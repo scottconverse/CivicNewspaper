@@ -20,6 +20,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - No signed installers.
 - Safari extension does not have a native macOS wrapper and is not installable as-is.
 
+## [0.1.1] - 2026-05-23
+
+### Added
+- Tauri auto-updater plugin wired against the GitHub releases feed (latest.json).
+- Cross-platform release workflow at .github/workflows/release.yml that builds
+  unsigned Windows MSI, macOS DMG, and Linux AppImage installers on tag push.
+
+### Security
+- Strict Content Security Policy applied to the Tauri WebView. Replaces the
+  prior `csp: null` placeholder.
+
+### Removed
+- Safari browser-extension stub. The codebase advertised Safari support but
+  shipped no Xcode wrapper. Removed entirely; Safari support is queued for a
+  future release when a proper safari-web-extension-converter build is set up.
+
+### Notes
+- The v0.2.0-beta sprint was attempted and rejected; this patch ships the
+  three Phase A items that landed honestly. v0.2 scope is now queued under a
+  different execution model.
+
 ## [0.1.0-alpha] - 2026-05-23
 
 Initial pre-alpha snapshot of the codebase. Not released.
@@ -46,5 +67,6 @@ Initial pre-alpha snapshot of the codebase. Not released.
 - Integrated upload to hosting providers (the "wizard" opens your output folder; you drag-and-drop into Netlify/Vercel/GitHub Pages yourself).
 - CI/CD.
 
-[Unreleased]: https://github.com/scottconverse/CivicNewspaper/compare/v0.1.0-alpha...HEAD
+[Unreleased]: https://github.com/scottconverse/CivicNewspaper/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/scottconverse/CivicNewspaper/compare/v0.1.0-alpha...v0.1.1
 [0.1.0-alpha]: https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.1.0-alpha
