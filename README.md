@@ -7,22 +7,21 @@ A local-first, single-editor desktop app for monitoring municipal feeds, flaggin
 ## What this is, and what it isn't
 
 **What it is, today:**
-- A Tauri v2 desktop app with a single-page React UI (`src/App.tsx`).
+- A Tauri v2 desktop app with a React 19 frontend structured as modular components (`src/components/`) and state management (`src/useApp.ts`).
 - A Rust core (`src-tauri/src/core/`) that:
   - Scrapes RSS/HTML feeds (`scraper.rs`).
   - Stores everything in a local SQLite database in WAL mode (`db.rs`).
-  - Runs **eight hand-written regex detectors** against scraped text — for money amounts, vote/decision keywords, personnel-change keywords, meeting/deadline keywords, watchlist hits, and a "source went quiet" timer (`detectors.rs`). This is not NLP. It is regular expressions in a loop.
-  - Runs **keyword-based pre-publication checks** on drafts — looks for a hard-coded list of accusatory terms, looks for the literal substring `evidence:` in each paragraph, requires presumption-of-innocence modifiers near arrest-related words (`guardrails.rs`). This is a lint rule, not an editor.
-  - Calls a local Ollama instance (`llm.rs`) for draft generation. Output quality is whatever your local model produces.
-  - Compiles approved drafts into a flat HTML site using `pulldown-cmark` and four templates in `templates/` (`compiler.rs`).
+  - Runs **eight hand-written regex detectors** against scraped text — for money amounts, vote/decision keywords, personnel-change keywords, meeting/deadline keywords, watchlist hits, and a "source went quiet" timer (`detectors.rs`). This is regular expressions in a loop.
+  - Runs **pre-publication checks** on drafts — alerts on accusatory terms, checks for the literal substring `evidence:` in paragraphs, and flags missing presumption-of-innocence modifiers near arrest-related words (`guardrails.rs`). Note: this is a lint-like helper in the UI, not a compilation block.
+  - Calls a local Ollama instance (`llm.rs`) for draft generation. Output quality depends on your local model configuration.
+  - Compiles approved drafts into a flat HTML site using `pulldown-cmark` and templates in `templates/` (`compiler.rs`).
   - Exposes a localhost-only Axum HTTP server on `127.0.0.1:12053` for browser-extension and assistant-skill pairing (`server.rs`, `auth.rs`).
 
 **What it isn't:**
-- A finished product. There are no signed installers and no GitHub releases yet.
-- An NLP system. The "detectors" cannot resolve composite events, named entities, or numeric context. They match keywords.
+- A finished product. Installers are currently unsigned.
+- An NLP system. The "detectors" match keywords rather than named entities or numeric contexts.
 - A multi-user newsroom. It is single-editor, single-machine.
-- A polished publishing host. The "wizard" for GitHub Pages / Netlify / Vercel is a button that opens your output folder in Explorer/Finder so you can drag-and-drop it into your hosting provider's web UI.
-
+- A polished publishing host. The "wizard" compiles the site to a folder on your computer, allowing you to drag-and-drop it into hosting providers like Netlify or GitHub Pages.
 
 ## Architecture (one paragraph)
 
@@ -35,21 +34,27 @@ For details: [docs/architecture.md](docs/architecture.md).
 ```
 .
 ├── README.md
-├── package.json                # Vite + React frontend
+├── package.json                # Vite + React frontend config
 ├── tsconfig.json
 ├── vite.config.ts
 ├── public/                     # Vite public assets
-├── src/                        # React frontend — single file today
-│   ├── App.tsx                 # 1,918-line single-page UI
+├── src/                        # React frontend
+│   ├── App.tsx                 # Core entry point
 │   ├── App.css
+│   ├── useApp.ts               # React state logic & IPC handler
 │   ├── ipc.ts                  # Tauri command bindings
 │   ├── main.tsx
 │   ├── vite-env.d.ts
+│   ├── components/             # UI Components split by tab
+│   │   ├── Workbench.tsx       # Story draft editor & guardrails
+│   │   ├── PublishPanel.tsx    # Static site compilation panel
+│   │   ├── SourcesPanel.tsx    # Source scraper settings
+│   │   └── SettingsPanel.tsx   # Backup, identity & model selection
 │   └── assets/
 ├── src-tauri/                  # Tauri Rust backend
-│   ├── Cargo.toml              # NOTE: name still "tauri-app", authors ["you"] — TODO rebrand
+│   ├── Cargo.toml              # Rust crate config (named "civicnews")
 │   ├── build.rs
-│   ├── tauri.conf.json
+│   ├── tauri.conf.json         # Tauri configs, includes Updater plugin
 │   ├── capabilities/
 │   ├── icons/
 │   ├── migrations/
@@ -78,9 +83,8 @@ For details: [docs/architecture.md](docs/architecture.md).
 │   ├── styles.css
 │   └── print.css
 ├── browser-extension/
-│   ├── chromium/               # Manifest v3 extension (background.js, content.js, manifest.json, icon.png)
-
-├── assistant-skill/            # SKILL.md + skill.json + client.js for AI editors
+│   ├── chromium/               # Manifest v3 browser capture utility
+├── assistant-skill/            # SKILL.md + client.js for CLI/IDE integrations
 └── docs/
     ├── architecture.md
     ├── user_manual.md
@@ -92,7 +96,7 @@ For details: [docs/architecture.md](docs/architecture.md).
 
 ## Building from source
 
-There are no prebuilt installers. You must build locally.
+You can build the application locally for development or packaging.
 
 **Prerequisites (all OSes):**
 - Rust toolchain — install via [rustup.rs](https://rustup.rs/).
@@ -100,10 +104,10 @@ There are no prebuilt installers. You must build locally.
 - Ollama running locally — [ollama.com](https://ollama.com/). Pull at least one model: `ollama pull gemma2:9b` (or smaller).
 
 **Platform prerequisites for Tauri v2:**
-- **Windows**: Microsoft Edge WebView2 (preinstalled on Windows 11; installer on Windows 10), plus the C++ Build Tools (`Desktop development with C++` workload).
+- **Windows**: Microsoft Edge WebView2, plus the C++ Build Tools (`Desktop development with C++` workload).
 - **macOS**: Xcode Command Line Tools (`xcode-select --install`).
-- **Linux**: WebKitGTK and a small graph of dev libraries. On Debian/Ubuntu:
-  ```
+- **Linux**: WebKitGTK and dev dependencies. On Debian/Ubuntu:
+  ```bash
   sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
   ```
   Other distros: see the [Tauri prereqs guide](https://v2.tauri.app/start/prerequisites/).
@@ -122,7 +126,7 @@ If `npm run tauri` errors with "tauri: command not found", install the Tauri CLI
 
 ## Status, license, contributing
 
-- **Status:** pre-alpha. The eight detectors and the guardrails check are usable but unsophisticated. No release has been cut.
+- **Status:** pre-alpha. The eight detectors and the guardrails check are usable but unsophisticated.
 - **License:** MIT. See [LICENSE](LICENSE).
 - **Contributing:** see [CONTRIBUTING.md](CONTRIBUTING.md). The detector regexes in `detectors.rs` are an easy, valuable place to start — every municipality uses slightly different boilerplate, and broader regex coverage directly improves the tool.
 - **Security:** see [SECURITY.md](SECURITY.md). The app opens a localhost HTTP server; please report any issues that bypass the host-header / origin / bearer-token checks.
@@ -137,7 +141,5 @@ If `npm run tauri` errors with "tauri: command not found", install the Tauri CLI
 
 ## Known TODOs visible in the manifest
 
-- `src-tauri/Cargo.toml`: package is still named `tauri-app`, description `"A Tauri App"`, authors `["you"]`. Rebrand before any release.
-- `package.json`: `"name": "tauri-app"`. Same.
 - No GitHub Actions / CI configured.
 - No signed installers; macOS Gatekeeper and Windows SmartScreen will warn users.
