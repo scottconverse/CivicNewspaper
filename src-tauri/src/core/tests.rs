@@ -12,7 +12,7 @@ mod tests {
     use crate::core::db::*;
     use crate::core::migrations::{run_migrations, get_current_version, get_expected_version};
     use crate::core::auth::{is_valid_host, is_valid_origin};
-    use crate::core::detectors::{run_detectors, parse_profile_config};
+    use crate::core::detectors::run_detectors;
     use crate::core::guardrails::run_guardrails_check;
     use crate::core::compiler::compile_static_site;
     use crate::core::backups::{save_backup, restore_backup};
@@ -41,7 +41,7 @@ mod tests {
     fn test_auth_checks() {
         // Host checks
         assert!(is_valid_host("127.0.0.1:12053"));
-        assert!(is_valid_host("localhost:12053"));
+        assert!(!is_valid_host("localhost:12053"));
         assert!(is_valid_host("  127.0.0.1:12053  ")); // Whitespace cleanup
         assert!(!is_valid_host("google.com"));
         assert!(!is_valid_host("127.0.0.1:8080"));
@@ -49,7 +49,7 @@ mod tests {
         // Origin checks
         assert!(is_valid_origin("chrome-extension://someuniqueextensionid"));
         assert!(is_valid_origin("safari-extension://someuniqueextensionid"));
-        assert!(is_valid_origin("null"));
+        assert!(!is_valid_origin("null"));
         assert!(!is_valid_origin("http://evilwebsite.com"));
         assert!(!is_valid_origin("https://localhost:12053"));
     }
@@ -95,7 +95,7 @@ mod tests {
 
         let profile_json = r#"{"money_threshold": 250000.0, "watchlist": ["John Doe"]}"#;
         
-        let new_leads = run_detectors(&conn, &[ev_money_high, ev_money_low], profile_json).unwrap();
+        let _new_leads = run_detectors(&conn, &[ev_money_high, ev_money_low], profile_json).unwrap();
         
         // Assert only the high amount lead was created (plus the New Primary Record lead which fires automatically for primary records)
         let leads = list_leads(&conn).unwrap();
@@ -118,7 +118,7 @@ mod tests {
             entities: "[]".to_string(),
         }).unwrap();
 
-        let new_leads2 = run_detectors(&conn, &[ev_watchlist], profile_json).unwrap();
+        let _new_leads2 = run_detectors(&conn, &[ev_watchlist], profile_json).unwrap();
         let leads_after = list_leads(&conn).unwrap();
         assert!(leads_after.iter().any(|l| l.detector_name == "Watchlist Hit" && l.why.contains("John Doe")));
 

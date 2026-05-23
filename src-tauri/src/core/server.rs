@@ -9,9 +9,19 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::net::SocketAddr;
-use super::db::{DbConn, confirm_pairing, list_leads, list_drafts, get_evidence_by_lead, insert_draft, Draft};
+use super::db::DbConn;
+use std::collections::HashMap;
+use std::time::Instant;
+use std::sync::{Arc, Mutex};
 use super::guardrails::run_guardrails_check;
 use super::llm::call_local_ollama;
+use sha2::{Sha256, Digest};
+
+#[derive(Clone)]
+pub struct AppState {
+    pub db: DbConn,
+    pub pair_attempts: Arc<Mutex<HashMap<String, (usize, Instant)>>>,
+}
 
 // JSON request/response models
 #[derive(Deserialize)]
@@ -61,8 +71,10 @@ struct GuardrailsRequest {
 }
 
 pub async fn start_server(db: DbConn) -> Result<(), Box<dyn Error + Send + Sync>> {
-    // Shared state between routes
-    let state_db = db.clone();
+    let app_state = AppState {
+        db: db.clone(),
+        pair_attempts: Arc::new(Mutex::new(HashMap::new())),
+    };
 
     // Routes requiring token authentication
     let api_routes = Router::new()
@@ -71,20 +83,21 @@ pub async fn start_server(db: DbConn) -> Result<(), Box<dyn Error + Send + Sync>
         .route("/drafts", post(create_draft_handler))
         .route("/llm/task", post(llm_task_handler))
         .route("/guardrails/check", post(guardrails_handler))
-        .layer(middleware::from_fn_with_state(state_db.clone(), super::auth::auth_middleware));
+        .route("/guardrails/check", post(guardrails_handler))
+        .layer(middleware::from_fn_with_state(app_state.clone(), super::auth::auth_middleware));
 
     // Outer app router (includes pairing route which doesn't check tokens)
     let app = Router::new()
         .route("/api/pair", post(pair_handler))
         .nest("/api", api_routes)
-        .with_state(state_db);
+        .with_state(app_state);
 
     // Bind strictly to loopback interface 127.0.0.1
     let addr = SocketAddr::from(([127, 0, 0, 1], 12053));
     println!("Core API server starting on http://{}", addr);
     
     let listener = tokio::net::TcpListener::bind(addr).await?;
-    axum::serve(listener, app).await?;
+    axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>()).await?;
 
     Ok(())
 }
@@ -92,47 +105,74 @@ pub async fn start_server(db: DbConn) -> Result<(), Box<dyn Error + Send + Sync>
 // Handlers
 
 async fn pair_handler(
-    State(db): State<DbConn>,
+    State(state): State<AppState>,
+    axum::extract::ConnectInfo(addr): axum::extract::ConnectInfo<SocketAddr>,
     Json(payload): Json<PairRequest>,
 ) -> Result<Json<PairResponse>, StatusCode> {
-    let conn = db.lock().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let ip = addr.ip().to_string();
+    {
+        let mut attempts = state.pair_attempts.lock().unwrap();
+        if let Some(&(count, time)) = attempts.get(&ip) {
+            if count >= 5 && time.elapsed().as_secs() < 1800 {
+                return Err(StatusCode::TOO_MANY_REQUESTS);
+            } else if time.elapsed().as_secs() >= 1800 {
+                attempts.remove(&ip);
+            }
+        }
+    }
+
+    let conn = state.db.lock().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     
-    match confirm_pairing(&conn, &payload.pin) {
-        Ok(Some(token)) => Ok(Json(PairResponse { token })),
-        Ok(None) => Err(StatusCode::UNAUTHORIZED),
+    let mut hasher = Sha256::new();
+    hasher.update(payload.pin.as_bytes());
+    let hashed_pin = hex::encode(hasher.finalize());
+    
+    match super::db::confirm_pairing(&conn, &hashed_pin) {
+        Ok(Some(token)) => {
+            let mut attempts = state.pair_attempts.lock().unwrap();
+            attempts.remove(&ip);
+            Ok(Json(PairResponse { token }))
+        },
+        Ok(None) => {
+            let mut attempts = state.pair_attempts.lock().unwrap();
+            let entry = attempts.entry(ip).or_insert((0, Instant::now()));
+            entry.0 += 1;
+            entry.1 = Instant::now();
+            Err(StatusCode::UNAUTHORIZED)
+        },
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
 }
 
 async fn get_queue_handler(
-    State(db): State<DbConn>,
+    State(state): State<AppState>,
 ) -> Result<Json<QueueResponse>, StatusCode> {
-    let conn = db.lock().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let conn = state.db.lock().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     
-    let leads = list_leads(&conn).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    let drafts = list_drafts(&conn).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let leads = super::db::list_leads(&conn).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let drafts = super::db::list_drafts(&conn).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     
     Ok(Json(QueueResponse { leads, drafts }))
 }
 
 async fn get_evidence_handler(
-    State(db): State<DbConn>,
+    State(state): State<AppState>,
     Path(lead_id): Path<i32>,
 ) -> Result<Json<Vec<super::db::EvidenceItem>>, StatusCode> {
-    let conn = db.lock().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let conn = state.db.lock().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     
-    let items = get_evidence_by_lead(&conn, lead_id).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let items = super::db::get_evidence_by_lead(&conn, lead_id).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     Ok(Json(items))
 }
 
 async fn create_draft_handler(
-    State(db): State<DbConn>,
+    State(state): State<AppState>,
     Json(payload): Json<CreateDraftRequest>,
 ) -> Result<Json<CreateDraftResponse>, StatusCode> {
-    let conn = db.lock().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let conn = state.db.lock().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     
     let now = chrono::Utc::now().to_rfc3339();
-    let draft = Draft {
+    let draft = super::db::Draft {
         id: None,
         lead_id: payload.lead_id,
         format: payload.format,
@@ -146,7 +186,7 @@ async fn create_draft_handler(
         updated_at: now,
     };
     
-    match insert_draft(&conn, &draft) {
+    match super::db::insert_draft(&conn, &draft) {
         Ok(id) => Ok(Json(CreateDraftResponse { id })),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
@@ -168,10 +208,10 @@ async fn llm_task_handler(
 }
 
 async fn guardrails_handler(
-    State(db): State<DbConn>,
+    State(state): State<AppState>,
     Json(payload): Json<GuardrailsRequest>,
 ) -> Result<Json<super::guardrails::GuardrailsReport>, StatusCode> {
-    let conn = db.lock().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let conn = state.db.lock().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     
     match run_guardrails_check(&conn, payload.draft_id) {
         Ok(report) => Ok(Json(report)),

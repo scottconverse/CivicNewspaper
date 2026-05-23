@@ -1352,13 +1352,13 @@ function App() {
                       />
                     </div>
                     <button className="btn btn-primary" type="submit">
-                      Generate Pairing Pin
+                      Generate Pairing Token
                     </button>
                   </form>
 
                   {generatedPin && (
                     <div>
-                      <div className="pairing-pin-box">{generatedPin}</div>
+                      <div className="pairing-pin-box" style={{ wordBreak: "break-all", fontSize: "1rem" }}>{generatedPin}</div>
                       <p className="help-text text-center" style={{ color: "var(--color-warning)" }}>{pinExpiryMsg}</p>
                     </div>
                   )}

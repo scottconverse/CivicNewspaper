@@ -68,12 +68,24 @@ pub fn delete_source(db: tauri::State<'_, DbConn>, id: i32) -> Result<(), String
 
 #[tauri::command]
 pub fn generate_pairing_pin(db: tauri::State<'_, DbConn>, label: String) -> Result<String, String> {
+    use rand::RngCore;
+    use base64::Engine;
+    use sha2::{Sha256, Digest};
+
     let conn = db.lock().map_err(|_| "Failed to lock database".to_string())?;
-    let u = uuid::Uuid::new_v4().as_u128();
-    let pin = format!("{:06}", u % 1_000_000);
+    
+    let mut bytes = [0u8; 16];
+    rand::rngs::OsRng.fill_bytes(&mut bytes);
+    let raw_pin = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(bytes);
+    
+    let mut hasher = Sha256::new();
+    hasher.update(raw_pin.as_bytes());
+    let hashed_pin = hex::encode(hasher.finalize());
+
     let expires_at = (chrono::Utc::now() + chrono::Duration::minutes(5)).to_rfc3339();
-    db::create_pairing_pin(&conn, &label, &pin, &expires_at).map_err(|e| e.to_string())?;
-    Ok(pin)
+    db::create_pairing_pin(&conn, &label, &hashed_pin, &expires_at).map_err(|e| e.to_string())?;
+    
+    Ok(raw_pin)
 }
 
 #[tauri::command]

@@ -5,28 +5,28 @@ use axum::{
     middleware::Next,
     response::Response,
 };
-use rusqlite::Connection;
-use std::sync::{Arc, Mutex};
 use super::db::{get_paired_client_by_token, record_paired_client_use};
 
 // Validate the Host header to defeat DNS rebinding attacks
 pub fn is_valid_host(host: &str) -> bool {
-    let host_clean = host.trim().to_lowercase();
-    host_clean == "127.0.0.1:12053" || host_clean == "localhost:12053"
+    host.trim() == "127.0.0.1:12053"
 }
 
 // Validate the Origin header to ensure it matches browser extension origins or is absent (for IDE agents)
 pub fn is_valid_origin(origin: &str) -> bool {
     let origin_clean = origin.trim().to_lowercase();
-    // Allow extensions (chrome-extension://... or safari-extension://...)
-    origin_clean.starts_with("chrome-extension://") || origin_clean.starts_with("safari-extension://") || origin_clean == "null"
+    if origin_clean == "null" {
+        return false;
+    }
+    origin_clean.starts_with("chrome-extension://") || origin_clean.starts_with("safari-extension://")
 }
 
 use axum::extract::State;
+use super::server::AppState;
 
 // Middleware for Axum HTTP routes
 pub async fn auth_middleware(
-    State(db): State<Arc<Mutex<Connection>>>,
+    State(state): State<AppState>,
     request: Request<Body>,
     next: Next,
 ) -> Result<Response, StatusCode> {
@@ -42,19 +42,29 @@ pub async fn auth_middleware(
         return Err(StatusCode::BAD_REQUEST);
     }
 
-    // 2. Origin Validation (if Origin header exists)
-    if let Some(origin_header) = request.headers().get(header::ORIGIN) {
-        if let Ok(origin_str) = origin_header.to_str() {
-            if !is_valid_origin(origin_str) {
-                println!("Auth Block: Untrusted Origin header: '{}'", origin_str);
+    // 2. Origin Validation
+    let path = request.uri().path();
+    let is_pair_route = path == "/api/pair";
+    let skip_origin = is_pair_route && request.headers().contains_key("x-civicnews-pair");
+
+    if !skip_origin {
+        if let Some(origin_header) = request.headers().get(header::ORIGIN) {
+            if let Ok(origin_str) = origin_header.to_str() {
+                if !is_valid_origin(origin_str) {
+                    println!("Auth Block: Untrusted Origin header: '{}'", origin_str);
+                    return Err(StatusCode::FORBIDDEN);
+                }
+            } else {
                 return Err(StatusCode::FORBIDDEN);
             }
+        } else {
+            // Reject missing Origin
+            return Err(StatusCode::FORBIDDEN);
         }
     }
 
     // 3. Skip token check for pairing route
-    let path = request.uri().path();
-    if path == "/api/pair" {
+    if is_pair_route {
         return Ok(next.run(request).await);
     }
 
@@ -76,7 +86,7 @@ pub async fn auth_middleware(
 
     // Check token in DB
     let is_valid = {
-        let conn = db.lock().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        let conn = state.db.lock().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
         match get_paired_client_by_token(&conn, token) {
             Ok(Some(_client)) => {
                 // Update last used timestamp
