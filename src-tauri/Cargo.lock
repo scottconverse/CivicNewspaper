@@ -535,6 +535,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "civicnews"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "chrono",
+ "feed-rs",
+ "pulldown-cmark",
+ "regex",
+ "reqwest 0.12.28",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "sha2",
+ "sysinfo",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-opener",
+ "tempfile",
+ "tokio",
+ "tower 0.4.13",
+ "tower-http 0.5.2",
+ "uuid",
+]
+
+[[package]]
 name = "combine"
 version = "4.6.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3966,31 +3991,6 @@ dependencies = [
  "webview2-com",
  "window-vibrancy",
  "windows 0.61.3",
-]
-
-[[package]]
-name = "tauri-app"
-version = "0.1.0"
-dependencies = [
- "axum",
- "chrono",
- "feed-rs",
- "pulldown-cmark",
- "regex",
- "reqwest 0.12.28",
- "rusqlite",
- "serde",
- "serde_json",
- "sha2",
- "sysinfo",
- "tauri",
- "tauri-build",
- "tauri-plugin-opener",
- "tempfile",
- "tokio",
- "tower 0.4.13",
- "tower-http 0.5.2",
- "uuid",
 ]
 
 [[package]]
