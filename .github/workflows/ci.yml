@@ -59,6 +59,7 @@ jobs:
         run: cargo test --all
 
   frontend:
+    needs: rust
     runs-on: [self-hosted, Linux, scott-desktop]
     steps:
       - uses: actions/checkout@v4
@@ -71,6 +72,11 @@ jobs:
       - name: Vitest
         run: npm test
       - run: npm run build
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.94.0
+          components: rustfmt, clippy
       - name: Run Phase 1 DoD verification
         if: hashFiles('scripts/verify-v0.2-phase-1-dod.sh') != ''
         run: bash scripts/verify-v0.2-phase-1-dod.sh
