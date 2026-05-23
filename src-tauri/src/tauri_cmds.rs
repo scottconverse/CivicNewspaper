@@ -165,10 +165,6 @@ pub async fn ingest(db: tauri::State<'_, DbConn>, app: tauri::AppHandle) -> Resu
         ids
     };
 
-    if unlinked_ids.is_empty() {
-        return Ok(0);
-    }
-
     let profile_json = {
         let path = get_config_path(&app)?;
         if path.exists() {

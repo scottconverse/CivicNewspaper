@@ -320,7 +320,7 @@ fn format_money(val: f64) -> String {
     let mut result = String::new();
     let num_bytes = integer_part.len();
     for (i, c) in integer_part.chars().enumerate() {
-        if i > 0 && (num_bytes - i).is_multiple_of(3) {
+        if i > 0 && (num_bytes - i) % 3 == 0 {
             result.push(',');
         }
         result.push(c);

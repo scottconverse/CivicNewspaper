@@ -64,7 +64,7 @@ mod tests {
             .insert(header::HOST, "127.0.0.1:12053".parse().unwrap());
 
         let res = app.oneshot(req).await.unwrap();
-        assert_eq!(res.status(), StatusCode::FORBIDDEN);
+        assert_eq!(res.status(), StatusCode::UNAUTHORIZED);
     }
 
     #[tokio::test]
@@ -72,7 +72,7 @@ mod tests {
         let (app, _) = setup_app();
         let mut req = make_req("/api/queue", axum::http::Method::GET, None);
         req.headers_mut()
-            .insert(header::HOST, "localhost:12053".parse().unwrap());
+            .insert(header::HOST, "invalidhost.com:12053".parse().unwrap());
         req.headers_mut()
             .insert(header::ORIGIN, "chrome-extension://someid".parse().unwrap());
 

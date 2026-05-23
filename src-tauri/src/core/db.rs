@@ -406,7 +406,7 @@ pub fn get_paired_client_by_token(
     conn: &Connection,
     token: &str,
 ) -> SqlResult<Option<PairedClient>> {
-    let mut stmt = conn.prepare("SELECT id, token, label, pairing_pin, pin_expires_at, created_at, last_used_at, revoked FROM paired_clients WHERE token = ?1 AND revoked = 0")?;
+    let mut stmt = conn.prepare("SELECT id, token, label, pairing_pin, pin_expires_at, created_at, last_used_at, revoked FROM paired_clients WHERE token = ?1 AND revoked = 0 AND pairing_pin IS NULL")?;
     let mut rows = stmt.query(params![token])?;
     if let Some(row) = rows.next()? {
         Ok(Some(PairedClient {
