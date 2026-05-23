@@ -14,7 +14,7 @@ Access is authorized via a paired token saved in the user's home configuration d
 * Windows: `%APPDATA%\civicnews-token.json`
 * macOS: `~/Library/Application Support/civicnews-token.json` or `~/.config/civicnews-token.json`
 
-A CLI utility is provided at [client.js](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/assistant-skill/client.js) to automate these calls.
+A CLI utility is provided at [client.js](./client.js) to automate these calls.
 
 ## Available Actions via CLI Bridge
 

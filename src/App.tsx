@@ -1,6 +1,7 @@
 // src/App.tsx
 import { useState, useEffect, useRef } from "react";
 import { listen } from "@tauri-apps/api/event";
+import { documentDir, join, resolveResource } from "@tauri-apps/api/path";
 import {
   Newspaper,
   Rss,
@@ -93,8 +94,21 @@ function App() {
   const [customSystemPrompt, setCustomSystemPrompt] = useState("");
   const [generatingText, setGeneratingText] = useState(false);
 
-  const [publishPath, setPublishPath] = useState("C:\\Users\\scott\\Documents\\antigravity\\civicnews-site");
-  const [backupPathInput, setBackupPathInput] = useState("C:\\Users\\scott\\Documents\\antigravity\\civicnews-backup.db");
+  const [publishPath, setPublishPath] = useState("");
+  const [backupPathInput, setBackupPathInput] = useState("");
+
+  useEffect(() => {
+    async function loadDefaultPaths() {
+      try {
+        const docDir = await documentDir();
+        setPublishPath(await join(docDir, "civicnews-site"));
+        setBackupPathInput(await join(docDir, "civicnews-backup.db"));
+      } catch (err) {
+        console.error("Failed to resolve default paths", err);
+      }
+    }
+    loadDefaultPaths();
+  }, []);
   const [correctionNote, setCorrectionNote] = useState("");
   const [showCorrectionModal, setShowCorrectionModal] = useState(false);
 
@@ -1291,7 +1305,7 @@ function App() {
             <div className="page-header">
               <div className="page-title">
                 <h1>Browser Integration Pairing</h1>
-                <p>Securely connect web browsers or external AI coding plugins (Codex, Antigravity) to access story queues and evidence records.</p>
+                <p>Securely connect web browsers or external AI coding plugins (Codex, Agent Pipeline) to access story queues and evidence records.</p>
               </div>
             </div>
 
@@ -1308,7 +1322,14 @@ function App() {
                     <li>Enable <strong>Developer Mode</strong> (top right).</li>
                     <li>Click the button below to open the extension folder, then <strong>drag and drop</strong> the folder into the extensions page.</li>
                   </ol>
-                  <button className="btn btn-secondary" onClick={() => openLocalPath("C:\\Users\\scott\\Documents\\antigravity\\eager-archimedes\\extension")}>
+                  <button className="btn btn-secondary" onClick={async () => {
+                    try {
+                      const extPath = await resolveResource("browser-extension");
+                      openLocalPath(extPath);
+                    } catch (e) {
+                      console.error("Failed to resolve extension path", e);
+                    }
+                  }}>
                     <FileDown size={16} /> Open Extension Folder
                   </button>
                 </div>
