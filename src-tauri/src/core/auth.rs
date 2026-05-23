@@ -19,7 +19,6 @@ pub fn is_valid_origin(origin: &str) -> bool {
         return false;
     }
     origin_clean.starts_with("chrome-extension://")
-        || origin_clean.starts_with("safari-extension://")
 }
 
 use super::server::AppState;

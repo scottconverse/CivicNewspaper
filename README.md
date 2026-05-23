@@ -22,7 +22,7 @@ A local-first, single-editor desktop app for monitoring municipal feeds, flaggin
 - An NLP system. The "detectors" cannot resolve composite events, named entities, or numeric context. They match keywords.
 - A multi-user newsroom. It is single-editor, single-machine.
 - A polished publishing host. The "wizard" for GitHub Pages / Netlify / Vercel is a button that opens your output folder in Explorer/Finder so you can drag-and-drop it into your hosting provider's web UI.
-- A working Safari extension. The `browser-extension/safari/` directory contains a manifest and scripts only; a real Safari Web Extension requires a native macOS wrapper app, which is not present.
+
 
 ## Architecture (one paragraph)
 
@@ -79,7 +79,7 @@ For details: [docs/architecture.md](docs/architecture.md).
 │   └── print.css
 ├── browser-extension/
 │   ├── chromium/               # Manifest v3 extension (background.js, content.js, manifest.json, icon.png)
-│   └── safari/                 # Manifest + scripts only — no native wrapper, NOT installable as-is
+
 ├── assistant-skill/            # SKILL.md + skill.json + client.js for AI editors
 └── docs/
     ├── architecture.md

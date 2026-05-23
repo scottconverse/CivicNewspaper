@@ -52,7 +52,6 @@ mod tests {
 
         // Origin checks
         assert!(is_valid_origin("chrome-extension://someuniqueextensionid"));
-        assert!(is_valid_origin("safari-extension://someuniqueextensionid"));
         assert!(!is_valid_origin("null"));
         assert!(!is_valid_origin("http://evilwebsite.com"));
         assert!(!is_valid_origin("https://localhost:12053"));
