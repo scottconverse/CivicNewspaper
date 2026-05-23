@@ -662,3 +662,6 @@ textarea:focus {
 
 .text-center { text-align: center; }
 .text-right { text-align: right; }
+
+@media (max-width: 768px) { .app-container { flex-direction: column; } .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-color); } }
+@media (prefers-color-scheme: dark) { :root { --bg-primary: #121212; --bg-secondary: #1e1e1e; --text-primary: #ffffff; --text-secondary: #a0a0a0; --border-color: #333333; } }
