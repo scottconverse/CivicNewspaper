@@ -6,7 +6,7 @@ Honest answers. If something here contradicts the marketing copy on the landing 
 
 ### Is this production software?
 
-No. CivicNewspaper is pre-alpha. There are no signed installers, no GitHub releases, no security review, no formal QA. Use it for experimentation. Do not stake legal or journalistic claims on it without independent verification of every output.
+No. CivicNewspaper is pre-alpha. There are no signed installers, no security review, and no formal QA. Use it for experimentation. Do not stake legal or journalistic claims on it without independent verification of every output.
 
 ### Should I use it to publish public-records reporting today?
 
@@ -64,7 +64,7 @@ There is no integrated upload. The "wizard" is text instructions plus an open-fo
 
 ### What gets published?
 
-Whatever drafts you've moved to the "Approved for Static Publish" state. The compiler produces:
+Whatever drafts you've moved to the "Approved for Static Publish" state (status `ready_to_publish` or `published` / `corrected`). The compiler produces:
 - `index.html` (newsroom home, listing approved posts).
 - One HTML page per approved post.
 - `styles.css`, `print.css`.
@@ -77,7 +77,7 @@ Whatever drafts you've moved to the "Approved for Static Publish" state. The com
 
 Three things, all keyword-based:
 1. **Citation coverage**: every paragraph longer than 30 characters that isn't a heading or code block must contain the literal substring `evidence:` (e.g. `[Source](evidence:12)`).
-2. **Accusatory language**: if a paragraph contains any of ~20 words (`corrupt`, `stole`, `fraud`, `embezzle`, etc.), it must also contain a citation. If it doesn't, the guardrail blocks publication.
+2. **Accusatory language**: if a paragraph contains any of ~20 words (`corrupt`, `stole`, `fraud`, `embezzle`, etc.), it must also contain a citation. If it doesn't, the UI flags a warning.
 3. **Presumption of innocence**: if a paragraph contains arrest-related words (`arrested`, `charged`, `indicted`, `convicted`, `prosecuted`), it must also contain a modifier like `alleged` / `allegedly` / `suspected` / `accused` nearby.
 
 It is a lint rule. It is not an inspector in any AI/NLP sense.
@@ -94,17 +94,17 @@ It runs eight regular expressions over each new evidence excerpt and creates a "
 - **Deadline** — fires on `deadline|submit by|due date|public comment period|rfp|bid due|applications close`.
 - **Watchlist hit** — case-insensitive word-boundary match against your custom term list.
 
-Lead-deduplication is exact-string match on the `why` field. Punctuation drift will produce duplicate leads. Improving this is on the roadmap.
+Lead-deduplication is exact-string match on the `why` field. Punctuation drift will produce duplicate leads.
 
 ### Why is there no NLP?
 
-Cost (compute), latency (must run on a 4-8 GB-RAM target machine), and complexity (NLP makes regressions invisible). The team takes "boring, transparent regex" as a deliberate choice for v0.1 and will revisit when there's an honest path to NLP that degrades gracefully on small hardware.
+Cost (compute), latency (must run on a 4-8 GB-RAM target machine), and complexity (NLP makes regressions invisible). The team takes "boring, transparent regex" as a deliberate choice for v0.1.
 
 ## Data and backups
 
 ### Where is my data stored?
 
-In a single SQLite file in the OS app-data directory (Windows: `%APPDATA%\com.tauri.dev\`; macOS: `~/Library/Application Support/com.tauri.dev/`; Linux: `~/.local/share/com.tauri.dev/`). Exact path depends on the `identifier` in `tauri.conf.json`.
+In a single SQLite file in the OS app-data directory (Windows: `%APPDATA%\org.civicnews.app\`; macOS: `~/Library/Application Support/org.civicnews.app/`; Linux: `~/.local/share/org.civicnews.app/`). Exact path depends on the `identifier` in `tauri.conf.json`.
 
 ### How do I back up?
 
@@ -122,14 +122,4 @@ Outbound HTTP from the Rust backend goes to:
 1. Whatever feed URLs you configured (RSS, HTML pages).
 2. `127.0.0.1:11434` (your local Ollama).
 
-There is no telemetry, no analytics, no update check, no error reporting service.
-
-### Does the browser extension phone home?
-
-It talks to `127.0.0.1:12053` (your local CivicNewspaper). That's it. Verify by reading `browser-extension/chromium/background.js` — it's short.
-
-## Contributing
-
-### I'd like to help. Where do I start?
-
-See [CONTRIBUTING.md](CONTRIBUTING.md). The most valuable easy contribution is a regex addition for your municipality's wording.
+Additionally, the frontend utilizes the Tauri updater plugin which checks for updates from the official GitHub releases endpoint (`latest.json`) on app launch. This check does not send user tracking or telemetry metrics.

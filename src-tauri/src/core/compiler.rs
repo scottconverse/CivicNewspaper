@@ -81,11 +81,11 @@ pub fn compile_static_site(
     fs::write(output_dir.join("styles.css"), STYLES_CSS)?;
     fs::write(output_dir.join("print.css"), PRINT_CSS)?;
 
-    // 4. Fetch drafts that are published or corrected
+    // 4. Fetch drafts that are published, corrected, or ready_to_publish
     let drafts = list_drafts(conn)?;
     let mut published_drafts = Vec::new();
     for d in drafts {
-        if d.status == "published" || d.status == "corrected" {
+        if d.status == "published" || d.status == "corrected" || d.status == "ready_to_publish" {
             published_drafts.push(d);
         }
     }
@@ -110,8 +110,9 @@ pub fn compile_static_site(
 
         // Convert Markdown body to HTML
         let raw_html = render_markdown(&draft.content);
-        // Replace custom references `href="evidence:123"` with local section anchors `#evidence-123`
-        let html_content = raw_html.replace("href=\"evidence:", "href=\"#evidence-");
+        // Replace custom references `href="evidence:123"` or `href="evidence://123"` with local section anchors `#evidence-123`
+        let mut html_content = raw_html.replace("href=\"evidence://", "href=\"#evidence-");
+        html_content = html_content.replace("href=\"evidence:", "href=\"#evidence-");
 
         // Format Linked Evidence List
         let mut evidence_html = String::new();
@@ -159,6 +160,19 @@ pub fn compile_static_site(
         post_html = post_html.replace("{{EVIDENCE_CITATIONS}}", &evidence_html);
         post_html = post_html.replace("{{CORRECTION_BANNER}}", &correction_banner);
         post_html = post_html.replace("{{YEAR}}", &current_year);
+
+        // Prepend "../" to relative assets and links since post page is in a subfolder
+        post_html = post_html.replace("href=\"styles.css\"", "href=\"../styles.css\"");
+        post_html = post_html.replace("href=\"print.css\"", "href=\"../print.css\"");
+        post_html = post_html.replace("href=\"index.html\"", "href=\"../index.html\"");
+        post_html = post_html.replace("href=\"about.html\"", "href=\"../about.html\"");
+        post_html = post_html.replace("href=\"ethics.html\"", "href=\"../ethics.html\"");
+        post_html = post_html.replace(
+            "href=\"how-we-report.html\"",
+            "href=\"../how-we-report.html\"",
+        );
+        post_html = post_html.replace("href=\"corrections.html\"", "href=\"../corrections.html\"");
+        post_html = post_html.replace("href=\"feed.xml\"", "href=\"../feed.xml\"");
 
         let relative_path = format!("{}/{}.html", subfolder, draft_id);
         let dest_path = output_dir.join(&relative_path);

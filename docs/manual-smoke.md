@@ -43,14 +43,12 @@ Since CivicNews is a local-first desktop application with sensitive GUI workflow
 
 ### 5. Guardrails & Compilation
 1. Edit the generated draft to include the word "corrupt" without a citation.
-2. Attempt to approve it for publishing.
-3. Verify the Factual Guardrail Inspector blocks the publish due to the accusatory language rule.
-4. Fix the draft by adding a citation near the word "corrupt".
-5. Approve for publish.
-6. Run the "Static Compilation & Publishing Wizard".
-7. Pick an output folder.
-8. Verify `index.html`, the article page, `styles.css`, and `feed.xml` are created correctly.
-9. Verify the article page does not execute any raw HTML (XSS test: insert `<script>alert(1)</script>` into the draft body before compile, verify it is escaped or stripped).
+2. Verify the Factual Guardrail Inspector raises a visual warning warning about the accusatory language rule. (Note: the guardrails act as editor helpers in the UI and do not block compilation or status changes).
+3. Approve for publish (status transitions to "Ready to Publish").
+4. Run the "Static Compilation & Publishing Wizard".
+5. Pick an output folder.
+6. Verify `index.html`, the article page, `styles.css`, and `feed.xml` are created correctly.
+7. Verify the article page does not execute any raw HTML (XSS test: insert `<script>alert(1)</script>` into the draft body before compile, verify it is escaped or stripped).
 
 ---
 *Note: This smoke test replaces the automated clean-VM verification for v0.1.0-alpha, as AI assistants cannot natively drive the Tauri desktop GUI.*

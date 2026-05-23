@@ -85,7 +85,8 @@ Here is where you write and verify your articles:
   * Did you use accusatory words (like *corrupt*, *stole*, *lied*) without a direct citation?
   * Did you include presumption-of-innocence words (like *alleged* or *charged*) when talking about arrests?
 * **Social Media Promo Pack**: Underneath the editor, you can click "Generate Posts" to automatically create optimized Twitter/X, Facebook, and Reddit posts based on your verified story.
-* If the guardrail check passes, click **Ready to Review**, then **Approve for Static Publish**.
+* **Publishing Approval**: If you are satisfied with the draft and it passes your verification standards, click **Approve for Static Publish**. 
+  *(Note: The static compiler looks specifically for drafts that have been approved. To ensure a draft compiles successfully into the news feed, make sure this button is clicked and the draft status updates to "Ready to Publish").*
 
 ---
 

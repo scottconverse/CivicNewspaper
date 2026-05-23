@@ -59,30 +59,24 @@ jobs:
         run: cargo test --all
 
   frontend:
+    needs: rust
     runs-on: [self-hosted, Linux, scott-desktop]
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Vitest (if configured)
-        run: |
-          if grep -q '"vitest"' package.json 2>/dev/null; then
-            npm test
-          else
-            echo "ℹ vitest not yet configured — skipping (Phase 1 will add it)"
-          fi
-
-      - name: Build frontend
-        run: npm run build
-
+      - run: npm ci
+      - name: Vitest
+        run: npm test
+      - run: npm run build
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.94.0
+          components: rustfmt, clippy
       - name: Run Phase 1 DoD verification
         if: hashFiles('scripts/verify-v0.2-phase-1-dod.sh') != ''
         run: bash scripts/verify-v0.2-phase-1-dod.sh

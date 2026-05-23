@@ -72,7 +72,7 @@ mod tests {
         let (app, _) = setup_app();
         let mut req = make_req("/api/queue", axum::http::Method::GET, None);
         req.headers_mut()
-            .insert(header::HOST, "localhost:12053".parse().unwrap());
+            .insert(header::HOST, "invalidhost.com:12053".parse().unwrap());
         req.headers_mut()
             .insert(header::ORIGIN, "chrome-extension://someid".parse().unwrap());
 

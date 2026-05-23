@@ -662,3 +662,41 @@ textarea:focus {
 
 .text-center { text-align: center; }
 .text-right { text-align: right; }
+
+.pairing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.sources-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+  .workbench-container,
+  .pairing-grid,
+  .sources-grid {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+  }
+  .evidence-pane {
+    height: 400px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* mobile-first responsive collapse */
+  .app-container { flex-direction: column; }
+  .sidebar { 
+    width: 100% !important; 
+    min-width: 100% !important;
+  }
+  .main-content { 
+    width: 100% !important; 
+    min-width: 100% !important;
+    padding: 1rem !important;
+  }
+}
