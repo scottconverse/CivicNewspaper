@@ -484,6 +484,7 @@ mod tests {
     fn test_compiler_xss_safe() {
         let conn = init_db("file:test_compiler_xss_safe?mode=memory&cache=shared").unwrap();
         let temp_dir = tempdir().unwrap();
+        assert!("&lt;script&gt;".contains("&lt;script"));
 
         // Use insert_source so we have a source for the lead
         let _source_id = crate::core::db::insert_source(
