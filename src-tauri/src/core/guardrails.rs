@@ -1,8 +1,8 @@
 // core/guardrails.rs
-use rusqlite::Connection;
-use std::error::Error;
-use serde::{Deserialize, Serialize};
 use super::db::{get_draft, get_evidence_by_lead};
+use rusqlite::Connection;
+use serde::{Deserialize, Serialize};
+use std::error::Error;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GuardrailsIssue {
@@ -23,7 +23,7 @@ pub fn run_guardrails_check(
     draft_id: i32,
 ) -> Result<GuardrailsReport, Box<dyn Error>> {
     let mut issues = Vec::new();
-    
+
     let draft = match get_draft(conn, draft_id)? {
         Some(d) => d,
         None => return Err(format!("Draft ID {} not found", draft_id).into()),
@@ -48,10 +48,26 @@ pub fn run_guardrails_check(
         .collect();
 
     let accusatory_words = vec![
-        "corrupt", "stole", "illegal", "fraud", "embezzle", "bribe", 
-        "scam", "theft", "criminal", "guilty", "conspiracy", "extortion", 
-        "misconduct", "kickback", "laundering", "arrested", "charged", 
-        "indicted", "convicted", "prosecuted"
+        "corrupt",
+        "stole",
+        "illegal",
+        "fraud",
+        "embezzle",
+        "bribe",
+        "scam",
+        "theft",
+        "criminal",
+        "guilty",
+        "conspiracy",
+        "extortion",
+        "misconduct",
+        "kickback",
+        "laundering",
+        "arrested",
+        "charged",
+        "indicted",
+        "convicted",
+        "prosecuted",
     ];
 
     for (p_idx, paragraph) in paragraphs.iter().enumerate() {
@@ -63,7 +79,7 @@ pub fn run_guardrails_check(
         // 1. Citation Coverage Check
         // Every factual claim paragraph must reference at least one `evidence:` citation
         let has_citation = paragraph.contains("evidence:") || paragraph.contains("evidence://");
-        
+
         // Let's check if the paragraph length is significant enough to count as a factual claim
         if paragraph.len() > 30 && !has_citation {
             issues.push(GuardrailsIssue {
@@ -98,9 +114,19 @@ pub fn run_guardrails_check(
 
             // 3. Presumption of Innocence / Legal Naming Rule
             // If legal/accusatory charge terms are present, the word 'alleged' or 'allegedly' must also be present
-            let legal_terms = vec!["arrested", "charged", "indicted", "accused", "suspect", "theft", "embezzle", "fraud", "misconduct"];
+            let legal_terms = vec![
+                "arrested",
+                "charged",
+                "indicted",
+                "accused",
+                "suspect",
+                "theft",
+                "embezzle",
+                "fraud",
+                "misconduct",
+            ];
             let contains_legal = legal_terms.iter().any(|&term| lower_p.contains(term));
-            
+
             if contains_legal && !lower_p.contains("alleged") && !lower_p.contains("allegedly") {
                 issues.push(GuardrailsIssue {
                     category: "Legal Naming".to_string(),
@@ -138,11 +164,11 @@ pub fn run_guardrails_check(
 // Find verbatim sequences of length N matching between a paragraph and an evidence text
 fn find_verbatim_overlap(paragraph: &str, excerpt: &str, min_words: usize) -> Vec<String> {
     let mut matches = Vec::new();
-    
+
     // Normalize and split into words
     let p_words = tokenize(paragraph);
     let e_words = tokenize(excerpt);
-    
+
     if p_words.len() < min_words || e_words.len() < min_words {
         return matches;
     }
@@ -150,13 +176,13 @@ fn find_verbatim_overlap(paragraph: &str, excerpt: &str, min_words: usize) -> Ve
     // Check sliding windows of size `min_words`
     let mut i = 0;
     while i <= p_words.len() - min_words {
-        let window = &p_words[i .. i + min_words];
-        
+        let window = &p_words[i..i + min_words];
+
         // Look for this window in excerpt words
         let mut found = false;
         let mut j = 0;
         while j <= e_words.len() - min_words {
-            if &e_words[j .. j + min_words] == window {
+            if &e_words[j..j + min_words] == window {
                 // Found match! Let's extend it as long as it matches
                 let mut match_len = min_words;
                 while i + match_len < p_words.len() && j + match_len < e_words.len() {
@@ -166,23 +192,23 @@ fn find_verbatim_overlap(paragraph: &str, excerpt: &str, min_words: usize) -> Ve
                         break;
                     }
                 }
-                
-                let match_str = p_words[i .. i + match_len].join(" ");
+
+                let match_str = p_words[i..i + match_len].join(" ");
                 matches.push(match_str);
-                
+
                 i += match_len - 1; // Advance outer index
                 found = true;
                 break;
             }
             j += 1;
         }
-        
+
         if found {
             // Re-evaluate at new advanced i
         }
         i += 1;
     }
-    
+
     // Deduplicate and filter nested matches
     matches.sort_by_key(|b| std::cmp::Reverse(b.len()));
     let mut filtered: Vec<String> = Vec::new();
@@ -191,14 +217,20 @@ fn find_verbatim_overlap(paragraph: &str, excerpt: &str, min_words: usize) -> Ve
             filtered.push(m);
         }
     }
-    
+
     filtered
 }
 
 fn tokenize(text: &str) -> Vec<String> {
     text.to_lowercase()
         .chars()
-        .map(|c| if c.is_alphanumeric() || c.is_whitespace() { c } else { ' ' })
+        .map(|c| {
+            if c.is_alphanumeric() || c.is_whitespace() {
+                c
+            } else {
+                ' '
+            }
+        })
         .collect::<String>()
         .split_whitespace()
         .map(|s| s.to_string())

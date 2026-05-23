@@ -1,13 +1,13 @@
 // src/tauri_cmds.rs
-use serde::{Serialize, Deserialize};
-use crate::core::db::{self, DbConn, Source, EvidenceItem, Lead, Draft, PairedClient};
-use crate::core::scraper;
-use crate::core::detectors;
+use crate::core::backups;
 use crate::core::compiler;
+use crate::core::db::{self, DbConn, Draft, EvidenceItem, Lead, PairedClient, Source};
+use crate::core::detectors;
+use crate::core::discovery::{self, DiscoveredSourceCategory};
 use crate::core::guardrails::{self, GuardrailsReport};
 use crate::core::llm;
-use crate::core::backups;
-use crate::core::discovery::{self, DiscoveredSourceCategory};
+use crate::core::scraper;
+use serde::{Deserialize, Serialize};
 use tauri::Manager;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -35,7 +35,9 @@ fn get_config_path(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String>
 
 #[tauri::command]
 pub fn get_sources(db: tauri::State<'_, DbConn>) -> Result<Vec<Source>, String> {
-    let conn = db.lock().map_err(|_| "Failed to lock database".to_string())?;
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
     db::list_sources(&conn).map_err(|e| e.to_string())
 }
 
@@ -46,7 +48,9 @@ pub fn add_source(
     url: String,
     r#type: String,
 ) -> Result<i32, String> {
-    let conn = db.lock().map_err(|_| "Failed to lock database".to_string())?;
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
     let source = Source {
         id: None,
         name,
@@ -62,41 +66,49 @@ pub fn add_source(
 
 #[tauri::command]
 pub fn delete_source(db: tauri::State<'_, DbConn>, id: i32) -> Result<(), String> {
-    let conn = db.lock().map_err(|_| "Failed to lock database".to_string())?;
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
     db::delete_source(&conn, id).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
 pub fn generate_pairing_pin(db: tauri::State<'_, DbConn>, label: String) -> Result<String, String> {
-    use rand::RngCore;
     use base64::Engine;
-    use sha2::{Sha256, Digest};
+    use rand::RngCore;
+    use sha2::{Digest, Sha256};
 
-    let conn = db.lock().map_err(|_| "Failed to lock database".to_string())?;
-    
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
+
     let mut bytes = [0u8; 16];
     rand::rngs::OsRng.fill_bytes(&mut bytes);
     let raw_pin = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(bytes);
-    
+
     let mut hasher = Sha256::new();
     hasher.update(raw_pin.as_bytes());
     let hashed_pin = hex::encode(hasher.finalize());
 
     let expires_at = (chrono::Utc::now() + chrono::Duration::minutes(5)).to_rfc3339();
     db::create_pairing_pin(&conn, &label, &hashed_pin, &expires_at).map_err(|e| e.to_string())?;
-    
+
     Ok(raw_pin)
 }
 
 #[tauri::command]
 pub fn list_paired_clients(db: tauri::State<'_, DbConn>) -> Result<Vec<PairedClient>, String> {
-    let conn = db.lock().map_err(|_| "Failed to lock database".to_string())?;
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
     db::list_paired_clients(&conn).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
 pub fn revoke_pairing(db: tauri::State<'_, DbConn>, id: i32) -> Result<(), String> {
-    let conn = db.lock().map_err(|_| "Failed to lock database".to_string())?;
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
     db::revoke_paired_client(&conn, id).map_err(|e| e.to_string())
 }
 
@@ -107,9 +119,12 @@ pub fn get_community_profile(app: tauri::AppHandle) -> Result<CommunityProfile, 
         return Ok(CommunityProfile {
             site_title: "CivicNews Observer".to_string(),
             site_subtitle: "Transparent Local Public Records & Evidence".to_string(),
-            about_text: "We report on local government activities using raw public records.".to_string(),
-            ethics_text: "Our ethics standard: transparent evidence, not outrage or rumors.".to_string(),
-            how_we_report_text: "We monitor municipal feeds and index agendas, minutes, and documents.".to_string(),
+            about_text: "We report on local government activities using raw public records."
+                .to_string(),
+            ethics_text: "Our ethics standard: transparent evidence, not outrage or rumors."
+                .to_string(),
+            how_we_report_text:
+                "We monitor municipal feeds and index agendas, minutes, and documents.".to_string(),
             money_threshold: 250000.0,
             watchlist: Vec::new(),
         });
@@ -119,7 +134,10 @@ pub fn get_community_profile(app: tauri::AppHandle) -> Result<CommunityProfile, 
 }
 
 #[tauri::command]
-pub fn save_community_profile(app: tauri::AppHandle, profile: CommunityProfile) -> Result<(), String> {
+pub fn save_community_profile(
+    app: tauri::AppHandle,
+    profile: CommunityProfile,
+) -> Result<(), String> {
     let path = get_config_path(&app)?;
     let content = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
     std::fs::write(path, content).map_err(|e| e.to_string())
@@ -127,13 +145,18 @@ pub fn save_community_profile(app: tauri::AppHandle, profile: CommunityProfile) 
 
 #[tauri::command]
 pub async fn ingest(db: tauri::State<'_, DbConn>, app: tauri::AppHandle) -> Result<usize, String> {
-    scraper::scrape_all_sources(&db).await.map_err(|e| e.to_string())?;
-    
+    scraper::scrape_all_sources(&db)
+        .await
+        .map_err(|e| e.to_string())?;
+
     let unlinked_ids = {
-        let conn = db.lock().map_err(|_| "Failed to lock database".to_string())?;
+        let conn = db
+            .lock()
+            .map_err(|_| "Failed to lock database".to_string())?;
         let mut stmt = conn.prepare("SELECT id FROM evidence_items WHERE id NOT IN (SELECT evidence_id FROM lead_evidence)")
             .map_err(|e| e.to_string())?;
-        let rows = stmt.query_map([], |row| row.get::<_, i32>(0))
+        let rows = stmt
+            .query_map([], |row| row.get::<_, i32>(0))
             .map_err(|e| e.to_string())?;
         let mut ids = Vec::new();
         for id in rows {
@@ -141,11 +164,11 @@ pub async fn ingest(db: tauri::State<'_, DbConn>, app: tauri::AppHandle) -> Resu
         }
         ids
     };
-    
+
     if unlinked_ids.is_empty() {
         return Ok(0);
     }
-    
+
     let profile_json = {
         let path = get_config_path(&app)?;
         if path.exists() {
@@ -154,32 +177,43 @@ pub async fn ingest(db: tauri::State<'_, DbConn>, app: tauri::AppHandle) -> Resu
             r#"{"money_threshold": 250000.0, "watchlist": []}"#.to_string()
         }
     };
-    
+
     let new_lead_ids = {
-        let conn = db.lock().map_err(|_| "Failed to lock database".to_string())?;
+        let conn = db
+            .lock()
+            .map_err(|_| "Failed to lock database".to_string())?;
         detectors::run_detectors(&conn, &unlinked_ids, &profile_json).map_err(|e| e.to_string())?
     };
-    
+
     Ok(new_lead_ids.len())
 }
 
 #[tauri::command]
 pub fn get_queue(db: tauri::State<'_, DbConn>) -> Result<QueueData, String> {
-    let conn = db.lock().map_err(|_| "Failed to lock database".to_string())?;
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
     let leads = db::list_leads(&conn).map_err(|e| e.to_string())?;
     let drafts = db::list_drafts(&conn).map_err(|e| e.to_string())?;
     Ok(QueueData { leads, drafts })
 }
 
 #[tauri::command]
-pub fn get_evidence(db: tauri::State<'_, DbConn>, lead_id: i32) -> Result<Vec<EvidenceItem>, String> {
-    let conn = db.lock().map_err(|_| "Failed to lock database".to_string())?;
+pub fn get_evidence(
+    db: tauri::State<'_, DbConn>,
+    lead_id: i32,
+) -> Result<Vec<EvidenceItem>, String> {
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
     db::get_evidence_by_lead(&conn, lead_id).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
 pub fn save_draft(db: tauri::State<'_, DbConn>, draft: Draft) -> Result<i32, String> {
-    let conn = db.lock().map_err(|_| "Failed to lock database".to_string())?;
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
     if let Some(id) = draft.id {
         db::update_draft(&conn, &draft).map_err(|e| e.to_string())?;
         Ok(id)
@@ -190,13 +224,21 @@ pub fn save_draft(db: tauri::State<'_, DbConn>, draft: Draft) -> Result<i32, Str
 
 #[tauri::command]
 pub fn delete_draft(db: tauri::State<'_, DbConn>, id: i32) -> Result<(), String> {
-    let conn = db.lock().map_err(|_| "Failed to lock database".to_string())?;
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
     db::delete_draft(&conn, id).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
-pub fn story_decision(db: tauri::State<'_, DbConn>, id: i32, decision: String) -> Result<(), String> {
-    let conn = db.lock().map_err(|_| "Failed to lock database".to_string())?;
+pub fn story_decision(
+    db: tauri::State<'_, DbConn>,
+    id: i32,
+    decision: String,
+) -> Result<(), String> {
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
     db::update_draft_status(&conn, id, &decision).map_err(|e| e.to_string())
 }
 
@@ -208,42 +250,59 @@ pub async fn generate_draft(
     system_prompt: Option<String>,
 ) -> Result<String, String> {
     let (lead_why, evidence_items) = {
-        let conn = db.lock().map_err(|_| "Failed to lock database".to_string())?;
-        let mut stmt = conn.prepare("SELECT why FROM leads WHERE id = ?1").map_err(|e| e.to_string())?;
-        let why: String = stmt.query_row([lead_id], |row| row.get(0)).map_err(|e| e.to_string())?;
+        let conn = db
+            .lock()
+            .map_err(|_| "Failed to lock database".to_string())?;
+        let mut stmt = conn
+            .prepare("SELECT why FROM leads WHERE id = ?1")
+            .map_err(|e| e.to_string())?;
+        let why: String = stmt
+            .query_row([lead_id], |row| row.get(0))
+            .map_err(|e| e.to_string())?;
         let items = db::get_evidence_by_lead(&conn, lead_id).map_err(|e| e.to_string())?;
         (why, items)
     };
-    
+
     if evidence_items.is_empty() {
         return Err("No evidence items linked to this lead.".to_string());
     }
-    
+
     let mut evidence_context = String::new();
     for item in &evidence_items {
         let item_id = item.id.unwrap_or(0);
-        evidence_context.push_str(&format!("Evidence Citation ID: {}\nExcerpt: {}\n\n", item_id, item.excerpt));
+        evidence_context.push_str(&format!(
+            "Evidence Citation ID: {}\nExcerpt: {}\n\n",
+            item_id, item.excerpt
+        ));
     }
-    
+
     let prompt = format!(
         "Lead topic: {}\n\nHere are the raw public records evidence:\n{}\nPlease draft a report in '{}' format. You MUST use 'evidence:ID' citations inside the text (like [Source](evidence:ID)) when claiming a fact from the records. Keep it objective, professional, and do not make assumptions beyond the text.",
         lead_why, evidence_context, format
     );
-    
+
     let sys = system_prompt.unwrap_or_else(|| "You are an AI assistant for a local community newspaper reporter. You write factual, objective drafts based strictly on provided records. You always cite evidence IDs.".to_string());
-    
+
     let mut model = "gemma2:9b".to_string();
     if let Ok(resp) = reqwest::get("http://127.0.0.1:11434/api/tags").await {
         if resp.status().is_success() {
             #[derive(Deserialize)]
-            struct ModelItem { name: String }
+            struct ModelItem {
+                name: String,
+            }
             #[derive(Deserialize)]
-            struct TagsResp { models: Vec<ModelItem> }
+            struct TagsResp {
+                models: Vec<ModelItem>,
+            }
             if let Ok(tags) = resp.json::<TagsResp>().await {
                 if !tags.models.is_empty() {
                     if tags.models.iter().any(|m| m.name.starts_with("gemma2:9b")) {
                         model = "gemma2:9b".to_string();
-                    } else if let Some(m) = tags.models.iter().find(|m| m.name.contains("gemma") || m.name.contains("llama")) {
+                    } else if let Some(m) = tags
+                        .models
+                        .iter()
+                        .find(|m| m.name.contains("gemma") || m.name.contains("llama"))
+                    {
                         model = m.name.clone();
                     } else {
                         model = tags.models[0].name.clone();
@@ -252,8 +311,10 @@ pub async fn generate_draft(
             }
         }
     }
-    
-    llm::call_local_ollama(&model, &prompt, &sys).await.map_err(|e| e.to_string())
+
+    llm::call_local_ollama(&model, &prompt, &sys)
+        .await
+        .map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -262,14 +323,22 @@ pub async fn llm_task(prompt: String, system: String) -> Result<String, String> 
     if let Ok(resp) = reqwest::get("http://127.0.0.1:11434/api/tags").await {
         if resp.status().is_success() {
             #[derive(Deserialize)]
-            struct ModelItem { name: String }
+            struct ModelItem {
+                name: String,
+            }
             #[derive(Deserialize)]
-            struct TagsResp { models: Vec<ModelItem> }
+            struct TagsResp {
+                models: Vec<ModelItem>,
+            }
             if let Ok(tags) = resp.json::<TagsResp>().await {
                 if !tags.models.is_empty() {
                     if tags.models.iter().any(|m| m.name.starts_with("gemma2:9b")) {
                         model = "gemma2:9b".to_string();
-                    } else if let Some(m) = tags.models.iter().find(|m| m.name.contains("gemma") || m.name.contains("llama")) {
+                    } else if let Some(m) = tags
+                        .models
+                        .iter()
+                        .find(|m| m.name.contains("gemma") || m.name.contains("llama"))
+                    {
                         model = m.name.clone();
                     } else {
                         model = tags.models[0].name.clone();
@@ -278,17 +347,26 @@ pub async fn llm_task(prompt: String, system: String) -> Result<String, String> 
             }
         }
     }
-    llm::call_local_ollama(&model, &prompt, &system).await.map_err(|e| e.to_string())
+    llm::call_local_ollama(&model, &prompt, &system)
+        .await
+        .map_err(|e| e.to_string())
 }
 
 #[tauri::command]
-pub fn guardrails_check(db: tauri::State<'_, DbConn>, draft_id: i32) -> Result<GuardrailsReport, String> {
+pub fn guardrails_check(
+    db: tauri::State<'_, DbConn>,
+    draft_id: i32,
+) -> Result<GuardrailsReport, String> {
     let conn = db.lock().map_err(|_| "Failed to lock database")?;
     guardrails::run_guardrails_check(&conn, draft_id).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
-pub fn publish(db: tauri::State<'_, DbConn>, app: tauri::AppHandle, output_dir: String) -> Result<(), String> {
+pub fn publish(
+    db: tauri::State<'_, DbConn>,
+    app: tauri::AppHandle,
+    output_dir: String,
+) -> Result<(), String> {
     let profile_json = {
         let path = get_config_path(&app)?;
         if path.exists() {
@@ -297,7 +375,7 @@ pub fn publish(db: tauri::State<'_, DbConn>, app: tauri::AppHandle, output_dir: 
             r#"{"site_title": "CivicNews Observer", "site_subtitle": "Transparent Local Public Records", "about_text": "", "ethics_text": "", "how_we_report_text": ""}"#.to_string()
         }
     };
-    
+
     let conn = db.lock().map_err(|_| "Failed to lock database")?;
     compiler::compile_static_site(&conn, &output_dir, &profile_json).map_err(|e| e.to_string())
 }
@@ -312,7 +390,7 @@ pub fn register_correction(
     let mut draft = db::get_draft(&conn, draft_id)
         .map_err(|e| e.to_string())?
         .ok_or_else(|| "Draft not found".to_string())?;
-    
+
     draft.status = "corrected".to_string();
     draft.correction_note = Some(correction_note);
     db::update_draft(&conn, &draft).map_err(|e| e.to_string())?;
@@ -332,7 +410,9 @@ pub fn backup_restore(
     backup_path: String,
 ) -> Result<(), String> {
     let live_db_path = db::get_app_db_path(&app).map_err(|e| e.to_string())?;
-    let live_db_path_str = live_db_path.to_str().ok_or_else(|| "Invalid database path".to_string())?;
+    let live_db_path_str = live_db_path
+        .to_str()
+        .ok_or_else(|| "Invalid database path".to_string())?;
     backups::restore_backup(&db, &backup_path, live_db_path_str).map_err(|e| e.to_string())
 }
 
@@ -376,9 +456,11 @@ pub fn get_system_ram() -> Result<u64, String> {
 }
 
 #[tauri::command]
-pub async fn discover_sources(city: String, state: String) -> Result<Vec<DiscoveredSourceCategory>, String> {
+pub async fn discover_sources(
+    city: String,
+    state: String,
+) -> Result<Vec<DiscoveredSourceCategory>, String> {
     discovery::discover_all_sources(&city, &state)
         .await
         .map_err(|e| e.to_string())
 }
-

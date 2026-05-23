@@ -1,4 +1,7 @@
 // core/server.rs
+use super::db::DbConn;
+use super::guardrails::run_guardrails_check;
+use super::llm::call_local_ollama;
 use axum::{
     extract::{Path, State},
     http::StatusCode,
@@ -7,15 +10,12 @@ use axum::{
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
+use std::collections::HashMap;
 use std::error::Error;
 use std::net::SocketAddr;
-use super::db::DbConn;
-use std::collections::HashMap;
-use std::time::Instant;
 use std::sync::{Arc, Mutex};
-use super::guardrails::run_guardrails_check;
-use super::llm::call_local_ollama;
-use sha2::{Sha256, Digest};
+use std::time::Instant;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -77,7 +77,10 @@ pub fn build_app(app_state: AppState) -> axum::Router {
         .route("/drafts", post(create_draft_handler))
         .route("/llm/task", post(llm_task_handler))
         .route("/guardrails/check", post(guardrails_handler))
-        .layer(middleware::from_fn_with_state(app_state.clone(), super::auth::auth_middleware));
+        .layer(middleware::from_fn_with_state(
+            app_state.clone(),
+            super::auth::auth_middleware,
+        ));
 
     Router::new()
         .route("/api/pair", post(pair_handler))
@@ -96,9 +99,13 @@ pub async fn start_server(db: DbConn) -> Result<(), Box<dyn Error + Send + Sync>
     // Bind strictly to loopback interface 127.0.0.1
     let addr = SocketAddr::from(([127, 0, 0, 1], 12053));
     println!("Core API server starting on http://{}", addr);
-    
+
     let listener = tokio::net::TcpListener::bind(addr).await?;
-    axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>()).await?;
+    axum::serve(
+        listener,
+        app.into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .await?;
 
     Ok(())
 }
@@ -122,25 +129,28 @@ async fn pair_handler(
         }
     }
 
-    let conn = state.db.lock().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
+    let conn = state
+        .db
+        .lock()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
     let mut hasher = Sha256::new();
     hasher.update(payload.pin.as_bytes());
     let hashed_pin = hex::encode(hasher.finalize());
-    
+
     match super::db::confirm_pairing(&conn, &hashed_pin) {
         Ok(Some(token)) => {
             let mut attempts = state.pair_attempts.lock().unwrap();
             attempts.remove(&ip);
             Ok(Json(PairResponse { token }))
-        },
+        }
         Ok(None) => {
             let mut attempts = state.pair_attempts.lock().unwrap();
             let entry = attempts.entry(ip).or_insert((0, Instant::now()));
             entry.0 += 1;
             entry.1 = Instant::now();
             Err(StatusCode::UNAUTHORIZED)
-        },
+        }
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
 }
@@ -148,11 +158,14 @@ async fn pair_handler(
 async fn get_queue_handler(
     State(state): State<AppState>,
 ) -> Result<Json<QueueResponse>, StatusCode> {
-    let conn = state.db.lock().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
+    let conn = state
+        .db
+        .lock()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
     let leads = super::db::list_leads(&conn).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     let drafts = super::db::list_drafts(&conn).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
+
     Ok(Json(QueueResponse { leads, drafts }))
 }
 
@@ -160,9 +173,13 @@ async fn get_evidence_handler(
     State(state): State<AppState>,
     Path(lead_id): Path<i32>,
 ) -> Result<Json<Vec<super::db::EvidenceItem>>, StatusCode> {
-    let conn = state.db.lock().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
-    let items = super::db::get_evidence_by_lead(&conn, lead_id).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let conn = state
+        .db
+        .lock()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let items = super::db::get_evidence_by_lead(&conn, lead_id)
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     Ok(Json(items))
 }
 
@@ -170,8 +187,11 @@ async fn create_draft_handler(
     State(state): State<AppState>,
     Json(payload): Json<CreateDraftRequest>,
 ) -> Result<Json<CreateDraftResponse>, StatusCode> {
-    let conn = state.db.lock().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
+    let conn = state
+        .db
+        .lock()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
     let now = chrono::Utc::now().to_rfc3339();
     let draft = super::db::Draft {
         id: None,
@@ -180,13 +200,15 @@ async fn create_draft_handler(
         title: payload.title,
         content: payload.content,
         status: "draft_generated".to_string(), // Forced to draft state
-        verification_checklist: payload.verification_checklist.unwrap_or_else(|| "[]".to_string()),
+        verification_checklist: payload
+            .verification_checklist
+            .unwrap_or_else(|| "[]".to_string()),
         missing_evidence_notes: None,
         correction_note: None,
         created_at: now.clone(),
         updated_at: now,
     };
-    
+
     match super::db::insert_draft(&conn, &draft) {
         Ok(id) => Ok(Json(CreateDraftResponse { id })),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
@@ -198,7 +220,7 @@ async fn llm_task_handler(
 ) -> Result<Json<LlmTaskResponse>, StatusCode> {
     // Load default model for tasks. Default to gemma2:9b as per spec
     let model = "gemma2:9b";
-    
+
     match call_local_ollama(model, &payload.prompt, &payload.system).await {
         Ok(result) => Ok(Json(LlmTaskResponse { result })),
         Err(e) => {
@@ -212,8 +234,11 @@ async fn guardrails_handler(
     State(state): State<AppState>,
     Json(payload): Json<GuardrailsRequest>,
 ) -> Result<Json<super::guardrails::GuardrailsReport>, StatusCode> {
-    let conn = state.db.lock().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    
+    let conn = state
+        .db
+        .lock()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
     match run_guardrails_check(&conn, payload.draft_id) {
         Ok(report) => Ok(Json(report)),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),

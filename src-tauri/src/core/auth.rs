@@ -1,11 +1,11 @@
 // core/auth.rs
+use super::db::{get_paired_client_by_token, record_paired_client_use};
 use axum::{
     body::Body,
     http::{header, Request, StatusCode},
     middleware::Next,
     response::Response,
 };
-use super::db::{get_paired_client_by_token, record_paired_client_use};
 
 // Validate the Host header to defeat DNS rebinding attacks
 pub fn is_valid_host(host: &str) -> bool {
@@ -18,11 +18,12 @@ pub fn is_valid_origin(origin: &str) -> bool {
     if origin_clean == "null" {
         return false;
     }
-    origin_clean.starts_with("chrome-extension://") || origin_clean.starts_with("safari-extension://")
+    origin_clean.starts_with("chrome-extension://")
+        || origin_clean.starts_with("safari-extension://")
 }
 
-use axum::extract::State;
 use super::server::AppState;
+use axum::extract::State;
 
 // Middleware for Axum HTTP routes
 pub async fn auth_middleware(
@@ -36,7 +37,7 @@ pub async fn auth_middleware(
         .get(header::HOST)
         .and_then(|h| h.to_str().ok())
         .unwrap_or("");
-        
+
     if !is_valid_host(host) {
         println!("Auth Block: Invalid Host header: '{}'", host);
         return Err(StatusCode::FORBIDDEN);
@@ -86,7 +87,10 @@ pub async fn auth_middleware(
 
     // Check token in DB
     let is_valid = {
-        let conn = state.db.lock().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        let conn = state
+            .db
+            .lock()
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
         match get_paired_client_by_token(&conn, token) {
             Ok(Some(_client)) => {
                 // Update last used timestamp

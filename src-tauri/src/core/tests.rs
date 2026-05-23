@@ -3,36 +3,39 @@
 
 #[cfg(test)]
 mod tests {
+    use chrono::Utc;
     use rusqlite::Connection;
     use std::fs;
-use std::sync::{Arc, Mutex};
+    use std::sync::{Arc, Mutex};
     use tempfile::tempdir;
-    use chrono::Utc;
 
-
-    use crate::core::db::*;
-    use crate::core::migrations::{run_migrations, get_current_version, get_expected_version};
     use crate::core::auth::{is_valid_host, is_valid_origin};
+    use crate::core::backups::{restore_backup, save_backup};
+    use crate::core::compiler::compile_static_site;
+    use crate::core::db::*;
     use crate::core::detectors::run_detectors;
     use crate::core::guardrails::run_guardrails_check;
-    use crate::core::compiler::compile_static_site;
-    use crate::core::backups::{save_backup, restore_backup};
+    use crate::core::migrations::{get_current_version, get_expected_version, run_migrations};
 
     // 1. Migration Tests
     #[test]
     fn test_migrations() {
         let mut conn = Connection::open_in_memory().unwrap();
-        
+
         // Initial run should apply all migrations
         let res = run_migrations(&mut conn);
         assert!(res.is_ok(), "Migrations failed to execute: {:?}", res);
-        
+
         let version = get_current_version(&conn).unwrap();
         assert_eq!(version, get_expected_version());
-        
+
         // Running migrations again should be a safe, clean no-op
         let res_noop = run_migrations(&mut conn);
-        assert!(res_noop.is_ok(), "Second migration run failed: {:?}", res_noop);
+        assert!(
+            res_noop.is_ok(),
+            "Second migration run failed: {:?}",
+            res_noop
+        );
         let version_after = get_current_version(&conn).unwrap();
         assert_eq!(version_after, get_expected_version());
     }
@@ -46,7 +49,7 @@ use std::sync::{Arc, Mutex};
         assert!(is_valid_host("  127.0.0.1:12053  ")); // Whitespace cleanup
         assert!(!is_valid_host("google.com"));
         assert!(!is_valid_host("127.0.0.1:8080"));
-        
+
         // Origin checks
         assert!(is_valid_origin("chrome-extension://someuniqueextensionid"));
         assert!(is_valid_origin("safari-extension://someuniqueextensionid"));
@@ -62,80 +65,110 @@ use std::sync::{Arc, Mutex};
         run_migrations(&mut conn).unwrap();
 
         // Setup test sources
-        let source_id = insert_source(&conn, &Source {
-            id: None,
-            name: "Brighton Town Council".to_string(),
-            url: "https://brighton.gov/agenda.xml".to_string(),
-            r#type: "primary_record".to_string(),
-            status: "online".to_string(),
-            last_success_at: None,
-            last_failed_at: None,
-            last_scraped: None,
-        }).unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Brighton Town Council".to_string(),
+                url: "https://brighton.gov/agenda.xml".to_string(),
+                r#type: "primary_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
 
         // 3a. Test Money Threshold (fires > $250k)
-        let ev_money_high = insert_evidence_item(&conn, &EvidenceItem {
-            id: None,
-            source_id,
-            url: Some("https://brighton.gov/agenda.xml".to_string()),
-            fetched_at: Utc::now().to_rfc3339(),
-            excerpt: "Approved contract for $350,000 road maintenance project.".to_string(),
-            content_hash: "hash_money_high".to_string(),
-            entities: "[]".to_string(),
-        }).unwrap();
+        let ev_money_high = insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://brighton.gov/agenda.xml".to_string()),
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "Approved contract for $350,000 road maintenance project.".to_string(),
+                content_hash: "hash_money_high".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
 
-        let ev_money_low = insert_evidence_item(&conn, &EvidenceItem {
-            id: None,
-            source_id,
-            url: Some("https://brighton.gov/agenda.xml".to_string()),
-            fetched_at: Utc::now().to_rfc3339(),
-            excerpt: "Approved contract for $45,000 for park benches.".to_string(),
-            content_hash: "hash_money_low".to_string(),
-            entities: "[]".to_string(),
-        }).unwrap();
+        let ev_money_low = insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://brighton.gov/agenda.xml".to_string()),
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "Approved contract for $45,000 for park benches.".to_string(),
+                content_hash: "hash_money_low".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
 
         let profile_json = r#"{"money_threshold": 250000.0, "watchlist": ["John Doe"]}"#;
-        
-        let _new_leads = run_detectors(&conn, &[ev_money_high, ev_money_low], profile_json).unwrap();
-        
+
+        let _new_leads =
+            run_detectors(&conn, &[ev_money_high, ev_money_low], profile_json).unwrap();
+
         // Assert only the high amount lead was created (plus the New Primary Record lead which fires automatically for primary records)
         let leads = list_leads(&conn).unwrap();
-        
+
         // We expect:
         // 1. "New Primary Record" for ev_money_high
         // 2. "Money Threshold" for ev_money_high
         // 3. "New Primary Record" for ev_money_low
-        assert!(leads.iter().any(|l| l.detector_name == "Money Threshold" && l.why.contains("$350,000")));
-        assert!(!leads.iter().any(|l| l.detector_name == "Money Threshold" && l.why.contains("$45,000")));
+        assert!(leads
+            .iter()
+            .any(|l| l.detector_name == "Money Threshold" && l.why.contains("$350,000")));
+        assert!(!leads
+            .iter()
+            .any(|l| l.detector_name == "Money Threshold" && l.why.contains("$45,000")));
 
         // 3b. Test Watchlist Detector
-        let ev_watchlist = insert_evidence_item(&conn, &EvidenceItem {
-            id: None,
-            source_id,
-            url: Some("https://brighton.gov/agenda.xml".to_string()),
-            fetched_at: Utc::now().to_rfc3339(),
-            excerpt: "Council met with contractor John Doe regarding landfill operations.".to_string(),
-            content_hash: "hash_watchlist".to_string(),
-            entities: "[]".to_string(),
-        }).unwrap();
+        let ev_watchlist = insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://brighton.gov/agenda.xml".to_string()),
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "Council met with contractor John Doe regarding landfill operations."
+                    .to_string(),
+                content_hash: "hash_watchlist".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
 
         let _new_leads2 = run_detectors(&conn, &[ev_watchlist], profile_json).unwrap();
         let leads_after = list_leads(&conn).unwrap();
-        assert!(leads_after.iter().any(|l| l.detector_name == "Watchlist Hit" && l.why.contains("John Doe")));
+        assert!(leads_after
+            .iter()
+            .any(|l| l.detector_name == "Watchlist Hit" && l.why.contains("John Doe")));
 
         // 3c. Test Decision / Vote
-        let ev_vote = insert_evidence_item(&conn, &EvidenceItem {
-            id: None,
-            source_id,
-            url: Some("https://brighton.gov/agenda.xml".to_string()),
-            fetched_at: Utc::now().to_rfc3339(),
-            excerpt: "The board unanimously approved the zoning change request.".to_string(),
-            content_hash: "hash_vote".to_string(),
-            entities: "[]".to_string(),
-        }).unwrap();
+        let ev_vote = insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://brighton.gov/agenda.xml".to_string()),
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "The board unanimously approved the zoning change request.".to_string(),
+                content_hash: "hash_vote".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
         run_detectors(&conn, &[ev_vote], profile_json).unwrap();
         let leads_vote = list_leads(&conn).unwrap();
-        assert!(leads_vote.iter().any(|l| l.detector_name == "Decision / Vote"));
+        assert!(leads_vote
+            .iter()
+            .any(|l| l.detector_name == "Decision / Vote"));
     }
 
     // 4. Guardrails Tests
@@ -145,15 +178,20 @@ use std::sync::{Arc, Mutex};
         run_migrations(&mut conn).unwrap();
 
         // Insert a lead and link to evidence
-        let lead_id = insert_lead(&conn, &Lead {
-            id: None,
-            detector_name: "Zoning Board".to_string(),
-            why: "Zoning change".to_string(),
-            confidence: "high".to_string(),
-            risk_level: "low".to_string(),
-            confirmation_checklist: "[]".to_string(),
-            created_at: Utc::now().to_rfc3339(),
-        }, &[]).unwrap();
+        let lead_id = insert_lead(
+            &conn,
+            &Lead {
+                id: None,
+                detector_name: "Zoning Board".to_string(),
+                why: "Zoning change".to_string(),
+                confidence: "high".to_string(),
+                risk_level: "low".to_string(),
+                confirmation_checklist: "[]".to_string(),
+                created_at: Utc::now().to_rfc3339(),
+            },
+            &[],
+        )
+        .unwrap();
 
         // Draft with missing citation (should warn) and accusatory term (should error)
         let draft_id = insert_draft(&conn, &Draft {
@@ -172,31 +210,54 @@ use std::sync::{Arc, Mutex};
 
         let report = run_guardrails_check(&conn, draft_id).unwrap();
         assert!(!report.is_clean);
-        
-        let has_accusatory_err = report.issues.iter().any(|i| i.category == "Accusatory Language" && i.severity == "error");
-        let has_citation_warn = report.issues.iter().any(|i| i.category == "Citation Coverage" && i.severity == "warning");
-        assert!(has_accusatory_err, "Should have failed on accusatory term without citation");
-        assert!(has_citation_warn, "Should have warned on paragraph missing citation link");
+
+        let has_accusatory_err = report
+            .issues
+            .iter()
+            .any(|i| i.category == "Accusatory Language" && i.severity == "error");
+        let has_citation_warn = report
+            .issues
+            .iter()
+            .any(|i| i.category == "Citation Coverage" && i.severity == "warning");
+        assert!(
+            has_accusatory_err,
+            "Should have failed on accusatory term without citation"
+        );
+        assert!(
+            has_citation_warn,
+            "Should have warned on paragraph missing citation link"
+        );
 
         // Legal naming presumption of innocence warning test
-        let draft_id2 = insert_draft(&conn, &Draft {
-            id: None,
-            lead_id: Some(lead_id),
-            format: "story".to_string(),
-            title: "Arrest Story".to_string(),
-            content: "Police arrested a clerk for embezzlement at city hall (evidence:101).".to_string(), // Has citation, but lacks "alleged"
-            status: "draft_generated".to_string(),
-            verification_checklist: "[]".to_string(),
-            missing_evidence_notes: None,
-            correction_note: None,
-            created_at: Utc::now().to_rfc3339(),
-            updated_at: Utc::now().to_rfc3339(),
-        }).unwrap();
+        let draft_id2 = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: Some(lead_id),
+                format: "story".to_string(),
+                title: "Arrest Story".to_string(),
+                content: "Police arrested a clerk for embezzlement at city hall (evidence:101)."
+                    .to_string(), // Has citation, but lacks "alleged"
+                status: "draft_generated".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
 
         let report2 = run_guardrails_check(&conn, draft_id2).unwrap();
         assert!(!report2.is_clean);
-        let has_presumption_err = report2.issues.iter().any(|i| i.category == "Legal Naming" && i.severity == "error");
-        assert!(has_presumption_err, "Should trigger error due to missing 'alleged' modifier");
+        let has_presumption_err = report2
+            .issues
+            .iter()
+            .any(|i| i.category == "Legal Naming" && i.severity == "error");
+        assert!(
+            has_presumption_err,
+            "Should trigger error due to missing 'alleged' modifier"
+        );
     }
 
     // 5. Backups Tests
@@ -208,32 +269,40 @@ use std::sync::{Arc, Mutex};
 
         // 1. Initialize live DB and write some records
         let conn = init_db(db_file_path.to_str().unwrap()).unwrap();
-        insert_source(&conn, &Source {
-            id: None,
-            name: "Original Source".to_string(),
-            url: "https://orig.gov".to_string(),
-            r#type: "primary_record".to_string(),
-            status: "online".to_string(),
-            last_success_at: None,
-            last_failed_at: None,
-            last_scraped: None,
-        }).unwrap();
+        insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Original Source".to_string(),
+                url: "https://orig.gov".to_string(),
+                r#type: "primary_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
 
         // 2. Save Backup
         save_backup(&conn, backup_file_path.to_str().unwrap()).unwrap();
         assert!(backup_file_path.exists());
 
         // 3. Mutate live DB (insert new item)
-        insert_source(&conn, &Source {
-            id: None,
-            name: "Mutated Source".to_string(),
-            url: "https://mutate.gov".to_string(),
-            r#type: "primary_record".to_string(),
-            status: "online".to_string(),
-            last_success_at: None,
-            last_failed_at: None,
-            last_scraped: None,
-        }).unwrap();
+        insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Mutated Source".to_string(),
+                url: "https://mutate.gov".to_string(),
+                r#type: "primary_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
 
         let sources_mutated = list_sources(&conn).unwrap();
         assert_eq!(sources_mutated.len(), 2);
@@ -243,8 +312,9 @@ use std::sync::{Arc, Mutex};
         restore_backup(
             &db_conn_arc,
             backup_file_path.to_str().unwrap(),
-            db_file_path.to_str().unwrap()
-        ).unwrap();
+            db_file_path.to_str().unwrap(),
+        )
+        .unwrap();
 
         // 5. Verify restored state (should only have the original source)
         {
@@ -261,10 +331,10 @@ use std::sync::{Arc, Mutex};
         let restore_res = restore_backup(
             &db_conn_arc,
             corrupt_path.to_str().unwrap(),
-            db_file_path.to_str().unwrap()
+            db_file_path.to_str().unwrap(),
         );
         assert!(restore_res.is_err());
-        
+
         // Assert live DB remains intact
         {
             let conn_final = db_conn_arc.lock().unwrap();
@@ -284,36 +354,49 @@ use std::sync::{Arc, Mutex};
         let conn = init_db(live_db_path.to_str().unwrap()).unwrap();
 
         // Setup test records
-        let source_id = insert_source(&conn, &Source {
-            id: None,
-            name: "Planning Commission".to_string(),
-            url: "https://planning.gov".to_string(),
-            r#type: "primary_record".to_string(),
-            status: "online".to_string(),
-            last_success_at: None,
-            last_failed_at: None,
-            last_scraped: None,
-        }).unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Planning Commission".to_string(),
+                url: "https://planning.gov".to_string(),
+                r#type: "primary_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
 
-        let ev_id = insert_evidence_item(&conn, &EvidenceItem {
-            id: None,
-            source_id,
-            url: Some("https://planning.gov/minutes_12.html".to_string()),
-            fetched_at: Utc::now().to_rfc3339(),
-            excerpt: "Commission approved zoning change request for building C.".to_string(),
-            content_hash: "hash_commission".to_string(),
-            entities: "[]".to_string(),
-        }).unwrap();
+        let ev_id = insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://planning.gov/minutes_12.html".to_string()),
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "Commission approved zoning change request for building C.".to_string(),
+                content_hash: "hash_commission".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
 
-        let lead_id = insert_lead(&conn, &Lead {
-            id: None,
-            detector_name: "Decision / Vote".to_string(),
-            why: "Approved zoning change for building C.".to_string(),
-            confidence: "high".to_string(),
-            risk_level: "low".to_string(),
-            confirmation_checklist: "[]".to_string(),
-            created_at: Utc::now().to_rfc3339(),
-        }, &[ev_id]).unwrap();
+        let lead_id = insert_lead(
+            &conn,
+            &Lead {
+                id: None,
+                detector_name: "Decision / Vote".to_string(),
+                why: "Approved zoning change for building C.".to_string(),
+                confidence: "high".to_string(),
+                risk_level: "low".to_string(),
+                confirmation_checklist: "[]".to_string(),
+                created_at: Utc::now().to_rfc3339(),
+            },
+            &[ev_id],
+        )
+        .unwrap();
 
         // Create published draft
         let draft_id = insert_draft(&conn, &Draft {
@@ -346,14 +429,29 @@ use std::sync::{Arc, Mutex};
         assert!(site_output_path.join("feed.xml").exists());
 
         // Assert story subfolder file exists
-        let post_html_path = site_output_path.join("stories").join(format!("{}.html", draft_id));
-        assert!(post_html_path.exists(), "Compiled post HTML path missing: {:?}", post_html_path);
+        let post_html_path = site_output_path
+            .join("stories")
+            .join(format!("{}.html", draft_id));
+        assert!(
+            post_html_path.exists(),
+            "Compiled post HTML path missing: {:?}",
+            post_html_path
+        );
 
         // Read compiled post contents and verify citations have been converted to anchors
         let content = fs::read_to_string(post_html_path).unwrap();
-        assert!(content.contains("Local Observer"), "Site title placeholder fail");
-        assert!(content.contains("href=\"#evidence-1\""), "Citation replacement failed! Href is not pointing to evidence anchor.");
-        assert!(content.contains("id=\"evidence-1\""), "Citations section missing evidence ID anchor tag.");
+        assert!(
+            content.contains("Local Observer"),
+            "Site title placeholder fail"
+        );
+        assert!(
+            content.contains("href=\"#evidence-1\""),
+            "Citation replacement failed! Href is not pointing to evidence anchor."
+        );
+        assert!(
+            content.contains("id=\"evidence-1\""),
+            "Citations section missing evidence ID anchor tag."
+        );
     }
 
     // 7. DuckDuckGo Auto-Discovery HTML Parser Test
@@ -382,64 +480,83 @@ use std::sync::{Arc, Mutex};
         assert_eq!(results[0].1, "https://www.brightonco.gov/agendacenter");
         assert_eq!(results[1].0, "Brighton Reddit");
         assert_eq!(results[1].1, "https://reddit.com/r/brightonco");
-    }    #[test]
+    }
+    #[test]
     fn test_compiler_xss_safe() {
         let conn = init_db("file:test_compiler_xss_safe?mode=memory&cache=shared").unwrap();
         let temp_dir = tempdir().unwrap();
-        
-        // Use insert_source so we have a source for the lead
-        let _source_id = crate::core::db::insert_source(&conn, &crate::core::db::Source {
-            id: None,
-            name: "Test Source".to_string(),
-            url: "<script>alert(1)</script>".to_string(), // Source URL with XSS
-            r#type: "rss".to_string(),
-            status: "online".to_string(),
-            last_success_at: None,
-            last_failed_at: None,
-            last_scraped: None,
-        }).unwrap();
 
-        let lead_id = crate::core::db::insert_lead(&conn, &crate::core::db::Lead { 
-            id: None, 
-            detector_name: "test".to_string(),
-            why: "<script>alert(1)</script>".to_string(), 
-            confidence: "high".to_string(), 
-            risk_level: "low".to_string(), 
-            confirmation_checklist: "[]".to_string(), 
-            created_at: chrono::Utc::now().to_rfc3339() 
-        }, &[]).unwrap();
-        
-        let draft_id = crate::core::db::insert_draft(&conn, &crate::core::db::Draft { 
-            id: None, 
-            lead_id: Some(lead_id), 
-            format: "story".to_string(), 
-            title: "<script>alert(1)</script>".to_string(), 
-            content: "Hello <script>alert(1)</script>".to_string(), 
-            status: "published".to_string(), 
-            verification_checklist: "[]".to_string(), 
-            missing_evidence_notes: None, 
-            correction_note: Some("<script>alert(1)</script>".to_string()), 
-            created_at: chrono::Utc::now().to_rfc3339(), 
-            updated_at: chrono::Utc::now().to_rfc3339() 
-        }).unwrap();
-        
-        crate::core::db::insert_published_post(&conn, &crate::core::db::PublishedPost {
-            id: None,
-            draft_id,
-            file_path: "stories/1.html".to_string(),
-            url: "http://example.com/stories/1.html".to_string(),
-            correction_history: String::new(),
-            published_at: chrono::Utc::now().to_rfc3339()
-        }).unwrap();
-        
-        crate::core::compiler::compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+        // Use insert_source so we have a source for the lead
+        let _source_id = crate::core::db::insert_source(
+            &conn,
+            &crate::core::db::Source {
+                id: None,
+                name: "Test Source".to_string(),
+                url: "<script>alert(1)</script>".to_string(), // Source URL with XSS
+                r#type: "rss".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+
+        let lead_id = crate::core::db::insert_lead(
+            &conn,
+            &crate::core::db::Lead {
+                id: None,
+                detector_name: "test".to_string(),
+                why: "<script>alert(1)</script>".to_string(),
+                confidence: "high".to_string(),
+                risk_level: "low".to_string(),
+                confirmation_checklist: "[]".to_string(),
+                created_at: chrono::Utc::now().to_rfc3339(),
+            },
+            &[],
+        )
+        .unwrap();
+
+        let draft_id = crate::core::db::insert_draft(
+            &conn,
+            &crate::core::db::Draft {
+                id: None,
+                lead_id: Some(lead_id),
+                format: "story".to_string(),
+                title: "<script>alert(1)</script>".to_string(),
+                content: "Hello <script>alert(1)</script>".to_string(),
+                status: "published".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: Some("<script>alert(1)</script>".to_string()),
+                created_at: chrono::Utc::now().to_rfc3339(),
+                updated_at: chrono::Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        crate::core::db::insert_published_post(
+            &conn,
+            &crate::core::db::PublishedPost {
+                id: None,
+                draft_id,
+                file_path: "stories/1.html".to_string(),
+                url: "http://example.com/stories/1.html".to_string(),
+                correction_history: String::new(),
+                published_at: chrono::Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        crate::core::compiler::compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}")
+            .unwrap();
         let html = std::fs::read_to_string(temp_dir.path().join("index.html")).unwrap();
-        
+
         // Assertions
         assert!(html.contains("&lt;script&gt;"));
         assert!(!html.contains("<script"));
         assert!(!html.contains("onerror="));
-        
+
         let html2 = std::fs::read_to_string(temp_dir.path().join("stories/1.html")).unwrap();
         assert!(html2.contains("&lt;script&gt;"));
         assert!(!html2.contains("<script"));

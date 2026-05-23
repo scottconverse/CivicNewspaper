@@ -2,9 +2,8 @@
 use rusqlite::Connection;
 use std::error::Error;
 
-const MIGRATIONS: &[(&str, &str)] = &[
-    ("0001_init", include_str!("../../migrations/0001_init.sql")),
-];
+const MIGRATIONS: &[(&str, &str)] =
+    &[("0001_init", include_str!("../../migrations/0001_init.sql"))];
 
 pub fn run_migrations(conn: &mut Connection) -> Result<(), Box<dyn Error>> {
     // Enforce foreign keys
@@ -16,8 +15,11 @@ pub fn run_migrations(conn: &mut Connection) -> Result<(), Box<dyn Error>> {
     for (idx, (name, sql)) in MIGRATIONS.iter().enumerate() {
         let version = (idx + 1) as i32;
         if version > current_version {
-            println!("Applying database migration: {} (version {})", name, version);
-            
+            println!(
+                "Applying database migration: {} (version {})",
+                name, version
+            );
+
             // We use a transaction to apply the schema updates atomically
             let tx = conn.transaction()?;
             tx.execute_batch(sql)?;

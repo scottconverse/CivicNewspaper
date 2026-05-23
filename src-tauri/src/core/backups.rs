@@ -1,8 +1,8 @@
 // core/backups.rs
+use super::db::DbConn;
 use rusqlite::Connection;
 use std::error::Error;
 use std::time::Duration;
-use super::db::DbConn;
 
 pub fn save_backup(conn: &Connection, dest_path: &str) -> Result<(), Box<dyn Error>> {
     let mut dest_conn = Connection::open(dest_path)?;
@@ -40,12 +40,13 @@ pub fn restore_backup(
         }
 
         let temp_conn = Connection::open(&temp_db_path)?;
-        let integrity: String = temp_conn.query_row("PRAGMA integrity_check;", [], |row| row.get(0))?;
+        let integrity: String =
+            temp_conn.query_row("PRAGMA integrity_check;", [], |row| row.get(0))?;
         if integrity != "ok" {
             let _ = std::fs::remove_file(&temp_db_path);
             return Err("Database integrity check failed. Backup file is corrupt.".into());
         }
-        
+
         let version: i32 = temp_conn.query_row("PRAGMA user_version;", [], |row| row.get(0))?;
         let expected = super::migrations::get_expected_version();
         if version > expected {
@@ -60,10 +61,12 @@ pub fn restore_backup(
     println!("[debug] restore_backup: acquiring database lock");
     // 3. Create rollback recovery snapshot of the live DB
     let rollback_backup_path = format!("{}.rollback_temp", live_db_path);
-    
+
     // Open a lock on the connection mutex
-    let mut conn = db_conn_arc.lock().map_err(|_| "Failed to acquire database lock")?;
-    
+    let mut conn = db_conn_arc
+        .lock()
+        .map_err(|_| "Failed to acquire database lock")?;
+
     println!("[debug] restore_backup: creating rollback snapshot");
     {
         let mut rollback_conn = Connection::open(&rollback_backup_path)?;
@@ -80,20 +83,23 @@ pub fn restore_backup(
     println!("[debug] restore_backup: swapping files via std::fs::rename");
     // 5. Atomic Swap of files
     if let Err(e) = std::fs::rename(&temp_db_path, live_db_path) {
-        println!("[debug] restore_backup: Swap failed: {}. Restoring from rollback snapshot.", e);
+        println!(
+            "[debug] restore_backup: Swap failed: {}. Restoring from rollback snapshot.",
+            e
+        );
         eprintln!("Swap failed: {}. Restoring from rollback snapshot.", e);
-        
+
         // Rollback: copy rollback snapshot back to live_db_path
         let mut original_conn = Connection::open(live_db_path)?;
         let rollback_conn = Connection::open(&rollback_backup_path)?;
         let backup = rusqlite::backup::Backup::new(&rollback_conn, &mut original_conn)?;
         let _ = backup.run_to_completion(5, Duration::from_millis(10), None);
         drop(backup);
-        
+
         *conn = original_conn;
         let _ = std::fs::remove_file(&temp_db_path);
         let _ = std::fs::remove_file(&rollback_backup_path);
-        
+
         return Err(format!("Failed to rename restored database file: {}", e).into());
     }
 
@@ -102,8 +108,14 @@ pub fn restore_backup(
     let mut new_conn = match Connection::open(live_db_path) {
         Ok(c) => c,
         Err(err) => {
-            println!("[debug] restore_backup: failed to open new database: {}. Restoring from rollback.", err);
-            eprintln!("Failed to open new database: {}. Restoring from rollback.", err);
+            println!(
+                "[debug] restore_backup: failed to open new database: {}. Restoring from rollback.",
+                err
+            );
+            eprintln!(
+                "Failed to open new database: {}. Restoring from rollback.",
+                err
+            );
             // Restore from rollback
             let mut original_conn = Connection::open(live_db_path)?;
             let rollback_conn = Connection::open(&rollback_backup_path)?;
@@ -115,14 +127,20 @@ pub fn restore_backup(
             return Err(format!("Failed to connect to restored database file: {}", err).into());
         }
     };
-    
+
     new_conn.pragma_update(None, "journal_mode", "WAL")?;
-    
+
     println!("[debug] restore_backup: running migrations on restored database");
     // 7. Run migrations on the restored database just in case it is older
     if let Err(migration_err) = super::migrations::run_migrations(&mut new_conn) {
-        println!("[debug] restore_backup: migrations failed: {}. Rolling back.", migration_err);
-        eprintln!("Failed to run migrations on restored database: {}. Rolling back.", migration_err);
+        println!(
+            "[debug] restore_backup: migrations failed: {}. Rolling back.",
+            migration_err
+        );
+        eprintln!(
+            "Failed to run migrations on restored database: {}. Rolling back.",
+            migration_err
+        );
         // Restore from rollback
         let mut original_conn = Connection::open(live_db_path)?;
         let rollback_conn = Connection::open(&rollback_backup_path)?;
@@ -133,7 +151,7 @@ pub fn restore_backup(
         let _ = std::fs::remove_file(&rollback_backup_path);
         return Err(format!("Migrations failed on restored database: {}", migration_err).into());
     }
-    
+
     println!("[debug] restore_backup: replacing connection handle");
     // Successfully restored! Replace the connection handle
     *conn = new_conn;

@@ -1,11 +1,11 @@
 // core/detectors.rs
+use super::db::{insert_lead, Lead};
+use chrono::{DateTime, Utc};
+use regex::Regex;
 use rusqlite::Connection;
-use std::error::Error;
 use serde::{Deserialize, Serialize};
 use serde_json;
-use regex::Regex;
-use chrono::{DateTime, Utc};
-use super::db::{insert_lead, Lead};
+use std::error::Error;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProfileConfig {
@@ -34,28 +34,30 @@ pub fn run_detectors(
     let config = parse_profile_config(profile_json);
     let money_threshold = config.money_threshold.unwrap_or(250000.0);
     let watchlist = config.watchlist.unwrap_or_default();
-    
+
     let mut new_lead_ids = Vec::new();
-    
+
     // Fetch all the source details for mapping
     let sources = super::db::list_sources(conn)?;
-    
+
     // Pre-compile Regexes
     let re_money = Regex::new(r"\$([0-9,]+)(?:\.[0-9]+)?").unwrap();
     let re_vote = Regex::new(r"(?i)\b(unanimously|voted|approved|resolved|passed|carried|denied|motion|adopted|rejected)\b").unwrap();
     let re_personnel = Regex::new(r"(?i)\b(appoint|resign|retire|terminate|hire|employ|vacancy|successor|resignation|appointment|fired|promoted)\b").unwrap();
     let re_meeting = Regex::new(r"(?i)\b(public hearing|special meeting|session will be held|meeting scheduled|council chamber|town hall|public meeting)\b").unwrap();
     let re_deadline = Regex::new(r"(?i)\b(deadline|submit by|due date|public comment period|rfp|bid due|applications close)\b").unwrap();
-    
+
     // High-risk legal keywords raising warning levels
     let re_high_risk = Regex::new(r"(?i)\b(arrested|charged|indicted|felony|misdemeanor|prosecute|lawsuit|alleged|defendant|plaintiff|litigation)\b").unwrap();
 
     // 1. Check "Source went quiet" detector (Source-level)
     for source in &sources {
-        if let (Some(last_success), Some(last_scrape)) = (&source.last_success_at, &source.last_scraped) {
+        if let (Some(last_success), Some(last_scrape)) =
+            (&source.last_success_at, &source.last_scraped)
+        {
             if let (Ok(success_dt), Ok(scrape_dt)) = (
                 DateTime::parse_from_rfc3339(last_success),
-                DateTime::parse_from_rfc3339(last_scrape)
+                DateTime::parse_from_rfc3339(last_scrape),
             ) {
                 let duration = scrape_dt.signed_duration_since(success_dt);
                 if duration.num_days() >= 7 {
@@ -69,11 +71,11 @@ pub fn run_detectors(
                         confirmation_checklist: serde_json::to_string(&vec![
                             "Verify if the agency's website URL has changed",
                             "Check if public postings have been paused for holidays/recess",
-                            "Ping the web administrator if the feed remains offline"
+                            "Ping the web administrator if the feed remains offline",
                         ])?,
                         created_at: Utc::now().to_rfc3339(),
                     };
-                    
+
                     // Check if lead already exists to avoid duplication
                     let exists = lead_exists(conn, "Source Went Quiet", &lead.why)?;
                     if !exists {
@@ -88,16 +90,19 @@ pub fn run_detectors(
     // Process each new evidence item
     for &evidence_id in new_evidence_ids {
         // Fetch evidence text
-        let mut stmt = conn.prepare("SELECT excerpt, source_id, url FROM evidence_items WHERE id = ?1")?;
+        let mut stmt =
+            conn.prepare("SELECT excerpt, source_id, url FROM evidence_items WHERE id = ?1")?;
         let mut rows = stmt.query([evidence_id])?;
         if let Some(row) = rows.next()? {
             let excerpt: String = row.get(0)?;
             let source_id: i32 = row.get(1)?;
             let evidence_url: Option<String> = row.get(2)?;
-            
+
             let source = sources.iter().find(|s| s.id == Some(source_id));
             let source_name = source.map(|s| s.name.as_str()).unwrap_or("Unknown Source");
-            let source_type = source.map(|s| s.r#type.as_str()).unwrap_or("primary_record");
+            let source_type = source
+                .map(|s| s.r#type.as_str())
+                .unwrap_or("primary_record");
 
             // Evaluate risk level of this specific evidence text
             let is_high_risk = re_high_risk.is_match(&excerpt);
@@ -105,11 +110,15 @@ pub fn run_detectors(
 
             // 2. New Primary Record Detector
             if source_type == "primary_record" || source_type == "official_comm" {
-                let why = format!("A new official primary document from '{}' was fetched today ({}).", source_name, evidence_url.clone().unwrap_or_default());
+                let why = format!(
+                    "A new official primary document from '{}' was fetched today ({}).",
+                    source_name,
+                    evidence_url.clone().unwrap_or_default()
+                );
                 let checklist = vec![
                     "Read the source document thoroughly for hidden agendas",
                     "Verify matching records from previous weeks",
-                    "Cross-reference this record with local news announcements"
+                    "Cross-reference this record with local news announcements",
                 ];
                 let lead = Lead {
                     id: None,
@@ -158,12 +167,13 @@ pub fn run_detectors(
 
             // 4. Decision / Vote Detector
             if re_vote.is_match(&excerpt) {
-                let matched_words: Vec<&str> = re_vote.find_iter(&excerpt).map(|m| m.as_str()).collect();
+                let matched_words: Vec<&str> =
+                    re_vote.find_iter(&excerpt).map(|m| m.as_str()).collect();
                 let why = format!("VOTING SIGNAL: Found vote/decision keywords ({:?}) in '{}' record, indicating an official board action has taken place.", matched_words, source_name);
                 let checklist = vec![
                     "Record the exact vote tally (e.g. 5-2, unanimous)",
                     "Identify which board members voted 'No' or abstained, and find out why",
-                    "Determine what immediate local impact this decision has on the community"
+                    "Determine what immediate local impact this decision has on the community",
                 ];
                 let lead = Lead {
                     id: None,
@@ -183,12 +193,15 @@ pub fn run_detectors(
 
             // 5. Personnel Change Detector
             if re_personnel.is_match(&excerpt) {
-                let matched_words: Vec<&str> = re_personnel.find_iter(&excerpt).map(|m| m.as_str()).collect();
+                let matched_words: Vec<&str> = re_personnel
+                    .find_iter(&excerpt)
+                    .map(|m| m.as_str())
+                    .collect();
                 let why = format!("PERSONNEL SIGNAL: Detected appointment or resignation keywords ({:?}) in '{}' record, suggesting staff transitions.", matched_words, source_name);
                 let checklist = vec![
                     "Confirm the name and title of the departing/entering official",
                     "Verify the official reason given for the departure or appointment",
-                    "Check if a salary change or severance package was approved"
+                    "Check if a salary change or severance package was approved",
                 ];
                 let lead = Lead {
                     id: None,
@@ -212,7 +225,7 @@ pub fn run_detectors(
                 let checklist = vec![
                     "Verify the date, time, and physical/virtual address of the meeting",
                     "Download the meeting agenda when it becomes available",
-                    "Identify the public comment signup rules (e.g. register 24 hours in advance)"
+                    "Identify the public comment signup rules (e.g. register 24 hours in advance)",
                 ];
                 let lead = Lead {
                     id: None,
@@ -236,7 +249,7 @@ pub fn run_detectors(
                 let checklist = vec![
                     "Pinpoint the exact submission deadline date and time",
                     "Outline the required criteria for submitting a public response",
-                    "Determine who receives the applications or proposals"
+                    "Determine who receives the applications or proposals",
                 ];
                 let lead = Lead {
                     id: None,
@@ -261,9 +274,13 @@ pub fn run_detectors(
                 if re_term.is_match(&excerpt) {
                     let why = format!("WATCHLIST HIT: The tracked keyword '{}' was found in a new record from '{}'.", term, source_name);
                     let checklist = vec![
-                        format!("Examine how '{}' is related to the other entities in the document", term),
+                        format!(
+                            "Examine how '{}' is related to the other entities in the document",
+                            term
+                        ),
                         "Check if this hit indicates a potential conflict of interest".to_string(),
-                        "Look up historical minutes to find previous references to this item".to_string()
+                        "Look up historical minutes to find previous references to this item"
+                            .to_string(),
                     ];
                     let lead = Lead {
                         id: None,
@@ -283,12 +300,13 @@ pub fn run_detectors(
             }
         }
     }
-    
+
     Ok(new_lead_ids)
 }
 
 fn lead_exists(conn: &Connection, detector_name: &str, why: &str) -> Result<bool, rusqlite::Error> {
-    let mut stmt = conn.prepare("SELECT count(*) FROM leads WHERE detector_name = ?1 AND why = ?2")?;
+    let mut stmt =
+        conn.prepare("SELECT count(*) FROM leads WHERE detector_name = ?1 AND why = ?2")?;
     let count: i32 = stmt.query_row([detector_name, why], |row| row.get(0))?;
     Ok(count > 0)
 }
@@ -298,7 +316,7 @@ fn format_money(val: f64) -> String {
     let parts: Vec<&str> = s.split('.').collect();
     let integer_part = parts[0];
     let decimal_part = parts[1];
-    
+
     let mut result = String::new();
     let num_bytes = integer_part.len();
     for (i, c) in integer_part.chars().enumerate() {

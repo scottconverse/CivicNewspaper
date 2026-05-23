@@ -1,12 +1,12 @@
 // core/compiler.rs
-use rusqlite::{Connection, params};
+use super::db::{get_evidence_by_lead, insert_published_post, list_drafts, PublishedPost};
+use chrono::{Datelike, Utc};
+use pulldown_cmark::{html, Options, Parser};
+use rusqlite::{params, Connection};
+use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::fs;
 use std::path::Path;
-use chrono::{Datelike, Utc};
-use serde::{Deserialize, Serialize};
-use pulldown_cmark::{html, Options, Parser};
-use super::db::{get_evidence_by_lead, insert_published_post, list_drafts, PublishedPost};
 
 const INDEX_TEMPLATE: &str = include_str!("../../../templates/index.html");
 const POST_TEMPLATE: &str = include_str!("../../../templates/post.html");
@@ -27,9 +27,14 @@ impl Default for CompilerProfile {
         CompilerProfile {
             site_title: "CivicNews Observer".to_string(),
             site_subtitle: "Transparent Local Public Records & Evidence".to_string(),
-            about_text: "We report on local government activities using raw public records.".to_string(),
-            ethics_text: "Our core ethics: evidence, not rumor. We link every fact to primary documentation.".to_string(),
-            how_we_report_text: "We collect agendas, minutes, and documents directly from municipal feeds.".to_string(),
+            about_text: "We report on local government activities using raw public records."
+                .to_string(),
+            ethics_text:
+                "Our core ethics: evidence, not rumor. We link every fact to primary documentation."
+                    .to_string(),
+            how_we_report_text:
+                "We collect agendas, minutes, and documents directly from municipal feeds."
+                    .to_string(),
         }
     }
 }
@@ -37,7 +42,10 @@ impl Default for CompilerProfile {
 pub fn render_markdown(markdown: &str) -> String {
     let options = Options::empty();
     let parser = Parser::new_ext(markdown, options).filter(|event| {
-        !matches!(event, pulldown_cmark::Event::Html(_) | pulldown_cmark::Event::InlineHtml(_))
+        !matches!(
+            event,
+            pulldown_cmark::Event::Html(_) | pulldown_cmark::Event::InlineHtml(_)
+        )
     });
     let mut html_output = String::new();
     html::push_html(&mut html_output, parser);
@@ -50,10 +58,17 @@ pub fn compile_static_site(
     profile_json: &str,
 ) -> Result<(), Box<dyn Error>> {
     let output_dir = Path::new(output_dir_str);
-    
+
     // 1. Create standard output directories
     fs::create_dir_all(output_dir)?;
-    let formats = vec!["briefs", "watch", "explainers", "stories", "opinions", "corrections"];
+    let formats = vec![
+        "briefs",
+        "watch",
+        "explainers",
+        "stories",
+        "opinions",
+        "corrections",
+    ];
     for fmt in &formats {
         fs::create_dir_all(output_dir.join(fmt))?;
     }
@@ -114,7 +129,8 @@ pub fn compile_static_site(
             }
         }
         if evidence_html.is_empty() {
-            evidence_html = "<li>No specific evidence items linked to this report.</li>".to_string();
+            evidence_html =
+                "<li>No specific evidence items linked to this report.</li>".to_string();
         }
 
         // Format Correction Banner
@@ -130,7 +146,7 @@ pub fn compile_static_site(
         };
 
         let safe_title = html_escape::encode_safe(&draft.title).to_string();
-        
+
         // Generate Post Page
         let mut post_html = POST_TEMPLATE.to_string();
         post_html = post_html.replace("{{SITE_TITLE}}", &profile.site_title);
@@ -155,7 +171,10 @@ pub fn compile_static_site(
             file_path: relative_path.clone(),
             url: relative_path.clone(),
             published_at: draft.updated_at.clone(),
-            correction_history: draft.correction_note.clone().unwrap_or_else(|| "[]".to_string()),
+            correction_history: draft
+                .correction_note
+                .clone()
+                .unwrap_or_else(|| "[]".to_string()),
         };
         // Let's insert published post into DB (ignoring if it exists or doing it silently)
         let mut stmt = conn.prepare("SELECT count(*) FROM published_posts WHERE draft_id = ?1")?;
@@ -204,7 +223,7 @@ pub fn compile_static_site(
     index_html = index_html.replace("{{SITE_TITLE}}", &profile.site_title);
     index_html = index_html.replace("{{SITE_SUBTITLE}}", &profile.site_subtitle);
     index_html = index_html.replace("{{ARTICLES}}", &article_list_html);
-    
+
     // Sidebar: list of latest 5 posts + profile description
     let mut sidebar_html = format!(
         "<div class=\"sidebar-section\">\n  <h3 class=\"sidebar-title\">About this Site</h3>\n  <p>{}</p>\n</div>\n",
@@ -216,33 +235,50 @@ pub fn compile_static_site(
     fs::write(output_dir.join("index.html"), index_html)?;
 
     // 7. Build About, Ethics, and How We Report pages
-    let compile_info_page = |filename: &str, title: &str, content_md: &str| -> Result<(), Box<dyn Error>> {
-        let body_html = render_markdown(content_md);
-        let mut page_html = POST_TEMPLATE.to_string();
-        page_html = page_html.replace("{{SITE_TITLE}}", &profile.site_title);
-        page_html = page_html.replace("{{SITE_SUBTITLE}}", &profile.site_subtitle);
-        page_html = page_html.replace("{{POST_TITLE}}", title);
-        page_html = page_html.replace("{{POST_DESCRIPTION}}", title);
-        page_html = page_html.replace("{{POST_DATE}}", &Utc::now().to_rfc3339());
-        page_html = page_html.replace("{{POST_FORMAT}}", "meta");
-        page_html = page_html.replace("{{POST_CONTENT}}", &body_html);
-        page_html = page_html.replace("{{EVIDENCE_CITATIONS}}", "<!-- No citations for info pages -->");
-        page_html = page_html.replace("{{CORRECTION_BANNER}}", "");
-        page_html = page_html.replace("{{YEAR}}", &current_year);
-        fs::write(output_dir.join(filename), page_html)?;
-        Ok(())
-    };
+    let compile_info_page =
+        |filename: &str, title: &str, content_md: &str| -> Result<(), Box<dyn Error>> {
+            let body_html = render_markdown(content_md);
+            let mut page_html = POST_TEMPLATE.to_string();
+            page_html = page_html.replace("{{SITE_TITLE}}", &profile.site_title);
+            page_html = page_html.replace("{{SITE_SUBTITLE}}", &profile.site_subtitle);
+            page_html = page_html.replace("{{POST_TITLE}}", title);
+            page_html = page_html.replace("{{POST_DESCRIPTION}}", title);
+            page_html = page_html.replace("{{POST_DATE}}", &Utc::now().to_rfc3339());
+            page_html = page_html.replace("{{POST_FORMAT}}", "meta");
+            page_html = page_html.replace("{{POST_CONTENT}}", &body_html);
+            page_html = page_html.replace(
+                "{{EVIDENCE_CITATIONS}}",
+                "<!-- No citations for info pages -->",
+            );
+            page_html = page_html.replace("{{CORRECTION_BANNER}}", "");
+            page_html = page_html.replace("{{YEAR}}", &current_year);
+            fs::write(output_dir.join(filename), page_html)?;
+            Ok(())
+        };
 
-    compile_info_page("about.html", "About CivicNews Observer", &profile.about_text)?;
-    compile_info_page("ethics.html", "Reporting Ethics & Standards", &profile.ethics_text)?;
-    compile_info_page("how-we-report.html", "How We Report", &profile.how_we_report_text)?;
+    compile_info_page(
+        "about.html",
+        "About CivicNews Observer",
+        &profile.about_text,
+    )?;
+    compile_info_page(
+        "ethics.html",
+        "Reporting Ethics & Standards",
+        &profile.ethics_text,
+    )?;
+    compile_info_page(
+        "how-we-report.html",
+        "How We Report",
+        &profile.how_we_report_text,
+    )?;
 
     // 8. Build corrections.html ledger
     let mut corrections_html = POST_TEMPLATE.to_string();
     corrections_html = corrections_html.replace("{{SITE_TITLE}}", &profile.site_title);
     corrections_html = corrections_html.replace("{{SITE_SUBTITLE}}", &profile.site_subtitle);
     corrections_html = corrections_html.replace("{{POST_TITLE}}", "Public Corrections Ledger");
-    corrections_html = corrections_html.replace("{{POST_DESCRIPTION}}", "Public Corrections Ledger");
+    corrections_html =
+        corrections_html.replace("{{POST_DESCRIPTION}}", "Public Corrections Ledger");
     corrections_html = corrections_html.replace("{{POST_DATE}}", &Utc::now().to_rfc3339());
     corrections_html = corrections_html.replace("{{POST_FORMAT}}", "ledger");
     corrections_html = corrections_html.replace("{{POST_CONTENT}}", &corrections_list_html);

@@ -1,9 +1,9 @@
 // core/discovery.rs
+use regex::Regex;
 use reqwest::Client;
+use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::time::Duration;
-use serde::{Serialize, Deserialize};
-use regex::Regex;
 use tokio::time::sleep;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -57,7 +57,9 @@ pub fn parse_duckduckgo_html(html: &str) -> Result<Vec<(String, String)>, Box<dy
             real_url = format!("https://duckduckgo.com{}", href);
         }
 
-        if !title.is_empty() && (real_url.starts_with("http://") || real_url.starts_with("https://")) {
+        if !title.is_empty()
+            && (real_url.starts_with("http://") || real_url.starts_with("https://"))
+        {
             results.push((title, real_url));
         }
     }
@@ -65,7 +67,10 @@ pub fn parse_duckduckgo_html(html: &str) -> Result<Vec<(String, String)>, Box<dy
     Ok(results)
 }
 
-pub async fn search_duckduckgo(client: &Client, query: &str) -> Result<Vec<(String, String)>, Box<dyn Error>> {
+pub async fn search_duckduckgo(
+    client: &Client,
+    query: &str,
+) -> Result<Vec<(String, String)>, Box<dyn Error>> {
     let mut base_url = reqwest::Url::parse("https://html.duckduckgo.com/html/")?;
     base_url.query_pairs_mut().append_pair("q", query);
     let search_url = base_url.to_string();
@@ -83,23 +88,61 @@ pub async fn search_duckduckgo(client: &Client, query: &str) -> Result<Vec<(Stri
     parse_duckduckgo_html(&html)
 }
 
-
-pub async fn discover_all_sources(city: &str, state: &str) -> Result<Vec<DiscoveredSourceCategory>, Box<dyn Error>> {
+pub async fn discover_all_sources(
+    city: &str,
+    state: &str,
+) -> Result<Vec<DiscoveredSourceCategory>, Box<dyn Error>> {
     let client = Client::builder()
         .timeout(Duration::from_secs(10))
         .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
         .build()?;
 
     let targets = vec![
-        ("Municipal Website", "primary_record", format!("{} {} government website", city, state)),
-        ("City Council Agenda", "primary_record", format!("{} {} city council agenda", city, state)),
-        ("Public & Legal Notices", "primary_record", format!("{} {} public notices", city, state)),
-        ("School Board Agenda", "primary_record", format!("{} {} school district board agenda", city, state)),
-        ("Police Department Facebook", "official_comm", format!("{} {} police department Facebook", city, state)),
-        ("Local Reddit Community", "community_signal", format!("{} {} Reddit", city, state)),
-        ("Local Newspaper Headlines", "media_lead", format!("{} {} local newspaper", city, state)),
-        ("Chamber of Commerce", "community_signal", format!("{} {} chamber of commerce", city, state)),
-        ("Library Events", "community_signal", format!("{} {} library events", city, state)),
+        (
+            "Municipal Website",
+            "primary_record",
+            format!("{} {} government website", city, state),
+        ),
+        (
+            "City Council Agenda",
+            "primary_record",
+            format!("{} {} city council agenda", city, state),
+        ),
+        (
+            "Public & Legal Notices",
+            "primary_record",
+            format!("{} {} public notices", city, state),
+        ),
+        (
+            "School Board Agenda",
+            "primary_record",
+            format!("{} {} school district board agenda", city, state),
+        ),
+        (
+            "Police Department Facebook",
+            "official_comm",
+            format!("{} {} police department Facebook", city, state),
+        ),
+        (
+            "Local Reddit Community",
+            "community_signal",
+            format!("{} {} Reddit", city, state),
+        ),
+        (
+            "Local Newspaper Headlines",
+            "media_lead",
+            format!("{} {} local newspaper", city, state),
+        ),
+        (
+            "Chamber of Commerce",
+            "community_signal",
+            format!("{} {} chamber of commerce", city, state),
+        ),
+        (
+            "Library Events",
+            "community_signal",
+            format!("{} {} library events", city, state),
+        ),
     ];
 
     let mut categories = Vec::new();

@@ -1,10 +1,10 @@
 // core/db.rs
+use chrono::Utc;
 use rusqlite::{params, Connection, Result as SqlResult};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
-use chrono::Utc;
 
 pub type DbConn = Arc<Mutex<Connection>>;
 
@@ -36,8 +36,8 @@ pub struct Lead {
     pub id: Option<i32>,
     pub detector_name: String,
     pub why: String,
-    pub confidence: String, // 'low', 'med', 'high'
-    pub risk_level: String, // 'low', 'med', 'high'
+    pub confidence: String,             // 'low', 'med', 'high'
+    pub risk_level: String,             // 'low', 'med', 'high'
     pub confirmation_checklist: String, // JSON array
     pub created_at: String,
 }
@@ -112,7 +112,7 @@ pub fn list_sources(conn: &Connection) -> SqlResult<Vec<Source>> {
             last_scraped: row.get(7)?,
         })
     })?;
-    
+
     let mut sources = Vec::new();
     for source in source_iter {
         sources.push(source?);
@@ -128,7 +128,12 @@ pub fn insert_source(conn: &Connection, source: &Source) -> SqlResult<i32> {
     Ok(conn.last_insert_rowid() as i32)
 }
 
-pub fn update_source_status(conn: &Connection, id: i32, status: &str, is_success: bool) -> SqlResult<()> {
+pub fn update_source_status(
+    conn: &Connection,
+    id: i32,
+    status: &str,
+    is_success: bool,
+) -> SqlResult<()> {
     let now = Utc::now().to_rfc3339();
     if is_success {
         conn.execute(
@@ -181,7 +186,7 @@ pub fn get_evidence_by_lead(conn: &Connection, lead_id: i32) -> SqlResult<Vec<Ev
         "SELECT e.id, e.source_id, e.url, e.fetched_at, e.excerpt, e.content_hash, e.entities 
          FROM evidence_items e
          JOIN lead_evidence le ON e.id = le.evidence_id
-         WHERE le.lead_id = ?1"
+         WHERE le.lead_id = ?1",
     )?;
     let iter = stmt.query_map(params![lead_id], |row| {
         Ok(EvidenceItem {
@@ -225,10 +230,10 @@ pub fn list_all_evidence(conn: &Connection) -> SqlResult<Vec<EvidenceItem>> {
 // --- Leads ---
 pub fn insert_lead(conn: &Connection, lead: &Lead, evidence_ids: &[i32]) -> SqlResult<i32> {
     let now = Utc::now().to_rfc3339();
-    
+
     // We execute the insert and linking inside a transaction
     // to keep lead integrity.
-    // Note: since rusqlite allows executing on connection directly, 
+    // Note: since rusqlite allows executing on connection directly,
     // and we want this call to be atomic:
     // If the connection is already in a transaction, this might fail, so we use execute block
     conn.execute(
@@ -397,7 +402,10 @@ pub fn list_published_posts(conn: &Connection) -> SqlResult<Vec<PublishedPost>> 
 }
 
 // --- Paired Clients ---
-pub fn get_paired_client_by_token(conn: &Connection, token: &str) -> SqlResult<Option<PairedClient>> {
+pub fn get_paired_client_by_token(
+    conn: &Connection,
+    token: &str,
+) -> SqlResult<Option<PairedClient>> {
     let mut stmt = conn.prepare("SELECT id, token, label, pairing_pin, pin_expires_at, created_at, last_used_at, revoked FROM paired_clients WHERE token = ?1 AND revoked = 0")?;
     let mut rows = stmt.query(params![token])?;
     if let Some(row) = rows.next()? {
@@ -436,7 +444,12 @@ pub fn get_paired_client_by_pin(conn: &Connection, pin: &str) -> SqlResult<Optio
     }
 }
 
-pub fn create_pairing_pin(conn: &Connection, label: &str, pin: &str, expires_at: &str) -> SqlResult<String> {
+pub fn create_pairing_pin(
+    conn: &Connection,
+    label: &str,
+    pin: &str,
+    expires_at: &str,
+) -> SqlResult<String> {
     let now = Utc::now().to_rfc3339();
     // Create a temporary token that is inactive until paired
     let token = uuid::Uuid::new_v4().to_string();
@@ -456,7 +469,7 @@ pub fn confirm_pairing(conn: &Connection, pin: &str) -> SqlResult<Option<String>
         let id: i32 = row.get(0)?;
         let token: String = row.get(1)?;
         let expires_at: String = row.get(2)?;
-        
+
         if expires_at > now {
             // Pair successful! Clear PIN and set last_used_at
             conn.execute(
@@ -491,12 +504,18 @@ pub fn list_paired_clients(conn: &Connection) -> SqlResult<Vec<PairedClient>> {
 }
 
 pub fn revoke_paired_client(conn: &Connection, id: i32) -> SqlResult<()> {
-    conn.execute("UPDATE paired_clients SET revoked = 1 WHERE id = ?1", params![id])?;
+    conn.execute(
+        "UPDATE paired_clients SET revoked = 1 WHERE id = ?1",
+        params![id],
+    )?;
     Ok(())
 }
 
 pub fn record_paired_client_use(conn: &Connection, token: &str) -> SqlResult<()> {
     let now = Utc::now().to_rfc3339();
-    conn.execute("UPDATE paired_clients SET last_used_at = ?1 WHERE token = ?2", params![now, token])?;
+    conn.execute(
+        "UPDATE paired_clients SET last_used_at = ?1 WHERE token = ?2",
+        params![now, token],
+    )?;
     Ok(())
 }
