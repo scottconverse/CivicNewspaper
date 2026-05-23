@@ -43,10 +43,6 @@ cargo test
 
 `src/App.tsx` is a 1,918-line single-page React component. Pulling out reusable pieces (the Queue view, the Workbench, the Onboarding wizard, the Settings tab) into `src/components/` would dramatically improve maintainability. The first PR on this path should pick one tab only and ship a working extraction with no behavior change.
 
-### Medium: Safari extension native wrapper
-
-The `browser-extension/safari/` directory has a web-extension manifest and scripts but no native macOS app shell. Safari requires a native shim. A PR that adds an Xcode project (or a `safari-web-extension-converter` workflow doc) is welcome.
-
 ### Harder: real NLP for detectors
 
 The current detector layer is regex. There is a credible case for layering a small local NER model on top — but the bar is high. A proposal-stage issue should answer:

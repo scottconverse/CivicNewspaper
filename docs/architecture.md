@@ -61,7 +61,7 @@ To defend against **DNS Rebinding Attacks** (where a malicious website overrides
 ### 2. Origin Whitelisting (CORS)
 To prevent cross-site request forgery (CSRF) from arbitrary browser tabs:
 * The `Origin` header is checked on all requests containing it.
-* Only trusted origins (`chrome-extension://...` and `safari-extension://...`) or absent origins (for CLI/IDE tools) are permitted.
+* Only trusted origins (`chrome-extension://...`) or absent origins (for CLI/IDE tools) are permitted.
 * Untrusted origins return `403 Forbidden`.
 
 ### 3. Token Pairing & Authorization

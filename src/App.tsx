@@ -65,6 +65,9 @@ function App() {
   // Navigation
   const [activeTab, setActiveTab] = useState<string>("queue");
 
+  // Updater
+  const [updateAvailable, setUpdateAvailable] = useState<any>(null);
+
   // App Data
   const [sources, setSources] = useState<Source[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -108,6 +111,19 @@ function App() {
       }
     }
     loadDefaultPaths();
+
+    async function checkForUpdates() {
+      try {
+        const { check } = await import('@tauri-apps/plugin-updater');
+        const update = await check();
+        if (update) {
+          setUpdateAvailable(update);
+        }
+      } catch (err) {
+        console.error("Updater check failed", err);
+      }
+    }
+    checkForUpdates();
   }, []);
   const [correctionNote, setCorrectionNote] = useState("");
   const [showCorrectionModal, setShowCorrectionModal] = useState(false);
@@ -768,13 +784,29 @@ function App() {
 
   return (
     <div className="app-container">
+      {/* Top Banner for Updates */}
+      {updateAvailable && (
+        <div style={{ background: '#3b82f6', color: 'white', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>
+          Update available: {updateAvailable.version}. 
+          <button 
+            style={{ marginLeft: '10px', padding: '2px 8px', borderRadius: '4px', border: 'none', background: 'white', color: '#3b82f6', cursor: 'pointer' }}
+            onClick={async () => {
+              await updateAvailable.downloadAndInstall();
+              const { relaunch } = await import('@tauri-apps/plugin-process');
+              await relaunch();
+            }}
+          >
+            Install & Restart
+          </button>
+        </div>
+      )}
+
       {/* Sidebar Navigation */}
       <aside className="sidebar">
         <div className="brand">
           <Newspaper className="brand-icon" />
           <span className="brand-name">CivicNews</span>
         </div>
-
         <nav>
           <ul className="nav-links">
             <li>
@@ -1337,7 +1369,7 @@ function App() {
                 <div className="card">
                   <h3 className="card-title">2. Pair Assistant</h3>
                   <p className="help-text">
-                    Pairing enables extensions like Chrome/Safari to query local data via read-only APIs on port <code>12053</code>. Write operations are blocked.
+                    Pairing enables Chrome extensions to query local data via read-only APIs on port <code>12053</code>. Write operations are blocked.
                   </p>
 
                   <form onSubmit={handleGeneratePin} style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "1rem" }}>
