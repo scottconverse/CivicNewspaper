@@ -421,15 +421,20 @@ function render() {
         item.className = 'cn-lead-item';
         item.innerHTML = `
           <div style="display:flex;justify-content:space-between;">
-            <span class="${lead.risk_level === 'high' ? 'cn-badge-red' : 'cn-badge-blue'}">${lead.risk_level.toUpperCase()}</span>
-            <span style="color:#64748b;font-size:10px;">ID: ${lead.id}</span>
+            <span class="cn-badge"></span>
+            <span style="color:#64748b;font-size:10px;" class="cn-lead-id"></span>
           </div>
-          <div class="cn-lead-why">${lead.why}</div>
+          <div class="cn-lead-why"></div>
           <div style="display:flex;gap:5px;margin-top:8px;justify-content:flex-end;">
             <button class="cn-button-sec cn-inject-btn" style="font-size:11px;">Insert Prompt</button>
             <button class="cn-button-sec cn-capture-btn" style="font-size:11px;">Capture Draft</button>
           </div>
         `;
+        const badge = item.querySelector('.cn-badge');
+        badge.className = lead.risk_level === 'high' ? 'cn-badge-red' : 'cn-badge-blue';
+        badge.textContent = lead.risk_level ? lead.risk_level.toUpperCase() : 'UNKNOWN';
+        item.querySelector('.cn-lead-id').textContent = `ID: ${lead.id}`;
+        item.querySelector('.cn-lead-why').textContent = lead.why;
         
         item.querySelector('.cn-inject-btn').addEventListener('click', (e) => {
           e.stopPropagation();
