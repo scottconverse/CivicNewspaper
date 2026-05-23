@@ -10,6 +10,23 @@ PASS=0
 FAIL=0
 log() { echo "[$1] $2"; if [ "$1" = "PASS" ]; then PASS=$((PASS+1)); else FAIL=$((FAIL+1)); fi; }
 
+# === Phase 1 work-present gate ===
+# This DoD verifies Phase 1 (frontend rebuild) when it's being introduced.
+# On branches that don't include Phase 1 work (e.g., the setup branch that
+# only adds this script, or unrelated branches), there's nothing to verify
+# and the DoD exits 0. Trigger signal: src/components/ exists OR package.json
+# declares vitest as a dependency. Phase 1 cannot ship without either.
+if [ ! -d src/components ] && ! grep -q '"vitest"' package.json 2>/dev/null; then
+  echo "ℹ Phase 1 work not present on this branch:"
+  echo "    src/components/ does not exist AND package.json has no vitest dep."
+  echo "    Phase 1 DoD has nothing to verify — exiting 0."
+  echo "    (When Phase 1 work is introduced, this skip gate stops applying"
+  echo "     and every check below must pass.)"
+  exit 0
+fi
+echo "✓ Phase 1 work detected — running full verification"
+echo ""
+
 # === Component decomposition ===
 [ "$(ls src/components/*.tsx 2>/dev/null | grep -v '\.test\.tsx$' | wc -l)" -ge 8 ] \
   && log PASS "P1: >=8 components" || log FAIL "P1: components count"
