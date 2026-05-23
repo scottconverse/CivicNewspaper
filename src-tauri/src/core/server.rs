@@ -70,27 +70,28 @@ struct GuardrailsRequest {
     draft_id: i32,
 }
 
-pub async fn start_server(db: DbConn) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let app_state = AppState {
-        db: db.clone(),
-        pair_attempts: Arc::new(Mutex::new(HashMap::new())),
-    };
-
-    // Routes requiring token authentication
+pub fn build_app(app_state: AppState) -> axum::Router {
     let api_routes = Router::new()
         .route("/queue", get(get_queue_handler))
         .route("/evidence/:lead_id", get(get_evidence_handler))
         .route("/drafts", post(create_draft_handler))
         .route("/llm/task", post(llm_task_handler))
         .route("/guardrails/check", post(guardrails_handler))
-        .route("/guardrails/check", post(guardrails_handler))
         .layer(middleware::from_fn_with_state(app_state.clone(), super::auth::auth_middleware));
 
-    // Outer app router (includes pairing route which doesn't check tokens)
-    let app = Router::new()
+    Router::new()
         .route("/api/pair", post(pair_handler))
         .nest("/api", api_routes)
-        .with_state(app_state);
+        .with_state(app_state)
+}
+
+pub async fn start_server(db: DbConn) -> Result<(), Box<dyn Error + Send + Sync>> {
+    let app_state = AppState {
+        db: db.clone(),
+        pair_attempts: Arc::new(Mutex::new(HashMap::new())),
+    };
+
+    let app = build_app(app_state);
 
     // Bind strictly to loopback interface 127.0.0.1
     let addr = SocketAddr::from(([127, 0, 0, 1], 12053));

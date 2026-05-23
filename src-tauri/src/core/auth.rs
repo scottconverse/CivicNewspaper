@@ -39,7 +39,7 @@ pub async fn auth_middleware(
         
     if !is_valid_host(host) {
         println!("Auth Block: Invalid Host header: '{}'", host);
-        return Err(StatusCode::BAD_REQUEST);
+        return Err(StatusCode::FORBIDDEN);
     }
 
     // 2. Origin Validation

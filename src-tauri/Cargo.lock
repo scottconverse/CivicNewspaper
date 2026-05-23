@@ -544,6 +544,7 @@ dependencies = [
  "feed-rs",
  "hex",
  "html-escape",
+ "http-body-util",
  "pulldown-cmark",
  "rand",
  "regex",

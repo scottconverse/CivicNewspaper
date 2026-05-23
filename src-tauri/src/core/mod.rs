@@ -11,3 +11,4 @@ pub mod llm;
 pub mod backups;
 pub mod tests;
 pub mod discovery;
+pub mod server_tests;
