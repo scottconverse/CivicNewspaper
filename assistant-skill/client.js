@@ -106,7 +106,7 @@ Usage:
       case 'pair': {
         const pin = args[1];
         if (!pin) {
-          console.error('Error: Please provide 6-digit PIN.');
+          console.error('Error: Please provide pairing token.');
           process.exit(1);
         }
         console.log(`Attempting pairing PIN ${pin}...`);

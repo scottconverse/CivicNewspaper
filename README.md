@@ -26,7 +26,7 @@ A local-first, single-editor desktop app for monitoring municipal feeds, flaggin
 
 ## Architecture (one paragraph)
 
-A Tauri-wrapped React frontend talks to a Rust backend via Tauri IPC. The Rust backend also runs an Axum HTTP server bound strictly to `127.0.0.1:12053` so that browser extensions and IDE-side assistant skills can pair (via short-lived 6-digit PIN) and exchange bearer tokens. All persistent state lives in a single SQLite file (WAL mode). Draft generation routes to a local Ollama instance at `127.0.0.1:11434`. The static-site compiler reads approved drafts from SQLite and writes a folder of HTML + CSS + RSS to a user-chosen output path.
+A Tauri-wrapped React frontend talks to a Rust backend via Tauri IPC. The Rust backend also runs an Axum HTTP server bound strictly to `127.0.0.1:12053` so that browser extensions and IDE-side assistant skills can pair (via short-lived 22-char token) and exchange bearer tokens. All persistent state lives in a single SQLite file (WAL mode). Draft generation routes to a local Ollama instance at `127.0.0.1:11434`. The static-site compiler reads approved drafts from SQLite and writes a folder of HTML + CSS + RSS to a user-chosen output path.
 
 For details: [docs/architecture.md](docs/architecture.md).
 

@@ -21,9 +21,9 @@ A CLI utility is provided at [client.js](./client.js) to automate these calls.
 You can run the CLI bridge using the `node` environment:
 
 ### 1. Pairing client
-Pair with the local desktop app using the 6-digit PIN displayed in the "Browser Pairing" tab of the desktop GUI:
+Pair with the local desktop app using the pairing token displayed in the "Browser Pairing" tab of the desktop GUI:
 ```bash
-node assistant-skill/client.js pair <6-digit-pin>
+node assistant-skill/client.js pair <22-char-token>
 ```
 
 ### 2. View Queue

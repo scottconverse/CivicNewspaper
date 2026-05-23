@@ -27,7 +27,7 @@ Initial pre-alpha snapshot of the codebase. Not released.
 ### Features present
 - Tauri v2 desktop wrapper with a single-page React 18 frontend (`src/App.tsx`).
 - Axum loopback HTTP server bound to `127.0.0.1:12053` for browser-extension and assistant-skill pairing.
-- Host-header validation, Origin whitelisting, short-lived 6-digit PIN pairing, bearer-token authorization (`auth.rs`).
+- Host-header validation, Origin whitelisting, 22-char URL-safe base64 token (SHA-256 hashed), 5-min expiry, IP-rate-limited pairing, bearer-token authorization (`auth.rs`).
 - SQLite (WAL mode) persistence layer; schema defined in `src-tauri/migrations/0001_init.sql`.
 - RSS/HTML feed scraper (`scraper.rs`).
 - Eight regex-based detectors: source-quiet timer, new-primary-record, money-threshold, decision/vote keyword, personnel-change keyword, public-meeting keyword, deadline keyword, watchlist keyword (`detectors.rs`).

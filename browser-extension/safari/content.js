@@ -393,8 +393,8 @@ function render() {
     body.innerHTML = `
       <div class="cn-pair-box">
         <h4 style="margin:0 0 5px 0;">Pair local assistant</h4>
-        <p style="color:#94a3b8;margin:0 0 10px 0;line-height:1.4;">Enter the pairing PIN from CivicNews Desktop App &gt; Browser Pairing.</p>
-        <input type="text" id="cn-pin-input" class="cn-input" placeholder="6-digit PIN" maxlength="6" />
+        <p style="color:#94a3b8;margin:0 0 10px 0;line-height:1.4;">Enter the pairing token from CivicNews Desktop App &gt; Browser Pairing.</p>
+        <input type="text" id="cn-pin-input" class="cn-input" placeholder="Paste 22-char token" />
         <button id="cn-pair-btn" class="cn-button">Pair Client</button>
       </div>
     `;

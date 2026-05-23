@@ -52,7 +52,7 @@ The folder is a Manifest v3 stub. Safari requires web extensions to be packaged 
 
 ### How do I install the Chromium browser extension?
 
-In Chrome: `chrome://extensions/` → enable Developer Mode → "Load Unpacked" → select the `browser-extension/chromium/` directory. Then pair it from CivicNewspaper's Browser Pairing tab using the 6-digit PIN.
+In Chrome: `chrome://extensions/` → enable Developer Mode → "Load Unpacked" → select the `browser-extension/chromium/` directory. Then pair it from CivicNewspaper's Browser Pairing tab using the pairing token.
 
 ## Publishing
 
