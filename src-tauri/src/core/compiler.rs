@@ -102,9 +102,11 @@ pub fn compile_static_site(
             for item in items {
                 let item_id = item.id.unwrap_or(0);
                 let source_url = item.url.clone().unwrap_or_else(|| "#".to_string());
+                let safe_url = html_escape::encode_safe(&source_url);
+                let safe_excerpt = html_escape::encode_safe(&item.excerpt);
                 evidence_html.push_str(&format!(
                     "<li id=\"evidence-{}\" style=\"margin-bottom: 0.5rem;\"><strong>[Ref {}]</strong> <a href=\"{}\" target=\"_blank\">Original Document Link</a>: <span style=\"font-style: italic;\">\"{}\"</span></li>\n",
-                    item_id, item_id, source_url, item.excerpt
+                    item_id, item_id, safe_url, safe_excerpt
                 ));
             }
         }
@@ -115,20 +117,23 @@ pub fn compile_static_site(
         // Format Correction Banner
         let correction_banner = if draft.status == "corrected" {
             let note = draft.correction_note.clone().unwrap_or_default();
+            let safe_note = html_escape::encode_safe(&note);
             format!(
                 "<div class=\"correction-banner\" style=\"background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 1rem; margin-bottom: 2rem; border-radius: 4px; font-family: var(--font-sans); font-size: 0.95rem;\"><strong>CORRECTION:</strong> {}</div>\n",
-                note
+                safe_note
             )
         } else {
             String::new()
         };
 
+        let safe_title = html_escape::encode_safe(&draft.title).to_string();
+        
         // Generate Post Page
         let mut post_html = POST_TEMPLATE.to_string();
         post_html = post_html.replace("{{SITE_TITLE}}", &profile.site_title);
         post_html = post_html.replace("{{SITE_SUBTITLE}}", &profile.site_subtitle);
-        post_html = post_html.replace("{{POST_TITLE}}", &draft.title);
-        post_html = post_html.replace("{{POST_DESCRIPTION}}", &draft.title);
+        post_html = post_html.replace("{{POST_TITLE}}", &safe_title);
+        post_html = post_html.replace("{{POST_DESCRIPTION}}", &safe_title);
         post_html = post_html.replace("{{POST_DATE}}", &draft.updated_at);
         post_html = post_html.replace("{{POST_FORMAT}}", &draft.format);
         post_html = post_html.replace("{{POST_CONTENT}}", &html_content);
@@ -164,20 +169,22 @@ pub fn compile_static_site(
         // Add to Homepage listing HTML
         article_list_html.push_str(&format!(
             "<article>\n  <h2 class=\"article-title\"><a href=\"{}\">{}</a></h2>\n  <div class=\"article-meta\">\n    <span>{}</span>\n    <span>Format: <span class=\"tag\">{}</span></span>\n  </div>\n</article>\n\n",
-            relative_path, draft.title, draft.updated_at, draft.format
+            relative_path, safe_title, draft.updated_at, draft.format
         ));
 
         // Add to RSS feed items
         rss_items.push_str(&format!(
             "    <item>\n      <title>{}</title>\n      <link>{}</link>\n      <guid>{}/{}</guid>\n      <pubDate>{}</pubDate>\n      <description>{}</description>\n    </item>\n",
-            draft.title, relative_path, subfolder, draft_id, draft.updated_at, draft.title
+            safe_title, relative_path, subfolder, draft_id, draft.updated_at, safe_title
         ));
 
         // Add to Corrections Ledger listing if corrected
         if draft.status == "corrected" {
+            let note_str = draft.correction_note.clone().unwrap_or_default();
+            let safe_corr_note = html_escape::encode_safe(&note_str);
             corrections_list_html.push_str(&format!(
                 "<div style=\"border-bottom: 1px dashed #cccccc; padding: 1.5rem 0;\">\n  <h3 style=\"margin-top: 0;\"><a href=\"{}\">{}</a></h3>\n  <p style=\"font-size: 0.9rem; color: #856404; background-color: #fff3cd; padding: 0.75rem; border-radius: 4px;\"><strong>Correction Notice ({}):</strong> {}</p>\n</div>\n\n",
-                relative_path, draft.title, draft.updated_at, draft.correction_note.clone().unwrap_or_default()
+                relative_path, safe_title, draft.updated_at, safe_corr_note
             ));
         }
     }
