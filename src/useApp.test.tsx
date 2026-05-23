@@ -1,7 +1,6 @@
 // src/useApp.test.tsx
 import { render, screen, act } from "@testing-library/react";
 import { describe, test, expect, vi } from "vitest";
-import React from "react";
 import { useApp } from "./useApp";
 
 // Mock tauri core invoke to return mock initial data
@@ -25,7 +24,7 @@ const TestComponent = () => {
 describe("useApp Hook Tests", () => {
   test("initializes hook states correctly and handles navigation updates", async () => {
     // Mock invoke implementations
-    vi.mocked(invoke).mockImplementation(async (cmd: string, ...args: any[]) => {
+    vi.mocked(invoke).mockImplementation(async (cmd: string, ..._args: any[]) => {
       if (cmd === "get_queue") {
         return { leads: [], drafts: [] };
       }

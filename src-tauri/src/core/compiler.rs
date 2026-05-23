@@ -167,7 +167,10 @@ pub fn compile_static_site(
         post_html = post_html.replace("href=\"index.html\"", "href=\"../index.html\"");
         post_html = post_html.replace("href=\"about.html\"", "href=\"../about.html\"");
         post_html = post_html.replace("href=\"ethics.html\"", "href=\"../ethics.html\"");
-        post_html = post_html.replace("href=\"how-we-report.html\"", "href=\"../how-we-report.html\"");
+        post_html = post_html.replace(
+            "href=\"how-we-report.html\"",
+            "href=\"../how-we-report.html\"",
+        );
         post_html = post_html.replace("href=\"corrections.html\"", "href=\"../corrections.html\"");
         post_html = post_html.replace("href=\"feed.xml\"", "href=\"../feed.xml\"");
 
