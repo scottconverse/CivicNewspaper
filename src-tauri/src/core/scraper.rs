@@ -1,5 +1,4 @@
 // core/scraper.rs
-use rusqlite::Connection;
 use std::error::Error;
 use std::time::Duration;
 use tokio::time::sleep;
@@ -180,7 +179,7 @@ async fn scrape_source(client: &Client, db: &DbConn, source: &Source) -> Result<
 }
 
 fn clean_html(html: &str) -> String {
-    let re_script_style = regex::Regex::new(r"(?s)<(script|style)[^>]*>.*?</\1>").unwrap();
+    let re_script_style = regex::Regex::new(r"(?s)<(script|style)[^>]*>.*?</(script|style)>").unwrap();
     let re_tags = regex::Regex::new(r"<[^>]*>").unwrap();
     
     let step1 = re_script_style.replace_all(html, "");
@@ -207,11 +206,9 @@ fn chunk_text(text: &str, chunk_size: usize) -> Vec<String> {
         if p_trimmed.is_empty() {
             continue;
         }
-        if current_chunk.len() + p_trimmed.len() > chunk_size {
-            if !current_chunk.is_empty() {
-                chunks.push(current_chunk.clone());
-                current_chunk.clear();
-            }
+        if current_chunk.len() + p_trimmed.len() > chunk_size && !current_chunk.is_empty() {
+            chunks.push(current_chunk.clone());
+            current_chunk.clear();
         }
         current_chunk.push_str(p_trimmed);
         current_chunk.push('\n');

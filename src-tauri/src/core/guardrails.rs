@@ -29,7 +29,7 @@ pub fn run_guardrails_check(
         None => return Err(format!("Draft ID {} not found", draft_id).into()),
     };
 
-    let title = draft.title;
+    let _title = draft.title;
     let content = draft.content;
     let lead_id = draft.lead_id;
 
@@ -184,7 +184,7 @@ fn find_verbatim_overlap(paragraph: &str, excerpt: &str, min_words: usize) -> Ve
     }
     
     // Deduplicate and filter nested matches
-    matches.sort_by(|a, b| b.len().cmp(&a.len()));
+    matches.sort_by_key(|b| std::cmp::Reverse(b.len()));
     let mut filtered: Vec<String> = Vec::new();
     for m in matches {
         if !filtered.iter().any(|f| f.contains(&m)) {

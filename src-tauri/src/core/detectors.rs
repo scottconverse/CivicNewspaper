@@ -4,8 +4,8 @@ use std::error::Error;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use regex::Regex;
-use chrono::{DateTime, Utc, NaiveDateTime};
-use super::db::{insert_lead, get_evidence_by_lead, Lead, EvidenceItem, Source};
+use chrono::{DateTime, Utc};
+use super::db::{insert_lead, Lead};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProfileConfig {
@@ -302,7 +302,7 @@ fn format_money(val: f64) -> String {
     let mut result = String::new();
     let num_bytes = integer_part.len();
     for (i, c) in integer_part.chars().enumerate() {
-        if i > 0 && (num_bytes - i) % 3 == 0 {
+        if i > 0 && (num_bytes - i).is_multiple_of(3) {
             result.push(',');
         }
         result.push(c);

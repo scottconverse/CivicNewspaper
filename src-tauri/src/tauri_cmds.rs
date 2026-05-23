@@ -1,7 +1,6 @@
 // src/tauri_cmds.rs
-use std::sync::{Arc, Mutex};
 use serde::{Serialize, Deserialize};
-use crate::core::db::{self, DbConn, Source, EvidenceItem, Lead, Draft, PublishedPost, PairedClient};
+use crate::core::db::{self, DbConn, Source, EvidenceItem, Lead, Draft, PairedClient};
 use crate::core::scraper;
 use crate::core::detectors;
 use crate::core::compiler;

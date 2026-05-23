@@ -6,11 +6,9 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
-use rusqlite::Connection;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::net::SocketAddr;
-use std::sync::{Arc, Mutex};
 use super::db::{DbConn, confirm_pairing, list_leads, list_drafts, get_evidence_by_lead, insert_draft, Draft};
 use super::guardrails::run_guardrails_check;
 use super::llm::call_local_ollama;

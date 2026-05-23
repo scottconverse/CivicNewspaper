@@ -1,5 +1,5 @@
 // core/db.rs
-use rusqlite::{params, Connection, Result as SqlResult, Row};
+use rusqlite::{params, Connection, Result as SqlResult};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::path::PathBuf;
@@ -82,7 +82,7 @@ pub struct PairedClient {
 // Database Initialization
 pub fn init_db(path: &str) -> Result<Connection, Box<dyn Error>> {
     let mut conn = Connection::open(path)?;
-    conn.pragma_update(None, "journal_mode", &"WAL")?;
+    conn.pragma_update(None, "journal_mode", "WAL")?;
     super::migrations::run_migrations(&mut conn)?;
     Ok(conn)
 }
@@ -201,6 +201,7 @@ pub fn get_evidence_by_lead(conn: &Connection, lead_id: i32) -> SqlResult<Vec<Ev
     Ok(items)
 }
 
+#[allow(dead_code)]
 pub fn list_all_evidence(conn: &Connection) -> SqlResult<Vec<EvidenceItem>> {
     let mut stmt = conn.prepare("SELECT id, source_id, url, fetched_at, excerpt, content_hash, entities FROM evidence_items")?;
     let iter = stmt.query_map([], |row| {
@@ -287,6 +288,7 @@ pub fn get_draft(conn: &Connection, id: i32) -> SqlResult<Option<Draft>> {
     }
 }
 
+#[allow(dead_code)]
 pub fn get_draft_by_lead(conn: &Connection, lead_id: i32) -> SqlResult<Option<Draft>> {
     let mut stmt = conn.prepare("SELECT id, lead_id, format, title, content, status, verification_checklist, missing_evidence_notes, correction_note, created_at, updated_at FROM drafts WHERE lead_id = ?1")?;
     let mut rows = stmt.query(params![lead_id])?;
@@ -374,6 +376,7 @@ pub fn insert_published_post(conn: &Connection, post: &PublishedPost) -> SqlResu
     Ok(conn.last_insert_rowid() as i32)
 }
 
+#[allow(dead_code)]
 pub fn list_published_posts(conn: &Connection) -> SqlResult<Vec<PublishedPost>> {
     let mut stmt = conn.prepare("SELECT id, draft_id, file_path, url, published_at, correction_history FROM published_posts ORDER BY published_at DESC")?;
     let iter = stmt.query_map([], |row| {
@@ -413,6 +416,7 @@ pub fn get_paired_client_by_token(conn: &Connection, token: &str) -> SqlResult<O
     }
 }
 
+#[allow(dead_code)]
 pub fn get_paired_client_by_pin(conn: &Connection, pin: &str) -> SqlResult<Option<PairedClient>> {
     let mut stmt = conn.prepare("SELECT id, token, label, pairing_pin, pin_expires_at, created_at, last_used_at, revoked FROM paired_clients WHERE pairing_pin = ?1 AND revoked = 0")?;
     let mut rows = stmt.query(params![pin])?;

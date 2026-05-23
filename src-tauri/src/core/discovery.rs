@@ -26,12 +26,12 @@ pub fn parse_duckduckgo_html(html: &str) -> Result<Vec<(String, String)>, Box<dy
     let re = Regex::new(r#"(?s)<a\s+class="result__a"\s+href="([^"]+)"[^>]*>(.*?)</a>"#)?;
 
     let mut results = Vec::new();
+    let title_re = Regex::new(r"<[^>]*>")?;
     for cap in re.captures_iter(html) {
         let href = &cap[1];
         let raw_title = &cap[2];
 
         // Strip any nested HTML tags from the title
-        let title_re = Regex::new(r"<[^>]*>")?;
         let title = title_re.replace_all(raw_title, "").trim().to_string();
 
         let mut real_url = href.to_string();

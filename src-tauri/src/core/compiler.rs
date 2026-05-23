@@ -6,7 +6,7 @@ use std::path::Path;
 use chrono::{Datelike, Utc};
 use serde::{Deserialize, Serialize};
 use pulldown_cmark::{html, Parser};
-use super::db::{get_evidence_by_lead, insert_published_post, list_drafts, Draft, PublishedPost};
+use super::db::{get_evidence_by_lead, insert_published_post, list_drafts, PublishedPost};
 
 const INDEX_TEMPLATE: &str = include_str!("../../../templates/index.html");
 const POST_TEMPLATE: &str = include_str!("../../../templates/post.html");

@@ -3,7 +3,7 @@ use axum::{
     body::Body,
     http::{header, Request, StatusCode},
     middleware::Next,
-    response::{IntoResponse, Response},
+    response::Response,
 };
 use rusqlite::Connection;
 use std::sync::{Arc, Mutex};

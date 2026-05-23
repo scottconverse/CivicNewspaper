@@ -2,7 +2,6 @@
 use rusqlite::Connection;
 use std::error::Error;
 use std::time::Duration;
-use std::sync::{Arc, Mutex};
 use super::db::DbConn;
 
 pub fn save_backup(conn: &Connection, dest_path: &str) -> Result<(), Box<dyn Error>> {
@@ -117,7 +116,7 @@ pub fn restore_backup(
         }
     };
     
-    new_conn.pragma_update(None, "journal_mode", &"WAL")?;
+    new_conn.pragma_update(None, "journal_mode", "WAL")?;
     
     println!("[debug] restore_backup: running migrations on restored database");
     // 7. Run migrations on the restored database just in case it is older

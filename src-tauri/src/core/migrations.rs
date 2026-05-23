@@ -28,6 +28,7 @@ pub fn run_migrations(conn: &mut Connection) -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
+#[allow(dead_code)]
 pub fn get_current_version(conn: &Connection) -> Result<i32, rusqlite::Error> {
     conn.query_row("PRAGMA user_version;", [], |row| row.get(0))
 }
