@@ -54,6 +54,7 @@ import {
   CommunityProfile,
   DiscoveredSource,
   DiscoveredSourceCategory,
+  GuardrailsReport,
   openLocalPath
 } from "./ipc";
 
@@ -1598,7 +1599,7 @@ function App() {
                 </div>
                 {!guardrailsReport.is_clean && (
                   <div style={{ marginTop: "0.5rem" }}>
-                    {guardrailsReport.issues.map((issue, idx) => (
+                    {guardrailsReport.issues.map((issue: any, idx: number) => (
                       <div key={idx} className={`guardrail-issue ${issue.severity}`}>
                         ⚠️ [Category: {issue.category.replace(/_/g, " ")}] {issue.message}
                       </div>
