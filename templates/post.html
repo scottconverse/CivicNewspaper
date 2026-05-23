@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{POST_TITLE}} - {{SITE_TITLE}}</title>
+    <meta name="description" content="{{POST_DESCRIPTION}}">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="print.css" media="print">
+</head>
+<body>
+    <header>
+        <h1 class="site-title"><a href="index.html" style="color: inherit; text-decoration: none;">{{SITE_TITLE}}</a></h1>
+        <p class="site-subtitle">{{SITE_SUBTITLE}}</p>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="ethics.html">Ethics Policy</a>
+            <a href="how-we-report.html">How We Report</a>
+            <a href="corrections.html">Corrections Ledger</a>
+            <a href="feed.xml">RSS Feed</a>
+        </div>
+    </header>
+
+    <main>
+        <article style="max-width: 700px; margin: 0 auto;">
+            {{CORRECTION_BANNER}}
+            
+            <h1 style="font-size: 2.5rem; line-height: 1.1; margin-bottom: 0.5rem;">{{POST_TITLE}}</h1>
+            <div class="article-meta">
+                <span>Published: {{POST_DATE}}</span>
+                <span>Format: <span class="tag">{{POST_FORMAT}}</span></span>
+            </div>
+            
+            <div class="article-content" style="font-size: 1.15rem; line-height: 1.7; margin-bottom: 3rem;">
+                {{POST_CONTENT}}
+            </div>
+            
+            <div class="citation-list">
+                <h3 style="margin-top: 0; font-family: var(--font-sans); font-size: 0.9rem; text-transform: uppercase; color: var(--accent-color);">Evidence & Sources Check</h3>
+                <p style="margin-bottom: 0.8rem; font-size: 0.85rem; color: var(--muted-color);">This publication is backed by transparent primary documentation. Click references to view original records:</p>
+                <ol style="margin: 0; padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.5;">
+                    {{EVIDENCE_CITATIONS}}
+                </ol>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <p>© {{YEAR}} {{SITE_TITLE}}. Built using transparent public records. Under no circumstances does this site run advertisements or trackers.</p>
+        <p>Published via CivicNews.</p>
+    </footer>
+</body>
+</html>

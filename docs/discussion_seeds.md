@@ -1,0 +1,97 @@
+# CivicNews GitHub Discussions
+## *Seed Topics & Templates for Community Launch*
+
+This document provides ready-made discussion templates to kickstart the GitHub Discussions tab in the CivicNews repository. Copy and paste these to introduce the project, answer frequently asked questions, and align contributors on editorial and architectural principles.
+
+---
+
+## 📌 Category: General
+### 🏷️ Topic 1: Welcome to CivicNews! 🏛️
+* **Title**: Welcome to CivicNews: Reclaiming Factual Local News
+* **Body**:
+  Welcome to the CivicNews community! 
+
+  CivicNews was born out of a simple realization: **local community news is disappearing, and the tools built for modern newsrooms are too complex, expensive, and cloud-dependent for a single community observer.**
+
+  Our goal is to give a single editor (often a citizen observer with limited technical skills but a passion for local transparency) a complete, local-first desktop workspace that does all of the following:
+  * Automatically scans city council minutes, agendas, and boards for critical OSINT signals (meetings, large expenditures, watchlists).
+  * Uses private, local AI models (running fully on your own computer) to draft neutral summaries and generate optimized social media promotional packs for Twitter, Facebook, and Reddit.
+  * Enforces strict pre-publication guardrails to ensure every claim links to a primary record citation.
+  * Compiles articles into a static, fast, flat HTML folder using a guided drag-and-drop wizard that can be hosted online for free.
+
+  #### 🤝 How to Get Involved:
+  1. **Test the builds**: Grab the latest installer for Mac or Windows and report any bugs or edge cases.
+  2. **Improve detectors**: If your local city hall uses unique wording for meeting notices or resolutions, help us refine the regex filters in `detectors.rs`.
+  3. **Share your workflow**: Tell us how you are hosting your compiled flat HTML pages (e.g., GitHub Pages, Netlify) and what local feeds you are monitoring.
+
+  *Let's rebuild trust in community news through raw evidence.*
+
+---
+
+## 💡 Category: Q&A / FAQ
+### 🏷️ Topic 2: Frequently Asked Questions about Local LLMs (Ollama)
+* **Title**: FAQ: Why Local AI (Ollama) and What Hardware is Required?
+* **Body**:
+  CivicNews relies on **Ollama** to run language models locally on your computer rather than sending public records data to external servers. Here are answers to the most common questions:
+
+  #### 1. Why local AI instead of ChatGPT or Claude APIs?
+  * **Privacy**: Your database, leads, and drafts never leave your device.
+  * **Cost**: Running local models is **100% free**. There are no API keys, paywalls, or monthly subscriptions.
+  * **Offline Support**: You can draft and review reports even without an active internet connection.
+
+  #### 2. What are the system requirements?
+  CivicNews automatically checks your system memory (RAM) during onboarding:
+  * **16 GB RAM or more (Recommended)**: The app pulls `gemma2:9b` (our standard model). This model is highly factual and excellent at citation-link matching.
+  * **8 GB RAM**: The onboarding wizard will recommend pulling a smaller model like `llama3:8b` or `qwen2.5:3b`.
+  * **4 GB RAM**: The app will guide you to a lightweight model (e.g., `qwen2.5:1.5b` or `tinyllama`) or suggest running in manual drafting mode.
+
+  #### 3. How do I change my AI model after onboarding?
+  Open the **Settings** tab in the CivicNews dashboard. You can enter any model name that you have pulled inside Ollama (e.g., `mistral`, `llama3.2`) and click Save.
+
+---
+
+## 🛠️ Category: Ideas & Development
+### 🏷️ Topic 3: Deep Dive: How the OSINT Detector Logic Works
+* **Title**: Technical Guide: Refine and Customize the OSINT Detectors
+* **Body**:
+  CivicNews parses scrapings through automated detectors inside `core/detectors.rs`. Here is how they operate:
+
+  #### 🛡️ The 8 Core Detectors
+  1. **Source Went Quiet**: Warns you if a monitored feed hasn't successfully updated in 7+ days (helps detect URL changes or posting recess).
+  2. **New Primary Record**: Automatically flags any new agenda, resolution, or minutes file uploaded by a primary feed.
+  3. **Money Threshold**: Scans for transaction values (e.g., `$350,000` or `$1,200,000.50`). If they exceed your configured threshold, a lead is generated.
+  4. **Decision / Vote**: Detects parliamentary terms like *unanimously*, *resolved*, *passed*, *adopted*, *motion*, *rejected*.
+  5. **Personnel Change**: Scans for staff keywords: *appoint*, *resign*, *hire*, *terminate*, *successor*, *vacancy*.
+  6. **Public Meeting**: Finds date and room announcements: *public hearing*, *council chamber*, *meeting scheduled*, *town hall*.
+  7. **Deadline**: Scans for bid proposals and comment timelines: *rfp*, *bid due*, *submit by*, *due date*.
+  8. **Watchlist Hit**: Matches your custom watchlist terms (names, vendors, departments) case-insensitively using word boundaries.
+
+  #### ✏️ How to Contribute:
+  If you notice that your city council's meeting minutes don't trigger the **Decision / Vote** detector, let us know here! We can add their specific terminology to the regular expression:
+  ```rust
+  let re_vote = Regex::new(r"(?i)\b(unanimously|voted|approved|resolved|passed|adopted|motion)\b").unwrap();
+  ```
+
+---
+
+## ✍️ Category: Editorial Guidelines
+### 🏷️ Topic 4: Editorial Standards: Evidence vs. Outrage
+* **Title**: Factual Guidelines: Writing for the Flat HTML Compiler
+* **Body**:
+  CivicNews enforces pre-publication guardrails to maintain strict neutrality. As an editor, here is the style template we recommend:
+
+  #### 🚫 Avoid "Outrage" Wording
+  Do not use adjectives that assign motive or pass judgment.
+  * **Bad**: *"The council corruptly voted to double the budget for their crony contractor."*
+  * **Good**: *"The council approved a budget amendment increasing the road maintenance contract value by $150,000 (evidence:12)."*
+
+  #### 🔗 Mandatory Citation Anchors
+  Every paragraph containing factual claims must have a citation link using Markdown:
+  `The town planning commission approved the development permit [Brighton Minutes, p. 4](evidence:104).`
+  * When compiled, this links directly to the raw evidence block displayed at the bottom of the page, ensuring readers can verify the claims.
+
+  #### ⚖️ Presumption of Innocence
+  When writing about police records or audits, always include qualifier terms.
+  * **Incorrect**: *"A town administrator embezzled funds from the sewer department."*
+  * **Correct**: *"A town administrator was arrested for the alleged embezzlement of sewer department funds (evidence:54)."*
+  * *Note: The CivicNews compiler will block publication if arrest keywords are used without a presumption-of-innocence modifier like "alleged".*

@@ -1,0 +1,498 @@
+// core/db.rs
+use rusqlite::{params, Connection, Result as SqlResult, Row};
+use serde::{Deserialize, Serialize};
+use std::error::Error;
+use std::path::PathBuf;
+use std::sync::{Arc, Mutex};
+use chrono::Utc;
+
+pub type DbConn = Arc<Mutex<Connection>>;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Source {
+    pub id: Option<i32>,
+    pub name: String,
+    pub url: String,
+    pub r#type: String, // 'primary_record', 'official_comm', 'community_signal', 'media_lead'
+    pub status: String, // 'online', 'offline'
+    pub last_success_at: Option<String>,
+    pub last_failed_at: Option<String>,
+    pub last_scraped: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EvidenceItem {
+    pub id: Option<i32>,
+    pub source_id: i32,
+    pub url: Option<String>,
+    pub fetched_at: String,
+    pub excerpt: String,
+    pub content_hash: String,
+    pub entities: String, // JSON array of strings
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Lead {
+    pub id: Option<i32>,
+    pub detector_name: String,
+    pub why: String,
+    pub confidence: String, // 'low', 'med', 'high'
+    pub risk_level: String, // 'low', 'med', 'high'
+    pub confirmation_checklist: String, // JSON array
+    pub created_at: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Draft {
+    pub id: Option<i32>,
+    pub lead_id: Option<i32>,
+    pub format: String, // 'brief', 'watch', 'explainer', 'investigation', 'opinion'
+    pub title: String,
+    pub content: String,
+    pub status: String, // 'lead', 'draft_generated', 'ready_to_review', ...
+    pub verification_checklist: String, // JSON array
+    pub missing_evidence_notes: Option<String>,
+    pub correction_note: Option<String>,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PublishedPost {
+    pub id: Option<i32>,
+    pub draft_id: i32,
+    pub file_path: String,
+    pub url: String,
+    pub published_at: String,
+    pub correction_history: String, // JSON array
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PairedClient {
+    pub id: Option<i32>,
+    pub token: String,
+    pub label: String,
+    pub pairing_pin: Option<String>,
+    pub pin_expires_at: Option<String>,
+    pub created_at: String,
+    pub last_used_at: Option<String>,
+    pub revoked: bool,
+}
+
+// Database Initialization
+pub fn init_db(path: &str) -> Result<Connection, Box<dyn Error>> {
+    let mut conn = Connection::open(path)?;
+    conn.pragma_update(None, "journal_mode", &"WAL")?;
+    super::migrations::run_migrations(&mut conn)?;
+    Ok(conn)
+}
+
+// App Data Path Resolver for Tauri v2
+pub fn get_app_db_path(app: &tauri::AppHandle) -> Result<PathBuf, Box<dyn Error>> {
+    use tauri::Manager;
+    let app_data = app.path().app_data_dir()?;
+    std::fs::create_dir_all(&app_data)?;
+    Ok(app_data.join("civicnews.db"))
+}
+
+// CRUD Operations
+
+// --- Sources ---
+pub fn list_sources(conn: &Connection) -> SqlResult<Vec<Source>> {
+    let mut stmt = conn.prepare("SELECT id, name, url, type, status, last_success_at, last_failed_at, last_scraped FROM sources")?;
+    let source_iter = stmt.query_map([], |row| {
+        Ok(Source {
+            id: Some(row.get(0)?),
+            name: row.get(1)?,
+            url: row.get(2)?,
+            r#type: row.get(3)?,
+            status: row.get(4)?,
+            last_success_at: row.get(5)?,
+            last_failed_at: row.get(6)?,
+            last_scraped: row.get(7)?,
+        })
+    })?;
+    
+    let mut sources = Vec::new();
+    for source in source_iter {
+        sources.push(source?);
+    }
+    Ok(sources)
+}
+
+pub fn insert_source(conn: &Connection, source: &Source) -> SqlResult<i32> {
+    conn.execute(
+        "INSERT INTO sources (name, url, type, status, last_success_at, last_failed_at, last_scraped) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+        params![source.name, source.url, source.r#type, source.status, source.last_success_at, source.last_failed_at, source.last_scraped],
+    )?;
+    Ok(conn.last_insert_rowid() as i32)
+}
+
+pub fn update_source_status(conn: &Connection, id: i32, status: &str, is_success: bool) -> SqlResult<()> {
+    let now = Utc::now().to_rfc3339();
+    if is_success {
+        conn.execute(
+            "UPDATE sources SET status = ?1, last_success_at = ?2, last_scraped = ?2 WHERE id = ?3",
+            params![status, now, id],
+        )?;
+    } else {
+        conn.execute(
+            "UPDATE sources SET status = ?1, last_failed_at = ?2 WHERE id = ?3",
+            params![status, now, id],
+        )?;
+    }
+    Ok(())
+}
+
+pub fn delete_source(conn: &Connection, id: i32) -> SqlResult<()> {
+    conn.execute("DELETE FROM sources WHERE id = ?1", params![id])?;
+    Ok(())
+}
+
+// --- Evidence Items ---
+pub fn insert_evidence_item(conn: &Connection, item: &EvidenceItem) -> SqlResult<i32> {
+    conn.execute(
+        "INSERT INTO evidence_items (source_id, url, fetched_at, excerpt, content_hash, entities) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+        params![item.source_id, item.url, item.fetched_at, item.excerpt, item.content_hash, item.entities],
+    )?;
+    Ok(conn.last_insert_rowid() as i32)
+}
+
+pub fn get_evidence_by_hash(conn: &Connection, hash: &str) -> SqlResult<Option<EvidenceItem>> {
+    let mut stmt = conn.prepare("SELECT id, source_id, url, fetched_at, excerpt, content_hash, entities FROM evidence_items WHERE content_hash = ?1")?;
+    let mut rows = stmt.query(params![hash])?;
+    if let Some(row) = rows.next()? {
+        Ok(Some(EvidenceItem {
+            id: Some(row.get(0)?),
+            source_id: row.get(1)?,
+            url: row.get(2)?,
+            fetched_at: row.get(3)?,
+            excerpt: row.get(4)?,
+            content_hash: row.get(5)?,
+            entities: row.get(6)?,
+        }))
+    } else {
+        Ok(None)
+    }
+}
+
+pub fn get_evidence_by_lead(conn: &Connection, lead_id: i32) -> SqlResult<Vec<EvidenceItem>> {
+    let mut stmt = conn.prepare(
+        "SELECT e.id, e.source_id, e.url, e.fetched_at, e.excerpt, e.content_hash, e.entities 
+         FROM evidence_items e
+         JOIN lead_evidence le ON e.id = le.evidence_id
+         WHERE le.lead_id = ?1"
+    )?;
+    let iter = stmt.query_map(params![lead_id], |row| {
+        Ok(EvidenceItem {
+            id: Some(row.get(0)?),
+            source_id: row.get(1)?,
+            url: row.get(2)?,
+            fetched_at: row.get(3)?,
+            excerpt: row.get(4)?,
+            content_hash: row.get(5)?,
+            entities: row.get(6)?,
+        })
+    })?;
+    let mut items = Vec::new();
+    for item in iter {
+        items.push(item?);
+    }
+    Ok(items)
+}
+
+pub fn list_all_evidence(conn: &Connection) -> SqlResult<Vec<EvidenceItem>> {
+    let mut stmt = conn.prepare("SELECT id, source_id, url, fetched_at, excerpt, content_hash, entities FROM evidence_items")?;
+    let iter = stmt.query_map([], |row| {
+        Ok(EvidenceItem {
+            id: Some(row.get(0)?),
+            source_id: row.get(1)?,
+            url: row.get(2)?,
+            fetched_at: row.get(3)?,
+            excerpt: row.get(4)?,
+            content_hash: row.get(5)?,
+            entities: row.get(6)?,
+        })
+    })?;
+    let mut items = Vec::new();
+    for item in iter {
+        items.push(item?);
+    }
+    Ok(items)
+}
+
+// --- Leads ---
+pub fn insert_lead(conn: &Connection, lead: &Lead, evidence_ids: &[i32]) -> SqlResult<i32> {
+    let now = Utc::now().to_rfc3339();
+    
+    // We execute the insert and linking inside a transaction
+    // to keep lead integrity.
+    // Note: since rusqlite allows executing on connection directly, 
+    // and we want this call to be atomic:
+    // If the connection is already in a transaction, this might fail, so we use execute block
+    conn.execute(
+        "INSERT INTO leads (detector_name, why, confidence, risk_level, confirmation_checklist, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+        params![lead.detector_name, lead.why, lead.confidence, lead.risk_level, lead.confirmation_checklist, now],
+    )?;
+    let lead_id = conn.last_insert_rowid() as i32;
+    for &eid in evidence_ids {
+        conn.execute(
+            "INSERT INTO lead_evidence (lead_id, evidence_id) VALUES (?1, ?2)",
+            params![lead_id, eid],
+        )?;
+    }
+    Ok(lead_id)
+}
+
+pub fn list_leads(conn: &Connection) -> SqlResult<Vec<Lead>> {
+    let mut stmt = conn.prepare("SELECT id, detector_name, why, confidence, risk_level, confirmation_checklist, created_at FROM leads")?;
+    let iter = stmt.query_map([], |row| {
+        Ok(Lead {
+            id: Some(row.get(0)?),
+            detector_name: row.get(1)?,
+            why: row.get(2)?,
+            confidence: row.get(3)?,
+            risk_level: row.get(4)?,
+            confirmation_checklist: row.get(5)?,
+            created_at: row.get(6)?,
+        })
+    })?;
+    let mut leads = Vec::new();
+    for lead in iter {
+        leads.push(lead?);
+    }
+    Ok(leads)
+}
+
+// --- Drafts ---
+pub fn get_draft(conn: &Connection, id: i32) -> SqlResult<Option<Draft>> {
+    let mut stmt = conn.prepare("SELECT id, lead_id, format, title, content, status, verification_checklist, missing_evidence_notes, correction_note, created_at, updated_at FROM drafts WHERE id = ?1")?;
+    let mut rows = stmt.query(params![id])?;
+    if let Some(row) = rows.next()? {
+        Ok(Some(Draft {
+            id: Some(row.get(0)?),
+            lead_id: row.get(1)?,
+            format: row.get(2)?,
+            title: row.get(3)?,
+            content: row.get(4)?,
+            status: row.get(5)?,
+            verification_checklist: row.get(6)?,
+            missing_evidence_notes: row.get(7)?,
+            correction_note: row.get(8)?,
+            created_at: row.get(9)?,
+            updated_at: row.get(10)?,
+        }))
+    } else {
+        Ok(None)
+    }
+}
+
+pub fn get_draft_by_lead(conn: &Connection, lead_id: i32) -> SqlResult<Option<Draft>> {
+    let mut stmt = conn.prepare("SELECT id, lead_id, format, title, content, status, verification_checklist, missing_evidence_notes, correction_note, created_at, updated_at FROM drafts WHERE lead_id = ?1")?;
+    let mut rows = stmt.query(params![lead_id])?;
+    if let Some(row) = rows.next()? {
+        Ok(Some(Draft {
+            id: Some(row.get(0)?),
+            lead_id: row.get(1)?,
+            format: row.get(2)?,
+            title: row.get(3)?,
+            content: row.get(4)?,
+            status: row.get(5)?,
+            verification_checklist: row.get(6)?,
+            missing_evidence_notes: row.get(7)?,
+            correction_note: row.get(8)?,
+            created_at: row.get(9)?,
+            updated_at: row.get(10)?,
+        }))
+    } else {
+        Ok(None)
+    }
+}
+
+pub fn insert_draft(conn: &Connection, draft: &Draft) -> SqlResult<i32> {
+    let now = Utc::now().to_rfc3339();
+    conn.execute(
+        "INSERT INTO drafts (lead_id, format, title, content, status, verification_checklist, missing_evidence_notes, correction_note, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?9)",
+        params![draft.lead_id, draft.format, draft.title, draft.content, draft.status, draft.verification_checklist, draft.missing_evidence_notes, draft.correction_note, now],
+    )?;
+    Ok(conn.last_insert_rowid() as i32)
+}
+
+pub fn update_draft(conn: &Connection, draft: &Draft) -> SqlResult<()> {
+    let now = Utc::now().to_rfc3339();
+    conn.execute(
+        "UPDATE drafts SET format = ?1, title = ?2, content = ?3, status = ?4, verification_checklist = ?5, missing_evidence_notes = ?6, correction_note = ?7, updated_at = ?8 WHERE id = ?9",
+        params![draft.format, draft.title, draft.content, draft.status, draft.verification_checklist, draft.missing_evidence_notes, draft.correction_note, now, draft.id],
+    )?;
+    Ok(())
+}
+
+pub fn update_draft_status(conn: &Connection, id: i32, status: &str) -> SqlResult<()> {
+    let now = Utc::now().to_rfc3339();
+    conn.execute(
+        "UPDATE drafts SET status = ?1, updated_at = ?2 WHERE id = ?3",
+        params![status, now, id],
+    )?;
+    Ok(())
+}
+
+pub fn list_drafts(conn: &Connection) -> SqlResult<Vec<Draft>> {
+    let mut stmt = conn.prepare("SELECT id, lead_id, format, title, content, status, verification_checklist, missing_evidence_notes, correction_note, created_at, updated_at FROM drafts ORDER BY updated_at DESC")?;
+    let iter = stmt.query_map([], |row| {
+        Ok(Draft {
+            id: Some(row.get(0)?),
+            lead_id: row.get(1)?,
+            format: row.get(2)?,
+            title: row.get(3)?,
+            content: row.get(4)?,
+            status: row.get(5)?,
+            verification_checklist: row.get(6)?,
+            missing_evidence_notes: row.get(7)?,
+            correction_note: row.get(8)?,
+            created_at: row.get(9)?,
+            updated_at: row.get(10)?,
+        })
+    })?;
+    let mut drafts = Vec::new();
+    for d in iter {
+        drafts.push(d?);
+    }
+    Ok(drafts)
+}
+
+pub fn delete_draft(conn: &Connection, id: i32) -> SqlResult<()> {
+    conn.execute("DELETE FROM drafts WHERE id = ?1", params![id])?;
+    Ok(())
+}
+
+// --- Published Posts ---
+pub fn insert_published_post(conn: &Connection, post: &PublishedPost) -> SqlResult<i32> {
+    conn.execute(
+        "INSERT INTO published_posts (draft_id, file_path, url, published_at, correction_history) VALUES (?1, ?2, ?3, ?4, ?5)",
+        params![post.draft_id, post.file_path, post.url, post.published_at, post.correction_history],
+    )?;
+    Ok(conn.last_insert_rowid() as i32)
+}
+
+pub fn list_published_posts(conn: &Connection) -> SqlResult<Vec<PublishedPost>> {
+    let mut stmt = conn.prepare("SELECT id, draft_id, file_path, url, published_at, correction_history FROM published_posts ORDER BY published_at DESC")?;
+    let iter = stmt.query_map([], |row| {
+        Ok(PublishedPost {
+            id: Some(row.get(0)?),
+            draft_id: row.get(1)?,
+            file_path: row.get(2)?,
+            url: row.get(3)?,
+            published_at: row.get(4)?,
+            correction_history: row.get(5)?,
+        })
+    })?;
+    let mut posts = Vec::new();
+    for p in iter {
+        posts.push(p?);
+    }
+    Ok(posts)
+}
+
+// --- Paired Clients ---
+pub fn get_paired_client_by_token(conn: &Connection, token: &str) -> SqlResult<Option<PairedClient>> {
+    let mut stmt = conn.prepare("SELECT id, token, label, pairing_pin, pin_expires_at, created_at, last_used_at, revoked FROM paired_clients WHERE token = ?1 AND revoked = 0")?;
+    let mut rows = stmt.query(params![token])?;
+    if let Some(row) = rows.next()? {
+        Ok(Some(PairedClient {
+            id: Some(row.get(0)?),
+            token: row.get(1)?,
+            label: row.get(2)?,
+            pairing_pin: row.get(3)?,
+            pin_expires_at: row.get(4)?,
+            created_at: row.get(5)?,
+            last_used_at: row.get(6)?,
+            revoked: row.get::<_, i32>(7)? == 1,
+        }))
+    } else {
+        Ok(None)
+    }
+}
+
+pub fn get_paired_client_by_pin(conn: &Connection, pin: &str) -> SqlResult<Option<PairedClient>> {
+    let mut stmt = conn.prepare("SELECT id, token, label, pairing_pin, pin_expires_at, created_at, last_used_at, revoked FROM paired_clients WHERE pairing_pin = ?1 AND revoked = 0")?;
+    let mut rows = stmt.query(params![pin])?;
+    if let Some(row) = rows.next()? {
+        Ok(Some(PairedClient {
+            id: Some(row.get(0)?),
+            token: row.get(1)?,
+            label: row.get(2)?,
+            pairing_pin: row.get(3)?,
+            pin_expires_at: row.get(4)?,
+            created_at: row.get(5)?,
+            last_used_at: row.get(6)?,
+            revoked: row.get::<_, i32>(7)? == 1,
+        }))
+    } else {
+        Ok(None)
+    }
+}
+
+pub fn create_pairing_pin(conn: &Connection, label: &str, pin: &str, expires_at: &str) -> SqlResult<String> {
+    let now = Utc::now().to_rfc3339();
+    // Create a temporary token that is inactive until paired
+    let token = uuid::Uuid::new_v4().to_string();
+    conn.execute(
+        "INSERT INTO paired_clients (token, label, pairing_pin, pin_expires_at, created_at, revoked) VALUES (?1, ?2, ?3, ?4, ?5, 0)",
+        params![token, label, pin, expires_at, now],
+    )?;
+    Ok(token)
+}
+
+pub fn confirm_pairing(conn: &Connection, pin: &str) -> SqlResult<Option<String>> {
+    let now = Utc::now().to_rfc3339();
+    // Find client with active pin that is not expired
+    let mut stmt = conn.prepare("SELECT id, token, pin_expires_at FROM paired_clients WHERE pairing_pin = ?1 AND revoked = 0")?;
+    let mut rows = stmt.query(params![pin])?;
+    if let Some(row) = rows.next()? {
+        let id: i32 = row.get(0)?;
+        let token: String = row.get(1)?;
+        let expires_at: String = row.get(2)?;
+        
+        if expires_at > now {
+            // Pair successful! Clear PIN and set last_used_at
+            conn.execute(
+                "UPDATE paired_clients SET pairing_pin = NULL, pin_expires_at = NULL, last_used_at = ?1 WHERE id = ?2",
+                params![now, id],
+            )?;
+            return Ok(Some(token));
+        }
+    }
+    Ok(None)
+}
+
+pub fn list_paired_clients(conn: &Connection) -> SqlResult<Vec<PairedClient>> {
+    let mut stmt = conn.prepare("SELECT id, token, label, pairing_pin, pin_expires_at, created_at, last_used_at, revoked FROM paired_clients WHERE revoked = 0")?;
+    let iter = stmt.query_map([], |row| {
+        Ok(PairedClient {
+            id: Some(row.get(0)?),
+            token: row.get(1)?,
+            label: row.get(2)?,
+            pairing_pin: row.get(3)?,
+            pin_expires_at: row.get(4)?,
+            created_at: row.get(5)?,
+            last_used_at: row.get(6)?,
+            revoked: row.get::<_, i32>(7)? == 1,
+        })
+    })?;
+    let mut clients = Vec::new();
+    for c in iter {
+        clients.push(c?);
+    }
+    Ok(clients)
+}
+
+pub fn revoke_paired_client(conn: &Connection, id: i32) -> SqlResult<()> {
+    conn.execute("UPDATE paired_clients SET revoked = 1 WHERE id = ?1", params![id])?;
+    Ok(())
+}
+
+pub fn record_paired_client_use(conn: &Connection, token: &str) -> SqlResult<()> {
+    let now = Utc::now().to_rfc3339();
+    conn.execute("UPDATE paired_clients SET last_used_at = ?1 WHERE token = ?2", params![now, token])?;
+    Ok(())
+}

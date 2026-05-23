@@ -1,0 +1,60 @@
+{
+  "name": "civicnews",
+  "version": "1.0.0",
+  "description": "Assistant skill to connect with CivicNews local-first backend",
+  "entrypoint": "client.js",
+  "tools": [
+    {
+      "name": "get_queue",
+      "description": "Fetch the daily story queue containing leads and drafts",
+      "arguments": {}
+    },
+    {
+      "name": "get_evidence",
+      "description": "Fetch evidence excerpts linked to a specific lead",
+      "arguments": {
+        "lead_id": {
+          "type": "number",
+          "description": "The ID of the lead to fetch evidence for",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "submit_draft",
+      "description": "Submit a new article draft based on evidence to the editor's workbench",
+      "arguments": {
+        "lead_id": {
+          "type": "number",
+          "description": "The lead ID or null if independent story"
+        },
+        "format": {
+          "type": "string",
+          "description": "Format: brief, watch, explainer, investigation, or opinion",
+          "required": true
+        },
+        "title": {
+          "type": "string",
+          "description": "Article title",
+          "required": true
+        },
+        "content": {
+          "type": "string",
+          "description": "Article body content (Markdown format with citations like [text](evidence:id))",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "check_guardrails",
+      "description": "Check draft for citation coverage, verbatim overlap, and legal/ethical guardrails",
+      "arguments": {
+        "draft_id": {
+          "type": "number",
+          "description": "The ID of the draft to verify",
+          "required": true
+        }
+      }
+    }
+  ]
+}
