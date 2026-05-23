@@ -23,7 +23,18 @@ dist-ssr
 *.sln
 *.sw?
 
-# Agent tooling scaffolding
+# Agent tooling scaffolding (per-tool clones / dev-machine scratch)
 .pipelines/
 Antigravity.md
-scripts/
+temp-repo/
+temp-ctt/
+temp-civicclerk/
+temp-civiccast/
+temp-civicsuite/
+instructions.txt
+extract.py
+extract.cjs
+inject.cjs
+check.sh
+# NOTE: do NOT add `scripts/` here. The repo legitimately uses scripts/ for
+# operator-owned verification (DoD script + hash file, see scripts/verify-*.sh).

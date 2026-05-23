@@ -1,0 +1,37 @@
+# Enforce LF line endings on files where content hashes are pinned.
+# The CI DoD-guard step computes sha256sum on Linux runners; any CRLF
+# conversion from a Windows checkout would change the hash and break
+# the integrity check. Lock these file types to LF universally.
+
+*.sh        text eol=lf
+*.sha256    text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+
+# Migration SQL stays LF — Linux/macOS dev parity and rusqlite parser.
+*.sql       text eol=lf
+
+# Rust and TS source stay text but allow git's normalization (LF in repo,
+# native in working tree); deterministic everywhere via git's "text" attr.
+*.rs        text
+*.ts        text
+*.tsx       text
+*.json      text
+*.md        text
+
+# Lockfiles are text but never auto-merge — operator-only edits.
+package-lock.json     text -diff
+src-tauri/Cargo.lock  text -diff
+
+# Binary assets.
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.webp      binary
+*.ico       binary
+*.icns      binary
+*.pdf       binary
+*.wav       binary
+*.mp3       binary
+*.mp4       binary
