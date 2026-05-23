@@ -46,10 +46,6 @@ Yours, if you publish it. The guardrail check does not verify factual correspond
 
 The project hasn't cut its first release yet. Until then you have to build from source — see the README's "Building from source" section. Building is straightforward if you already have Rust, Node, and Ollama installed; if you don't, expect 20–40 minutes the first time.
 
-### Why does the Safari extension folder exist if the Safari extension doesn't work?
-
-The folder is a Manifest v3 stub. Safari requires web extensions to be packaged inside a native macOS app, and that native wrapper is not yet built. The Chromium extension (Chrome / Edge / Brave / etc.) does work.
-
 ### How do I install the Chromium browser extension?
 
 In Chrome: `chrome://extensions/` → enable Developer Mode → "Load Unpacked" → select the `browser-extension/chromium/` directory. Then pair it from CivicNewspaper's Browser Pairing tab using the pairing token.
