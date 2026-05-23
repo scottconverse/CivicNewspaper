@@ -9,8 +9,7 @@ use axum::{
 
 // Validate the Host header to defeat DNS rebinding attacks
 pub fn is_valid_host(host: &str) -> bool {
-    let h = host.trim();
-    h == "127.0.0.1:12053" || h == "localhost:12053"
+    host.trim() == "127.0.0.1:12053"
 }
 
 // Validate the Origin header to ensure it matches browser extension origins or is absent (for IDE agents)
@@ -59,7 +58,8 @@ pub async fn auth_middleware(
                 return Err(StatusCode::FORBIDDEN);
             }
         } else {
-            // Absent origin is allowed for local CLI and IDE clients (e.g. assistant skill)
+            // Reject missing Origin
+            return Err(StatusCode::FORBIDDEN);
         }
     }
 

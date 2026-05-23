@@ -45,7 +45,7 @@ mod tests {
     fn test_auth_checks() {
         // Host checks
         assert!(is_valid_host("127.0.0.1:12053"));
-        assert!(is_valid_host("localhost:12053"));
+        assert!(!is_valid_host("localhost:12053"));
         assert!(is_valid_host("  127.0.0.1:12053  ")); // Whitespace cleanup
         assert!(!is_valid_host("google.com"));
         assert!(!is_valid_host("127.0.0.1:8080"));

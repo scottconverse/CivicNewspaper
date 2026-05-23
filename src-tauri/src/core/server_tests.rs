@@ -64,7 +64,7 @@ mod tests {
             .insert(header::HOST, "127.0.0.1:12053".parse().unwrap());
 
         let res = app.oneshot(req).await.unwrap();
-        assert_eq!(res.status(), StatusCode::UNAUTHORIZED);
+        assert_eq!(res.status(), StatusCode::FORBIDDEN);
     }
 
     #[tokio::test]
