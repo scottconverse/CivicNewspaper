@@ -663,6 +663,18 @@ textarea:focus {
 .text-center { text-align: center; }
 .text-right { text-align: right; }
 
+.pairing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.sources-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 1.5rem;
+}
+
 @media (max-width: 1024px) {
   .workbench-container,
   .pairing-grid,

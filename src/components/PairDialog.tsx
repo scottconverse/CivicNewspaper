@@ -33,7 +33,7 @@ export const PairDialog: React.FC<PairDialogProps> = ({
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }} id="pairing-grid">
+      <div className="pairing-grid" id="pairing-grid">
         {/* Left Column: Generate Pin & Extension Setup */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           <div className="card" id="card-extension-setup">

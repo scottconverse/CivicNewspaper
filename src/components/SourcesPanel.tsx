@@ -102,7 +102,7 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: "1.5rem" }}>
+      <div className="sources-grid">
         {/* Left Pane: Sources List */}
         <div className="card">
           <div className="table-container">
