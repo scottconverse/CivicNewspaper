@@ -90,8 +90,8 @@ For a detailed breakdown of security tokens, CORS policies, DNS rebinding guards
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/scottconverse/civic-news.git
-   cd civic-news
+   git clone https://github.com/scottconverse/CivicNewspaper.git
+   cd CivicNewspaper
    ```
 
 2. Install dependencies:
