@@ -418,17 +418,43 @@ function render() {
       state.leads.forEach((lead) => {
         const item = document.createElement('div');
         item.className = 'cn-lead-item';
-        item.innerHTML = `
-          <div style="display:flex;justify-content:space-between;">
-            <span class="${lead.risk_level === 'high' ? 'cn-badge-red' : 'cn-badge-blue'}">${lead.risk_level.toUpperCase()}</span>
-            <span style="color:#64748b;font-size:10px;">ID: ${lead.id}</span>
-          </div>
-          <div class="cn-lead-why">${lead.why}</div>
-          <div style="display:flex;gap:5px;margin-top:8px;justify-content:flex-end;">
-            <button class="cn-button-sec cn-inject-btn" style="font-size:11px;">Insert Prompt</button>
-            <button class="cn-button-sec cn-capture-btn" style="font-size:11px;">Capture Draft</button>
-          </div>
-        `;
+        const topRow = document.createElement('div');
+        topRow.style.cssText = "display:flex;justify-content:space-between;";
+        
+        const riskBadge = document.createElement('span');
+        riskBadge.className = lead.risk_level === 'high' ? 'cn-badge-red' : 'cn-badge-blue';
+        riskBadge.textContent = lead.risk_level.toUpperCase();
+        
+        const idSpan = document.createElement('span');
+        idSpan.style.cssText = "color:#64748b;font-size:10px;";
+        idSpan.textContent = `ID: ${lead.id}`;
+        
+        topRow.appendChild(riskBadge);
+        topRow.appendChild(idSpan);
+        
+        const whyDiv = document.createElement('div');
+        whyDiv.className = 'cn-lead-why';
+        whyDiv.textContent = lead.why;
+        
+        const actionRow = document.createElement('div');
+        actionRow.style.cssText = "display:flex;gap:5px;margin-top:8px;justify-content:flex-end;";
+        
+        const injectBtn = document.createElement('button');
+        injectBtn.className = 'cn-button-sec cn-inject-btn';
+        injectBtn.style.cssText = "font-size:11px;";
+        injectBtn.textContent = 'Insert Prompt';
+        
+        const captureBtn = document.createElement('button');
+        captureBtn.className = 'cn-button-sec cn-capture-btn';
+        captureBtn.style.cssText = "font-size:11px;";
+        captureBtn.textContent = 'Capture Draft';
+        
+        actionRow.appendChild(injectBtn);
+        actionRow.appendChild(captureBtn);
+        
+        item.appendChild(topRow);
+        item.appendChild(whyDiv);
+        item.appendChild(actionRow);
         
         item.querySelector('.cn-inject-btn').addEventListener('click', (e) => {
           e.stopPropagation();
