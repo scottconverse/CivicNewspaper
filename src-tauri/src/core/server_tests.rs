@@ -86,7 +86,7 @@ mod tests {
         }
 
         // 2. Call /api/pair
-        let mut req = make_req("/api/pair", axum::http::Method::POST, Some(json!({ "pin": raw_pin })));
+        let req = make_req("/api/pair", axum::http::Method::POST, Some(json!({ "pin": raw_pin })));
         let res = app.clone().oneshot(req).await.unwrap();
         assert_eq!(res.status(), StatusCode::OK);
         

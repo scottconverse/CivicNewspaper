@@ -5,7 +5,7 @@ use std::fs;
 use std::path::Path;
 use chrono::{Datelike, Utc};
 use serde::{Deserialize, Serialize};
-use pulldown_cmark::{html, Parser};
+use pulldown_cmark::{html, Options, Parser};
 use super::db::{get_evidence_by_lead, insert_published_post, list_drafts, PublishedPost};
 
 const INDEX_TEMPLATE: &str = include_str!("../../../templates/index.html");
@@ -35,7 +35,10 @@ impl Default for CompilerProfile {
 }
 
 pub fn render_markdown(markdown: &str) -> String {
-    let parser = Parser::new(markdown);
+    let options = Options::empty();
+    let parser = Parser::new_ext(markdown, options).filter(|event| {
+        !matches!(event, pulldown_cmark::Event::Html(_) | pulldown_cmark::Event::InlineHtml(_))
+    });
     let mut html_output = String::new();
     html::push_html(&mut html_output, parser);
     html_output

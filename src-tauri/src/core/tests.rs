@@ -1,13 +1,14 @@
 // core/tests.rs
+#![allow(clippy::module_inception)]
+
 #[cfg(test)]
 mod tests {
     use rusqlite::Connection;
     use std::fs;
-    use std::path::Path;
-    use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex};
     use tempfile::tempdir;
     use chrono::Utc;
-    use serde_json;
+
 
     use crate::core::db::*;
     use crate::core::migrations::{run_migrations, get_current_version, get_expected_version};
@@ -381,6 +382,67 @@ mod tests {
         assert_eq!(results[0].1, "https://www.brightonco.gov/agendacenter");
         assert_eq!(results[1].0, "Brighton Reddit");
         assert_eq!(results[1].1, "https://reddit.com/r/brightonco");
+    }    #[test]
+    fn test_compiler_xss_safe() {
+        let conn = init_db("file:test_compiler_xss_safe?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        
+        // Use insert_source so we have a source for the lead
+        let _source_id = crate::core::db::insert_source(&conn, &crate::core::db::Source {
+            id: None,
+            name: "Test Source".to_string(),
+            url: "<script>alert(1)</script>".to_string(), // Source URL with XSS
+            r#type: "rss".to_string(),
+            status: "online".to_string(),
+            last_success_at: None,
+            last_failed_at: None,
+            last_scraped: None,
+        }).unwrap();
+
+        let lead_id = crate::core::db::insert_lead(&conn, &crate::core::db::Lead { 
+            id: None, 
+            detector_name: "test".to_string(),
+            why: "<script>alert(1)</script>".to_string(), 
+            confidence: "high".to_string(), 
+            risk_level: "low".to_string(), 
+            confirmation_checklist: "[]".to_string(), 
+            created_at: chrono::Utc::now().to_rfc3339() 
+        }, &[]).unwrap();
+        
+        let draft_id = crate::core::db::insert_draft(&conn, &crate::core::db::Draft { 
+            id: None, 
+            lead_id: Some(lead_id), 
+            format: "story".to_string(), 
+            title: "<script>alert(1)</script>".to_string(), 
+            content: "Hello <script>alert(1)</script>".to_string(), 
+            status: "published".to_string(), 
+            verification_checklist: "[]".to_string(), 
+            missing_evidence_notes: None, 
+            correction_note: Some("<script>alert(1)</script>".to_string()), 
+            created_at: chrono::Utc::now().to_rfc3339(), 
+            updated_at: chrono::Utc::now().to_rfc3339() 
+        }).unwrap();
+        
+        crate::core::db::insert_published_post(&conn, &crate::core::db::PublishedPost {
+            id: None,
+            draft_id,
+            file_path: "stories/1.html".to_string(),
+            url: "http://example.com/stories/1.html".to_string(),
+            correction_history: String::new(),
+            published_at: chrono::Utc::now().to_rfc3339()
+        }).unwrap();
+        
+        crate::core::compiler::compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+        let html = std::fs::read_to_string(temp_dir.path().join("index.html")).unwrap();
+        
+        // Assertions
+        assert!(html.contains("&lt;script&gt;"));
+        assert!(!html.contains("<script"));
+        assert!(!html.contains("onerror="));
+        
+        let html2 = std::fs::read_to_string(temp_dir.path().join("stories/1.html")).unwrap();
+        assert!(html2.contains("&lt;script&gt;"));
+        assert!(!html2.contains("<script"));
+        assert!(!html2.contains("onerror="));
     }
 }
-
