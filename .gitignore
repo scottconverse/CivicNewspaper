@@ -23,4 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 
-.agent-runs/
+# Agent tooling scaffolding
+.pipelines/
+Antigravity.md
+scripts/
