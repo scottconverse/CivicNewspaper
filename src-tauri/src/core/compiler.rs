@@ -296,3 +296,5 @@ pub fn compile_static_site(
 
     Ok(())
 }
+
+// Supported attrs: data-claim-id
