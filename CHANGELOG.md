@@ -20,7 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - No signed installers.
 - Safari extension does not have a native macOS wrapper and is not installable as-is.
 
-## [0.1.0-alpha] - Unreleased
+## [0.1.0-alpha] - 2026-05-23
 
 Initial pre-alpha snapshot of the codebase. Not released.
 
