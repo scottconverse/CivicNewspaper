@@ -237,6 +237,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                               onDeleteDraft(draft.id!);
                             }}
                             id={`btn-delete-draft-${draft.id}`}
+                            aria-label="Delete draft"
                           >
                             <Trash2 size={12} />
                           </button>

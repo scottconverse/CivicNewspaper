@@ -663,16 +663,28 @@ textarea:focus {
 .text-center { text-align: center; }
 .text-right { text-align: right; }
 
+@media (max-width: 1024px) {
+  .workbench-container,
+  .pairing-grid,
+  .sources-grid {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+  }
+  .evidence-pane {
+    height: 400px !important;
+  }
+}
+
 @media (max-width: 768px) {
   /* mobile-first responsive collapse */
   .app-container { flex-direction: column; }
-  .sidebar { width: 100%; }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-primary: #121212;
-    --bg-secondary: #1e1e1e;
-    --text-primary: #f0f0f0;
+  .sidebar { 
+    width: 100% !important; 
+    min-width: 100% !important;
+  }
+  .main-content { 
+    width: 100% !important; 
+    min-width: 100% !important;
+    padding: 1rem !important;
   }
 }
