@@ -1,0 +1,94 @@
+<USER_REQUEST>
+=================================================================
+CivicNews v0.2.0-beta — Full Product Hardening
+Autonomous Run · No Mid-Sprint Check-Ins
+=================================================================
+
+GOAL
+Close every gap identified in the v0.1.0-alpha post-tag audit. End
+state: v0.2.0-beta is a credible product that a non-Scott user can
+download, install, onboard, and operate against real municipal
+sources without owning the codebase.
+
+DELIVERY MODEL
+- Single autonomous run across 8 phases (A–H).
+- One commit per logical change. Conventional Commits. Sign with the
+  pipeline's standard author config (not "scott@localhost").
+- Each phase ends with `cargo test --all && npm run build` green.
+- No mid-run plan reviews. No "before I start X, can I confirm..."
+  Just do it. The plan IS the directive.
+- Push to a feature branch `v0.2-hardening`; do NOT push to main
+  during the run. Only the final tag-candidate PR opens against main.
+
+STOP CONDITIONS (when to come back early)
+- DoD verification script fails the same check 3 times in a row
+  after attempted fixes.
+- A required external API or crate is not available / not viable
+  (e.g., Legistar refuses unauthenticated requests, faster-whisper
+  binary unavailable on Windows). In that case: complete what you
+  can, document the blocker in `docs/v0.2-blockers.md`, report.
+- You discover that a Phase A–D item (the must-haves) is impossible
+  with the current architecture. Stop and report; do not invent a
+  workaround that defeats the goal.
+
+DO NOT
+- Open the README to add new feature claims. The README will be
+  updated by Phase I (final) to match what actually shipped.
+- Add commits with `[lib] name` changes, repo renames, or other
+  out-of-scope identity tweaks.
+- Touch the agent-pipeline-claude scaffolding (it's gitignored;
+  keep it that way).
+- Run `cargo fmt --check` and commit fixes mid-phase. Run once at
+  the end of each phase; commit any fmt changes as a single
+  `style: cargo fmt` commit at the phase boundary.
+
+REFERENC
+<truncated 19706 bytes>
+laims schema"
+
+# Phase G
+grep -qi "pdf-extract\|lopdf" src-tauri/Cargo.toml && log PASS "G1 pdf crate" || log FAIL "G1 pdf crate"
+[ -d src-tauri/src/core/sources ] && log PASS "G2 sources/" || log FAIL "G2 sources dir"
+grep -q "transcripts" src-tauri/migrations/*.sql && log PASS "G3 transcripts table" || log FAIL "G3 transcripts"
+
+# Phase H
+grep -q "data-claim-id" src-tauri/src/core/compiler.rs && log PASS "H1 claim-id attr" || log FAIL "H1 claim-id"
+
+# Phase I
+grep -q "0.2.0-beta" CHANGELOG.md && log PASS "I2 CHANGELOG entry" || log FAIL "I2 CHANGELOG"
+
+# Cross-cutting
+(cd src-tauri && cargo test --all 2>&1 | tail -3 | grep -q "0 failed") && log PASS "cargo test all green" || log FAIL "cargo test"
+(cd src-tauri && cargo clippy --all-targets -- -D warnings 2>&1 | tail -3 | grep -qv "error") && log PASS "clippy clean" || log FAIL "clippy"
+npm run build 2>&1 | tail -3 | grep -q "built in" && log PASS "vite build" || log FAIL "vite build"
+
+echo ""
+echo "============================="
+echo "TOTAL: $PASS pass / $FAIL fail"
+echo "============================="
+[ "$FAIL" -eq 0 ] && exit 0 || exit 1
+
+=================================================================
+REPORTING PROTOCOL — when you come back
+=================================================================
+
+You return ONCE, with:
+1. PR URL on v0.2-hardening → main.
+2. Full output of `scripts/verify-v0.2-dod.sh`.
+3. Latest CI run URL on the v0.2-hardening branch — must be green.
+4. One paragraph per blocked item if any (only items in
+   docs/v0.2-blockers.md). No paragraph for items that shipped.
+
+If verify-v0.2-dod.sh prints `0 fail`, the sprint is done. Scott
+reviews once, approves the merge + the v0.2.0-beta tag, and you cut
+the release.
+
+If verify-v0.2-dod.sh prints any failures: do not return until you
+have tried at least 3 fixes per failure. Then report the failures
+unfixed, with the actual error output, and stop.
+
+That's the run. Go.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-05-23T06:11:41-06:00.
+</ADDITIONAL_METADATA>

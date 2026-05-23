@@ -13,7 +13,7 @@ mod tests {
     use crate::core::backups::{restore_backup, save_backup};
     use crate::core::compiler::compile_static_site;
     use crate::core::db::*;
-    use crate::core::detectors::run_detectors;
+    use crate::core::osint_detectors::run_detectors;
     use crate::core::guardrails::run_guardrails_check;
     use crate::core::migrations::{get_current_version, get_expected_version, run_migrations};
 

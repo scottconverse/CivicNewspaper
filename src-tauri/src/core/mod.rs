@@ -3,7 +3,7 @@ pub mod auth;
 pub mod backups;
 pub mod compiler;
 pub mod db;
-pub mod detectors;
+pub mod osint_detectors;
 pub mod discovery;
 pub mod guardrails;
 pub mod llm;

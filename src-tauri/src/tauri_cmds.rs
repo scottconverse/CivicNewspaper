@@ -2,7 +2,7 @@
 use crate::core::backups;
 use crate::core::compiler;
 use crate::core::db::{self, DbConn, Draft, EvidenceItem, Lead, PairedClient, Source};
-use crate::core::detectors;
+use crate::core::osint_detectors;
 use crate::core::discovery::{self, DiscoveredSourceCategory};
 use crate::core::guardrails::{self, GuardrailsReport};
 use crate::core::llm;
@@ -182,7 +182,7 @@ pub async fn ingest(db: tauri::State<'_, DbConn>, app: tauri::AppHandle) -> Resu
         let conn = db
             .lock()
             .map_err(|_| "Failed to lock database".to_string())?;
-        detectors::run_detectors(&conn, &unlinked_ids, &profile_json).map_err(|e| e.to_string())?
+        osint_detectors::run_detectors(&conn, &unlinked_ids, &profile_json).map_err(|e| e.to_string())?
     };
 
     Ok(new_lead_ids.len())

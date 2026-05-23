@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { documentDir, join, resolveResource } from "@tauri-apps/api/path";
+import { OnboardingWizard } from "./components/OnboardingWizard";
 import {
   Newspaper,
   Rss,
@@ -64,6 +65,7 @@ import "./App.css";
 function App() {
   // Navigation
   const [activeTab, setActiveTab] = useState<string>("queue");
+  const [firstRun, setFirstRun] = useState(() => localStorage.getItem("firstRunCompleted") !== "true");
 
   // Updater
   const [updateAvailable, setUpdateAvailable] = useState<any>(null);
@@ -1963,6 +1965,10 @@ function App() {
             )}
           </div>
         </div>
+      )}
+
+      {firstRun && (
+        <OnboardingWizard onComplete={() => setFirstRun(false)} />
       )}
     </div>
   );
