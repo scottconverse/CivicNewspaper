@@ -1,124 +1,143 @@
-# 🏛️ CivicNews
+# CivicNewspaper
 
-> **A local-first, zero-runtime civic intelligence tool for single-editor community newsrooms.**
+> Pre-alpha. Not production software. No security review. APIs and database schema may break without notice.
 
-CivicNews empowers citizen journalists, local editors, and community observers to monitor municipal government feeds, extract key OSINT signals, draft objective reports using local LLMs, verify facts with linked primary record citations, and publish flat HTML sites—all running 100% locally on your computer with **zero external cloud runtime dependencies** and **no technical installation hurdles** for readers.
+A local-first, single-editor desktop app for monitoring municipal feeds, flagging public-record signals, drafting reports with a local LLM, and compiling a static HTML newsroom. Built on Tauri v2, React, SQLite, and Ollama. Runs entirely on your computer — there is no cloud component.
 
----
+## What this is, and what it isn't
 
-## 🌟 Key Features
+**What it is, today:**
+- A Tauri v2 desktop app with a single-page React UI (`src/App.tsx`).
+- A Rust core (`src-tauri/src/core/`) that:
+  - Scrapes RSS/HTML feeds (`scraper.rs`).
+  - Stores everything in a local SQLite database in WAL mode (`db.rs`).
+  - Runs **eight hand-written regex detectors** against scraped text — for money amounts, vote/decision keywords, personnel-change keywords, meeting/deadline keywords, watchlist hits, and a "source went quiet" timer (`detectors.rs`). This is not NLP. It is regular expressions in a loop.
+  - Runs **keyword-based pre-publication checks** on drafts — looks for a hard-coded list of accusatory terms, looks for the literal substring `evidence:` in each paragraph, requires presumption-of-innocence modifiers near arrest-related words (`guardrails.rs`). This is a lint rule, not an editor.
+  - Calls a local Ollama instance (`llm.rs`) for draft generation. Output quality is whatever your local model produces.
+  - Compiles approved drafts into a flat HTML site using `pulldown-cmark` and four templates in `templates/` (`compiler.rs`).
+  - Exposes a localhost-only Axum HTTP server on `127.0.0.1:12053` for browser-extension and assistant-skill pairing (`server.rs`, `auth.rs`).
 
-* **Local-First Architecture**: Built on Tauri v2, React, and SQLite. Your sources, records, leads, and drafts never leave your device.
-* **OSINT Detector Engine**: Automated background parser that scans primary record documents for:
-  * 💰 Large budgets or contracts exceeding customizable thresholds.
-  * 🗳️ Official council votes, adopted resolutions, and decisions.
-  * 👥 Personnel transitions (appointments, resignations, hires).
-  * 📅 Public meetings scheduled and deadlines.
-  * 🔍 Custom keyword watchlists.
-* **Factual Guardrail Inspector**: An automated editor that scans drafts before publication to:
-  * Ensure full citation coverage (claims mapped directly to raw evidence IDs).
-  * Prevent accusatory terminology that lacks linked documentary proof.
-  * Enforce standard presumption-of-innocence modifiers (e.g., "alleged").
-* **Flat HTML Compiler & Wizard**: Compiles your approved story queue into a clean, modern, responsive static site with built-in RSS feeds. Features a guided drag-and-drop wizard for easy hosting on GitHub Pages, Netlify, or Vercel.
-* **Social Media Promo Pack Generator**: Automatically synthesizes your verified drafts into optimized posts for Twitter/X, Facebook, and Reddit.
-* **Multi-Client Bridges**:
-  * **Tauri Desktop Client**: The central command deck (Queue, Workbench, System status).
-  * **Browser Extensions (Chromium/Safari)**: One-click extraction of public record PDFs or pages right from municipal portals. Includes a simple drag-and-drop installer.
-  * **Coding Agent Skills**: Integrates seamlessly with AI editors like Codex, Cowork, or Antigravity.
+**What it isn't:**
+- A finished product. There are no signed installers and no GitHub releases yet.
+- An NLP system. The "detectors" cannot resolve composite events, named entities, or numeric context. They match keywords.
+- A multi-user newsroom. It is single-editor, single-machine.
+- A polished publishing host. The "wizard" for GitHub Pages / Netlify / Vercel is a button that opens your output folder in Explorer/Finder so you can drag-and-drop it into your hosting provider's web UI.
+- A working Safari extension. The `browser-extension/safari/` directory contains a manifest and scripts only; a real Safari Web Extension requires a native macOS wrapper app, which is not present.
 
----
+## Architecture (one paragraph)
 
-## 🗺️ System Architecture
+A Tauri-wrapped React frontend talks to a Rust backend via Tauri IPC. The Rust backend also runs an Axum HTTP server bound strictly to `127.0.0.1:12053` so that browser extensions and IDE-side assistant skills can pair (via short-lived 6-digit PIN) and exchange bearer tokens. All persistent state lives in a single SQLite file (WAL mode). Draft generation routes to a local Ollama instance at `127.0.0.1:11434`. The static-site compiler reads approved drafts from SQLite and writes a folder of HTML + CSS + RSS to a user-chosen output path.
 
-CivicNews runs entirely on the user's local machine, establishing a sandboxed Axum loopback server to coordinate browser extensions and agent clients securely.
+For details: [docs/architecture.md](docs/architecture.md).
 
-```mermaid
-graph TD
-    SubGraph1[Browser Extensions & AI Agents] -->|Secure Pin-Pairing| CoreServer[Axum Loopback API <br> 127.0.0.1:12053]
-    DesktopUI[React + TS Glassmorphic UI] -->|Tauri IPC| TauriBackend[Tauri Rust Core]
-    TauriBackend <--> CoreServer
-    
-    TauriBackend -->|SQL Queries| DB[(SQLite Database <br> WAL Mode)]
-    TauriBackend -->|Scrapes Feeds| Internet((Municipal Feeds <br> & OSINT Sources))
-    TauriBackend -->|Generates Drafts| Ollama((Local Ollama <br> Gemma 2:9B / Llama 3))
-    
-    TauriBackend -->|Flat Compiler| FlatHTML[Static Flat-HTML Website <br> index.html / RSS Feed]
+## Project structure (verified)
+
 ```
-
-For a detailed breakdown of security tokens, CORS policies, DNS rebinding guards, and database schemas, check out the [Architecture Documentation](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/docs/architecture.md).
-
----
-
-## 📦 Project Structure
-
-```text
-├── src/                      # React Frontend Dashboard UI
-│   ├── components/           # UI Elements (Workbench, Queue, Onboarding Wizard)
-│   └── App.tsx               # Main Dashboard application entry point
-├── src-tauri/                # Tauri Rust Backend Core
-│   ├── migrations/           # Database schema migrations
-│   ├── templates/            # Flat HTML website templates (index, post, CSS)
+.
+├── README.md
+├── package.json                # Vite + React frontend
+├── tsconfig.json
+├── vite.config.ts
+├── public/                     # Vite public assets
+├── src/                        # React frontend — single file today
+│   ├── App.tsx                 # 1,918-line single-page UI
+│   ├── App.css
+│   ├── ipc.ts                  # Tauri command bindings
+│   ├── main.tsx
+│   ├── vite-env.d.ts
+│   └── assets/
+├── src-tauri/                  # Tauri Rust backend
+│   ├── Cargo.toml              # NOTE: name still "tauri-app", authors ["you"] — TODO rebrand
+│   ├── build.rs
+│   ├── tauri.conf.json
+│   ├── capabilities/
+│   ├── icons/
+│   ├── migrations/
+│   │   └── 0001_init.sql
 │   └── src/
-│       ├── core/             # Rust Core Library
-│       │   ├── auth.rs       # Pin-pairing and DNS rebinding authorization middleware
-│       │   ├── backups.rs    # Atomic database backup and restore logic
-│       │   ├── compiler.rs   # Static flat-HTML compilation engine
-│       │   ├── db.rs         # SQLite schema & CRUD operations
-│       │   ├── detectors.rs  # OSINT pattern matching regex logic
-│       │   ├── guardrails.rs # Pre-publication syntax & citation checker
-│       │   ├── llm.rs        # Local Ollama client & model pulling wrappers
-│       │   ├── scraper.rs    # Feed parser and webpage text cleaner
-│       │   └── server.rs     # Axum loopback HTTP controller handlers
-│       └── tauri_cmds.rs     # Tauri IPC command bridges
-├── browser-extension/        # Pairable Browser Extensions
-│   ├── chromium/             # Google Chrome / Edge Manifest v3 Extension
-│   └── safari/               # Xcode Safari Web Extension scaffolding
-└── assistant-skill/          # Codex / Cowork / Antigravity Assistant Plugin
+│       ├── main.rs
+│       ├── lib.rs
+│       ├── tauri_cmds.rs       # Tauri IPC command handlers
+│       └── core/
+│           ├── mod.rs
+│           ├── auth.rs         # Host-header + Origin + PIN/token middleware
+│           ├── backups.rs      # SQLite backup/restore
+│           ├── compiler.rs     # Markdown -> flat HTML compiler
+│           ├── db.rs           # Schema + CRUD
+│           ├── detectors.rs    # 8 regex detectors
+│           ├── discovery.rs    # Feed-discovery helpers
+│           ├── guardrails.rs   # Pre-publish keyword checks
+│           ├── llm.rs          # Ollama HTTP client
+│           ├── migrations.rs   # Migration runner
+│           ├── scraper.rs      # RSS / HTML feed parser
+│           ├── server.rs       # Axum loopback server
+│           └── tests.rs        # Backend tests
+├── templates/                  # Static-site templates (read by compiler.rs)
+│   ├── index.html
+│   ├── post.html
+│   ├── styles.css
+│   └── print.css
+├── browser-extension/
+│   ├── chromium/               # Manifest v3 extension (background.js, content.js, manifest.json, icon.png)
+│   └── safari/                 # Manifest + scripts only — no native wrapper, NOT installable as-is
+├── assistant-skill/            # SKILL.md + skill.json + client.js for AI editors
+└── docs/
+    ├── architecture.md
+    ├── user_manual.md
+    ├── discussion_seeds.md
+    ├── index.html              # GitHub Pages landing
+    ├── script.js
+    └── style.css
 ```
 
----
+## Building from source
 
-## 🚀 Getting Started (Developers)
+There are no prebuilt installers. You must build locally.
 
-### Prerequisites
+**Prerequisites (all OSes):**
+- Rust toolchain — install via [rustup.rs](https://rustup.rs/).
+- Node.js 18+ and npm — [nodejs.org](https://nodejs.org/).
+- Ollama running locally — [ollama.com](https://ollama.com/). Pull at least one model: `ollama pull gemma2:9b` (or smaller).
 
-1. **Rust & Cargo**: Follow instructions at [rustup.rs](https://rustup.rs/).
-2. **Node.js & npm**: Install via [nodejs.org](https://nodejs.org/).
-3. **Ollama**: Download and install from [ollama.com](https://ollama.com/).
+**Platform prerequisites for Tauri v2:**
+- **Windows**: Microsoft Edge WebView2 (preinstalled on Windows 11; installer on Windows 10), plus the C++ Build Tools (`Desktop development with C++` workload).
+- **macOS**: Xcode Command Line Tools (`xcode-select --install`).
+- **Linux**: WebKitGTK and a small graph of dev libraries. On Debian/Ubuntu:
+  ```
+  sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+  ```
+  Other distros: see the [Tauri prereqs guide](https://v2.tauri.app/start/prerequisites/).
 
-### Installation
+**Build steps:**
+```bash
+git clone https://github.com/scottconverse/CivicNewspaper.git
+cd CivicNewspaper
+npm install
+npm run tauri dev        # dev mode with hot reload
+# or
+npm run tauri build      # produces a platform installer in src-tauri/target/release/bundle/
+```
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/scottconverse/CivicNewspaper.git
-   cd CivicNewspaper
-   ```
+If `npm run tauri` errors with "tauri: command not found", install the Tauri CLI as a dev dependency: `npm install --save-dev @tauri-apps/cli`.
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+## Status, license, contributing
 
-3. Run the development server:
-   ```bash
-   npm run tauri dev
-   ```
+- **Status:** pre-alpha. The eight detectors and the guardrails check are usable but unsophisticated. No release has been cut.
+- **License:** MIT. See [LICENSE](LICENSE).
+- **Contributing:** see [CONTRIBUTING.md](CONTRIBUTING.md). The detector regexes in `detectors.rs` are an easy, valuable place to start — every municipality uses slightly different boilerplate, and broader regex coverage directly improves the tool.
+- **Security:** see [SECURITY.md](SECURITY.md). The app opens a localhost HTTP server; please report any issues that bypass the host-header / origin / bearer-token checks.
+- **Changes:** see [CHANGELOG.md](CHANGELOG.md).
 
-4. Build production installers (macOS `.app`, Windows `.msi`):
-   ```bash
-   npm run tauri build
-   ```
+## Further reading
 
----
+- [docs/user_manual.md](docs/user_manual.md) — for non-technical editors.
+- [docs/architecture.md](docs/architecture.md) — for developers and reviewers.
+- [docs/discussion_seeds.md](docs/discussion_seeds.md) — templates for GitHub Discussions.
+- [FAQ.md](FAQ.md).
 
-## 📖 Further Documentation
+## Known TODOs visible in the manifest
 
-* 📕 **[User Manual for Non-Technical Editors](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/docs/user_manual.md)**: A step-by-step guide explaining setup, Ollama configuration, feed management, and publishing.
-* 📐 **[System & Security Architecture](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/docs/architecture.md)**: Deep dive into API endpoints, database structures, pairing flows, and security protocols.
-* 💬 **[Seed Discussion Posts](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/docs/discussion_seeds.md)**: Templates for repository Discussions (Welcome post, local LLM FAQ, editorial standards guide).
-
----
-
-## 📜 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+- `src-tauri/Cargo.toml`: package is still named `tauri-app`, description `"A Tauri App"`, authors `["you"]`. Rebrand before any release.
+- `package.json`: `"name": "tauri-app"`. Same.
+- No GitHub Actions / CI configured.
+- No signed installers; macOS Gatekeeper and Windows SmartScreen will warn users.
