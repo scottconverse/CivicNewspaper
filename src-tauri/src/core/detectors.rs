@@ -319,6 +319,7 @@ fn format_money(val: f64) -> String {
 
     let mut result = String::new();
     let num_bytes = integer_part.len();
+    #[allow(clippy::manual_is_multiple_of)]
     for (i, c) in integer_part.chars().enumerate() {
         if i > 0 && (num_bytes - i) % 3 == 0 {
             result.push(',');
