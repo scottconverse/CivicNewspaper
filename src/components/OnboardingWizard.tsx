@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { listen, UnlistenFn } from "@tauri-apps/api/event";
+import { listen } from "@tauri-apps/api/event";
 import { documentDir, appDataDir, join } from "@tauri-apps/api/path";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { ChevronRight, Download, CheckCircle, RefreshCcw, Copy, Info } from "lucide-react";
