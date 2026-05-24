@@ -52,6 +52,26 @@ jobs:
           fi
           echo "✓ Phase 2 DoD script integrity verified ($ACTUAL)"
 
+      - name: Verify Phase 3 DoD script integrity (hash check)
+        run: |
+          if [ ! -f scripts/verify-v0.2-phase-3-dod.sh ] || [ ! -f scripts/.dod-phase-3.sha256 ]; then
+            echo "ℹ Phase 3 DoD script not present on this branch — skipping hash check"
+            exit 0
+          fi
+          EXPECTED=$(tr -d '[:space:]' < scripts/.dod-phase-3.sha256)
+          ACTUAL=$(sha256sum scripts/verify-v0.2-phase-3-dod.sh | awk '{print $1}')
+          if [ "$EXPECTED" != "$ACTUAL" ]; then
+            echo "❌ Phase 3 DoD script hash mismatch:"
+            echo "   expected: $EXPECTED"
+            echo "   actual:   $ACTUAL"
+            echo ""
+            echo "scripts/verify-v0.2-phase-3-dod.sh was modified after directive write-time."
+            echo "The DoD script is owned by the operator, not the dev pipeline."
+            echo "Reject this branch and re-issue the directive from the canonical script."
+            exit 1
+          fi
+          echo "✓ Phase 3 DoD script integrity verified ($ACTUAL)"
+
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
 
@@ -103,3 +123,6 @@ jobs:
       - name: Run Phase 2 DoD verification
         if: hashFiles('scripts/verify-v0.2-phase-2-dod.sh') != ''
         run: bash scripts/verify-v0.2-phase-2-dod.sh
+      - name: Run Phase 3 DoD verification
+        if: hashFiles('scripts/verify-v0.2-phase-3-dod.sh') != ''
+        run: bash scripts/verify-v0.2-phase-3-dod.sh
