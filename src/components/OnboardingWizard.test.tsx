@@ -18,7 +18,7 @@ vi.mock("@tauri-apps/api/event", () => ({
 }));
 
 vi.mock("@tauri-apps/plugin-opener", () => ({
-  open: vi.fn(),
+  openUrl: vi.fn(),
 }));
 
 describe("OnboardingWizard Component Tests", () => {

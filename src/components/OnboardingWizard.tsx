@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen, UnlistenFn } from "@tauri-apps/api/event";
 import { documentDir, appDataDir, join } from "@tauri-apps/api/path";
-import { open } from "@tauri-apps/plugin-opener";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { ChevronRight, Download, CheckCircle, RefreshCcw, Copy, Info } from "lucide-react";
 
 interface OnboardingWizardProps {
@@ -100,9 +100,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }
     setPullProgress("Starting pull...");
     setPullPercent(0);
 
-    let unlisten: UnlistenFn | null = null;
     try {
-      unlisten = await listen<{status: string, percent: number | null}>("ollama:pull-progress", (event) => {
+      await listen<{status: string, percent: number | null}>("ollama:pull-progress", (event) => {
         setPullProgress(event.payload.status);
         if (event.payload.percent !== null) {
           setPullPercent(event.payload.percent);
@@ -238,7 +237,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }
                 <h4 style={{ color: "var(--color-danger)" }}>Ollama Not Detected</h4>
                 <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>Ollama must be running locally to power the AI features.</p>
                 <div style={{ display: "flex", gap: "1rem" }}>
-                  <button className="btn btn-primary" onClick={() => open("https://ollama.ai")}>
+                  <button className="btn btn-primary" onClick={() => openUrl("https://ollama.ai")}>
                     Install Ollama
                   </button>
                   <button className="btn btn-secondary" onClick={runHealthCheck} disabled={checkingHealth}>
