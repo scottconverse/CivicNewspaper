@@ -11,8 +11,47 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
+            // Panic Hook
+            if let Ok(app_data) = app.path().app_data_dir() {
+                let log_dir = app_data.join("logs");
+                let log_path = log_dir.join("civicnews.log");
+                std::panic::set_hook(Box::new(move |info| {
+                    let msg = match info.payload().downcast_ref::<&'static str>() {
+                        Some(s) => *s,
+                        None => match info.payload().downcast_ref::<String>() {
+                            Some(s) => &s[..],
+                            None => "Box<dyn Any>",
+                        },
+                    };
+                    let ts = chrono::Utc::now().to_rfc3339();
+                    let backtrace = std::backtrace::Backtrace::force_capture();
+
+                    if std::fs::create_dir_all(&log_dir).is_ok() {
+                        let mut truncate = false;
+                        if let Ok(metadata) = std::fs::metadata(&log_path) {
+                            if metadata.len() >= 1_048_576 {
+                                truncate = true;
+                            }
+                        }
+
+                        let file_opts = std::fs::OpenOptions::new()
+                            .create(true)
+                            .write(true)
+                            .truncate(truncate)
+                            .append(!truncate)
+                            .open(&log_path);
+
+                        if let Ok(mut file) = file_opts {
+                            use std::io::Write;
+                            let _ = writeln!(file, "[{}] PANIC: {}\n{}", ts, msg, backtrace);
+                        }
+                    }
+                }));
+            }
+
             // 1. Get database path inside app data folder
             let db_path =
                 crate::core::db::get_app_db_path(app.handle()).map_err(|e| e.to_string())?;
@@ -64,7 +103,8 @@ pub fn run() {
             ollama_pull_model,
             is_onboarding_complete,
             set_onboarding_complete,
-            set_setting
+            set_setting,
+            export_diagnostics
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

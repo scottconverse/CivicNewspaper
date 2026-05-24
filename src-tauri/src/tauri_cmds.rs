@@ -627,3 +627,16 @@ pub fn set_setting(db: tauri::State<'_, DbConn>, key: String, value: String) -> 
     .map_err(|e| e.to_string())?;
     Ok(())
 }
+
+#[tauri::command]
+pub async fn export_diagnostics(
+    db: tauri::State<'_, DbConn>,
+    app_handle: tauri::AppHandle,
+    path: String,
+) -> Result<(), String> {
+    let app_data = app_handle.path().app_data_dir().unwrap_or_default();
+    let diags = crate::core::diagnostics::gather_diagnostics(&*db, app_data).await?;
+    let json = serde_json::to_string_pretty(&diags).map_err(|e| e.to_string())?;
+    std::fs::write(path, json).map_err(|e| e.to_string())?;
+    Ok(())
+}

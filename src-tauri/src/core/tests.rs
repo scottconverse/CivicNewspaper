@@ -598,4 +598,48 @@ mod tests {
             .unwrap();
         assert_eq!(val2, "test_value_2");
     }
+
+    // 8. Phase 3 Diagnostics Tests
+    #[tokio::test]
+    async fn test_gather_diagnostics_has_all_fields() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        let db_conn = Arc::new(Mutex::new(conn));
+        let temp_dir = tempdir().unwrap();
+
+        let diags =
+            crate::core::diagnostics::gather_diagnostics(&db_conn, temp_dir.path().to_path_buf())
+                .await
+                .unwrap();
+        assert!(!diags.app_version.is_empty());
+        assert!(!diags.os_name.is_empty());
+        assert!(!diags.os_version.is_empty());
+        assert!(!diags.tauri_version.is_empty());
+        assert_eq!(diags.db_schema_version, get_expected_version() as i64);
+        assert_eq!(diags.evidence_count, 0);
+        assert_eq!(diags.leads_count, 0);
+        assert_eq!(diags.drafts_count, 0);
+        assert_eq!(diags.published_posts_count, 0);
+    }
+
+    #[tokio::test]
+    async fn test_export_diagnostics_writes_valid_json() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        let db_conn = Arc::new(Mutex::new(conn));
+        let temp_dir = tempdir().unwrap();
+
+        let file_path = temp_dir.path().join("diag.json");
+        let diags =
+            crate::core::diagnostics::gather_diagnostics(&db_conn, temp_dir.path().to_path_buf())
+                .await
+                .unwrap();
+        let json = serde_json::to_string_pretty(&diags).unwrap();
+        std::fs::write(&file_path, json).unwrap();
+
+        let content = std::fs::read_to_string(&file_path).unwrap();
+        let parsed: crate::core::diagnostics::Diagnostics = serde_json::from_str(&content).unwrap();
+        assert_eq!(parsed.app_version, diags.app_version);
+        assert_eq!(parsed.os_name, diags.os_name);
+    }
 }

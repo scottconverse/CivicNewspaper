@@ -40,6 +40,21 @@ The following components are in scope for security reports:
 - Performance / DoS by a feed publishing huge documents — file as a normal bug.
 - Editorial-content disagreements with the guardrail keyword list — file as a normal issue.
 
+## Diagnostic reports
+
+The application allows you to manually export a diagnostic JSON report via the System Status panel to assist with troubleshooting.
+
+**There is no automatic upload or telemetery.** The report is generated only when you click "Export Diagnostic Report", and you choose exactly where on your local machine the JSON file is saved. You can inspect it before sharing it with anyone.
+
+The diagnostic report captures the following fields:
+- `app_version`: The current version of CivicNews
+- `os_name` / `os_version`: Your operating system details
+- `tauri_version`: The underlying Tauri framework version
+- `ollama_reachable` / `ollama_models`: Local AI inference status and available models
+- `db_schema_version`: Internal SQLite database schema version
+- `evidence_count`, `leads_count`, `drafts_count`, `published_posts_count`: Counts of items in your local database
+- `panic_log_tail`: The last 100 lines of the application's panic log (if any crashes occurred)
+
 ## Known weak spots (acknowledged, not fixed)
 
 These are documented so reporters don't burn time finding them:

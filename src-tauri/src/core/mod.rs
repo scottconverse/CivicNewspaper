@@ -4,6 +4,7 @@ pub mod backups;
 pub mod compiler;
 pub mod db;
 pub mod detectors;
+pub mod diagnostics;
 pub mod discovery;
 pub mod guardrails;
 pub mod llm;
