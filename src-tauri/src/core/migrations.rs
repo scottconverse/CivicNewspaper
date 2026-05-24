@@ -4,7 +4,10 @@ use std::error::Error;
 
 const MIGRATIONS: &[(&str, &str)] = &[
     ("0001_init", include_str!("../../migrations/0001_init.sql")),
-    ("0003_settings", include_str!("../../migrations/0003_settings.sql")),
+    (
+        "0003_settings",
+        include_str!("../../migrations/0003_settings.sql"),
+    ),
 ];
 
 pub fn run_migrations(conn: &mut Connection) -> Result<(), Box<dyn Error>> {

@@ -569,13 +569,33 @@ mod tests {
         crate::core::migrations::run_migrations(&mut conn).unwrap();
 
         // set value
-        conn.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?1, ?2)", ["test_key", "test_value_1"]).unwrap();
-        let val1: String = conn.query_row("SELECT value FROM settings WHERE key = 'test_key'", [], |row| row.get(0)).unwrap();
+        conn.execute(
+            "INSERT OR REPLACE INTO settings (key, value) VALUES (?1, ?2)",
+            ["test_key", "test_value_1"],
+        )
+        .unwrap();
+        let val1: String = conn
+            .query_row(
+                "SELECT value FROM settings WHERE key = 'test_key'",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap();
         assert_eq!(val1, "test_value_1");
 
         // overwrite value
-        conn.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?1, ?2)", ["test_key", "test_value_2"]).unwrap();
-        let val2: String = conn.query_row("SELECT value FROM settings WHERE key = 'test_key'", [], |row| row.get(0)).unwrap();
+        conn.execute(
+            "INSERT OR REPLACE INTO settings (key, value) VALUES (?1, ?2)",
+            ["test_key", "test_value_2"],
+        )
+        .unwrap();
+        let val2: String = conn
+            .query_row(
+                "SELECT value FROM settings WHERE key = 'test_key'",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap();
         assert_eq!(val2, "test_value_2");
     }
 }

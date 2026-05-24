@@ -486,9 +486,13 @@ pub async fn ollama_health() -> Result<OllamaState, String> {
                 struct TagsResp {
                     models: Vec<ModelItem>,
                 }
-                
+
                 let mut version = None;
-                if let Ok(v_resp) = client.get("http://127.0.0.1:11434/api/version").send().await {
+                if let Ok(v_resp) = client
+                    .get("http://127.0.0.1:11434/api/version")
+                    .send()
+                    .await
+                {
                     #[derive(serde::Deserialize)]
                     struct VersionResp {
                         version: String,
@@ -520,13 +524,11 @@ pub async fn ollama_health() -> Result<OllamaState, String> {
                 })
             }
         }
-        Err(_) => {
-            Ok(OllamaState {
-                reachable: false,
-                models: vec![],
-                version: None,
-            })
-        }
+        Err(_) => Ok(OllamaState {
+            reachable: false,
+            models: vec![],
+            version: None,
+        }),
     }
 }
 
@@ -535,14 +537,18 @@ pub fn ollama_pull_model(app: tauri::AppHandle, model: String) -> Result<(), Str
     use tauri::Emitter;
     tauri::async_runtime::spawn(async move {
         let client = reqwest::Client::new();
-        if let Ok(mut resp) = client.post("http://127.0.0.1:11434/api/pull")
+        if let Ok(mut resp) = client
+            .post("http://127.0.0.1:11434/api/pull")
             .json(&serde_json::json!({ "name": model, "stream": true }))
-            .send().await {
-            
+            .send()
+            .await
+        {
             while let Ok(Some(chunk)) = resp.chunk().await {
                 let text = String::from_utf8_lossy(&chunk);
                 for line in text.lines() {
-                    if line.trim().is_empty() { continue; }
+                    if line.trim().is_empty() {
+                        continue;
+                    }
                     #[derive(serde::Deserialize)]
                     struct PullMsg {
                         status: String,
@@ -551,18 +557,27 @@ pub fn ollama_pull_model(app: tauri::AppHandle, model: String) -> Result<(), Str
                     }
                     if let Ok(msg) = serde_json::from_str::<PullMsg>(line) {
                         let percent = if let (Some(c), Some(t)) = (msg.completed, msg.total) {
-                            if t > 0.0 { Some((c / t) * 100.0) } else { None }
-                        } else { None };
-                        
+                            if t > 0.0 {
+                                Some((c / t) * 100.0)
+                            } else {
+                                None
+                            }
+                        } else {
+                            None
+                        };
+
                         #[derive(serde::Serialize, Clone)]
                         struct ProgressPayload {
                             status: String,
                             percent: Option<f64>,
                         }
-                        let _ = app.emit("ollama:pull-progress", ProgressPayload {
-                            status: msg.status,
-                            percent,
-                        });
+                        let _ = app.emit(
+                            "ollama:pull-progress",
+                            ProgressPayload {
+                                status: msg.status,
+                                percent,
+                            },
+                        );
                     }
                 }
             }
@@ -573,8 +588,12 @@ pub fn ollama_pull_model(app: tauri::AppHandle, model: String) -> Result<(), Str
 
 #[tauri::command]
 pub fn is_onboarding_complete(db: tauri::State<'_, DbConn>) -> Result<bool, String> {
-    let conn = db.lock().map_err(|_| "Failed to lock database".to_string())?;
-    let mut stmt = conn.prepare("SELECT value FROM settings WHERE key = 'onboarding_complete'").map_err(|e| e.to_string())?;
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
+    let mut stmt = conn
+        .prepare("SELECT value FROM settings WHERE key = 'onboarding_complete'")
+        .map_err(|e| e.to_string())?;
     let val: Result<String, _> = stmt.query_row([], |row| row.get(0));
     match val {
         Ok(v) => Ok(v == "1"),
@@ -584,15 +603,27 @@ pub fn is_onboarding_complete(db: tauri::State<'_, DbConn>) -> Result<bool, Stri
 
 #[tauri::command]
 pub fn set_onboarding_complete(db: tauri::State<'_, DbConn>, value: bool) -> Result<(), String> {
-    let conn = db.lock().map_err(|_| "Failed to lock database".to_string())?;
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
     let val_str = if value { "1" } else { "0" };
-    conn.execute("INSERT OR REPLACE INTO settings (key, value) VALUES ('onboarding_complete', ?1)", [val_str]).map_err(|e| e.to_string())?;
+    conn.execute(
+        "INSERT OR REPLACE INTO settings (key, value) VALUES ('onboarding_complete', ?1)",
+        [val_str],
+    )
+    .map_err(|e| e.to_string())?;
     Ok(())
 }
 
 #[tauri::command]
 pub fn set_setting(db: tauri::State<'_, DbConn>, key: String, value: String) -> Result<(), String> {
-    let conn = db.lock().map_err(|_| "Failed to lock database".to_string())?;
-    conn.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?1, ?2)", [&key, &value]).map_err(|e| e.to_string())?;
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
+    conn.execute(
+        "INSERT OR REPLACE INTO settings (key, value) VALUES (?1, ?2)",
+        [&key, &value],
+    )
+    .map_err(|e| e.to_string())?;
     Ok(())
 }
