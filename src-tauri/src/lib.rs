@@ -59,7 +59,12 @@ pub fn run() {
             check_ollama,
             pull_model,
             get_system_ram,
-            discover_sources
+            discover_sources,
+            ollama_health,
+            ollama_pull_model,
+            is_onboarding_complete,
+            set_onboarding_complete,
+            set_setting
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
