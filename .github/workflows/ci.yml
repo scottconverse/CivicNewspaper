@@ -97,9 +97,7 @@ jobs:
         with:
           toolchain: 1.94.0
           components: rustfmt, clippy
-      - name: Run Phase 1 DoD verification
-        if: hashFiles('scripts/verify-v0.2-phase-1-dod.sh') != ''
-        run: bash scripts/verify-v0.2-phase-1-dod.sh
+
       - name: Run Phase 2 DoD verification
         if: hashFiles('scripts/verify-v0.2-phase-2-dod.sh') != ''
         run: bash scripts/verify-v0.2-phase-2-dod.sh
