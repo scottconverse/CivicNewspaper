@@ -61,7 +61,7 @@ pub async fn gather_diagnostics(db: &DbConn, app_data_dir: PathBuf) -> Result<Di
     let mut panic_log_tail = Vec::new();
     if let Ok(file) = File::open(&log_path) {
         let reader = BufReader::new(file);
-        let lines: Vec<String> = reader.lines().filter_map(Result::ok).collect();
+        let lines: Vec<String> = reader.lines().map_while(Result::ok).collect();
         let start = if lines.len() > 100 {
             lines.len() - 100
         } else {

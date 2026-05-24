@@ -10,12 +10,11 @@
 
 ## TL;DR
 
-Following the verification audit of the latest fixes, the codebase successfully resolves all **3 Blocker-level** and **1 Critical-level** issues previously identified:
-1. Pairing security has been restored by preventing unconfirmed/expired PINs from authorizing database tokens.
-2. The Node/IDE assistant CLI is no longer blocked by strict origin enforcement.
-3. Static site subfolders are compiled with corrected relative stylesheet and navigation paths.
-4. The quiet source detector loop now runs consistently regardless of ingestion feed volume.
-Two Major issues (`QA-005` and `QA-007`) remain active as designed by the configuration profiles, but no blockers or critical flaws currently impact the main user journeys.
+Following the verification audit of the latest fixes, the codebase successfully resolves all **3 Blocker-level** and **1 Critical-level** issues previously identified. However, an audit of the new **Phase 3 Export Diagnostics** feature reveals **1 new Blocker** and **2 new Minor** issues. 
+
+The primary vulnerability (QA-008) is an Arbitrary File Write via the `export_diagnostics` Tauri command, which blindly uses `std::fs::write` on a frontend-supplied path, entirely bypassing Tauri's filesystem scope restrictions. If an attacker achieves XSS via malicious scraped content, they could silently overwrite sensitive system files or the app's database.
+
+Two Major issues (`QA-005` and `QA-007`) remain active as designed by the configuration profiles, but no blockers or critical flaws currently impact the main user journeys aside from the newly discovered export diagnostics vulnerability.
 
 ---
 
@@ -23,11 +22,11 @@ Two Major issues (`QA-005` and `QA-007`) remain active as designed by the config
 
 | Severity | Previous Count | Current Count |
 |---|---|---|
-| Blocker | 3 | 0 |
+| Blocker | 3 | 1 |
 | Critical | 1 | 0 |
 | Major | 3 | 2 |
-| Minor | 0 | 0 |
-| Nit | 0 | 0 |
+| Minor | 0 | 2 |
+| Nit | 0 | 1 |
 
 ---
 
@@ -151,6 +150,62 @@ CivicNewspaper is a local newsroom tool that runs as a desktop app (Tauri v2) pa
   3. API returns `429 Too Many Requests`.
 * **Why this matters:** Because all local tools (Browser extension, CLI, IDE plugin) run on the loopback interface (`127.0.0.1`), a lockout on one tool locks out all other integrations on the system for 30 minutes.
 * **Fix path:** Exempt `127.0.0.1` from hard rate-limit lockouts, or shorten the lockout window to 1-2 minutes for localhost queries.
+
+---
+
+### [QA-008] — Major — Logic — LLM JSON Output Parsing Failure Due to Preamble Text
+* **Status: Open**
+  * **Evidence:** In the `generate_draft` command (and API handler), LLM prompts rely on strict JSON schema definitions, but local inference models (Llama 3 8B, Mistral v0.2) occasionally output hallucinated preamble text before the JSON payload (e.g., "Here is your JSON response: `{...}`").
+  * **Why this matters:** The scraper logic assumes valid parseable JSON. Preamble text breaks `serde_json::from_str`, leading to total draft generation failure for an otherwise good LLM response.
+  * **Blast radius:** Core draft generation capability.
+  * **Fix path:** Use a regex or JSON extraction utility to isolate the outermost `{...}` or `[...]` block before passing it to the JSON parser, or utilize the native JSON schema mode if supported by the Ollama API version.
+
+---
+
+### [QA-009] — Blocker — Security — IPC Command `export_diagnostics` Enables Arbitrary File Write
+  * **Status: Open**
+  * **Category:** Security / Flow
+  * **Evidence:**
+    1. The frontend invokes the `export_diagnostics` Tauri command, passing an arbitrary user-selected `path`.
+    2. In `src-tauri/src/tauri_cmds.rs`, `export_diagnostics` uses `std::fs::write(path, json)` directly.
+    3. `std::fs::write` bypasses Tauri's internal filesystem scope enforcement mechanism.
+    4. If the frontend is compromised (e.g., via XSS from a maliciously formatted scraped news feed), an attacker can silently invoke `export_diagnostics` to overwrite sensitive files (e.g. `~/.ssh/authorized_keys`, Startup scripts, or `civicnews.db`) because no file extension or path sanitization occurs.
+  * **Why this matters:** Elevates a potential XSS vulnerability from an application-level flaw to a full System Compromise or Denial of Service by allowing arbitrary system files to be corrupted or replaced with JSON data.
+  * **Blast radius:** The entire host operating system. The vulnerability is reachable by any XSS payload.
+  * **Fix path:** Instead of using native `std::fs::write`, use `tauri::fs::write` (which enforces Tauri scopes) OR better, manage the file saving natively within Rust using `tauri::api::dialog::FileDialogBuilder` so the frontend doesn't supply the path at all.
+
+---
+
+### [QA-010] — Minor — Performance — Blocking I/O inside Async Command `export_diagnostics`
+  * **Status: Open**
+  * **Category:** Performance
+  * **Evidence:**
+    1. `export_diagnostics` is defined as an `async fn`.
+    2. It performs blocking disk I/O using `std::fs::write(path, json)`.
+  * **Why this matters:** In the `tokio` asynchronous runtime used by Tauri, synchronous disk operations block the executor thread. If invoked frequently or on a slow disk, it could temporarily freeze other asynchronous operations.
+  * **Blast radius:** Tauri backend async runtime.
+  * **Fix path:** Replace `std::fs::write` with `tokio::fs::write`, or wrap the operation in `tokio::task::spawn_blocking`.
+
+---
+
+### [QA-011] — Minor — Performance — Inefficient Memory Allocation When Truncating Panic Logs
+  * **Status: Open**
+  * **Category:** Performance
+  * **Evidence:**
+    1. In `gather_diagnostics` (`src-tauri/src/core/diagnostics.rs`), the panic log is read using `reader.lines().filter_map(Result::ok).collect::<Vec<String>>()`.
+    2. To get the tail, it collects *every single line* of the log into an allocated `String` in a `Vec`, and then slices the last 100 lines.
+  * **Why this matters:** Even though the panic hook rotates the log at 1MB, a 1MB log file can contain over 10,000 lines. Allocating 10,000 strings just to discard 9,900 of them is an unnecessary memory spike.
+  * **Blast radius:** Memory usage during the diagnostics export flow.
+  * **Fix path:** Use a `std::collections::VecDeque` with a fixed capacity of 100 to only store the last 100 lines while reading, dropping older lines incrementally to avoid large allocations.
+
+---
+
+### [QA-012] — Nit — Hardcoded Tauri Version in Diagnostics
+  * **Status: Open**
+  * **Category:** Flow
+  * **Evidence:** `gather_diagnostics` assigns `tauri_version = "2.0.0".to_string()` with a comment about fallbacks.
+  * **Why this matters:** The diagnostics report will forever state Tauri 2.0.0 regardless of future framework updates.
+  * **Fix path:** Inject the actual version at compile time using `env!("CARGO_PKG_VERSION")` on the `tauri` crate, or retrieve it from Tauri's package info structs.
 
 ---
 
