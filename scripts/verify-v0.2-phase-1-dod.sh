@@ -87,10 +87,14 @@ BUILD_OUT=$(npm run build 2>&1)
 echo "$BUILD_OUT" | tail -5
 echo "$BUILD_OUT" | grep -q 'built in' && log PASS "P1: vite build" || log FAIL "P1: vite build"
 
-# === Rust still green (no regression) ===
+# === Rust still green (no regression — monotonic, not equality) ===
+# Asserts count >= 14 baseline. Subsequent phases may add tests; they must
+# not delete tests below baseline. Equality lock was a one-shot Phase 1
+# design flaw that conflicted with Phase 2's test_settings_round_trip.
 RUST_OUT=$(cd src-tauri && cargo test --all 2>&1)
 echo "$RUST_OUT" | tail -5
-echo "$RUST_OUT" | grep "test result:" | head -1 | grep -qE '14 passed' && log PASS "P1: rust 14/14 (no regression)" || log FAIL "P1: rust test count changed"
+RUST_COUNT=$(echo "$RUST_OUT" | grep "test result:" | head -1 | sed -E 's/.* ([0-9]+) passed.*/\1/')
+[ -n "$RUST_COUNT" ] && [ "$RUST_COUNT" -ge 14 ] && log PASS "P1: rust $RUST_COUNT passed (>=14 baseline)" || log FAIL "P1: rust test count below 14 baseline ($RUST_COUNT)"
 
 # === No DoD script tampering ===
 # This script is in the repo. CI hash-checks the script before running it.
