@@ -1,0 +1,118 @@
+# SPDX-License-Identifier: Apache-2.0
+# v0.2 Phase 4 — Source Tier + Prompt Library + Daily Scan + Plain Language Rewrite.
+# Pre-approved by the operator; the matching directive.yaml binds these values
+# via dict-equality. Any field change here must be mirrored in directive.yaml.
+
+pipeline_run:
+  id: "2026-05-25-phase-4-source-tier-prompts-daily-scan-rewrite"
+  type: feature
+  branch: "v0.2-phase-4"
+
+  goal: "Ship a real bundled prompt library, a one-click Daily Scan that uses the local LLM to surface civic story leads, an explicit three-tier source taxonomy on every source, and a one-click Plain Language rewrite for finished drafts."
+
+  allowed_paths:
+    - ".agent-runs/2026-05-25-phase-4-source-tier-prompts-daily-scan-rewrite/"
+    - "src-tauri/migrations/0004_source_tier.sql"
+    - "src-tauri/migrations/0005_daily_scans.sql"
+    - "src-tauri/src/core/db.rs"
+    - "src-tauri/src/core/prompts.rs"
+    - "src-tauri/src/core/daily_scan.rs"
+    - "src-tauri/src/core/mod.rs"
+    - "src-tauri/src/core/migrations.rs"
+    - "src-tauri/src/core/tests.rs"
+    - "src-tauri/src/lib.rs"
+    - "src-tauri/src/tauri_cmds.rs"
+    - "src-tauri/prompts/"
+    - "src-tauri/tauri.conf.json"
+    - "src-tauri/Cargo.toml"
+    - "src-tauri/Cargo.lock"
+    - "src/App.tsx"
+    - "src/useApp.ts"
+    - "src/components/Workbench.tsx"
+    - "src/components/Workbench.test.tsx"
+    - "src/components/SystemStatus.tsx"
+    - "src/components/SystemStatus.test.tsx"
+    - "src/components/SourcesPanel.tsx"
+    - "src/components/SourcesPanel.test.tsx"
+    - "src/components/LeadQueue.tsx"
+    - "src/components/PublishPanel.tsx"
+    - "src/components/DailyScanResults.tsx"
+    - "src/components/DailyScanResults.test.tsx"
+    - "package.json"
+    - "package-lock.json"
+    - "SECURITY.md"
+
+  forbidden_paths:
+    - "src-tauri/src/core/auth.rs"
+    - "src-tauri/src/core/scraper.rs"
+    - "src-tauri/src/core/detectors.rs"
+    - "src-tauri/src/core/compiler.rs"
+    - "src-tauri/src/core/guardrails.rs"
+    - "src-tauri/src/core/llm.rs"
+    - "src-tauri/src/core/backups.rs"
+    - "src-tauri/src/core/server.rs"
+    - "src-tauri/src/core/discovery.rs"
+    - "src-tauri/src/core/diagnostics.rs"
+    - "src-tauri/src/core/server_tests.rs"
+    - "src-tauri/migrations/0001_init.sql"
+    - "src-tauri/migrations/0003_settings.sql"
+    - "scripts/"
+    - ".github/workflows/"
+    - ".agent-workflows/"
+
+  non_goals:
+    - "Do not implement Phase 5 features (integrity audit, pending stories) — those belong to Run B."
+    - "Do not implement Phase 6 features (sourcing connectors, PDF/Legistar/YouTube/Whisper) — Run C."
+    - "Do not modify the deterministic guardrails in guardrails.rs — those are the binding rules; the prompt library is advisory only."
+    - "Do not auto-suppress, downgrade, or block stories based on source tier — tier is a transparency label, not a gate."
+    - "Do not weaken the v0.1.1 XSS test or strict CSP."
+    - "Do not modify ci.yml, DoD scripts, or hash pins — operator-owned."
+    - "Do not delete any prior-phase named test (test_compiler_xss_safe, test_settings_round_trip, test_gather_diagnostics_has_all_fields, test_export_diagnostics_writes_valid_json, test_export_diagnostics_path_validation_rejects_traversal)."
+
+  expected_outputs:
+    - "Migration src-tauri/migrations/0004_source_tier.sql exists, UTF-8 LF encoded, adds NOT NULL CHECK column 'tier' to sources table with values ('official_record', 'news_reporting', 'community_signal')."
+    - "Migration src-tauri/migrations/0005_daily_scans.sql exists, UTF-8 LF, creates daily_scan_runs and daily_scan_leads tables with the schema specified in the directive."
+    - "src-tauri/src/core/prompts.rs defines pub fn load_prompt + Tauri commands list_prompts and get_prompt; get_prompt input is validated against the enumerated id set (no path traversal)."
+    - "src-tauri/src/core/daily_scan.rs defines pub fn run_daily_scan + Tauri command run_daily_scan; city/state inputs validated as short ASCII strings."
+    - "src-tauri/prompts/ contains the bundled prompt library; minimum files: aggregator/01-daily-scan.md, story/07-plain-language.md."
+    - "Source struct in db.rs has a 'tier' field; CRUD reads and writes it."
+    - "Tauri command plain_language_rewrite(draft_id: i32) returns rewritten text from the local LLM using prompts/story/07-plain-language.md."
+    - "Workbench.tsx has a Prompt Library dropdown populated from list_prompts and a 'Rewrite for Newsletter / Email / Facebook' button."
+    - "SystemStatus.tsx has a 'Run Daily Scan' button, disabled when Ollama unreachable."
+    - "DailyScanResults.tsx renders leads in rank order with tier badges and an 'Open in Workbench' action that creates a draft lead."
+    - "Source tier badges render in LeadQueue.tsx and PublishPanel.tsx."
+    - "SECURITY.md has been updated to document the bundled prompt library (read-only local resource, no network calls in load_prompt) and the Daily Scan (local LLM only, results stay on disk)."
+    - "Six new Rust tests pass by exact name: test_source_tier_migration, test_source_tier_backfill_media_lead, test_list_prompts_returns_bundled, test_get_prompt_loads_aggregator, test_daily_scan_parses_fixture_response, test_plain_language_rewrite_invokes_ollama."
+    - "cargo test --all returns >= 24 passed (Phase 3 baseline 18 + 6 new). Anti-padding enforced by named-test-presence checks."
+    - "DailyScanResults.test.tsx asserts: renders 3 fixture leads with tier badges; 'Open in Workbench' fires correct action with correct lead id. vitest count grows accordingly."
+    - "cargo fmt --check, cargo clippy -- -D warnings, npm run build all pass."
+    - "All 10 backend Rust files except db.rs show zero diff against origin/main (content AND mode bits)."
+
+  required_gates:
+    - human_approval_manifest
+    - human_approval_plan
+    - policy_passed
+    - tests_passed
+    - human_approval_merge
+    - directive_bound
+    - scope_lock_authority
+    - execute_readiness
+
+  risk: medium
+
+  rollback_plan: "Revert the squash-merge commit on main. The two migrations are additive (no down-migration needed for the column add or the new tables); leaving them applied on a databases of a user who upgraded past the merge and then reverted is harmless — the columns/tables become unused but cause no errors."
+
+  definition_of_done: "Phase 4 is done when every expected_output above is observably true, cargo test --all is green at >= 24 passing tests with the six named tests present, vitest is green with the new DailyScanResults cases, cargo fmt and clippy and vite build are green, all forbidden paths show zero diff against origin/main, the in-app workflow (add a source with tier=official_record → scrape it → click Run Daily Scan → leads appear in DailyScanResults → Open in Workbench creates a draft lead) works end-to-end with a real Ollama backend, the in-app workflow (draft a story → click Rewrite for Newsletter → output appears in a side panel) works end-to-end, and pre-merge audit-lite returns zero Blockers and zero Criticals."
+
+  director_notes:
+    - "researcher: confirm whether src-tauri/prompts/ exists in the repo. If it does NOT, identify whether prompt content should be imported from a sibling repo (operator referenced civic-newsroom and civic-scanner in prior session memory). If neither exists, the dev must create at least the two minimum required prompts (aggregator/01-daily-scan.md and story/07-plain-language.md) with content matching the spec; the aggregator prompt must contain the literal string 'CIVIC NEWSROOM - DAILY CIVIC NEWS AGGREGATOR' (it is the unfakeable anchor that test_get_prompt_loads_aggregator asserts)."
+    - "researcher: confirm whether call_local_ollama is already pub in llm.rs and reachable from daily_scan.rs / a new plain_language_rewrite command without modifying llm.rs (which is scope-locked). If a small refactor of llm.rs is required to expose the function, escalate to operator before modifying — do not silently widen scope."
+    - "researcher: check tauri.conf.json bundle.resources for the existing pattern for shipping non-Rust assets; the prompts/ directory must be bundled so tauri::api::path::resolve_resource can find it at runtime."
+    - "planner: order test-write before execute. The six named Rust tests should be authored as failing tests first (test_source_tier_migration et al). Frontend DailyScanResults.test.tsx should be authored alongside the component."
+    - "executor: get_prompt(id: String) is renderer-supplied. Validate id against the enumerated list from list_prompts (do not pass through to filesystem). The grep pattern for the directive's input-validation acceptance check is `list_prompts|VALID_PROMPT_IDS|prompt_id_allowed` inside the get_prompt body."
+    - "executor: run_daily_scan(city: String, state: String, since_hours: u32) — city and state are substituted into prompt placeholders, not used for filesystem/SQL/exec. Still validate as short ASCII (regex `^[A-Za-z][A-Za-z .'-]{0,63}$` or similar). since_hours bound to <= 168 (one week) to prevent unbounded evidence pulls."
+    - "executor: do NOT use --force-with-lease for the first push of v0.2-phase-4 to origin. Use `git push -u origin v0.2-phase-4`. After verifying `gh run list` returns a non-empty result, you may report CI status; before then, do not."
+
+  advances_target: "v0.2 Phase 4 — Source Tier + Prompt Library + Daily Scan + Plain Language Rewrite"
+
+  authorizing_source: ".agent-workflows/PROJECT_CONTROL_PLANE.md:8"
