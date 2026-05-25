@@ -9,6 +9,7 @@ export interface Source {
   url: string;
   type: string; // 'primary_record', 'official_comm', 'community_signal', 'media_lead'
   status: string; // 'online', 'offline'
+  tier: string; // 'official_record', 'news_reporting', 'community_signal'
   last_success_at?: string;
   last_failed_at?: string;
   last_scraped?: string;
@@ -31,6 +32,7 @@ export interface Lead {
   confidence: string; // 'low', 'med', 'high'
   risk_level: string; // 'low', 'med', 'high'
   confirmation_checklist: string; // JSON array
+  from_scan_lead_id?: number;
   created_at: string;
 }
 
@@ -91,8 +93,8 @@ export async function getSources(): Promise<Source[]> {
   return invoke<Source[]>("get_sources");
 }
 
-export async function addSource(name: string, url: string, type: string): Promise<number> {
-  return invoke<number>("add_source", { name, url, type });
+export async function addSource(name: string, url: string, type: string, tier: string): Promise<number> {
+  return invoke<number>("add_source", { name, url, type, tier });
 }
 
 export async function deleteSource(id: number): Promise<void> {
@@ -207,4 +209,10 @@ export async function openExternalUrl(url: string): Promise<void> {
   await openUrl(url);
 }
 
+export async function runDailyScan(city: string, state: string, sinceHours: number): Promise<number> {
+  return invoke<number>("run_daily_scan", { city, state, sinceHours });
+}
 
+export async function plainLanguageRewrite(text: string): Promise<string> {
+  return invoke<string>("plain_language_rewrite", { text });
+}

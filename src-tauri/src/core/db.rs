@@ -15,6 +15,7 @@ pub struct Source {
     pub url: String,
     pub r#type: String, // 'primary_record', 'official_comm', 'community_signal', 'media_lead'
     pub status: String, // 'online', 'offline'
+    pub tier: String, // 'official_record', 'news_reporting', 'community_signal'
     pub last_success_at: Option<String>,
     pub last_failed_at: Option<String>,
     pub last_scraped: Option<String>,
@@ -39,7 +40,26 @@ pub struct Lead {
     pub confidence: String,             // 'low', 'med', 'high'
     pub risk_level: String,             // 'low', 'med', 'high'
     pub confirmation_checklist: String, // JSON array
+    pub from_scan_lead_id: Option<i32>,
     pub created_at: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DailyScanRun {
+    pub id: Option<i32>,
+    pub started_at: String,
+    pub completed_at: Option<String>,
+    pub run_status: String, // 'in_progress', 'completed', 'failed'
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DailyScanLead {
+    pub id: Option<i32>,
+    pub scan_id: i32,
+    pub title: String,
+    pub summary: String,
+    pub source_id: i32,
+    pub original_url: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -99,7 +119,7 @@ pub fn get_app_db_path(app: &tauri::AppHandle) -> Result<PathBuf, Box<dyn Error>
 
 // --- Sources ---
 pub fn list_sources(conn: &Connection) -> SqlResult<Vec<Source>> {
-    let mut stmt = conn.prepare("SELECT id, name, url, type, status, last_success_at, last_failed_at, last_scraped FROM sources")?;
+    let mut stmt = conn.prepare("SELECT id, name, url, type, status, last_success_at, last_failed_at, last_scraped, tier FROM sources")?;
     let source_iter = stmt.query_map([], |row| {
         Ok(Source {
             id: Some(row.get(0)?),
@@ -110,6 +130,7 @@ pub fn list_sources(conn: &Connection) -> SqlResult<Vec<Source>> {
             last_success_at: row.get(5)?,
             last_failed_at: row.get(6)?,
             last_scraped: row.get(7)?,
+            tier: row.get(8)?,
         })
     })?;
 
@@ -122,8 +143,8 @@ pub fn list_sources(conn: &Connection) -> SqlResult<Vec<Source>> {
 
 pub fn insert_source(conn: &Connection, source: &Source) -> SqlResult<i32> {
     conn.execute(
-        "INSERT INTO sources (name, url, type, status, last_success_at, last_failed_at, last_scraped) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
-        params![source.name, source.url, source.r#type, source.status, source.last_success_at, source.last_failed_at, source.last_scraped],
+        "INSERT INTO sources (name, url, type, status, last_success_at, last_failed_at, last_scraped, tier) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
+        params![source.name, source.url, source.r#type, source.status, source.last_success_at, source.last_failed_at, source.last_scraped, source.tier],
     )?;
     Ok(conn.last_insert_rowid() as i32)
 }
@@ -237,8 +258,8 @@ pub fn insert_lead(conn: &Connection, lead: &Lead, evidence_ids: &[i32]) -> SqlR
     // and we want this call to be atomic:
     // If the connection is already in a transaction, this might fail, so we use execute block
     conn.execute(
-        "INSERT INTO leads (detector_name, why, confidence, risk_level, confirmation_checklist, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
-        params![lead.detector_name, lead.why, lead.confidence, lead.risk_level, lead.confirmation_checklist, now],
+        "INSERT INTO leads (detector_name, why, confidence, risk_level, confirmation_checklist, from_scan_lead_id, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+        params![lead.detector_name, lead.why, lead.confidence, lead.risk_level, lead.confirmation_checklist, lead.from_scan_lead_id, now],
     )?;
     let lead_id = conn.last_insert_rowid() as i32;
     for &eid in evidence_ids {
@@ -251,7 +272,7 @@ pub fn insert_lead(conn: &Connection, lead: &Lead, evidence_ids: &[i32]) -> SqlR
 }
 
 pub fn list_leads(conn: &Connection) -> SqlResult<Vec<Lead>> {
-    let mut stmt = conn.prepare("SELECT id, detector_name, why, confidence, risk_level, confirmation_checklist, created_at FROM leads")?;
+    let mut stmt = conn.prepare("SELECT id, detector_name, why, confidence, risk_level, confirmation_checklist, from_scan_lead_id, created_at FROM leads")?;
     let iter = stmt.query_map([], |row| {
         Ok(Lead {
             id: Some(row.get(0)?),
@@ -260,7 +281,52 @@ pub fn list_leads(conn: &Connection) -> SqlResult<Vec<Lead>> {
             confidence: row.get(3)?,
             risk_level: row.get(4)?,
             confirmation_checklist: row.get(5)?,
-            created_at: row.get(6)?,
+            from_scan_lead_id: row.get(6)?,
+            created_at: row.get(7)?,
+        })
+    })?;
+    let mut leads = Vec::new();
+    for lead in iter {
+        leads.push(lead?);
+    }
+    Ok(leads)
+}
+
+// --- Daily Scans ---
+pub fn insert_daily_scan_run(conn: &Connection, run: &DailyScanRun) -> SqlResult<i32> {
+    conn.execute(
+        "INSERT INTO daily_scan_runs (started_at, completed_at, run_status) VALUES (?1, ?2, ?3)",
+        params![run.started_at, run.completed_at, run.run_status],
+    )?;
+    Ok(conn.last_insert_rowid() as i32)
+}
+
+pub fn update_daily_scan_run(conn: &Connection, run: &DailyScanRun) -> SqlResult<()> {
+    conn.execute(
+        "UPDATE daily_scan_runs SET completed_at = ?1, run_status = ?2 WHERE id = ?3",
+        params![run.completed_at, run.run_status, run.id],
+    )?;
+    Ok(())
+}
+
+pub fn insert_daily_scan_lead(conn: &Connection, lead: &DailyScanLead) -> SqlResult<i32> {
+    conn.execute(
+        "INSERT INTO daily_scan_leads (scan_id, title, summary, source_id, original_url) VALUES (?1, ?2, ?3, ?4, ?5)",
+        params![lead.scan_id, lead.title, lead.summary, lead.source_id, lead.original_url],
+    )?;
+    Ok(conn.last_insert_rowid() as i32)
+}
+
+pub fn list_daily_scan_leads(conn: &Connection, scan_id: i32) -> SqlResult<Vec<DailyScanLead>> {
+    let mut stmt = conn.prepare("SELECT id, scan_id, title, summary, source_id, original_url FROM daily_scan_leads WHERE scan_id = ?1")?;
+    let iter = stmt.query_map(params![scan_id], |row| {
+        Ok(DailyScanLead {
+            id: Some(row.get(0)?),
+            scan_id: row.get(1)?,
+            title: row.get(2)?,
+            summary: row.get(3)?,
+            source_id: row.get(4)?,
+            original_url: row.get(5)?,
         })
     })?;
     let mut leads = Vec::new();

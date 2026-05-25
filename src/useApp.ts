@@ -36,7 +36,8 @@ import {
   CommunityProfile,
   DiscoveredSource,
   DiscoveredSourceCategory,
-  GuardrailsReport
+  GuardrailsReport,
+  runDailyScan
 } from "./ipc";
 
 export function useApp() {
@@ -63,6 +64,7 @@ export function useApp() {
   const [newSourceName, setNewSourceName] = useState("");
   const [newSourceUrl, setNewSourceUrl] = useState("");
   const [newSourceType, setNewSourceType] = useState("primary_record");
+  const [newSourceTier, setNewSourceTier] = useState("community_signal");
   
   const [pairingLabel, setPairingLabel] = useState("");
   const [generatedPin, setGeneratedPin] = useState<string | null>(null);
@@ -252,12 +254,27 @@ export function useApp() {
     }
   };
 
+  const handleDailyScan = async () => {
+    try {
+      setLoading(true);
+      setStatusMessage("Running daily scan on evidence using the aggregator prompt...");
+      setErrorMessage("");
+      const scanId = await runDailyScan("Brighton", "CO", 24); // Hardcoding city/state for now
+      setStatusMessage(`Daily Scan complete (Scan ID: ${scanId}).`);
+      await loadInitialData();
+    } catch (e: any) {
+      setErrorMessage(e.toString());
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAddSource = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newSourceName || !newSourceUrl) return;
     try {
       setLoading(true);
-      await addSource(newSourceName, newSourceUrl, newSourceType);
+      await addSource(newSourceName, newSourceUrl, newSourceType, newSourceTier);
       setNewSourceName("");
       setNewSourceUrl("");
       setStatusMessage("Source added successfully.");
@@ -324,7 +341,7 @@ export function useApp() {
       let importedCount = 0;
       for (const item of selectedDiscovered) {
         try {
-          await addSource(item.name, item.url, item.type);
+          await addSource(item.name, item.url, item.type, "community_signal");
           importedCount++;
         } catch (err) {
           console.error("Failed to add discovered source:", item.name, err);
@@ -394,7 +411,7 @@ export function useApp() {
           if (!validTypes.includes(type)) {
             type = bulkImportType;
           }
-          await addSource(name, url, type);
+          await addSource(name, url, type, "community_signal");
           importedCount++;
         }
       }
@@ -714,6 +731,8 @@ export function useApp() {
     setNewSourceUrl,
     newSourceType,
     setNewSourceType,
+    newSourceTier,
+    setNewSourceTier,
     pairingLabel,
     setPairingLabel,
     generatedPin,
@@ -775,6 +794,7 @@ export function useApp() {
     loadInitialData,
     pollOllamaStatus,
     handleIngest,
+    handleDailyScan,
     handleAddSource,
     handleDeleteSource,
     handleRunDiscovery,

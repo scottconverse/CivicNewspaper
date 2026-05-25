@@ -12,6 +12,7 @@ interface LeadQueueProps {
   onSelect: (id: number) => void;
   onSyncList: () => void;
   onIngest: () => void;
+  onDailyScan: () => void;
   onOpenDraftEditor: (draft: Draft) => void;
   onOpenCorrectionModal: (draftId: number) => void;
   onDeleteDraft: (id: number) => void;
@@ -26,6 +27,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
   onSelect,
   onSyncList,
   onIngest,
+  onDailyScan,
   onOpenDraftEditor,
   onOpenCorrectionModal,
   onDeleteDraft
@@ -79,6 +81,10 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
           <button className="btn btn-secondary" onClick={onSyncList} disabled={loading} id="btn-sync-list">
             <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
             Sync List
+          </button>
+          <button className="btn btn-secondary" onClick={onDailyScan} disabled={loading} id="btn-daily-scan">
+            <Play size={16} />
+            Daily Scan
           </button>
           <button className="btn btn-primary" onClick={onIngest} disabled={loading} id="btn-scrape-detect">
             <Play size={16} />

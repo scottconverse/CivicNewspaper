@@ -47,6 +47,7 @@ pub fn add_source(
     name: String,
     url: String,
     r#type: String,
+    tier: String,
 ) -> Result<i32, String> {
     let conn = db
         .lock()
@@ -57,6 +58,7 @@ pub fn add_source(
         url,
         r#type,
         status: "online".to_string(),
+        tier,
         last_success_at: None,
         last_failed_at: None,
         last_scraped: None,
@@ -678,4 +680,32 @@ pub async fn export_diagnostics(
     let download = app_handle.path().download_dir().unwrap_or_default();
     let validated = validate_export_path(app_data.clone(), download, &path)?;
     export_diagnostics_inner(&db, app_data, validated).await
+}
+
+#[tauri::command]
+pub fn list_prompts() -> Vec<String> {
+    crate::core::prompts::list_prompts()
+}
+
+#[tauri::command]
+pub fn get_prompt(app: tauri::AppHandle, id: String) -> Result<String, String> {
+    crate::core::prompts::get_prompt(&app, &id)
+}
+
+#[tauri::command]
+pub async fn run_daily_scan(
+    db: tauri::State<'_, DbConn>,
+    app: tauri::AppHandle,
+    city: String,
+    state: String,
+    since_hours: u32,
+) -> Result<i32, String> {
+    crate::core::daily_scan::run_daily_scan(&db, &app, &city, &state, since_hours).await
+}
+
+#[tauri::command]
+pub async fn plain_language_rewrite(text: String) -> Result<String, String> {
+    let system = "You are a plain language summarizer. Rewrite the following text to an 8th-grade reading level. Remove jargon. Keep the core facts.".to_string();
+    let prompt = format!("Rewrite this:\n{}", text);
+    llm_task(prompt, system).await
 }

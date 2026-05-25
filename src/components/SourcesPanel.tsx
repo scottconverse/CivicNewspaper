@@ -12,6 +12,8 @@ interface SourcesPanelProps {
   onNewSourceUrlChange: (val: string) => void;
   newSourceType: string;
   onNewSourceTypeChange: (val: string) => void;
+  newSourceTier: string;
+  onNewSourceTierChange: (val: string) => void;
   onAddSource: (e: React.FormEvent) => void;
   onDeleteSource: (id: number) => void;
   
@@ -50,6 +52,8 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
   onNewSourceUrlChange,
   newSourceType,
   onNewSourceTypeChange,
+  newSourceTier,
+  onNewSourceTierChange,
   onAddSource,
   onDeleteSource,
   showBulkImportModal,
@@ -112,6 +116,7 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                   <th>Source</th>
                   <th>URL</th>
                   <th>Type</th>
+                  <th>Tier</th>
                   <th>Status</th>
                   <th>Scraped</th>
                   <th>Action</th>
@@ -132,6 +137,11 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                       <td>
                         <span className="badge badge-neutral" style={{ textTransform: "capitalize" }}>
                           {src.type.replace(/_/g, " ")}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="badge badge-neutral" style={{ textTransform: "capitalize" }}>
+                          {src.tier ? src.tier.replace(/_/g, " ") : "Community Signal"}
                         </span>
                       </td>
                       <td>
@@ -189,6 +199,15 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                 <option value="official_comm">Official Communication (Press releases, announcements)</option>
                 <option value="community_signal">Community Signal (Local forums, neighborhood boards)</option>
                 <option value="media_lead">Media Lead (Newspapers, regional feeds)</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Source Tier</label>
+              <select value={newSourceTier} onChange={(e) => onNewSourceTierChange(e.target.value)} id="select-new-source-tier">
+                <option value="official_record">Official Record</option>
+                <option value="news_reporting">News Reporting</option>
+                <option value="community_signal">Community Signal</option>
               </select>
             </div>
 
