@@ -627,3 +627,55 @@ pub fn set_setting(db: tauri::State<'_, DbConn>, key: String, value: String) -> 
     .map_err(|e| e.to_string())?;
     Ok(())
 }
+
+pub fn validate_export_path(
+    app_data_dir: std::path::PathBuf,
+    download_dir: std::path::PathBuf,
+    path: &str,
+) -> Result<std::path::PathBuf, String> {
+    let requested = std::path::Path::new(path);
+    let parent = requested
+        .parent()
+        .ok_or_else(|| "Invalid path".to_string())?;
+
+    let canonical_parent =
+        std::fs::canonicalize(parent).map_err(|e| format!("Invalid path: {}", e))?;
+
+    let canonical_app_data = std::fs::canonicalize(&app_data_dir).unwrap_or(app_data_dir);
+    let canonical_download = std::fs::canonicalize(&download_dir).unwrap_or(download_dir);
+
+    if canonical_parent.starts_with(&canonical_app_data)
+        || canonical_parent.starts_with(&canonical_download)
+    {
+        Ok(canonical_parent.join(
+            requested
+                .file_name()
+                .ok_or_else(|| "No file name".to_string())?,
+        ))
+    } else {
+        Err("Path is outside allowed directories".to_string())
+    }
+}
+
+pub async fn export_diagnostics_inner(
+    db: &DbConn,
+    app_data: std::path::PathBuf,
+    validated_path: std::path::PathBuf,
+) -> Result<(), String> {
+    let diags = crate::core::diagnostics::gather_diagnostics(db, app_data).await?;
+    let json = serde_json::to_string_pretty(&diags).map_err(|e| e.to_string())?;
+    std::fs::write(validated_path, json).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn export_diagnostics(
+    db: tauri::State<'_, DbConn>,
+    app_handle: tauri::AppHandle,
+    path: String,
+) -> Result<(), String> {
+    let app_data = app_handle.path().app_data_dir().unwrap_or_default();
+    let download = app_handle.path().download_dir().unwrap_or_default();
+    let validated = validate_export_path(app_data.clone(), download, &path)?;
+    export_diagnostics_inner(&db, app_data, validated).await
+}

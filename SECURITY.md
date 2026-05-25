@@ -40,12 +40,26 @@ The following components are in scope for security reports:
 - Performance / DoS by a feed publishing huge documents — file as a normal bug.
 - Editorial-content disagreements with the guardrail keyword list — file as a normal issue.
 
+## Diagnostic reports
+
+The application allows you to manually export a diagnostic JSON report via the System Status panel to assist with troubleshooting.
+
+**There is no automatic upload or telemetery.** The report is generated only when you click "Export Diagnostic Report", and you choose exactly where on your local machine the JSON file is saved. You can inspect it before sharing it with anyone.
+
+The diagnostic report captures the following fields:
+- `app_version`: The current version of CivicNews
+- `os_name` / `os_version`: Your operating system details
+- `tauri_version`: The underlying Tauri framework version
+- `ollama_reachable` / `ollama_models`: Local AI inference status and available models
+- `db_schema_version`: Internal SQLite database schema version
+- `evidence_count`, `leads_count`, `drafts_count`, `published_posts_count`: Counts of items in your local database
+- `panic_log_tail`: The last 100 lines of the application's panic log (if any crashes occurred)
+
 ## Known weak spots (acknowledged, not fixed)
 
 These are documented so reporters don't burn time finding them:
 
 - **Other local processes can reach `127.0.0.1:12053`.** The bearer token is the only gate. Any process running as the same user can attempt to brute-force the pairing token, but it is 16 random bytes of `OsRng` encoded as a 22-char base64 string, making an online brute-force during the 5-minute pairing window virtually impossible. A malicious local process would have to read the token directly out of the SQLite file or intercept IPC.
-- **Markdown compiled to HTML is not sanitized in this audit's read of `compiler.rs`.** `pulldown-cmark` by default allows raw HTML. If your authoring workflow pulls evidence excerpts from untrusted feeds, those excerpts could contain `<script>` tags that survive into your published static site. Treat all evidence excerpts as untrusted text and sanitize before output. (This is a real, fixable bug — reports welcome.)
 - **No code signing.** Built binaries will be flagged by Windows SmartScreen and macOS Gatekeeper. There is no way for a user to verify their build hasn't been tampered with downstream other than building from source.
 
 ## Disclosure timing
