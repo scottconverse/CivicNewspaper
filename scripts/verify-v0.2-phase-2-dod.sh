@@ -131,29 +131,38 @@ BUILD_OUT=$(npm run build 2>&1)
 echo "$BUILD_OUT" | tail -3
 echo "$BUILD_OUT" | grep -q 'built in' && log PASS "P2: vite build" || log FAIL "P2: vite build"
 
-# === Scope lock: these files MUST be unchanged from main ===
-# Phase 2 is onboarding only. No backend security/auth/db/scraper/etc changes.
-# Compare against origin/main to catch scope drift.
-SCOPE_LOCKED=(
-  "src-tauri/src/core/auth.rs"
-  "src-tauri/src/core/db.rs"
-  "src-tauri/src/core/scraper.rs"
-  "src-tauri/src/core/detectors.rs"
-  "src-tauri/src/core/compiler.rs"
-  "src-tauri/src/core/guardrails.rs"
-  "src-tauri/src/core/llm.rs"
-  "src-tauri/src/core/backups.rs"
-  "src-tauri/src/core/server.rs"
-  "src-tauri/src/core/discovery.rs"
-)
-DRIFT=0
-for f in "${SCOPE_LOCKED[@]}"; do
-  if ! git diff --quiet origin/main..HEAD -- "$f" 2>/dev/null; then
-    echo "  scope drift: $f modified vs main"
-    DRIFT=$((DRIFT+1))
-  fi
-done
-[ "$DRIFT" -eq 0 ] && log PASS "P2: scope lock — no backend drift" || log FAIL "P2: $DRIFT scope-locked files modified"
+# === Scope lock: only enforced when Phase 2 is being newly introduced ===
+# Phase 2 is onboarding only. No backend security/auth/db/scraper/etc changes
+# DURING THE PHASE 2 PR. Once Phase 2 is merged to main, subsequent phases
+# (4, 5, 6, 7, 8) may legitimately modify previously-locked files; their own
+# directive's scope-lock enforces what they can touch. The "phase 2 not yet
+# merged" detection uses test_settings_round_trip presence on origin/main as
+# the anchor signature — present on main means Phase 2 is merged, so this
+# branch is a downstream PR and the scope-lock check no longer applies.
+if git show origin/main:src-tauri/src/core/tests.rs 2>/dev/null | grep -q "fn test_settings_round_trip"; then
+  log PASS "P2: scope lock skipped — Phase 2 already on main (downstream PR)"
+else
+  SCOPE_LOCKED=(
+    "src-tauri/src/core/auth.rs"
+    "src-tauri/src/core/db.rs"
+    "src-tauri/src/core/scraper.rs"
+    "src-tauri/src/core/detectors.rs"
+    "src-tauri/src/core/compiler.rs"
+    "src-tauri/src/core/guardrails.rs"
+    "src-tauri/src/core/llm.rs"
+    "src-tauri/src/core/backups.rs"
+    "src-tauri/src/core/server.rs"
+    "src-tauri/src/core/discovery.rs"
+  )
+  DRIFT=0
+  for f in "${SCOPE_LOCKED[@]}"; do
+    if ! git diff --quiet origin/main..HEAD -- "$f" 2>/dev/null; then
+      echo "  scope drift: $f modified vs main"
+      DRIFT=$((DRIFT+1))
+    fi
+  done
+  [ "$DRIFT" -eq 0 ] && log PASS "P2: scope lock — no backend drift" || log FAIL "P2: $DRIFT scope-locked files modified"
+fi
 
 # === Phase 1 components must be intact ===
 # Each component file from Phase 1 must still be >= 30 lines (no stubs).
