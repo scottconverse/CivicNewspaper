@@ -1,0 +1,66 @@
+id: "2026-05-25-phase-4-source-tier-prompts-daily-scan-rewrite" # drafted from orchestration metadata
+type: "feature" # drafted from orchestration metadata
+branch: "feature/phase-4-source-tier-prompts-daily-scan-rewrite" # drafted from inferred conventions + git status
+goal: "CivicNews ships a prompt library, a Daily Scan backed by an aggregator prompt, a one-click Plain Language rewrite, and a Source Tier taxonomy on every source." # drafted from docs/spec/v0.2-phase-4.md
+allowed_paths: # drafted from docs/spec/v0.2-phase-4.md and inferred file layouts
+  - "src-tauri/migrations/0004_source_tier.sql"
+  - "src-tauri/migrations/0005_daily_scans.sql"
+  - "src-tauri/src/core/db.rs"
+  - "src-tauri/src/core/prompts.rs"
+  - "src-tauri/src/core/daily_scan.rs"
+  - "src-tauri/src/core/tests.rs"
+  - "src-tauri/src/core/mod.rs"
+  - "src-tauri/src/main.rs"
+  - "src-tauri/src/tauri_cmds.rs"
+  - "src/components/SourcesPanel.tsx"
+  - "src/components/SourcesPanel.test.tsx"
+  - "src/components/Workbench.tsx"
+  - "src/components/Workbench.test.tsx"
+  - "src/components/SystemStatus.tsx"
+  - "src/components/SystemStatus.test.tsx"
+  - "src/components/DailyScanResults.tsx"
+  - "src/components/DailyScanResults.test.tsx"
+  - "CHANGELOG.md"
+forbidden_paths: # drafted from .agent-workflows/PROJECT_CONTROL_PLANE.md
+  - "src-tauri/src/core/auth.rs"
+  - "src-tauri/src/core/scraper.rs"
+  - "src-tauri/src/core/detectors.rs"
+  - "src-tauri/src/core/compiler.rs"
+  - "src-tauri/src/core/guardrails.rs"
+  - "src-tauri/src/core/llm.rs"
+  - "src-tauri/src/core/backups.rs"
+  - "src-tauri/src/core/server.rs"
+  - "src-tauri/src/core/discovery.rs"
+  - "src-tauri/src/core/diagnostics.rs"
+  - "scripts/verify-v0.2-phase-*.sh"
+  - "scripts/.dod-phase-*.sha256"
+  - ".github/workflows/ci.yml"
+non_goals: # drafted from .agent-workflows/PROJECT_CONTROL_PLANE.md §v0.2 release plan
+  - "Integrity Audit (Phase 5)"
+  - "Pending Stories (Phase 7)"
+  - "Provenance Sidebar (Phase 7)"
+  - "Sourcing Connectors (Phase 6)"
+  - "Validation/Release (Phase 8)"
+expected_outputs: # drafted from docs/spec/v0.2-phase-4.md
+  - "src-tauri/migrations/0004_source_tier.sql"
+  - "src-tauri/migrations/0005_daily_scans.sql"
+  - "src-tauri/src/core/prompts.rs"
+  - "src-tauri/src/core/daily_scan.rs"
+  - "src/components/DailyScanResults.tsx"
+  - "src/components/DailyScanResults.test.tsx"
+  - "CHANGELOG.md"
+required_gates: # drafted from template defaults
+  - human_approval_manifest
+  - human_approval_plan
+  - policy_passed
+  - tests_passed
+  - human_approval_merge
+risk: "high" # drafted from presence of schema migrations
+rollback_plan: "git revert the merge commit; manually down-migrate 0004_source_tier and 0005_daily_scans or drop added columns and tables." # drafted from presence of schema migrations
+definition_of_done: "cargo test includes the 6 new tests for source-tier, prompt loader, scan parser, and rewrite, all passing. Total tests >= 24. CI green on all DoDs. Pre-merge audit-lite returns zero Blockers and zero Criticals." # drafted from docs/spec/v0.2-phase-4.md §Phase 4 done when
+director_notes: # drafted from docs/spec/v0.2-phase-4.md §Prerequisite and §4b
+  - "researcher: verify src-tauri/prompts/ resource directory exists; if absent, escalate to operator to avoid fabricating prompts."
+  - "researcher: get_prompt MUST validate the id against list_prompts() enumeration; an unvalidated id is a path-traversal sink."
+  - "researcher: since_hours MUST be bounded 0 < since_hours <= 168 to prevent unbounded evidence pulls."
+advances_target: "v0.2 Phase 4 — Source Tier + Prompt Library + Daily Scan + Plain Language Rewrite" # drafted from .agent-workflows/PROJECT_CONTROL_PLANE.md
+authorizing_source: ".agent-workflows/PROJECT_CONTROL_PLANE.md:8" # drafted from .agent-workflows/PROJECT_CONTROL_PLANE.md
