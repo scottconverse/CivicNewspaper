@@ -1,0 +1,82 @@
+# SPDX-License-Identifier: Apache-2.0
+# Scope lock for the v0.2 Phase 4 pipeline run. Pre-approved by the operator;
+# the matching directive.yaml binds these values via dict-equality.
+
+current_rung: "v0.2-phase-4"
+canonical_source: ".agent-workflows/PROJECT_CONTROL_PLANE.md"
+rung_title: "Source Tier + Prompt Library + Daily Scan + Plain Language Rewrite"
+proves: "This run delivers Phase 4 of the v0.2 milestone: a real bundled prompt library, a Daily Scan flow backed by the local-LLM aggregator prompt, an explicit three-tier source taxonomy on every source, and a one-click Plain Language rewrite for finished drafts. No Phase 5/6/7/8 features are implemented in this run."
+
+required_modules:
+  - "src-tauri/src/core/prompts.rs"
+  - "src-tauri/src/core/daily_scan.rs"
+  - "src-tauri/migrations/0004_source_tier.sql"
+  - "src-tauri/migrations/0005_daily_scans.sql"
+  - "src/components/DailyScanResults.tsx"
+
+allowed_feature_terms:
+  - "source tier"
+  - "official_record"
+  - "news_reporting"
+  - "community_signal"
+  - "prompt library"
+  - "list_prompts"
+  - "get_prompt"
+  - "load_prompt"
+  - "daily scan"
+  - "run_daily_scan"
+  - "DailyScanResults"
+  - "plain language"
+  - "plain_language_rewrite"
+  - "aggregator"
+  - "tier badge"
+  - "Open in Workbench"
+
+forbidden_feature_terms_without_replan:
+  - "integrity audit"
+  - "audit_draft_integrity"
+  - "pending stories"
+  - "mark_pending"
+  - "reopen_pending"
+  - "Legistar"
+  - "Granicus"
+  - "PrimeGov"
+  - "NovusAGENDA"
+  - "PDF extract"
+  - "YouTube transcript"
+  - "Whisper"
+  - "faster-whisper"
+  - "provenance sidebar"
+  - "WebVTT"
+  - "v0.2.0-beta"
+  - "release.yml"
+
+scope_bullets:
+  - "Add a three-tier source taxonomy ('official_record', 'news_reporting', 'community_signal') to the sources table via migration 0004; backfill type='media_lead' to tier='news_reporting'; default the rest to 'official_record'."
+  - "Add a tier selector when adding or editing a source; render the source's tier as a badge in LeadQueue and PublishPanel."
+  - "Bundle prompt files under src-tauri/prompts/; expose them to the frontend via list_prompts (returns enumerated [{id, category, title, path, description}]) and get_prompt(id: String) -> Result<String, String>. Input id must be validated against the enumerated set; no path-traversal sink."
+  - "Add a Prompt Library dropdown in Workbench's draft generation area; selecting a prompt pastes its body into the system-prompt field for the next Ollama call."
+  - "Create migration 0005 with daily_scan_runs and daily_scan_leads tables per the spec."
+  - "Implement run_daily_scan(city: String, state: String, since_hours: u32) -> Result<DailyScanRun, String> that pulls recent evidence_items, loads the aggregator prompt, substitutes placeholders, calls call_local_ollama, parses the structured response, and persists one daily_scan_runs row + N daily_scan_leads rows. Validate city/state as short ASCII; bound since_hours <= 168."
+  - "Add a 'Run Daily Scan' button in SystemStatus (disabled when Ollama unreachable) that navigates to a new DailyScanResults view; the view renders leads with tier badges and an 'Open in Workbench' action that creates a draft lead."
+  - "Implement plain_language_rewrite(draft_id: i32) -> Result<String, String> using prompts/story/07-plain-language.md; expose via 'Rewrite for Newsletter / Email / Facebook' button in Workbench. Do NOT auto-persist; the UI decides save-as-variant vs copy-to-clipboard."
+  - "Add six named Rust tests: test_source_tier_migration, test_source_tier_backfill_media_lead, test_list_prompts_returns_bundled, test_get_prompt_loads_aggregator, test_daily_scan_parses_fixture_response, test_plain_language_rewrite_invokes_ollama. The aggregator-prompt test must assert the unfakeable anchor string."
+  - "Update SECURITY.md to document the bundled prompt library (read-only, no network in load_prompt) and the Daily Scan (local LLM only, no auto-upload of results)."
+
+exit_criteria:
+  - "All expected_outputs in manifest.yaml are observably true."
+  - "cargo test --all >= 24 passed with the six named tests present."
+  - "vitest passes with the new DailyScanResults.test.tsx cases."
+  - "cargo fmt --check, cargo clippy -- -D warnings, npm run build all green."
+  - "All nine remaining scope-locked backend Rust files (auth.rs, scraper.rs, detectors.rs, compiler.rs, guardrails.rs, llm.rs, backups.rs, server.rs, discovery.rs, diagnostics.rs) show zero diff against origin/main — content and mode bits."
+  - "Phase 1, 2, 3 DoD scripts continue to pass on CI (no regressions to prior phases)."
+  - "Pre-merge audit-lite returns zero Blockers and zero Criticals; any Major findings are triaged and either fixed or explicitly accepted."
+
+replan_required_if:
+  - "src-tauri/prompts/ resource directory does not exist AND no prior repo can be identified as the import source (escalate to operator before fabricating prompt content)"
+  - "call_local_ollama is not pub or requires modification of llm.rs to call from daily_scan.rs (escalate, do not silently widen scope to llm.rs)"
+  - "README, CHANGELOG, or docs/ files name another rung as active"
+  - "implementation path belongs to Phase 5, 6, 7, or 8"
+  - "user wording in any sub-prompt or comment conflicts with PROJECT_CONTROL_PLANE.md"
+  - "any scope-locked backend Rust file (auth, scraper, detectors, compiler, guardrails, llm, backups, server, discovery, diagnostics) requires modification — STOP and escalate"
+  - "any operator-owned file (.github/workflows/, scripts/, .agent-workflows/) requires modification"

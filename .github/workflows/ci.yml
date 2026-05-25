@@ -72,6 +72,27 @@ jobs:
           fi
           echo "✓ Phase 3 DoD script integrity verified ($ACTUAL)"
 
+      - name: Verify Phase 4 directive integrity (hash check)
+        run: |
+          DIR=.agent-runs/2026-05-25-phase-4-source-tier-prompts-daily-scan-rewrite
+          if [ ! -f "$DIR/directive.yaml" ] || [ ! -f scripts/.directive-2026-05-25-phase-4.sha256 ]; then
+            echo "ℹ Phase 4 directive not present on this branch — skipping hash check"
+            exit 0
+          fi
+          EXPECTED=$(tr -d '[:space:]' < scripts/.directive-2026-05-25-phase-4.sha256)
+          ACTUAL=$(sha256sum "$DIR/directive.yaml" | awk '{print $1}')
+          if [ "$EXPECTED" != "$ACTUAL" ]; then
+            echo "❌ Phase 4 directive hash mismatch:"
+            echo "   expected: $EXPECTED"
+            echo "   actual:   $ACTUAL"
+            echo ""
+            echo "$DIR/directive.yaml was modified after operator pre-approval."
+            echo "The directive is owned by the operator, not the pipeline."
+            echo "Reject this branch and re-issue from the canonical directive."
+            exit 1
+          fi
+          echo "✓ Phase 4 directive integrity verified ($ACTUAL)"
+
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
 
