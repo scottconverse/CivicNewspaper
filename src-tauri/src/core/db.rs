@@ -14,6 +14,7 @@ pub struct Source {
     pub name: String,
     pub url: String,
     pub r#type: String, // 'primary_record', 'official_comm', 'community_signal', 'media_lead'
+    pub tier: String,
     pub status: String, // 'online', 'offline'
     pub last_success_at: Option<String>,
     pub last_failed_at: Option<String>,
@@ -40,6 +41,7 @@ pub struct Lead {
     pub risk_level: String,             // 'low', 'med', 'high'
     pub confirmation_checklist: String, // JSON array
     pub created_at: String,
+    pub from_scan_lead_id: Option<i32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -99,17 +101,18 @@ pub fn get_app_db_path(app: &tauri::AppHandle) -> Result<PathBuf, Box<dyn Error>
 
 // --- Sources ---
 pub fn list_sources(conn: &Connection) -> SqlResult<Vec<Source>> {
-    let mut stmt = conn.prepare("SELECT id, name, url, type, status, last_success_at, last_failed_at, last_scraped FROM sources")?;
+    let mut stmt = conn.prepare("SELECT id, name, url, type, tier, status, last_success_at, last_failed_at, last_scraped FROM sources")?;
     let source_iter = stmt.query_map([], |row| {
         Ok(Source {
             id: Some(row.get(0)?),
             name: row.get(1)?,
             url: row.get(2)?,
             r#type: row.get(3)?,
-            status: row.get(4)?,
-            last_success_at: row.get(5)?,
-            last_failed_at: row.get(6)?,
-            last_scraped: row.get(7)?,
+            tier: row.get(4)?,
+            status: row.get(5)?,
+            last_success_at: row.get(6)?,
+            last_failed_at: row.get(7)?,
+            last_scraped: row.get(8)?,
         })
     })?;
 
@@ -122,8 +125,8 @@ pub fn list_sources(conn: &Connection) -> SqlResult<Vec<Source>> {
 
 pub fn insert_source(conn: &Connection, source: &Source) -> SqlResult<i32> {
     conn.execute(
-        "INSERT INTO sources (name, url, type, status, last_success_at, last_failed_at, last_scraped) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
-        params![source.name, source.url, source.r#type, source.status, source.last_success_at, source.last_failed_at, source.last_scraped],
+        "INSERT INTO sources (name, url, type, tier, status, last_success_at, last_failed_at, last_scraped) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
+        params![source.name, source.url, source.r#type, source.tier, source.status, source.last_success_at, source.last_failed_at, source.last_scraped],
     )?;
     Ok(conn.last_insert_rowid() as i32)
 }
@@ -237,8 +240,8 @@ pub fn insert_lead(conn: &Connection, lead: &Lead, evidence_ids: &[i32]) -> SqlR
     // and we want this call to be atomic:
     // If the connection is already in a transaction, this might fail, so we use execute block
     conn.execute(
-        "INSERT INTO leads (detector_name, why, confidence, risk_level, confirmation_checklist, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
-        params![lead.detector_name, lead.why, lead.confidence, lead.risk_level, lead.confirmation_checklist, now],
+        "INSERT INTO leads (detector_name, why, confidence, risk_level, confirmation_checklist, created_at, from_scan_lead_id) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+        params![lead.detector_name, lead.why, lead.confidence, lead.risk_level, lead.confirmation_checklist, now, lead.from_scan_lead_id],
     )?;
     let lead_id = conn.last_insert_rowid() as i32;
     for &eid in evidence_ids {
@@ -251,7 +254,7 @@ pub fn insert_lead(conn: &Connection, lead: &Lead, evidence_ids: &[i32]) -> SqlR
 }
 
 pub fn list_leads(conn: &Connection) -> SqlResult<Vec<Lead>> {
-    let mut stmt = conn.prepare("SELECT id, detector_name, why, confidence, risk_level, confirmation_checklist, created_at FROM leads")?;
+    let mut stmt = conn.prepare("SELECT id, detector_name, why, confidence, risk_level, confirmation_checklist, created_at, from_scan_lead_id FROM leads")?;
     let iter = stmt.query_map([], |row| {
         Ok(Lead {
             id: Some(row.get(0)?),
@@ -261,6 +264,7 @@ pub fn list_leads(conn: &Connection) -> SqlResult<Vec<Lead>> {
             risk_level: row.get(4)?,
             confirmation_checklist: row.get(5)?,
             created_at: row.get(6)?,
+            from_scan_lead_id: row.get(7)?,
         })
     })?;
     let mut leads = Vec::new();
@@ -518,4 +522,48 @@ pub fn record_paired_client_use(conn: &Connection, token: &str) -> SqlResult<()>
         params![now, token],
     )?;
     Ok(())
+}
+
+// --- Daily Scans ---
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DailyScanRun {
+    pub id: Option<i32>,
+    pub run_date: String,
+    pub city: String,
+    pub state: String,
+    pub model_used: String,
+    pub prompt_id: String,
+    pub raw_response: String,
+    pub created_at: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DailyScanLead {
+    pub id: Option<i32>,
+    pub run_id: i32,
+    pub rank: i32,
+    pub tier: String,
+    pub headline: String,
+    pub details: String,
+    pub source: Option<String>,
+    pub url: Option<String>,
+    pub confidence: Option<String>,
+    pub action: Option<String>,
+    pub beat: Option<String>,
+}
+
+pub fn insert_daily_scan_run(conn: &Connection, run: &DailyScanRun) -> SqlResult<i32> {
+    conn.execute(
+        "INSERT INTO daily_scan_runs (run_date, city, state, model_used, prompt_id, raw_response, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+        params![run.run_date, run.city, run.state, run.model_used, run.prompt_id, run.raw_response, run.created_at],
+    )?;
+    Ok(conn.last_insert_rowid() as i32)
+}
+
+pub fn insert_daily_scan_lead(conn: &Connection, lead: &DailyScanLead) -> SqlResult<i32> {
+    conn.execute(
+        "INSERT INTO daily_scan_leads (run_id, rank, tier, headline, details, source, url, confidence, action, beat) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
+        params![lead.run_id, lead.rank, lead.tier, lead.headline, lead.details, lead.source, lead.url, lead.confidence, lead.action, lead.beat],
+    )?;
+    Ok(conn.last_insert_rowid() as i32)
 }

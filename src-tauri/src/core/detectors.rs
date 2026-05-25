@@ -73,7 +73,7 @@ pub fn run_detectors(
                             "Check if public postings have been paused for holidays/recess",
                             "Ping the web administrator if the feed remains offline",
                         ])?,
-                        created_at: Utc::now().to_rfc3339(),
+                        created_at: Utc::now().to_rfc3339(), from_scan_lead_id: None,
                     };
 
                     // Check if lead already exists to avoid duplication
@@ -127,7 +127,7 @@ pub fn run_detectors(
                     confidence: "high".to_string(),
                     risk_level: risk_level.to_string(),
                     confirmation_checklist: serde_json::to_string(&checklist)?,
-                    created_at: Utc::now().to_rfc3339(),
+                    created_at: Utc::now().to_rfc3339(), from_scan_lead_id: None,
                 };
                 let exists = lead_exists(conn, "New Primary Record", &lead.why)?;
                 if !exists {
@@ -154,7 +154,7 @@ pub fn run_detectors(
                             confidence: "high".to_string(),
                             risk_level: risk_level.to_string(),
                             confirmation_checklist: serde_json::to_string(&checklist)?,
-                            created_at: Utc::now().to_rfc3339(),
+                            created_at: Utc::now().to_rfc3339(), from_scan_lead_id: None,
                         };
                         let exists = lead_exists(conn, "Money Threshold", &lead.why)?;
                         if !exists {
@@ -182,7 +182,7 @@ pub fn run_detectors(
                     confidence: "medium".to_string(),
                     risk_level: risk_level.to_string(),
                     confirmation_checklist: serde_json::to_string(&checklist)?,
-                    created_at: Utc::now().to_rfc3339(),
+                    created_at: Utc::now().to_rfc3339(), from_scan_lead_id: None,
                 };
                 let exists = lead_exists(conn, "Decision / Vote", &lead.why)?;
                 if !exists {
@@ -210,7 +210,7 @@ pub fn run_detectors(
                     confidence: "medium".to_string(),
                     risk_level: risk_level.to_string(),
                     confirmation_checklist: serde_json::to_string(&checklist)?,
-                    created_at: Utc::now().to_rfc3339(),
+                    created_at: Utc::now().to_rfc3339(), from_scan_lead_id: None,
                 };
                 let exists = lead_exists(conn, "Personnel Change", &lead.why)?;
                 if !exists {
@@ -234,7 +234,7 @@ pub fn run_detectors(
                     confidence: "medium".to_string(),
                     risk_level: "low".to_string(),
                     confirmation_checklist: serde_json::to_string(&checklist)?,
-                    created_at: Utc::now().to_rfc3339(),
+                    created_at: Utc::now().to_rfc3339(), from_scan_lead_id: None,
                 };
                 let exists = lead_exists(conn, "Public Meeting Scheduled", &lead.why)?;
                 if !exists {
@@ -258,7 +258,7 @@ pub fn run_detectors(
                     confidence: "medium".to_string(),
                     risk_level: "low".to_string(),
                     confirmation_checklist: serde_json::to_string(&checklist)?,
-                    created_at: Utc::now().to_rfc3339(),
+                    created_at: Utc::now().to_rfc3339(), from_scan_lead_id: None,
                 };
                 let exists = lead_exists(conn, "Deadline", &lead.why)?;
                 if !exists {
@@ -289,7 +289,7 @@ pub fn run_detectors(
                         confidence: "high".to_string(),
                         risk_level: risk_level.to_string(),
                         confirmation_checklist: serde_json::to_string(&checklist)?,
-                        created_at: Utc::now().to_rfc3339(),
+                        created_at: Utc::now().to_rfc3339(), from_scan_lead_id: None,
                     };
                     let exists = lead_exists(conn, "Watchlist Hit", &lead.why)?;
                     if !exists {

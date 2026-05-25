@@ -89,6 +89,17 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
           <span className="badge badge-success" data-testid="scraper-status-text">Ready / Idle</span>
         </div>
 
+        {/* Daily Scan */}
+        <div className="flex-between" style={{ padding: "0.5rem 0", borderBottom: "1px solid var(--border-color)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <ScraperIcon size={16} style={{ color: "var(--text-secondary)" }} />
+            <span>Daily Scan</span>
+          </div>
+          <button className="btn btn-primary btn-sm" onClick={() => { invoke('run_daily_scan', { city: 'Local', state: 'ST', sinceHours: 24 }).catch(console.error); }}>
+            Trigger Scan
+          </button>
+        </div>
+
         {/* App Version */}
         <div className="flex-between" style={{ padding: "0.5rem 0" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>

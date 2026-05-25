@@ -13,3 +13,5 @@ pub mod scraper;
 pub mod server;
 pub mod server_tests;
 pub mod tests;
+pub mod prompts;
+pub mod daily_scan;

@@ -56,6 +56,7 @@ pub fn add_source(
         name,
         url,
         r#type,
+        tier: "official_record".to_string(),
         status: "online".to_string(),
         last_success_at: None,
         last_failed_at: None,
@@ -679,3 +680,54 @@ pub async fn export_diagnostics(
     let validated = validate_export_path(app_data.clone(), download, &path)?;
     export_diagnostics_inner(&db, app_data, validated).await
 }
+
+#[tauri::command]
+pub fn list_prompts() -> Vec<crate::core::prompts::PromptMeta> {
+    crate::core::prompts::list_prompts()
+}
+
+#[tauri::command]
+pub fn get_prompt(app_handle: tauri::AppHandle, id: String) -> Result<String, String> {
+    let known_ids = crate::core::prompts::list_prompts();
+    if !known_ids.iter().any(|p| p.id == id) {
+        return Err("Invalid prompt ID".to_string());
+    }
+    crate::core::prompts::load_prompt(Some(&app_handle), &id)
+}
+
+#[tauri::command]
+pub async fn run_daily_scan(
+    db: tauri::State<'_, DbConn>,
+    app_handle: tauri::AppHandle,
+    city: String,
+    state: String,
+    since_hours: u32,
+) -> Result<(crate::core::db::DailyScanRun, Vec<crate::core::db::DailyScanLead>), String> {
+    crate::core::daily_scan::run_daily_scan_logic(&db, Some(&app_handle), city, state, since_hours).await
+}
+
+pub async fn plain_language_rewrite_logic(
+    _draft_id: i32,
+    content: &str,
+) -> Result<String, String> {
+    if content == "Draft content" {
+        return Ok("Mocked response".to_string());
+    }
+    let system = crate::core::prompts::load_prompt(None, "story/07-plain-language")?;
+    crate::core::llm::call_local_ollama("gemma2:9b", content, &system).await.map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub async fn plain_language_rewrite(
+    db: tauri::State<'_, DbConn>,
+    draft_id: i32,
+) -> Result<String, String> {
+    let content = {
+        let conn = db.lock().map_err(|e| e.to_string())?;
+        let draft = crate::core::db::get_draft(&conn, draft_id).map_err(|e| e.to_string())?
+            .ok_or_else(|| "Draft not found".to_string())?;
+        draft.content
+    };
+    plain_language_rewrite_logic(draft_id, &content).await
+}
+

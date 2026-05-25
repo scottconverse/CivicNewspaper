@@ -257,6 +257,13 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                   <button className="btn btn-primary btn-sm" onClick={() => onDecision("ready_to_publish")} id="btn-status-publish">
                     Approve for Static Publish
                   </button>
+                  <button className="btn btn-secondary btn-sm" onClick={() => {
+                      import('@tauri-apps/api/core').then(({ invoke }) => {
+                          invoke('plain_language_rewrite', { draftId: selectedDraft.id }).then(res => onUpdateDraftContent(res as string)).catch(console.error);
+                      });
+                  }}>
+                    Plain Language Rewrite
+                  </button>
                 </div>
               </div>
             </div>

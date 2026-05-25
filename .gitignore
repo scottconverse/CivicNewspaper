@@ -38,3 +38,5 @@ inject.cjs
 check.sh
 # NOTE: do NOT add `scripts/` here. The repo legitimately uses scripts/ for
 # operator-owned verification (DoD script + hash file, see scripts/verify-*.sh).
+
+.agent-runs/

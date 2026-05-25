@@ -8,6 +8,14 @@ const MIGRATIONS: &[(&str, &str)] = &[
         "0003_settings",
         include_str!("../../migrations/0003_settings.sql"),
     ),
+    (
+        "0004_source_tier",
+        include_str!("../../migrations/0004_source_tier.sql"),
+    ),
+    (
+        "0005_daily_scans",
+        include_str!("../../migrations/0005_daily_scans.sql"),
+    ),
 ];
 
 pub fn run_migrations(conn: &mut Connection) -> Result<(), Box<dyn Error>> {

@@ -133,6 +133,11 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                         <span className="badge badge-neutral" style={{ textTransform: "capitalize" }}>
                           {src.type.replace(/_/g, " ")}
                         </span>
+                        {(src as any).tier && (
+                          <span className="badge badge-success" style={{ marginLeft: "0.5rem", textTransform: "capitalize" }}>
+                            {(src as any).tier.replace(/_/g, " ")}
+                          </span>
+                        )}
                       </td>
                       <td>
                         <span className={`status-dot ${getStatusColor(src.status)}`} />

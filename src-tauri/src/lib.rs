@@ -104,7 +104,11 @@ pub fn run() {
             is_onboarding_complete,
             set_onboarding_complete,
             set_setting,
-            export_diagnostics
+            export_diagnostics,
+            list_prompts,
+            get_prompt,
+            run_daily_scan,
+            plain_language_rewrite
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
