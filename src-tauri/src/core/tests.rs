@@ -630,9 +630,13 @@ mod tests {
         let temp_dir = tempdir().unwrap();
 
         let file_path = temp_dir.path().join("diag.json");
-        crate::tauri_cmds::export_diagnostics_inner(&db_conn, temp_dir.path().to_path_buf(), file_path.clone())
-            .await
-            .unwrap();
+        crate::tauri_cmds::export_diagnostics_inner(
+            &db_conn,
+            temp_dir.path().to_path_buf(),
+            file_path.clone(),
+        )
+        .await
+        .unwrap();
 
         let content = std::fs::read_to_string(&file_path).unwrap();
         let parsed: crate::core::diagnostics::Diagnostics = serde_json::from_str(&content).unwrap();
@@ -647,15 +651,23 @@ mod tests {
         let downloads = temp_dir.path().join("downloads");
         std::fs::create_dir_all(&app_data).unwrap();
         std::fs::create_dir_all(&downloads).unwrap();
-        
+
         // Good path in app_data
         let good_path = app_data.join("export.json");
-        let res = crate::tauri_cmds::validate_export_path(app_data.clone(), downloads.clone(), good_path.to_str().unwrap());
+        let res = crate::tauri_cmds::validate_export_path(
+            app_data.clone(),
+            downloads.clone(),
+            good_path.to_str().unwrap(),
+        );
         assert!(res.is_ok());
 
         // Good path in downloads
         let good_path2 = downloads.join("export2.json");
-        let res2 = crate::tauri_cmds::validate_export_path(app_data.clone(), downloads.clone(), good_path2.to_str().unwrap());
+        let res2 = crate::tauri_cmds::validate_export_path(
+            app_data.clone(),
+            downloads.clone(),
+            good_path2.to_str().unwrap(),
+        );
         assert!(res2.is_ok());
 
         // Bad path using traversal
@@ -663,8 +675,12 @@ mod tests {
         // Ensure parent directory for bad path exists so canonicalize doesn't fail early
         let etc_dir = temp_dir.path().join("etc");
         std::fs::create_dir_all(&etc_dir).unwrap();
-        
-        let res_bad = crate::tauri_cmds::validate_export_path(app_data.clone(), downloads.clone(), bad_path.to_str().unwrap());
+
+        let res_bad = crate::tauri_cmds::validate_export_path(
+            app_data.clone(),
+            downloads.clone(),
+            bad_path.to_str().unwrap(),
+        );
         assert!(res_bad.is_err());
         assert_eq!(res_bad.unwrap_err(), "Path is outside allowed directories");
     }

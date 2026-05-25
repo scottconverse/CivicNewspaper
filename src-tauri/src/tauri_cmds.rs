@@ -634,15 +634,24 @@ pub fn validate_export_path(
     path: &str,
 ) -> Result<std::path::PathBuf, String> {
     let requested = std::path::Path::new(path);
-    let parent = requested.parent().ok_or_else(|| "Invalid path".to_string())?;
-    
-    let canonical_parent = std::fs::canonicalize(parent).map_err(|e| format!("Invalid path: {}", e))?;
-    
+    let parent = requested
+        .parent()
+        .ok_or_else(|| "Invalid path".to_string())?;
+
+    let canonical_parent =
+        std::fs::canonicalize(parent).map_err(|e| format!("Invalid path: {}", e))?;
+
     let canonical_app_data = std::fs::canonicalize(&app_data_dir).unwrap_or(app_data_dir);
     let canonical_download = std::fs::canonicalize(&download_dir).unwrap_or(download_dir);
-    
-    if canonical_parent.starts_with(&canonical_app_data) || canonical_parent.starts_with(&canonical_download) {
-        Ok(canonical_parent.join(requested.file_name().ok_or_else(|| "No file name".to_string())?))
+
+    if canonical_parent.starts_with(&canonical_app_data)
+        || canonical_parent.starts_with(&canonical_download)
+    {
+        Ok(canonical_parent.join(
+            requested
+                .file_name()
+                .ok_or_else(|| "No file name".to_string())?,
+        ))
     } else {
         Err("Path is outside allowed directories".to_string())
     }
