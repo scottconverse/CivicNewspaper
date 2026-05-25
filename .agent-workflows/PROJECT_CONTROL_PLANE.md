@@ -9,7 +9,7 @@ plugin reads this file at preflight to enforce the priority-drift gate.
 
 Authoritative spec: `_audits/dev-directives/v0.2-hardening.md` § Phase 4 (lines 311–439).
 Canonical in-repo spec for active run: [`docs/spec/v0.2-phase-4.md`](../docs/spec/v0.2-phase-4.md).
-Active pipeline run directory: `.agent-runs/2026-05-25-phase-4-source-tier-prompts-daily-scan-rewrite/`.
+The dev's `/agent-pipeline-antigravity:run start` invocation drafts its own `.agent-runs/<run-id>/manifest.yaml` + `scope-lock.yaml` from the description prose. Operator reviews the drafted manifest at the chat manifest gate and replies APPROVE or REVISE.
 
 ## v0.2 release plan
 
