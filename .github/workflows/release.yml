@@ -26,6 +26,10 @@ jobs:
         with:
           toolchain: 1.94.0
           
+      - name: Add macOS target
+        if: matrix.platform == 'macos-latest'
+        run: rustup target add x86_64-apple-darwin
+          
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
         with:
