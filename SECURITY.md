@@ -40,6 +40,14 @@ The following components are in scope for security reports:
 - Performance / DoS by a feed publishing huge documents — file as a normal bug.
 - Editorial-content disagreements with the guardrail keyword list — file as a normal issue.
 
+## Local-LLM Only Privacy
+
+CivicNewspaper is designed with a strict "local-LLM only" architecture. All AI tasks—draft generation, social media pack creation, and plain-language rewriting—are executed on your local machine using Ollama.
+
+- **No API Keys:** The application does not accept or use API keys for external services like OpenAI, Anthropic, or Google.
+- **No Data Exfiltration:** Your drafts, evidence, and prompts never leave your local machine.
+- **Offline Capable:** The entire AI pipeline operates without an internet connection once your selected model (e.g., `gemma2:9b`) is downloaded.
+
 ## Diagnostic reports
 
 The application allows you to manually export a diagnostic JSON report via the System Status panel to assist with troubleshooting.

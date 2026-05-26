@@ -1,0 +1,3 @@
+- `call_local_ollama` is a standalone public async function.
+- No `LlmClient` trait exists.
+- Return type of `call_local_ollama` is `Result<String, Box<dyn Error + Send + Sync>>`.

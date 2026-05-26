@@ -1,0 +1,79 @@
+pipeline_run:
+  id: "2026-05-25-phase-4-remediation" # drafted from given run_id
+  type: "bugfix" # drafted from given pipeline_type
+  branch: "v0.2-phase-4" # drafted from directive-phase-4-remediation.md
+
+  goal: "Remediate all 14 findings from audit-lite-phase-4-2026-05-25.md plus the prompt-schema-drift watch item to achieve zero Blockers and zero Criticals." # drafted from directive-phase-4-remediation.md § Objective
+
+  allowed_paths: # drafted from directive-phase-4-remediation.md § Execute + Phase 4 plan
+    - "src-tauri/migrations/"
+    - "src-tauri/src/core/daily_scan.rs"
+    - "src-tauri/src/core/db.rs"
+    - "src-tauri/src/core/llm.rs"
+    - "src-tauri/src/core/prompts.rs"
+    - "src-tauri/src/core/tests.rs"
+    - "src-tauri/src/core/migrations.rs"
+    - "src-tauri/src/core/server.rs"
+    - "src-tauri/src/tauri_cmds.rs"
+    - "src-tauri/Cargo.toml"
+    - "src-tauri/Cargo.lock"
+    - "src/useApp.ts"
+    - "src/components/SourcesPanel.tsx"
+    - "src/components/SourcesPanel.test.tsx"
+    - "src/components/SystemStatus.tsx"
+    - "src/components/Workbench.tsx"
+    - "src/components/DailyScanResults.tsx"
+    - "src/components/DailyScanResults.test.tsx"
+    - "src/ipc.ts"
+    - "CHANGELOG.md"
+    - "SECURITY.md"
+    - "carried-debt.md"
+    - "walkthrough.md"
+
+  forbidden_paths: # drafted from PROJECT_CONTROL_PLANE.md § Cross-run invariants
+    - "src-tauri/src/core/auth.rs"
+    - "src-tauri/src/core/scraper.rs"
+    - "src-tauri/src/core/detectors.rs"
+    - "src-tauri/src/core/compiler.rs"
+    - "src-tauri/src/core/guardrails.rs"
+    - "src-tauri/src/core/backups.rs"
+    - "src-tauri/src/core/discovery.rs"
+    - "src-tauri/src/core/diagnostics.rs"
+    - ".github/workflows/"
+    - "scripts/"
+
+  non_goals: # drafted from directive-phase-4-remediation.md § 1 & 6
+    - "Do not add features beyond those 14 findings and the watch item."
+    - "If you discover a 15th issue, file it as a watch item in carried-debt.md and continue."
+    - "Do not silently rewrite functions in llm.rs beyond the LlmClient trait and impl surface."
+
+  expected_outputs: # drafted from directive-phase-4-remediation.md § 5
+    - "src/components/DailyScanResults.tsx and src/components/DailyScanResults.test.tsx"
+    - "SECURITY.md contains the Daily Scan local-LLM-only section"
+    - "CHANGELOG.md has Phase 4 entry naming all four sub-features"
+    - "carried-debt.md exists with P5-001 entry"
+    - "src-tauri/migrations/0006_daily_scan_lead_source_nullable.sql and 0007_source_tier_check.sql"
+    - "cargo test reports >= 24 passing, including the 6 named tests and drift test"
+    - "npx vitest run clean including DailyScanResults.test.tsx"
+
+  required_gates:
+    - human_approval_manifest
+    - human_approval_plan
+    - policy_passed
+    - tests_passed
+    - human_approval_merge
+    - execute_readiness
+
+  risk: "high" # drafted from severity (touches LLM code, schema migrations, and security docs)
+
+  rollback_plan: "git revert <commit-sha>; manually revert table schema or drop dev SQLite database and allow rebuild from 0005 migrations." # drafted from migration needs
+
+  definition_of_done: "All 14 findings from audit-lite-phase-4-2026-05-25.md are remediated, along with the prompt-schema-drift watch item. cargo test reports >= 24 passing, including the 6 named Phase 4 tests and the drift test. clippy, vitest, and tsc are clean. SECURITY.md and CHANGELOG.md are updated. carried-debt.md is created with P5-001. llm.rs uses LlmClient trait without direct call_local_ollama references outside. The audit-lite re-run at Critique returns 0 Blockers, 0 Criticals. No files modified outside authorized scope." # drafted from directive-phase-4-remediation.md § 5
+
+  director_notes: # drafted from directive-phase-4-remediation.md § 4 & 7
+    - "researcher: inventory existing call sites of call_local_ollama for D1."
+    - "researcher: inventory existing get_setting / CommunityProfile flow for P4-005 fix."
+    - "executor: stop and report if D1 trait refactor requires behavior changes beyond additive surface."
+
+  advances_target: "v0.2 Phase 4 — Source Tier + Prompt Library + Daily Scan + Plain Language Rewrite" # drafted from .agent-workflows/PROJECT_CONTROL_PLANE.md
+  authorizing_source: ".agent-workflows/PROJECT_CONTROL_PLANE.md:8" # drafted from .agent-workflows/PROJECT_CONTROL_PLANE.md

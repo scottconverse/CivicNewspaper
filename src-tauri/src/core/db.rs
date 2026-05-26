@@ -58,7 +58,7 @@ pub struct DailyScanLead {
     pub scan_id: i32,
     pub title: String,
     pub summary: String,
-    pub source_id: i32,
+    pub source_id: Option<i32>,
     pub original_url: String,
 }
 
@@ -248,6 +248,33 @@ pub fn list_all_evidence(conn: &Connection) -> SqlResult<Vec<EvidenceItem>> {
     Ok(items)
 }
 
+pub fn list_evidence_since(conn: &Connection, since_hours: u32) -> SqlResult<Vec<EvidenceItem>> {
+    let cutoff = Utc::now() - chrono::Duration::hours(since_hours as i64);
+    let cutoff_str = cutoff.to_rfc3339();
+    
+    let mut stmt = conn.prepare(
+        "SELECT id, source_id, url, fetched_at, excerpt, content_hash, entities 
+         FROM evidence_items 
+         WHERE fetched_at >= ?1"
+    )?;
+    let iter = stmt.query_map(params![cutoff_str], |row| {
+        Ok(EvidenceItem {
+            id: Some(row.get(0)?),
+            source_id: row.get(1)?,
+            url: row.get(2)?,
+            fetched_at: row.get(3)?,
+            excerpt: row.get(4)?,
+            content_hash: row.get(5)?,
+            entities: row.get(6)?,
+        })
+    })?;
+    let mut items = Vec::new();
+    for item in iter {
+        items.push(item?);
+    }
+    Ok(items)
+}
+
 // --- Leads ---
 pub fn insert_lead(conn: &Connection, lead: &Lead, evidence_ids: &[i32]) -> SqlResult<i32> {
     let now = Utc::now().to_rfc3339();
@@ -317,6 +344,7 @@ pub fn insert_daily_scan_lead(conn: &Connection, lead: &DailyScanLead) -> SqlRes
     Ok(conn.last_insert_rowid() as i32)
 }
 
+#[allow(dead_code)]
 pub fn list_daily_scan_leads(conn: &Connection, scan_id: i32) -> SqlResult<Vec<DailyScanLead>> {
     let mut stmt = conn.prepare("SELECT id, scan_id, title, summary, source_id, original_url FROM daily_scan_leads WHERE scan_id = ?1")?;
     let iter = stmt.query_map(params![scan_id], |row| {

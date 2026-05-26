@@ -115,6 +115,8 @@ export function useApp() {
   const [customLlmResult, setCustomLlmResult] = useState("");
   const [customLlmRunning, setCustomLlmRunning] = useState(false);
 
+  const [latestScanId, setLatestScanId] = useState<number | null>(null);
+
   // Global Status Feed
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
@@ -259,7 +261,10 @@ export function useApp() {
       setLoading(true);
       setStatusMessage("Running daily scan on evidence using the aggregator prompt...");
       setErrorMessage("");
-      const scanId = await runDailyScan("Brighton", "CO", 24); // Hardcoding city/state for now
+      const city = communityProfile?.city || "Brighton";
+      const state = communityProfile?.state || "CO";
+      const scanId = await runDailyScan(city, state, 24);
+      setLatestScanId(scanId);
       setStatusMessage(`Daily Scan complete (Scan ID: ${scanId}).`);
       await loadInitialData();
     } catch (e: any) {
@@ -785,6 +790,7 @@ export function useApp() {
     setCustomLlmSystem,
     customLlmResult,
     customLlmRunning,
+    latestScanId,
     loading,
     statusMessage,
     setStatusMessage,

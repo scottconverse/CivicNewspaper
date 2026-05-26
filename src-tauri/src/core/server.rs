@@ -1,7 +1,7 @@
 // core/server.rs
 use super::db::DbConn;
 use super::guardrails::run_guardrails_check;
-use super::llm::call_local_ollama;
+// Removed call_local_ollama
 use axum::{
     extract::{Path, State},
     http::StatusCode,
@@ -21,6 +21,7 @@ use std::time::Instant;
 pub struct AppState {
     pub db: DbConn,
     pub pair_attempts: Arc<Mutex<HashMap<String, (usize, Instant)>>>,
+    pub llm_client: Arc<dyn crate::core::llm::LlmClient>,
 }
 
 // JSON request/response models
@@ -92,6 +93,7 @@ pub async fn start_server(db: DbConn) -> Result<(), Box<dyn Error + Send + Sync>
     let app_state = AppState {
         db: db.clone(),
         pair_attempts: Arc::new(Mutex::new(HashMap::new())),
+        llm_client: Arc::new(crate::core::llm::OllamaClient),
     };
 
     let app = build_app(app_state);
@@ -216,12 +218,13 @@ async fn create_draft_handler(
 }
 
 async fn llm_task_handler(
+    State(state): State<AppState>,
     Json(payload): Json<LlmTaskRequest>,
 ) -> Result<Json<LlmTaskResponse>, StatusCode> {
     // Load default model for tasks. Default to gemma2:9b as per spec
     let model = "gemma2:9b";
 
-    match call_local_ollama(model, &payload.prompt, &payload.system).await {
+    match state.llm_client.call(model, &payload.prompt, &payload.system).await {
         Ok(result) => Ok(Json(LlmTaskResponse { result })),
         Err(e) => {
             eprintln!("Ollama task execution failed: {}", e);

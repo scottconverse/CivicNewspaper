@@ -1,0 +1,2 @@
+- `0006_daily_scan_lead_source_nullable.sql` and `0007_source_tier_check.sql` do not exist.
+- `migrations.rs` registers up to `0005_daily_scans.sql`.

@@ -2,11 +2,13 @@
 import React, { useState } from "react";
 import { RefreshCw, Play, Trash2, Info, ChevronRight, Search } from "lucide-react";
 import { Lead, Draft } from "../ipc";
+import { DailyScanResults } from "./DailyScanResults";
 
 interface LeadQueueProps {
   leads: Lead[];
   drafts: Draft[];
   loading: boolean;
+  latestScanId?: number | null;
   selectedLeadId?: number | null;
   filter?: string;
   onSelect: (id: number) => void;
@@ -22,6 +24,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
   leads,
   drafts,
   loading,
+  latestScanId,
   selectedLeadId,
   filter = "",
   onSelect,
@@ -92,6 +95,10 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
           </button>
         </div>
       </div>
+
+      {latestScanId && (
+        <DailyScanResults scanId={latestScanId} />
+      )}
 
       <div className="queue-tabs">
         <button

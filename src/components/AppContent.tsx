@@ -73,6 +73,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
             leads={app.leads}
             drafts={app.drafts}
             loading={app.loading}
+            latestScanId={app.latestScanId}
             onSelect={app.handleOpenDraftWizard}
             onSyncList={app.loadInitialData}
             onIngest={app.handleIngest}

@@ -6,13 +6,15 @@ import { CommunityProfile } from "../ipc";
 
 describe("SettingsPanel Component Tests", () => {
   const mockProfile: CommunityProfile = {
-    site_title: "Brighton Observer",
-    site_subtitle: "Local news first",
-    about_text: "About us...",
-    ethics_text: "Our ethical framework",
-    how_we_report_text: "Our methodology",
-    money_threshold: 250000,
-    watchlist: []
+    site_title: "Test Site",
+    site_subtitle: "Testing only",
+    about_text: "About us",
+    ethics_text: "Ethics",
+    how_we_report_text: "Process",
+    money_threshold: 50000,
+    watchlist: [],
+    city: "Test City",
+    state: "TC"
   };
 
   test("backup path input is editable and save profile fires with the right path/data", () => {

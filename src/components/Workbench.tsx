@@ -232,19 +232,26 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                 <div style={{ display: "flex", gap: "1rem" }}>
                   <button 
                     className="btn btn-secondary btn-sm"
+                    disabled={generatingText}
                     onClick={async () => {
                       if (!selectedDraft.content) return;
+                      const proceed = window.confirm("Replace draft with plain-language rewrite? This cannot be undone.");
+                      if (!proceed) return;
                       try {
                         import('../ipc').then(async ({ plainLanguageRewrite }) => {
-                          const rewrite = await plainLanguageRewrite(selectedDraft.content);
+                          const rewrite = await plainLanguageRewrite(selectedDraft.content, selectedDraft.format);
                           onUpdateDraftContent(rewrite);
+                        }).catch(e => {
+                          console.error("Failed to rewrite draft:", e);
+                          alert(`Error: ${e}`);
                         });
                       } catch (e) {
-                        console.error(e);
+                        console.error("Failed to rewrite draft:", e);
+                        alert(`Error: ${e}`);
                       }
                     }}
                   >
-                    Plain Language Rewrite
+                    {generatingText ? "Rewriting..." : "Plain Language Rewrite"}
                   </button>
                   <span className="help-text">Highlight text and click "Cite" in evidence pane to link.</span>
                 </div>

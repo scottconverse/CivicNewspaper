@@ -1,0 +1,3 @@
+- `add_source` accepts unvalidated `tier`.
+- `list_daily_scan_leads` is not exposed as a Tauri command.
+- `plain_language_rewrite`, `llm_task`, `generate_draft` call `call_local_ollama` directly instead of using `app.state::<Arc<dyn LlmClient>>()`.

@@ -60,6 +60,20 @@ pub async fn call_local_ollama(
     Ok(body.response)
 }
 
+#[async_trait::async_trait]
+pub trait LlmClient: Send + Sync {
+    async fn call(&self, model: &str, prompt: &str, system: &str) -> Result<String, String>;
+}
+
+pub struct OllamaClient;
+
+#[async_trait::async_trait]
+impl LlmClient for OllamaClient {
+    async fn call(&self, model: &str, prompt: &str, system: &str) -> Result<String, String> {
+        call_local_ollama(model, prompt, system).await.map_err(|e| e.to_string())
+    }
+}
+
 pub async fn pull_ollama_model(
     model: &str,
 ) -> Result<reqwest::Response, Box<dyn Error + Send + Sync>> {

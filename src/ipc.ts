@@ -69,6 +69,17 @@ export interface CommunityProfile {
   how_we_report_text: string;
   money_threshold: number;
   watchlist: string[];
+  city: string;
+  state: string;
+}
+
+export interface DailyScanLead {
+  id?: number;
+  scan_id: number;
+  title: string;
+  summary: string;
+  source_id?: number;
+  original_url: string;
 }
 
 export interface QueueData {
@@ -213,6 +224,10 @@ export async function runDailyScan(city: string, state: string, sinceHours: numb
   return invoke<number>("run_daily_scan", { city, state, sinceHours });
 }
 
-export async function plainLanguageRewrite(text: string): Promise<string> {
-  return invoke<string>("plain_language_rewrite", { text });
+export async function listDailyScanLeads(scanId: number): Promise<DailyScanLead[]> {
+  return invoke<DailyScanLead[]>("list_daily_scan_leads", { scanId });
+}
+
+export async function plainLanguageRewrite(text: string, draftFormat: string): Promise<string> {
+  return invoke<string>("plain_language_rewrite", { text, draftFormat });
 }
