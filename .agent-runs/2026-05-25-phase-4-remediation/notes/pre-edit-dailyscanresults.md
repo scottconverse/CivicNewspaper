@@ -1,0 +1,1 @@
+- `DailyScanResults.tsx` and `.test.tsx` do not exist.

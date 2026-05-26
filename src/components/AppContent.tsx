@@ -73,9 +73,11 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
             leads={app.leads}
             drafts={app.drafts}
             loading={app.loading}
+            latestScanId={app.latestScanId}
             onSelect={app.handleOpenDraftWizard}
             onSyncList={app.loadInitialData}
             onIngest={app.handleIngest}
+            onDailyScan={app.handleDailyScan}
             onOpenDraftEditor={app.handleOpenDraftEditor}
             onOpenCorrectionModal={app.openCorrectionModal}
             onDeleteDraft={app.handleDeleteDraft}
@@ -93,6 +95,8 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           onNewSourceUrlChange={app.setNewSourceUrl}
           newSourceType={app.newSourceType}
           onNewSourceTypeChange={app.setNewSourceType}
+          newSourceTier={app.newSourceTier}
+          onNewSourceTierChange={app.setNewSourceTier}
           onAddSource={app.handleAddSource}
           onDeleteSource={app.handleDeleteSource}
           showBulkImportModal={app.showBulkImportModal}

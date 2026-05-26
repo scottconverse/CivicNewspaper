@@ -1,0 +1,6 @@
+- `parse_and_save_scan_response` at line 28 hardcodes `source_id: 1`.
+- `parse_and_save_scan_response` at line 31 silently discards insert errors (`if ...is_ok()`).
+- `run_daily_scan` does not use the `since_hours` parameter to filter evidence (line 71 uses `db::list_all_evidence`).
+- Regex at line 50 is compiled per-request.
+- Lacks orphan recovery for the scan run if a nested error occurs (e.g., locking the DB again).
+- Calls `call_local_ollama` directly instead of using a trait.

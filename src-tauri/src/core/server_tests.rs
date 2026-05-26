@@ -26,6 +26,7 @@ mod tests {
         let state = AppState {
             db: db.clone(),
             pair_attempts: attempts,
+            llm_client: Arc::new(crate::core::llm::OllamaClient),
         };
 
         let app = build_app(state);

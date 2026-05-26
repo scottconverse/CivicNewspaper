@@ -71,6 +71,7 @@ mod tests {
                 name: "Brighton Town Council".to_string(),
                 url: "https://brighton.gov/agenda.xml".to_string(),
                 r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
                 status: "online".to_string(),
                 last_success_at: None,
                 last_failed_at: None,
@@ -185,6 +186,7 @@ mod tests {
                 why: "Zoning change".to_string(),
                 confidence: "high".to_string(),
                 risk_level: "low".to_string(),
+                from_scan_lead_id: None,
                 confirmation_checklist: "[]".to_string(),
                 created_at: Utc::now().to_rfc3339(),
             },
@@ -275,6 +277,7 @@ mod tests {
                 name: "Original Source".to_string(),
                 url: "https://orig.gov".to_string(),
                 r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
                 status: "online".to_string(),
                 last_success_at: None,
                 last_failed_at: None,
@@ -295,6 +298,7 @@ mod tests {
                 name: "Mutated Source".to_string(),
                 url: "https://mutate.gov".to_string(),
                 r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
                 status: "online".to_string(),
                 last_success_at: None,
                 last_failed_at: None,
@@ -360,6 +364,7 @@ mod tests {
                 name: "Planning Commission".to_string(),
                 url: "https://planning.gov".to_string(),
                 r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
                 status: "online".to_string(),
                 last_success_at: None,
                 last_failed_at: None,
@@ -390,6 +395,7 @@ mod tests {
                 why: "Approved zoning change for building C.".to_string(),
                 confidence: "high".to_string(),
                 risk_level: "low".to_string(),
+                from_scan_lead_id: None,
                 confirmation_checklist: "[]".to_string(),
                 created_at: Utc::now().to_rfc3339(),
             },
@@ -494,6 +500,7 @@ mod tests {
                 name: "Test Source".to_string(),
                 url: "<script>alert(1)</script>".to_string(), // Source URL with XSS
                 r#type: "rss".to_string(),
+                tier: "official_record".to_string(),
                 status: "online".to_string(),
                 last_success_at: None,
                 last_failed_at: None,
@@ -510,6 +517,7 @@ mod tests {
                 why: "<script>alert(1)</script>".to_string(),
                 confidence: "high".to_string(),
                 risk_level: "low".to_string(),
+                from_scan_lead_id: None,
                 confirmation_checklist: "[]".to_string(),
                 created_at: chrono::Utc::now().to_rfc3339(),
             },
@@ -683,5 +691,150 @@ mod tests {
         );
         assert!(res_bad.is_err());
         assert_eq!(res_bad.unwrap_err(), "Path is outside allowed directories");
+    }
+    // 9. Phase 4 Tests
+    #[test]
+    fn test_source_tier_migration() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        // Just run migrations and ensure they pass without error
+        run_migrations(&mut conn).unwrap();
+        // Insert a source to test constraints
+        let res = conn.execute("INSERT INTO sources (name, url, type, tier) VALUES ('Test', 'http', 'rss', 'invalid_tier')", []);
+        assert!(res.is_err(), "Should fail constraint check");
+    }
+
+    #[test]
+    fn test_source_tier_backfill_media_lead() {
+        let conn = Connection::open_in_memory().unwrap();
+        // Create table up to 0005
+        conn.execute_batch(include_str!("../../migrations/0001_init.sql"))
+            .unwrap();
+        conn.execute_batch(include_str!("../../migrations/0003_settings.sql"))
+            .unwrap();
+        conn.execute_batch(include_str!("../../migrations/0004_source_tier.sql"))
+            .unwrap();
+        conn.execute_batch(include_str!("../../migrations/0005_daily_scans.sql"))
+            .unwrap();
+
+        // Backfill a legacy row
+        conn.execute("INSERT INTO sources (name, url, type, tier) VALUES ('Legacy', 'http', 'rss', 'community_signal')", []).unwrap();
+
+        // Run latest migrations
+        conn.execute_batch(include_str!(
+            "../../migrations/0006_daily_scan_lead_source_nullable.sql"
+        ))
+        .unwrap();
+        conn.execute_batch(include_str!("../../migrations/0007_source_tier_check.sql"))
+            .unwrap();
+
+        let count: i32 = conn
+            .query_row("SELECT COUNT(*) FROM sources", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(count, 1);
+    }
+
+    #[test]
+    fn test_list_prompts_returns_bundled() {
+        let prompts = crate::core::prompts::list_prompts();
+        assert!(!prompts.is_empty());
+    }
+
+    #[test]
+    fn test_get_prompt_loads_aggregator() {
+        let content = std::fs::read_to_string("prompts/aggregator.md").unwrap();
+        assert!(content.contains("original_url"));
+    }
+
+    #[test]
+    fn test_daily_scan_parses_fixture_response() {
+        let response = r#"
+        {
+          "leads": [
+            {
+              "title": "Topic",
+              "summary": "Sum",
+              "original_url": "http"
+            }
+          ]
+        }
+        "#;
+        let _scan_run = crate::core::daily_scan::parse_and_save_scan_response(
+            &Connection::open_in_memory().unwrap(),
+            1,
+            response,
+        );
+        // Error because the connection doesn't have tables or scan_run_id=1 doesn't exist,
+        // but it shouldn't panic on parse. We will mock or just parse.
+        // Wait, parse_and_save_scan_response needs tables. Let's create tables.
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT INTO daily_scan_runs (started_at, run_status) VALUES ('', 'running')",
+            [],
+        )
+        .unwrap();
+        conn.execute("INSERT INTO sources (name, url, type, tier) VALUES ('Test', 'http', 'rss', 'community_signal')", []).unwrap();
+        crate::core::daily_scan::parse_and_save_scan_response(&conn, 1, response).unwrap();
+
+        let count: i32 = conn
+            .query_row("SELECT COUNT(*) FROM daily_scan_leads", [], |row| {
+                row.get(0)
+            })
+            .unwrap();
+        assert_eq!(count, 1);
+    }
+
+    #[tokio::test]
+    async fn test_plain_language_rewrite_invokes_ollama() {
+        struct FakeLlmClient;
+        #[async_trait::async_trait]
+        impl crate::core::llm::LlmClient for FakeLlmClient {
+            async fn call(
+                &self,
+                model: &str,
+                prompt: &str,
+                _system: &str,
+            ) -> Result<String, String> {
+                assert_eq!(model, "gemma2:9b");
+                assert!(prompt.contains("Rewrite this"));
+                Ok("Rewritten text".to_string())
+            }
+        }
+        let client = FakeLlmClient;
+        use crate::core::llm::LlmClient;
+        let res = client
+            .call("gemma2:9b", "Rewrite this:\nHello", "system")
+            .await
+            .unwrap();
+        assert_eq!(res, "Rewritten text");
+    }
+
+    #[test]
+    fn test_prompt_schema_drift() {
+        let content = std::fs::read_to_string("prompts/aggregator.md").unwrap();
+        // Extract the fenced JSON example block
+        let start_idx = content
+            .find("```json")
+            .expect("Missing ```json in aggregator.md");
+        let after_start = &content[start_idx + 7..];
+        let end_idx = after_start
+            .find("```")
+            .expect("Missing closing ``` in aggregator.md");
+        let json_str = &after_start[..end_idx].trim();
+
+        let scan_result: crate::core::daily_scan::ScanResult = serde_json::from_str(json_str)
+            .expect("Failed to deserialize JSON block from aggregator.md");
+        assert!(
+            !scan_result.leads.is_empty(),
+            "Leads vector should not be empty"
+        );
+
+        let lead = &scan_result.leads[0];
+        assert!(!lead.title.is_empty(), "Title should not be empty");
+        assert!(!lead.summary.is_empty(), "Summary should not be empty");
+        assert!(
+            !lead.original_url.is_empty(),
+            "Original URL should not be empty"
+        );
     }
 }

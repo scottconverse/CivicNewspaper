@@ -229,7 +229,32 @@ export const Workbench: React.FC<WorkbenchProps> = ({
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", flexGrow: 1 }}>
               <div className="flex-between">
                 <label style={{ fontWeight: 600, fontSize: "0.9rem" }}>Article Body (Markdown)</label>
-                <span className="help-text">Highlight text and click "Cite" in evidence pane to link.</span>
+                <div style={{ display: "flex", gap: "1rem" }}>
+                  <button 
+                    className="btn btn-secondary btn-sm"
+                    disabled={generatingText}
+                    onClick={async () => {
+                      if (!selectedDraft.content) return;
+                      const proceed = window.confirm("Replace draft with plain-language rewrite? This cannot be undone.");
+                      if (!proceed) return;
+                      try {
+                        import('../ipc').then(async ({ plainLanguageRewrite }) => {
+                          const rewrite = await plainLanguageRewrite(selectedDraft.content, selectedDraft.format);
+                          onUpdateDraftContent(rewrite);
+                        }).catch(e => {
+                          console.error("Failed to rewrite draft:", e);
+                          alert(`Error: ${e}`);
+                        });
+                      } catch (e) {
+                        console.error("Failed to rewrite draft:", e);
+                        alert(`Error: ${e}`);
+                      }
+                    }}
+                  >
+                    {generatingText ? "Rewriting..." : "Plain Language Rewrite"}
+                  </button>
+                  <span className="help-text">Highlight text and click "Cite" in evidence pane to link.</span>
+                </div>
               </div>
               <textarea
                 id="draft-editor-textarea"

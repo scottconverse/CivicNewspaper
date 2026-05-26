@@ -1,0 +1,3 @@
+- `DailyScanLead` struct at line 61 has `source_id: i32`. Needs to be `Option<i32>`.
+- `list_daily_scan_leads` gets `source_id` without expecting `NULL`.
+- Missing `list_evidence_since` query.

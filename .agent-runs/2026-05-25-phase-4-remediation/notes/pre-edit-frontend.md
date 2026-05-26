@@ -1,0 +1,3 @@
+- `handleDailyScan` hardcodes `runDailyScan("Brighton", "CO", 24)`.
+- `Workbench.tsx` button ignores `draftFormat` and doesn't `await` or `confirm` (P4-007, P4-008, P4-013).
+- `DailyScanLead` in `ipc.ts` has `source_id: number`. Must be `source_id?: number`.

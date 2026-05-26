@@ -11,6 +11,7 @@ describe("SourcesPanel Component Tests", () => {
       name: "City Council Feed",
       url: "https://city.gov/rss",
       type: "primary_record",
+      tier: "official_record",
       status: "online",
       last_success_at: "2026-05-23T00:00:00Z",
       last_failed_at: undefined,
@@ -32,6 +33,8 @@ describe("SourcesPanel Component Tests", () => {
         onNewSourceUrlChange={vi.fn()}
         newSourceType="primary_record"
         onNewSourceTypeChange={vi.fn()}
+        newSourceTier="official_record"
+        onNewSourceTierChange={vi.fn()}
         onAddSource={handleAddSource}
         onDeleteSource={handleDeleteSource}
         showBulkImportModal={false}

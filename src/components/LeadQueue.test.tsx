@@ -46,6 +46,7 @@ describe("LeadQueue Component Tests", () => {
         onSelect={handleSelect}
         onSyncList={vi.fn()}
         onIngest={vi.fn()}
+        onDailyScan={vi.fn()}
         onOpenDraftEditor={vi.fn()}
         onOpenCorrectionModal={vi.fn()}
         onDeleteDraft={vi.fn()}

@@ -73,6 +73,7 @@ pub fn run_detectors(
                             "Check if public postings have been paused for holidays/recess",
                             "Ping the web administrator if the feed remains offline",
                         ])?,
+                        from_scan_lead_id: None,
                         created_at: Utc::now().to_rfc3339(),
                     };
 
@@ -127,6 +128,7 @@ pub fn run_detectors(
                     confidence: "high".to_string(),
                     risk_level: risk_level.to_string(),
                     confirmation_checklist: serde_json::to_string(&checklist)?,
+                    from_scan_lead_id: None,
                     created_at: Utc::now().to_rfc3339(),
                 };
                 let exists = lead_exists(conn, "New Primary Record", &lead.why)?;
@@ -154,6 +156,7 @@ pub fn run_detectors(
                             confidence: "high".to_string(),
                             risk_level: risk_level.to_string(),
                             confirmation_checklist: serde_json::to_string(&checklist)?,
+                            from_scan_lead_id: None,
                             created_at: Utc::now().to_rfc3339(),
                         };
                         let exists = lead_exists(conn, "Money Threshold", &lead.why)?;
@@ -182,6 +185,7 @@ pub fn run_detectors(
                     confidence: "medium".to_string(),
                     risk_level: risk_level.to_string(),
                     confirmation_checklist: serde_json::to_string(&checklist)?,
+                    from_scan_lead_id: None,
                     created_at: Utc::now().to_rfc3339(),
                 };
                 let exists = lead_exists(conn, "Decision / Vote", &lead.why)?;
@@ -210,6 +214,7 @@ pub fn run_detectors(
                     confidence: "medium".to_string(),
                     risk_level: risk_level.to_string(),
                     confirmation_checklist: serde_json::to_string(&checklist)?,
+                    from_scan_lead_id: None,
                     created_at: Utc::now().to_rfc3339(),
                 };
                 let exists = lead_exists(conn, "Personnel Change", &lead.why)?;
@@ -234,6 +239,7 @@ pub fn run_detectors(
                     confidence: "medium".to_string(),
                     risk_level: "low".to_string(),
                     confirmation_checklist: serde_json::to_string(&checklist)?,
+                    from_scan_lead_id: None,
                     created_at: Utc::now().to_rfc3339(),
                 };
                 let exists = lead_exists(conn, "Public Meeting Scheduled", &lead.why)?;
@@ -258,6 +264,7 @@ pub fn run_detectors(
                     confidence: "medium".to_string(),
                     risk_level: "low".to_string(),
                     confirmation_checklist: serde_json::to_string(&checklist)?,
+                    from_scan_lead_id: None,
                     created_at: Utc::now().to_rfc3339(),
                 };
                 let exists = lead_exists(conn, "Deadline", &lead.why)?;
@@ -289,6 +296,7 @@ pub fn run_detectors(
                         confidence: "high".to_string(),
                         risk_level: risk_level.to_string(),
                         confirmation_checklist: serde_json::to_string(&checklist)?,
+                        from_scan_lead_id: None,
                         created_at: Utc::now().to_rfc3339(),
                     };
                     let exists = lead_exists(conn, "Watchlist Hit", &lead.why)?;

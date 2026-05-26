@@ -1,0 +1,1 @@
+- `llm_task_handler` calls `call_local_ollama` directly. Needs to use `LlmClient` trait.

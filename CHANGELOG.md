@@ -9,8 +9,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Added
 - LICENSE (MIT).
 - CONTRIBUTING.md, SECURITY.md, CHANGELOG.md, FAQ.md.
+- **Phase 4:** `LlmClient` trait for LLM dependency injection to allow better unit testing.
+- **Phase 4:** Added `DailyScanResults` UI to visualize daily scan leads.
+- **Phase 4:** Extended `CommunityProfile` to store and inject city and state for daily scans.
 
 ### Changed
+- **Phase 4:** Migrated schema to support nullable `source_id` on daily scan leads and enforced constraints on source tiers.
+- **Phase 4:** Updated Workbench rewrite feature to use native async error handling and added a confirmation prompt.
 - README rewritten to match actual project state. Removed `file:///C:/...` links to author's local filesystem. Corrected project-structure tree (`src/components/` and `src-tauri/templates/` claims removed).
 
 ### Known issues

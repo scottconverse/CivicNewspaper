@@ -2,16 +2,19 @@
 import React, { useState } from "react";
 import { RefreshCw, Play, Trash2, Info, ChevronRight, Search } from "lucide-react";
 import { Lead, Draft } from "../ipc";
+import { DailyScanResults } from "./DailyScanResults";
 
 interface LeadQueueProps {
   leads: Lead[];
   drafts: Draft[];
   loading: boolean;
+  latestScanId?: number | null;
   selectedLeadId?: number | null;
   filter?: string;
   onSelect: (id: number) => void;
   onSyncList: () => void;
   onIngest: () => void;
+  onDailyScan: () => void;
   onOpenDraftEditor: (draft: Draft) => void;
   onOpenCorrectionModal: (draftId: number) => void;
   onDeleteDraft: (id: number) => void;
@@ -21,11 +24,13 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
   leads,
   drafts,
   loading,
+  latestScanId,
   selectedLeadId,
   filter = "",
   onSelect,
   onSyncList,
   onIngest,
+  onDailyScan,
   onOpenDraftEditor,
   onOpenCorrectionModal,
   onDeleteDraft
@@ -80,12 +85,20 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
             <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
             Sync List
           </button>
+          <button className="btn btn-secondary" onClick={onDailyScan} disabled={loading} id="btn-daily-scan">
+            <Play size={16} />
+            Daily Scan
+          </button>
           <button className="btn btn-primary" onClick={onIngest} disabled={loading} id="btn-scrape-detect">
             <Play size={16} />
             Scrape & Detect
           </button>
         </div>
       </div>
+
+      {latestScanId && (
+        <DailyScanResults scanId={latestScanId} />
+      )}
 
       <div className="queue-tabs">
         <button
