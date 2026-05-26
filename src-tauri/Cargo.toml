@@ -1,6 +1,6 @@
 [package]
 name = "civicnews"
-version = "0.1.1"
+version = "0.2.0"
 description = "A local-first newsroom tool with verifiable trust chain."
 authors = ["Scott Converse <sconverse@gmail.com>"]
 license = "MIT"
