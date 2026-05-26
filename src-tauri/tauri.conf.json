@@ -41,6 +41,9 @@
     ],
     "resources": [
       "prompts/*"
+    ],
+    "externalBin": [
+      "binaries/ollama"
     ]
   }
 }

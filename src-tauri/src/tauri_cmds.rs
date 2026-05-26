@@ -481,6 +481,55 @@ pub fn pull_model(app: tauri::AppHandle, model: String) -> Result<(), String> {
 }
 
 #[tauri::command]
+pub fn pull_ollama_model(app: tauri::AppHandle, model_id: String) -> Result<(), String> {
+    use tauri::Emitter;
+    let model = model_id.clone();
+    tauri::async_runtime::spawn(async move {
+        let client = reqwest::Client::new();
+        if let Ok(mut resp) = client
+            .post("http://127.0.0.1:11434/api/pull")
+            .json(&serde_json::json!({ "name": model_id, "stream": true }))
+            .send()
+            .await
+        {
+            while let Ok(Some(chunk)) = resp.chunk().await {
+                let text = String::from_utf8_lossy(&chunk);
+                for line in text.lines() {
+                    if line.trim().is_empty() {
+                        continue;
+                    }
+                    #[derive(serde::Deserialize)]
+                    struct PullMsg {
+                        status: String,
+                        completed: Option<f64>,
+                        total: Option<f64>,
+                    }
+                    if let Ok(msg) = serde_json::from_str::<PullMsg>(line) {
+                        #[derive(serde::Serialize, Clone)]
+                        struct ProgressPayload {
+                            model: String,
+                            status: String,
+                            completed: Option<f64>,
+                            total: Option<f64>,
+                        }
+                        let _ = app.emit(
+                            "ollama-pull-progress",
+                            ProgressPayload {
+                                model: model.clone(),
+                                status: msg.status,
+                                completed: msg.completed,
+                                total: msg.total,
+                            },
+                        );
+                    }
+                }
+            }
+        }
+    });
+    Ok(())
+}
+
+#[tauri::command]
 pub fn get_system_ram() -> Result<u64, String> {
     use sysinfo::System;
     let mut sys = System::new_all();

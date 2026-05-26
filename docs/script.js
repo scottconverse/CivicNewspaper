@@ -1,6 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Mermaid
+    if (typeof mermaid !== 'undefined') {
+        mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    }
+
     // Initialize Lucide Icons
     lucide.createIcons();
+
+    // Platform detection for download highlights
+    const userAgent = navigator.userAgent.toLowerCase();
+    const platform = navigator.platform ? navigator.platform.toLowerCase() : '';
+    
+    let detectedPlatform = '';
+    if (userAgent.includes('win') || platform.includes('win')) {
+        detectedPlatform = 'win';
+    } else if (userAgent.includes('mac') || platform.includes('mac') || platform.includes('ipad') || platform.includes('iphone')) {
+        detectedPlatform = 'mac';
+    } else if (userAgent.includes('linux') || platform.includes('linux')) {
+        detectedPlatform = 'linux';
+    }
+    
+    if (detectedPlatform) {
+        const targetCard = document.getElementById(`download-${detectedPlatform}`);
+        if (targetCard) {
+            targetCard.classList.add('highlighted');
+        }
+    }
 
     // Intersection Observer for scroll animations
     const observerOptions = {

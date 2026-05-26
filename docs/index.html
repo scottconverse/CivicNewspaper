@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 </head>
 <body>
 
@@ -20,7 +21,7 @@
                 <a href="#features">Features</a>
                 <a href="#how-it-works">How It Works</a>
                 <a href="#architecture">Architecture</a>
-                <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/user_manual.md" class="nav-btn-secondary" target="_blank">User Manual</a>
+                <a href="./user_manual.md" class="nav-btn-secondary" target="_blank">User Manual</a>
                 <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank" class="nav-btn-primary">GitHub</a>
             </div>
         </div>
@@ -30,17 +31,48 @@
     <header class="hero">
         <div class="hero-content fade-up">
             <div class="pill">Local-First. Zero Runtime.</div>
-            <h1 class="hero-title">The newsroom for the <span class="gradient-text">community observer</span>.</h1>
+            <h1 class="hero-title">The newsroom for the <span class="gradient-text">community observer</span></h1>
             <p class="hero-subtitle">
                 A desktop civic intelligence tool empowering single-editor newsrooms to monitor municipal feeds, extract OSINT signals, draft objective reports using local AI, and publish flat HTML sites—all running 100% locally.
             </p>
-            <div class="hero-actions">
-                <a href="https://github.com/scottconverse/CivicNewspaper/releases" class="btn btn-primary">
-                    <i data-lucide="download"></i> Download App
-                </a>
-                <a href="#architecture" class="btn btn-secondary">
-                    <i data-lucide="cpu"></i> View Architecture
-                </a>
+            
+            <div class="download-container">
+                <div class="download-card" id="download-win">
+                    <a href="https://github.com/scottconverse/CivicNewspaper/releases/latest/download/CivicNewspaper_0.2.0_x64_en-US.msi" class="btn download-btn">
+                        <i data-lucide="monitor"></i> Download for Windows
+                    </a>
+                    <div class="install-callout">
+                        <a href="install.md" class="callout-link">
+                            <i data-lucide="help-circle"></i> First time installing?
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="download-card" id="download-mac">
+                    <a href="https://github.com/scottconverse/CivicNewspaper/releases/latest/download/CivicNewspaper_0.2.0_x64.dmg" class="btn download-btn">
+                        <i data-lucide="apple"></i> Download for macOS
+                    </a>
+                    <div class="install-callout">
+                        <a href="install.md" class="callout-link">
+                            <i data-lucide="help-circle"></i> First time installing?
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="download-card" id="download-linux">
+                    <a href="https://github.com/scottconverse/CivicNewspaper/releases/latest/download/civicnewspaper_0.2.0_amd64.deb" class="btn download-btn">
+                        <i data-lucide="terminal"></i> Download for Linux
+                    </a>
+                    <div class="install-callout">
+                        <a href="install.md" class="callout-link">
+                            <i data-lucide="help-circle"></i> First time installing?
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-image-container">
+                <img src="assets/hero.png" alt="CivicNewspaper Dashboard Overview" class="hero-image">
             </div>
         </div>
     </header>
@@ -55,27 +87,27 @@
             <div class="features-grid">
                 
                 <div class="feature-card fade-up" style="transition-delay: 0.1s;">
-                    <div class="feature-icon"><i data-lucide="shield-check"></i></div>
-                    <h3>Local-First Architecture</h3>
-                    <p>Built on Tauri and SQLite. Your sources, records, leads, and drafts never leave your device. No cloud APIs or data harvesting.</p>
+                    <div class="feature-icon"><i data-lucide="refresh-cw"></i></div>
+                    <h3>Daily Scan</h3>
+                    <p>Aggregates municipality signals automatically. Keeps you updated on the latest local government feeds without manual tracking.</p>
                 </div>
 
                 <div class="feature-card fade-up" style="transition-delay: 0.2s;">
-                    <div class="feature-icon"><i data-lucide="radar"></i></div>
-                    <h3>OSINT Detector Engine</h3>
-                    <p>Automated background parser scans public agendas and minutes for large budgets, votes, and keywords on your custom watchlist.</p>
+                    <div class="feature-icon"><i data-lucide="file-text"></i></div>
+                    <h3>Plain Language Summary & Rewrite</h3>
+                    <p>Converts dense, bureaucratic agendas and reports into clean, readable text. Full offline LLM support keeps your workspace private.</p>
                 </div>
 
                 <div class="feature-card fade-up" style="transition-delay: 0.3s;">
-                    <div class="feature-icon"><i data-lucide="file-check-2"></i></div>
-                    <h3>Factual Guardrails</h3>
-                    <p>Enforces strict citation coverage and prevents accusatory terminology without linked documentary proof.</p>
+                    <div class="feature-icon"><i data-lucide="shield-check"></i></div>
+                    <h3>Source Tier Enforcement</h3>
+                    <p>Classify and segment feeds by reliability and official standing. Focus first on high-priority regulatory or legislative sources.</p>
                 </div>
 
                 <div class="feature-card fade-up" style="transition-delay: 0.4s;">
-                    <div class="feature-icon"><i data-lucide="globe"></i></div>
-                    <h3>Flat HTML Compiler</h3>
-                    <p>Compiles your approved story queue into a clean, modern static site with RSS feeds. Perfect for free drag-and-drop hosting.</p>
+                    <div class="feature-icon"><i data-lucide="cpu"></i></div>
+                    <h3>Bundled Ollama Sidecar</h3>
+                    <p>Features zero separate setup. Run your intelligence model directly on your CPU out-of-the-box, no external server needed.</p>
                 </div>
 
             </div>
@@ -150,17 +182,14 @@
                         </div>
                     </div>
                     <div class="arch-visual">
-                        <!-- Abstract Visual Representation of Architecture -->
-                        <div class="arch-diagram">
-                            <div class="node browser">Browser Extension</div>
-                            <div class="arrow">↓</div>
-                            <div class="node server">Axum Local Server<br><small>127.0.0.1:12053</small></div>
-                            <div class="arrow-double">↕</div>
-                            <div class="node core">Tauri Rust Core</div>
-                            <div class="arrow-double">↕</div>
-                            <div class="node-group">
-                                <div class="node db">SQLite DB</div>
-                                <div class="node ai">Ollama LLM</div>
+                        <div class="mermaid-container">
+                            <div class="mermaid">
+graph TD
+    A[Browser Extension / UI] <-->|Pairing PIN / API| B[Tauri HTTP Loopback Server Axum]
+    B <--> C[Tauri Rust Core]
+    C <--> D[SQLite DB WAL Mode]
+    C <--> E[Ollama Sidecar Gemma 2]
+    C --> F[Flat HTML Compiler]
                             </div>
                         </div>
                     </div>
@@ -179,7 +208,7 @@
                 <p>Open-source civic intelligence.</p>
             </div>
             <div class="footer-links">
-                <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/user_manual.md" target="_blank">User Manual</a>
+                <a href="./user_manual.md" target="_blank">User Manual</a>
                 <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/architecture.md" target="_blank">Architecture Specs</a>
                 <a href="https://github.com/scottconverse/CivicNewspaper/discussions" target="_blank">Community Discussions</a>
                 <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank">GitHub</a>

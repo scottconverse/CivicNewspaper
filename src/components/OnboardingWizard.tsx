@@ -9,6 +9,7 @@ interface OnboardingWizardProps {
   ollamaOnline: boolean;
   systemRam: number;
   onComplete: () => void;
+  initialStep?: number;
 }
 
 interface OllamaState {
@@ -17,8 +18,8 @@ interface OllamaState {
   version: string | null;
 }
 
-export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }) => {
-  const [step, setStep] = useState<number>(1);
+export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, initialStep }) => {
+  const [step, setStep] = useState<number>(initialStep || 1);
   
   // Step 1 State
   const [pubName, setPubName] = useState("");
@@ -48,7 +49,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }
   const steps = [
     { title: "Identity", desc: "Define your local news outlet name and mission." },
     { title: "Ollama Health", desc: "Check connection with the local Ollama LLM endpoint." },
-    { title: "Pull Model", desc: "Download recommended models based on system specifications." },
+    { title: "Download AI Model", desc: "Downloading AI model (5.4 GB). This is a one-time setup." },
     { title: "Defaults", desc: "Configure publication directories and backup database paths." },
     { title: "Browser Pairing", desc: "Establish authorization pairing with the browser extensions." },
     { title: "Done", desc: "Onboarding completed. Ready to inspect local stories." }
@@ -95,24 +96,33 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }
   };
 
   const startPullModel = async () => {
-    const modelToPull = getRecommendedModel();
     setPulling(true);
     setPullProgress("Starting pull...");
     setPullPercent(0);
 
     try {
-      await listen<{status: string, percent: number | null}>("ollama:pull-progress", (event) => {
-        setPullProgress(event.payload.status);
-        if (event.payload.percent !== null) {
-          setPullPercent(event.payload.percent);
+      await listen<{ model: string; status: string; completed?: number; total?: number }>(
+        "ollama-pull-progress",
+        (event) => {
+          setPullProgress(event.payload.status);
+          if (
+            event.payload.completed !== undefined &&
+            event.payload.total !== undefined &&
+            event.payload.total > 0
+          ) {
+            setPullPercent((event.payload.completed / event.payload.total) * 100);
+          }
+          if (
+            event.payload.status === "success" ||
+            event.payload.status.toLowerCase().includes("success")
+          ) {
+            setPullComplete(true);
+            setPulling(false);
+          }
         }
-        if (event.payload.status === "success") {
-          setPullComplete(true);
-          setPulling(false);
-        }
-      });
+      );
 
-      await invoke("ollama_pull_model", { model: modelToPull });
+      await invoke("pull_ollama_model", { modelId: "gemma2:9b" });
     } catch (e) {
       console.error(e);
       setPullProgress("Error pulling model.");
@@ -266,20 +276,27 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }
           </div>
         )}
 
-        {/* STEP 3: PULL MODEL */}
+        {/* STEP 3: DOWNLOAD AI MODEL */}
         {step === 3 && (
           <div>
             <div style={{ background: "rgba(0,0,0,0.02)", padding: "1rem", borderRadius: "8px", marginBottom: "1rem" }}>
-              <strong>Recommended Model: {getRecommendedModel()}</strong>
+              <strong>AI Model: gemma2:9b (Recommended)</strong>
               <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
-                This is optimized for your {sysRam}GB of system RAM.
+                Downloading AI model (5.4 GB). This is a one-time setup.
               </p>
             </div>
             
             {!pulling && !pullComplete && (
-              <button className="btn btn-primary" onClick={startPullModel}>
-                <Download size={16} style={{ marginRight: "0.5rem" }} /> Pull Recommended Model
-              </button>
+              <div>
+                <button className="btn btn-primary" onClick={startPullModel}>
+                  <Download size={16} style={{ marginRight: "0.5rem" }} /> Download Gemma 2 (9B)
+                </button>
+                <div style={{ marginTop: "1rem", background: "rgba(245, 158, 11, 0.05)", borderLeft: "4px solid var(--color-warning)", padding: "0.75rem", borderRadius: "4px" }}>
+                  <p style={{ fontSize: "0.85rem", margin: 0, color: "var(--text-primary)" }}>
+                    <strong>Warning:</strong> You can skip this download, but you will be unable to run a Daily Scan until the model is downloaded later.
+                  </p>
+                </div>
+              </div>
             )}
 
             {(pulling || pullComplete) && (

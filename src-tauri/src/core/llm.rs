@@ -2,7 +2,11 @@
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
+use std::sync::Mutex;
 use std::time::Duration;
+use tauri::AppHandle;
+use tauri_plugin_shell::process::CommandChild;
+use tauri_plugin_shell::ShellExt;
 
 #[derive(Debug, Serialize)]
 struct OllamaGenerateRequest<'a> {
@@ -102,4 +106,44 @@ pub async fn pull_ollama_model(
     }
 
     Ok(resp)
+}
+
+pub struct OllamaSidecar {
+    pub(crate) child: Mutex<Option<CommandChild>>,
+}
+
+impl OllamaSidecar {
+    pub fn new() -> Self {
+        Self {
+            child: Mutex::new(None),
+        }
+    }
+
+    pub fn start(&self, app: &AppHandle) -> Result<(), Box<dyn Error + Send + Sync>> {
+        let mut guard = self.child.lock().map_err(|e| format!("Lock error: {}", e))?;
+        if guard.is_some() {
+            return Ok(());
+        }
+
+        let sidecar_command = app
+            .shell()
+            .sidecar("ollama")
+            .map_err(|e| format!("Sidecar error: {}", e))?
+            .args(["serve"]);
+
+        let (_rx, child_proc) = sidecar_command
+            .spawn()
+            .map_err(|e| format!("Spawn error: {}", e))?;
+
+        *guard = Some(child_proc);
+        Ok(())
+    }
+
+    pub fn stop(&self) -> Result<(), Box<dyn Error + Send + Sync>> {
+        let mut guard = self.child.lock().map_err(|e| format!("Lock error: {}", e))?;
+        if let Some(child_proc) = guard.take() {
+            child_proc.kill().map_err(|e| format!("Kill error: {}", e))?;
+        }
+        Ok(())
+    }
 }

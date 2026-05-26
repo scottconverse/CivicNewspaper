@@ -131,6 +131,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           <OnboardingWizard
             ollamaOnline={app.ollamaOnline}
             systemRam={app.systemRam}
+            initialStep={app.onboardingStep}
             onComplete={() => app.setActiveTab("queue")}
           />
           <SystemStatus

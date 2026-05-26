@@ -192,6 +192,20 @@ export async function pullModel(model: string): Promise<void> {
   return invoke<void>("pull_model", { model });
 }
 
+export interface OllamaState {
+  reachable: boolean;
+  models: string[];
+  version: string | null;
+}
+
+export async function ollamaHealth(): Promise<OllamaState> {
+  return invoke<OllamaState>("ollama_health");
+}
+
+export async function pullOllamaModel(modelId: string): Promise<void> {
+  return invoke<void>("pull_ollama_model", { modelId });
+}
+
 export async function getSystemRam(): Promise<number> {
   return invoke<number>("get_system_ram");
 }

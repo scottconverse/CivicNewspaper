@@ -2,7 +2,26 @@
 
 > Pre-alpha. Not production software. No security review. APIs and database schema may break without notice.
 
-A local-first, single-editor desktop app for monitoring municipal feeds, flagging public-record signals, drafting reports with a local LLM, and compiling a static HTML newsroom. Built on Tauri v2, React, SQLite, and Ollama. Runs entirely on your computer — there is no cloud component.
+CivicNewspaper is a local-first, privacy-focused desktop application designed for local journalists, newsroom operators, and community organizers who want to monitor public municipal feeds without relying on complex, cloud-based software. It automatically scans local RSS feeds and websites for public records and meeting notices, identifies important civic signals, and helps draft plain-language summaries using a private, offline language model running directly on your computer. By storing all database records and drafts locally, CivicNewspaper provides a secure, independent toolkit to help you track municipal actions and compile a static website ready for publishing.
+
+## Download
+
+You can download the latest pre-compiled installers for your platform from the [latest GitHub Releases](https://github.com/scottconverse/CivicNewspaper/releases/latest).
+
+### Installation Instructions
+* **Windows**: Download the `.msi` or `.exe` installer. When launching, Windows SmartScreen will display a warning because the installer is currently unsigned. Click **"More info"** and then **"Run anyway"** to proceed.
+* **macOS**: Download the `.dmg` or `.app` file. Because the app is not signed with an Apple developer certificate, macOS Gatekeeper will block execution. Right-click the application icon, select **Open**, and then confirm the prompt. Alternatively, go to **System Settings > Privacy & Security** and scroll down to click **"Open Anyway"** for CivicNewspaper.
+* **Linux**: Download the `.deb` package (for Debian/Ubuntu) or the `.AppImage`. Install the `.deb` via your package manager (e.g., `sudo dpkg -i civicnewspaper_*.deb`) or make the `.AppImage` executable (`chmod +x CivicNewspaper.AppImage`) and run it.
+
+## First Run
+
+When you open CivicNewspaper for the first time, you will be guided through an onboarding wizard. 
+
+1. **Model Download**: The application requires a local language model to draft summaries and rewrite text offline. By default, the wizard will pull the `gemma2:9b` model via Ollama. This download is approximately **5.4 GB** and may take anywhere from a few minutes to an hour depending on your internet connection. 
+2. **First Source**: After the model download completes, the onboarding wizard will prompt you to add your first RSS or web feed to scan.
+3. **Database Initialization**: The app automatically sets up a local SQLite database (in WAL mode) to store feeds, scraped articles, signals, and story drafts. 
+
+No accounts or internet connections are required after this initial setup.
 
 ## What this is, and what it isn't
 

@@ -1,77 +1,149 @@
-# CivicNews System Architecture
-## *Technical Design and Security Protocol Specification*
+# CivicNewspaper System Architecture
 
-This document outlines the architectural specifications, security protocols, database schemas, and integration flows of the CivicNews local core.
+This document describes the architectural design, data models, and security boundaries of CivicNewspaper.
 
 ---
 
-## 🏗️ System Components
+## 🏗️ System Overview
 
-CivicNews utilizes a hybrid desktop-server layout to allow secure coordination between the desktop interface, browser extensions, and developer plugins without requiring cloud infrastructure.
+CivicNewspaper is a local-first desktop application. It operates entirely on the user's local machine, leveraging Tauri for the OS interface, React for the UI, and a Rust core for data orchestration.
 
 ```mermaid
-sequenceDiagram
-    participant Browser as Browser Extension / CLI Client
-    participant Axum as Axum Local Server (127.0.0.1:12053)
-    participant Rust as Tauri Rust Core
-    participant DB as SQLite DB
-    participant UI as React Desktop UI
-    
-    %% Pairing Flow
-    UI->>Rust: generate_pairing_pin("Chrome Extension")
-    Rust->>DB: Store PIN & Label (expires in 5m)
-    Rust-->>UI: Return PIN
-    Browser->>Axum: POST /api/pair { pin }
-    Note over Axum,DB: Check rate limits & hash PIN
-    Axum->>DB: Validate PIN & Retrieve Token
-    DB-->>Axum: Return Token
-    Axum-->>Browser: Return paired bearer Token
-    
-    %% Ingest Flow
-    Browser->>Axum: GET /api/queue with Auth Header
-    Note over Axum: Middleware: validates Host & token
-    Axum->>DB: List leads & drafts
-    DB-->>Axum: Returns data
-    Axum-->>Browser: JSON response
+graph TD
+    subgraph Desktop Application
+        ReactUI[React UI] <-->|IPC Channels| TauriShell[Tauri Shell]
+        TauriShell <-->|Rust FFI Bridge| RustCore[Rust Core]
+    end
+    subgraph Local Storage & Engines
+        RustCore <-->|SQLite Driver| SQLite[(SQLite Database WAL Mode)]
+        RustCore <-->|HTTP API localhost:11434| Ollama[Ollama Sidecar]
+    end
+    subgraph Publishing
+        RustCore -->|pulldown-cmark Compiler| CompiledSite[Compiled Static Site]
+    end
+    subgraph Integrations
+        Loopback[Axum Loopback Server 127.0.0.1:12053] <-->|Rust Core| RustCore
+        BrowserExt[Browser Extension / CLI] <-->|Bearer Token Auth| Loopback
+    end
 ```
 
-### 1. Tauri v2 Desktop Wrapper
-* Manages the OS window, native system tray, and alerts.
-* Provides native system commands (`tauri_cmds.rs`) bridged to the React frontend UI.
-* Exposes file selection dialogs for database backup and restore operations.
-
-### 2. Axum Local Loopback Server (`127.0.0.1:12053`)
-* Runs inside a background `tokio` thread spawned during Tauri initialization.
-* Exposes HTTP endpoints allowing browser extensions and IDE skills to pair and interact with the database.
-* Strictly binds to the loopback interface (`127.0.0.1`) to prevent external network access.
-
-### 3. SQLite Database (`civicnews.db`)
-* Runs in **WAL (Write-Ahead Log) mode** to enable concurrent reads and writes.
-* Handled safely via thread-safe `Arc<Mutex<Connection>>` guards.
+### Components
+1. **Tauri Desktop Shell**: Native desktop host wrapper compiled with Rust. Manages window lifecycles, native file dialogs, and subprocess security.
+2. **React UI**: Responsive user interface built with React 19, TypeScript, and modern CSS.
+3. **Rust Core**: Hand-written core modules implementing feed scraping, database persistence, regex matching, markdown compilation, and local server routing.
+4. **Ollama Sidecar**: Independent service running locally on port `11434` providing offline LLM completion APIs.
+5. **SQLite Database**: Single-file relational storage with Write-Ahead Logging (WAL) enabled for performance and crash resilience.
+6. **Compiled Static Site**: Output folder containing parsed HTML files, style assets, and RSS feeds.
 
 ---
 
-## 🔒 Security Protocols & Protections
+## 🔄 Data Flow
 
-To protect the local system from malicious web scripts running inside user browsers, multiple levels of defense-in-depth are implemented in `auth.rs`:
+The core workflow of CivicNewspaper translates municipal records into structured news feeds.
 
-### 1. Host Header Validation
-To defend against **DNS Rebinding Attacks** (where a malicious website overrides local DNS resolution to route requests to local loopback ports), the Axum middleware verifies the `Host` header of every incoming HTTP request:
-* Allowed Hosts: `127.0.0.1:12053` or `localhost:12053` (case-insensitive).
-* Any other host immediately returns a `400 Bad Request` or `403 Forbidden` status.
+```mermaid
+graph LR
+    Sources[Sources] -->|URLs/Feeds| Scraper[Scraper]
+    Scraper -->|Excerpts / Raw Text| Detectors[Regex Detectors]
+    Detectors -->|Matches & Checklist| Leads[Leads]
+    Leads -->|Promote / AI Draft| Drafts[Drafts]
+    Drafts -->|pulldown-cmark Compiler| CompiledSite[Compiled Site]
+    CompiledSite -->|Output| RSS[RSS Feed]
+```
 
-### 2. Origin Whitelisting (CORS)
-To prevent cross-site request forgery (CSRF) from arbitrary browser tabs:
-* The `Origin` header is checked on all requests containing it.
-* Only trusted origins (e.g., `chrome-extension://...`) are permitted.
-* Requests without an `Origin` header (for CLI and IDE integration tools, such as the assistant skill CLI) are permitted to connect, as they are not subject to browser-based CSRF.
-* Untrusted origins return `403 Forbidden`.
+1. **Sources**: RSS feeds, HTML portals, or browser clips.
+2. **Scraper**: Pulls raw HTML or XML content, extracts clean text, and stores them as `evidence_items`.
+3. **Detectors**: Scans stored text chunks against regex rules (e.g. monetary thresholds, key votes, personnel updates).
+4. **Leads**: Structured signals that group matched evidence paragraphs.
+5. **Drafts**: Factual markdown articles written on the Workbench tab.
+6. **Compiled Site & RSS**: Finished static HTML documents and RSS feeds exported to the output directory.
 
-### 3. Token Pairing & Authorization
-* Pairing requires a short-lived (5-minute expiration) 22-char token generated by the Tauri client.
-* Upon validation (`POST /api/pair`), the associated cryptographically secure Bearer token is returned to the client.
-* Subsequent API requests must attach this token as a `Bearer` token inside the `Authorization` header.
-* Revoking a client from the Settings tab immediately invalidates its token in the database.
+---
+
+## ⚡ Daily Scan Flow
+
+The Daily Scan uses the local language model to aggregate multiple sources of information over a 24-hour window and identify potential leads.
+
+```mermaid
+graph TD
+    Evidence[24h Scraped Evidence Items] -->|Combine Excerpts| AggregatorPrompt[Aggregator Prompt Builder]
+    AggregatorPrompt -->|Prompt Payload| LLM[Local Ollama LLM]
+    LLM -->|Parsed JSON Results| DailyScanLeads[daily_scan_leads Database]
+    DailyScanLeads -->|Display in Queue UI| UIPromote[UI Promote Button Clicked]
+    UIPromote -->|Convert to Lead/Draft| StoryWorkbench[Story Workbench]
+```
+
+* **Evidence Items**: Scraped documents and text chunks collected in the last 24 hours.
+* **Aggregator Prompt**: Groups all excerpts into a single compact context window, requesting the LLM to identify key developments.
+* **Local LLM**: Generates structured, tokenized JSON summaries of findings.
+* **daily_scan_leads**: Database representation of scan findings.
+* **UI Promote**: Operator reviews scan results and clicks "Promote" to establish an editable story draft.
+
+---
+
+## ✍️ Plain-Language Rewrite Flow
+
+Operators can simplify complex legalese and municipal jargon into plain English using the offline rewrite flow.
+
+```mermaid
+graph TD
+    Draft[Original Draft Text] -->|Format-Aware System Prompt| PromptBuilder[Prompt Builder]
+    PromptBuilder -->|Simplify Request| LLM[Local Ollama LLM]
+    LLM -->|Plain-Language Output| ConfirmDialog[window.confirm dialog]
+    ConfirmDialog -->|User clicks Confirm| DraftReplaced[Draft Text Replaced]
+    ConfirmDialog -->|User clicks Cancel| DraftKept[Draft Kept Unchanged]
+```
+
+* **Format-Aware System Prompt**: Instructs the LLM to write for a general public audience, preserving numbers and names while discarding jargon.
+* **window.confirm**: Displays a side-by-side modal panel for user verification.
+* **Draft Replaced / Draft Kept**: The editor content is updated only upon explicit human confirmation.
+
+---
+
+## 🔒 Security Model
+
+To protect the local computer from malicious web scripts, CivicNewspaper enforces rigid security boundaries.
+
+```mermaid
+graph TD
+    subgraph Loopback Boundary 127.0.0.1
+        Server[Axum Loopback Server]
+        PIN[Pairing PIN System]
+        TTL[Token TTL Expiration]
+        Locks[Scope-locks Path Verification]
+    end
+    subgraph Client-Side Security
+        CSP[Content Security Policy]
+    end
+    Request[Incoming Request] -->|Host & Origin Check| Server
+    Server --> PIN
+    Server --> TTL
+    Server --> Locks
+    TauriWebView[Tauri Webview] --> CSP
+```
+
+* **Loopback Server**: The Axum server strictly binds to the loopback IP `127.0.0.1:12053`. Any external interface requests are rejected.
+* **Host & Origin Headers**: Checks the `Host` and `Origin` headers on incoming calls to block DNS rebinding and cross-origin attacks from malicious browser tabs.
+* **Pairing PIN**: A temporary 6-digit PIN with a short TTL (5 minutes) is generated to securely exchange long-term cryptographically strong bearer tokens with paired extensions.
+* **Scope-locks**: File system directories are verified prior to writing backups or compiled sites, preventing directory traversal attacks.
+* **Content Security Policy**: Webview header restriction blocks loading third-party scripts or frames.
+
+---
+
+## 🚀 Onboarding Flow
+
+The startup wizard ensures all dependencies are set up before allowing the operator to use the application workspace.
+
+```mermaid
+graph TD
+    WizardSteps[Start Onboarding Wizard] -->|Detect Ollama| ModelPull[Model Pull Progress 'gemma2:9b']
+    ModelPull -->|5.4 GB Download Complete| FirstSource[First Source Added]
+    FirstSource -->|Database Populated| Dashboard[App Dashboard Access]
+```
+
+* **Detect Ollama**: Checks if the Ollama background daemon is reachable on `127.0.0.1:11434`.
+* **Model Pull Progress**: Triggers the `gemma2:9b` model pull and tracks the download progress bytes.
+* **First Source**: Requests the user's initial feed to populate the workspace database.
 
 ---
 
@@ -145,20 +217,3 @@ Authorized external integrations.
 * `created_at`: `TEXT NOT NULL`
 * `last_used_at`: `TEXT`
 * `revoked`: `INTEGER NOT NULL DEFAULT 0` (0=false, 1=true)
-
----
-
-## ⚙️ Compilation & Verification Mechanics
-
-### 1. HTML Reference Swapping
-The Flat HTML Compiler reads files from the database and maps Markdown references to section anchors:
-* A markdown link written as `[Budget](evidence:12)` is parsed into raw HTML `<a href="evidence:12">Budget</a>`.
-* The compiler uses string replacements to rewrite the target: `<a href="#evidence-12">Budget</a>`.
-* The evidence citation section generates list item anchors matching `id="evidence-12"` to scroll the reader to the exact citation excerpt upon clicking.
-
-### 2. Pre-Publication Guardrails Checks
-The guardrails module (`guardrails.rs`) checks drafts and generates visual safety reports inside the editor UI:
-* **Accusatory Language**: Checks for words like `corrupt`, `embezzle`, `illegal`, `fraud`, `theft`, `misappropriation`, `bribery`, `conspiracy`, `kickback`. If found, the editor highlights the issue and requires a valid `evidence:ID` citation nearby.
-* **Presumption of Innocence**: Scans for arrest terms like `arrested`, `charged`, `indicted`, `convicted`, `prosecuted`. If any of these are found in a sentence, the editor flags a warning unless standard qualifiers like `alleged`, `allegedly`, `suspected`, `accused` are nearby.
-* **Citation Coverage**: Generates warnings for paragraphs that contain factual assertions but lack at least one linked `evidence:` citation.
-* **UI vs. Compiler Role**: Guardrails operate as editor lint warnings. In the current iteration, they do not block compilation or force status reverts; the responsibility of resolving flagged violations lies with the editor.

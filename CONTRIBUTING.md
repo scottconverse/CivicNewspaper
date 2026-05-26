@@ -39,6 +39,13 @@ cargo test
 
 `src-tauri/src/core/guardrails.rs` has a hard-coded `accusatory_words` list. If your editorial judgment says a word belongs in or out, open an issue first to discuss — this list is editorial policy, not just code.
 
+### Medium: New LLM-Backed Features and the LlmClient Trait
+
+For any new LLM-backed features (such as automated headlines, translations, or summaries), you **must** use the [LlmClient](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/llm.rs) trait pattern defined in [llm.rs](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/llm.rs).
+* Do not make direct HTTP requests to Ollama or use ad-hoc clients.
+* Implement your logic against the `LlmClient` trait so it can be easily mocked in our Rust test suite.
+* Write corresponding mock tests in [tests.rs](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/tests.rs) to verify your implementation under different model behaviors and failure modes.
+
 ### Medium: frontend componentization
 
 `src/App.tsx` is a 1,918-line single-page React component. Pulling out reusable pieces (the Queue view, the Workbench, the Onboarding wizard, the Settings tab) into `src/components/` would dramatically improve maintainability. The first PR on this path should pick one tab only and ship a working extraction with no behavior change.

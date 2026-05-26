@@ -42,9 +42,26 @@ Yours, if you publish it. The guardrail check does not verify factual correspond
 
 ## Setup and installation
 
-### Why isn't there a Mac / Windows installer to download?
+### Where do I download the app?
 
-The project hasn't cut its first release yet. Until then you have to build from source — see the README's "Building from source" section. Building is straightforward if you already have Rust, Node, and Ollama installed; if you don't, expect 20–40 minutes the first time.
+Pre-compiled installers for Windows, macOS, and Linux are available on the [latest GitHub Releases page](https://github.com/scottconverse/CivicNewspaper/releases/latest). See the [docs/install.md](docs/install.md) file for step-by-step setup guides.
+
+### Why does Windows/Mac warn me about this app?
+
+Windows SmartScreen and macOS Gatekeeper warn you because the installers are not digitally signed with an expensive, recurring Microsoft/Apple developer certificate. CivicNewspaper is an open-source, community-led project and operates on a "trust-without-signing" model. You can verify the integrity of the downloaded files manually by computing their SHA256 checksums and matching them against the hashes published on the GitHub Release page. For details on how to bypass the warnings and verify the files, see the [Installation Guide](docs/install.md).
+
+### How much disk space do I need?
+
+You will need:
+- **Application space**: Around 330 MB for the installed application.
+- **AI Model space**: Around 5.4 GB for the default `gemma2:9b` offline writing model.
+- **Database space**: The SQLite database starts at less than 1 MB, but will grow depending on how many sources you monitor and how many text excerpts you scrape. Typically, a year of municipal monitoring uses under 100 MB.
+
+Total recommended free space: **6 GB to 10 GB**.
+
+### Does this work offline?
+
+Yes. Once you have completed the onboarding setup and downloaded the language model (which requires an active internet connection), all text processing, signal detection, AI drafting, guardrail checking, database storage, and site compilation happen locally on your computer. You can use CivicNewspaper entirely offline. You only need the internet to scrape new online feeds or to upload your compiled site to a hosting provider.
 
 ### How do I install the Chromium browser extension?
 

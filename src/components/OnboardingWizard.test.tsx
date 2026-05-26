@@ -110,4 +110,69 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(screen.getByText(/Pull a recommended model/i)).toBeInTheDocument());
     expect(screen.getByText(/gemma2:9b/)).toBeInTheDocument();
   });
+
+  test("Model Pull: streams progress and completes", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+    let progressCallback: any = null;
+
+    const eventApi = await import("@tauri-apps/api/event");
+    vi.mocked(eventApi.listen).mockImplementation(((eventName: string, callback: any) => {
+      if (eventName === "ollama-pull-progress") {
+        progressCallback = callback;
+      }
+      return Promise.resolve(() => {});
+    }) as any);
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: [], version: "0.1.0" });
+      if (cmd === "pull_ollama_model") return Promise.resolve();
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} initialStep={3} />);
+
+    // Check we are on Step 3
+    expect(screen.getByText("Step 3 of 6")).toBeInTheDocument();
+    
+    // Click pull recommended model button
+    const pullBtn = screen.getByRole("button", { name: /Download Gemma 2/i });
+    fireEvent.click(pullBtn);
+
+    // Verify it called pull_ollama_model command
+    await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("pull_ollama_model", { modelId: "gemma2:9b" }));
+
+    // Simulate progress event at 50%
+    await waitFor(() => expect(progressCallback).not.toBeNull());
+    
+    const { act } = await import("@testing-library/react");
+    act(() => {
+      progressCallback({
+        payload: {
+          model: "gemma2:9b",
+          status: "downloading",
+          completed: 50,
+          total: 100,
+        },
+      });
+    });
+
+    // Expect to see progress percentage in document
+    expect(await screen.findByText("50.0%")).toBeInTheDocument();
+
+    // Now simulate success
+    act(() => {
+      progressCallback({
+        payload: {
+          model: "gemma2:9b",
+          status: "success",
+          completed: 100,
+          total: 100,
+        },
+      });
+    });
+
+    expect(await screen.findByText("Model pulled successfully.")).toBeInTheDocument();
+  });
 });

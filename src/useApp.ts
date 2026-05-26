@@ -26,6 +26,7 @@ import {
   backupRestore,
   checkOllama,
   pullModel,
+  ollamaHealth,
   getSystemRam,
   discoverSources,
   Source,
@@ -43,6 +44,7 @@ import {
 export function useApp() {
   // Navigation
   const [activeTab, setActiveTab] = useState<string>("queue");
+  const [onboardingStep, setOnboardingStep] = useState<number>(1);
 
   // Updater
   const [updateAvailable, setUpdateAvailable] = useState<any>(null);
@@ -259,8 +261,18 @@ export function useApp() {
   const handleDailyScan = async () => {
     try {
       setLoading(true);
-      setStatusMessage("Running daily scan on evidence using the aggregator prompt...");
+      setStatusMessage("Checking AI model presence...");
       setErrorMessage("");
+
+      const health = await ollamaHealth();
+      if (!health.reachable || !health.models.some(m => m.includes("gemma2:9b"))) {
+        setErrorMessage("Daily Scan requires the gemma2:9b model, which was not found. Redirecting to model download setup...");
+        setOnboardingStep(3);
+        setActiveTab("onboarding");
+        return;
+      }
+
+      setStatusMessage("Running daily scan on evidence using the aggregator prompt...");
       const city = communityProfile?.city || "Brighton";
       const state = communityProfile?.state || "CO";
       const scanId = await runDailyScan(city, state, 24);
@@ -782,6 +794,8 @@ export function useApp() {
     setWizardModel,
     pullingModel,
     pullProgressText,
+    onboardingStep,
+    setOnboardingStep,
     manualLlmMode,
     setManualLlmMode,
     customLlmPrompt,

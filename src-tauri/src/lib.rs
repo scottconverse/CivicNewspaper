@@ -12,6 +12,7 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
             // Panic Hook
@@ -71,6 +72,13 @@ pub fn run() {
                 }
             });
 
+            // Start Ollama Sidecar
+            let sidecar = Arc::new(crate::core::llm::OllamaSidecar::new());
+            app.manage(sidecar.clone());
+            if let Err(e) = sidecar.start(app.handle()) {
+                eprintln!("Failed to start Ollama sidecar: {}", e);
+            }
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -97,6 +105,7 @@ pub fn run() {
             backup_restore,
             check_ollama,
             pull_model,
+            pull_ollama_model,
             get_system_ram,
             discover_sources,
             ollama_health,
@@ -110,6 +119,13 @@ pub fn run() {
             run_daily_scan,
             plain_language_rewrite
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|app_handle, event| {
+            if let tauri::RunEvent::Exit = event {
+                if let Some(sidecar) = app_handle.try_state::<Arc<crate::core::llm::OllamaSidecar>>() {
+                    let _ = sidecar.stop();
+                }
+            }
+        });
 }
