@@ -15,7 +15,7 @@ pub struct Source {
     pub url: String,
     pub r#type: String, // 'primary_record', 'official_comm', 'community_signal', 'media_lead'
     pub status: String, // 'online', 'offline'
-    pub tier: String, // 'official_record', 'news_reporting', 'community_signal'
+    pub tier: String,   // 'official_record', 'news_reporting', 'community_signal'
     pub last_success_at: Option<String>,
     pub last_failed_at: Option<String>,
     pub last_scraped: Option<String>,
@@ -251,11 +251,11 @@ pub fn list_all_evidence(conn: &Connection) -> SqlResult<Vec<EvidenceItem>> {
 pub fn list_evidence_since(conn: &Connection, since_hours: u32) -> SqlResult<Vec<EvidenceItem>> {
     let cutoff = Utc::now() - chrono::Duration::hours(since_hours as i64);
     let cutoff_str = cutoff.to_rfc3339();
-    
+
     let mut stmt = conn.prepare(
         "SELECT id, source_id, url, fetched_at, excerpt, content_hash, entities 
          FROM evidence_items 
-         WHERE fetched_at >= ?1"
+         WHERE fetched_at >= ?1",
     )?;
     let iter = stmt.query_map(params![cutoff_str], |row| {
         Ok(EvidenceItem {

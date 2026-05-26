@@ -224,7 +224,11 @@ async fn llm_task_handler(
     // Load default model for tasks. Default to gemma2:9b as per spec
     let model = "gemma2:9b";
 
-    match state.llm_client.call(model, &payload.prompt, &payload.system).await {
+    match state
+        .llm_client
+        .call(model, &payload.prompt, &payload.system)
+        .await
+    {
         Ok(result) => Ok(Json(LlmTaskResponse { result })),
         Err(e) => {
             eprintln!("Ollama task execution failed: {}", e);

@@ -25,8 +25,12 @@ pub struct CommunityProfile {
     pub state: String,
 }
 
-fn default_city() -> String { "Brighton".to_string() }
-fn default_state() -> String { "CO".to_string() }
+fn default_city() -> String {
+    "Brighton".to_string()
+}
+fn default_state() -> String {
+    "CO".to_string()
+}
 
 #[derive(Serialize, Deserialize)]
 pub struct QueueData {
@@ -335,14 +339,19 @@ pub async fn generate_draft(
         }
     }
 
-    let llm_client = app.try_state::<std::sync::Arc<dyn crate::core::llm::LlmClient>>()
+    let llm_client = app
+        .try_state::<std::sync::Arc<dyn crate::core::llm::LlmClient>>()
         .map(|s| s.inner().clone())
         .unwrap_or_else(|| std::sync::Arc::new(crate::core::llm::OllamaClient));
     llm_client.call(&model, &prompt, &sys).await
 }
 
 #[tauri::command]
-pub async fn llm_task(app: tauri::AppHandle, prompt: String, system: String) -> Result<String, String> {
+pub async fn llm_task(
+    app: tauri::AppHandle,
+    prompt: String,
+    system: String,
+) -> Result<String, String> {
     let mut model = "gemma2:9b".to_string();
     if let Ok(resp) = reqwest::get("http://127.0.0.1:11434/api/tags").await {
         if resp.status().is_success() {
@@ -371,7 +380,8 @@ pub async fn llm_task(app: tauri::AppHandle, prompt: String, system: String) -> 
             }
         }
     }
-    let llm_client = app.try_state::<std::sync::Arc<dyn crate::core::llm::LlmClient>>()
+    let llm_client = app
+        .try_state::<std::sync::Arc<dyn crate::core::llm::LlmClient>>()
         .map(|s| s.inner().clone())
         .unwrap_or_else(|| std::sync::Arc::new(crate::core::llm::OllamaClient));
     llm_client.call(&model, &prompt, &system).await
@@ -731,7 +741,11 @@ pub async fn run_daily_scan(
 }
 
 #[tauri::command]
-pub async fn plain_language_rewrite(app: tauri::AppHandle, text: String, draft_format: String) -> Result<String, String> {
+pub async fn plain_language_rewrite(
+    app: tauri::AppHandle,
+    text: String,
+    draft_format: String,
+) -> Result<String, String> {
     let system = format!("You are a plain language summarizer. Rewrite the following text to an 8th-grade reading level in the '{}' format. Remove jargon. Keep the core facts.", draft_format);
     let prompt = format!("Rewrite this:\n{}", text);
     llm_task(app, prompt, system).await
