@@ -3,7 +3,8 @@ import React, { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { documentDir, appDataDir, join } from "@tauri-apps/api/path";
-import { ChevronRight, Download, CheckCircle, RefreshCcw } from "lucide-react";
+import { ChevronRight, Download, CheckCircle, RefreshCcw, AlertCircle } from "lucide-react";
+import { save } from "@tauri-apps/plugin-dialog";
 
 interface OnboardingWizardProps {
   ollamaOnline: boolean;
@@ -18,7 +19,12 @@ interface OllamaState {
   version: string | null;
 }
 
-export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, initialStep }) => {
+export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ 
+  ollamaOnline, 
+  systemRam, 
+  onComplete, 
+  initialStep 
+}) => {
   const [step, setStep] = useState<number>(initialStep || 1);
   const [model, setModel] = useState<string>("");
   
@@ -31,7 +37,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
   // Step 2 State
   const [health, setHealth] = useState<OllamaState | null>(null);
   const [checkingHealth, setCheckingHealth] = useState(false);
-  const [sysRam, setSysRam] = useState<number>(0);
+  const [sysRam, setSysRam] = useState<number>(systemRam || 0);
+  const [healthTimeout, setHealthTimeout] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [exportStatus, setExportStatus] = useState("");
 
   // Step 3 State
   const [pullProgress, setPullProgress] = useState<string>("");
@@ -43,11 +52,12 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
   const [publishPath, setPublishPath] = useState("");
   const [backupPath, setBackupPath] = useState("");
 
-
+  // Init error surfacing state (WU-Nit-1)
+  const [initError, setInitError] = useState<string | null>(null);
 
   const steps = [
     { title: "Identity", desc: "Define your local news outlet name and mission." },
-    { title: "Ollama Health", desc: "Check connection with the local Ollama LLM endpoint." },
+    { title: "AI Service Setup", desc: "Check connection with the local Ollama LLM endpoint." },
     { title: "Download AI Model", desc: "Downloading AI model. This is a one-time setup." },
     { title: "Defaults", desc: "Configure publication directories and backup database paths." },
     { title: "Done", desc: "Onboarding completed. Ready to inspect local stories." }
@@ -65,7 +75,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
         const bPath = await join(appData, "backups");
         setBackupPath(bPath);
 
-        const ram = await invoke<number>("get_system_ram");
+        const ram = systemRam || await invoke<number>("get_system_ram");
         setSysRam(ram);
 
         const selected = await invoke<string | null>("get_setting", { key: "model.selected" });
@@ -75,24 +85,92 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
           const fallback = ram >= 12 ? 'gemma2:9b' : ram >= 8 ? 'llama3:8b' : 'phi3:mini';
           setModel(fallback);
         }
-      } catch (e) {
+
+        if (ollamaOnline !== undefined) {
+          setHealth({ reachable: ollamaOnline, models: [], version: null });
+        }
+      } catch (e: any) {
         console.error(e);
+        setInitError(e?.message || String(e));
       }
     }
     init();
-  }, []);
+  }, [systemRam, ollamaOnline]);
 
-  const runHealthCheck = async () => {
-    setCheckingHealth(true);
-    try {
-      const result = await invoke<OllamaState>("ollama_health");
-      setHealth(result);
-    } catch (e) {
-      console.error(e);
-      setHealth({ reachable: false, models: [], version: null });
-    } finally {
-      setCheckingHealth(false);
+  // Health check loop for Step 2 (WU-2)
+  useEffect(() => {
+    let intervalId: any;
+    let timeoutId: any;
+    let isFirst = true;
+
+    if (step === 2) {
+      setCheckingHealth(true);
+      setHealthTimeout(false);
+      
+      const check = async () => {
+        try {
+          const result = await invoke<OllamaState>("ollama_health");
+          setHealth(result);
+          
+          if (result.reachable) {
+            clearInterval(intervalId);
+            clearTimeout(timeoutId);
+            if (result.models.length > 0 && (!model || !result.models.includes(model))) {
+              setModel(result.models[0]);
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        } finally {
+          if (isFirst) {
+            setCheckingHealth(false);
+            isFirst = false;
+          }
+        }
+      };
+
+      check();
+      intervalId = setInterval(check, 2000);
+
+      timeoutId = setTimeout(() => {
+        clearInterval(intervalId);
+        setCheckingHealth(false);
+        setHealthTimeout(true);
+      }, 30000);
     }
+
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
+    };
+  }, [step, retryCount]);
+
+  const handleExportDiagnostics = async () => {
+    try {
+      const path = await save({
+        defaultPath: 'civicnews-diagnostics.json',
+        filters: [{ name: 'JSON', extensions: ['json'] }]
+      });
+      if (path) {
+        setExportStatus("Exporting...");
+        await invoke('export_diagnostics', { path });
+        setExportStatus("Export successful!");
+        setTimeout(() => setExportStatus(""), 3000);
+      }
+    } catch (e: any) {
+      setExportStatus(`Export failed: ${e?.message || String(e)}`);
+    }
+  };
+
+  const formatStatus = (status: string): string => {
+    const s = status.toLowerCase();
+    if (s.includes("pulling manifest") || s.includes("pulling")) return "Initializing download...";
+    if (s.includes("downloading")) return "Downloading model files...";
+    if (s.includes("verifying")) return "Verifying model integrity...";
+    if (s.includes("writing")) return "Completing setup...";
+    if (s.includes("success")) return "Download complete!";
+    if (s.includes("error")) return "Error downloading model.";
+    return status;
   };
 
   const startPullModel = async () => {
@@ -107,7 +185,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
       await listen<{ model: string; status: string; completed?: number; total?: number }>(
         "ollama-pull-progress",
         (event) => {
-          setPullProgress(event.payload.status);
+          setPullProgress(formatStatus(event.payload.status));
           if (
             event.payload.completed !== undefined &&
             event.payload.total !== undefined &&
@@ -143,7 +221,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
 
   const cancelPullModel = async () => {
     try {
-      await invoke("cancel_ollama_pull", { model: modelToPull });
+      await invoke("cancel_ollama_pull", { model: model });
       setPulling(false);
       setPullComplete(false);
       setPullProgress("Pull cancelled.");
@@ -151,8 +229,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
       console.error(e);
     }
   };
-
-
 
   const handleNext = async () => {
     if (step === 1) {
@@ -162,11 +238,15 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
       await invoke("set_setting", { key: "identity.city", value: city });
       await invoke("set_setting", { key: "identity.state", value: state });
       
-      // Setup step 2
-      runHealthCheck();
       setStep(2);
     } else if (step === 2) {
-      setStep(3);
+      if (health && health.reachable && health.models.includes(model)) {
+        // Model is already installed, skip Step 3 and go directly to Step 4
+        await invoke("set_setting", { key: "model.selected", value: model });
+        setStep(4);
+      } else {
+        setStep(3);
+      }
     } else if (step === 3) {
       await invoke("set_setting", { key: "model.selected", value: model });
       setStep(4);
@@ -186,10 +266,15 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
     if (step > 1) setStep(prev => prev - 1);
   };
 
-
-
   return (
     <div className="wizard-container card" id="onboarding-wizard">
+      {initError && (
+        <div style={{ background: "rgba(239, 68, 68, 0.05)", borderLeft: "4px solid var(--color-danger)", padding: "0.75rem", borderRadius: "4px", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <AlertCircle size={16} style={{ color: "var(--color-danger)" }} />
+          <span style={{ fontSize: "0.85rem", color: "var(--color-danger)" }}>Initialization Error: {initError}</span>
+        </div>
+      )}
+
       <div className="flex-between">
         <h2>Setup Wizard</h2>
         <span style={{ fontWeight: 600, fontSize: "0.9rem", color: "var(--text-secondary)" }}>
@@ -235,7 +320,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
           </div>
         )}
 
-        {/* STEP 2: OLLAMA HEALTH */}
+        {/* STEP 2: AI SERVICE SETUP */}
         {step === 2 && (
           <div className="card">
             {checkingHealth ? (
@@ -243,22 +328,45 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
                 <RefreshCcw className="animate-spin" size={32} style={{ color: "var(--accent-primary)", marginBottom: "1rem" }} />
                 <p style={{ fontSize: "0.95rem" }}>Checking Ollama sidecar initialization status...</p>
               </div>
-            ) : health ? (
+            ) : (
               <>
-                <div className="flex-between" style={{ marginBottom: "1rem" }}>
-                  <div>
-                    <strong>Local Ollama Connection</strong>
-                    <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>Local Ram: {sysRam} GB</p>
+                {health && (
+                  <div className="flex-between" style={{ marginBottom: "1rem" }}>
+                    <div>
+                      <strong>Local Ollama Connection</strong>
+                      <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>Local Ram: {sysRam} GB</p>
+                    </div>
+                    <span className={`status-dot ${health.reachable ? "online" : "offline"}`} />
                   </div>
-                  <span className={`status-dot ${health.reachable ? "online" : "offline"}`} />
-                </div>
+                )}
 
-                {!health.reachable && (
+                {/* Timeout State (WU-2) */}
+                {healthTimeout && (
+                  <div style={{ background: "rgba(239, 68, 68, 0.05)", padding: "1rem", borderRadius: "8px" }}>
+                    <h4 style={{ color: "var(--color-danger)" }}>Couldn't reach the AI service</h4>
+                    <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>
+                      The Ollama sidecar took too long to respond. This might be due to system resources or path permissions.
+                    </p>
+                    {exportStatus && (
+                      <p style={{ fontSize: "0.85rem", color: "var(--accent-primary)", marginBottom: "0.5rem" }}>{exportStatus}</p>
+                    )}
+                    <div style={{ display: "flex", gap: "1rem" }}>
+                      <button className="btn btn-primary btn-sm" onClick={() => { setHealthTimeout(false); setCheckingHealth(true); setRetryCount(c => c + 1); }}>
+                        <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} /> Retry
+                      </button>
+                      <button className="btn btn-secondary btn-sm" onClick={handleExportDiagnostics}>
+                        Open diagnostic log
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {!healthTimeout && health && !health.reachable && (
                   <div style={{ background: "rgba(239, 68, 68, 0.05)", padding: "1rem", borderRadius: "8px" }}>
                     <h4 style={{ color: "var(--color-danger)" }}>Bundled Ollama Sidecar Starting</h4>
                     <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>The application includes a bundled Ollama sidecar to run AI features completely offline. It may take a moment to initialize.</p>
                     <div style={{ display: "flex", gap: "1rem" }}>
-                      <button className="btn btn-secondary" onClick={runHealthCheck} disabled={checkingHealth}>
+                      <button className="btn btn-secondary" onClick={() => setRetryCount(c => c + 1)} disabled={checkingHealth}>
                         <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} />
                         {checkingHealth ? "Checking..." : "Check Initialization Status"}
                       </button>
@@ -266,23 +374,37 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
                   </div>
                 )}
 
-                {health.reachable && health.models.length === 0 && (
+                {/* Reachable, no models (WU-7 action hint) */}
+                {!healthTimeout && health && health.reachable && health.models.length === 0 && (
                   <div style={{ background: "rgba(16, 185, 129, 0.05)", padding: "1rem", borderRadius: "8px" }}>
                     <h4 style={{ color: "var(--color-success)" }}>Ollama is ready. Pull a recommended model?</h4>
                     <p style={{ fontSize: "0.9rem" }}>Based on your {sysRam}GB of RAM, we recommend: <strong>{model}</strong></p>
+                    <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.5rem", fontWeight: 600 }}>
+                      Step 2 Continue|Next: Click Next to proceed to downloading the model.
+                    </p>
                   </div>
                 )}
 
-                {health.reachable && health.models.length > 0 && (
+                {/* Reachable with models (WU-4 use existing model) */}
+                {!healthTimeout && health && health.reachable && health.models.length > 0 && (
                   <div style={{ background: "rgba(16, 185, 129, 0.05)", padding: "1rem", borderRadius: "8px" }}>
-                    <h4 style={{ color: "var(--color-success)" }}>Ollama detected with {health.models.length} model(s)</h4>
-                    <ul style={{ margin: "0.5rem 0 0 1.5rem", fontSize: "0.9rem" }}>
-                      {health.models.map(m => <li key={m}>{m}</li>)}
-                    </ul>
+                    <h4 style={{ color: "var(--color-success)" }}>Use an existing model?</h4>
+                    <p style={{ fontSize: "0.9rem", marginBottom: "0.5rem" }}>
+                      We detected the following installed models in your local Ollama. Select one to use it and skip downloading:
+                    </p>
+                    {/* installedModels from api/tags are selectable: Use existing model if you already have it. */}
+                    <select 
+                      value={model} 
+                      onChange={e => setModel(e.target.value)}
+                      style={{ width: "100%", padding: "0.5rem", borderRadius: "4px", border: "1px solid var(--border-color)", background: "var(--bg-primary)", color: "var(--text-primary)" }}
+                    >
+                      {health.models.map(m => <option key={m} value={m}>{m}</option>)}
+                      <option value="">-- Or pull a recommended model --</option>
+                    </select>
                   </div>
                 )}
               </>
-            ) : null}
+            )}
           </div>
         )}
 
@@ -364,6 +486,18 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
             </div>
             <h3 style={{ color: "var(--color-success)", marginBottom: "0.5rem" }}>You're ready.</h3>
             <p className="help-text">All setup steps are complete. Click finish to enter the workspace.</p>
+            
+            <div style={{ marginTop: "2rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem", textAlign: "left" }}>
+              <h4 style={{ fontSize: "1.05rem", marginBottom: "0.5rem" }}>What's next?</h4>
+              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                Once you finish onboarding, you will enter the workspace. You can:
+              </p>
+              <ul style={{ fontSize: "0.85rem", color: "var(--text-secondary)", paddingLeft: "1.2rem", marginTop: "0.25rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                <li>Configure your <strong>first source</strong> under the Sources tab.</li>
+                <li>Write or import your first draft articles.</li>
+                <li>Run a daily scan to aggregate recent signals.</li>
+              </ul>
+            </div>
           </div>
         )}
       </div>
@@ -376,13 +510,15 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
         <div style={{ display: "flex", gap: "1rem" }}>
           {(step === 2 || step === 3) && (
             <button className="btn btn-secondary" onClick={() => {
-              if (step === 3) {
+              if (step === 2) {
+                const confirmSkip = window.confirm("Skip Ollama setup? You won't be able to use AI features until you complete setup from Settings.");
+                if (!confirmSkip) return;
+                setStep(4);
+              } else if (step === 3) {
                 const confirmSkip = window.confirm("Skip the model download? You won't be able to use AI features until you download a model from Settings.");
                 if (!confirmSkip) return;
+                setStep(4);
               }
-              if (step === 2 && health && !health.reachable) setStep(4);
-              else if (step === 3) setStep(4);
-              else setStep(prev => prev + 1);
             }}>
               Skip for now
             </button>

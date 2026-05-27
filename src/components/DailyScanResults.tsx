@@ -42,9 +42,9 @@ export const DailyScanResults: React.FC<Props> = ({ scanId }) => {
           {leads.map((lead, idx) => (
             <li key={idx} style={{ marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid var(--border-color)' }}>
               <h4 style={{ margin: '0 0 0.5rem 0' }}>{lead.title}</h4>
-              <p style={{ margin: '0 0 0.5rem 0' }}>{lead.summary}</p>
+              <p style={{ margin: '0 0 0.5rem 0' }}>{lead.summary ?? "No summary available for this lead."}</p>
               <div className="flex-between">
-                <a href={lead.original_url} target="_blank" rel="noreferrer">Original Source</a>
+                <a href={lead.original_url} target="_blank" rel="noopener noreferrer">Original Source</a>
                 {lead.source_id === undefined || lead.source_id === null ? (
                   <span className="badge badge-info" data-testid="aggregated-badge">Aggregated across sources</span>
                 ) : (

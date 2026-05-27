@@ -24,6 +24,7 @@ vi.mock("@tauri-apps/plugin-opener", () => ({
 describe("OnboardingWizard Component Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    window.confirm = vi.fn(() => true);
   });
 
   test("Happy path: completes onboarding and calls onComplete", async () => {
@@ -173,5 +174,38 @@ describe("OnboardingWizard Component Tests", () => {
     });
 
     expect(await screen.findByText("Model pulled successfully.")).toBeInTheDocument();
+  });
+
+  test("test_onboarding_step2_timeout_shows_retry", async () => {
+    vi.useFakeTimers();
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+    
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "ollama_health") return new Promise(() => {});
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
+    
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+    
+    await vi.waitFor(() => {
+      expect(screen.getByText("Checking Ollama sidecar initialization status...")).toBeInTheDocument();
+    });
+
+    const { act } = await import("@testing-library/react");
+    act(() => {
+      vi.advanceTimersByTime(30000);
+    });
+
+    await vi.waitFor(() => {
+      expect(screen.getByText("Couldn't reach the AI service")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /retry/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Open diagnostic log/i })).toBeInTheDocument();
+    });
+
+    vi.useRealTimers();
   });
 });

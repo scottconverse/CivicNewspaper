@@ -12,13 +12,13 @@
 <body>
 
     <!-- Navigation -->
-    <nav>
+    <nav aria-label="Site navigation">
         <div class="nav-container">
             <div class="logo">
                 <i data-lucide="landmark"></i> CivicNews
             </div>
             <input type="checkbox" id="nav-toggle" class="nav-toggle">
-            <label for="nav-toggle" class="nav-toggle-label">
+            <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation menu">
                 <span></span>
             </label>
             <div class="nav-links">
@@ -75,11 +75,9 @@
                 </div>
             </div>
 
-            <div class="hero-image-container">
-                <div class="hero-preview-placeholder" style="border: 2px dashed rgba(255,255,255,0.15); border-radius: 12px; padding: 40px; text-align: center; background: rgba(255,255,255,0.03); margin-top: 40px;">
-                    <h3 style="color: #fff; margin-bottom: 12px;">Interactive Preview Coming in v0.2.2</h3>
-                    <p style="color: rgba(255,255,255,0.6); font-size: 0.95rem; line-height: 1.6; max-width: 600px; margin: 0 auto;">The screenshot preview of the new dashboard interface is temporarily offline while we update the layout mockups to match the final production VM state.</p>
-                </div>
+            <div class="hero-preview-placeholder">
+                <h3>Interactive Preview Coming in v0.2.2</h3>
+                <p>The screenshot preview of the new dashboard interface is temporarily offline while we update the layout mockups to match the final production VM state.</p>
             </div>
         </div>
     </header>

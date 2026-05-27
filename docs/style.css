@@ -538,42 +538,28 @@ footer {
     }
 }
 
-/* Hero Image Showcase */
-.hero-image-container {
-    margin-top: 4rem;
-    position: relative;
-    display: flex;
-    justify-content: center;
+/* Hero Image Showcase Preview */
+.hero-preview-placeholder {
+    border: 2px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.03);
+    margin-top: 40px;
     width: 100%;
 }
 
-.hero-image-container::before {
-    content: '';
-    position: absolute;
-    top: 15%;
-    left: 15%;
-    width: 70%;
-    height: 70%;
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-    filter: blur(80px);
-    opacity: 0.25;
-    z-index: -1;
-    pointer-events: none;
+.hero-preview-placeholder h3 {
+    color: #fff;
+    margin-bottom: 12px;
 }
 
-.hero-image {
-    max-width: 90%;
-    height: auto;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6), 0 0 50px rgba(59, 130, 246, 0.15);
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease, border-color 0.6s ease;
-}
-
-.hero-image:hover {
-    transform: translateY(-8px) scale(1.015);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.8), 0 0 60px rgba(139, 92, 246, 0.3);
+.hero-preview-placeholder p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 /* Download Cards Grid */
@@ -735,4 +721,12 @@ footer {
 .mermaid svg .node:hover polygon {
     stroke: var(--accent-primary) !important;
     filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.5));
+}
+
+/* Accessibility focus styles for navigation hamburger menu */
+.nav-toggle:focus-visible + .nav-toggle-label,
+#nav-toggle:focus-visible + .nav-toggle-label,
+.hamburger:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 4px;
 }

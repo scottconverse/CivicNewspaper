@@ -1,6 +1,6 @@
 // src/components/Workbench.tsx
-import React, { useState } from "react";
-import { CheckCircle, AlertTriangle, Info } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { CheckCircle, AlertTriangle, Info, FileText } from "lucide-react";
 import { Lead, Draft, EvidenceItem, GuardrailsReport } from "../ipc";
 
 interface WorkbenchProps {
@@ -56,6 +56,10 @@ export const Workbench: React.FC<WorkbenchProps> = ({
 }) => {
   const [isRewriting, setIsRewriting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setError(null);
+  }, [selectedDraft?.id]);
 
   const handleInsertCitation = (evidenceId: number) => {
     const textarea = document.getElementById("draft-editor-textarea") as HTMLTextAreaElement;
@@ -130,8 +134,8 @@ export const Workbench: React.FC<WorkbenchProps> = ({
             <h4>Linked Records ({evidenceList.length})</h4>
             <div style={{ maxHeight: "150px", overflowY: "auto", marginTop: "0.5rem" }}>
               {evidenceList.map((item, idx) => (
-                <div key={idx} style={{ padding: "0.25rem 0", fontSize: "0.85rem", borderBottom: "1px solid var(--border-color)" }}>
-                  📄 <em>"{item.excerpt.slice(0, 100)}..."</em>
+                <div key={idx} style={{ padding: "0.25rem 0", fontSize: "0.85rem", borderBottom: "1px solid var(--border-color)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                  <FileText size={14} /> <em>"{item.excerpt.slice(0, 100)}..."</em>
                 </div>
               ))}
             </div>
@@ -147,8 +151,8 @@ export const Workbench: React.FC<WorkbenchProps> = ({
           </div>
           
           {!ollamaOnline && !manualLlmMode && (
-            <div className="error-text" id="ollama-offline-warning">
-              ⚠️ Local Ollama is offline. Open the "Ollama Wizard" tab to set up or use "Manual Mode" settings.
+            <div className="error-text" id="ollama-offline-warning" style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+              <AlertTriangle size={14} /> Local Ollama is offline. Open the "Ollama Wizard" tab to set up or use "Manual Mode" settings.
             </div>
           )}
         </div>
@@ -206,7 +210,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
               <div style={{ marginTop: "0.5rem" }} id="guardrails-issues-list">
                 {guardrailsReport.issues.map((issue: any, idx: number) => (
                   <div key={idx} className={`guardrail-issue ${issue.severity}`}>
-                    ⚠️ [Category: {issue.category.replace(/_/g, " ")}] {issue.message}
+                    <AlertTriangle size={14} style={{ marginRight: "0.25rem", verticalAlign: "middle" }} /> [Category: {issue.category.replace(/_/g, " ")}] {issue.message}
                   </div>
                 ))}
               </div>
@@ -233,8 +237,8 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                 <label style={{ fontWeight: 600, fontSize: "0.9rem" }}>Article Body (Markdown)</label>
                 <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
                   {error && (
-                    <span className="error-text" style={{ fontSize: "0.85rem", color: "var(--color-danger)" }}>
-                      ⚠️ {error}
+                    <span className="error-text" style={{ fontSize: "0.85rem", color: "var(--color-danger)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                      <AlertTriangle size={14} /> {error}
                     </span>
                   )}
                   <button 
