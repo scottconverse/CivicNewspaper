@@ -10,7 +10,7 @@ def _compute_sha256(filepath):
             sha256_hash.update(byte_block)
     return sha256_hash.hexdigest()
 
-def audit_team_zero_blockers(verdict_path=".agent-runs/2026-05-26-civicnewspaper-v020-ship/audit-team-verdict.json", expected_sha=""):
+def audit_team_zero_blockers(verdict_path, expected_sha=""):
     if not os.path.exists(verdict_path):
         raise Exception(f"Verdict file missing at {verdict_path}")
     
