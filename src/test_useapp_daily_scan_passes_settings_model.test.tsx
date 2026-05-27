@@ -60,7 +60,7 @@ describe("useApp Hook Tests", () => {
     expect(screen.getByTestId("active-tab")).toHaveTextContent("sources");
   });
 
-  test("test_useapp_daily_scan_passes_settings_model", async () => {
+  test("test_useapp_daily_scan_end_to_end_model", async () => {
     vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
       if (cmd === "get_queue") return { leads: [], drafts: [] };
       if (cmd === "get_sources") return [];

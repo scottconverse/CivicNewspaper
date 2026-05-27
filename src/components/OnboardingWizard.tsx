@@ -143,7 +143,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
 
   const cancelPullModel = async () => {
     try {
-      await invoke("cancel_ollama_pull");
+      await invoke("cancel_ollama_pull", { model: modelToPull });
       setPulling(false);
       setPullComplete(false);
       setPullProgress("Pull cancelled.");

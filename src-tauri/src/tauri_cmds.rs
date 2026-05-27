@@ -476,80 +476,126 @@ pub fn pull_model(app: tauri::AppHandle, model: String) -> Result<(), String> {
     Ok(())
 }
 
-static CANCEL_PULL: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+use std::collections::HashMap;
+use std::sync::Mutex;
+use std::sync::LazyLock;
+use tokio::sync::watch;
+
+static CANCEL_PULL_MAP: LazyLock<Mutex<HashMap<String, watch::Sender<bool>>>> =
+    LazyLock::new(|| Mutex::new(HashMap::new()));
 
 #[tauri::command]
-pub fn cancel_ollama_pull() -> Result<(), String> {
-    CANCEL_PULL.store(true, std::sync::atomic::Ordering::SeqCst);
+pub fn cancel_ollama_pull(model: String) -> Result<(), String> {
+    let map = CANCEL_PULL_MAP.lock().unwrap();
+    if let Some(tx) = map.get(&model) {
+        let _ = tx.send(true);
+    }
     Ok(())
 }
 
 #[tauri::command]
-pub fn pull_ollama_model(app: tauri::AppHandle, model_id: String) -> Result<(), String> {
+pub async fn pull_ollama_model(app: tauri::AppHandle, model_id: String) -> Result<(), String> {
     use tauri::Emitter;
     let model = model_id.clone();
-    CANCEL_PULL.store(false, std::sync::atomic::Ordering::SeqCst);
+    
+    // Create watch channel for cancellation
+    let (tx, mut rx) = watch::channel(false);
+    {
+        let mut map = CANCEL_PULL_MAP.lock().unwrap();
+        map.insert(model_id.clone(), tx);
+    }
+
+    let client = reqwest::Client::new();
+    let resp_res = client
+        .post("http://127.0.0.1:11434/api/pull")
+        .json(&serde_json::json!({ "name": model_id, "stream": true }))
+        .send()
+        .await;
+
+    let mut resp = match resp_res {
+        Ok(r) => r,
+        Err(e) => {
+            let mut map = CANCEL_PULL_MAP.lock().unwrap();
+            map.remove(&model);
+            return Err(e.to_string());
+        }
+    };
+
+    if !resp.status().is_success() {
+        let mut map = CANCEL_PULL_MAP.lock().unwrap();
+        map.remove(&model);
+        return Err(format!("Failed to start pulling model: status {}", resp.status()));
+    }
+
     tauri::async_runtime::spawn(async move {
-        let client = reqwest::Client::new();
-        if let Ok(mut resp) = client
-            .post("http://127.0.0.1:11434/api/pull")
-            .json(&serde_json::json!({ "name": model_id, "stream": true }))
-            .send()
-            .await
-        {
-            while let Ok(Some(chunk)) = resp.chunk().await {
-                if CANCEL_PULL.load(std::sync::atomic::Ordering::SeqCst) {
-                    #[derive(serde::Serialize, Clone)]
-                    struct ProgressPayload {
-                        model: String,
-                        status: String,
-                        completed: Option<f64>,
-                        total: Option<f64>,
-                    }
-                    let _ = app.emit(
-                        "ollama-pull-progress",
-                        ProgressPayload {
-                            model: model.clone(),
-                            status: "cancelled".to_string(),
-                            completed: None,
-                            total: None,
-                        },
-                    );
-                    break;
-                }
-                let text = String::from_utf8_lossy(&chunk);
-                for line in text.lines() {
-                    if line.trim().is_empty() {
-                        continue;
-                    }
-                    #[derive(serde::Deserialize)]
-                    struct PullMsg {
-                        status: String,
-                        completed: Option<f64>,
-                        total: Option<f64>,
-                    }
-                    if let Ok(msg) = serde_json::from_str::<PullMsg>(line) {
-                        #[derive(serde::Serialize, Clone)]
-                        struct ProgressPayload {
-                            model: String,
-                            status: String,
-                            completed: Option<f64>,
-                            total: Option<f64>,
-                        }
+        #[derive(serde::Serialize, Clone)]
+        struct ProgressPayload {
+            model: String,
+            status: String,
+            completed: Option<f64>,
+            total: Option<f64>,
+        }
+
+        loop {
+            tokio::select! {
+                _ = rx.changed() => {
+                    if *rx.borrow() {
                         let _ = app.emit(
                             "ollama-pull-progress",
                             ProgressPayload {
                                 model: model.clone(),
-                                status: msg.status,
-                                completed: msg.completed,
-                                total: msg.total,
+                                status: "cancelled".to_string(),
+                                completed: None,
+                                total: None,
                             },
                         );
+                        break;
+                    }
+                }
+                chunk_res = resp.chunk() => {
+                    match chunk_res {
+                        Ok(Some(chunk)) => {
+                            let text = String::from_utf8_lossy(&chunk);
+                            for line in text.lines() {
+                                if line.trim().is_empty() {
+                                    continue;
+                                }
+                                #[derive(serde::Deserialize)]
+                                struct PullMsg {
+                                    status: String,
+                                    completed: Option<f64>,
+                                    total: Option<f64>,
+                                }
+                                if let Ok(msg) = serde_json::from_str::<PullMsg>(line) {
+                                    let _ = app.emit(
+                                        "ollama-pull-progress",
+                                        ProgressPayload {
+                                            model: model.clone(),
+                                            status: msg.status,
+                                            completed: msg.completed,
+                                            total: msg.total,
+                                        },
+                                    );
+                                }
+                            }
+                        }
+                        Ok(None) => {
+                            let _ = app.emit("ollama-pull-complete", ());
+                            break;
+                        }
+                        Err(e) => {
+                            let _ = app.emit("ollama-pull-error", e.to_string());
+                            break;
+                        }
                     }
                 }
             }
         }
+
+        let mut map = CANCEL_PULL_MAP.lock().unwrap();
+        map.remove(&model);
     });
+
     Ok(())
 }
 
