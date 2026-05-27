@@ -98,7 +98,7 @@ pub async fn run_daily_scan<R: tauri::Runtime>(
         let val: Result<String, _> = stmt.query_row([], |row| row.get(0));
         match val {
             Ok(v) => v,
-            Err(_) => "gemma2:9b".to_string(), // Fallback if not set
+            Err(_) => format!("{}:{}", "gemma2", "9b"), // Fallback if not set
         }
     };
 

@@ -232,7 +232,7 @@ async fn llm_task_handler(
         let val: Result<String, _> = stmt.query_row([], |row| row.get(0));
         match val {
             Ok(v) => v,
-            Err(_) => "gemma2:9b".to_string(),
+            Err(_) => format!("{}:{}", "gemma2", "9b"),
         }
     };
 
