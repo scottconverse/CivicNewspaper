@@ -120,7 +120,10 @@ impl OllamaSidecar {
     }
 
     pub fn start(&self, app: &AppHandle) -> Result<(), Box<dyn Error + Send + Sync>> {
-        let mut guard = self.child.lock().map_err(|e| format!("Lock error: {}", e))?;
+        let mut guard = self
+            .child
+            .lock()
+            .map_err(|e| format!("Lock error: {}", e))?;
         if guard.is_some() {
             return Ok(());
         }
@@ -140,9 +143,14 @@ impl OllamaSidecar {
     }
 
     pub fn stop(&self) -> Result<(), Box<dyn Error + Send + Sync>> {
-        let mut guard = self.child.lock().map_err(|e| format!("Lock error: {}", e))?;
+        let mut guard = self
+            .child
+            .lock()
+            .map_err(|e| format!("Lock error: {}", e))?;
         if let Some(child_proc) = guard.take() {
-            child_proc.kill().map_err(|e| format!("Kill error: {}", e))?;
+            child_proc
+                .kill()
+                .map_err(|e| format!("Kill error: {}", e))?;
         }
         Ok(())
     }

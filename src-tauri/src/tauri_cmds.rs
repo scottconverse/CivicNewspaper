@@ -779,9 +779,9 @@ pub fn get_prompt(app: tauri::AppHandle, id: String) -> Result<String, String> {
 }
 
 #[tauri::command]
-pub async fn run_daily_scan(
+pub async fn run_daily_scan<R: tauri::Runtime>(
     db: tauri::State<'_, DbConn>,
-    app: tauri::AppHandle,
+    app: tauri::AppHandle<R>,
     city: String,
     state: String,
     since_hours: u32,

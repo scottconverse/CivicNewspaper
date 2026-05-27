@@ -79,6 +79,10 @@ pub fn run() {
                 eprintln!("Failed to start Ollama sidecar: {}", e);
             }
 
+            // Register LlmClient state for Daily Scan / LLM features
+            let llm_client: Arc<dyn crate::core::llm::LlmClient> = Arc::new(crate::core::llm::OllamaClient);
+            app.manage(llm_client);
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -123,7 +127,9 @@ pub fn run() {
         .expect("error while building tauri application")
         .run(|app_handle, event| {
             if let tauri::RunEvent::Exit = event {
-                if let Some(sidecar) = app_handle.try_state::<Arc<crate::core::llm::OllamaSidecar>>() {
+                if let Some(sidecar) =
+                    app_handle.try_state::<Arc<crate::core::llm::OllamaSidecar>>()
+                {
                     let _ = sidecar.stop();
                 }
             }

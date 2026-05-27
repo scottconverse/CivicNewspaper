@@ -6,7 +6,7 @@ pub fn list_prompts() -> Vec<String> {
     VALID_PROMPT_IDS.iter().map(|s| s.to_string()).collect()
 }
 
-pub fn get_prompt(app: &tauri::AppHandle, id: &str) -> Result<String, String> {
+pub fn get_prompt<R: tauri::Runtime>(app: &tauri::AppHandle<R>, id: &str) -> Result<String, String> {
     use tauri::Manager;
     if !VALID_PROMPT_IDS.contains(&id) {
         return Err(format!("Invalid prompt ID: {}", id));

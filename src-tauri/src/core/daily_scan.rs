@@ -40,9 +40,9 @@ pub fn parse_and_save_scan_response(
     Ok(saved)
 }
 
-pub async fn run_daily_scan(
+pub async fn run_daily_scan<R: tauri::Runtime>(
     db: &DbConn,
-    app: &tauri::AppHandle,
+    app: &tauri::AppHandle<R>,
     city: &str,
     state: &str,
     since_hours: u32,
