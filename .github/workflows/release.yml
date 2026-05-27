@@ -60,6 +60,14 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
         
+      - name: Clean stale cargo locks
+        run: |
+          find src-tauri/target -name ".cargo-lock" -delete 2>/dev/null || true
+          find /.cargo -name ".package-cache" -delete 2>/dev/null || true
+          find /.cargo -name "*.lock" -delete 2>/dev/null || true
+          find /root/.cargo -name ".package-cache" -delete 2>/dev/null || true
+          find /root/.cargo -name "*.lock" -delete 2>/dev/null || true
+
       - name: Fetch Ollama binaries
         run: bash scripts/fetch-ollama-binaries.sh
         
