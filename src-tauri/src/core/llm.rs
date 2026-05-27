@@ -128,9 +128,15 @@ impl OllamaSidecar {
             return Ok(());
         }
 
+        let binary_name = if cfg!(test) {
+            "test-ollama-fixture"
+        } else {
+            "ollama"
+        };
+
         let sidecar_command = app
             .shell()
-            .sidecar("ollama")
+            .sidecar(binary_name)
             .map_err(|e| format!("Sidecar error: {}", e))?
             .args(["serve"]);
 
@@ -153,5 +159,11 @@ impl OllamaSidecar {
                 .map_err(|e| format!("Kill error: {}", e))?;
         }
         Ok(())
+    }
+}
+
+impl Drop for OllamaSidecar {
+    fn drop(&mut self) {
+        let _ = self.stop();
     }
 }

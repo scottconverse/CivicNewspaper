@@ -18,3 +18,15 @@ This file tracks deferred work and known technical debt.
   Resolution path: move these to an integration test crate at `src-tauri/tests/`
   where Tauri's mock_app reliably works on Windows. Deferred to v0.3 to avoid
   scope creep on the v0.2.2 hot-patch.
+- **P5-004 (OllamaSidecar AppHandle coupling)**: The two sidecar lifecycle tests
+  (`test_ollama_sidecar_spawns_with_expected_pid_pattern`,
+  `test_ollama_sidecar_terminates_cleanly_on_drop`)
+  require `tauri::test::mock_app()` because `OllamaSidecar::start` uses
+  `app.shell().sidecar("ollama")` which requires an `AppHandle`. This couples
+  the spawn/kill logic to the Tauri shell-plugin API and makes the tests
+  unrunnable on Windows console-mode lib unit tests (mock_app DLL crash).
+  Resolution path for v0.3: refactor `OllamaSidecar` to expose
+  `start_with_path(PathBuf)` so tests can bypass the shell-plugin lookup
+  and run cross-platform. Keep the AppHandle-taking `start()` as a thin
+  convenience wrapper for production callers. Deferred to v0.3 to avoid
+  scope creep on the v0.2.2 hot-patch.

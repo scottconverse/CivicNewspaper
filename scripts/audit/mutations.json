@@ -24,12 +24,14 @@
     "test": "test_ollama_sidecar_spawns_with_expected_pid_pattern",
     "file": "src-tauri/src/core/llm.rs",
     "function": "pub fn start",
-    "language": "rust"
+    "language": "rust",
+    "platforms": ["linux", "darwin"]
   },
   {
     "test": "test_ollama_sidecar_terminates_cleanly_on_drop",
     "file": "src-tauri/src/core/llm.rs",
     "function": "pub fn stop",
-    "language": "rust"
+    "language": "rust",
+    "platforms": ["linux", "darwin"]
   }
 ]

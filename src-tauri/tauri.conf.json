@@ -43,7 +43,8 @@
       "prompts/*"
     ],
     "externalBin": [
-      "binaries/ollama"
+      "binaries/ollama",
+      "binaries/test-ollama-fixture"
     ]
   }
 }

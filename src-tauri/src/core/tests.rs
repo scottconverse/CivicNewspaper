@@ -855,18 +855,59 @@ mod tests {
         );
     }
 
+    #[cfg_attr(target_os = "windows", ignore = "OllamaSidecar::start uses app.shell().sidecar() requiring AppHandle; Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as carried-debt P5-004")]
     #[test]
     fn test_ollama_sidecar_spawns_with_expected_pid_pattern() {
-        let sidecar = crate::core::llm::OllamaSidecar::new();
-        assert!(sidecar.child.lock().unwrap().is_none());
-        // Mock-based verification: sidecar structure starts with no active child process.
+        #[cfg(not(target_os = "windows"))]
+        {
+            let app = tauri::test::mock_app();
+            let sidecar = crate::core::llm::OllamaSidecar::new();
+            assert!(sidecar.child.lock().unwrap().is_none());
+
+            let res = sidecar.start(app.handle());
+            assert!(res.is_ok());
+
+            let pid = {
+                let guard = sidecar.child.lock().unwrap();
+                assert!(guard.is_some());
+                let p = guard.as_ref().unwrap().pid();
+                assert!(p > 0);
+                p
+            };
+
+            let res_stop = sidecar.stop();
+            assert!(res_stop.is_ok());
+            assert!(sidecar.child.lock().unwrap().is_none());
+        }
     }
 
+    #[cfg_attr(target_os = "windows", ignore = "OllamaSidecar::start uses app.shell().sidecar() requiring AppHandle; Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as carried-debt P5-004")]
     #[test]
     fn test_ollama_sidecar_terminates_cleanly_on_drop() {
-        let sidecar = crate::core::llm::OllamaSidecar::new();
-        assert!(sidecar.stop().is_ok());
-        // Clean drop validation: stop returns Ok even if no process was spawned.
+        #[cfg(not(target_os = "windows"))]
+        {
+            let app = tauri::test::mock_app();
+            // test calls sidecar.stop() via drop
+            let pid = {
+                let sidecar = crate::core::llm::OllamaSidecar::new();
+                let res = sidecar.start(app.handle());
+                assert!(res.is_ok());
+
+                let guard = sidecar.child.lock().unwrap();
+                assert!(guard.is_some());
+                let p = guard.as_ref().unwrap().pid();
+                assert!(p > 0);
+                p
+            };
+
+            // At this point, the sidecar has been dropped, so the process should have been terminated.
+            // Verify drop implicitly calls sidecar.stop()
+            // Let's verify using sysinfo:
+            let mut sys = sysinfo::System::new_all();
+            sys.refresh_all();
+            let process_exists = sys.process(sysinfo::Pid::from(pid as usize)).is_some();
+            assert!(!process_exists, "Sidecar process should be terminated after drop");
+        }
     }
 
     #[cfg_attr(target_os = "windows", ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as P5-003")]
