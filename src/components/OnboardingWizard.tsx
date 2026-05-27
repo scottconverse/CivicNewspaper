@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { documentDir, appDataDir, join } from "@tauri-apps/api/path";
-import { openUrl } from "@tauri-apps/plugin-opener";
 import { ChevronRight, Download, CheckCircle, RefreshCcw, Copy, Info } from "lucide-react";
 
 interface OnboardingWizardProps {
@@ -249,15 +248,12 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
 
             {!health.reachable && (
               <div style={{ background: "rgba(239, 68, 68, 0.05)", padding: "1rem", borderRadius: "8px" }}>
-                <h4 style={{ color: "var(--color-danger)" }}>Ollama Not Detected</h4>
-                <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>Ollama must be running locally to power the AI features.</p>
+                <h4 style={{ color: "var(--color-danger)" }}>Bundled Ollama Sidecar Starting</h4>
+                <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>The application includes a bundled Ollama sidecar to run AI features completely offline. It may take a moment to initialize.</p>
                 <div style={{ display: "flex", gap: "1rem" }}>
-                  <button className="btn btn-primary" onClick={() => openUrl("https://ollama.ai")}>
-                    Install Ollama
-                  </button>
                   <button className="btn btn-secondary" onClick={runHealthCheck} disabled={checkingHealth}>
                     <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} />
-                    {checkingHealth ? "Checking..." : "I Have It — Re-check"}
+                    {checkingHealth ? "Checking..." : "Check Initialization Status"}
                   </button>
                 </div>
               </div>

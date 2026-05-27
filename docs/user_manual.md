@@ -40,7 +40,7 @@ On your very first launch, the **Onboarding Wizard** will walk you through three
 
 1. **Ollama & Model Setup**: 
    * CivicNewspaper uses **Ollama** to run a local artificial intelligence model on your computer. This means no cloud subscriptions and complete privacy.
-   * If you do not have Ollama installed, the wizard will prompt you to download it from [ollama.com](https://ollama.com). Keep Ollama running in the background.
+   * Ollama comes pre-installed as a bundled sidecar. The onboarding wizard will automatically initialize it, so you do not need to download or install Ollama separately.
    * The wizard will initiate a download of the default writing model, **Gemma 2 (9B)**. This model file is approximately **5.4 GB**. Depending on your internet speed, the download may take anywhere from 10 minutes to an hour. 
    * *Tip:* If your computer has less than 16 GB of RAM, you can select a smaller model (such as Llama 3 8B or Gemma 2 2B) in the setup to keep your computer running smoothly.
 2. **Community Profile**:

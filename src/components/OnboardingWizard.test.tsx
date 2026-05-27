@@ -84,7 +84,7 @@ describe("OnboardingWizard Component Tests", () => {
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
     // Step 2
-    await waitFor(() => expect(screen.getByText("Ollama Not Detected")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("Bundled Ollama Sidecar Starting")).toBeInTheDocument());
     expect(screen.getByRole("button", { name: /Skip for now/i })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Skip for now/i }));
 

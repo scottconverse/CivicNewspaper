@@ -120,7 +120,7 @@ You can build the application locally for development or packaging.
 **Prerequisites (all OSes):**
 - Rust toolchain — install via [rustup.rs](https://rustup.rs/).
 - Node.js 18+ and npm — [nodejs.org](https://nodejs.org/).
-- Ollama running locally — [ollama.com](https://ollama.com/). Pull at least one model: `ollama pull gemma2:9b` (or smaller).
+- Ollama (comes pre-installed via the bundled sidecar; for local development from source, run Ollama locally: [ollama.com](https://ollama.com)). Pull at least one model: `ollama pull gemma2:9b` (or smaller).
 
 **Platform prerequisites for Tauri v2:**
 - **Windows**: Microsoft Edge WebView2, plus the C++ Build Tools (`Desktop development with C++` workload).
