@@ -1,3 +1,4 @@
+# fix(v0.2.3): WV-3 self-test sed regex check
 name: Check Notices Version Consistency
 
 on:
