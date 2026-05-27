@@ -70,19 +70,19 @@ verify_and_write() {
 
 # 1. macOS Intel
 echo "Downloading macOS Intel binary..."
-TEMP_DARWIN_X86=$(mktemp)
+TEMP_DARWIN_X86=$(mktemp "${TMPDIR:-/tmp}/ollama-tmp.XXXXXX")
 curl -L -o "$TEMP_DARWIN_X86" "$BASE_URL/ollama-darwin"
 verify_and_write "$TEMP_DARWIN_X86" "x86_64-apple-darwin" "$BIN_DIR/ollama-x86_64-apple-darwin"
 
 # 2. macOS Apple Silicon
 echo "Downloading macOS Apple Silicon binary..."
-TEMP_DARWIN_AARCH=$(mktemp)
+TEMP_DARWIN_AARCH=$(mktemp "${TMPDIR:-/tmp}/ollama-tmp.XXXXXX")
 curl -L -o "$TEMP_DARWIN_AARCH" "$BASE_URL/ollama-darwin"
 verify_and_write "$TEMP_DARWIN_AARCH" "aarch64-apple-darwin" "$BIN_DIR/ollama-aarch64-apple-darwin"
 
 # 3. Linux
 echo "Downloading Linux binary..."
-TEMP_LINUX_TGZ=$(mktemp)
+TEMP_LINUX_TGZ=$(mktemp "${TMPDIR:-/tmp}/ollama-tmp.XXXXXX")
 curl -L -o "$TEMP_LINUX_TGZ" "$BASE_URL/ollama-linux-amd64.tgz"
 
 # Verify the tgz archive first
@@ -96,7 +96,7 @@ fi
 echo "SHA256 verified for Linux tgz: $actual_linux_sha"
 
 # Extract bin/ollama from the tgz
-TEMP_LINUX_BIN=$(mktemp)
+TEMP_LINUX_BIN=$(mktemp "${TMPDIR:-/tmp}/ollama-tmp.XXXXXX")
 tar -xzf "$TEMP_LINUX_TGZ" ./bin/ollama -O > "$TEMP_LINUX_BIN"
 rm -f "$TEMP_LINUX_TGZ"
 
@@ -114,7 +114,7 @@ echo "Successfully wrote $BIN_DIR/ollama-x86_64-unknown-linux-gnu"
 
 # 4. Windows
 echo "Downloading Windows binary..."
-TEMP_WIN_ZIP=$(mktemp)
+TEMP_WIN_ZIP=$(mktemp "${TMPDIR:-/tmp}/ollama-tmp.XXXXXX")
 curl -L -o "$TEMP_WIN_ZIP" "$BASE_URL/ollama-windows-amd64.zip"
 
 # Verify the zip archive first
@@ -128,7 +128,7 @@ fi
 echo "SHA256 verified for Windows zip: $actual_win_sha"
 
 # Extract ollama.exe from the zip
-TEMP_WIN_BIN=$(mktemp)
+TEMP_WIN_BIN=$(mktemp "${TMPDIR:-/tmp}/ollama-tmp.XXXXXX")
 unzip -p "$TEMP_WIN_ZIP" ollama.exe > "$TEMP_WIN_BIN"
 rm -f "$TEMP_WIN_ZIP"
 

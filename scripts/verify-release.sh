@@ -82,7 +82,7 @@ for artifact in "${ARTIFACTS[@]}"; do
   sha256sum "$artifact" >> dist/SHA256SUMS
   
   # Create temporary directory for extraction
-  tmp_extract=$(mktemp -d)
+  tmp_extract=$(mktemp -d "${TMPDIR:-/tmp}/ollama-extract.XXXXXX")
   
   # Extract based on file extension
   case "$filename" in
