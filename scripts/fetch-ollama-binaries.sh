@@ -97,7 +97,7 @@ echo "SHA256 verified for Linux tgz: $actual_linux_sha"
 
 # Extract bin/ollama from the tgz
 TEMP_LINUX_BIN=$(mktemp "${TMPDIR:-/tmp}/ollama-tmp.XXXXXX")
-tar -xzf "$TEMP_LINUX_TGZ" ./bin/ollama -O > "$TEMP_LINUX_BIN"
+tar -xOf "$TEMP_LINUX_TGZ" ./bin/ollama > "$TEMP_LINUX_BIN"
 rm -f "$TEMP_LINUX_TGZ"
 
 # Size check the extracted binary
