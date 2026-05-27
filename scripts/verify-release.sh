@@ -99,7 +99,7 @@ for artifact in "${ARTIFACTS[@]}"; do
         cp -R "$mount_point"/* "$tmp_extract/"
         hdiutil detach "$mount_point"
       else
-        7z x -o"$tmp_extract" "$artifact"
+        7z x -o"$tmp_extract" "$artifact" || true
       fi
       ;;
     *.msi)
@@ -107,7 +107,7 @@ for artifact in "${ARTIFACTS[@]}"; do
       if command -v msiexec &>/dev/null; then
         msiexec /a "$artifact" /qb TARGETDIR="$tmp_extract"
       else
-        7z x -o"$tmp_extract" "$artifact"
+        7z x -o"$tmp_extract" "$artifact" || true
       fi
       ;;
     *.AppImage)
@@ -150,6 +150,8 @@ for artifact in "${ARTIFACTS[@]}"; do
   min_size=100000000 # 100 MB
   if [[ "$filename" == *windows* || "$filename" == *.msi || "$filename" == *.exe ]]; then
     min_size=25000000 # 25 MB
+  elif [[ "$filename" == *darwin* || "$filename" == *.dmg ]]; then
+    min_size=50000000 # 50 MB
   fi
   
   if [ "$size" -lt "$min_size" ]; then
