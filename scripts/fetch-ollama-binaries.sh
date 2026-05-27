@@ -56,7 +56,7 @@ verify_and_write() {
     exit 1
   fi
   local expected_sha
-  expected_sha=$(grep "$triple" "$SHA_FILE" | awk '{print $1}' | tr -d '\r\n')
+  expected_sha=$(grep -v '^#' "$SHA_FILE" | grep "$triple" | awk '{print $1}' | tr -d '\r\n')
   if [ -z "$expected_sha" ]; then
     echo "FAIL: No pinned SHA found for triple $triple in $SHA_FILE"
     exit 1
@@ -107,7 +107,7 @@ TEMP_LINUX_TGZ=$(mktemp "${TMPDIR:-/tmp}/ollama-tmp.XXXXXX")
 curl -L -o "$TEMP_LINUX_TGZ" "$BASE_URL/ollama-linux-amd64.tgz"
 
 # Verify the tgz archive first
-expected_linux_sha=$(grep "x86_64-unknown-linux-gnu" "$SHA_FILE" | awk '{print $1}' | tr -d '\r\n')
+expected_linux_sha=$(grep -v '^#' "$SHA_FILE" | grep "x86_64-unknown-linux-gnu" | awk '{print $1}' | tr -d '\r\n')
 actual_linux_sha=$(get_sha256 "$TEMP_LINUX_TGZ")
 if [ "$actual_linux_sha" != "$expected_linux_sha" ]; then
   echo "FAIL: SHA256 mismatch for Linux tgz! Expected: $expected_linux_sha, Got: $actual_linux_sha"
@@ -140,7 +140,7 @@ TEMP_WIN_ZIP=$(mktemp "${TMPDIR:-/tmp}/ollama-tmp.XXXXXX")
 curl -L -o "$TEMP_WIN_ZIP" "$BASE_URL/ollama-windows-amd64.zip"
 
 # Verify the zip archive first
-expected_win_sha=$(grep "x86_64-pc-windows-msvc" "$SHA_FILE" | awk '{print $1}' | tr -d '\r\n')
+expected_win_sha=$(grep -v '^#' "$SHA_FILE" | grep "x86_64-pc-windows-msvc" | awk '{print $1}' | tr -d '\r\n')
 actual_win_sha=$(get_sha256 "$TEMP_WIN_ZIP")
 if [ "$actual_win_sha" != "$expected_win_sha" ]; then
   echo "FAIL: SHA256 mismatch for Windows zip! Expected: $expected_win_sha, Got: $actual_win_sha"
