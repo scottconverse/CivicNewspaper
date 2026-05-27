@@ -24,7 +24,7 @@ Because the Windows installer is unsigned, Windows SmartScreen will flag the app
 
 This screenshot placeholder describes the Windows SmartScreen warning window, where users click "More info" to reveal the "Run anyway" button.
 
-> ⚠️ Real installer warning screenshots will be added in v0.2.2 once captured on clean VMs.
+> ⚠️ Real installer screenshots are pending and will be added in v0.3 once captured on clean VMs.
 > The AI-generated mockups shipped in v0.2.0 were withdrawn because they did not match
 > the actual dialogs and could mislead users.
 
@@ -42,7 +42,7 @@ macOS Gatekeeper blocks unsigned apps by default, preventing execution if the de
 
 This screenshot placeholder describes the macOS Gatekeeper warning popup, which prompts the user to open or cancel the unsigned application.
 
-> ⚠️ Real installer warning screenshots will be added in v0.2.2 once captured on clean VMs.
+> ⚠️ Real installer screenshots are pending and will be added in v0.3 once captured on clean VMs.
 > The AI-generated mockups shipped in v0.2.0 were withdrawn because they did not match
 > the actual dialogs and could mislead users.
 

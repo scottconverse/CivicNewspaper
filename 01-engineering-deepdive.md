@@ -55,7 +55,7 @@ CivicNews provides a secure, local-first desktop database and static compiler fo
 ### [ENG-003] — Major — Performance — N+1 database locks and lack of batch transactions during feed ingestion
 
 **Evidence**
-- **File:** [src-tauri/src/core/scraper.rs#L124-L145](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/scraper.rs#L124-L145) and [L166-L187](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/scraper.rs#L166-L187)
+- **File:** [src-tauri/src/core/scraper.rs#L124-L145](src-tauri/src/core/scraper.rs#L124-L145) and [L166-L187](src-tauri/src/core/scraper.rs#L166-L187)
 - **Description:** During scraping, `scrape_source` processes feed items and HTML text chunks in a loop. For every item, it locks the `DbConn` (`Arc<Mutex<Connection>>`), queries if it exists (`get_evidence_by_hash`), releases the lock, then locks again to insert (`insert_evidence_item`). No overarching transaction is opened, so each check and insert commits to disk individually.
 
 **Why this matters**
@@ -76,7 +76,7 @@ Acquire the database connection lock once per feed source and wrap the duplicate
 ### [ENG-004] — Major — Correctness — Absence of payload size limits during feed downloading leading to potential OOM crashes
 
 **Evidence**
-- **File:** [src-tauri/src/core/scraper.rs#L92](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/scraper.rs#L92)
+- **File:** [src-tauri/src/core/scraper.rs#L92](src-tauri/src/core/scraper.rs#L92)
 - **Code snippet:**
   ```rust
   let body_bytes = response.bytes().await?;
@@ -100,7 +100,7 @@ Read response bytes in chunks (using a stream reader) and abort the request if t
 ### [ENG-005] — Major — Security / Correctness — Fragile regex-based HTML tag stripping in scraper
 
 **Evidence**
-- **File:** [src-tauri/src/core/scraper.rs#L194-L212](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/scraper.rs#L194-L212)
+- **File:** [src-tauri/src/core/scraper.rs#L194-L212](src-tauri/src/core/scraper.rs#L194-L212)
 - **Code snippet:**
   ```rust
   let re_tags = regex::Regex::new(r"<[^>]*>").unwrap();
@@ -124,7 +124,7 @@ Replace the custom regex cleaner with a robust, dedicated HTML extraction librar
 ### [ENG-010] — Major — Security — Loopback-wide denial of service (DoS) via IP-based pairing rate limiting
 
 **Evidence**
-- **File:** [src-tauri/src/core/server.rs#L120-L130](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/server.rs#L120-L130) and [L143-L153](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/server.rs#L143-L153)
+- **File:** [src-tauri/src/core/server.rs#L120-L130](src-tauri/src/core/server.rs#L120-L130) and [L143-L153](src-tauri/src/core/server.rs#L143-L153)
 - **Code snippet:**
   ```rust
   let ip = addr.ip().to_string();
@@ -159,7 +159,7 @@ Store rate limit state keyed by a combination of client identifier and/or custom
 ### [ENG-006] — Minor — Correctness — Flawed text chunking logic failing to split large single-paragraph blocks
 
 **Evidence**
-- **File:** [src-tauri/src/core/scraper.rs#L218-L229](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/scraper.rs#L218-L229)
+- **File:** [src-tauri/src/core/scraper.rs#L218-L229](src-tauri/src/core/scraper.rs#L218-L229)
 - **Description:** The text chunker iterates over split paragraphs. If a single paragraph is larger than `chunk_size` (2000 chars), the logic appends it to `current_chunk` and skips the chunk boundary check because `current_chunk` was empty. It then yields a chunk that exceeds the target limit.
 
 **Why this matters**
@@ -173,7 +173,7 @@ Modify the chunker so that if a single paragraph's length exceeds `chunk_size`, 
 ### [ENG-007] — Minor — Performance — Redundant statement preparation and regex compilation in loops
 
 **Evidence**
-- **File:** [src-tauri/src/core/detectors.rs](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/detectors.rs) (Lines 44-51, and statement prepares inside detector loops).
+- **File:** [src-tauri/src/core/detectors.rs](src-tauri/src/core/detectors.rs) (Lines 44-51, and statement prepares inside detector loops).
 - **Description:** Six regexes (`re_money`, `re_vote`, etc.) are compiled from string literals every time `run_detectors` is invoked. Furthermore, SQLite prepared statements in helpers like `lead_exists` are re-prepared on every call within the evidence ingestion loop.
 
 **Why this matters**
@@ -187,7 +187,7 @@ Store compiled regexes in `std::sync::OnceLock` variables, and prepare SQLite st
 ### [ENG-008] — Minor — Security / Correctness — Unescaped template replacement of draft format leading to HTML injection
 
 **Evidence**
-- **File:** [src-tauri/src/core/compiler.rs#L157](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/compiler.rs#L157)
+- **File:** [src-tauri/src/core/compiler.rs#L157](src-tauri/src/core/compiler.rs#L157)
 - **Code snippet:**
   ```rust
   post_html = post_html.replace("{{POST_FORMAT}}", &draft.format);
@@ -205,7 +205,7 @@ Escape `draft.format` using `html_escape::encode_safe` before template replaceme
 ### [ENG-009] — Minor — Correctness — Incomplete transaction implementation in `insert_lead`
 
 **Evidence**
-- **File:** [src-tauri/src/core/db.rs#L231-L251](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/db.rs#L231-L251)
+- **File:** [src-tauri/src/core/db.rs#L231-L251](src-tauri/src/core/db.rs#L231-L251)
 - **Description:** The code comment in `insert_lead` states "We execute the insert and linking inside a transaction to keep lead integrity," but it executes separate `conn.execute` statements directly on the connection without calling `conn.transaction()?`.
 
 **Why this matters**
@@ -219,7 +219,7 @@ Instantiate a transaction wrapper with `conn.transaction()?`, execute the querie
 ### [ENG-011] — Minor — Hygiene / Architecture — Unreachable pairing route bypass and dead code in auth middleware
 
 **Evidence**
-- **File:** [src-tauri/src/core/server.rs#L73-L89](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/server.rs#L73-L89) and [src-tauri/src/core/auth.rs#L47-L50](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/auth.rs#L47-L50)
+- **File:** [src-tauri/src/core/server.rs#L73-L89](src-tauri/src/core/server.rs#L73-L89) and [src-tauri/src/core/auth.rs#L47-L50](src-tauri/src/core/auth.rs#L47-L50)
 - **Code snippet:**
   ```rust
   // auth.rs

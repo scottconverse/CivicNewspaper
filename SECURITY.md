@@ -48,6 +48,14 @@ CivicNewspaper is designed with a strict "local-LLM only" architecture. All AI t
 - **No Data Exfiltration:** Your drafts, evidence, and prompts never leave your local machine.
 - **Offline Capable:** The entire AI pipeline operates without an internet connection once your selected model (e.g., `gemma2:9b`) is downloaded.
 
+## Local Sidecar Attack Surface
+
+CivicNewspaper bundles Ollama as an external binary sidecar process to perform local AI inference. This introduces specific security aspects:
+- **Bundled Binary**: The Ollama executable is packaged inside the application bundle and verified via SHA256 checksum checks during build time.
+- **Process Lifecycle**: The backend Rust core spawns and manages the Ollama sidecar process, binding it to the default port `11434`. The process is terminated automatically when the main desktop app exits.
+- **Tauri Capability `args` Config**: The sidecar execution argument list is explicitly restricted by Tauri's capability policies. Arbitrary command-line arguments are not permitted.
+- **Renderer-Compromise Implications**: If the frontend renderer is compromised (e.g., via stored XSS in a scraped feed), the attacker cannot execute arbitrary commands or access the host filesystem directly through the sidecar, but they could perform unauthorized local inference or query local models via the loopback port `11434`.
+
 ## Diagnostic reports
 
 The application allows you to manually export a diagnostic JSON report via the System Status panel to assist with troubleshooting.

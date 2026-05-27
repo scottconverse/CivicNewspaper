@@ -70,7 +70,9 @@ For details: [docs/architecture.md](docs/architecture.md).
 │   │   ├── Workbench.tsx       # Story draft editor & guardrails
 │   │   ├── PublishPanel.tsx    # Static site compilation panel
 │   │   ├── SourcesPanel.tsx    # Source scraper settings
-│   │   └── SettingsPanel.tsx   # Backup, identity & model selection
+│   │   ├── SettingsPanel.tsx   # Backup, identity & model selection
+│   │   ├── OnboardingWizard.tsx # Multi-step offline setup wizard
+│   │   └── DailyScanResults.tsx # Extracted intelligence lead results
 │   └── assets/
 ├── src-tauri/                  # Tauri Rust backend
 │   ├── Cargo.toml              # Rust crate config (named "civicnews")
@@ -103,8 +105,9 @@ For details: [docs/architecture.md](docs/architecture.md).
 │   ├── post.html
 │   ├── styles.css
 │   └── print.css
-├── browser-extension/
-│   ├── chromium/               # Manifest v3 browser capture utility
+├── scripts/                    # Release & policy tools
+│   ├── policy/                 # Hard-fail by construction auto-promote scripts
+│   └── audit/                  # Audit verification tools
 ├── assistant-skill/            # SKILL.md + client.js for CLI/IDE integrations
 └── docs/
     ├── architecture.md
@@ -122,7 +125,7 @@ You can build the application locally for development or packaging.
 **Prerequisites (all OSes):**
 - Rust toolchain — install via [rustup.rs](https://rustup.rs/).
 - Node.js 18+ and npm — [nodejs.org](https://nodejs.org/).
-- Ollama (comes pre-installed via the bundled sidecar; for local development from source, run Ollama locally: [ollama.com](https://ollama.com)). Pull at least one model: `ollama pull gemma2:9b` (or smaller).
+- Ollama — No separate installation is required; Ollama is bundled as a sidecar inside the application.
 
 **Platform prerequisites for Tauri v2:**
 - **Windows**: Microsoft Edge WebView2, plus the C++ Build Tools (`Desktop development with C++` workload).

@@ -41,14 +41,14 @@ cargo test
 
 ### Medium: New LLM-Backed Features and the LlmClient Trait
 
-For any new LLM-backed features (such as automated headlines, translations, or summaries), you **must** use the [LlmClient](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/llm.rs) trait pattern defined in [llm.rs](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/llm.rs).
+For any new LLM-backed features (such as automated headlines, translations, or summaries), you **must** use the [LlmClient](src-tauri/src/core/llm.rs) trait pattern defined in [llm.rs](src-tauri/src/core/llm.rs).
 * Do not make direct HTTP requests to Ollama or use ad-hoc clients.
 * Implement your logic against the `LlmClient` trait so it can be easily mocked in our Rust test suite.
-* Write corresponding mock tests in [tests.rs](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/tests.rs) to verify your implementation under different model behaviors and failure modes.
+* Write corresponding mock tests in [tests.rs](src-tauri/src/core/tests.rs) to verify your implementation under different model behaviors and failure modes.
 
 ### Medium: frontend componentization
 
-`src/App.tsx` is a 1,918-line single-page React component. Pulling out reusable pieces (the Queue view, the Workbench, the Onboarding wizard, the Settings tab) into `src/components/` would dramatically improve maintainability. The first PR on this path should pick one tab only and ship a working extraction with no behavior change.
+The frontend utilizes modular components. Pulling out or improving reusable pieces in `src/components/` (like the Queue view, the Workbench, or the Onboarding wizard) or working on the core logic in `src-tauri/src/core/` helps maintainability. Make sure new features utilize the `LlmClient` trait for offline capability.
 
 ### Harder: real NLP for detectors
 

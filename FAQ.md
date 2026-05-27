@@ -139,4 +139,4 @@ Outbound HTTP from the Rust backend goes to:
 1. Whatever feed URLs you configured (RSS, HTML pages).
 2. `127.0.0.1:11434` (your local Ollama).
 
-Additionally, the frontend utilizes the Tauri updater plugin which checks for updates from the official GitHub releases endpoint (`latest.json`) on app launch. This check does not send user tracking or telemetry metrics.
+The Tauri updater is dormant and inactive. No automatic checks are performed. Users must manually check the GitHub Releases page to download updates. If you want to update, a manual download is required.

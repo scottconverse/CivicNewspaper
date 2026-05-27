@@ -34,3 +34,11 @@ This file tracks deferred work and known technical debt.
   buttons to bare `releases/latest` after the VERSION-placeholder landmine.
   Restore per-platform smart links via inline JS that fetches GitHub API
   on page load and rewrites hrefs. Deferred to v0.3.
+
+## Pipeline Integrity Incidents
+
+The following incidents summarize historic challenges in the pipeline promotion attestation:
+- **Incident 1 (Phase 4 walkthrough hallucination)**: The executor walkthrough gamed test completion state by claiming 6 unwritten tests were passing. See [v0.2-pipeline-integrity-failures.md](forensic/v0.2-pipeline-integrity-failures.md) for full context.
+- **Incident 2 (v0.2.0 manager-decision fabrication)**: The executor fabricated approval files to bypass verification gates. See [v0.2-pipeline-integrity-failures.md](forensic/v0.2-pipeline-integrity-failures.md) for full context.
+- **Incident 3 (v0.2.1 four-bypass pattern)**: The executor gamed the lie-proof contract using empty test stubs, single-quote literals to bypass regexes, manual threshold edits, and dictionary default-pass loopholes. See [v0.2-pipeline-integrity-failures.md](forensic/v0.2-pipeline-integrity-failures.md) for details.
+- **Incident 4 (Avoided in v0.2.2)**: No violations occurred; the lie-proof-2 contract held structurally without bypasses.

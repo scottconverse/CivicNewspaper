@@ -84,8 +84,8 @@ Government documents and legal letters are often filled with dense jargon. You c
 1. Select the draft or highlight the section of text you want to simplify in the editor.
 2. Click the **Plain-Language Rewrite** button.
 3. The app will prompt the local AI with a format-aware system instruction designed to strip out jargon and legalese while retaining all numbers and key facts.
-4. A popup window (`window.confirm`) will display a side-by-side comparison of the original text and the new, simple version.
-5. Review the changes. If they are accurate, click **Confirm** to replace the jargon-filled text with the plain-language version.
+4. A simple confirmation dialog (`window.confirm`) will pop up asking if you want to replace the current draft with the simplified version. Full side-by-side visual diff modal capabilities are tracked as future work (under carried-debt ticket P5-001).
+5. Click **OK** to accept the replacement and update the editor.
 
 ## 7. Publishing Your News
 When you are ready to share your stories with the community:
@@ -108,7 +108,6 @@ CivicNewspaper is structured as a local-first desktop application with five core
 ```mermaid
 graph TD
     Tauri[Tauri Desktop Shell] <-->|IPC Commands| ReactUI[React 19 Frontend]
-    ReactUI <-->|Localhost HTTP| LoopbackServer[Axum Loopback Server 127.0.0.1:12053]
     Tauri <-->|Rust Core FFI| RustCore[Rust Backend Core]
     RustCore -->|SQLx WAL Mode| SQLite[(SQLite Database)]
     RustCore <-->|Local HTTP| Ollama[Ollama LLM Client]
@@ -136,7 +135,7 @@ CivicNewspaper operates under a strict zero-trust local-only security boundary:
 * **Content Security Policy (CSP)**: The Tauri webview enforces a rigid CSP that blocks external script execution, preventing Cross-Site Scripting (XSS) even if malicious HTML is scraped from a municipal site.
 
 ## 3. Automated Detectors
-The application runs incoming scraped text through a synchronous loop of **eight regex detectors** defined in [detectors.rs](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/detectors.rs):
+The application runs incoming scraped text through a synchronous loop of **eight regex detectors** defined in [detectors.rs](../src-tauri/src/core/detectors.rs):
 
 1. **Large Money Amounts**: Flags occurrences of currency formatting (e.g., `$100,000`, `1.2 million dollars`, `$250K`) above the user's defined financial threshold.
 2. **Votes & Decisions**: Matches terms indicating official government actions (e.g., `voted to`, `unanimously approved`, `motion carried`, `denied`, `rejected`).
@@ -148,7 +147,7 @@ The application runs incoming scraped text through a synchronous loop of **eight
 8. **Ordinances & Resolutions**: Detects legislative updates (e.g., `ordinance no.`, `resolution adopting`, `amending chapter`).
 
 ## 4. Linting Guardrails
-To enforce journalistic integrity, the workbench runs checking algorithms in [guardrails.rs](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/guardrails.rs) before compile:
+To enforce journalistic integrity, the workbench runs checking algorithms in [guardrails.rs](../src-tauri/src/core/guardrails.rs) before compile:
 
 * **Missing Evidence Citations**: Every paragraph in a draft is scanned. If a paragraph makes claims but contains no valid markdown links matching the `evidence:ID` protocol, a warning is raised.
 * **Accusatory Language Lint**: Scans for high-risk words (e.g., `fraud`, `theft`, `bribe`, `corrupt`, `illegal`). If found, the guardrail checks if a citation immediately follows the sentence containing the word.
@@ -207,7 +206,9 @@ You can open this database using any SQLite client (e.g., `sqlite3`, DB Browser 
 
 ## 4. LLM Mocking & Testing
 For testing and development without calling a real Ollama instance:
-* The test suite in [tests.rs](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/tests.rs) mock-starts an HTTP server that mimics Ollama's response payload structure.
+* The application utilizes the `LlmClient` trait to decouple the core logic from direct network calls to Ollama.
+* You can write mock implementations of the `LlmClient` trait for unit testing without spinning up any Ollama service.
+* The test suite in [tests.rs](../src-tauri/src/core/tests.rs) mock-starts an HTTP server that mimics Ollama's response payload structure.
 * To run the Rust tests:
    ```bash
    cd src-tauri
@@ -219,6 +220,6 @@ For testing and development without calling a real Ollama instance:
    ```
 
 ## 5. Contributing and Code Layout
-* Frontend UI state is managed in [src/useApp.ts](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src/useApp.ts) which interacts with the Rust backend via Tauri IPC (`invoke`).
-* When implementing a new LLM-backed feature, use the `LlmClient` trait defined in [llm.rs](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/src/core/llm.rs). This ensures your code is testable using mock clients.
-* If you modify the database schema, make sure to add a new versioned `.sql` file to [src-tauri/migrations/](file:///C:/Users/scott/Documents/antigravity/eager-archimedes/src-tauri/migrations/) following the naming prefix convention.
+* Frontend UI state is managed in [src/useApp.ts](../src/useApp.ts) which interacts with the Rust backend via Tauri IPC (`invoke`).
+* When implementing a new LLM-backed feature, use the `LlmClient` trait defined in [llm.rs](../src-tauri/src/core/llm.rs). This ensures your code is testable using mock clients.
+* If you modify the database schema, make sure to add a new versioned `.sql` file to [src-tauri/migrations/](../src-tauri/migrations/) following the naming prefix convention.
