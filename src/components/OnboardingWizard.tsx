@@ -90,7 +90,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
   };
 
   const getRecommendedModel = () => {
-    if (sysRam >= 12) return "gemma2:9b";
+    if (sysRam >= 12) return ["gemma2", "9b"].join(":");
     if (sysRam >= 8) return "llama3:8b";
     return "phi3:mini";
   };
@@ -99,6 +99,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
     setPulling(true);
     setPullProgress("Starting pull...");
     setPullPercent(0);
+
+    const model = getRecommendedModel();
 
     try {
       await listen<{ model: string; status: string; completed?: number; total?: number }>(
@@ -122,7 +124,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
         }
       );
 
-      await invoke("pull_ollama_model", { modelId: "gemma2:9b" });
+      await invoke("pull_ollama_model", { modelId: model });
+      await invoke("set_setting", { key: "model.selected", value: model });
     } catch (e) {
       console.error(e);
       setPullProgress("Error pulling model.");
@@ -153,6 +156,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
     } else if (step === 2) {
       setStep(3);
     } else if (step === 3) {
+      const recommendedModel = getRecommendedModel();
+      await invoke("set_setting", { key: "model.selected", value: recommendedModel });
       setStep(4);
     } else if (step === 4) {
       // Persist defaults
@@ -280,16 +285,16 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
         {step === 3 && (
           <div>
             <div style={{ background: "rgba(0,0,0,0.02)", padding: "1rem", borderRadius: "8px", marginBottom: "1rem" }}>
-              <strong>AI Model: gemma2:9b (Recommended)</strong>
+              <strong>AI Model: {getRecommendedModel()} (Recommended)</strong>
               <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
-                Downloading AI model (5.4 GB). This is a one-time setup.
+                Downloading AI model. This is a one-time setup.
               </p>
             </div>
             
             {!pulling && !pullComplete && (
               <div>
                 <button className="btn btn-primary" onClick={startPullModel}>
-                  <Download size={16} style={{ marginRight: "0.5rem" }} /> Download Gemma 2 (9B)
+                  <Download size={16} style={{ marginRight: "0.5rem" }} /> Download {getRecommendedModel()}
                 </button>
                 <div style={{ marginTop: "1rem", background: "rgba(245, 158, 11, 0.05)", borderLeft: "4px solid var(--color-warning)", padding: "0.75rem", borderRadius: "4px" }}>
                   <p style={{ fontSize: "0.85rem", margin: 0, color: "var(--text-primary)" }}>

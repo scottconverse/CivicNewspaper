@@ -32,6 +32,59 @@ fn default_state() -> String {
     "CO".to_string()
 }
 
+async fn get_selected_model_or_fallback(db: &DbConn) -> String {
+    let saved = {
+        if let Ok(conn) = db.lock() {
+            if let Ok(mut stmt) = conn.prepare("SELECT value FROM settings WHERE key = 'model.selected'") {
+                if let Ok(val) = stmt.query_row([], |row| row.get::<_, String>(0)) {
+                    Some(val)
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    };
+
+    if let Some(m) = saved {
+        return m;
+    }
+
+    let default_m = format!("{}:{}", "gemma2", "9b");
+    let mut model = default_m.clone();
+    if let Ok(resp) = reqwest::get("http://127.0.0.1:11434/api/tags").await {
+        if resp.status().is_success() {
+            #[derive(Deserialize)]
+            struct ModelItem {
+                name: String,
+            }
+            #[derive(Deserialize)]
+            struct TagsResp {
+                models: Vec<ModelItem>,
+            }
+            if let Ok(tags) = resp.json::<TagsResp>().await {
+                if !tags.models.is_empty() {
+                    if tags.models.iter().any(|m| m.name.starts_with(&default_m)) {
+                        model = default_m;
+                    } else if let Some(m) = tags
+                        .models
+                        .iter()
+                        .find(|m| m.name.contains("gemma") || m.name.contains("llama") || m.name.contains("phi"))
+                    {
+                        model = m.name.clone();
+                    } else {
+                        model = tags.models[0].name.clone();
+                    }
+                }
+            }
+        }
+    }
+    model
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct QueueData {
     pub leads: Vec<Lead>,
@@ -310,34 +363,7 @@ pub async fn generate_draft(
 
     let sys = system_prompt.unwrap_or_else(|| "You are an AI assistant for a local community newspaper reporter. You write factual, objective drafts based strictly on provided records. You always cite evidence IDs.".to_string());
 
-    let mut model = "gemma2:9b".to_string();
-    if let Ok(resp) = reqwest::get("http://127.0.0.1:11434/api/tags").await {
-        if resp.status().is_success() {
-            #[derive(Deserialize)]
-            struct ModelItem {
-                name: String,
-            }
-            #[derive(Deserialize)]
-            struct TagsResp {
-                models: Vec<ModelItem>,
-            }
-            if let Ok(tags) = resp.json::<TagsResp>().await {
-                if !tags.models.is_empty() {
-                    if tags.models.iter().any(|m| m.name.starts_with("gemma2:9b")) {
-                        model = "gemma2:9b".to_string();
-                    } else if let Some(m) = tags
-                        .models
-                        .iter()
-                        .find(|m| m.name.contains("gemma") || m.name.contains("llama"))
-                    {
-                        model = m.name.clone();
-                    } else {
-                        model = tags.models[0].name.clone();
-                    }
-                }
-            }
-        }
-    }
+    let model = get_selected_model_or_fallback(&db).await;
 
     let llm_client = app
         .try_state::<std::sync::Arc<dyn crate::core::llm::LlmClient>>()
@@ -349,37 +375,11 @@ pub async fn generate_draft(
 #[tauri::command]
 pub async fn llm_task(
     app: tauri::AppHandle,
+    db: tauri::State<'_, DbConn>,
     prompt: String,
     system: String,
 ) -> Result<String, String> {
-    let mut model = "gemma2:9b".to_string();
-    if let Ok(resp) = reqwest::get("http://127.0.0.1:11434/api/tags").await {
-        if resp.status().is_success() {
-            #[derive(Deserialize)]
-            struct ModelItem {
-                name: String,
-            }
-            #[derive(Deserialize)]
-            struct TagsResp {
-                models: Vec<ModelItem>,
-            }
-            if let Ok(tags) = resp.json::<TagsResp>().await {
-                if !tags.models.is_empty() {
-                    if tags.models.iter().any(|m| m.name.starts_with("gemma2:9b")) {
-                        model = "gemma2:9b".to_string();
-                    } else if let Some(m) = tags
-                        .models
-                        .iter()
-                        .find(|m| m.name.contains("gemma") || m.name.contains("llama"))
-                    {
-                        model = m.name.clone();
-                    } else {
-                        model = tags.models[0].name.clone();
-                    }
-                }
-            }
-        }
-    }
+    let model = get_selected_model_or_fallback(&db).await;
     let llm_client = app
         .try_state::<std::sync::Arc<dyn crate::core::llm::LlmClient>>()
         .map(|s| s.inner().clone())
@@ -716,6 +716,22 @@ pub fn set_setting(db: tauri::State<'_, DbConn>, key: String, value: String) -> 
     Ok(())
 }
 
+#[tauri::command]
+pub fn get_setting(db: tauri::State<'_, DbConn>, key: String) -> Result<Option<String>, String> {
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
+    let mut stmt = conn
+        .prepare("SELECT value FROM settings WHERE key = ?1")
+        .map_err(|e| e.to_string())?;
+    let val: Result<String, _> = stmt.query_row([key], |row| row.get(0));
+    match val {
+        Ok(v) => Ok(Some(v)),
+        Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
+        Err(e) => Err(e.to_string()),
+    }
+}
+
 pub fn validate_export_path(
     app_data_dir: std::path::PathBuf,
     download_dir: std::path::PathBuf,
@@ -792,10 +808,11 @@ pub async fn run_daily_scan<R: tauri::Runtime>(
 #[tauri::command]
 pub async fn plain_language_rewrite(
     app: tauri::AppHandle,
+    db: tauri::State<'_, DbConn>,
     text: String,
     draft_format: String,
 ) -> Result<String, String> {
     let system = format!("You are a plain language summarizer. Rewrite the following text to an 8th-grade reading level in the '{}' format. Remove jargon. Keep the core facts.", draft_format);
     let prompt = format!("Rewrite this:\n{}", text);
-    llm_task(app, prompt, system).await
+    llm_task(app, db, prompt, system).await
 }

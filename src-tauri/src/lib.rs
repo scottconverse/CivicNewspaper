@@ -117,6 +117,7 @@ pub fn run() {
             is_onboarding_complete,
             set_onboarding_complete,
             set_setting,
+            get_setting,
             export_diagnostics,
             list_prompts,
             get_prompt,

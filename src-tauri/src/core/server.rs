@@ -221,12 +221,24 @@ async fn llm_task_handler(
     State(state): State<AppState>,
     Json(payload): Json<LlmTaskRequest>,
 ) -> Result<Json<LlmTaskResponse>, StatusCode> {
-    // Load default model for tasks. Default to gemma2:9b as per spec
-    let model = "gemma2:9b";
+    let model = {
+        let conn = state
+            .db
+            .lock()
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        let mut stmt = conn
+            .prepare("SELECT value FROM settings WHERE key = 'model.selected'")
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        let val: Result<String, _> = stmt.query_row([], |row| row.get(0));
+        match val {
+            Ok(v) => v,
+            Err(_) => "gemma2:9b".to_string(),
+        }
+    };
 
     match state
         .llm_client
-        .call(model, &payload.prompt, &payload.system)
+        .call(&model, &payload.prompt, &payload.system)
         .await
     {
         Ok(result) => Ok(Json(LlmTaskResponse { result })),

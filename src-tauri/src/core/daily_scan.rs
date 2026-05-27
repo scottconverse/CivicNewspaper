@@ -90,10 +90,22 @@ pub async fn run_daily_scan<R: tauri::Runtime>(
         city, state, context
     );
 
+    let model = {
+        let conn = db.lock().map_err(|_| "Failed to lock db")?;
+        let mut stmt = conn
+            .prepare("SELECT value FROM settings WHERE key = 'model.selected'")
+            .map_err(|e| e.to_string())?;
+        let val: Result<String, _> = stmt.query_row([], |row| row.get(0));
+        match val {
+            Ok(v) => v,
+            Err(_) => "gemma2:9b".to_string(), // Fallback if not set
+        }
+    };
+
     use tauri::Manager;
     let llm_client = app.state::<std::sync::Arc<dyn LlmClient>>();
     let llm_res = llm_client
-        .call("gemma2:9b", &final_prompt, &prompt_template)
+        .call(&model, &final_prompt, &prompt_template)
         .await;
 
     let conn = match db.lock() {

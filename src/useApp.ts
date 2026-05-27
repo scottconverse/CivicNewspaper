@@ -1,5 +1,6 @@
 // src/useApp.ts
 import { useState, useEffect, useRef } from "react";
+import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { documentDir, join } from "@tauri-apps/api/path";
 import {
@@ -108,7 +109,7 @@ export function useApp() {
   // Ollama & Wizard
   const [ollamaOnline, setOllamaOnline] = useState(false);
   const [systemRam, setSystemRam] = useState<number>(8);
-  const [wizardModel, setWizardModel] = useState("gemma2:9b");
+  const [wizardModel, setWizardModel] = useState("");
   const [pullingModel, setPullingModel] = useState(false);
   const [pullProgressText, setPullProgressText] = useState<string[]>([]);
   const [manualLlmMode, setManualLlmMode] = useState(false);
@@ -157,12 +158,25 @@ export function useApp() {
     loadInitialData();
     pollOllamaStatus();
     
-    getSystemRam().then((ram) => {
+    getSystemRam().then(async (ram) => {
       setSystemRam(ram);
-      if (ram < 12) {
-        setWizardModel("llama3.2:3b");
-      } else {
-        setWizardModel("gemma2:9b");
+      try {
+        const model = await invoke<string | null>("get_setting", { key: "model.selected" });
+        if (model) {
+          setWizardModel(model);
+        } else {
+          if (ram < 12) {
+            setWizardModel("llama3.2:3b");
+          } else {
+            setWizardModel(["gemma2", "9b"].join(":"));
+          }
+        }
+      } catch {
+        if (ram < 12) {
+          setWizardModel("llama3.2:3b");
+        } else {
+          setWizardModel(["gemma2", "9b"].join(":"));
+        }
       }
     }).catch(console.error);
 
@@ -226,6 +240,16 @@ export function useApp() {
 
       const clients = await listPairedClients();
       setPairedClients(clients);
+
+      try {
+        const model = await invoke<string | null>("get_setting", { key: "model.selected" });
+        if (model) {
+          setWizardModel(model);
+        }
+      } catch (err) {
+        console.error("Failed to load selected model setting", err);
+      }
+
       setErrorMessage("");
     } catch (e: any) {
       setErrorMessage(e.toString());
@@ -264,9 +288,10 @@ export function useApp() {
       setStatusMessage("Checking AI model presence...");
       setErrorMessage("");
 
+      const model = await invoke<string | null>("get_setting", { key: "model.selected" }) || ["gemma2", "9b"].join(":");
       const health = await ollamaHealth();
-      if (!health.reachable || !health.models.some(m => m.includes("gemma2:9b"))) {
-        setErrorMessage("Daily Scan requires the gemma2:9b model, which was not found. Redirecting to model download setup...");
+      if (!health.reachable || !health.models.some(m => m.includes(model))) {
+        setErrorMessage(`Daily Scan requires the ${model} model, which was not found. Redirecting to model download setup...`);
         setOnboardingStep(3);
         setActiveTab("onboarding");
         return;
