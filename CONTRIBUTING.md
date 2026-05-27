@@ -6,7 +6,7 @@ Thanks for considering a contribution. CivicNewspaper is pre-alpha; the most val
 
 - The project is single-editor, local-first, no-cloud. Contributions that add cloud dependencies, telemetry, or analytics will be rejected.
 - Every fact in published output must be linkable to a primary record. Contributions that weaken the guardrails (citation, presumption-of-innocence) need a strong justification.
-- No vendored binaries. No bundled model weights. Ollama is a runtime dependency the user installs themselves.
+- Ollama is bundled as a sidecar binary; contributors should not introduce additional vendored binaries without director approval. No bundled model weights.
 
 ## Development setup
 
