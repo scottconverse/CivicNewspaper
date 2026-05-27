@@ -30,7 +30,7 @@ describe("OnboardingWizard Component Tests", () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
 
-    const gemma2_9b = ["gemma2", "9b"].join(":");
+    const gemma2_9b = 'gemma2:9b';
     invokeMock.mockImplementation((cmd: string) => {
       if (cmd === "get_system_ram") return Promise.resolve(16);
       if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: [gemma2_9b], version: "0.1.0" });
@@ -104,7 +104,7 @@ describe("OnboardingWizard Component Tests", () => {
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
     // Step 2
-    const gemma2_9b = ["gemma2", "9b"].join(":");
+    const gemma2_9b = 'gemma2:9b';
     await waitFor(() => expect(screen.getByText(/Pull a recommended model/i)).toBeInTheDocument());
     expect(screen.getByText(new RegExp(gemma2_9b))).toBeInTheDocument();
   });
@@ -135,7 +135,7 @@ describe("OnboardingWizard Component Tests", () => {
     expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
     
     // Click pull recommended model button
-    const gemma2_9b = ["gemma2", "9b"].join(":");
+    const gemma2_9b = 'gemma2:9b';
     const pullBtn = await screen.findByRole("button", { name: new RegExp("Download " + gemma2_9b, "i") });
     fireEvent.click(pullBtn);
 
