@@ -9,6 +9,28 @@ mkdir -p "$BIN_DIR"
 VERSION="v0.3.14"
 BASE_URL="https://github.com/ollama/ollama/releases/download/$VERSION"
 SHA_FILE="scripts/ollama-binaries-shas.txt"
+THRESHOLDS_FILE="scripts/policy/thresholds.json"
+
+# Validate thresholds JSON exists and is valid
+if [ ! -f "$THRESHOLDS_FILE" ]; then
+  echo "FAIL: $THRESHOLDS_FILE is missing" >&2
+  exit 1
+fi
+
+PY_CMD="python3"
+if ! command -v python3 >/dev/null 2>&1; then
+  PY_CMD="python"
+fi
+
+if ! $PY_CMD -c "import json; json.load(open('$THRESHOLDS_FILE'))" >/dev/null 2>&1; then
+  echo "FAIL: $THRESHOLDS_FILE is malformed or invalid" >&2
+  exit 1
+fi
+
+get_min_size() {
+  local platform="$1"
+  $PY_CMD -c "import json, sys; d=json.load(open('$THRESHOLDS_FILE')); print(d['ollama_binary_min_bytes_per_platform'].get(sys.argv[1], d['ollama_binary_min_bytes']))" "$platform"
+}
 
 get_sha256() {
   local file="$1"
@@ -26,6 +48,7 @@ verify_and_write() {
   local temp_file="$1"
   local triple="$2"
   local dest_binary="$3"
+  local platform="$4"
 
   # 1. Get expected SHA
   if [ ! -f "$SHA_FILE" ]; then
@@ -49,11 +72,9 @@ verify_and_write() {
   fi
   echo "SHA256 verified for $triple: $actual_sha"
 
-  # 3. Size check
-  local min_size=100000000
-  if [[ "$triple" == *"apple-darwin"* ]]; then
-    min_size=50000000
-  fi
+  # 3. Size check loaded from thresholds.json
+  local min_size
+  min_size=$(get_min_size "$platform")
   local size
   size=$(wc -c < "$temp_file")
   if [ "$size" -lt "$min_size" ]; then
@@ -72,13 +93,13 @@ verify_and_write() {
 echo "Downloading macOS Intel binary..."
 TEMP_DARWIN_X86=$(mktemp "${TMPDIR:-/tmp}/ollama-tmp.XXXXXX")
 curl -L -o "$TEMP_DARWIN_X86" "$BASE_URL/ollama-darwin"
-verify_and_write "$TEMP_DARWIN_X86" "x86_64-apple-darwin" "$BIN_DIR/ollama-x86_64-apple-darwin"
+verify_and_write "$TEMP_DARWIN_X86" "x86_64-apple-darwin" "$BIN_DIR/ollama-x86_64-apple-darwin" "darwin"
 
 # 2. macOS Apple Silicon
 echo "Downloading macOS Apple Silicon binary..."
 TEMP_DARWIN_AARCH=$(mktemp "${TMPDIR:-/tmp}/ollama-tmp.XXXXXX")
 curl -L -o "$TEMP_DARWIN_AARCH" "$BASE_URL/ollama-darwin"
-verify_and_write "$TEMP_DARWIN_AARCH" "aarch64-apple-darwin" "$BIN_DIR/ollama-aarch64-apple-darwin"
+verify_and_write "$TEMP_DARWIN_AARCH" "aarch64-apple-darwin" "$BIN_DIR/ollama-aarch64-apple-darwin" "darwin"
 
 # 3. Linux
 echo "Downloading Linux binary..."
@@ -100,10 +121,11 @@ TEMP_LINUX_BIN=$(mktemp "${TMPDIR:-/tmp}/ollama-tmp.XXXXXX")
 tar -xOf "$TEMP_LINUX_TGZ" ./bin/ollama > "$TEMP_LINUX_BIN"
 rm -f "$TEMP_LINUX_TGZ"
 
-# Size check the extracted binary
+# Size check the extracted binary vs thresholds.json
+linux_min_size=$(get_min_size "linux")
 linux_bin_size=$(wc -c < "$TEMP_LINUX_BIN")
-if [ "$linux_bin_size" -lt 100000000 ]; then
-  echo "FAIL: Extracted Linux binary size is too small ($linux_bin_size bytes), must be >= 100MB"
+if [ "$linux_bin_size" -lt "$linux_min_size" ]; then
+  echo "FAIL: Extracted Linux binary size is too small ($linux_bin_size bytes), must be >= $linux_min_size"
   rm -f "$TEMP_LINUX_BIN"
   exit 1
 fi
@@ -132,10 +154,11 @@ TEMP_WIN_BIN=$(mktemp "${TMPDIR:-/tmp}/ollama-tmp.XXXXXX")
 unzip -p "$TEMP_WIN_ZIP" ollama.exe > "$TEMP_WIN_BIN"
 rm -f "$TEMP_WIN_ZIP"
 
-# Size check the extracted binary
+# Size check the extracted binary vs thresholds.json
+win_min_size=$(get_min_size "windows")
 win_bin_size=$(wc -c < "$TEMP_WIN_BIN")
-if [ "$win_bin_size" -lt 25000000 ]; then
-  echo "FAIL: Extracted Windows binary size is too small ($win_bin_size bytes), must be >= 25MB"
+if [ "$win_bin_size" -lt "$win_min_size" ]; then
+  echo "FAIL: Extracted Windows binary size is too small ($win_bin_size bytes), must be >= $win_min_size"
   rm -f "$TEMP_WIN_BIN"
   exit 1
 fi
