@@ -784,51 +784,46 @@ mod tests {
         assert_eq!(count, 1);
     }
 
-    #[cfg(not(target_os = "windows"))]
+    #[cfg_attr(target_os = "windows", ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as P5-003")]
     #[tokio::test]
     async fn test_plain_language_rewrite_invokes_ollama() {
-        // MUTATION-RESISTANT
-        use tauri::Manager;
-        let app = tauri::test::mock_app();
+        #[cfg(not(target_os = "windows"))]
+        {
+            // MUTATION-RESISTANT
+            use tauri::Manager;
+            let app = tauri::test::mock_app();
 
-        // Register DbConn state
-        let mut conn = Connection::open_in_memory().unwrap();
-        crate::core::migrations::run_migrations(&mut conn).unwrap();
-        // Insert selected model setting
-        conn.execute("INSERT OR REPLACE INTO settings (key, value) VALUES ('model.selected', 'fake-model')", []).unwrap();
-        let db_conn: DbConn = Arc::new(Mutex::new(conn));
-        app.manage(db_conn.clone());
+            // Register DbConn state
+            let mut conn = Connection::open_in_memory().unwrap();
+            crate::core::migrations::run_migrations(&mut conn).unwrap();
+            // Insert selected model setting
+            conn.execute("INSERT OR REPLACE INTO settings (key, value) VALUES ('model.selected', 'fake-model')", []).unwrap();
+            let db_conn: DbConn = Arc::new(Mutex::new(conn));
+            app.manage(db_conn.clone());
 
-        // Register LlmClient state
-        struct FakeLlmClient;
-        #[async_trait::async_trait]
-        impl crate::core::llm::LlmClient for FakeLlmClient {
-            async fn call(&self, model: &str, prompt: &str, system: &str) -> Result<String, String> {
-                assert_eq!(model, "fake-model");
-                assert!(prompt.contains("Rewrite this"));
-                assert!(system.contains("summarizer"));
-                Ok("Rewritten text".to_string())
+            // Register LlmClient state
+            struct FakeLlmClient;
+            #[async_trait::async_trait]
+            impl crate::core::llm::LlmClient for FakeLlmClient {
+                async fn call(&self, model: &str, prompt: &str, system: &str) -> Result<String, String> {
+                    assert_eq!(model, "fake-model");
+                    assert!(prompt.contains("Rewrite this"));
+                    assert!(system.contains("summarizer"));
+                    Ok("Rewritten text".to_string())
+                }
             }
+            app.manage(Arc::new(FakeLlmClient) as Arc<dyn crate::core::llm::LlmClient>);
+
+            let res = crate::tauri_cmds::plain_language_rewrite(
+                app.handle().clone(),
+                app.state(),
+                "Hello".to_string(),
+                "story".to_string(),
+            )
+            .await;
+
+            assert_eq!(res.unwrap(), "Rewritten text");
         }
-        app.manage(Arc::new(FakeLlmClient) as Arc<dyn crate::core::llm::LlmClient>);
-
-        let res = crate::tauri_cmds::plain_language_rewrite(
-            app.handle().clone(),
-            app.state(),
-            "Hello".to_string(),
-            "story".to_string(),
-        )
-        .await;
-
-        assert_eq!(res.unwrap(), "Rewritten text");
-    }
-
-    #[cfg(target_os = "windows")]
-    #[tokio::test]
-    async fn test_plain_language_rewrite_invokes_ollama() {
-        // MUTATION-RESISTANT
-        // On Windows, mock_app() is bypassed to avoid DLL loader mismatch crashes.
-        assert!(true);
     }
 
     #[test]
@@ -874,46 +869,40 @@ mod tests {
         // Clean drop validation: stop returns Ok even if no process was spawned.
     }
 
-    #[cfg(not(target_os = "windows"))]
+    #[cfg_attr(target_os = "windows", ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as P5-003")]
     #[tokio::test]
     async fn test_daily_scan_command_does_not_panic_when_state_registered() {
-        use tauri::Manager;
-        let app = tauri::test::mock_app();
-        
-        // Register DbConn state
-        let mut conn = rusqlite::Connection::open_in_memory().unwrap();
-        crate::core::migrations::run_migrations(&mut conn).unwrap();
-        let db_conn: DbConn = Arc::new(Mutex::new(conn));
-        app.manage(db_conn);
-        
-        // Register LlmClient state
-        struct FakeLlmClient;
-        #[async_trait::async_trait]
-        impl crate::core::llm::LlmClient for FakeLlmClient {
-            async fn call(&self, _model: &str, _prompt: &str, _system: &str) -> Result<String, String> {
-                Ok("{\"leads\":[]}".to_string())
+        #[cfg(not(target_os = "windows"))]
+        {
+            use tauri::Manager;
+            let app = tauri::test::mock_app();
+            
+            // Register DbConn state
+            let mut conn = rusqlite::Connection::open_in_memory().unwrap();
+            crate::core::migrations::run_migrations(&mut conn).unwrap();
+            let db_conn: DbConn = Arc::new(Mutex::new(conn));
+            app.manage(db_conn);
+            
+            // Register LlmClient state
+            struct FakeLlmClient;
+            #[async_trait::async_trait]
+            impl crate::core::llm::LlmClient for FakeLlmClient {
+                async fn call(&self, _model: &str, _prompt: &str, _system: &str) -> Result<String, String> {
+                    Ok("{\"leads\":[]}".to_string())
+                }
             }
+            app.manage(Arc::new(FakeLlmClient) as Arc<dyn crate::core::llm::LlmClient>);
+            
+            let res = crate::tauri_cmds::run_daily_scan(
+                app.state(),
+                app.handle().clone(),
+                "Brighton".to_string(),
+                "CO".to_string(),
+                24
+            ).await;
+            
+            assert!(res.is_ok());
         }
-        app.manage(Arc::new(FakeLlmClient) as Arc<dyn crate::core::llm::LlmClient>);
-        
-        let res = crate::tauri_cmds::run_daily_scan(
-            app.state(),
-            app.handle().clone(),
-            "Brighton".to_string(),
-            "CO".to_string(),
-            24
-        ).await;
-        
-        assert!(res.is_ok());
-    }
-
-    #[cfg(target_os = "windows")]
-    #[tokio::test]
-    async fn test_daily_scan_command_does_not_panic_when_state_registered() {
-        // On Windows, tauri::test::mock_app() causes a runtime DLL entry point mismatch crash
-        // (STATUS_ENTRYPOINT_NOT_FOUND / 0xc0000139) because the console test executable
-        // conflicts with GUI DLL linkages. The full integration test is executed on non-Windows CI.
-        assert!(true);
     }
 
     #[test]
@@ -954,46 +943,42 @@ mod tests {
         assert_eq!(evidence_count, 1);
     }
 
-    #[cfg(not(target_os = "windows"))]
+    #[cfg_attr(target_os = "windows", ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as P5-003")]
     #[tokio::test]
     async fn test_daily_scan_uses_settings_model_not_hardcoded() {
-        use tauri::Manager;
-        let app = tauri::test::mock_app();
+        #[cfg(not(target_os = "windows"))]
+        {
+            use tauri::Manager;
+            let app = tauri::test::mock_app();
 
-        // Register DbConn state
-        let mut conn = Connection::open_in_memory().unwrap();
-        crate::core::migrations::run_migrations(&mut conn).unwrap();
-        // Insert custom model setting
-        conn.execute("INSERT OR REPLACE INTO settings (key, value) VALUES ('model.selected', 'my-custom-model')", []).unwrap();
-        let db_conn: DbConn = Arc::new(Mutex::new(conn));
-        app.manage(db_conn.clone());
+            // Register DbConn state
+            let mut conn = Connection::open_in_memory().unwrap();
+            crate::core::migrations::run_migrations(&mut conn).unwrap();
+            // Insert custom model setting
+            conn.execute("INSERT OR REPLACE INTO settings (key, value) VALUES ('model.selected', 'my-custom-model')", []).unwrap();
+            let db_conn: DbConn = Arc::new(Mutex::new(conn));
+            app.manage(db_conn.clone());
 
-        // Register LlmClient state
-        struct FakeLlmClient;
-        #[async_trait::async_trait]
-        impl crate::core::llm::LlmClient for FakeLlmClient {
-            async fn call(&self, model: &str, _prompt: &str, _system: &str) -> Result<String, String> {
-                assert_eq!(model, "my-custom-model");
-                Ok("{\"leads\":[]}".to_string())
+            // Register LlmClient state
+            struct FakeLlmClient;
+            #[async_trait::async_trait]
+            impl crate::core::llm::LlmClient for FakeLlmClient {
+                async fn call(&self, model: &str, _prompt: &str, _system: &str) -> Result<String, String> {
+                    assert_eq!(model, "my-custom-model");
+                    Ok("{\"leads\":[]}".to_string())
+                }
             }
+            app.manage(Arc::new(FakeLlmClient) as Arc<dyn crate::core::llm::LlmClient>);
+
+            let res = crate::core::daily_scan::run_daily_scan(
+                &db_conn,
+                app.handle(),
+                "Brighton",
+                "CO",
+                24
+            ).await;
+
+            assert!(res.is_ok());
         }
-        app.manage(Arc::new(FakeLlmClient) as Arc<dyn crate::core::llm::LlmClient>);
-
-        let res = crate::core::daily_scan::run_daily_scan(
-            &db_conn,
-            app.handle(),
-            "Brighton",
-            "CO",
-            24
-        ).await;
-
-        assert!(res.is_ok());
-    }
-
-    #[cfg(target_os = "windows")]
-    #[tokio::test]
-    async fn test_daily_scan_uses_settings_model_not_hardcoded() {
-        // On Windows, mock_app() is bypassed to avoid DLL loader mismatch crashes.
-        assert!(true);
     }
 }
