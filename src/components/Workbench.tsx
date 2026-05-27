@@ -1,5 +1,5 @@
 // src/components/Workbench.tsx
-import React from "react";
+import React, { useState } from "react";
 import { CheckCircle, AlertTriangle, Info } from "lucide-react";
 import { Lead, Draft, EvidenceItem, GuardrailsReport } from "../ipc";
 
@@ -54,6 +54,8 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   onUpdateDraftTitle,
   onUpdateDraftContent
 }) => {
+  const [isRewriting, setIsRewriting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleInsertCitation = (evidenceId: number) => {
     const textarea = document.getElementById("draft-editor-textarea") as HTMLTextAreaElement;
@@ -229,29 +231,34 @@ export const Workbench: React.FC<WorkbenchProps> = ({
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", flexGrow: 1 }}>
               <div className="flex-between">
                 <label style={{ fontWeight: 600, fontSize: "0.9rem" }}>Article Body (Markdown)</label>
-                <div style={{ display: "flex", gap: "1rem" }}>
+                <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                  {error && (
+                    <span className="error-text" style={{ fontSize: "0.85rem", color: "var(--color-danger)" }}>
+                      ⚠️ {error}
+                    </span>
+                  )}
                   <button 
                     className="btn btn-secondary btn-sm"
-                    disabled={generatingText}
+                    disabled={isRewriting}
                     onClick={async () => {
                       if (!selectedDraft.content) return;
                       const proceed = window.confirm("Replace draft with plain-language rewrite? This cannot be undone.");
                       if (!proceed) return;
+                      setIsRewriting(true);
+                      setError(null);
                       try {
-                        import('../ipc').then(async ({ plainLanguageRewrite }) => {
-                          const rewrite = await plainLanguageRewrite(selectedDraft.content, selectedDraft.format);
-                          onUpdateDraftContent(rewrite);
-                        }).catch(e => {
-                          console.error("Failed to rewrite draft:", e);
-                          alert(`Error: ${e}`);
-                        });
-                      } catch (e) {
-                        console.error("Failed to rewrite draft:", e);
-                        alert(`Error: ${e}`);
+                        const { plainLanguageRewrite } = await import('../ipc');
+                        const rewrite = await plainLanguageRewrite(selectedDraft.content, selectedDraft.format);
+                        onUpdateDraftContent(rewrite);
+                      } catch (error: any) {
+                        console.error("Failed to rewrite draft:", error);
+                        setError(error?.message || String(error));
+                      } finally {
+                        setIsRewriting(false);
                       }
                     }}
                   >
-                    {generatingText ? "Rewriting..." : "Plain Language Rewrite"}
+                    {isRewriting ? "Rewriting..." : "Plain Language Rewrite"}
                   </button>
                   <span className="help-text">Highlight text and click "Cite" in evidence pane to link.</span>
                 </div>
