@@ -36,11 +36,7 @@ async fn get_selected_model_or_fallback(db: &DbConn) -> String {
     let saved = {
         if let Ok(conn) = db.lock() {
             if let Ok(mut stmt) = conn.prepare("SELECT value FROM settings WHERE key = 'model.selected'") {
-                if let Ok(val) = stmt.query_row([], |row| row.get::<_, String>(0)) {
-                    Some(val)
-                } else {
-                    None
-                }
+                stmt.query_row([], |row| row.get::<_, String>(0)).ok()
             } else {
                 None
             }
@@ -322,8 +318,8 @@ pub fn story_decision(
 }
 
 #[tauri::command]
-pub async fn generate_draft(
-    app: tauri::AppHandle,
+pub async fn generate_draft<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
     db: tauri::State<'_, DbConn>,
     lead_id: i32,
     format: String,
@@ -366,24 +362,24 @@ pub async fn generate_draft(
     let model = get_selected_model_or_fallback(&db).await;
 
     let llm_client = app
-        .try_state::<std::sync::Arc<dyn crate::core::llm::LlmClient>>()
-        .map(|s| s.inner().clone())
-        .unwrap_or_else(|| std::sync::Arc::new(crate::core::llm::OllamaClient));
+        .state::<std::sync::Arc<dyn crate::core::llm::LlmClient>>()
+        .inner()
+        .clone();
     llm_client.call(&model, &prompt, &sys).await
 }
 
 #[tauri::command]
-pub async fn llm_task(
-    app: tauri::AppHandle,
+pub async fn llm_task<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
     db: tauri::State<'_, DbConn>,
     prompt: String,
     system: String,
 ) -> Result<String, String> {
     let model = get_selected_model_or_fallback(&db).await;
     let llm_client = app
-        .try_state::<std::sync::Arc<dyn crate::core::llm::LlmClient>>()
-        .map(|s| s.inner().clone())
-        .unwrap_or_else(|| std::sync::Arc::new(crate::core::llm::OllamaClient));
+        .state::<std::sync::Arc<dyn crate::core::llm::LlmClient>>()
+        .inner()
+        .clone();
     llm_client.call(&model, &prompt, &system).await
 }
 
@@ -806,8 +802,8 @@ pub async fn run_daily_scan<R: tauri::Runtime>(
 }
 
 #[tauri::command]
-pub async fn plain_language_rewrite(
-    app: tauri::AppHandle,
+pub async fn plain_language_rewrite<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
     db: tauri::State<'_, DbConn>,
     text: String,
     draft_format: String,
