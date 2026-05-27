@@ -1,0 +1,46 @@
+{
+  "timestamp": "2026-05-27T22:12:00Z",
+  "host_platform": "linux",
+  "results": [
+    {
+      "test": "test_plain_language_rewrite_invokes_ollama",
+      "function": "src-tauri/src/tauri_cmds.rs::pub async fn plain_language_rewrite",
+      "mutation_caught": true,
+      "platform_tested": [
+        "linux"
+      ]
+    },
+    {
+      "test": "test_daily_scan_command_does_not_panic_when_state_registered",
+      "function": "src-tauri/src/tauri_cmds.rs::pub async fn run_daily_scan",
+      "mutation_caught": true,
+      "platform_tested": [
+        "linux"
+      ]
+    },
+    {
+      "test": "test_daily_scan_uses_settings_model_not_hardcoded",
+      "function": "src-tauri/src/core/daily_scan.rs::pub async fn run_daily_scan",
+      "mutation_caught": true,
+      "platform_tested": [
+        "linux"
+      ]
+    },
+    {
+      "test": "test_ollama_sidecar_spawns_with_expected_pid_pattern",
+      "function": "src-tauri/src/core/llm.rs::pub fn start",
+      "mutation_caught": true,
+      "platform_tested": [
+        "linux"
+      ]
+    },
+    {
+      "test": "test_ollama_sidecar_terminates_cleanly_on_drop",
+      "function": "src-tauri/src/core/llm.rs::pub fn stop",
+      "mutation_caught": true,
+      "platform_tested": [
+        "linux"
+      ]
+    }
+  ]
+}
