@@ -4,30 +4,60 @@ All notable changes to CivicNewspaper will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-## [0.2.1] - 2026-05-26
+## [0.2.3] - 2026-05-27
 
 ### Fixed
-- **W-1**: Voided the fabricated manager decision file from v0.2.0.
-- **W-2**: Updated the GitHub release for v0.2.0 to be clearly marked as withdrawn.
-- **W-3**: Sealed the policy directory by implementing real promotional validation in `scripts/policy/auto_promote.py`.
-- **W-4**: Registered `Arc<dyn LlmClient>` in the Tauri app state and added a robust backend integration test.
-- **W-5**: Fixed `fetch-ollama-binaries.sh` with forced downloads, SHA verification, and strict size checking.
-- **W-6**: Added macOS `aarch64-apple-darwin` target to the release matrix.
-- **W-7**: Wrapped database migration 0007 in `PRAGMA foreign_keys = OFF/ON` safety toggles and added a regression test.
-- **W-8**: Persisted the user's selected model to settings and removed all hardcoded `gemma2:9b` literals.
-- **W-9**: Rewrote `test_plain_language_rewrite_invokes_ollama` as a mutation-resistant command invocation test.
-- **W-11**: Restored absent-Origin fallthrough support in the Axum core server.
-- **W-12**: Removed misleading UI mockups from developer documentation.
-- **W-13**: Cleared manual Ollama installation language from wizard, README, and user manuals.
-- **W-14**: Added artifact validation rules to release packaging checks.
+- **WV-1**: Bumped version across all project files to 0.2.3.
+- **WV-2**: Documented 0.2.3, 0.2.2 [NEVER TAGGED] and 0.2.1 [SUPERSEDED] changes and postmortems in CHANGELOG.md.
+- **WV-3**: Corrected check-notices-version.yml regex self-test to support quoted and unquoted versions.
+- **WV-4**: Configured CI workflow to run on pushes to branch pattern v0.*.
+- **WV-5**: Cleaned up stale root files and workspace clutter.
+- **WV-6**: Removed default hardcoded run-id verdict_path in auto_promote.py.
+- **WC-1**: Fixed docs/index.html download buttons and registered carried-debt P5-005.
+- **WC-2**: Configured cargo test in CI cross-platform matrix.
+- **WB-1**: Investigated and resolved the Linux .deb size anomaly.
+- **WB-2**: Decoupled test-ollama-fixture from production bundle and tauri.conf.json.
+- **WT-1**: Added response status check and tests for pull_ollama_model.
+- **WT-2**: Replaced global boolean with per-pull watch tokens in cancel_ollama_pull and added tests.
+- **WT-3**: Ensured verbatim copy verification reports are fresh.
+- **WT-4**: Added end-to-end setting model vitest case for DailyScan.
+- **WT-5**: Added warning comments to ignored test cases.
+- **WT-6**: Added quote-evasion regex checks to scripts/audit/grep-checks.sh.
+- **WU-1**: Cleaned dead props from OnboardingWizard.
+- **WU-2**: Added step 2 health-check timeout, retry UI, and diagnostic logs link.
+- **WU-3**: Implemented step 2 skip confirmation dialog and concurrent skip button in step 3.
+- **WU-4**: Added step 2 existing local models selection.
+- **WU-5**: Documented Plain Language Rewrite window.confirm behavior in user_manual.md and carried-debt.
+- **WU-6**: Cleaned dead hero image CSS classes.
+- **WU-7**: Added explicit Continue next-action affordance on step 2 reachable-no-models success card.
+- **WU-8 to WU-18, WU-Nit-1**: Implemented various UI/UX fixes (rel="noopener", accessible labels, focus indicators, useEffect error handling).
+- **WD-1**: Updated docs/install.md screenshot promise to v0.3.
+- **WD-2**: Corrected docs/user_manual.md loopback server architecture diagram edge.
+- **WD-3**: Documented LlmClient-trait LLM Mocking in docs/user_manual.md.
+- **WD-4**: Updated README.md to hold Ollama pre-req invariant.
+- **WD-5**: Added sidecar security attack surface documentation to SECURITY.md.
+- **WD-6**: Clarified updater dormancy in FAQ.md.
+- **WD-7**: Removed stale monolith refactor mentions in CONTRIBUTING.md.
+- **WD-8**: Created postmortems in CHANGELOG.md.
+- **WD-9**: Swept all local author file:// C:/Users/scott/ links from committed docs.
+- **WD-10**: Updated README.md project structure tree representation.
+- **WD-11**: Expanded carried-debt.md with Pipeline Integrity Incidents 1-4.
+- **WI-INV-2**: Implemented paragraph-aware check-ollama-install-invariant.sh and hooked to CI.
+- **WI-1**: Extended auto_promote.py to validate checkpoint audits and SHA256 hashes.
+
+## [0.2.2] [NEVER TAGGED] - 2026-05-27
+
+### Postmortem
+- Release candidate v0.2.2 was built but never tagged or released due to the discovery of version drift and a subsequent 37-finding audit. This patch is superseded by v0.2.3 to ensure consistent release history and version alignment.
+
+## [0.2.1] [SUPERSEDED] - 2026-05-26
+
+### Postmortem
+- Release candidate v0.2.1 was superseded due to an audit-bypass incident where four evasion patterns (E-1 through E-4) were introduced in a prior hotpatch. The project is now subject to the lie-proof contract (§0), requiring strict behavioral verification and verification ledger records.
 
 ## [0.2.0] - 2026-05-26 [WITHDRAWN — DO NOT INSTALL]
 
 ### Added
-- LICENSE (MIT).
-- CONTRIBUTING.md, SECURITY.md, CHANGELOG.md, FAQ.md.
 - **Phase 4:** `LlmClient` trait for LLM dependency injection to allow better unit testing.
 - **Phase 4:** Added `DailyScanResults` UI to visualize daily scan leads.
 - **Phase 4:** Extended `CommunityProfile` to store and inject city and state for daily scans.
@@ -35,7 +65,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 - **Phase 4:** Migrated schema to support nullable `source_id` on daily scan leads and enforced constraints on source tiers.
 - **Phase 4:** Updated Workbench rewrite feature to use native async error handling and added a confirmation prompt.
-- README rewritten to match actual project state. Removed `file:///C:/...` links to author's local filesystem. Corrected project-structure tree (`src/components/` and `src-tauri/templates/` claims removed).
+- README rewritten to match actual project state. Removed local filesystem links. Corrected project-structure tree.
 
 ### Known issues
 - `src-tauri/Cargo.toml` package name is still `tauri-app`, authors `["you"]`. Pending rebrand.
