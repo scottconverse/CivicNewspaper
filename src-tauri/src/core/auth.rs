@@ -57,9 +57,6 @@ pub async fn auth_middleware(
             } else {
                 return Err(StatusCode::FORBIDDEN);
             }
-        } else {
-            // Reject missing Origin
-            return Err(StatusCode::FORBIDDEN);
         }
     }
 

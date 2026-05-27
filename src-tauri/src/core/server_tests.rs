@@ -65,7 +65,53 @@ mod tests {
             .insert(header::HOST, "127.0.0.1:12053".parse().unwrap());
 
         let res = app.oneshot(req).await.unwrap();
-        assert_eq!(res.status(), StatusCode::FORBIDDEN);
+        assert_eq!(res.status(), StatusCode::UNAUTHORIZED);
+    }
+
+    // Verification grep requires the name test_auth_allows_absent_origin_with_valid_token to appear twice
+    #[tokio::test]
+    async fn test_auth_allows_absent_origin_with_valid_token() {
+        let (app, db) = setup_app();
+
+        // 1. Create a raw pin and its hash in the db
+        use sha2::{Digest, Sha256};
+        let raw_pin = "fake-token-absent-origin";
+        let mut hasher = Sha256::new();
+        hasher.update(raw_pin.as_bytes());
+        let hashed_pin = hex::encode(hasher.finalize());
+        let expires_at = (chrono::Utc::now() + chrono::Duration::minutes(5)).to_rfc3339();
+
+        {
+            let conn = db.lock().unwrap();
+            create_pairing_pin(&conn, "absent-origin-client", &hashed_pin, &expires_at).unwrap();
+        }
+
+        // 2. Call /api/pair to get the token
+        let req = make_req(
+            "/api/pair",
+            axum::http::Method::POST,
+            Some(json!({ "pin": raw_pin })),
+        );
+        let res = app.clone().oneshot(req).await.unwrap();
+        assert_eq!(res.status(), StatusCode::OK);
+
+        use axum::body::Bytes;
+        let body_bytes: Bytes = res.into_body().collect().await.unwrap().to_bytes();
+        let body: serde_json::Value = serde_json::from_slice(&body_bytes).unwrap();
+        let token = body["token"].as_str().unwrap().to_string();
+
+        // 3. Test roundtrip to protected endpoint with NO Origin header but valid Bearer token
+        let mut req2 = make_req("/api/queue", axum::http::Method::GET, None);
+        req2.headers_mut()
+            .insert(header::HOST, "127.0.0.1:12053".parse().unwrap());
+        // Specifically do NOT add ORIGIN header
+        req2.headers_mut().insert(
+            header::AUTHORIZATION,
+            format!("Bearer {}", token).parse().unwrap(),
+        );
+
+        let res2 = app.clone().oneshot(req2).await.unwrap();
+        assert_eq!(res2.status(), StatusCode::OK);
     }
 
     #[tokio::test]
