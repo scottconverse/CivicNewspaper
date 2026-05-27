@@ -30,3 +30,7 @@ This file tracks deferred work and known technical debt.
   and run cross-platform. Keep the AppHandle-taking `start()` as a thin
   convenience wrapper for production callers. Deferred to v0.3 to avoid
   scope creep on the v0.2.2 hot-patch.
+- **P5-005 (Per-platform smart download links)**: v0.2.3 reverted download
+  buttons to bare `releases/latest` after the VERSION-placeholder landmine.
+  Restore per-platform smart links via inline JS that fetches GitHub API
+  on page load and rewrites hrefs. Deferred to v0.3.
