@@ -21,13 +21,49 @@ def audit_team_zero_blockers(verdict_path=".agent-runs/2026-05-26-civicnewspaper
     with open(verdict_path, "r", encoding="utf-8") as f:
         data = json.load(f)
         
-    blockers = data.get("blockers", 0)
-    criticals = data.get("criticals", 0)
+    required = {
+        "blockers", "criticals", "verdict", "audit_artifact", "auditor",
+        "mutation_checks_results_sha256", "clippy_platforms_run", "mutation_checks_platforms"
+    }
+    missing = required - set(data.keys())
+    if missing:
+        raise ValueError(f"verdict file missing required fields: {missing}")
+        
+    if type(data["blockers"]) is not int:
+        raise ValueError("blockers must be an integer")
+    if type(data["criticals"]) is not int:
+        raise ValueError("criticals must be an integer")
+        
+    if data["verdict"] != "PROMOTE":
+        raise ValueError("verdict must be PROMOTE")
+        
+    if not isinstance(data["mutation_checks_results_sha256"], str) or not data["mutation_checks_results_sha256"]:
+        raise ValueError("mutation_checks_results_sha256 must be a non-empty string")
+        
+    if not isinstance(data["clippy_platforms_run"], list) or len(data["clippy_platforms_run"]) == 0:
+        raise ValueError("clippy_platforms_run must be a non-empty list")
+        
+    # Read mutations.json and verify platform intersections
+    mutations_path = "scripts/audit/mutations.json"
+    if os.path.exists(mutations_path):
+        with open(mutations_path, "r", encoding="utf-8") as f:
+            mutations = json.load(f)
+        
+        verdict_platforms = set(data["mutation_checks_platforms"])
+        for entry in mutations:
+            entry_platforms = entry.get("platforms")
+            if entry_platforms:
+                intersection = verdict_platforms.intersection(set(entry_platforms))
+                if not intersection:
+                    raise ValueError(f"No platform intersection for mutation test: {entry['test']}")
+
+    blockers = data["blockers"]
+    criticals = data["criticals"]
     
     if blockers == 0 and criticals == 0:
         return "PASS"
     else:
-        return "FAIL"
+        raise ValueError("Non-zero blockers or criticals count")
 
 def release_artifacts_exist_on_github(tag="v0.2.0"):
     try:

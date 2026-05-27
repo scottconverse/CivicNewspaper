@@ -1,0 +1,11 @@
+{
+  "ollama_binary_min_bytes": 100000000,
+  "ollama_binary_min_bytes_per_platform": {
+    "linux": 100000000,
+    "darwin": 50000000,
+    "windows": 25000000
+  },
+  "min_artifacts_for_release": 7,
+  "audit_team_blocker_threshold": 0,
+  "audit_team_critical_threshold": 0
+}
