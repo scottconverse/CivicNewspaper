@@ -80,17 +80,19 @@ To verify that your downloaded binary is safe and matches the exact code compile
 
 Open a terminal or command prompt and run the command matching your operating system:
 
+*(Note: Replace `<version>` with the actual version you downloaded, e.g., `0.2.2`. You can find the canonical checksums in the `SHA256SUMS` file on the GitHub Releases page.)*
+
 * **Windows (PowerShell)**:
   ```powershell
-  Get-FileHash -Algorithm SHA256 C:\Users\YourUsername\Downloads\CivicNewspaper_0.2.0_x64_en-US.msi
+  Get-FileHash -Algorithm SHA256 C:\Users\YourUsername\Downloads\CivicNewspaper_<version>_x64_en-US.msi
   ```
 * **macOS (Terminal)**:
   ```bash
-  shasum -a 256 ~/Downloads/CivicNewspaper_0.2.0_x64.dmg
+  shasum -a 256 ~/Downloads/CivicNewspaper_<version>_x64.dmg
   ```
 * **Linux (Terminal)**:
   ```bash
-  sha256sum ~/Downloads/civicnewspaper_0.2.0_amd64.deb
+  sha256sum ~/Downloads/civicnewspaper_<version>_amd64.deb
   ```
 
 ### Step 3: Compare the Hashes

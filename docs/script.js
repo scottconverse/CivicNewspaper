@@ -69,4 +69,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // Fetch latest release tag and replace VERSION in download links
+    fetch('https://api.github.com/repos/scottconverse/CivicNewspaper/releases/latest')
+        .then(response => response.json())
+        .then(data => {
+            const version = data.tag_name.replace('v', '');
+            document.querySelectorAll('.download-btn').forEach(btn => {
+                btn.href = btn.href.replace('VERSION', version);
+            });
+        })
+        .catch(err => {
+            console.error('Failed to fetch latest release from GitHub API:', err);
+            // Fallback: replace VERSION with latest release candidate version
+            document.querySelectorAll('.download-btn').forEach(btn => {
+                btn.href = btn.href.replace('VERSION', '0.2.2');
+            });
+        });
 });
