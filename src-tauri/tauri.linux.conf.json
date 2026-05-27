@@ -1,8 +1,7 @@
 {
   "bundle": {
     "targets": [
-      "deb",
-      "rpm"
+      "deb"
     ]
   }
 }
