@@ -61,6 +61,7 @@ jobs:
         run: npm ci
         
       - name: Clean stale cargo locks
+        if: matrix.platform == 'ubuntu-latest'
         run: |
           find src-tauri/target -name ".cargo-lock" -delete 2>/dev/null || true
           find /.cargo -name ".package-cache" -delete 2>/dev/null || true
