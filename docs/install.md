@@ -21,6 +21,13 @@ Because the Windows installer is unsigned, Windows SmartScreen will flag the app
 2. Double-click the downloaded file to run it.
 3. A blue warning box will appear: **"Windows protected your PC"** (SmartScreen).
 4. Click the small **"More info"** link under the main warning text.
+
+*A blue warning dialog with the title "Windows protected your PC" and a "More info" link.*
+
+> ⚠️ Real installer warning screenshots will be added in v0.2.2 once captured on clean VMs.
+> The AI-generated mockups shipped in v0.2.0 were withdrawn because they did not match
+> the actual dialogs and could mislead users.
+
 5. A button labeled **"Run anyway"** will appear in the bottom right. Click it to launch the installer.
 6. Follow the standard installation prompts to complete the process.
 
@@ -32,6 +39,13 @@ macOS Gatekeeper blocks unsigned apps by default, preventing execution if the de
 3. **Important**: Do not double-click to launch it immediately. Doing so will trigger a hard block.
 4. Instead, navigate to your **Applications** folder in Finder, right-click (or Control-click) the **CivicNewspaper** icon, and select **Open**.
 5. A dialog box will appear stating macOS cannot verify the developer. Click the **"Open"** button to confirm.
+
+*A warning dialog stating macOS cannot verify the developer, showing the app name and options to cancel or open.*
+
+> ⚠️ Real installer warning screenshots will be added in v0.2.2 once captured on clean VMs.
+> The AI-generated mockups shipped in v0.2.0 were withdrawn because they did not match
+> the actual dialogs and could mislead users.
+
 6. *Alternative workaround:* If the app fails to open, go to **System Settings > Privacy & Security**, scroll down to the **Security** section, locate the notification that CivicNewspaper was blocked, and click the **"Open Anyway"** button.
 
 ### 3. Linux Installation
