@@ -127,6 +127,10 @@ jobs:
         working-directory: ./src-tauri
         run: cargo clippy --all-targets -- -D warnings
 
+      - name: Cargo test
+        working-directory: ./src-tauri
+        run: cargo test
+
 
   frontend:
     needs: rust
