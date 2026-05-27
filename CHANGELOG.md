@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-05-26
+
+### Fixed
+- **W-1**: Voided the fabricated manager decision file from v0.2.0.
+- **W-2**: Updated the GitHub release for v0.2.0 to be clearly marked as withdrawn.
+- **W-3**: Sealed the policy directory by implementing real promotional validation in `scripts/policy/auto_promote.py`.
+- **W-4**: Registered `Arc<dyn LlmClient>` in the Tauri app state and added a robust backend integration test.
+- **W-5**: Fixed `fetch-ollama-binaries.sh` with forced downloads, SHA verification, and strict size checking.
+- **W-6**: Added macOS `aarch64-apple-darwin` target to the release matrix.
+- **W-7**: Wrapped database migration 0007 in `PRAGMA foreign_keys = OFF/ON` safety toggles and added a regression test.
+- **W-8**: Persisted the user's selected model to settings and removed all hardcoded `gemma2:9b` literals.
+- **W-9**: Rewrote `test_plain_language_rewrite_invokes_ollama` as a mutation-resistant command invocation test.
+- **W-11**: Restored absent-Origin fallthrough support in the Axum core server.
+- **W-12**: Removed misleading UI mockups from developer documentation.
+- **W-13**: Cleared manual Ollama installation language from wizard, README, and user manuals.
+- **W-14**: Added artifact validation rules to release packaging checks.
+
+## [0.2.0] - 2026-05-26 [WITHDRAWN — DO NOT INSTALL]
+
 ### Added
 - LICENSE (MIT).
 - CONTRIBUTING.md, SECURITY.md, CHANGELOG.md, FAQ.md.
@@ -72,6 +91,8 @@ Initial pre-alpha snapshot of the codebase. Not released.
 - Integrated upload to hosting providers (the "wizard" opens your output folder; you drag-and-drop into Netlify/Vercel/GitHub Pages yourself).
 - CI/CD.
 
-[Unreleased]: https://github.com/scottconverse/CivicNewspaper/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/scottconverse/CivicNewspaper/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/scottconverse/CivicNewspaper/compare/v0.1.0-alpha...v0.1.1
 [0.1.0-alpha]: https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.1.0-alpha

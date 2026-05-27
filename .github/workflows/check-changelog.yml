@@ -1,0 +1,30 @@
+name: Check Changelog
+
+on:
+  push:
+    branches: [ main, v0.2.1-hotpatch ]
+  pull_request:
+    branches: [ main, v0.2.1-hotpatch ]
+
+jobs:
+  check-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version from Cargo.toml
+        id: get_version
+        run: |
+          VERSION=$(grep -m1 '^version = ' src-tauri/Cargo.toml | cut -d '"' -f 2)
+          echo "Version is $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check if version exists in CHANGELOG.md
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          if grep -q "## \[$VERSION\]" CHANGELOG.md; then
+            echo "SUCCESS: Version $VERSION matches a section header in CHANGELOG.md"
+          else
+            echo "ERROR: Version $VERSION not found as a section header in CHANGELOG.md"
+            exit 1
+          fi
