@@ -36,18 +36,18 @@ CivicNewspaper runs entirely on your local computer to keep your notes, articles
   3. For the `.AppImage`, right-click the file, go to **Properties > Permissions**, check **"Allow executing file as program"** (or run `chmod +x CivicNewspaper.AppImage`), and double-click to launch.
 
 ## 2. First-Time Setup
-On your very first launch, the **Onboarding Wizard** will walk you through three essential setup steps:
+On your very first launch, the **Onboarding Wizard** will walk you through five essential setup steps:
 
-1. **Ollama & Model Setup**: 
-   * CivicNewspaper uses **Ollama** to run a local artificial intelligence model on your computer. This means no cloud subscriptions and complete privacy.
-   * Ollama comes pre-installed as a bundled sidecar. The onboarding wizard will automatically initialize it, so you do not need to download or install Ollama separately.
-   * The wizard will initiate a download of the default writing model, **Gemma 2 (9B)**. This model file is approximately **5.4 GB**. Depending on your internet speed, the download may take anywhere from 10 minutes to an hour. 
-   * *Tip:* If your computer has less than 16 GB of RAM, you can select a smaller model (such as Llama 3 8B or Gemma 2 2B) in the setup to keep your computer running smoothly.
-2. **Community Profile**:
-   * Fill in your website's **Title** (e.g., *Oak Valley Council Watch*), **Subtitle**, and a short **About** page bio explaining your mission.
-   * Write an **Ethics Statement** (e.g., *"We compile primary records. Every claim is linked directly to an official document. No opinion, no rumors."*).
-3. **Local Database Initialization**:
-   * The app will create a local SQLite database file in a secure app directory on your computer to store your configuration, feeds, signals, and drafts.
+1. **Identity**:
+   * Enter your community profile details including **Publication Name** (e.g. *Oak Valley Council Watch*), **Editor Name**, **City**, and **State**.
+2. **Ollama Health Check**:
+   * The application checks the connection status of the bundled offline Ollama sidecar AI engine. You do not need to install Ollama separately.
+3. **Download AI Model**:
+   * Pull the recommended offline AI model based on your system RAM (e.g. `gemma2:9b` for RAM >= 12GB, `llama3:8b` for RAM >= 8GB, or `phi3:mini` for lower specs).
+4. **Defaults**:
+   * Configure your publication paths: **Publish Path** (where static HTML sites are compiled) and **Backup Path** (where database backups are stored).
+5. **Done**:
+   * Finish the setup to initialize your database and enter the main workspace.
 
 ## 3. Adding Your First Source
 To watch your local government, you must tell the app which web pages or feeds to monitor.

@@ -1,3 +1,4 @@
+// STEPS DEFINED HERE ARE DOCUMENTED IN docs/user_manual.md PART 1. Update both together.
 import React, { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
@@ -49,9 +50,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
   const steps = [
     { title: "Identity", desc: "Define your local news outlet name and mission." },
     { title: "Ollama Health", desc: "Check connection with the local Ollama LLM endpoint." },
-    { title: "Download AI Model", desc: "Downloading AI model (5.4 GB). This is a one-time setup." },
+    { title: "Download AI Model", desc: "Downloading AI model. This is a one-time setup." },
     { title: "Defaults", desc: "Configure publication directories and backup database paths." },
-    { title: "Browser Pairing", desc: "Establish authorization pairing with the browser extensions." },
     { title: "Done", desc: "Onboarding completed. Ready to inspect local stories." }
   ];
 
@@ -101,6 +101,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
     setPulling(true);
     setPullProgress("Starting pull...");
     setPullPercent(0);
+    setPullComplete(false);
 
     const modelToPull = model;
 
@@ -123,6 +124,13 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
             setPullComplete(true);
             setPulling(false);
           }
+          if (
+            event.payload.status === "cancelled" ||
+            event.payload.status.toLowerCase().includes("cancel")
+          ) {
+            setPullComplete(false);
+            setPulling(false);
+          }
         }
       );
 
@@ -132,6 +140,17 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
       console.error(e);
       setPullProgress("Error pulling model.");
       setPulling(false);
+    }
+  };
+
+  const cancelPullModel = async () => {
+    try {
+      await invoke("cancel_ollama_pull");
+      setPulling(false);
+      setPullComplete(false);
+      setPullProgress("Pull cancelled.");
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -165,12 +184,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
       await invoke("set_setting", { key: "paths.publish", value: publishPath });
       await invoke("set_setting", { key: "paths.backup", value: backupPath });
       
-      // Setup step 5
-      generateToken();
       setStep(5);
     } else if (step === 5) {
-      setStep(6);
-    } else if (step === 6) {
       await invoke("set_onboarding_complete", { value: true });
       onComplete();
     }
@@ -238,44 +253,53 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
         )}
 
         {/* STEP 2: OLLAMA HEALTH */}
-        {step === 2 && health && (
+        {step === 2 && (
           <div className="card">
-            <div className="flex-between" style={{ marginBottom: "1rem" }}>
-              <div>
-                <strong>Local Ollama Connection</strong>
-                <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>Local Ram: {sysRam} GB</p>
+            {checkingHealth ? (
+              <div style={{ textAlign: "center", padding: "2rem 0" }}>
+                <RefreshCcw className="animate-spin" size={32} style={{ color: "var(--accent-primary)", marginBottom: "1rem" }} />
+                <p style={{ fontSize: "0.95rem" }}>Checking Ollama sidecar initialization status...</p>
               </div>
-              <span className={`status-dot ${health.reachable ? "online" : "offline"}`} />
-            </div>
-
-            {!health.reachable && (
-              <div style={{ background: "rgba(239, 68, 68, 0.05)", padding: "1rem", borderRadius: "8px" }}>
-                <h4 style={{ color: "var(--color-danger)" }}>Bundled Ollama Sidecar Starting</h4>
-                <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>The application includes a bundled Ollama sidecar to run AI features completely offline. It may take a moment to initialize.</p>
-                <div style={{ display: "flex", gap: "1rem" }}>
-                  <button className="btn btn-secondary" onClick={runHealthCheck} disabled={checkingHealth}>
-                    <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} />
-                    {checkingHealth ? "Checking..." : "Check Initialization Status"}
-                  </button>
+            ) : health ? (
+              <>
+                <div className="flex-between" style={{ marginBottom: "1rem" }}>
+                  <div>
+                    <strong>Local Ollama Connection</strong>
+                    <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>Local Ram: {sysRam} GB</p>
+                  </div>
+                  <span className={`status-dot ${health.reachable ? "online" : "offline"}`} />
                 </div>
-              </div>
-            )}
 
-            {health.reachable && health.models.length === 0 && (
-              <div style={{ background: "rgba(16, 185, 129, 0.05)", padding: "1rem", borderRadius: "8px" }}>
-                <h4 style={{ color: "var(--color-success)" }}>Ollama is ready. Pull a recommended model?</h4>
-                <p style={{ fontSize: "0.9rem" }}>Based on your {sysRam}GB of RAM, we recommend: <strong>{model}</strong></p>
-              </div>
-            )}
+                {!health.reachable && (
+                  <div style={{ background: "rgba(239, 68, 68, 0.05)", padding: "1rem", borderRadius: "8px" }}>
+                    <h4 style={{ color: "var(--color-danger)" }}>Bundled Ollama Sidecar Starting</h4>
+                    <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>The application includes a bundled Ollama sidecar to run AI features completely offline. It may take a moment to initialize.</p>
+                    <div style={{ display: "flex", gap: "1rem" }}>
+                      <button className="btn btn-secondary" onClick={runHealthCheck} disabled={checkingHealth}>
+                        <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} />
+                        {checkingHealth ? "Checking..." : "Check Initialization Status"}
+                      </button>
+                    </div>
+                  </div>
+                )}
 
-            {health.reachable && health.models.length > 0 && (
-              <div style={{ background: "rgba(16, 185, 129, 0.05)", padding: "1rem", borderRadius: "8px" }}>
-                <h4 style={{ color: "var(--color-success)" }}>Ollama detected with {health.models.length} model(s)</h4>
-                <ul style={{ margin: "0.5rem 0 0 1.5rem", fontSize: "0.9rem" }}>
-                  {health.models.map(m => <li key={m}>{m}</li>)}
-                </ul>
-              </div>
-            )}
+                {health.reachable && health.models.length === 0 && (
+                  <div style={{ background: "rgba(16, 185, 129, 0.05)", padding: "1rem", borderRadius: "8px" }}>
+                    <h4 style={{ color: "var(--color-success)" }}>Ollama is ready. Pull a recommended model?</h4>
+                    <p style={{ fontSize: "0.9rem" }}>Based on your {sysRam}GB of RAM, we recommend: <strong>{model}</strong></p>
+                  </div>
+                )}
+
+                {health.reachable && health.models.length > 0 && (
+                  <div style={{ background: "rgba(16, 185, 129, 0.05)", padding: "1rem", borderRadius: "8px" }}>
+                    <h4 style={{ color: "var(--color-success)" }}>Ollama detected with {health.models.length} model(s)</h4>
+                    <ul style={{ margin: "0.5rem 0 0 1.5rem", fontSize: "0.9rem" }}>
+                      {health.models.map(m => <li key={m}>{m}</li>)}
+                    </ul>
+                  </div>
+                )}
+              </>
+            ) : null}
           </div>
         )}
 
@@ -318,6 +342,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
                     }} 
                   />
                 </div>
+                {pulling && (
+                  <button className="btn btn-secondary btn-sm" onClick={cancelPullModel} style={{ marginTop: "1rem" }}>
+                    Cancel Download
+                  </button>
+                )}
                 {pullComplete && (
                   <div style={{ marginTop: "1rem", color: "var(--color-success)", display: "flex", alignItems: "center" }}>
                     <CheckCircle size={16} style={{ marginRight: "0.5rem" }} /> Model pulled successfully.
@@ -344,35 +373,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
           </div>
         )}
 
-        {/* STEP 5: BROWSER PAIRING */}
+        {/* STEP 5: DONE */}
         {step === 5 && (
-          <div>
-            <div style={{ background: "rgba(59, 130, 246, 0.05)", padding: "1rem", borderRadius: "8px", marginBottom: "1.5rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
-                <Info size={16} color="var(--color-primary)" />
-                <strong style={{ color: "var(--color-primary)" }}>Browser Extension Setup</strong>
-              </div>
-              <ol style={{ margin: "0 0 0 1.5rem", fontSize: "0.9rem", lineHeight: "1.6" }}>
-                <li>Open <code>chrome://extensions/</code> in Chrome/Edge/Brave.</li>
-                <li>Enable <strong>Developer Mode</strong>.</li>
-                <li>Click <strong>Load Unpacked</strong> &rarr; select the <code>browser-extension/chromium/</code> folder.</li>
-                <li>Click the extension icon in your browser and paste the token below.</li>
-              </ol>
-            </div>
-
-            <label style={{ fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>Pairing Token</label>
-            <div style={{ display: "flex", gap: "0.5rem" }}>
-              <input type="text" readOnly value={pairingToken} style={{ flex: 1, padding: "0.5rem", fontFamily: "monospace", background: "var(--bg-secondary)" }} />
-              <button className="btn btn-secondary" onClick={copyToClipboard}>
-                {copied ? <CheckCircle size={16} /> : <Copy size={16} />}
-                <span style={{ marginLeft: "0.5rem" }}>{copied ? "Copied" : "Copy"}</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 6: DONE */}
-        {step === 6 && (
           <div style={{ textAlign: "center", padding: "3rem 0" }}>
             <div style={{ display: "inline-flex", background: "rgba(16, 185, 129, 0.1)", padding: "1rem", borderRadius: "50%", marginBottom: "1rem" }}>
               <CheckCircle size={48} color="var(--color-success)" />
@@ -389,11 +391,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
         </button>
         
         <div style={{ display: "flex", gap: "1rem" }}>
-          {(step === 2 || step === 3 || step === 5) && (
+          {(step === 2 || step === 3) && (
             <button className="btn btn-secondary" onClick={() => {
+              if (step === 3) {
+                const confirmSkip = window.confirm("Skip the model download? You won't be able to use AI features until you download a model from Settings.");
+                if (!confirmSkip) return;
+              }
               if (step === 2 && health && !health.reachable) setStep(4);
               else if (step === 3) setStep(4);
-              else if (step === 5) setStep(6);
               else setStep(prev => prev + 1);
             }}>
               Skip for now

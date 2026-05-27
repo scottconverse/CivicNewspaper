@@ -17,9 +17,11 @@ You can download the latest pre-compiled installers for your platform from the [
 
 When you open CivicNewspaper for the first time, you will be guided through an onboarding wizard. 
 
-1. **Model Download**: The application requires a local language model to draft summaries and rewrite text offline. By default, the wizard will pull the `gemma2:9b` model via Ollama. This download is approximately **5.4 GB** and may take anywhere from a few minutes to an hour depending on your internet connection. 
-2. **First Source**: After the model download completes, the onboarding wizard will prompt you to add your first RSS or web feed to scan.
-3. **Database Initialization**: The app automatically sets up a local SQLite database (in WAL mode) to store feeds, scraped articles, signals, and story drafts. 
+1. **Identity**: Enter your Publication Name, Editor Name, City, and State.
+2. **Ollama Health**: The wizard verifies connection to the bundled offline AI sidecar engine.
+3. **Download AI Model**: Pull the recommended AI model (such as `gemma2:9b`, `llama3:8b`, or `phi3:mini` depending on your computer's RAM) for offline draft generation.
+4. **Defaults**: Configure your Publish Path (where static sites are compiled) and Backup Path (for database backups).
+5. **Done**: Complete the setup to enter your workspace.
 
 No accounts or internet connections are required after this initial setup.
 

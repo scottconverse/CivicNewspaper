@@ -1,0 +1,40 @@
+name: Check Onboarding Documentation Synchronization
+
+on:
+  push:
+    branches: [ "main", "v*" ]
+  pull_request:
+    branches: [ "main", "v*" ]
+
+jobs:
+  check-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify step count and fields sync
+        run: |
+          CODE_STEPS=$(grep -c -E "\{\s*title:\s*\"" src/components/OnboardingWizard.tsx)
+          echo "Code onboarding steps found: $CODE_STEPS"
+          if [ "$CODE_STEPS" -ne 5 ]; then
+            echo "FAIL: Expected 5 steps in OnboardingWizard.tsx, found $CODE_STEPS"
+            exit 1
+          fi
+
+          if ! grep -q "five essential setup steps" docs/user_manual.md; then
+            echo "FAIL: docs/user_manual.md does not reference five setup steps"
+            exit 1
+          fi
+
+          for field in "Publication Name" "Editor Name" "City" "State" "Publish Path" "Backup Path"; do
+            if ! grep -qi "$field" src/components/OnboardingWizard.tsx; then
+              echo "FAIL: OnboardingWizard.tsx is missing field: $field"
+              exit 1
+            fi
+            if ! grep -qi "$field" docs/user_manual.md; then
+              echo "FAIL: docs/user_manual.md is missing field: $field"
+              exit 1
+            fi
+          done
+
+          echo "OK: Onboarding Wizard code and docs are fully synchronized!"
