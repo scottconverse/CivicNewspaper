@@ -5,7 +5,7 @@ Since CivicNews is a local-first desktop application with sensitive GUI workflow
 ## Prerequisites
 - A clean Windows User Account or a fresh Windows Sandbox / VM.
 - No existing `%APPDATA%\com.tauri.dev\` folder.
-- No local Ollama running yet (or installed freshly).
+- No local Ollama instance running yet (the bundled sidecar will be used).
 
 ## Test Steps
 
@@ -19,7 +19,7 @@ Since CivicNews is a local-first desktop application with sensitive GUI workflow
 2. Complete the identity and city setup.
 3. Arrive at the "Local AI / Ollama" step.
 4. Verify the RAM inspection correctly identifies system memory and recommends an appropriate model.
-5. If Ollama is not installed, follow the link to install it. Start Ollama.
+5. Verify the wizard detects the bundled Ollama sidecar and reports it is initializing.
 6. Pull the recommended model in the background (e.g. `gemma2:9b` or `llama3:8b`).
 7. Complete the wizard and arrive at the main Newsroom dashboard.
 
