@@ -3,3 +3,4 @@
 5128b932b7e739dbe5b04dd7a1ee4e709bdc10e64ce5450cf83cd0f0fb4060e2  .agent-runs/2026-05-26-civicnewspaper-v020-ship/audits/checkpoint-03-binaries.md
 a1345e25952806f0dbd961a04e1f831da73659a1a0c776cffe8666d2e6080542  .agent-runs/2026-05-26-civicnewspaper-v020-ship/audits/checkpoint-04-tests-and-runtime.md
 d0f1aecea7db6d619fd0ac616b3863037f83c39ccef4896d96711bf0d5215d86  .agent-runs/2026-05-26-civicnewspaper-v020-ship/audits/checkpoint-05-ui-ux.md
+7b68d66edac555fd32bc1f46d60094d0684756fbb8a4182ce1b44112eb439b89  .agent-runs/2026-05-26-civicnewspaper-v020-ship/audits/checkpoint-06-docs.md
