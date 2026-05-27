@@ -19,6 +19,7 @@ interface OllamaState {
 
 export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, initialStep }) => {
   const [step, setStep] = useState<number>(initialStep || 1);
+  const [model, setModel] = useState<string>("");
   
   // Step 1 State
   const [pubName, setPubName] = useState("");
@@ -68,6 +69,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
 
         const ram = await invoke<number>("get_system_ram");
         setSysRam(ram);
+
+        const selected = await invoke<string | null>("get_setting", { key: "model.selected" });
+        if (selected) {
+          setModel(selected);
+        } else {
+          const fallback = ram >= 12 ? 'gemma2:9b' : ram >= 8 ? 'llama3:8b' : 'phi3:mini';
+          setModel(fallback);
+        }
       } catch (e) {
         console.error(e);
       }
@@ -88,18 +97,12 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
     }
   };
 
-  const getRecommendedModel = () => {
-    if (sysRam >= 12) return ["gemma2", "9b"].join(":");
-    if (sysRam >= 8) return "llama3:8b";
-    return "phi3:mini";
-  };
-
   const startPullModel = async () => {
     setPulling(true);
     setPullProgress("Starting pull...");
     setPullPercent(0);
 
-    const model = getRecommendedModel();
+    const modelToPull = model;
 
     try {
       await listen<{ model: string; status: string; completed?: number; total?: number }>(
@@ -123,8 +126,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
         }
       );
 
-      await invoke("pull_ollama_model", { modelId: model });
-      await invoke("set_setting", { key: "model.selected", value: model });
+      await invoke("pull_ollama_model", { modelId: modelToPull });
+      await invoke("set_setting", { key: "model.selected", value: modelToPull });
     } catch (e) {
       console.error(e);
       setPullProgress("Error pulling model.");
@@ -155,8 +158,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
     } else if (step === 2) {
       setStep(3);
     } else if (step === 3) {
-      const recommendedModel = getRecommendedModel();
-      await invoke("set_setting", { key: "model.selected", value: recommendedModel });
+      await invoke("set_setting", { key: "model.selected", value: model });
       setStep(4);
     } else if (step === 4) {
       // Persist defaults
@@ -262,7 +264,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
             {health.reachable && health.models.length === 0 && (
               <div style={{ background: "rgba(16, 185, 129, 0.05)", padding: "1rem", borderRadius: "8px" }}>
                 <h4 style={{ color: "var(--color-success)" }}>Ollama is ready. Pull a recommended model?</h4>
-                <p style={{ fontSize: "0.9rem" }}>Based on your {sysRam}GB of RAM, we recommend: <strong>{getRecommendedModel()}</strong></p>
+                <p style={{ fontSize: "0.9rem" }}>Based on your {sysRam}GB of RAM, we recommend: <strong>{model}</strong></p>
               </div>
             )}
 
@@ -281,7 +283,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
         {step === 3 && (
           <div>
             <div style={{ background: "rgba(0,0,0,0.02)", padding: "1rem", borderRadius: "8px", marginBottom: "1rem" }}>
-              <strong>AI Model: {getRecommendedModel()} (Recommended)</strong>
+              <strong>AI Model: {model} (Recommended)</strong>
               <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
                 Downloading AI model. This is a one-time setup.
               </p>
@@ -290,7 +292,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
             {!pulling && !pullComplete && (
               <div>
                 <button className="btn btn-primary" onClick={startPullModel}>
-                  <Download size={16} style={{ marginRight: "0.5rem" }} /> Download {getRecommendedModel()}
+                  <Download size={16} style={{ marginRight: "0.5rem" }} /> Download {model}
                 </button>
                 <div style={{ marginTop: "1rem", background: "rgba(245, 158, 11, 0.05)", borderLeft: "4px solid var(--color-warning)", padding: "0.75rem", borderRadius: "4px" }}>
                   <p style={{ fontSize: "0.85rem", margin: 0, color: "var(--text-primary)" }}>

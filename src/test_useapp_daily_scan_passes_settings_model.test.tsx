@@ -59,4 +59,40 @@ describe("useApp Hook Tests", () => {
 
     expect(screen.getByTestId("active-tab")).toHaveTextContent("sources");
   });
+
+  test("test_useapp_daily_scan_passes_settings_model", async () => {
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
+      if (cmd === "get_queue") return { leads: [], drafts: [] };
+      if (cmd === "get_sources") return [];
+      if (cmd === "get_community_profile") return { city: "Brighton", state: "CO" };
+      if (cmd === "list_paired_clients") return [];
+      if (cmd === "get_system_ram") return 16;
+      if (cmd === "get_setting" && args?.key === "model.selected") {
+        return "phi3:mini";
+      }
+      if (cmd === "ollama_health") {
+        return { reachable: true, models: ["phi3:mini"], version: "0.1.0" };
+      }
+      if (cmd === "run_daily_scan") {
+        return 1;
+      }
+      return null;
+    });
+
+    let hookResult: any;
+    const TestComp = () => {
+      hookResult = useApp();
+      return null;
+    };
+
+    await act(async () => {
+      render(<TestComp />);
+    });
+
+    await act(async () => {
+      await hookResult.handleDailyScan();
+    });
+
+    expect(invoke).toHaveBeenCalledWith("get_setting", { key: "model.selected" });
+  });
 });

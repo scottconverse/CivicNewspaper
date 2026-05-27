@@ -161,22 +161,14 @@ export function useApp() {
     getSystemRam().then(async (ram) => {
       setSystemRam(ram);
       try {
-        const model = await invoke<string | null>("get_setting", { key: "model.selected" });
-        if (model) {
-          setWizardModel(model);
-        } else {
-          if (ram < 12) {
-            setWizardModel("llama3.2:3b");
-          } else {
-            setWizardModel(["gemma2", "9b"].join(":"));
-          }
+        let model = await invoke<string | null>("get_setting", { key: "model.selected" });
+        if (!model) {
+          model = ram >= 12 ? 'gemma2:9b' : ram >= 8 ? 'llama3:8b' : 'phi3:mini';
+          await invoke("set_setting", { key: "model.selected", value: model });
         }
-      } catch {
-        if (ram < 12) {
-          setWizardModel("llama3.2:3b");
-        } else {
-          setWizardModel(["gemma2", "9b"].join(":"));
-        }
+        setWizardModel(model);
+      } catch (err) {
+        console.error("Failed to load or initialize selected model setting", err);
       }
     }).catch(console.error);
 
@@ -288,7 +280,13 @@ export function useApp() {
       setStatusMessage("Checking AI model presence...");
       setErrorMessage("");
 
-      const model = await invoke<string | null>("get_setting", { key: "model.selected" }) || ["gemma2", "9b"].join(":");
+      const model = await invoke<string | null>("get_setting", { key: "model.selected" });
+      if (!model) {
+        setErrorMessage("Daily Scan requires a selected AI model, but none was configured.");
+        setOnboardingStep(3);
+        setActiveTab("onboarding");
+        return;
+      }
       const health = await ollamaHealth();
       if (!health.reachable || !health.models.some(m => m.includes(model))) {
         setErrorMessage(`Daily Scan requires the ${model} model, which was not found. Redirecting to model download setup...`);
