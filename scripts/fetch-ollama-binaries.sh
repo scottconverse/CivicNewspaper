@@ -22,7 +22,7 @@ if ! command -v python3 >/dev/null 2>&1; then
   PY_CMD="python"
 fi
 
-if ! $PY_CMD -c "import json; json.load(open('$THRESHOLDS_FILE'))" >/dev/null 2>&1; then
+if ! $PY_CMD -c "import json; json.load(open('$THRESHOLDS_FILE'))" >/dev/null 2>&1; then # thresholds
   echo "FAIL: $THRESHOLDS_FILE is malformed or invalid" >&2
   exit 1
 fi
