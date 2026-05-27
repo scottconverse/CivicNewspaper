@@ -16,7 +16,7 @@ graph TD
     end
     subgraph Local Storage & Engines
         RustCore <-->|SQLite Driver| SQLite[(SQLite Database WAL Mode)]
-        RustCore <-->|HTTP API localhost:11434| Ollama[Ollama Sidecar]
+        RustCore <-->|HTTP API localhost:11434| Ollama["Ollama Sidecar (Mach-O universal on macOS)"]
     end
     subgraph Publishing
         RustCore -->|pulldown-cmark Compiler| CompiledSite[Compiled Static Site]
