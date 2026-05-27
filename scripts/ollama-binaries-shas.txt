@@ -1,3 +1,4 @@
+# Note: Both macOS targets (x86_64-apple-darwin and aarch64-apple-darwin) point to the same upstream Mach-O universal binary.
 746eeac2a062f76d68e7ed2488d6bb7537610adc13dfcd6c7c12aaf025691f09 x86_64-apple-darwin
 746eeac2a062f76d68e7ed2488d6bb7537610adc13dfcd6c7c12aaf025691f09 aarch64-apple-darwin
 8b746572392b6a6912bedfb5ac8115c18b77815ea4614c6cce7ccb6f67b9d929 x86_64-unknown-linux-gnu

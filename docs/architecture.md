@@ -136,13 +136,13 @@ The startup wizard ensures all dependencies are set up before allowing the opera
 
 ```mermaid
 graph TD
-    WizardSteps[Start Onboarding Wizard] -->|Detect Ollama| ModelPull[Model Pull Progress 'gemma2:9b']
-    ModelPull -->|5.4 GB Download Complete| FirstSource[First Source Added]
+    WizardSteps[Start Onboarding Wizard] -->|Detect Ollama| ModelPull[Model Pull Progress]
+    ModelPull -->|Model Download Complete| FirstSource[First Source Added]
     FirstSource -->|Database Populated| Dashboard[App Dashboard Access]
 ```
 
 * **Detect Ollama**: Checks if the Ollama background daemon is reachable on `127.0.0.1:11434`.
-* **Model Pull Progress**: Triggers the `gemma2:9b` model pull and tracks the download progress bytes.
+* **Model Pull Progress**: Triggers the recommended model pull and tracks the download progress bytes.
 * **First Source**: Requests the user's initial feed to populate the workspace database.
 
 ---
