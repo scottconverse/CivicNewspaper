@@ -23,7 +23,8 @@ def audit_team_zero_blockers(verdict_path, expected_sha=""):
         
     required = {
         "blockers", "criticals", "verdict", "audit_artifact", "auditor",
-        "mutation_checks_results_sha256", "clippy_platforms_run", "mutation_checks_platforms"
+        "mutation_checks_results_sha256", "clippy_platforms_run", "mutation_checks_platforms",
+        "checkpoint_audits_clean"
     }
     missing = required - set(data.keys())
     if missing:
@@ -36,6 +37,9 @@ def audit_team_zero_blockers(verdict_path, expected_sha=""):
         
     if data["verdict"] != "PROMOTE":
         raise ValueError("verdict must be PROMOTE")
+        
+    if data["checkpoint_audits_clean"] is not True:
+        raise ValueError("checkpoint_audits_clean must be True")
         
     if not isinstance(data["mutation_checks_results_sha256"], str) or not data["mutation_checks_results_sha256"]:
         raise ValueError("mutation_checks_results_sha256 must be a non-empty string")
@@ -56,6 +60,58 @@ def audit_team_zero_blockers(verdict_path, expected_sha=""):
                 intersection = verdict_platforms.intersection(set(entry_platforms))
                 if not intersection:
                     raise ValueError(f"No platform intersection for mutation test: {entry['test']}")
+
+    # Checkpoint Audits validation (WI-1)
+    run_dir = os.path.dirname(verdict_path)
+    checkpoint_shas_path = os.path.join(run_dir, "audits", "checkpoint-shas.txt")
+    if not os.path.exists(checkpoint_shas_path):
+        raise ValueError(f"checkpoint-shas.txt missing at {checkpoint_shas_path}")
+        
+    import re
+    with open(checkpoint_shas_path, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+        
+    for line in lines:
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = line.split(None, 1)
+        if len(parts) < 2:
+            continue
+        pinned_sha, filename = parts[0], parts[1]
+        
+        # Verify file exists
+        if not os.path.exists(filename):
+            raise Exception(f"Checkpoint file missing: {filename}")
+            
+        # Verify SHA
+        computed_sha = _compute_sha256(filename)
+        if computed_sha != pinned_sha:
+            raise Exception(f"Checkpoint file hash mismatch for {filename}. Expected: {pinned_sha}, Got: {computed_sha}")
+            
+        # Parse severity rollup
+        with open(filename, "r", encoding="utf-8") as cf:
+            content = cf.read()
+            
+        rollup_idx = content.lower().find("severity rollup")
+        if rollup_idx != -1:
+            rollup_section = content[rollup_idx:rollup_idx+500]
+        else:
+            rollup_section = content
+            
+        blocker_match = re.search(r"blocker[s]?\s*:\s*(\d+)", rollup_section, re.IGNORECASE)
+        critical_match = re.search(r"critical[s]?\s*:\s*(\d+)", rollup_section, re.IGNORECASE)
+        
+        if not blocker_match:
+            raise ValueError(f"No blocker count found in {filename}")
+        if not critical_match:
+            raise ValueError(f"No critical count found in {filename}")
+            
+        blockers_count = int(blocker_match.group(1))
+        criticals_count = int(critical_match.group(1))
+        
+        if blockers_count > 0 or criticals_count > 0:
+            raise ValueError(f"Non-zero blockers or criticals count in {filename}")
 
     blockers = data["blockers"]
     criticals = data["criticals"]
