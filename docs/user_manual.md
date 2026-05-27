@@ -199,9 +199,9 @@ To build and run CivicNewspaper from source, ensure you have:
 
 ## 3. Database Management & Inspecting State
 The SQLite database file is located in the standard application data directory:
-* **Windows**: `%APPDATA%\com.civicnewspaper.app\civicnews.db`
-* **macOS**: `~/Library/Application Support/com.civicnewspaper.app/civicnews.db`
-* **Linux**: `~/.config/com.civicnewspaper.app/civicnews.db`
+* **Windows**: `%APPDATA%\org.civicnews.app\civicnews.db`
+* **macOS**: `~/Library/Application Support/org.civicnews.app/civicnews.db`
+* **Linux**: `~/.local/share/org.civicnews.app/civicnews.db`
 
 You can open this database using any SQLite client (e.g., `sqlite3`, DB Browser for SQLite, or a VS Code extension) to inspect the tables (`sources`, `scraped_items`, `leads`, `drafts`, `migrations`).
 
