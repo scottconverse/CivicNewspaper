@@ -6,6 +6,7 @@ use std::sync::Mutex;
 use std::time::Duration;
 use tauri::AppHandle;
 use tauri_plugin_shell::process::CommandChild;
+#[cfg(not(test))]
 use tauri_plugin_shell::ShellExt;
 
 #[derive(Debug, Serialize)]
@@ -108,8 +109,26 @@ pub async fn pull_ollama_model(
     Ok(resp)
 }
 
+#[allow(dead_code)]
+pub enum SidecarChild {
+    Tauri(CommandChild),
+    #[cfg(test)]
+    Std(std::process::Child),
+}
+
+impl SidecarChild {
+    #[allow(dead_code)]
+    pub fn pid(&self) -> u32 {
+        match self {
+            Self::Tauri(c) => c.pid(),
+            #[cfg(test)]
+            Self::Std(c) => c.id(),
+        }
+    }
+}
+
 pub struct OllamaSidecar {
-    pub(crate) child: Mutex<Option<CommandChild>>,
+    pub(crate) child: Mutex<Option<SidecarChild>>,
 }
 
 impl OllamaSidecar {
@@ -128,24 +147,50 @@ impl OllamaSidecar {
             return Ok(());
         }
 
-        let binary_name = if cfg!(test) {
-            "test-ollama-fixture"
-        } else {
-            "ollama"
-        };
+        #[cfg(test)]
+        {
+            let _app = app;
+            let mut base_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+            base_path.push("tests");
+            base_path.push("fixtures");
+            
+            let binary_name = if cfg!(target_os = "windows") {
+                "test-ollama-fixture-x86_64-pc-windows-msvc.exe"
+            } else if cfg!(target_os = "macos") {
+                if cfg!(target_arch = "aarch64") {
+                    "test-ollama-fixture-aarch64-apple-darwin"
+                } else {
+                    "test-ollama-fixture-x86_64-apple-darwin"
+                }
+            } else {
+                "test-ollama-fixture-x86_64-unknown-linux-gnu"
+            };
+            base_path.push(binary_name);
 
-        let sidecar_command = app
-            .shell()
-            .sidecar(binary_name)
-            .map_err(|e| format!("Sidecar error: {}", e))?
-            .args(["serve"]);
+            let child_proc = std::process::Command::new(base_path)
+                .arg("serve")
+                .spawn()
+                .map_err(|e| format!("Spawn error: {}", e))?;
 
-        let (_rx, child_proc) = sidecar_command
-            .spawn()
-            .map_err(|e| format!("Spawn error: {}", e))?;
+            *guard = Some(SidecarChild::Std(child_proc));
+            Ok(())
+        }
 
-        *guard = Some(child_proc);
-        Ok(())
+        #[cfg(not(test))]
+        {
+            let sidecar_command = app
+                .shell()
+                .sidecar("ollama")
+                .map_err(|e| format!("Sidecar error: {}", e))?
+                .args(["serve"]);
+
+            let (_rx, child_proc) = sidecar_command
+                .spawn()
+                .map_err(|e| format!("Spawn error: {}", e))?;
+
+            *guard = Some(SidecarChild::Tauri(child_proc));
+            Ok(())
+        }
     }
 
     pub fn stop(&self) -> Result<(), Box<dyn Error + Send + Sync>> {
@@ -154,9 +199,15 @@ impl OllamaSidecar {
             .lock()
             .map_err(|e| format!("Lock error: {}", e))?;
         if let Some(child_proc) = guard.take() {
-            child_proc
-                .kill()
-                .map_err(|e| format!("Kill error: {}", e))?;
+            match child_proc {
+                SidecarChild::Tauri(c) => {
+                    c.kill().map_err(|e| format!("Kill error: {}", e))?;
+                }
+                #[cfg(test)]
+                SidecarChild::Std(mut c) => {
+                    c.kill().map_err(|e| format!("Kill error: {}", e))?;
+                }
+            }
         }
         Ok(())
     }
