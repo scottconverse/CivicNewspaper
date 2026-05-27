@@ -1,2 +1,3 @@
 4d9617b3d66bd7e79f28f8476d3f3985a1519d1131457cfd0bc06827d1df3733  .agent-runs/2026-05-26-civicnewspaper-v020-ship/audits/checkpoint-01-version-and-release-eng.md
 58b4185c8ff4139e66113dc8516b8b42f5a862de97a5e97b407b4b0876532230  .agent-runs/2026-05-26-civicnewspaper-v020-ship/audits/checkpoint-02-criticals.md
+5128b932b7e739dbe5b04dd7a1ee4e709bdc10e64ce5450cf83cd0f0fb4060e2  .agent-runs/2026-05-26-civicnewspaper-v020-ship/audits/checkpoint-03-binaries.md
