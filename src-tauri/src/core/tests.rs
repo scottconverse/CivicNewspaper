@@ -893,4 +893,42 @@ mod tests {
         // conflicts with GUI DLL linkages. The full integration test is executed on non-Windows CI.
         assert!(true);
     }
+
+    #[test]
+    fn test_migration_0007_survives_existing_evidence_rows() {
+        let conn = Connection::open_in_memory().unwrap();
+        // Enable foreign keys
+        conn.execute("PRAGMA foreign_keys = ON;", []).unwrap();
+
+        // Run migrations up to 0006
+        conn.execute_batch(include_str!("../../migrations/0001_init.sql")).unwrap();
+        conn.execute_batch(include_str!("../../migrations/0003_settings.sql")).unwrap();
+        conn.execute_batch(include_str!("../../migrations/0004_source_tier.sql")).unwrap();
+        conn.execute_batch(include_str!("../../migrations/0005_daily_scans.sql")).unwrap();
+        conn.execute_batch(include_str!("../../migrations/0006_daily_scan_lead_source_nullable.sql")).unwrap();
+
+        // Insert a source
+        conn.execute(
+            "INSERT INTO sources (id, name, url, type, tier) VALUES (1, 'Test Source', 'http://example.com', 'rss', 'community_signal')",
+            [],
+        )
+        .unwrap();
+
+        // Insert an evidence item referencing that source
+        conn.execute(
+            "INSERT INTO evidence_items (id, source_id, fetched_at, excerpt, content_hash, entities) VALUES (1, 1, '2026-05-26T17:39:19Z', 'excerpt', 'hash123', '[]')",
+            [],
+        )
+        .unwrap();
+
+        // Run migration 0007 and make sure it doesn't fail due to foreign key violations/constraints on DROP TABLE
+        let migration_res = conn.execute_batch(include_str!("../../migrations/0007_source_tier_check.sql"));
+        assert!(migration_res.is_ok(), "Migration 0007 failed under active foreign keys: {:?}", migration_res);
+
+        // Verify data was preserved
+        let source_count: i32 = conn.query_row("SELECT COUNT(*) FROM sources", [], |row| row.get(0)).unwrap();
+        let evidence_count: i32 = conn.query_row("SELECT COUNT(*) FROM evidence_items", [], |row| row.get(0)).unwrap();
+        assert_eq!(source_count, 1);
+        assert_eq!(evidence_count, 1);
+    }
 }

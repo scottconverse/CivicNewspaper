@@ -1,3 +1,5 @@
+PRAGMA foreign_keys = OFF;
+
 CREATE TABLE sources_new (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -13,3 +15,5 @@ CREATE TABLE sources_new (
 INSERT INTO sources_new SELECT id, name, url, type, status, last_success_at, last_failed_at, last_scraped, tier FROM sources;
 DROP TABLE sources;
 ALTER TABLE sources_new RENAME TO sources;
+
+PRAGMA foreign_keys = ON;
