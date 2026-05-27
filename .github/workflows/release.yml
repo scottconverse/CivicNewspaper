@@ -13,10 +13,16 @@ jobs:
         include:
           - platform: ubuntu-latest
             os: [self-hosted, Linux, scott-desktop]
+            target: x86_64-unknown-linux-gnu
           - platform: macos-latest
             os: macos-latest
+            target: x86_64-apple-darwin
+          - platform: macos-latest-arm
+            os: macos-latest
+            target: aarch64-apple-darwin
           - platform: windows-latest
             os: windows-latest
+            target: x86_64-pc-windows-msvc
     runs-on: ${{ matrix.os }}
     
     steps:
@@ -33,8 +39,8 @@ jobs:
           toolchain: 1.94.0
           
       - name: Add macOS target
-        if: matrix.platform == 'macos-latest'
-        run: rustup target add x86_64-apple-darwin
+        if: matrix.target == 'x86_64-apple-darwin' || matrix.target == 'aarch64-apple-darwin'
+        run: rustup target add ${{ matrix.target }}
           
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
@@ -63,4 +69,4 @@ jobs:
           releaseBody: "See the assets to download this version and install."
           releaseDraft: false
           prerelease: false
-          args: --target ${{ matrix.platform == 'ubuntu-latest' && 'x86_64-unknown-linux-gnu' || matrix.platform == 'macos-latest' && 'x86_64-apple-darwin' || 'x86_64-pc-windows-msvc' }}
+          args: --target ${{ matrix.target }}
