@@ -80,8 +80,7 @@ pub fn run() {
             }
 
             // Register LlmClient state for Daily Scan / LLM features
-            let llm_client: Arc<dyn crate::core::llm::LlmClient> = Arc::new(crate::core::llm::OllamaClient);
-            app.manage(llm_client);
+            app.manage(std::sync::Arc::new(crate::core::llm::OllamaClient) as std::sync::Arc<dyn crate::core::llm::LlmClient>);
 
             Ok(())
         })
