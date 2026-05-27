@@ -109,6 +109,7 @@ pub fn run() {
             check_ollama,
             pull_model,
             pull_ollama_model,
+            cancel_ollama_pull,
             get_system_ram,
             discover_sources,
             ollama_health,

@@ -476,10 +476,19 @@ pub fn pull_model(app: tauri::AppHandle, model: String) -> Result<(), String> {
     Ok(())
 }
 
+static CANCEL_PULL: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+#[tauri::command]
+pub fn cancel_ollama_pull() -> Result<(), String> {
+    CANCEL_PULL.store(true, std::sync::atomic::Ordering::SeqCst);
+    Ok(())
+}
+
 #[tauri::command]
 pub fn pull_ollama_model(app: tauri::AppHandle, model_id: String) -> Result<(), String> {
     use tauri::Emitter;
     let model = model_id.clone();
+    CANCEL_PULL.store(false, std::sync::atomic::Ordering::SeqCst);
     tauri::async_runtime::spawn(async move {
         let client = reqwest::Client::new();
         if let Ok(mut resp) = client
@@ -489,6 +498,25 @@ pub fn pull_ollama_model(app: tauri::AppHandle, model_id: String) -> Result<(), 
             .await
         {
             while let Ok(Some(chunk)) = resp.chunk().await {
+                if CANCEL_PULL.load(std::sync::atomic::Ordering::SeqCst) {
+                    #[derive(serde::Serialize, Clone)]
+                    struct ProgressPayload {
+                        model: String,
+                        status: String,
+                        completed: Option<f64>,
+                        total: Option<f64>,
+                    }
+                    let _ = app.emit(
+                        "ollama-pull-progress",
+                        ProgressPayload {
+                            model: model.clone(),
+                            status: "cancelled".to_string(),
+                            completed: None,
+                            total: None,
+                        },
+                    );
+                    break;
+                }
                 let text = String::from_utf8_lossy(&chunk);
                 for line in text.lines() {
                     if line.trim().is_empty() {

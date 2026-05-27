@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { documentDir, appDataDir, join } from "@tauri-apps/api/path";
-import { ChevronRight, Download, CheckCircle, RefreshCcw, Copy, Info } from "lucide-react";
+import { ChevronRight, Download, CheckCircle, RefreshCcw } from "lucide-react";
 
 interface OnboardingWizardProps {
   ollamaOnline: boolean;
@@ -43,9 +43,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
   const [publishPath, setPublishPath] = useState("");
   const [backupPath, setBackupPath] = useState("");
 
-  // Step 5 State
-  const [pairingToken, setPairingToken] = useState("");
-  const [copied, setCopied] = useState(false);
+
 
   const steps = [
     { title: "Identity", desc: "Define your local news outlet name and mission." },
@@ -154,14 +152,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
     }
   };
 
-  const generateToken = async () => {
-    try {
-      const token = await invoke<string>("generate_pairing_pin", { label: "onboarding" });
-      setPairingToken(token);
-    } catch (e) {
-      console.error(e);
-    }
-  };
+
 
   const handleNext = async () => {
     if (step === 1) {
@@ -195,15 +186,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete, 
     if (step > 1) setStep(prev => prev - 1);
   };
 
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(pairingToken);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (e) {
-      console.error(e);
-    }
-  };
+
 
   return (
     <div className="wizard-container card" id="onboarding-wizard">

@@ -41,28 +41,24 @@ describe("OnboardingWizard Component Tests", () => {
     render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} />);
 
     // Step 1
-    expect(screen.getByText("Step 1 of 6")).toBeInTheDocument();
+    expect(screen.getByText("Step 1 of 5")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
     // Step 2
-    await waitFor(() => expect(screen.getByText("Step 2 of 6")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
     expect(screen.getByText(new RegExp(gemma2_9b))).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
     // Step 3
-    await waitFor(() => expect(screen.getByText("Step 3 of 6")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("Step 3 of 5")).toBeInTheDocument());
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
     // Step 4
-    await waitFor(() => expect(screen.getByText("Step 4 of 6")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("Step 4 of 5")).toBeInTheDocument());
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
     // Step 5
-    await waitFor(() => expect(screen.getByText("Step 5 of 6")).toBeInTheDocument());
-    fireEvent.click(screen.getByRole("button", { name: /next/i }));
-
-    // Step 6
-    await waitFor(() => expect(screen.getByText("Step 6 of 6")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("Step 5 of 5")).toBeInTheDocument());
     fireEvent.click(screen.getByRole("button", { name: /Finish Onboarding/i }));
 
     await waitFor(() => expect(handleComplete).toHaveBeenCalled());
@@ -89,7 +85,7 @@ describe("OnboardingWizard Component Tests", () => {
     fireEvent.click(screen.getByRole("button", { name: /Skip for now/i }));
 
     // Should skip to step 4 because step 3 (pull model) is also skipped
-    await waitFor(() => expect(screen.getByText("Step 4 of 6")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("Step 4 of 5")).toBeInTheDocument());
   });
 
   test("Ollama reachable with Empty Models: shows ready message", async () => {
@@ -136,7 +132,7 @@ describe("OnboardingWizard Component Tests", () => {
     render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} initialStep={3} />);
 
     // Check we are on Step 3
-    expect(screen.getByText("Step 3 of 6")).toBeInTheDocument();
+    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
     
     // Click pull recommended model button
     const gemma2_9b = ["gemma2", "9b"].join(":");
