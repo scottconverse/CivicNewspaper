@@ -6,8 +6,8 @@ set -eu
 BIN_DIR="src-tauri/binaries"
 mkdir -p "$BIN_DIR"
 
-VERSION="v0.3.14"
-BASE_URL="https://github.com/ollama/ollama/releases/download/$VERSION"
+OLLAMA_VERSION="v0.3.14"
+BASE_URL="https://github.com/ollama/ollama/releases/download/$OLLAMA_VERSION"
 SHA_FILE="scripts/ollama-binaries-shas.txt"
 THRESHOLDS_FILE="scripts/policy/thresholds.json"
 
