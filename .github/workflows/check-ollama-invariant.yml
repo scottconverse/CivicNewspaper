@@ -1,0 +1,19 @@
+# fix(v0.2.3): WI-INV-2-2 check-ollama-invariant workflow
+name: Check Ollama Invariant
+
+on:
+  push:
+    branches: [ "main", "v*" ]
+  pull_request:
+    branches: [ "main", "v*" ]
+
+jobs:
+  check-invariant:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Ollama-install invariant check
+        run: |
+          chmod +x scripts/audit/check-ollama-install-invariant.sh
+          bash scripts/audit/check-ollama-install-invariant.sh
