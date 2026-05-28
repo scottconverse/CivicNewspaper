@@ -15,11 +15,16 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
+            let sidecar = Arc::new(crate::core::llm::OllamaSidecar::new());
+            app.manage(sidecar.clone());
+
             // Panic Hook
             if let Ok(app_data) = app.path().app_data_dir() {
                 let log_dir = app_data.join("logs");
                 let log_path = log_dir.join("civicnews.log");
+                let sidecar_clone = sidecar.clone();
                 std::panic::set_hook(Box::new(move |info| {
+                    let _ = sidecar_clone.stop();
                     let msg = match info.payload().downcast_ref::<&'static str>() {
                         Some(s) => *s,
                         None => match info.payload().downcast_ref::<String>() {
@@ -73,8 +78,6 @@ pub fn run() {
             });
 
             // Start Ollama Sidecar
-            let sidecar = Arc::new(crate::core::llm::OllamaSidecar::new());
-            app.manage(sidecar.clone());
             if let Err(e) = sidecar.start(app.handle()) {
                 eprintln!("Failed to start Ollama sidecar: {}", e);
             }
@@ -128,12 +131,15 @@ pub fn run() {
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
         .run(|app_handle, event| {
-            if let tauri::RunEvent::Exit = event {
-                if let Some(sidecar) =
-                    app_handle.try_state::<Arc<crate::core::llm::OllamaSidecar>>()
-                {
-                    let _ = sidecar.stop();
+            match event {
+                tauri::RunEvent::Exit | tauri::RunEvent::WindowEvent { event: tauri::WindowEvent::CloseRequested { .. }, .. } => {
+                    if let Some(sidecar) =
+                        app_handle.try_state::<Arc<crate::core::llm::OllamaSidecar>>()
+                    {
+                        let _ = sidecar.stop();
+                    }
                 }
+                _ => {}
             }
         });
 }

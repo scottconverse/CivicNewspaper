@@ -139,6 +139,22 @@ impl OllamaSidecar {
     }
 
     pub fn start<R: tauri::Runtime>(&self, app: &AppHandle<R>) -> Result<(), Box<dyn Error + Send + Sync>> {
+        // Port 11434 collision check: graceful coexistence
+        let addr: std::net::SocketAddr = "127.0.0.1:11434".parse().unwrap();
+        if std::net::TcpStream::connect_timeout(&addr, std::time::Duration::from_millis(50)).is_ok() {
+            return Ok(());
+        }
+
+        // Startup sweep for orphan ollama processes
+        let sys = sysinfo::System::new_all();
+        for process in sys.processes().values() {
+            let name = process.name();
+            let cmd = process.cmd().join(" ");
+            if (name.contains("ollama") || cmd.contains("ollama")) && cmd.contains("serve") {
+                let _ = process.kill();
+            }
+        }
+
         let mut guard = self
             .child
             .lock()

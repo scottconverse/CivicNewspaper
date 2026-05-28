@@ -880,13 +880,12 @@ mod tests {
             let res = sidecar.start(app.handle());
             assert!(res.is_ok());
 
-            let pid = {
+            {
                 let guard = sidecar.child.lock().unwrap();
                 assert!(guard.is_some());
                 let p = guard.as_ref().unwrap().pid();
                 assert!(p > 0);
-                p
-            };
+            }
 
             let res_stop = sidecar.stop();
             assert!(res_stop.is_ok());
@@ -1171,6 +1170,25 @@ mod tests {
             }
 
             let _ = crate::cancel_ollama_pull("model-2".to_string());
+        }
+    }
+
+    #[tokio::test]
+    async fn test_sidecar_skips_spawn_when_port_11434_occupied() {
+        #[cfg(unix)]
+        {
+            let listener = tokio::net::TcpListener::bind("127.0.0.1:11434")
+                .await
+                .unwrap();
+
+            let app = tauri::test::mock_app();
+            let sidecar = crate::core::llm::OllamaSidecar::new();
+            let res = sidecar.start(app.handle());
+            assert!(res.is_ok());
+
+            // Verify that no child was spawned (child is None)
+            let child_guard = sidecar.child.lock().unwrap();
+            assert!(child_guard.is_none());
         }
     }
 }
