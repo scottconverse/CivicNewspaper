@@ -208,7 +208,7 @@ You can open this database using any SQLite client (e.g., `sqlite3`, DB Browser 
 For testing and development without calling a real Ollama instance:
 * The application utilizes the `LlmClient` trait to decouple the core logic from direct network calls to Ollama.
 * You can write mock implementations of the `LlmClient` trait for unit testing without spinning up any Ollama service.
-* The test suite in [tests.rs](../src-tauri/src/core/tests.rs) mock-starts an HTTP server that mimics Ollama's response payload structure.
+* For unit testing, mock implementations of the `LlmClient` trait (such as `FakeLlmClient`) are registered with the Tauri application state using `app.manage()`. For example, the test `test_plain_language_rewrite_invokes_ollama` in [tests.rs](../src-tauri/src/core/tests.rs) registers a mock client to verify core logic without launching a service or network server.
 * To run the Rust tests:
    ```bash
    cd src-tauri
