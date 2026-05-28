@@ -38,3 +38,10 @@ inject.cjs
 check.sh
 # NOTE: do NOT add `scripts/` here. The repo legitimately uses scripts/ for
 # operator-owned verification (DoD script + hash file, see scripts/verify-*.sh).
+
+# Python cache
+**/__pycache__/
+**/*.pyc
+
+# Mutation checks results
+mutation-checks-results.json

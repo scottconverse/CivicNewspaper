@@ -1,0 +1,37 @@
+pipeline_run:
+  id: "2026-05-27-v024-hotpatch"
+  type: "bugfix"
+  branch: "v0.2.4-hotpatch"
+  goal: "Execute v0.2.4-hotpatch release resolving all 28 findings and structurally closing 6 evasion shapes."
+  allowed_paths:
+    - "src/"
+    - "src-tauri/"
+    - "docs/"
+    - ".github/workflows/"
+    - ".pipelines/"
+    - ".agent-runs/"
+    - "README.md"
+    - "CHANGELOG.md"
+    - "SECURITY.md"
+    - "FAQ.md"
+    - "CONTRIBUTING.md"
+    - "NOTICES.md"
+    - "carried-debt.md"
+    - "package.json"
+    - "package-lock.json"
+    - "scripts/"
+  forbidden_paths:
+    - "LICENSE"
+    - ".gitattributes"
+  non_goals:
+    - "Do not tag the release."
+    - "Do not push final tags."
+  expected_outputs:
+    - "All 28 audit findings resolved."
+    - "6 evasion shapes structurally closed."
+    - "Checkpoint validations 1-8 written and SHA-pinned."
+  required_gates:
+    - "policy_passed"
+    - "tests_passed"
+  advances_target: "v0.2.4-hotpatch"
+  authorizing_source: "DIRECTIVE-v024-fix-all-28-plus-structural.md"
