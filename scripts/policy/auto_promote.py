@@ -2,6 +2,89 @@ import os
 import json
 import hashlib
 import subprocess
+import urllib.request
+import urllib.parse
+import re
+import glob
+
+def _is_valid_url(url):
+    try:
+        parsed = urllib.parse.urlparse(url)
+        if not parsed.scheme or parsed.scheme not in ("http", "https"):
+            return False
+            
+        # GENERIC_URL check: reject root url without path (WP-1)
+        path = parsed.path.strip("/")
+        if not path:
+            return False
+            
+        # Verify URL via HTTP HEAD request (or GET fallback)
+        req = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "Mozilla/5.0"})
+        try:
+            with urllib.request.urlopen(req, timeout=5) as response:
+                if 200 <= response.status < 400:
+                    return True
+        except Exception:
+            # Fallback to GET
+            try:
+                req = urllib.request.Request(url, method="GET", headers={"User-Agent": "Mozilla/5.0"})
+                with urllib.request.urlopen(req, timeout=5) as response:
+                    if 200 <= response.status < 400:
+                        return True
+            except Exception:
+                pass
+    except Exception:
+        pass
+    return False
+
+def _is_valid_sha(sha):
+    # Check if git SHA is valid
+    try:
+        # Run git rev-parse --quiet --verify
+        res = subprocess.run(
+            ["git", "rev-parse", "--quiet", "--verify", sha],
+            capture_output=True, text=True
+        )
+        if res.returncode == 0:
+            return True
+    except Exception:
+        pass
+    return False
+
+def _check_citation_in_window(lines, start_idx):
+    # Narrative phrase is on line start_idx
+    # Window is start_idx to start_idx + 3
+    end_idx = min(start_idx + 3, len(lines) - 1)
+    window_lines = lines[start_idx:end_idx + 1]
+    
+    # 1. Look for URL
+    url_pattern = re.compile(r"https?://[^\s)\]]+")
+    for line in window_lines:
+        urls = url_pattern.findall(line)
+        for url in urls:
+            if _is_valid_url(url):
+                return True
+                
+    # 2. Look for SHA256 or Git SHA
+    hex_pattern = re.compile(r"\b[a-fA-F0-9]{7,64}\b")
+    for line in window_lines:
+        hexes = hex_pattern.findall(line)
+        for h in hexes:
+            if len(h) == 64:
+                # Valid SHA256 reference
+                return True
+            elif 7 <= len(h) <= 40:
+                # Check if it is a valid Git commit SHA
+                if _is_valid_sha(h):
+                    return True
+                    
+    # 3. Look for build-log filename reference
+    build_log_pattern = re.compile(r"\bbuild[-_]log\.txt\b|\bbuild[-_]log\b", re.IGNORECASE)
+    for line in window_lines:
+        if build_log_pattern.search(line):
+            return True
+            
+    return False
 
 def _compute_sha256(filepath):
     sha256_hash = hashlib.sha256()
@@ -121,6 +204,30 @@ def audit_team_zero_blockers(verdict_path, expected_sha=""):
             
         if blockers_count > 0 or criticals_count > 0:
             raise ValueError(f"Non-zero blockers or criticals count in {filename}")
+
+    # Enforce §0.17 narrative citation rules (WP-1)
+    stage_reports = glob.glob(os.path.join(run_dir, "stage-*-report.md"))
+    narratives = [
+        "by design",
+        "is normal",
+        "expected behavior",
+        "this is correct because"
+    ]
+    for report_path in stage_reports:
+        with open(report_path, "r", encoding="utf-8") as rf:
+            report_lines = rf.readlines()
+        for i, line in enumerate(report_lines):
+            has_narrative = False
+            for phrase in narratives:
+                if phrase in line.lower():
+                    has_narrative = True
+                    break
+            if has_narrative:
+                if not _check_citation_in_window(report_lines, i):
+                    raise ValueError(
+                        f"Narrative phrase found in {os.path.basename(report_path)} "
+                        f"on line {i+1} lacks valid cited evidence in 3-line window."
+                    )
 
     blockers = data["blockers"]
     criticals = data["criticals"]
