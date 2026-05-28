@@ -174,7 +174,7 @@ This section provides details on how to build, test, and contribute to the Civic
 To build and run CivicNewspaper from source, ensure you have:
 * **Node.js 18+** & `npm`
 * **Rust compiler (Stable)** via `rustup`
-* **Ollama** installed locally
+* **Ollama**: For developers building from source only, you may install Ollama locally to test custom or external configurations.
 * **Platform Dependencies**:
   * *Windows*: C++ Build Tools (via Visual Studio Installer).
   * *macOS*: Xcode Command Line Tools.
