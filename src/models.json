@@ -1,0 +1,5 @@
+{
+  "high": "gemma2:9b",
+  "medium": "llama3:8b",
+  "low": "phi3:mini"
+}

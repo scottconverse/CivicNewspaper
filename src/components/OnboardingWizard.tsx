@@ -5,6 +5,7 @@ import { listen } from "@tauri-apps/api/event";
 import { documentDir, appDataDir, join } from "@tauri-apps/api/path";
 import { ChevronRight, Download, CheckCircle, RefreshCcw, AlertCircle } from "lucide-react";
 import { save } from "@tauri-apps/plugin-dialog";
+import modelsConfig from "../models.json";
 
 interface OnboardingWizardProps {
   ollamaOnline: boolean;
@@ -82,7 +83,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         if (selected) {
           setModel(selected);
         } else {
-          const fallback = ram >= 12 ? 'gemma2:9b' : ram >= 8 ? 'llama3:8b' : 'phi3:mini';
+          const fallback = ram >= 12 ? modelsConfig.high : ram >= 8 ? modelsConfig.medium : modelsConfig.low;
           setModel(fallback);
         }
 
@@ -379,13 +380,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   <div style={{ background: "rgba(16, 185, 129, 0.05)", padding: "1rem", borderRadius: "8px" }}>
                     <h4 style={{ color: "var(--color-success)" }}>Ollama is ready. Pull a recommended model?</h4>
                     <p style={{ fontSize: "0.9rem" }}>Based on your {sysRam}GB of RAM, we recommend: <strong>{model}</strong></p>
-                    <button 
-                      className="btn btn-primary" 
-                      onClick={handleNext}
-                      style={{ marginTop: "1rem" }}
-                    >
-                      Continue
-                    </button>
                   </div>
                 )}
 
@@ -403,7 +397,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                       style={{ width: "100%", padding: "0.5rem", borderRadius: "4px", border: "1px solid var(--border-color)", background: "var(--bg-primary)", color: "var(--text-primary)" }}
                     >
                       {health.models.map(m => <option key={m} value={m}>{m}</option>)}
-                      <option value="">-- Or pull a recommended model --</option>
+                      <option value="" disabled hidden>-- Or pull a recommended model --</option>
                     </select>
                   </div>
                 )}
@@ -521,7 +515,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               } else if (step === 3) {
                 const confirmSkip = window.confirm("Skip the model download? You won't be able to use AI features until you download a model from Settings.");
                 if (!confirmSkip) return;
-                // Skip: setStep(4) cancel_ollama_pull|cancelPull
                 await cancelPullModel();
                 setStep(4);
               }

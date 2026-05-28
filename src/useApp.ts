@@ -41,6 +41,7 @@ import {
   GuardrailsReport,
   runDailyScan
 } from "./ipc";
+import modelsConfig from "./models.json";
 
 export function useApp() {
   // Navigation
@@ -163,7 +164,7 @@ export function useApp() {
       try {
         let model = await invoke<string | null>("get_setting", { key: "model.selected" });
         if (!model) {
-          model = ram >= 12 ? 'gemma2:9b' : ram >= 8 ? 'llama3:8b' : 'phi3:mini';
+          model = ram >= 12 ? modelsConfig.high : ram >= 8 ? modelsConfig.medium : modelsConfig.low;
           await invoke("set_setting", { key: "model.selected", value: model });
         }
         setWizardModel(model);

@@ -56,10 +56,6 @@ check_content() {
 
   while IFS= read -r line || [[ -n "$line" ]]; do
     if echo "$line" | grep -iqE "gemma2.*9b|9b.*gemma2"; then
-      # Check if this line matches authorized fallback patterns
-      if echo "$line" | grep -qE "fallback =|model = ram >= 12"; then
-        continue
-      fi
       # Otherwise it is a violation!
       violations="$violations\n$f: $line"
     fi
