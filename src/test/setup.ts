@@ -13,6 +13,9 @@ vi.mock('@tauri-apps/api/path', () => ({
   appDataDir: vi.fn(),
   join: vi.fn(),
 }));
+vi.mock('@tauri-apps/api/app', () => ({
+  getVersion: vi.fn(() => Promise.resolve('0.2.6')),
+}));
 vi.mock('@tauri-apps/plugin-updater', () => ({
   check: vi.fn(),
 }));

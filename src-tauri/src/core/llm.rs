@@ -138,14 +138,31 @@ impl OllamaSidecar {
         }
     }
 
+    /// Returns true if something is already listening on the Ollama port (11434).
+    pub(crate) fn ollama_port_in_use() -> bool {
+        Self::port_in_use("127.0.0.1:11434")
+    }
+
+    /// Returns true if a TCP listener is reachable at `addr`. Extracted and
+    /// parameterized so the collision-skip behavior can be tested cross-platform
+    /// against an OS-assigned ephemeral port — without a Tauri app handle and
+    /// without depending on whether real Ollama happens to occupy 11434.
+    pub(crate) fn port_in_use(addr: &str) -> bool {
+        match addr.parse::<std::net::SocketAddr>() {
+            Ok(socket) => {
+                std::net::TcpStream::connect_timeout(&socket, std::time::Duration::from_millis(50))
+                    .is_ok()
+            }
+            Err(_) => false,
+        }
+    }
+
     pub fn start<R: tauri::Runtime>(
         &self,
         app: &AppHandle<R>,
     ) -> Result<(), Box<dyn Error + Send + Sync>> {
         // Port 11434 collision check: graceful coexistence
-        let addr: std::net::SocketAddr = "127.0.0.1:11434".parse().unwrap();
-        if std::net::TcpStream::connect_timeout(&addr, std::time::Duration::from_millis(50)).is_ok()
-        {
+        if Self::ollama_port_in_use() {
             return Ok(());
         }
 

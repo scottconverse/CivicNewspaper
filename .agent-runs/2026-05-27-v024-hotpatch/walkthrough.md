@@ -9,7 +9,7 @@ This document summarizes the changes, testing, and validation results for the `v
 - Verified release artifacts built via GitHub Actions Release workflow.
 - Updated forensic failures and technical debt files.
 
-Total commits added since `v0.2.3-hotpatch` HEAD (`942a940`): **39** (calculated via `git log 942a940..HEAD --oneline | wc -l`).
+Total commits added from `v0.2.3-hotpatch` HEAD (`942a940`) through this v0.2.4 release HEAD (`91824ac`): **39** (calculated via `git log 942a940..91824ac --oneline | wc -l`). Both endpoints are pinned to explicit commit SHAs so the count stays reproducible as later commits land on the branch.
 
 ## Verification Results
 

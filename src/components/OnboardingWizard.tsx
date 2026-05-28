@@ -7,6 +7,11 @@ import { ChevronRight, Download, CheckCircle, RefreshCcw, AlertCircle } from "lu
 import { save } from "@tauri-apps/plugin-dialog";
 import modelsConfig from "../models.json";
 
+// Minimum system RAM (GB) for the smallest bundled model (phi3:mini) to run at
+// usable speed. Below this floor we still allow setup but warn the user that AI
+// features may run slowly.
+const LOW_RAM_FLOOR_GB = 8;
+
 interface OnboardingWizardProps {
   ollamaOnline: boolean;
   systemRam: number;
@@ -48,6 +53,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const [pullPercent, setPullPercent] = useState<number | null>(null);
   const [pulling, setPulling] = useState(false);
   const [pullComplete, setPullComplete] = useState(false);
+  const [pullError, setPullError] = useState<string>("");
 
   // Step 4 State
   const [publishPath, setPublishPath] = useState("");
@@ -179,6 +185,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     setPullProgress("Starting pull...");
     setPullPercent(0);
     setPullComplete(false);
+    setPullError("");
 
     const modelToPull = model;
 
@@ -213,9 +220,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
       await invoke("pull_ollama_model", { modelId: modelToPull });
       await invoke("set_setting", { key: "model.selected", value: modelToPull });
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      setPullProgress("Error pulling model.");
+      const reason = (e?.message || String(e) || "").trim();
+      setPullError(
+        `Download failed${reason ? `: ${reason}` : "."} ` +
+          `Make sure Ollama is running and your internet connection is working, then click "Download ${modelToPull}" to try again.`
+      );
+      setPullProgress("");
       setPulling(false);
     }
   };
@@ -380,6 +392,15 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   <div style={{ background: "rgba(16, 185, 129, 0.05)", padding: "1rem", borderRadius: "8px" }}>
                     <h4 style={{ color: "var(--color-success)" }}>Ollama is ready. Pull a recommended model?</h4>
                     <p style={{ fontSize: "0.9rem" }}>Based on your {sysRam}GB of RAM, we recommend: <strong>{model}</strong></p>
+                    {sysRam > 0 && sysRam < LOW_RAM_FLOOR_GB && (
+                      <p
+                        data-testid="low-ram-warning"
+                        style={{ fontSize: "0.85rem", color: "var(--color-danger)", marginTop: "0.5rem", display: "flex", alignItems: "center", gap: "0.4rem" }}
+                      >
+                        <AlertCircle size={16} />
+                        Your system has {sysRam}GB of RAM, below the {LOW_RAM_FLOOR_GB}GB recommended for local AI. {model} will still run, but generation may be slow.
+                      </p>
+                    )}
                   </div>
                 )}
 
@@ -418,6 +439,17 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             
             {!pulling && !pullComplete && (
               <div>
+                {pullError && (
+                  <div
+                    data-testid="pull-error"
+                    style={{ marginBottom: "1rem", background: "rgba(239, 68, 68, 0.06)", borderLeft: "4px solid var(--color-danger)", padding: "0.75rem", borderRadius: "4px" }}
+                  >
+                    <p style={{ fontSize: "0.85rem", margin: 0, color: "var(--text-primary)", display: "flex", alignItems: "flex-start", gap: "0.4rem" }}>
+                      <AlertCircle size={16} style={{ flexShrink: 0, marginTop: "0.1rem" }} />
+                      <span>{pullError}</span>
+                    </p>
+                  </div>
+                )}
                 <button className="btn btn-primary" onClick={startPullModel}>
                   <Download size={16} style={{ marginRight: "0.5rem" }} /> Download {model}
                 </button>

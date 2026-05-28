@@ -121,6 +121,9 @@ export function useApp() {
 
   const [latestScanId, setLatestScanId] = useState<number | null>(null);
 
+  // Real application version, read from the Tauri bundle at runtime.
+  const [appVersion, setAppVersion] = useState("");
+
   // Global Status Feed
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
@@ -139,6 +142,16 @@ export function useApp() {
       }
     }
     loadDefaultPaths();
+
+    async function loadAppVersion() {
+      try {
+        const { getVersion } = await import("@tauri-apps/api/app");
+        setAppVersion(await getVersion());
+      } catch (err) {
+        console.error("Failed to resolve app version", err);
+      }
+    }
+    loadAppVersion();
 
     async function checkForUpdates() {
       try {
@@ -829,6 +842,7 @@ export function useApp() {
     customLlmResult,
     customLlmRunning,
     latestScanId,
+    appVersion,
     loading,
     statusMessage,
     setStatusMessage,

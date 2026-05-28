@@ -112,10 +112,16 @@ mod tests {
         );
     }
 
-    // M-3: test_useapp_daily_scan_end_to_end_model has grep-bait comments
+    // M-3 / N-1: the daily-scan model test must verify real model-gating
+    // behavior, not merely lack grep-bait comments and assert a constant equals
+    // itself. This checks both: the prior bait and the tautology are gone, AND
+    // the genuine behavioral assertions are present (a negative-path test where
+    // an unavailable selected model must block run_daily_scan).
     #[test]
-    fn reproduce_m3_grep_bait_comments() {
+    fn reproduce_m3_test_verifies_model_gating_behavior() {
         let test_content = read_file("src/test_useapp_daily_scan_passes_settings_model.test.tsx");
+
+        // Prior grep-bait comments that simulated coverage must be absent.
         assert!(
             !test_content.contains("mockLlm expect: phi3:mini"),
             "M-3 violation: test contains grep-bait comment 'mockLlm expect: phi3:mini'"
@@ -124,9 +130,22 @@ mod tests {
             !test_content.contains("llmCall receivedModel"),
             "M-3 violation: test contains grep-bait comment 'llmCall receivedModel'"
         );
+
+        // The tautological assertion (expectedModel === "phi3:mini") must be gone.
         assert!(
-            !test_content.contains("fn test_useapp_daily_scan_end_to_end_model"),
-            "M-3 violation: test contains grep-bait comment 'fn test_useapp_daily_scan_end_to_end_model'"
+            !test_content.contains("expect(expectedModel).toBe"),
+            "M-3 violation: test still contains the tautological assertion comparing a local constant to itself"
+        );
+
+        // Genuine behavioral coverage must be present: a negative-path test
+        // proving an unavailable selected model blocks the scan.
+        assert!(
+            test_content.contains("test_useapp_daily_scan_blocks_when_selected_model_unavailable"),
+            "M-3 violation: missing the negative-path test proving the selected model gates the scan"
+        );
+        assert!(
+            test_content.contains(".not.toHaveBeenCalledWith"),
+            "M-3 violation: missing the assertion that run_daily_scan is NOT invoked when the model is unavailable"
         );
     }
 
@@ -154,17 +173,28 @@ mod tests {
         );
     }
 
-    // M-6: walkthrough commit count mismatch
+    // M-6 / C-2 / Mn-3: the walkthrough commit count must be pinned to explicit
+    // SHA endpoints and report the verified count — not an ambiguous "..HEAD"
+    // range (which drifts as new commits land) and not the prior gamed check,
+    // which asserted the absence of a literal ("**38**") that was never in the
+    // file and therefore always passed. read_file panics if the artifact is
+    // missing, so this test cannot silently no-op the way the path_exists guard
+    // allowed. The count 39 is verified via `git log 942a940..91824ac --oneline`.
     #[test]
-    fn reproduce_m6_walkthrough_mismatch() {
-        let walkthrough_path = ".agent-runs/2026-05-27-v024-hotpatch/walkthrough.md";
-        if path_exists(walkthrough_path) {
-            let content = read_file(walkthrough_path);
-            assert!(
-                !content.contains("**38**"),
-                "M-6 violation: Walkthrough contains hardcoded incorrect commit count '38 commits'"
-            );
-        }
+    fn reproduce_m6_walkthrough_commit_count_pinned_and_correct() {
+        let content = read_file(".agent-runs/2026-05-27-v024-hotpatch/walkthrough.md");
+        assert!(
+            content.contains("942a940..91824ac"),
+            "M-6 violation: walkthrough commit-count range is not pinned to explicit SHA endpoints (942a940..91824ac)"
+        );
+        assert!(
+            !content.contains("942a940..HEAD"),
+            "M-6 violation: walkthrough still uses the ambiguous unpinned range '942a940..HEAD'"
+        );
+        assert!(
+            content.contains("**39**"),
+            "M-6 violation: walkthrough does not report the verified commit count (**39**) for the pinned range"
+        );
     }
 
     // Structural Closure 1: §0.21 build output checks (preventing grep-bait comments and parentheticals)

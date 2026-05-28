@@ -137,7 +137,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           <SystemStatus
             ollamaOnline={app.ollamaOnline}
             dbVersion="v1.1.0"
-            appVersion="0.1.1"
+            appVersion={app.appVersion}
           />
         </div>
       )}
