@@ -9,7 +9,13 @@ We checked three possibilities:
 3. **Upstream Binary Size**: We extracted `bin/ollama` directly from the official upstream `ollama-linux-amd64.tgz` (which is 1.58 GB). The single executable file `./bin/ollama` is indeed exactly 1,075,755,640 bytes (1.07 GB).
 
 ### Root Cause
-The upstream Ollama project bundles GPU acceleration runtimes (e.g., CUDA, ROCm, etc.) and inference engine libraries directly inside the standalone executable or within the payload, resulting in a self-contained ~1 GB binary. This is by design in Ollama v0.3.14 to avoid dependency conflicts on Linux systems.
+The ~1 GB size of the extracted binary reflects the monolithic `bin/ollama` executable itself. Upstream Ollama compiles its server and core orchestration logic directly into this single file. 
+
+However, GPU acceleration shared libraries (such as `libcublas.so` and `libcudart.so`) are located in a separate `lib/ollama/` directory inside the upstream tarball. Since our `scripts/fetch-ollama-binaries.sh` only extracts `bin/ollama` and discards `lib/ollama/`, the packaged application does not bundle these GPU libraries. As a result, GPU acceleration falls back to CPU at runtime on Linux.
+
+Cited evidence:
+- Upstream Ollama v0.3.14 Linux Release: https://github.com/ollama/ollama/releases/tag/v0.3.14
+- Upstream `ollama-linux-amd64.tgz` tarball layout and file sizes: https://github.com/ollama/ollama/releases/download/v0.3.14/ollama-linux-amd64.tgz
 
 ## Action & Fix
-The pinned SHA is correct. The extraction from the `.tgz` is correct. The size is normal and expected for Ollama v0.3.14. No changes were required for the fetch script or the SHAs file, but we have documented the size sanity check to confirm the findings.
+The pinned SHA is correct. The extraction from the `.tgz` is correct. The size of the monolithic binary is expected. No changes were required for the fetch script or the SHAs file, but we have documented the GPU library limitation in the carried debt list.

@@ -34,6 +34,8 @@ This file tracks deferred work and known technical debt.
   buttons to bare `releases/latest` after the VERSION-placeholder landmine.
   Restore per-platform smart links via inline JS that fetches GitHub API
   on page load and rewrites hrefs. Deferred to v0.3.
+- **P5-006 (Sidecar lifecycle on crash + port 11434 collision detection)**: Graceful coexistence with external Ollama instances and clean process reaping on closing/panic exits. Resolved in v0.2.4.
+- **P5-007 (Linux GPU Shared Libraries Bundling)**: Extract `lib/ollama/*` alongside `bin/ollama` in `fetch-ollama-binaries.sh`, bundle in `tauri.conf.json` `externalBin`, and verify via `ldd` post-installation to enable GPU acceleration on Linux rather than falling back to CPU. Deferred to v0.3.
 
 ## Pipeline Integrity Incidents
 

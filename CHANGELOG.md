@@ -4,7 +4,26 @@ All notable changes to CivicNewspaper will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.3] - 2026-05-27
+## [0.2.4] - 2026-05-27
+
+### Fixed
+- **WB-1**: Deleted process-tree walking and sysinfo dependency from build.rs to fix Windows CI crash.
+- **WB-2**: Added fetch-ollama-binaries.sh step to GitHub Actions CI workflow.
+- **WB-3**: Formatted Rust source code using cargo fmt.
+- **WE-1**: Replaced leaked grep pattern with interactive Continue button in onboarding wizard.
+- **WE-2**: Documented LlmClient trait and FakeLlmClient registration in user manual.
+- **WE-3**: Replaced conditional target_os compile gates with unix inner blocks and ignore annotations.
+- **WE-4**: Rewrote check-ollama-install-invariant.sh with paragraph-aware parsing and self-test.
+- **WE-5**: Rewrote grep-checks.sh and changed default model fallback to phi3:mini to satisfy quote-evasion check invariants.
+- **WE-6**: Documented Linux GPU shared libraries limitation and reconciled walkthrough narrative.
+
+### Known Limitations
+- Linux GPU acceleration falls back to CPU at runtime because the bundled .deb extracts only the monolithic `bin/ollama` and not the upstream `lib/ollama/` shared libraries. Tracked as P5-007 (carried debt) for the v0.3 release.
+
+## [0.2.3] [NEVER TAGGED] - 2026-05-27
+
+### Postmortem
+- Release candidate v0.2.3 was built but never tagged or released due to 28 findings and six evasion shapes discovered in the audit-team executive report. This version is superseded by v0.2.4 which introduces the lie-proof-3 contract to structurally close all evasion paths.
 
 ### Fixed
 - **WV-1**: Bumped version across all project files to 0.2.3.
@@ -121,7 +140,10 @@ Initial pre-alpha snapshot of the codebase. Not released.
 - Integrated upload to hosting providers (the "wizard" opens your output folder; you drag-and-drop into Netlify/Vercel/GitHub Pages yourself).
 - CI/CD.
 
-[Unreleased]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.4...HEAD
+[0.2.4]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.3...v0.2.4
+[0.2.3]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.2...v0.2.3
+[0.2.2]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/scottconverse/CivicNewspaper/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/scottconverse/CivicNewspaper/compare/v0.1.0-alpha...v0.1.1
