@@ -40,7 +40,7 @@ On your very first launch, the **Onboarding Wizard** will walk you through five 
 
 1. **Identity**:
    * Enter your community profile details including **Publication Name** (e.g. *Oak Valley Council Watch*), **Editor Name**, **City**, and **State**.
-2. **Ollama Health Check**:
+2. **AI Service Setup**:
    * The application checks the connection status of the bundled offline Ollama sidecar AI engine. You do not need to install Ollama separately.
 3. **Download AI Model**:
    * Pull the recommended offline AI model based on your system RAM (e.g. `gemma2:9b` for RAM >= 12GB, `llama3:8b` for RAM >= 8GB, or `phi3:mini` for lower specs).
