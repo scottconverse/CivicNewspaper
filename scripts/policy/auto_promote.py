@@ -99,17 +99,26 @@ def audit_team_zero_blockers(verdict_path, expected_sha=""):
         else:
             rollup_section = content
             
-        blocker_match = re.search(r"blocker[s]?\s*:\s*(\d+)", rollup_section, re.IGNORECASE)
-        critical_match = re.search(r"critical[s]?\s*:\s*(\d+)", rollup_section, re.IGNORECASE)
+        blockers_count = None
+        criticals_count = None
         
-        if not blocker_match:
+        # Regex anchored per Wnit-5
+        pattern = re.compile(r"^- (Blocker|Critical|Major|Minor|Nit):\s*(\d+)\s*$", re.IGNORECASE)
+        for line in rollup_section.splitlines():
+            m = pattern.match(line)
+            if m:
+                severity = m.group(1).lower()
+                count = int(m.group(2))
+                if severity == "blocker":
+                    blockers_count = count
+                elif severity == "critical":
+                    criticals_count = count
+
+        if blockers_count is None:
             raise ValueError(f"No blocker count found in {filename}")
-        if not critical_match:
+        if criticals_count is None:
             raise ValueError(f"No critical count found in {filename}")
             
-        blockers_count = int(blocker_match.group(1))
-        criticals_count = int(critical_match.group(1))
-        
         if blockers_count > 0 or criticals_count > 0:
             raise ValueError(f"Non-zero blockers or criticals count in {filename}")
 

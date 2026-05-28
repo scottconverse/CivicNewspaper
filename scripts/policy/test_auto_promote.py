@@ -286,3 +286,47 @@ def test_checkpoint_file_has_critical(temp_run_env):
     with pytest.raises(ValueError) as excinfo:
         audit_team_zero_blockers(verdict_path=p, expected_sha=sha)
     assert "Non-zero blockers or criticals count in" in str(excinfo.value)
+
+def test_severity_rollup_regex_anchored(temp_run_env):
+    temp_dir, audits_dir = temp_run_env
+    p = os.path.join(temp_dir, "verdict.json")
+    write_json(p, {
+        'blockers': 0, 'criticals': 0, 'verdict': 'PROMOTE', 'audit_artifact': 'x', 'auditor': 'x',
+        'mutation_checks_results_sha256': 'some-sha',
+        'clippy_platforms_run': ['linux'], 'mutation_checks_platforms': ['linux'],
+        'checkpoint_audits_clean': True
+    })
+    
+    # Valid format: must PASS
+    chk_file = os.path.join(temp_dir, "checkpoint-1.md")
+    write_text(chk_file, "## Severity rollup\n- Blocker: 0\n- Critical: 0\n- Major: 0\n- Minor: 0\n- Nit: 0\n")
+    chk_sha = _compute_sha256(chk_file)
+    write_text(os.path.join(audits_dir, "checkpoint-shas.txt"), f"{chk_sha}  {chk_file}\n")
+    sha = _compute_sha256(p)
+    assert audit_team_zero_blockers(verdict_path=p, expected_sha=sha) == "PASS"
+
+    # Non-anchored or malformed formats: must FAIL
+    # Case 1: missing starting dash
+    write_text(chk_file, "## Severity rollup\nBlocker: 0\n- Critical: 0\n")
+    chk_sha = _compute_sha256(chk_file)
+    write_text(os.path.join(audits_dir, "checkpoint-shas.txt"), f"{chk_sha}  {chk_file}\n")
+    with pytest.raises(ValueError) as excinfo:
+        audit_team_zero_blockers(verdict_path=p, expected_sha=sha)
+    assert "No blocker count found" in str(excinfo.value)
+
+    # Case 2: extra text before the dash
+    write_text(chk_file, "## Severity rollup\nExtra - Blocker: 0\n- Critical: 0\n")
+    chk_sha = _compute_sha256(chk_file)
+    write_text(os.path.join(audits_dir, "checkpoint-shas.txt"), f"{chk_sha}  {chk_file}\n")
+    with pytest.raises(ValueError) as excinfo:
+        audit_team_zero_blockers(verdict_path=p, expected_sha=sha)
+    assert "No blocker count found" in str(excinfo.value)
+
+    # Case 3: extra text after the count
+    write_text(chk_file, "## Severity rollup\n- Blocker: 0 extra\n- Critical: 0\n")
+    chk_sha = _compute_sha256(chk_file)
+    write_text(os.path.join(audits_dir, "checkpoint-shas.txt"), f"{chk_sha}  {chk_file}\n")
+    with pytest.raises(ValueError) as excinfo:
+        audit_team_zero_blockers(verdict_path=p, expected_sha=sha)
+    assert "No blocker count found" in str(excinfo.value)
+
