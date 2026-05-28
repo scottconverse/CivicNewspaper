@@ -379,9 +379,13 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   <div style={{ background: "rgba(16, 185, 129, 0.05)", padding: "1rem", borderRadius: "8px" }}>
                     <h4 style={{ color: "var(--color-success)" }}>Ollama is ready. Pull a recommended model?</h4>
                     <p style={{ fontSize: "0.9rem" }}>Based on your {sysRam}GB of RAM, we recommend: <strong>{model}</strong></p>
-                    <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.5rem", fontWeight: 600 }}>
-                      Step 2 Continue|Next: Click Next to proceed to downloading the model.
-                    </p>
+                    <button 
+                      className="btn btn-primary" 
+                      onClick={handleNext}
+                      style={{ marginTop: "1rem" }}
+                    >
+                      Continue
+                    </button>
                   </div>
                 )}
 

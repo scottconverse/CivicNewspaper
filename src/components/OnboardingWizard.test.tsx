@@ -34,7 +34,7 @@ describe("OnboardingWizard Component Tests", () => {
     const gemma2_9b = 'gemma2:9b';
     invokeMock.mockImplementation((cmd: string) => {
       if (cmd === "get_system_ram") return Promise.resolve(16);
-      if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: [gemma2_9b], version: "0.1.0" });
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: [], version: "0.1.0" });
       if (cmd === "generate_pairing_pin") return Promise.resolve("ABCD-1234");
       return Promise.resolve();
     });
@@ -207,5 +207,36 @@ describe("OnboardingWizard Component Tests", () => {
     });
 
     vi.useRealTimers();
+  });
+
+  test("test_onboarding_no_models_continue_button_advances_step", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: [], version: "0.1.0" });
+      if (cmd === "ollama_list_models") return Promise.resolve([]); // Mock returns [] (no models installed)
+      return Promise.resolve();
+    });
+
+    // Render with initialStep={1}
+    render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} initialStep={1} />);
+
+    // Step 1
+    expect(screen.getByText("Step 1 of 5")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+
+    // Step 2
+    // setStep(2) advances the wizard to step 2; expect step 2 is active
+    await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
+
+    // Locate the Continue button in the success card and click it
+    const continueBtn = screen.getByRole("button", { name: /continue/i });
+    expect(continueBtn).toBeInTheDocument();
+    fireEvent.click(continueBtn);
+
+    // Verify it advanced to Step 3
+    await waitFor(() => expect(screen.getByText("Step 3 of 5")).toBeInTheDocument());
   });
 });
