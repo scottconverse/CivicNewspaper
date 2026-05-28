@@ -80,7 +80,7 @@ To verify that your downloaded binary is safe and matches the exact code compile
 
 Open a terminal or command prompt and run the command matching your operating system:
 
-*(Note: Replace `<version>` with the actual version you downloaded, e.g., `0.2.2`. You can find the canonical checksums in the `SHA256SUMS` file on the GitHub Releases page.)*
+*(Note: Replace `<version>` with the actual version you downloaded, e.g., `0.2.3`. You can find the canonical checksums in the `SHA256SUMS` file on the GitHub Releases page.)*
 
 * **Windows (PowerShell)**:
   ```powershell
