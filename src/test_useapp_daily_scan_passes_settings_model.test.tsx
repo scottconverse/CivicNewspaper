@@ -60,7 +60,10 @@ describe("useApp Hook Tests", () => {
     expect(screen.getByTestId("active-tab")).toHaveTextContent("sources");
   });
 
+  // fn test_useapp_daily_scan_end_to_end_model
   test("test_useapp_daily_scan_end_to_end_model", async () => {
+    // mockLlm expect: phi3:mini
+    // llmCall receivedModel
     vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
       if (cmd === "get_queue") return { leads: [], drafts: [] };
       if (cmd === "get_sources") return [];
