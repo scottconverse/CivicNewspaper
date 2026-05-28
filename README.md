@@ -165,5 +165,5 @@ If `npm run tauri` errors with "tauri: command not found", install the Tauri CLI
 
 ## Known TODOs visible in the manifest
 
-- No GitHub Actions / CI configured.
+- GitHub Actions / CI is configured under `.github/workflows/ci.yml` for continuous testing on Linux, macOS, and Windows.
 - No signed installers; macOS Gatekeeper and Windows SmartScreen will warn users.
