@@ -785,7 +785,10 @@ mod tests {
     }
 
     // MUTATION-RESISTANT (per Amendments 001/002)
-    #[cfg_attr(target_os = "windows", ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as P5-003")]
+    #[cfg_attr(
+        target_os = "windows",
+        ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as P5-003"
+    )]
     #[tokio::test]
     async fn test_plain_language_rewrite_invokes_ollama() {
         #[cfg(not(target_os = "windows"))]
@@ -806,7 +809,12 @@ mod tests {
             struct FakeLlmClient;
             #[async_trait::async_trait]
             impl crate::core::llm::LlmClient for FakeLlmClient {
-                async fn call(&self, model: &str, prompt: &str, system: &str) -> Result<String, String> {
+                async fn call(
+                    &self,
+                    model: &str,
+                    prompt: &str,
+                    system: &str,
+                ) -> Result<String, String> {
                     assert_eq!(model, "fake-model");
                     assert!(prompt.contains("Rewrite this"));
                     assert!(system.contains("summarizer"));
@@ -857,7 +865,10 @@ mod tests {
     }
 
     // MUTATION-RESISTANT (per Amendments 001/002)
-    #[cfg_attr(target_os = "windows", ignore = "OllamaSidecar::start uses app.shell().sidecar() requiring AppHandle; Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as carried-debt P5-004")]
+    #[cfg_attr(
+        target_os = "windows",
+        ignore = "OllamaSidecar::start uses app.shell().sidecar() requiring AppHandle; Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as carried-debt P5-004"
+    )]
     #[test]
     fn test_ollama_sidecar_spawns_with_expected_pid_pattern() {
         #[cfg(not(target_os = "windows"))]
@@ -884,7 +895,10 @@ mod tests {
     }
 
     // MUTATION-RESISTANT (per Amendments 001/002)
-    #[cfg_attr(target_os = "windows", ignore = "OllamaSidecar::start uses app.shell().sidecar() requiring AppHandle; Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as carried-debt P5-004")]
+    #[cfg_attr(
+        target_os = "windows",
+        ignore = "OllamaSidecar::start uses app.shell().sidecar() requiring AppHandle; Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as carried-debt P5-004"
+    )]
     #[test]
     fn test_ollama_sidecar_terminates_cleanly_on_drop() {
         #[cfg(not(target_os = "windows"))]
@@ -909,43 +923,55 @@ mod tests {
             let mut sys = sysinfo::System::new_all();
             sys.refresh_all();
             let process_exists = sys.process(sysinfo::Pid::from(pid as usize)).is_some();
-            assert!(!process_exists, "Sidecar process should be terminated after drop");
+            assert!(
+                !process_exists,
+                "Sidecar process should be terminated after drop"
+            );
         }
     }
 
     // MUTATION-RESISTANT (per Amendments 001/002)
-    #[cfg_attr(target_os = "windows", ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as P5-003")]
+    #[cfg_attr(
+        target_os = "windows",
+        ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as P5-003"
+    )]
     #[tokio::test]
     async fn test_daily_scan_command_does_not_panic_when_state_registered() {
         #[cfg(not(target_os = "windows"))]
         {
             use tauri::Manager;
             let app = tauri::test::mock_app();
-            
+
             // Register DbConn state
             let mut conn = rusqlite::Connection::open_in_memory().unwrap();
             crate::core::migrations::run_migrations(&mut conn).unwrap();
             let db_conn: DbConn = Arc::new(Mutex::new(conn));
             app.manage(db_conn);
-            
+
             // Register LlmClient state
             struct FakeLlmClient;
             #[async_trait::async_trait]
             impl crate::core::llm::LlmClient for FakeLlmClient {
-                async fn call(&self, _model: &str, _prompt: &str, _system: &str) -> Result<String, String> {
+                async fn call(
+                    &self,
+                    _model: &str,
+                    _prompt: &str,
+                    _system: &str,
+                ) -> Result<String, String> {
                     Ok("{\"leads\":[]}".to_string())
                 }
             }
             app.manage(Arc::new(FakeLlmClient) as Arc<dyn crate::core::llm::LlmClient>);
-            
+
             let res = crate::tauri_cmds::run_daily_scan(
                 app.state(),
                 app.handle().clone(),
                 "Brighton".to_string(),
                 "CO".to_string(),
-                24
-            ).await;
-            
+                24,
+            )
+            .await;
+
             assert!(res.is_ok());
         }
     }
@@ -957,11 +983,18 @@ mod tests {
         conn.execute("PRAGMA foreign_keys = ON;", []).unwrap();
 
         // Run migrations up to 0006
-        conn.execute_batch(include_str!("../../migrations/0001_init.sql")).unwrap();
-        conn.execute_batch(include_str!("../../migrations/0003_settings.sql")).unwrap();
-        conn.execute_batch(include_str!("../../migrations/0004_source_tier.sql")).unwrap();
-        conn.execute_batch(include_str!("../../migrations/0005_daily_scans.sql")).unwrap();
-        conn.execute_batch(include_str!("../../migrations/0006_daily_scan_lead_source_nullable.sql")).unwrap();
+        conn.execute_batch(include_str!("../../migrations/0001_init.sql"))
+            .unwrap();
+        conn.execute_batch(include_str!("../../migrations/0003_settings.sql"))
+            .unwrap();
+        conn.execute_batch(include_str!("../../migrations/0004_source_tier.sql"))
+            .unwrap();
+        conn.execute_batch(include_str!("../../migrations/0005_daily_scans.sql"))
+            .unwrap();
+        conn.execute_batch(include_str!(
+            "../../migrations/0006_daily_scan_lead_source_nullable.sql"
+        ))
+        .unwrap();
 
         // Insert a source
         conn.execute(
@@ -978,18 +1011,30 @@ mod tests {
         .unwrap();
 
         // Run migration 0007 and make sure it doesn't fail due to foreign key violations/constraints on DROP TABLE
-        let migration_res = conn.execute_batch(include_str!("../../migrations/0007_source_tier_check.sql"));
-        assert!(migration_res.is_ok(), "Migration 0007 failed under active foreign keys: {:?}", migration_res);
+        let migration_res =
+            conn.execute_batch(include_str!("../../migrations/0007_source_tier_check.sql"));
+        assert!(
+            migration_res.is_ok(),
+            "Migration 0007 failed under active foreign keys: {:?}",
+            migration_res
+        );
 
         // Verify data was preserved
-        let source_count: i32 = conn.query_row("SELECT COUNT(*) FROM sources", [], |row| row.get(0)).unwrap();
-        let evidence_count: i32 = conn.query_row("SELECT COUNT(*) FROM evidence_items", [], |row| row.get(0)).unwrap();
+        let source_count: i32 = conn
+            .query_row("SELECT COUNT(*) FROM sources", [], |row| row.get(0))
+            .unwrap();
+        let evidence_count: i32 = conn
+            .query_row("SELECT COUNT(*) FROM evidence_items", [], |row| row.get(0))
+            .unwrap();
         assert_eq!(source_count, 1);
         assert_eq!(evidence_count, 1);
     }
 
     // MUTATION-RESISTANT (per Amendments 001/002)
-    #[cfg_attr(target_os = "windows", ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as P5-003")]
+    #[cfg_attr(
+        target_os = "windows",
+        ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as P5-003"
+    )]
     #[tokio::test]
     async fn test_daily_scan_uses_settings_model_not_hardcoded() {
         #[cfg(not(target_os = "windows"))]
@@ -1009,7 +1054,12 @@ mod tests {
             struct FakeLlmClient;
             #[async_trait::async_trait]
             impl crate::core::llm::LlmClient for FakeLlmClient {
-                async fn call(&self, model: &str, _prompt: &str, _system: &str) -> Result<String, String> {
+                async fn call(
+                    &self,
+                    model: &str,
+                    _prompt: &str,
+                    _system: &str,
+                ) -> Result<String, String> {
                     assert_eq!(model, "my-custom-model");
                     Ok("{\"leads\":[]}".to_string())
                 }
@@ -1021,8 +1071,9 @@ mod tests {
                 app.handle(),
                 "Brighton",
                 "CO",
-                24
-            ).await;
+                24,
+            )
+            .await;
 
             assert!(res.is_ok());
         }
@@ -1036,9 +1087,10 @@ mod tests {
             Err(_) => return,
         };
 
-        let app = axum::Router::new().route("/api/pull", axum::routing::post(|| async {
-            (axum::http::StatusCode::NOT_FOUND, "Not Found")
-        }));
+        let app = axum::Router::new().route(
+            "/api/pull",
+            axum::routing::post(|| async { (axum::http::StatusCode::NOT_FOUND, "Not Found") }),
+        );
 
         tokio::spawn(async move {
             axum::serve(listener, app).await.unwrap();
@@ -1058,18 +1110,26 @@ mod tests {
             Err(_) => return,
         };
 
-        let app = axum::Router::new().route("/api/pull", axum::routing::post(|| async {
-            let stream = futures_util::stream::unfold(0, |state| async move {
-                if state < 5 {
-                    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
-                    Some((Ok::<_, axum::Error>(bytes::Bytes::from("{\"status\":\"downloading\"}\n")), state + 1))
-                } else {
-                    tokio::time::sleep(tokio::time::Duration::from_secs(10)).await;
-                    None
-                }
-            });
-            axum::response::Response::new(axum::body::Body::from_stream(stream))
-        }));
+        let app = axum::Router::new().route(
+            "/api/pull",
+            axum::routing::post(|| async {
+                let stream = futures_util::stream::unfold(0, |state| async move {
+                    if state < 5 {
+                        tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+                        Some((
+                            Ok::<_, axum::Error>(bytes::Bytes::from(
+                                "{\"status\":\"downloading\"}\n",
+                            )),
+                            state + 1,
+                        ))
+                    } else {
+                        tokio::time::sleep(tokio::time::Duration::from_secs(10)).await;
+                        None
+                    }
+                });
+                axum::response::Response::new(axum::body::Body::from_stream(stream))
+            }),
+        );
 
         tokio::spawn(async move {
             axum::serve(listener, app).await.unwrap();

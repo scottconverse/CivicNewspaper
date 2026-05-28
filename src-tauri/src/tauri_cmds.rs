@@ -35,7 +35,9 @@ fn default_state() -> String {
 async fn get_selected_model_or_fallback(db: &DbConn) -> String {
     let saved = {
         if let Ok(conn) = db.lock() {
-            if let Ok(mut stmt) = conn.prepare("SELECT value FROM settings WHERE key = 'model.selected'") {
+            if let Ok(mut stmt) =
+                conn.prepare("SELECT value FROM settings WHERE key = 'model.selected'")
+            {
                 stmt.query_row([], |row| row.get::<_, String>(0)).ok()
             } else {
                 None
@@ -65,11 +67,11 @@ async fn get_selected_model_or_fallback(db: &DbConn) -> String {
                 if !tags.models.is_empty() {
                     if tags.models.iter().any(|m| m.name.starts_with(&default_m)) {
                         model = default_m;
-                    } else if let Some(m) = tags
-                        .models
-                        .iter()
-                        .find(|m| m.name.contains("gemma") || m.name.contains("llama") || m.name.contains("phi"))
-                    {
+                    } else if let Some(m) = tags.models.iter().find(|m| {
+                        m.name.contains("gemma")
+                            || m.name.contains("llama")
+                            || m.name.contains("phi")
+                    }) {
                         model = m.name.clone();
                     } else {
                         model = tags.models[0].name.clone();
@@ -477,8 +479,8 @@ pub fn pull_model(app: tauri::AppHandle, model: String) -> Result<(), String> {
 }
 
 use std::collections::HashMap;
-use std::sync::Mutex;
 use std::sync::LazyLock;
+use std::sync::Mutex;
 use tokio::sync::watch;
 
 static CANCEL_PULL_MAP: LazyLock<Mutex<HashMap<String, watch::Sender<bool>>>> =
@@ -497,7 +499,7 @@ pub fn cancel_ollama_pull(model: String) -> Result<(), String> {
 pub async fn pull_ollama_model(app: tauri::AppHandle, model_id: String) -> Result<(), String> {
     use tauri::Emitter;
     let model = model_id.clone();
-    
+
     // Create watch channel for cancellation
     let (tx, mut rx) = watch::channel(false);
     {
@@ -524,7 +526,10 @@ pub async fn pull_ollama_model(app: tauri::AppHandle, model_id: String) -> Resul
     if !resp.status().is_success() {
         let mut map = CANCEL_PULL_MAP.lock().unwrap();
         map.remove(&model);
-        return Err(format!("Failed to start pulling model: status {}", resp.status()));
+        return Err(format!(
+            "Failed to start pulling model: status {}",
+            resp.status()
+        ));
     }
 
     tauri::async_runtime::spawn(async move {

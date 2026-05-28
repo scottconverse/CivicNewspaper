@@ -153,7 +153,7 @@ impl OllamaSidecar {
             let mut base_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
             base_path.push("tests");
             base_path.push("fixtures");
-            
+
             let binary_name = if cfg!(target_os = "windows") {
                 "test-ollama-fixture-x86_64-pc-windows-msvc.exe"
             } else if cfg!(target_os = "macos") {
