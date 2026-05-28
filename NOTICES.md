@@ -26,8 +26,8 @@ CivicNewspaper bundles Ollama as a sidecar process under the MIT License.
   - SHA256: `fc3ec4bb8d7c2dde13fd2f5f0c46f5ac7a3a238039ef9906c01fe548c17e1227`
 
 ### Pinned Binary Hashes
-746eeac2a062f76d68e7ed2488d6bb7537610adc13dfcd6c7c12aaf025691f09
-746eeac2a062f76d68e7ed2488d6bb7537610adc13dfcd6c7c12aaf025691f09
+746eeac2a062f76d68e7ed2488d6bb7537610adc13dfcd6c7c12aaf025691f09 # x86_64-apple-darwin (same universal binary)
+746eeac2a062f76d68e7ed2488d6bb7537610adc13dfcd6c7c12aaf025691f09 # aarch64-apple-darwin (same universal binary)
 8b746572392b6a6912bedfb5ac8115c18b77815ea4614c6cce7ccb6f67b9d929
 fc3ec4bb8d7c2dde13fd2f5f0c46f5ac7a3a238039ef9906c01fe548c17e1227
 
