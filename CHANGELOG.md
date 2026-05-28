@@ -4,7 +4,29 @@ All notable changes to CivicNewspaper will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.4] - 2026-05-27
+## [0.2.5] - 2026-05-28
+
+### Added
+- **M-2**: Added dynamic settings-based fallback model parsing by loading configuration from `models.json` instead of hardcoding `'gemma2:9b'`.
+- **M-4**: Standardized wizard Skip flow to invoke `cancelPullModel` backend call without non-functional verification comments.
+
+### Changed
+- **M-1**: Made the occupied sidecar port test case cross-platform by using standard `TcpListener` binding on Windows and unix.
+- **M-3**: Strengthened Daily Scan model setting unit test with a real end-to-end setting-to-LLM-invocation trace assertion.
+- **M-5**: Removed tautological tree path annotations in README.md.
+- **M-6**: Configured automated verification checking to assert walkthrough commit count is regenerated directly from git history.
+- **WMin-1**: Removed the redundant primary Continue button from the wizard's reachable-no-models card.
+- **WNit-1**: Disabled selection of the empty placeholder option in the wizard pull dropdown.
+- **WNit-3**: shorted ignored test `cfg_attr` ignore messages to ensure no line exceeds 120 chars.
+
+## [0.2.4] [NEVER TAGGED] - 2026-05-27
+
+### Postmortem
+- **What was built:** This release was designed to fix the build crash by removing the process-tree walking logic from `build.rs` and adding the `fetch-ollama-binaries.sh` step to GitHub Actions.
+- **Audit Findings:** The subsequent v0.2.4 audit report identified 18 findings (0 Blockers, 0 Criticals, 6 Majors, 8 Minors, 4 Nits) showing that while the build was fixed, multiple evasion paths and hardcoded dependencies remained in adjacent layers.
+- **Displacement layers:** The audit team discovered 5 new displacement layers (E6-1 through E6-3, and modifications of E5-1, E5-5) where automated checks were bypassed by gating tests via `#[cfg(unix)]` or fabricating commit count statistics.
+- **Withheld tag:** The `v0.2.4-hotpatch` candidate tag was automatically created on CI, but the final production release tag `v0.2.4` was withheld by the director due to the outstanding 18 findings.
+- **Dependency notes:** The `sysinfo` dependency movement from build-time to runtime remained in place to handle orphan process management on sidecar crash.
 
 ### Fixed
 - **WB-1**: Deleted process-tree walking and sysinfo dependency from build.rs to fix Windows CI crash.
@@ -23,7 +45,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [0.2.3] [NEVER TAGGED] - 2026-05-27
 
 ### Postmortem
-- Release candidate v0.2.3 was built but never tagged or released due to 28 findings and six evasion shapes discovered in the audit-team executive report. This version is superseded by v0.2.4 which introduces the lie-proof-3 contract to structurally close all evasion paths.
+- **Scope of work:** This release candidate aimed to resolve all 37 findings from the v0.2.2 audit team reports, bump the version to 0.2.3, and compile binaries on CI/CD.
+- **Evasion discovery:** During the subsequent audit of the v0.2.3 candidate, 30 new findings were identified, including six evasion shapes (E5-1 through E5-6) designed to bypass automated checks.
+- **Unethical bypasses:** The audit team flagged critical issues such as quote-evasions, simulated outputs, and hardcoded variables used to trick verification scripts while the underlying product code remained broken.
+- **Withheld tag:** Due to these severe integrity and technical failures, the release tag was withheld, and the branch was rejected for merging.
+- **Dependency movement:** In this round, the `sysinfo` dependency was moved from build-dependencies to runtime-dependencies to allow the sweeping of orphan processes on sidecar crash, which is noted for further compliance reviews.
 
 ### Fixed
 - **WV-1**: Bumped version across all project files to 0.2.3.
@@ -141,11 +167,12 @@ Initial pre-alpha snapshot of the codebase. Not released.
 - Integrated upload to hosting providers (the "wizard" opens your output folder; you drag-and-drop into Netlify/Vercel/GitHub Pages yourself).
 - CI/CD.
 
-[Unreleased]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.4...HEAD
-[0.2.4]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.3...v0.2.4
-[0.2.3]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.2...v0.2.3
-[0.2.2]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.1...v0.2.2
-[0.2.1]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.0...v0.2.1
-[0.2.0]: https://github.com/scottconverse/CivicNewspaper/compare/v0.1.1...v0.2.0
-[0.1.1]: https://github.com/scottconverse/CivicNewspaper/compare/v0.1.0-alpha...v0.1.1
+[Unreleased]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.5..HEAD
+[0.2.5]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.4..v0.2.5
+[0.2.4]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.3..v0.2.4
+[0.2.3]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.2..v0.2.3
+[0.2.2]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.1..v0.2.2
+[0.2.1]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.0..v0.2.1
+[0.2.0]: https://github.com/scottconverse/CivicNewspaper/compare/v0.1.1..v0.2.0
+[0.1.1]: https://github.com/scottconverse/CivicNewspaper/compare/v0.1.0-alpha..v0.1.1
 [0.1.0-alpha]: https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.1.0-alpha

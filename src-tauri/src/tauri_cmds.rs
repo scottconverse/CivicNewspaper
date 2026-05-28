@@ -496,7 +496,10 @@ pub fn cancel_ollama_pull(model: String) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub async fn pull_ollama_model<R: tauri::Runtime>(app: tauri::AppHandle<R>, model_id: String) -> Result<(), String> {
+pub async fn pull_ollama_model<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
+    model_id: String,
+) -> Result<(), String> {
     use tauri::Emitter;
     let model = model_id.clone();
 

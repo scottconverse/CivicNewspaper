@@ -71,7 +71,7 @@ For details: [docs/architecture.md](docs/architecture.md).
 │   │   ├── PublishPanel.tsx    # Static site compilation panel
 │   │   ├── SourcesPanel.tsx    # Source scraper settings
 │   │   ├── SettingsPanel.tsx   # Backup, identity & model selection
-│   │   ├── OnboardingWizard.tsx # Multi-step offline setup wizard (src/components/OnboardingWizard.tsx)
+│   │   ├── OnboardingWizard.tsx # Multi-step offline setup wizard
 │   │   └── DailyScanResults.tsx # Extracted intelligence lead results
 │   └── assets/
 ├── src-tauri/                  # Tauri Rust backend
@@ -105,7 +105,7 @@ For details: [docs/architecture.md](docs/architecture.md).
 │   ├── post.html
 │   ├── styles.css
 │   └── print.css
-├── scripts/                    # Release & policy tools (contains scripts/policy/ and scripts/audit/)
+├── scripts/                    # Release & policy tools
 │   ├── policy/                 # Hard-fail by construction auto-promote scripts
 │   └── audit/                  # Audit verification tools
 ├── assistant-skill/            # SKILL.md + client.js for CLI/IDE integrations

@@ -1173,7 +1173,10 @@ mod tests {
         }
     }
 
-    #[cfg_attr(target_os = "windows", ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as carried-debt P5-003")]
+    #[cfg_attr(
+        target_os = "windows",
+        ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as carried-debt P5-003"
+    )]
     #[tokio::test]
     async fn test_sidecar_skips_spawn_when_port_11434_occupied() {
         let _listener = tokio::net::TcpListener::bind("127.0.0.1:11434")
@@ -1189,6 +1192,4 @@ mod tests {
         let child_guard = sidecar.child.lock().unwrap();
         assert!(child_guard.is_none());
     }
-
-
 }

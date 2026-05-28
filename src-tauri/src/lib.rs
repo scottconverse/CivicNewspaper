@@ -130,16 +130,18 @@ pub fn run() {
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
-        .run(|app_handle, event| {
-            match event {
-                tauri::RunEvent::Exit | tauri::RunEvent::WindowEvent { event: tauri::WindowEvent::CloseRequested { .. }, .. } => {
-                    if let Some(sidecar) =
-                        app_handle.try_state::<Arc<crate::core::llm::OllamaSidecar>>()
-                    {
-                        let _ = sidecar.stop();
-                    }
+        .run(|app_handle, event| match event {
+            tauri::RunEvent::Exit
+            | tauri::RunEvent::WindowEvent {
+                event: tauri::WindowEvent::CloseRequested { .. },
+                ..
+            } => {
+                if let Some(sidecar) =
+                    app_handle.try_state::<Arc<crate::core::llm::OllamaSidecar>>()
+                {
+                    let _ = sidecar.stop();
                 }
-                _ => {}
             }
+            _ => {}
         });
 }

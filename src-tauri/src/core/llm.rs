@@ -138,10 +138,14 @@ impl OllamaSidecar {
         }
     }
 
-    pub fn start<R: tauri::Runtime>(&self, app: &AppHandle<R>) -> Result<(), Box<dyn Error + Send + Sync>> {
+    pub fn start<R: tauri::Runtime>(
+        &self,
+        app: &AppHandle<R>,
+    ) -> Result<(), Box<dyn Error + Send + Sync>> {
         // Port 11434 collision check: graceful coexistence
         let addr: std::net::SocketAddr = "127.0.0.1:11434".parse().unwrap();
-        if std::net::TcpStream::connect_timeout(&addr, std::time::Duration::from_millis(50)).is_ok() {
+        if std::net::TcpStream::connect_timeout(&addr, std::time::Duration::from_millis(50)).is_ok()
+        {
             return Ok(());
         }
 

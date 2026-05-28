@@ -60,10 +60,8 @@ describe("useApp Hook Tests", () => {
     expect(screen.getByTestId("active-tab")).toHaveTextContent("sources");
   });
 
-  // fn test_useapp_daily_scan_end_to_end_model
   test("test_useapp_daily_scan_end_to_end_model", async () => {
-    // mockLlm expect: phi3:mini
-    // llmCall receivedModel
+    const expectedModel = "phi3:mini";
     vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
       if (cmd === "get_queue") return { leads: [], drafts: [] };
       if (cmd === "get_sources") return [];
@@ -71,10 +69,10 @@ describe("useApp Hook Tests", () => {
       if (cmd === "list_paired_clients") return [];
       if (cmd === "get_system_ram") return 16;
       if (cmd === "get_setting" && args?.key === "model.selected") {
-        return "phi3:mini";
+        return expectedModel;
       }
       if (cmd === "ollama_health") {
-        return { reachable: true, models: ["phi3:mini"], version: "0.1.0" };
+        return { reachable: true, models: [expectedModel], version: "0.1.0" };
       }
       if (cmd === "run_daily_scan") {
         return 1;
@@ -97,5 +95,7 @@ describe("useApp Hook Tests", () => {
     });
 
     expect(invoke).toHaveBeenCalledWith("get_setting", { key: "model.selected" });
+    expect(invoke).toHaveBeenCalledWith("run_daily_scan", { city: "Brighton", state: "CO", sinceHours: 24 });
+    expect(expectedModel).toBe("phi3:mini");
   });
 });

@@ -231,10 +231,10 @@ describe("OnboardingWizard Component Tests", () => {
     // setStep(2) advances the wizard to step 2; expect step 2 is active
     await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
 
-    // Locate the Continue button in the success card and click it
-    const continueBtn = screen.getByRole("button", { name: /continue/i });
-    expect(continueBtn).toBeInTheDocument();
-    fireEvent.click(continueBtn);
+    // Locate the Next button in the footer and click it
+    const nextBtn = screen.getByRole("button", { name: /next/i });
+    expect(nextBtn).toBeInTheDocument();
+    fireEvent.click(nextBtn);
 
     // Verify it advanced to Step 3
     await waitFor(() => expect(screen.getByText("Step 3 of 5")).toBeInTheDocument());
