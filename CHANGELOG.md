@@ -91,9 +91,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - README rewritten to match actual project state. Removed local filesystem links. Corrected project-structure tree.
 
 ### Known issues
-- `src-tauri/Cargo.toml` package name is still `tauri-app`, authors `["you"]`. Pending rebrand.
-- `package.json` name is still `tauri-app`. Pending rebrand.
-- No CI configured.
 - No signed installers.
 - Safari extension does not have a native macOS wrapper and is not installable as-is.
 
