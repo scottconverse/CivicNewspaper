@@ -483,7 +483,7 @@ use std::sync::LazyLock;
 use std::sync::Mutex;
 use tokio::sync::watch;
 
-static CANCEL_PULL_MAP: LazyLock<Mutex<HashMap<String, watch::Sender<bool>>>> =
+pub(crate) static CANCEL_PULL_MAP: LazyLock<Mutex<HashMap<String, watch::Sender<bool>>>> =
     LazyLock::new(|| Mutex::new(HashMap::new()));
 
 #[tauri::command]
@@ -496,7 +496,7 @@ pub fn cancel_ollama_pull(model: String) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub async fn pull_ollama_model(app: tauri::AppHandle, model_id: String) -> Result<(), String> {
+pub async fn pull_ollama_model<R: tauri::Runtime>(app: tauri::AppHandle<R>, model_id: String) -> Result<(), String> {
     use tauri::Emitter;
     let model = model_id.clone();
 

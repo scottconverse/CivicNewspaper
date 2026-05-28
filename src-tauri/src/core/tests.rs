@@ -1154,7 +1154,7 @@ mod tests {
             assert!(res2.is_ok());
 
             {
-                let map = crate::CANCEL_PULL_MAP.lock().unwrap();
+                let map = crate::tauri_cmds::CANCEL_PULL_MAP.lock().unwrap();
                 assert!(map.contains_key("model-1"));
                 assert!(map.contains_key("model-2"));
             }
@@ -1165,7 +1165,7 @@ mod tests {
             tokio::time::sleep(tokio::time::Duration::from_millis(200)).await;
 
             {
-                let map = crate::CANCEL_PULL_MAP.lock().unwrap();
+                let map = crate::tauri_cmds::CANCEL_PULL_MAP.lock().unwrap();
                 assert!(!map.contains_key("model-1"));
                 assert!(map.contains_key("model-2"));
             }

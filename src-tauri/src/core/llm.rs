@@ -138,7 +138,7 @@ impl OllamaSidecar {
         }
     }
 
-    pub fn start(&self, app: &AppHandle) -> Result<(), Box<dyn Error + Send + Sync>> {
+    pub fn start<R: tauri::Runtime>(&self, app: &AppHandle<R>) -> Result<(), Box<dyn Error + Send + Sync>> {
         let mut guard = self
             .child
             .lock()
