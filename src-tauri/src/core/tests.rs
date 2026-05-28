@@ -791,7 +791,7 @@ mod tests {
     )]
     #[tokio::test]
     async fn test_plain_language_rewrite_invokes_ollama() {
-        #[cfg(not(target_os = "windows"))]
+        #[cfg(unix)]
         {
             // MUTATION-RESISTANT
             use tauri::Manager;
@@ -871,7 +871,7 @@ mod tests {
     )]
     #[test]
     fn test_ollama_sidecar_spawns_with_expected_pid_pattern() {
-        #[cfg(not(target_os = "windows"))]
+        #[cfg(unix)]
         {
             let app = tauri::test::mock_app();
             let sidecar = crate::core::llm::OllamaSidecar::new();
@@ -901,7 +901,7 @@ mod tests {
     )]
     #[test]
     fn test_ollama_sidecar_terminates_cleanly_on_drop() {
-        #[cfg(not(target_os = "windows"))]
+        #[cfg(unix)]
         {
             let app = tauri::test::mock_app();
             // test calls sidecar.stop() via drop
@@ -937,7 +937,7 @@ mod tests {
     )]
     #[tokio::test]
     async fn test_daily_scan_command_does_not_panic_when_state_registered() {
-        #[cfg(not(target_os = "windows"))]
+        #[cfg(unix)]
         {
             use tauri::Manager;
             let app = tauri::test::mock_app();
@@ -1037,7 +1037,7 @@ mod tests {
     )]
     #[tokio::test]
     async fn test_daily_scan_uses_settings_model_not_hardcoded() {
-        #[cfg(not(target_os = "windows"))]
+        #[cfg(unix)]
         {
             use tauri::Manager;
             let app = tauri::test::mock_app();
@@ -1079,87 +1079,98 @@ mod tests {
         }
     }
 
-    #[cfg(not(target_os = "windows"))]
+    #[cfg_attr(
+        target_os = "windows",
+        ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as P5-003"
+    )]
     #[tokio::test]
     async fn test_pull_ollama_model_propagates_http_error() {
-        let listener = match tokio::net::TcpListener::bind("127.0.0.1:11434").await {
-            Ok(l) => l,
-            Err(_) => return,
-        };
+        #[cfg(unix)]
+        {
+            let listener = tokio::net::TcpListener::bind("127.0.0.1:11434")
+                .await
+                .unwrap();
 
-        let app = axum::Router::new().route(
-            "/api/pull",
-            axum::routing::post(|| async { (axum::http::StatusCode::NOT_FOUND, "Not Found") }),
-        );
+            let app = axum::Router::new().route(
+                "/api/pull",
+                axum::routing::post(|| async { (axum::http::StatusCode::NOT_FOUND, "Not Found") }),
+            );
 
-        tokio::spawn(async move {
-            axum::serve(listener, app).await.unwrap();
-        });
+            tokio::spawn(async move {
+                axum::serve(listener, app).await.unwrap();
+            });
 
-        let app_handle = tauri::test::mock_app().handle().clone();
-        let res = crate::pull_ollama_model(app_handle, "non-existent-model-xyz".to_string()).await;
-        assert!(res.is_err());
-        assert!(res.unwrap_err().contains("status 404"));
+            let app_handle = tauri::test::mock_app().handle().clone();
+            let res =
+                crate::pull_ollama_model(app_handle, "non-existent-model-xyz".to_string()).await;
+            assert!(res.is_err());
+            assert!(res.unwrap_err().contains("status 404"));
+        }
     }
 
-    #[cfg(not(target_os = "windows"))]
+    #[cfg_attr(
+        target_os = "windows",
+        ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as P5-003"
+    )]
     #[tokio::test]
     async fn test_cancel_ollama_pull_is_per_pull() {
-        let listener = match tokio::net::TcpListener::bind("127.0.0.1:11434").await {
-            Ok(l) => l,
-            Err(_) => return,
-        };
-
-        let app = axum::Router::new().route(
-            "/api/pull",
-            axum::routing::post(|| async {
-                let stream = futures_util::stream::unfold(0, |state| async move {
-                    if state < 5 {
-                        tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
-                        Some((
-                            Ok::<_, axum::Error>(bytes::Bytes::from(
-                                "{\"status\":\"downloading\"}\n",
-                            )),
-                            state + 1,
-                        ))
-                    } else {
-                        tokio::time::sleep(tokio::time::Duration::from_secs(10)).await;
-                        None
-                    }
-                });
-                axum::response::Response::new(axum::body::Body::from_stream(stream))
-            }),
-        );
-
-        tokio::spawn(async move {
-            axum::serve(listener, app).await.unwrap();
-        });
-
-        let app_handle = tauri::test::mock_app().handle().clone();
-
-        let res1 = crate::pull_ollama_model(app_handle.clone(), "model-1".to_string()).await;
-        assert!(res1.is_ok());
-
-        let res2 = crate::pull_ollama_model(app_handle.clone(), "model-2".to_string()).await;
-        assert!(res2.is_ok());
-
+        #[cfg(unix)]
         {
-            let map = crate::CANCEL_PULL_MAP.lock().unwrap();
-            assert!(map.contains_key("model-1"));
-            assert!(map.contains_key("model-2"));
+            let listener = tokio::net::TcpListener::bind("127.0.0.1:11434")
+                .await
+                .unwrap();
+
+            let app = axum::Router::new().route(
+                "/api/pull",
+                axum::routing::post(|| async {
+                    let stream = futures_util::stream::unfold(0, |state| async move {
+                        if state < 5 {
+                            tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+                            Some((
+                                Ok::<_, axum::Error>(bytes::Bytes::from(
+                                    "{\"status\":\"downloading\"}\n",
+                                )),
+                                state + 1,
+                            ))
+                        } else {
+                            tokio::time::sleep(tokio::time::Duration::from_secs(10)).await;
+                            None
+                        }
+                    });
+                    axum::response::Response::new(axum::body::Body::from_stream(stream))
+                }),
+            );
+
+            tokio::spawn(async move {
+                axum::serve(listener, app).await.unwrap();
+            });
+
+            let app_handle = tauri::test::mock_app().handle().clone();
+
+            let res1 = crate::pull_ollama_model(app_handle.clone(), "model-1".to_string()).await;
+            assert!(res1.is_ok());
+
+            let res2 = crate::pull_ollama_model(app_handle.clone(), "model-2".to_string()).await;
+            assert!(res2.is_ok());
+
+            {
+                let map = crate::CANCEL_PULL_MAP.lock().unwrap();
+                assert!(map.contains_key("model-1"));
+                assert!(map.contains_key("model-2"));
+            }
+
+            let res_cancel = crate::cancel_ollama_pull("model-1".to_string());
+            assert!(res_cancel.is_ok());
+
+            tokio::time::sleep(tokio::time::Duration::from_millis(200)).await;
+
+            {
+                let map = crate::CANCEL_PULL_MAP.lock().unwrap();
+                assert!(!map.contains_key("model-1"));
+                assert!(map.contains_key("model-2"));
+            }
+
+            let _ = crate::cancel_ollama_pull("model-2".to_string());
         }
-
-        let res_cancel = crate::cancel_ollama_pull("model-1".to_string());
-        assert!(res_cancel.is_ok());
-
-        tokio::time::sleep(tokio::time::Duration::from_millis(200)).await;
-
-        {
-            let map = crate::CANCEL_PULL_MAP.lock().unwrap();
-            assert!(!map.contains_key("model-1"));
-            assert!(map.contains_key("model-2"));
-        }
-
-        let _ = crate::cancel_ollama_pull("model-2".to_string());
     }
 }

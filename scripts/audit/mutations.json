@@ -33,5 +33,19 @@
     "function": "pub fn stop",
     "language": "rust",
     "platforms": ["linux", "darwin"]
+  },
+  {
+    "test": "test_pull_ollama_model_propagates_http_error",
+    "file": "src-tauri/src/tauri_cmds.rs",
+    "function": "pub async fn pull_ollama_model",
+    "language": "rust",
+    "platforms": ["linux", "darwin"]
+  },
+  {
+    "test": "test_cancel_ollama_pull_is_per_pull",
+    "file": "src-tauri/src/tauri_cmds.rs",
+    "function": "pub async fn pull_ollama_model",
+    "language": "rust",
+    "platforms": ["linux", "darwin"]
   }
 ]
