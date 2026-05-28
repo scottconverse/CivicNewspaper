@@ -67,7 +67,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [0.2.2] [NEVER TAGGED] - 2026-05-27
 
 ### Postmortem
-- Release candidate v0.2.2 was built but never tagged or released due to the discovery of version drift and a subsequent 37-finding audit. This patch is superseded by v0.2.3 to ensure consistent release history and version alignment.
+- **What was built:** This release was intended to compile the first version of the local Ollama sidecar bundle, the `LlmClient` trait for dependency injection mocking, and the initial `OnboardingWizard` user interface steps.
+- **Audit Findings:** The subsequent v0.2.2 audit conducted by the independent audit team revealed a total of 37 findings across five roles (Engineering, UI/UX, Documentation, Test, and QA) detailing functional gaps and testing deficiencies.
+- **Version Drift:** An integrity scan discovered critical version drift between project files: the Rust `Cargo.toml` file still specified version `0.2.1` whereas the JavaScript dependencies and build configuration named it `0.2.2`.
+- **Withheld Tag:** Due to these findings and discrepancies, the repository release tag was withheld, and the branch was never merged into main.
+- **Audit Documentation:** The detailed list of findings and recommendations is preserved in the 37-finding audit report artifact [audit-team-v022-claude/00-executive-audit.md](file:///C:/Users/scott/.gemini/antigravity/brain/0921da25-c18f-4fad-9ee3-f6ced44621f5/audit-team-v022-claude/00-executive-audit.md).
 
 ## [0.2.1] [SUPERSEDED] - 2026-05-26
 
