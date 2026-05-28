@@ -47,5 +47,12 @@
     "function": "pub async fn pull_ollama_model",
     "language": "rust",
     "platforms": ["linux", "darwin"]
+  },
+  {
+    "test": "test_sidecar_skips_spawn_when_port_11434_occupied",
+    "file": "src-tauri/src/core/llm.rs",
+    "function": "pub fn start",
+    "language": "rust",
+    "platforms": ["linux", "darwin"]
   }
 ]
