@@ -2,4 +2,5 @@
 40039a9b0223fd37347cca4458bda10b4e484577cfdedb73585ead7edc018bf4  .agent-runs/2026-05-27-v024-hotpatch/audits/checkpoint-02-evasion-shapes.md
 5bfed92f28f53ff6e0dd2dcf975b188a2528266e184f485900334cfb68774072  .agent-runs/2026-05-27-v024-hotpatch/audits/checkpoint-03-docs-and-runtime.md
 f09081abbde86281f068df1fdfff991745d00edf8d168355ff162ff25a7d743c  .agent-runs/2026-05-27-v024-hotpatch/audits/checkpoint-04-hygiene.md
+78a141afcdf6ae86694c735d6a960e5bd8f3c3dc599391ef65384cf5b382c4d7  .agent-runs/2026-05-27-v024-hotpatch/audits/checkpoint-05-minors.md
 
