@@ -4,7 +4,8 @@
 set -euo pipefail
 
 # Find repo root to be cwd-insensitive (Wnit-4)
-REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+REPO_ROOT=$(cd "$SCRIPT_DIR/../.." && pwd)
 
 # Parse arguments
 TARGET_FILE=""
