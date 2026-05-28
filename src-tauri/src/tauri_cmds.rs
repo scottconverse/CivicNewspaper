@@ -51,7 +51,7 @@ async fn get_selected_model_or_fallback(db: &DbConn) -> String {
         return m;
     }
 
-    let default_m = format!("{}:{}", "gemma2", "9b");
+    let default_m = "phi3:mini".to_string();
     let mut model = default_m.clone();
     if let Ok(resp) = reqwest::get("http://127.0.0.1:11434/api/tags").await {
         if resp.status().is_success() {
