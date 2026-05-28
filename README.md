@@ -71,13 +71,13 @@ For details: [docs/architecture.md](docs/architecture.md).
 │   │   ├── PublishPanel.tsx    # Static site compilation panel
 │   │   ├── SourcesPanel.tsx    # Source scraper settings
 │   │   ├── SettingsPanel.tsx   # Backup, identity & model selection
-│   │   ├── OnboardingWizard.tsx # Multi-step offline setup wizard
+│   │   ├── OnboardingWizard.tsx # Multi-step offline setup wizard (src/components/OnboardingWizard.tsx)
 │   │   └── DailyScanResults.tsx # Extracted intelligence lead results
 │   └── assets/
 ├── src-tauri/                  # Tauri Rust backend
 │   ├── Cargo.toml              # Rust crate config (named "civicnews")
 │   ├── build.rs
-│   ├── tauri.conf.json         # Tauri configs, includes Updater plugin
+│   ├── tauri.conf.json         # Tauri configs, includes Updater plugin (dormant — see FAQ)
 │   ├── capabilities/
 │   ├── icons/
 │   ├── migrations/
@@ -105,7 +105,7 @@ For details: [docs/architecture.md](docs/architecture.md).
 │   ├── post.html
 │   ├── styles.css
 │   └── print.css
-├── scripts/                    # Release & policy tools
+├── scripts/                    # Release & policy tools (contains scripts/policy/ and scripts/audit/)
 │   ├── policy/                 # Hard-fail by construction auto-promote scripts
 │   └── audit/                  # Audit verification tools
 ├── assistant-skill/            # SKILL.md + client.js for CLI/IDE integrations
