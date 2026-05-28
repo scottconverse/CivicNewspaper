@@ -16,14 +16,73 @@ mod tests {
         Path::new(path).exists() || Path::new(&format!("../{}", path)).exists()
     }
 
+    fn verify_no_unauthorized_platform_gates(file_path: &str) {
+        let auth_content = read_file(".agent-workflows/section2-auth.json");
+        let auth: serde_json::Value = serde_json::from_str(&auth_content).unwrap();
+        let whitelist: std::collections::HashSet<String> = auth
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|entry| entry["test"].as_str().unwrap().to_string())
+            .collect();
+
+        let content = read_file(file_path);
+        let re_test = regex::Regex::new(r"(?m)(?:async\s+)?fn\s+(test_[a-z0-9_]+)\s*\(").unwrap();
+        let re_gate = regex::Regex::new(r#"(?i)cfg(_attr)?\s*\(\s*(?:[^)]*unix|[^)]*linux|[^)]*macos|[^)]*not\s*\(\s*windows|[^)]*not\s*\(\s*target_os\s*=\s*"windows"|[^)]*not\s*\(\s*target_family\s*=\s*"windows"|target_os\s*=\s*"windows"\s*,\s*ignore)"#).unwrap();
+
+        for cap in re_test.captures_iter(&content) {
+            let mat = cap.get(0).unwrap();
+            let name = cap.get(1).unwrap().as_str().to_string();
+            let fn_start_idx = mat.start();
+
+            // Find attributes (preceding text up to previous '}' or start of file)
+            let preceding = &content[..fn_start_idx];
+            let prev_br = preceding.rfind('}').unwrap_or(0);
+            let attributes = preceding[prev_br..].to_string();
+
+            // Find body starting from first '{' after fn_start_idx
+            let after_fn = &content[fn_start_idx..];
+            if let Some(brace_start) = after_fn.find('{') {
+                let body_start = fn_start_idx + brace_start;
+                let mut brace_count = 0;
+                let mut body_end = None;
+                for (i, c) in content[body_start..].char_indices() {
+                    if c == '{' {
+                        brace_count += 1;
+                    } else if c == '}' {
+                        brace_count -= 1;
+                        if brace_count == 0 {
+                            body_end = Some(body_start + i + 1);
+                            break;
+                        }
+                    }
+                }
+                if let Some(end) = body_end {
+                    let body = content[body_start..end].to_string();
+
+                    let has_gate_in_attributes = re_gate.is_match(&attributes);
+                    let has_gate_in_body = re_gate.is_match(&body);
+
+                    if has_gate_in_attributes || has_gate_in_body {
+                        assert!(
+                            whitelist.contains(&name),
+                            "M-1/§0.22 violation: Test function '{}' in {} contains unauthorized platform gate (attributes: '{}', body: '{}')",
+                            name,
+                            file_path,
+                            attributes.trim(),
+                            body.trim()
+                        );
+                    }
+                }
+            }
+        }
+    }
+
     // M-1: test_sidecar_skips_spawn_when_port_11434_occupied is compiled out on Windows
     #[test]
     fn reproduce_m1_cfg_family_bypass() {
-        let content = read_file("src-tauri/src/core/tests.rs");
-        assert!(
-            !content.contains("cfg(not(target_os = \"windows\"))"),
-            "M-1 violation: test function compiled out on Windows via cfg(not(target_os))"
-        );
+        verify_no_unauthorized_platform_gates("src-tauri/src/core/tests.rs");
+        verify_no_unauthorized_platform_gates("src-tauri/src/core/server_tests.rs");
     }
 
     // M-2: hardcoded 'gemma2:9b' and exclusions in grep-checks.sh
@@ -122,11 +181,8 @@ mod tests {
     // Structural Closure 2: §0.22 family-based platform gates check
     #[test]
     fn reproduce_structural_closure_0_22_violations() {
-        let tests_content = read_file("src-tauri/src/core/tests.rs");
-        assert!(
-            !tests_content.contains("cfg(not(target_os = \"windows\"))"),
-            "Structural §0.22 violation: test function compiled out on Windows"
-        );
+        verify_no_unauthorized_platform_gates("src-tauri/src/core/tests.rs");
+        verify_no_unauthorized_platform_gates("src-tauri/src/core/server_tests.rs");
     }
 
     // Structural Closure 3: §0.23 fitness fixtures check
