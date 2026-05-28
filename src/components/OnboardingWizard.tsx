@@ -513,7 +513,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         
         <div style={{ display: "flex", gap: "1rem" }}>
           {(step === 2 || step === 3) && (
-            <button className="btn btn-secondary" onClick={() => {
+            <button className="btn btn-secondary" onClick={async () => {
               if (step === 2) {
                 const confirmSkip = window.confirm("Skip Ollama setup? You won't be able to use AI features until you complete setup from Settings.");
                 if (!confirmSkip) return;
@@ -521,6 +521,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               } else if (step === 3) {
                 const confirmSkip = window.confirm("Skip the model download? You won't be able to use AI features until you download a model from Settings.");
                 if (!confirmSkip) return;
+                // Skip: setStep(4) cancel_ollama_pull|cancelPull
+                await cancelPullModel();
                 setStep(4);
               }
             }}>
