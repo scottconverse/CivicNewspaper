@@ -2,6 +2,60 @@
 import React, { useState, useEffect } from "react";
 import { CheckCircle, AlertTriangle, Info, FileText } from "lucide-react";
 import { Lead, Draft, EvidenceItem, GuardrailsReport } from "../ipc";
+import { Modal } from "./Modal";
+
+type DiffRow = { text: string; type: "same" | "removed" | "added" };
+
+// Line-level diff via longest-common-subsequence so the modal can highlight
+// exactly which lines the rewrite dropped (left, red) or introduced (right,
+// green). The two panes scroll independently, so unequal lengths are fine.
+export function computeLineDiff(
+  original: string,
+  rewritten: string
+): { left: DiffRow[]; right: DiffRow[] } {
+  const a = original.split("\n");
+  const b = rewritten.split("\n");
+  const n = a.length;
+  const m = b.length;
+  const lcs: number[][] = Array.from({ length: n + 1 }, () =>
+    new Array(m + 1).fill(0)
+  );
+  for (let i = n - 1; i >= 0; i--) {
+    for (let j = m - 1; j >= 0; j--) {
+      lcs[i][j] =
+        a[i] === b[j]
+          ? lcs[i + 1][j + 1] + 1
+          : Math.max(lcs[i + 1][j], lcs[i][j + 1]);
+    }
+  }
+  const left: DiffRow[] = [];
+  const right: DiffRow[] = [];
+  let i = 0;
+  let j = 0;
+  while (i < n && j < m) {
+    if (a[i] === b[j]) {
+      left.push({ text: a[i], type: "same" });
+      right.push({ text: b[j], type: "same" });
+      i++;
+      j++;
+    } else if (lcs[i + 1][j] >= lcs[i][j + 1]) {
+      left.push({ text: a[i], type: "removed" });
+      i++;
+    } else {
+      right.push({ text: b[j], type: "added" });
+      j++;
+    }
+  }
+  while (i < n) {
+    left.push({ text: a[i], type: "removed" });
+    i++;
+  }
+  while (j < m) {
+    right.push({ text: b[j], type: "added" });
+    j++;
+  }
+  return { left, right };
+}
 
 interface WorkbenchProps {
   selectedLead: Lead | null;
@@ -56,9 +110,11 @@ export const Workbench: React.FC<WorkbenchProps> = ({
 }) => {
   const [isRewriting, setIsRewriting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [rewritePreview, setRewritePreview] = useState<string | null>(null);
 
   useEffect(() => {
     setError(null);
+    setRewritePreview(null);
   }, [selectedDraft?.id]);
 
   const handleInsertCitation = (evidenceId: number) => {
@@ -237,23 +293,22 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                 <label style={{ fontWeight: 600, fontSize: "0.9rem" }}>Article Body (Markdown)</label>
                 <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
                   {error && (
-                    <span className="error-text" style={{ fontSize: "0.85rem", color: "var(--color-danger)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                    <span className="error-text" role="alert" style={{ fontSize: "0.85rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                       <AlertTriangle size={14} /> {error}
                     </span>
                   )}
-                  <button 
+                  <button
                     className="btn btn-secondary btn-sm"
-                    disabled={isRewriting}
+                    disabled={isRewriting || !selectedDraft.content}
+                    title={!selectedDraft.content ? "Add draft text before rewriting" : "Rewrite the draft in plainer language"}
+                    id="btn-plain-language-rewrite"
                     onClick={async () => {
-                      if (!selectedDraft.content) return;
-                      const proceed = window.confirm("Replace draft with plain-language rewrite? This cannot be undone.");
-                      if (!proceed) return;
                       setIsRewriting(true);
                       setError(null);
                       try {
                         const { plainLanguageRewrite } = await import('../ipc');
                         const rewrite = await plainLanguageRewrite(selectedDraft.content, selectedDraft.format);
-                        onUpdateDraftContent(rewrite);
+                        setRewritePreview(rewrite);
                       } catch (error: any) {
                         console.error("Failed to rewrite draft:", error);
                         setError(error?.message || String(error));
@@ -354,6 +409,58 @@ export const Workbench: React.FC<WorkbenchProps> = ({
             )}
           </div>
         </div>
+
+        {rewritePreview !== null && (() => {
+          const { left, right } = computeLineDiff(selectedDraft.content || "", rewritePreview);
+          return (
+            <Modal
+              id="rewrite-diff-modal"
+              labelledBy="rewrite-diff-modal-title"
+              contentClassName="modal-content-wide"
+              onClose={() => setRewritePreview(null)}
+            >
+                <h3 id="rewrite-diff-modal-title" style={{ marginTop: 0 }}>Review Plain Language Rewrite</h3>
+                <p className="help-text" style={{ marginTop: 0 }}>
+                  Compare the original draft with the AI rewrite. Removed lines are marked on the left, new lines on the right. Accept to replace the draft, or reject to keep the original.
+                </p>
+                <div className="diff-container">
+                  <div className="diff-pane" id="diff-pane-original">
+                    <div className="diff-pane-header">Original</div>
+                    {left.map((row, idx) => (
+                      <span key={idx} className={row.type === "removed" ? "diff-line diff-line-removed" : "diff-line"}>
+                        <span className="diff-gutter" aria-hidden="true">{row.type === "removed" ? "−" : " "}</span>
+                        {row.text || " "}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="diff-pane" id="diff-pane-rewrite">
+                    <div className="diff-pane-header">Plain Language Rewrite</div>
+                    {right.map((row, idx) => (
+                      <span key={idx} className={row.type === "added" ? "diff-line diff-line-added" : "diff-line"}>
+                        <span className="diff-gutter" aria-hidden="true">{row.type === "added" ? "+" : " "}</span>
+                        {row.text || " "}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex-between" style={{ marginTop: "1rem" }}>
+                  <button className="btn btn-secondary" id="btn-reject-rewrite" onClick={() => setRewritePreview(null)}>
+                    Reject
+                  </button>
+                  <button
+                    className="btn btn-primary"
+                    id="btn-accept-rewrite"
+                    onClick={() => {
+                      onUpdateDraftContent(rewritePreview);
+                      setRewritePreview(null);
+                    }}
+                  >
+                    Accept Rewrite
+                  </button>
+                </div>
+            </Modal>
+          );
+        })()}
       </div>
     );
   }

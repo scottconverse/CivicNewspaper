@@ -8,6 +8,7 @@ import { SettingsPanel } from "./SettingsPanel";
 import { PublishPanel } from "./PublishPanel";
 import { SystemStatus } from "./SystemStatus";
 import { SourcesPanel } from "./SourcesPanel";
+import { Modal } from "./Modal";
 import { resolveResource } from "@tauri-apps/api/path";
 import { openLocalPath } from "../ipc";
 
@@ -217,9 +218,8 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
 
       {/* Correction Modal */}
       {app.showCorrectionModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3 style={{ marginBottom: "1rem" }}>Register Story Correction</h3>
+        <Modal labelledBy="correction-modal-title" onClose={() => app.setShowCorrectionModal(false)}>
+            <h3 id="correction-modal-title" style={{ marginBottom: "1rem" }}>Register Story Correction</h3>
             <p className="help-text" style={{ marginBottom: "1rem" }}>
               Entering a correction marks the story status as <code>corrected</code>, and appends a public retraction note directly on the static site compiler output.
             </p>
@@ -243,8 +243,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
                 </button>
               </div>
             </div>
-          </div>
-        </div>
+        </Modal>
       )}
     </>
   );

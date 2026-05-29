@@ -26,7 +26,7 @@ import {
   backupSave,
   backupRestore,
   checkOllama,
-  pullModel,
+  pullOllamaModel,
   ollamaHealth,
   getSystemRam,
   discoverSources,
@@ -42,6 +42,26 @@ import {
   runDailyScan
 } from "./ipc";
 import modelsConfig from "./models.json";
+
+export interface OllamaPullProgress {
+  model?: string;
+  status?: string;
+  completed?: number;
+  total?: number;
+}
+
+// Formats a structured `ollama-pull-progress` event into a single log line.
+// The pull command (`pull_ollama_model`) emits a structured object payload, not
+// a JSON string — pinning the shape here keeps the listener from regressing to
+// the old string-parsing path the consolidation removed.
+export function formatPullProgressLine(payload: OllamaPullProgress): string {
+  let line = payload.status || "Downloading...";
+  if (payload.completed && payload.total && payload.total > 0) {
+    const pct = Math.round((payload.completed / payload.total) * 100);
+    line += ` (${pct}%)`;
+  }
+  return line;
+}
 
 export function useApp() {
   // Navigation
@@ -187,18 +207,9 @@ export function useApp() {
     }).catch(console.error);
 
     const setupListeners = async () => {
-      const progressUnlisten = await listen<string>("ollama-pull-progress", (event) => {
-        try {
-          const parsed = JSON.parse(event.payload);
-          let progressLine = parsed.status || "Downloading...";
-          if (parsed.completed && parsed.total) {
-            const pct = Math.round((parsed.completed / parsed.total) * 100);
-            progressLine += ` (${pct}%)`;
-          }
-          setPullProgressText(prev => [...prev.slice(-30), progressLine]);
-        } catch {
-          setPullProgressText(prev => [...prev.slice(-30), event.payload]);
-        }
+      const progressUnlisten = await listen<OllamaPullProgress>("ollama-pull-progress", (event) => {
+        const progressLine = formatPullProgressLine(event.payload);
+        setPullProgressText(prev => [...prev.slice(-30), progressLine]);
       });
 
       const completeUnlisten = await listen<void>("ollama-pull-complete", () => {
@@ -742,7 +753,7 @@ export function useApp() {
     if (!wizardModel) return;
     setPullingModel(true);
     setPullProgressText(["Initializing download..."]);
-    pullModel(wizardModel).catch((e) => {
+    pullOllamaModel(wizardModel).catch((e) => {
       setPullingModel(false);
       setErrorMessage(e.toString());
     });

@@ -758,14 +758,6 @@ mod tests {
           ]
         }
         "#;
-        let _scan_run = crate::core::daily_scan::parse_and_save_scan_response(
-            &Connection::open_in_memory().unwrap(),
-            1,
-            response,
-        );
-        // Error because the connection doesn't have tables or scan_run_id=1 doesn't exist,
-        // but it shouldn't panic on parse. We will mock or just parse.
-        // Wait, parse_and_save_scan_response needs tables. Let's create tables.
         let mut conn = Connection::open_in_memory().unwrap();
         run_migrations(&mut conn).unwrap();
         conn.execute(
@@ -784,55 +776,47 @@ mod tests {
         assert_eq!(count, 1);
     }
 
-    // MUTATION-RESISTANT (per Amendments 001/002)
-    #[cfg_attr(
-        target_os = "windows",
-        ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as P5-003"
-    )]
+    // MUTATION-RESISTANT (per Amendments 001/002). Runs on every platform,
+    // including Windows: exercises the real model-selection path
+    // (get_selected_model_or_fallback) plus the core rewrite logic with an
+    // injected fake client, so no Tauri mock_app() is needed (P5-003 resolved).
     #[tokio::test]
     async fn test_plain_language_rewrite_invokes_ollama() {
-        #[cfg(unix)]
-        {
-            // MUTATION-RESISTANT
-            use tauri::Manager;
-            let app = tauri::test::mock_app();
+        let mut conn = Connection::open_in_memory().unwrap();
+        crate::core::migrations::run_migrations(&mut conn).unwrap();
+        // Insert selected model setting; get_selected_model_or_fallback returns
+        // it directly (no network) when present.
+        conn.execute(
+            "INSERT OR REPLACE INTO settings (key, value) VALUES ('model.selected', 'fake-model')",
+            [],
+        )
+        .unwrap();
+        let db_conn: DbConn = Arc::new(Mutex::new(conn));
 
-            // Register DbConn state
-            let mut conn = Connection::open_in_memory().unwrap();
-            crate::core::migrations::run_migrations(&mut conn).unwrap();
-            // Insert selected model setting
-            conn.execute("INSERT OR REPLACE INTO settings (key, value) VALUES ('model.selected', 'fake-model')", []).unwrap();
-            let db_conn: DbConn = Arc::new(Mutex::new(conn));
-            app.manage(db_conn.clone());
+        let model = crate::tauri_cmds::get_selected_model_or_fallback(&db_conn).await;
+        assert_eq!(model, "fake-model");
 
-            // Register LlmClient state
-            struct FakeLlmClient;
-            #[async_trait::async_trait]
-            impl crate::core::llm::LlmClient for FakeLlmClient {
-                async fn call(
-                    &self,
-                    model: &str,
-                    prompt: &str,
-                    system: &str,
-                ) -> Result<String, String> {
-                    assert_eq!(model, "fake-model");
-                    assert!(prompt.contains("Rewrite this"));
-                    assert!(system.contains("summarizer"));
-                    Ok("Rewritten text".to_string())
-                }
+        struct FakeLlmClient;
+        #[async_trait::async_trait]
+        impl crate::core::llm::LlmClient for FakeLlmClient {
+            async fn call(
+                &self,
+                model: &str,
+                prompt: &str,
+                system: &str,
+            ) -> Result<String, String> {
+                assert_eq!(model, "fake-model");
+                assert!(prompt.contains("Rewrite this"));
+                assert!(system.contains("summarizer"));
+                Ok("Rewritten text".to_string())
             }
-            app.manage(Arc::new(FakeLlmClient) as Arc<dyn crate::core::llm::LlmClient>);
-
-            let res = crate::tauri_cmds::plain_language_rewrite(
-                app.handle().clone(),
-                app.state(),
-                "Hello".to_string(),
-                "story".to_string(),
-            )
-            .await;
-
-            assert_eq!(res.unwrap(), "Rewritten text");
         }
+        let llm_client: Arc<dyn crate::core::llm::LlmClient> = Arc::new(FakeLlmClient);
+
+        let res =
+            crate::core::llm::plain_language_rewrite(&llm_client, &model, "Hello", "story").await;
+
+        assert_eq!(res.unwrap(), "Rewritten text");
     }
 
     #[test]
@@ -864,115 +848,129 @@ mod tests {
         );
     }
 
-    // MUTATION-RESISTANT (per Amendments 001/002)
-    #[cfg_attr(
-        target_os = "windows",
-        ignore = "OllamaSidecar::start uses app.shell().sidecar() requiring AppHandle; Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as carried-debt P5-004"
-    )]
+    // MUTATION-RESISTANT (per Amendments 001/002). Runs on every platform,
+    // including Windows: start_for_test spawns the bundled fixture without a
+    // Tauri AppHandle, so no mock_app() is constructed (P5-004 resolved).
     #[test]
     fn test_ollama_sidecar_spawns_with_expected_pid_pattern() {
-        #[cfg(unix)]
+        // Reserve an OS-assigned port, then release it, so the collision probe
+        // sees a free port and start_for_test proceeds to spawn the fixture.
+        let probe = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        let free_addr = probe.local_addr().unwrap().to_string();
+        drop(probe);
+
+        let sidecar = crate::core::llm::OllamaSidecar::new();
+        assert!(sidecar.child.lock().unwrap().is_none());
+
+        let res = sidecar.start_for_test(&free_addr);
+        assert!(res.is_ok());
+
         {
-            let app = tauri::test::mock_app();
-            let sidecar = crate::core::llm::OllamaSidecar::new();
-            assert!(sidecar.child.lock().unwrap().is_none());
-
-            let res = sidecar.start(app.handle());
-            assert!(res.is_ok());
-
-            {
-                let guard = sidecar.child.lock().unwrap();
-                assert!(guard.is_some());
-                let p = guard.as_ref().unwrap().pid();
-                assert!(p > 0);
-            }
-
-            let res_stop = sidecar.stop();
-            assert!(res_stop.is_ok());
-            assert!(sidecar.child.lock().unwrap().is_none());
+            let guard = sidecar.child.lock().unwrap();
+            assert!(guard.is_some());
+            let p = guard.as_ref().unwrap().pid();
+            assert!(p > 0);
         }
+
+        let res_stop = sidecar.stop();
+        assert!(res_stop.is_ok());
+        assert!(sidecar.child.lock().unwrap().is_none());
     }
 
-    // MUTATION-RESISTANT (per Amendments 001/002)
-    #[cfg_attr(
-        target_os = "windows",
-        ignore = "OllamaSidecar::start uses app.shell().sidecar() requiring AppHandle; Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as carried-debt P5-004"
-    )]
+    // MUTATION-RESISTANT (per Amendments 001/002). Cross-platform: no mock_app().
     #[test]
     fn test_ollama_sidecar_terminates_cleanly_on_drop() {
-        #[cfg(unix)]
-        {
-            let app = tauri::test::mock_app();
-            // test calls sidecar.stop() via drop
-            let pid = {
-                let sidecar = crate::core::llm::OllamaSidecar::new();
-                let res = sidecar.start(app.handle());
-                assert!(res.is_ok());
+        let probe = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        let free_addr = probe.local_addr().unwrap().to_string();
+        drop(probe);
 
-                let guard = sidecar.child.lock().unwrap();
-                assert!(guard.is_some());
-                let p = guard.as_ref().unwrap().pid();
-                assert!(p > 0);
-                p
-            };
+        // test calls sidecar.stop() via drop
+        let pid = {
+            let sidecar = crate::core::llm::OllamaSidecar::new();
+            let res = sidecar.start_for_test(&free_addr);
+            assert!(res.is_ok());
 
-            // At this point, the sidecar has been dropped, so the process should have been terminated.
-            // Verify drop implicitly calls sidecar.stop()
-            // Let's verify using sysinfo:
-            let mut sys = sysinfo::System::new_all();
-            sys.refresh_all();
-            let process_exists = sys.process(sysinfo::Pid::from(pid as usize)).is_some();
-            assert!(
-                !process_exists,
-                "Sidecar process should be terminated after drop"
-            );
-        }
+            let guard = sidecar.child.lock().unwrap();
+            assert!(guard.is_some());
+            let p = guard.as_ref().unwrap().pid();
+            assert!(p > 0);
+            p
+        };
+
+        // At this point, the sidecar has been dropped, so the process should
+        // have been terminated. Verify drop implicitly calls sidecar.stop().
+        let mut sys = sysinfo::System::new_all();
+        sys.refresh_all();
+        let process_exists = sys.process(sysinfo::Pid::from(pid as usize)).is_some();
+        assert!(
+            !process_exists,
+            "Sidecar process should be terminated after drop"
+        );
     }
 
-    // MUTATION-RESISTANT (per Amendments 001/002)
-    #[cfg_attr(
-        target_os = "windows",
-        ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as P5-003"
-    )]
+    // MUTATION-RESISTANT (per Amendments 001/002). Runs on every platform,
+    // including Windows: calls the core scan directly with an injected fake
+    // client, so no Tauri mock_app() is needed (P5-003 resolved). TEST-006:
+    // asserts the scan's leads are actually persisted, not merely that the call
+    // returns Ok — an Ok with zero rows would pass a bare is_ok() check while
+    // silently dropping every lead.
     #[tokio::test]
     async fn test_daily_scan_command_does_not_panic_when_state_registered() {
-        #[cfg(unix)]
-        {
-            use tauri::Manager;
-            let app = tauri::test::mock_app();
+        let mut conn = rusqlite::Connection::open_in_memory().unwrap();
+        crate::core::migrations::run_migrations(&mut conn).unwrap();
+        let db_conn: DbConn = Arc::new(Mutex::new(conn));
 
-            // Register DbConn state
-            let mut conn = rusqlite::Connection::open_in_memory().unwrap();
-            crate::core::migrations::run_migrations(&mut conn).unwrap();
-            let db_conn: DbConn = Arc::new(Mutex::new(conn));
-            app.manage(db_conn);
-
-            // Register LlmClient state
-            struct FakeLlmClient;
-            #[async_trait::async_trait]
-            impl crate::core::llm::LlmClient for FakeLlmClient {
-                async fn call(
-                    &self,
-                    _model: &str,
-                    _prompt: &str,
-                    _system: &str,
-                ) -> Result<String, String> {
-                    Ok("{\"leads\":[]}".to_string())
-                }
+        struct FakeLlmClient;
+        #[async_trait::async_trait]
+        impl crate::core::llm::LlmClient for FakeLlmClient {
+            async fn call(
+                &self,
+                _model: &str,
+                _prompt: &str,
+                _system: &str,
+            ) -> Result<String, String> {
+                Ok(r#"{"leads":[{"title":"Council overspend","summary":"Budget anomaly","original_url":"http://example.test/lead"}]}"#.to_string())
             }
-            app.manage(Arc::new(FakeLlmClient) as Arc<dyn crate::core::llm::LlmClient>);
-
-            let res = crate::tauri_cmds::run_daily_scan(
-                app.state(),
-                app.handle().clone(),
-                "Brighton".to_string(),
-                "CO".to_string(),
-                24,
-            )
-            .await;
-
-            assert!(res.is_ok());
         }
+        let llm_client: Arc<dyn crate::core::llm::LlmClient> = Arc::new(FakeLlmClient);
+
+        let res = crate::core::daily_scan::run_daily_scan(
+            &db_conn,
+            &llm_client,
+            "aggregator prompt template",
+            "Brighton",
+            "CO",
+            24,
+        )
+        .await;
+
+        let run_id = res.expect("scan should succeed");
+
+        let conn = db_conn.lock().unwrap();
+        let (count, title): (i32, String) = conn
+            .query_row(
+                "SELECT COUNT(*), COALESCE(MAX(title), '') FROM daily_scan_leads WHERE scan_id = ?1",
+                [run_id],
+                |row| Ok((row.get(0)?, row.get(1)?)),
+            )
+            .unwrap();
+        assert_eq!(count, 1, "the scan's single lead should be persisted");
+        assert_eq!(
+            title, "Council overspend",
+            "the persisted lead should carry the model's title"
+        );
+
+        let status: String = conn
+            .query_row(
+                "SELECT run_status FROM daily_scan_runs WHERE id = ?1",
+                [run_id],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(
+            status, "completed",
+            "a successful scan should mark the run completed"
+        );
     }
 
     #[test]
@@ -1029,148 +1027,323 @@ mod tests {
         assert_eq!(evidence_count, 1);
     }
 
-    // MUTATION-RESISTANT (per Amendments 001/002)
-    #[cfg_attr(
-        target_os = "windows",
-        ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as P5-003"
-    )]
+    // MUTATION-RESISTANT (per Amendments 001/002). Runs on every platform,
+    // including Windows: the core scan reads the model from settings itself, so
+    // the fake client can assert it without a Tauri mock_app() (P5-003 resolved).
     #[tokio::test]
     async fn test_daily_scan_uses_settings_model_not_hardcoded() {
-        #[cfg(unix)]
-        {
-            use tauri::Manager;
-            let app = tauri::test::mock_app();
+        let mut conn = Connection::open_in_memory().unwrap();
+        crate::core::migrations::run_migrations(&mut conn).unwrap();
+        // Insert custom model setting
+        conn.execute(
+            "INSERT OR REPLACE INTO settings (key, value) VALUES ('model.selected', 'my-custom-model')",
+            [],
+        )
+        .unwrap();
+        let db_conn: DbConn = Arc::new(Mutex::new(conn));
 
-            // Register DbConn state
-            let mut conn = Connection::open_in_memory().unwrap();
-            crate::core::migrations::run_migrations(&mut conn).unwrap();
-            // Insert custom model setting
-            conn.execute("INSERT OR REPLACE INTO settings (key, value) VALUES ('model.selected', 'my-custom-model')", []).unwrap();
-            let db_conn: DbConn = Arc::new(Mutex::new(conn));
-            app.manage(db_conn.clone());
-
-            // Register LlmClient state
-            struct FakeLlmClient;
-            #[async_trait::async_trait]
-            impl crate::core::llm::LlmClient for FakeLlmClient {
-                async fn call(
-                    &self,
-                    model: &str,
-                    _prompt: &str,
-                    _system: &str,
-                ) -> Result<String, String> {
-                    assert_eq!(model, "my-custom-model");
-                    Ok("{\"leads\":[]}".to_string())
-                }
+        struct FakeLlmClient;
+        #[async_trait::async_trait]
+        impl crate::core::llm::LlmClient for FakeLlmClient {
+            async fn call(
+                &self,
+                model: &str,
+                _prompt: &str,
+                _system: &str,
+            ) -> Result<String, String> {
+                assert_eq!(model, "my-custom-model");
+                Ok("{\"leads\":[]}".to_string())
             }
-            app.manage(Arc::new(FakeLlmClient) as Arc<dyn crate::core::llm::LlmClient>);
-
-            let res = crate::core::daily_scan::run_daily_scan(
-                &db_conn,
-                app.handle(),
-                "Brighton",
-                "CO",
-                24,
-            )
-            .await;
-
-            assert!(res.is_ok());
         }
+        let llm_client: Arc<dyn crate::core::llm::LlmClient> = Arc::new(FakeLlmClient);
+
+        let res = crate::core::daily_scan::run_daily_scan(
+            &db_conn,
+            &llm_client,
+            "aggregator prompt template",
+            "Brighton",
+            "CO",
+            24,
+        )
+        .await;
+
+        assert!(res.is_ok());
     }
 
-    #[cfg_attr(
-        target_os = "windows",
-        ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as P5-003"
-    )]
+    struct NoopPullSink;
+    impl crate::core::llm::PullProgressSink for NoopPullSink {
+        fn progress(&self, _payload: crate::core::llm::PullProgress) {}
+        fn complete(&self) {}
+        fn error(&self, _message: String) {}
+    }
+
+    // Polls `cond` until it holds or `timeout` elapses, returning the final
+    // result. Replaces fixed `sleep`s when waiting for an async side effect
+    // (e.g. a cancellation propagating through CANCEL_PULL_MAP): a fixed sleep
+    // either flakes under load if too short or wastes wall-clock if too long.
+    async fn poll_until<F: Fn() -> bool>(timeout: std::time::Duration, cond: F) -> bool {
+        let start = tokio::time::Instant::now();
+        while start.elapsed() < timeout {
+            if cond() {
+                return true;
+            }
+            tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+        }
+        cond()
+    }
+
+    // MUTATION-RESISTANT (per Amendments 001/002). Runs on every platform,
+    // including Windows: drives the core pull against a local stub server on an
+    // OS-assigned ephemeral port with a no-op sink, so no Tauri mock_app() is
+    // needed and parallel tests never collide on a fixed port (P5-003 resolved).
     #[tokio::test]
     async fn test_pull_ollama_model_propagates_http_error() {
-        #[cfg(unix)]
-        {
-            let listener = tokio::net::TcpListener::bind("127.0.0.1:11434")
-                .await
-                .unwrap();
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let base_url = format!("http://{}", listener.local_addr().unwrap());
 
-            let app = axum::Router::new().route(
-                "/api/pull",
-                axum::routing::post(|| async { (axum::http::StatusCode::NOT_FOUND, "Not Found") }),
-            );
+        let app = axum::Router::new().route(
+            "/api/pull",
+            axum::routing::post(|| async { (axum::http::StatusCode::NOT_FOUND, "Not Found") }),
+        );
 
-            tokio::spawn(async move {
-                axum::serve(listener, app).await.unwrap();
-            });
+        tokio::spawn(async move {
+            axum::serve(listener, app).await.unwrap();
+        });
 
-            let app_handle = tauri::test::mock_app().handle().clone();
-            let res =
-                crate::pull_ollama_model(app_handle, "non-existent-model-xyz".to_string()).await;
-            assert!(res.is_err());
-            assert!(res.unwrap_err().contains("status 404"));
-        }
+        let res = crate::core::llm::run_ollama_pull(
+            "non-existent-model-xyz".to_string(),
+            &base_url,
+            std::sync::Arc::new(NoopPullSink),
+        )
+        .await;
+        assert!(res.is_err());
+        assert!(res.unwrap_err().contains("status 404"));
     }
 
-    #[cfg_attr(
-        target_os = "windows",
-        ignore = "Tauri mock_app() incompatible with Windows console-mode lib unit tests; tracked as P5-003"
-    )]
+    // MUTATION-RESISTANT (per Amendments 001/002). Runs on every platform,
+    // including Windows: exercises the real per-model cancellation map without a
+    // Tauri mock_app(); the stub server uses an ephemeral port (P5-003 resolved).
+    // Cancelling one model's pull must not disturb another model's in-flight pull.
     #[tokio::test]
-    async fn test_cancel_ollama_pull_is_per_pull() {
-        #[cfg(unix)]
+    async fn test_cancel_ollama_pull_is_per_model() {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let base_url = format!("http://{}", listener.local_addr().unwrap());
+
+        let app = axum::Router::new().route(
+            "/api/pull",
+            axum::routing::post(|| async {
+                let stream = futures_util::stream::unfold(0, |state| async move {
+                    if state < 5 {
+                        tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+                        Some((
+                            Ok::<_, axum::Error>(bytes::Bytes::from(
+                                "{\"status\":\"downloading\"}\n",
+                            )),
+                            state + 1,
+                        ))
+                    } else {
+                        tokio::time::sleep(tokio::time::Duration::from_secs(10)).await;
+                        None
+                    }
+                });
+                axum::response::Response::new(axum::body::Body::from_stream(stream))
+            }),
+        );
+
+        tokio::spawn(async move {
+            axum::serve(listener, app).await.unwrap();
+        });
+
+        let res1 = crate::core::llm::run_ollama_pull(
+            "model-1".to_string(),
+            &base_url,
+            std::sync::Arc::new(NoopPullSink),
+        )
+        .await;
+        assert!(res1.is_ok());
+
+        let res2 = crate::core::llm::run_ollama_pull(
+            "model-2".to_string(),
+            &base_url,
+            std::sync::Arc::new(NoopPullSink),
+        )
+        .await;
+        assert!(res2.is_ok());
+
         {
-            let listener = tokio::net::TcpListener::bind("127.0.0.1:11434")
-                .await
-                .unwrap();
-
-            let app = axum::Router::new().route(
-                "/api/pull",
-                axum::routing::post(|| async {
-                    let stream = futures_util::stream::unfold(0, |state| async move {
-                        if state < 5 {
-                            tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
-                            Some((
-                                Ok::<_, axum::Error>(bytes::Bytes::from(
-                                    "{\"status\":\"downloading\"}\n",
-                                )),
-                                state + 1,
-                            ))
-                        } else {
-                            tokio::time::sleep(tokio::time::Duration::from_secs(10)).await;
-                            None
-                        }
-                    });
-                    axum::response::Response::new(axum::body::Body::from_stream(stream))
-                }),
-            );
-
-            tokio::spawn(async move {
-                axum::serve(listener, app).await.unwrap();
-            });
-
-            let app_handle = tauri::test::mock_app().handle().clone();
-
-            let res1 = crate::pull_ollama_model(app_handle.clone(), "model-1".to_string()).await;
-            assert!(res1.is_ok());
-
-            let res2 = crate::pull_ollama_model(app_handle.clone(), "model-2".to_string()).await;
-            assert!(res2.is_ok());
-
-            {
-                let map = crate::tauri_cmds::CANCEL_PULL_MAP.lock().unwrap();
-                assert!(map.contains_key("model-1"));
-                assert!(map.contains_key("model-2"));
-            }
-
-            let res_cancel = crate::cancel_ollama_pull("model-1".to_string());
-            assert!(res_cancel.is_ok());
-
-            tokio::time::sleep(tokio::time::Duration::from_millis(200)).await;
-
-            {
-                let map = crate::tauri_cmds::CANCEL_PULL_MAP.lock().unwrap();
-                assert!(!map.contains_key("model-1"));
-                assert!(map.contains_key("model-2"));
-            }
-
-            let _ = crate::cancel_ollama_pull("model-2".to_string());
+            let map = crate::core::llm::CANCEL_PULL_MAP.lock().unwrap();
+            assert!(map.contains_key("model-1"));
+            assert!(map.contains_key("model-2"));
         }
+
+        crate::core::llm::cancel_pull("model-1");
+
+        // Wait (bounded) for the cancellation to drain model-1 from the map.
+        let model_1_removed = poll_until(std::time::Duration::from_secs(5), || {
+            let map = crate::core::llm::CANCEL_PULL_MAP.lock().unwrap();
+            !map.contains_key("model-1")
+        })
+        .await;
+        assert!(
+            model_1_removed,
+            "cancelling model-1 should remove its entry from CANCEL_PULL_MAP"
+        );
+
+        {
+            let map = crate::core::llm::CANCEL_PULL_MAP.lock().unwrap();
+            assert!(
+                map.contains_key("model-2"),
+                "cancelling model-1 must not disturb model-2's in-flight pull"
+            );
+        }
+
+        crate::core::llm::cancel_pull("model-2");
+    }
+
+    // ENG-001: a second pull for a model that already has one in flight must be
+    // rejected, not silently overwrite the first's cancel sender (which would
+    // orphan the first pull and let the first's completion remove the second's
+    // entry). Verifies the duplicate is refused and the original entry survives.
+    #[tokio::test]
+    async fn test_duplicate_same_model_pull_is_rejected() {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let base_url = format!("http://{}", listener.local_addr().unwrap());
+
+        let app = axum::Router::new().route(
+            "/api/pull",
+            axum::routing::post(|| async {
+                // Keep the connection open so the pull stays in flight.
+                let stream = futures_util::stream::unfold(0, |state| async move {
+                    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+                    Some((
+                        Ok::<_, axum::Error>(bytes::Bytes::from("{\"status\":\"downloading\"}\n")),
+                        state + 1,
+                    ))
+                });
+                axum::response::Response::new(axum::body::Body::from_stream(stream))
+            }),
+        );
+
+        tokio::spawn(async move {
+            axum::serve(listener, app).await.unwrap();
+        });
+
+        let res1 = crate::core::llm::run_ollama_pull(
+            "dup-model".to_string(),
+            &base_url,
+            std::sync::Arc::new(NoopPullSink),
+        )
+        .await;
+        assert!(res1.is_ok(), "the first pull should start");
+
+        let res2 = crate::core::llm::run_ollama_pull(
+            "dup-model".to_string(),
+            &base_url,
+            std::sync::Arc::new(NoopPullSink),
+        )
+        .await;
+        assert!(
+            res2.is_err(),
+            "a duplicate same-model pull must be rejected, not started"
+        );
+        assert!(
+            res2.unwrap_err().contains("already in progress"),
+            "the rejection should explain a pull is already in progress"
+        );
+
+        // The original pull's entry must still be present (not clobbered).
+        {
+            let map = crate::core::llm::CANCEL_PULL_MAP.lock().unwrap();
+            assert!(
+                map.contains_key("dup-model"),
+                "the original in-flight pull's cancel sender must survive the rejected duplicate"
+            );
+        }
+
+        crate::core::llm::cancel_pull("dup-model");
+        let removed = poll_until(std::time::Duration::from_secs(5), || {
+            let map = crate::core::llm::CANCEL_PULL_MAP.lock().unwrap();
+            !map.contains_key("dup-model")
+        })
+        .await;
+        assert!(
+            removed,
+            "cancelling the original pull should drain its entry"
+        );
+    }
+
+    // ENG-006: a base_url carrying a trailing slash must not produce a
+    // double-slashed "//api/pull" (which the stub server — like real Ollama —
+    // would not route, surfacing as an error). The stub only registers
+    // "/api/pull", so an Ok here proves the trailing slash was trimmed.
+    #[tokio::test]
+    async fn test_run_ollama_pull_trims_trailing_slash_in_base_url() {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+
+        let app = axum::Router::new().route(
+            "/api/pull",
+            axum::routing::post(|| async {
+                (axum::http::StatusCode::OK, "{\"status\":\"success\"}\n")
+            }),
+        );
+
+        tokio::spawn(async move {
+            axum::serve(listener, app).await.unwrap();
+        });
+
+        // Note the trailing slash on the base URL.
+        let base_url = format!("http://{}/", addr);
+        let res = crate::core::llm::run_ollama_pull(
+            "slash-model".to_string(),
+            &base_url,
+            std::sync::Arc::new(NoopPullSink),
+        )
+        .await;
+        assert!(
+            res.is_ok(),
+            "a trailing-slash base_url should still reach /api/pull, got {:?}",
+            res
+        );
+
+        // The short body completes the stream, draining the entry on its own.
+        let drained = poll_until(std::time::Duration::from_secs(5), || {
+            let map = crate::core::llm::CANCEL_PULL_MAP.lock().unwrap();
+            !map.contains_key("slash-model")
+        })
+        .await;
+        assert!(
+            drained,
+            "the completed pull should remove its own map entry"
+        );
+    }
+
+    // ENG-003: the orphan-`ollama serve` sweep predicate, exercised with
+    // synthetic process descriptors so the matching rule is verified without
+    // enumerating (and risking killing) real processes.
+    #[test]
+    fn test_is_orphan_ollama_serve_predicate() {
+        use crate::core::llm::OllamaSidecar as S;
+
+        // Matches: ollama by binary name running serve.
+        assert!(S::is_orphan_ollama_serve("ollama", "ollama serve"));
+        // Matches: ollama.exe with a full path command line.
+        assert!(S::is_orphan_ollama_serve(
+            "ollama.exe",
+            "C:\\Program Files\\Ollama\\ollama.exe serve"
+        ));
+        // Matches: generic process name but command line references ollama serve.
+        assert!(S::is_orphan_ollama_serve(
+            "node",
+            "/usr/local/bin/ollama serve"
+        ));
+
+        // Non-match: ollama running a different subcommand (not serve).
+        assert!(!S::is_orphan_ollama_serve("ollama", "ollama run llama3"));
+        // Non-match: a different daemon that merely uses the word "serve".
+        assert!(!S::is_orphan_ollama_serve("vite", "vite serve --port 5173"));
+        // Non-match: neither name nor command references ollama.
+        assert!(!S::is_orphan_ollama_serve("postgres", "postgres -D /data"));
     }
 
     // B-1 remediation: the collision-detection that drives start()'s skip path
@@ -1200,23 +1373,22 @@ mod tests {
         );
     }
 
-    // The full start() skip path (returns Ok, spawns no child when the port is
-    // occupied) still exercises mock_app(), which only works off-Windows. The
-    // behavioral guarantee it once claimed is now covered cross-platform by
-    // test_ollama_port_in_use_detects_occupied_port above.
-    #[cfg(unix)]
-    #[tokio::test]
-    async fn test_sidecar_skips_spawn_when_port_11434_occupied() {
-        let _listener = tokio::net::TcpListener::bind("127.0.0.1:11434")
-            .await
-            .unwrap();
+    // The full start() skip path — returns Ok and spawns no child when the
+    // probed port is already in use — verified cross-platform via start_for_test,
+    // which injects the probe address so we neither bind the real 11434 (a
+    // developer's actual ollama may hold it) nor construct an AppHandle.
+    #[test]
+    fn test_sidecar_skips_spawn_when_port_occupied() {
+        // Hold an OS-assigned port for the duration of the test so the probe
+        // sees it as occupied.
+        let _occupied = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        let addr = _occupied.local_addr().unwrap().to_string();
 
-        let app = tauri::test::mock_app();
         let sidecar = crate::core::llm::OllamaSidecar::new();
-        let res = sidecar.start(app.handle());
+        let res = sidecar.start_for_test(&addr);
         assert!(res.is_ok());
 
-        // Verify that no child was spawned (child is None)
+        // No child should have been spawned because the port was in use.
         let child_guard = sidecar.child.lock().unwrap();
         assert!(child_guard.is_none());
     }

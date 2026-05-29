@@ -40,9 +40,10 @@ pub fn parse_and_save_scan_response(
     Ok(saved)
 }
 
-pub async fn run_daily_scan<R: tauri::Runtime>(
+pub async fn run_daily_scan(
     db: &DbConn,
-    app: &tauri::AppHandle<R>,
+    llm_client: &std::sync::Arc<dyn LlmClient>,
+    prompt_template: &str,
     city: &str,
     state: &str,
     since_hours: u32,
@@ -57,8 +58,6 @@ pub async fn run_daily_scan<R: tauri::Runtime>(
     if !regex.is_match(city) || !regex.is_match(state) {
         return Err("Invalid city or state format".to_string());
     }
-
-    let prompt_template = crate::core::prompts::get_prompt(app, "aggregator")?;
 
     let run = DailyScanRun {
         id: None,
@@ -102,10 +101,8 @@ pub async fn run_daily_scan<R: tauri::Runtime>(
         }
     };
 
-    use tauri::Manager;
-    let llm_client = app.state::<std::sync::Arc<dyn LlmClient>>();
     let llm_res = llm_client
-        .call(&model, &final_prompt, &prompt_template)
+        .call(&model, &final_prompt, prompt_template)
         .await;
 
     let conn = match db.lock() {

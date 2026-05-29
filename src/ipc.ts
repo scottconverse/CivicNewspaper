@@ -188,10 +188,6 @@ export async function checkOllama(): Promise<boolean> {
   return invoke<boolean>("check_ollama");
 }
 
-export async function pullModel(model: string): Promise<void> {
-  return invoke<void>("pull_model", { model });
-}
-
 export interface OllamaState {
   reachable: boolean;
   models: string[];

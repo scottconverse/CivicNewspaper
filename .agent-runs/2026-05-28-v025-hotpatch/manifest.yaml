@@ -1,0 +1,77 @@
+pipeline_run:
+  # Run id: ISO date + task slug, e.g. "2026-05-08-portal-darkmode-toggle".
+  id: "2026-05-28-v025-hotpatch" # drafted from orchestrator arguments
+
+  # Pipeline type: must match a YAML in .pipelines/. Default plugin ships with 'feature' and 'bugfix'.
+  type: "bugfix" # drafted from orchestrator arguments
+
+  # Branch the run will commit to.
+  branch: "v0.2.5-hotpatch" # drafted from user_description v0.2.5-hotpatch
+
+  # One sentence, user-facing. The thing a release-notes reader will see.
+  goal: "Execute v0.2.5-hotpatch release resolving all 18 findings and applying structural closures." # drafted from system override instructions
+
+  # Path prefixes this run is allowed to touch.
+  allowed_paths: # drafted from 2026-05-27-v024-hotpatch/manifest.yaml allowed_paths
+    - "src/"
+    - "src-tauri/"
+    - "docs/"
+    - ".github/workflows/"
+    - ".pipelines/"
+    - ".agent-runs/"
+    - "README.md"
+    - "CHANGELOG.md"
+    - "SECURITY.md"
+    - "FAQ.md"
+    - "CONTRIBUTING.md"
+    - "NOTICES.md"
+    - "carried-debt.md"
+    - "package.json"
+    - "package-lock.json"
+    - "scripts/"
+
+  # Path prefixes this run must NOT touch even if listed under allowed_paths via a parent.
+  forbidden_paths: # drafted from 2026-05-27-v024-hotpatch/manifest.yaml forbidden_paths
+    - "LICENSE"
+    - ".gitattributes"
+
+  # Things explicitly out of scope. Each item is one short sentence.
+  non_goals: # drafted from 2026-05-27-v024-hotpatch/manifest.yaml non_goals
+    - "Do not tag the release."
+    - "Do not push final tags."
+
+  # What artifacts and behaviors must exist when the run completes.
+  expected_outputs: # drafted from system override instructions
+    - "All 18 audit findings resolved."
+    - "Structural closures applied per the v0.2.5 directive."
+    - "Checkpoint validations written and SHA-pinned."
+
+  # Required gates — flipped to satisfied as the pipeline advances.
+  required_gates: # drafted from 2026-05-27-v024-hotpatch/manifest.yaml required_gates
+    - "policy_passed"
+    - "tests_passed"
+
+  # Risk: low | medium | high.
+  risk: "high" # drafted from previous hotpatch risk level
+
+  # If this work is reverted, what's the procedure?
+  rollback_plan: "git revert <merge-commit>; redeploy" # drafted from standard reversion procedures
+
+  # One paragraph naming the precise bar the work clears.
+  definition_of_done: "All 18 audit findings are resolved. cargo test passes and shows no regressions. clippy, vitest, and tsc are clean. CHANGELOG.md and SECURITY.md are updated. No files modified outside authorized scope. The audit-lite re-run at Critique returns 0 Blockers, 0 Criticals." # drafted from system override instructions
+
+  # Optional: director-flagged research focuses.
+  director_notes: [] # drafted from template default
+
+  # ---------------------------------------------------------------------
+  # v1.2.0 priority-drift gate fields (REQUIRED)
+  # ---------------------------------------------------------------------
+
+  # The exact "Active target:" string from the project's control plane.
+  advances_target: "v0.2.5-hotpatch" # drafted from user_description v0.2.5-hotpatch
+
+  # File:line citation pointing at the exact line in the control plane that authorizes this work.
+  authorizing_source: "" # drafted from template default (empty because override_active_target is set)
+
+  # OPTIONAL escape valve. If set to a string of >= 60 characters (~two sentences), the priority-drift check is logged-but-not-blocked.
+  override_active_target: "Bypassing active-target check: this run executes the pre-approved v0.2.5-hotpatch sequence to remediate all 18 findings and apply structural closures per the v0.2.5 directive." # drafted from system override instructions

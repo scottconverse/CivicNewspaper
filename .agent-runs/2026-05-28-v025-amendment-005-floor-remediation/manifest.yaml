@@ -1,0 +1,33 @@
+pipeline_run:
+  id: '2026-05-28-v025-amendment-005-floor-remediation' # drafted from directive.yaml
+  type: 'feature' # drafted from run parameters
+  branch: 'v0.2.5-hotpatch' # drafted from directive.yaml
+  goal: 'Migrate the §2-AUTH whitelist from mutations.json to a dedicated configuration file and address the floor findings F-5 and F-6.' # drafted from DIRECTIVE-v025-AMENDMENT-005-floor-remediation.md
+  allowed_paths: # drafted from directive.yaml
+    - 'src-tauri/src/core/reproduction_tests.rs'
+    - '.agent-workflows/section2-auth.json'
+  forbidden_paths: # drafted from directive.yaml
+    - 'scripts/audit/mutations.json'
+  non_goals: # drafted from DIRECTIVE-v025-AMENDMENT-005-floor-remediation.md
+    - 'Do not modify any production code files.'
+    - 'Do not add new items to the work queue.'
+    - 'Do not modify mutations.json.'
+  expected_outputs: # drafted from DIRECTIVE-v025-AMENDMENT-005-floor-remediation.md
+    - '.agent-workflows/section2-auth.json'
+    - 'src-tauri/src/core/reproduction_tests.rs'
+  required_gates: # drafted from manifest-template.yaml
+    - human_approval_manifest
+    - human_approval_plan
+    - policy_passed
+    - tests_passed
+    - human_approval_merge
+    - directive_bound
+    - scope_lock_authority
+  risk: 'low' # drafted from manifest-template.yaml
+  rollback_plan: 'Revert any commits on the v0.2.5-hotpatch branch and remove the .agent-workflows/section2-auth.json file.' # drafted from DIRECTIVE-v025-AMENDMENT-005-floor-remediation.md
+  definition_of_done: 'The whitelist is relocated to .agent-workflows/section2-auth.json with all eight authorized tests configured, all tests pass, and mutations.json remains unmodified.' # drafted from DIRECTIVE-v025-AMENDMENT-005-floor-remediation.md
+  director_notes: [] # drafted from DIRECTIVE-v025-AMENDMENT-005-floor-remediation.md
+  advances_target: 'v0.2 Phase 4 — Source Tier + Prompt Library + Daily Scan + Plain Language Rewrite' # drafted from PROJECT_CONTROL_PLANE.md
+  authorizing_source: '.agent-workflows/PROJECT_CONTROL_PLANE.md:8' # drafted from PROJECT_CONTROL_PLANE.md
+  override_active_target: 'Bypassing active-target check: this run executes the pre-approved v0.2.5-amendment-005-floor-remediation sequence to close F-5 and F-6 findings and decouple the whitelist from mutations.json.' # drafted from run parameters
+  target_repos: [] # drafted from manifest-template.yaml

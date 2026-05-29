@@ -32,7 +32,7 @@ fn default_state() -> String {
     "CO".to_string()
 }
 
-async fn get_selected_model_or_fallback(db: &DbConn) -> String {
+pub(crate) async fn get_selected_model_or_fallback(db: &DbConn) -> String {
     let saved = {
         if let Ok(conn) = db.lock() {
             if let Ok(mut stmt) =
@@ -455,44 +455,31 @@ pub async fn check_ollama() -> bool {
 }
 
 #[tauri::command]
-pub fn pull_model(app: tauri::AppHandle, model: String) -> Result<(), String> {
-    use tauri::Emitter;
-    tauri::async_runtime::spawn(async move {
-        match llm::pull_ollama_model(&model).await {
-            Ok(mut resp) => {
-                while let Ok(Some(chunk)) = resp.chunk().await {
-                    let text = String::from_utf8_lossy(&chunk);
-                    for line in text.lines() {
-                        if !line.trim().is_empty() {
-                            let _ = app.emit("ollama-pull-progress", line);
-                        }
-                    }
-                }
-                let _ = app.emit("ollama-pull-complete", ());
-            }
-            Err(e) => {
-                let _ = app.emit("ollama-pull-error", e.to_string());
-            }
-        }
-    });
+pub fn cancel_ollama_pull(model: String) -> Result<(), String> {
+    crate::core::llm::cancel_pull(&model);
     Ok(())
 }
 
-use std::collections::HashMap;
-use std::sync::LazyLock;
-use std::sync::Mutex;
-use tokio::sync::watch;
+/// Bridges core pull progress to Tauri's event emitter. Keeps the wire format
+/// the frontend expects: `ollama-pull-progress` carries `{model,status,completed,total}`,
+/// `ollama-pull-complete` carries null, `ollama-pull-error` carries a string.
+struct AppHandlePullSink<R: tauri::Runtime> {
+    app: tauri::AppHandle<R>,
+}
 
-pub(crate) static CANCEL_PULL_MAP: LazyLock<Mutex<HashMap<String, watch::Sender<bool>>>> =
-    LazyLock::new(|| Mutex::new(HashMap::new()));
-
-#[tauri::command]
-pub fn cancel_ollama_pull(model: String) -> Result<(), String> {
-    let map = CANCEL_PULL_MAP.lock().unwrap();
-    if let Some(tx) = map.get(&model) {
-        let _ = tx.send(true);
+impl<R: tauri::Runtime> crate::core::llm::PullProgressSink for AppHandlePullSink<R> {
+    fn progress(&self, payload: crate::core::llm::PullProgress) {
+        use tauri::Emitter;
+        let _ = self.app.emit("ollama-pull-progress", payload);
     }
-    Ok(())
+    fn complete(&self) {
+        use tauri::Emitter;
+        let _ = self.app.emit("ollama-pull-complete", ());
+    }
+    fn error(&self, message: String) {
+        use tauri::Emitter;
+        let _ = self.app.emit("ollama-pull-error", message);
+    }
 }
 
 #[tauri::command]
@@ -500,111 +487,8 @@ pub async fn pull_ollama_model<R: tauri::Runtime>(
     app: tauri::AppHandle<R>,
     model_id: String,
 ) -> Result<(), String> {
-    use tauri::Emitter;
-    let model = model_id.clone();
-
-    // Create watch channel for cancellation
-    let (tx, mut rx) = watch::channel(false);
-    {
-        let mut map = CANCEL_PULL_MAP.lock().unwrap();
-        map.insert(model_id.clone(), tx);
-    }
-
-    let client = reqwest::Client::new();
-    let resp_res = client
-        .post("http://127.0.0.1:11434/api/pull")
-        .json(&serde_json::json!({ "name": model_id, "stream": true }))
-        .send()
-        .await;
-
-    let mut resp = match resp_res {
-        Ok(r) => r,
-        Err(e) => {
-            let mut map = CANCEL_PULL_MAP.lock().unwrap();
-            map.remove(&model);
-            return Err(e.to_string());
-        }
-    };
-
-    if !resp.status().is_success() {
-        let mut map = CANCEL_PULL_MAP.lock().unwrap();
-        map.remove(&model);
-        return Err(format!(
-            "Failed to start pulling model: status {}",
-            resp.status()
-        ));
-    }
-
-    tauri::async_runtime::spawn(async move {
-        #[derive(serde::Serialize, Clone)]
-        struct ProgressPayload {
-            model: String,
-            status: String,
-            completed: Option<f64>,
-            total: Option<f64>,
-        }
-
-        loop {
-            tokio::select! {
-                _ = rx.changed() => {
-                    if *rx.borrow() {
-                        let _ = app.emit(
-                            "ollama-pull-progress",
-                            ProgressPayload {
-                                model: model.clone(),
-                                status: "cancelled".to_string(),
-                                completed: None,
-                                total: None,
-                            },
-                        );
-                        break;
-                    }
-                }
-                chunk_res = resp.chunk() => {
-                    match chunk_res {
-                        Ok(Some(chunk)) => {
-                            let text = String::from_utf8_lossy(&chunk);
-                            for line in text.lines() {
-                                if line.trim().is_empty() {
-                                    continue;
-                                }
-                                #[derive(serde::Deserialize)]
-                                struct PullMsg {
-                                    status: String,
-                                    completed: Option<f64>,
-                                    total: Option<f64>,
-                                }
-                                if let Ok(msg) = serde_json::from_str::<PullMsg>(line) {
-                                    let _ = app.emit(
-                                        "ollama-pull-progress",
-                                        ProgressPayload {
-                                            model: model.clone(),
-                                            status: msg.status,
-                                            completed: msg.completed,
-                                            total: msg.total,
-                                        },
-                                    );
-                                }
-                            }
-                        }
-                        Ok(None) => {
-                            let _ = app.emit("ollama-pull-complete", ());
-                            break;
-                        }
-                        Err(e) => {
-                            let _ = app.emit("ollama-pull-error", e.to_string());
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        let mut map = CANCEL_PULL_MAP.lock().unwrap();
-        map.remove(&model);
-    });
-
-    Ok(())
+    let sink = std::sync::Arc::new(AppHandlePullSink { app });
+    crate::core::llm::run_ollama_pull(model_id, "http://127.0.0.1:11434", sink).await
 }
 
 #[tauri::command]
@@ -696,60 +580,6 @@ pub async fn ollama_health() -> Result<OllamaState, String> {
             version: None,
         }),
     }
-}
-
-#[tauri::command]
-pub fn ollama_pull_model(app: tauri::AppHandle, model: String) -> Result<(), String> {
-    use tauri::Emitter;
-    tauri::async_runtime::spawn(async move {
-        let client = reqwest::Client::new();
-        if let Ok(mut resp) = client
-            .post("http://127.0.0.1:11434/api/pull")
-            .json(&serde_json::json!({ "name": model, "stream": true }))
-            .send()
-            .await
-        {
-            while let Ok(Some(chunk)) = resp.chunk().await {
-                let text = String::from_utf8_lossy(&chunk);
-                for line in text.lines() {
-                    if line.trim().is_empty() {
-                        continue;
-                    }
-                    #[derive(serde::Deserialize)]
-                    struct PullMsg {
-                        status: String,
-                        completed: Option<f64>,
-                        total: Option<f64>,
-                    }
-                    if let Ok(msg) = serde_json::from_str::<PullMsg>(line) {
-                        let percent = if let (Some(c), Some(t)) = (msg.completed, msg.total) {
-                            if t > 0.0 {
-                                Some((c / t) * 100.0)
-                            } else {
-                                None
-                            }
-                        } else {
-                            None
-                        };
-
-                        #[derive(serde::Serialize, Clone)]
-                        struct ProgressPayload {
-                            status: String,
-                            percent: Option<f64>,
-                        }
-                        let _ = app.emit(
-                            "ollama:pull-progress",
-                            ProgressPayload {
-                                status: msg.status,
-                                percent,
-                            },
-                        );
-                    }
-                }
-            }
-        }
-    });
-    Ok(())
 }
 
 #[tauri::command]
@@ -880,7 +710,20 @@ pub async fn run_daily_scan<R: tauri::Runtime>(
     state: String,
     since_hours: u32,
 ) -> Result<i32, String> {
-    crate::core::daily_scan::run_daily_scan(&db, &app, &city, &state, since_hours).await
+    let prompt_template = crate::core::prompts::get_prompt(&app, "aggregator")?;
+    let llm_client = app
+        .state::<std::sync::Arc<dyn crate::core::llm::LlmClient>>()
+        .inner()
+        .clone();
+    crate::core::daily_scan::run_daily_scan(
+        &db,
+        &llm_client,
+        &prompt_template,
+        &city,
+        &state,
+        since_hours,
+    )
+    .await
 }
 
 #[tauri::command]
@@ -890,7 +733,10 @@ pub async fn plain_language_rewrite<R: tauri::Runtime>(
     text: String,
     draft_format: String,
 ) -> Result<String, String> {
-    let system = format!("You are a plain language summarizer. Rewrite the following text to an 8th-grade reading level in the '{}' format. Remove jargon. Keep the core facts.", draft_format);
-    let prompt = format!("Rewrite this:\n{}", text);
-    llm_task(app, db, prompt, system).await
+    let model = get_selected_model_or_fallback(&db).await;
+    let llm_client = app
+        .state::<std::sync::Arc<dyn crate::core::llm::LlmClient>>()
+        .inner()
+        .clone();
+    crate::core::llm::plain_language_rewrite(&llm_client, &model, &text, &draft_format).await
 }

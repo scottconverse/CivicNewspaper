@@ -565,11 +565,20 @@ footer {
 /* Download Cards Grid */
 .download-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr;
     gap: 1.5rem;
     max-width: 960px;
     margin: 3.5rem auto 1.5rem auto;
     padding: 0 1rem;
+}
+
+/* Three-up only above the mobile breakpoint. This rule is gated on min-width
+   so it can't override the single-column mobile layout by source order — the
+   base rule above already defaults to one column. */
+@media (min-width: 769px) {
+    .download-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 .download-card {
@@ -629,6 +638,7 @@ footer {
     content: 'Recommended Platform';
     position: absolute;
     top: -11px;
+    white-space: nowrap;
     background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
     color: white;
     font-size: 0.65rem;
@@ -729,4 +739,14 @@ footer {
 .hamburger:focus-visible {
     outline: 2px solid var(--accent-primary);
     outline-offset: 4px;
+}
+
+/* Keyboard focus rings for the download buttons and install callouts. The
+   default user-agent outline is suppressed by the rounded button styling, so
+   restore a visible ring for keyboard users without affecting mouse clicks. */
+.download-btn:focus-visible,
+.callout-link:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 3px;
+    border-radius: 8px;
 }

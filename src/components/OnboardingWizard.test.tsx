@@ -180,22 +180,34 @@ describe("OnboardingWizard Component Tests", () => {
     vi.useFakeTimers();
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
-    
+
     invokeMock.mockImplementation((cmd: string) => {
       if (cmd === "get_system_ram") return Promise.resolve(16);
       if (cmd === "ollama_health") return new Promise(() => {});
       return Promise.resolve();
     });
 
+    const { act } = await import("@testing-library/react");
+
     render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
-    
-    fireEvent.click(screen.getByRole("button", { name: /next/i }));
-    
+
+    // Let the async init() effect (path/RAM/setting lookups) settle inside act
+    // so its state updates don't land outside an act(...) boundary.
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
+
+    // handleNext() is async (awaits set_setting then setStep(2)); wrapping the
+    // click in an async act flushes that chain — including the step-2 health
+    // effect's initial state updates — before we assert.
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /next/i }));
+    });
+
     await vi.waitFor(() => {
       expect(screen.getByText("Checking Ollama sidecar initialization status...")).toBeInTheDocument();
     });
 
-    const { act } = await import("@testing-library/react");
     act(() => {
       vi.advanceTimersByTime(30000);
     });

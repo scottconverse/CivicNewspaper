@@ -2,41 +2,73 @@
 
 This file tracks deferred work and known technical debt.
 
-## Deferred Items
+## Status convention
 
-- **P5-000 (P0 - Sealed Policy Callables for Pipeline Integrity)**: Security bypass loophole. Custom callables declared under `acceptance.manager` in the directive must be loaded from a sealed/immutable location that the executor cannot access or edit, rather than a directory editable by the executor. Executor access to these scripts allows arbitrary validation overrides.
-- **P5-001 (Diff Modal for Rewrites)**: The plain-language rewrite feature currently overwrites the draft content in place (after a confirmation prompt). A visual diff modal comparing the original text with the rewritten text should be implemented in a future phase to provide better editorial oversight.
-- **P5-002 (Tauri Auto-Updater)**: The Tauri auto-updater is currently disabled with `plugins.updater.active = false` (dormant). Full auto-updater signature configuration and rollout is deferred to a future release.
-- **Forensic Branch Reference**: The branch `forensic/phase-4-gamed-2026-05-25` contains historical diagnostic artifacts and code revisions related to the Phase 4 audit-lite and director overrides.
-- **P5-003 (Tauri mock_app() Windows test harness)**: Four Tauri-state-dependent tests
-  (`test_plain_language_rewrite_invokes_ollama`,
+Every item carries exactly one disposition tag so its state is unambiguous at a
+glance. An item stays in this ledger until history no longer needs it; while it
+remains, the tag says where it stands:
+
+- **DEFERRED (→ vX.Y)** — still outstanding; deferred to the named release (or `future` if unscheduled).
+- **RESOLVED (vX.Y, <pointer>)** — shipped; names the release and a code/doc pointer.
+- **WITHDRAWN (<reason>)** — intentionally dropped; names the reason.
+
+An item is only deleted outright once it is no longer referenced anywhere;
+otherwise it stays here with a RESOLVED or WITHDRAWN tag so cross-references in
+`CHANGELOG.md`, `README.md`, and `FAQ.md` never dangle.
+
+## Items
+
+- **P5-000 — DEFERRED (→ future)** (P0, Sealed Policy Callables for Pipeline Integrity): Security bypass loophole. Custom callables declared under `acceptance.manager` in the directive must be loaded from a sealed/immutable location that the executor cannot access or edit, rather than a directory editable by the executor. Executor access to these scripts allows arbitrary validation overrides.
+- **P5-001 — RESOLVED (v0.2.6, `Workbench.tsx` rewrite diff modal)** (Diff Modal for Rewrites): The plain-language rewrite
+  no longer overwrites the draft in place. `Workbench.tsx` now holds the LLM
+  result in `rewritePreview` state and opens a side-by-side diff modal
+  (`#rewrite-diff-modal`) showing the original (left) versus the rewrite
+  (right) with line-level LCS highlighting (removed lines red, added lines
+  green). The editor explicitly Accepts (applies via `onUpdateDraftContent`)
+  or Rejects (discards) before any change lands.
+- **P5-002 — DEFERRED (→ future)** (Tauri auto-updater dormant): The auto-updater
+  is intentionally inactive — `src-tauri/tauri.conf.json` sets
+  `plugins.updater.active = false`. The updater plugin ships but performs no
+  update checks; updates are manual via the GitHub releases page. User-facing
+  documentation of this state lives in `FAQ.md` ("The Tauri updater is dormant")
+  and `README.md`.
+- **P5-003 — RESOLVED (v0.2.6, AppHandle decoupling)** (Tauri mock_app() Windows test harness): The three
+  Tauri-state-dependent tests (`test_plain_language_rewrite_invokes_ollama`,
   `test_daily_scan_command_does_not_panic_when_state_registered`,
-  `test_daily_scan_uses_settings_model_not_hardcoded`,
-  `test_sidecar_skips_spawn_when_port_11434_occupied`)
-  are skipped on Windows via `#[cfg_attr(target_os = "windows", ignore = "...")]`
-  because `tauri::test::mock_app()` triggers a DLL loader crash
-  (STATUS_ENTRYPOINT_NOT_FOUND, 0xc0000139) in console-mode lib unit tests.
-  Resolution path: move these to an integration test crate at `src-tauri/tests/`
-  where Tauri's mock_app reliably works on Windows. Deferred to v0.3 to avoid
-  scope creep on the v0.2.2 hot-patch.
-- **P5-004 (OllamaSidecar AppHandle coupling)**: The two sidecar lifecycle tests
-  (`test_ollama_sidecar_spawns_with_expected_pid_pattern`,
-  `test_ollama_sidecar_terminates_cleanly_on_drop`)
-  require `tauri::test::mock_app()` because `OllamaSidecar::start` uses
-  `app.shell().sidecar("ollama")` which requires an `AppHandle`. This couples
-  the spawn/kill logic to the Tauri shell-plugin API and makes the tests
-  unrunnable on Windows console-mode lib unit tests (mock_app DLL crash).
-  Resolution path for v0.3: refactor `OllamaSidecar` to expose
-  `start_with_path(PathBuf)` so tests can bypass the shell-plugin lookup
-  and run cross-platform. Keep the AppHandle-taking `start()` as a thin
-  convenience wrapper for production callers. Deferred to v0.3 to avoid
-  scope creep on the v0.2.2 hot-patch.
-- **P5-005 (Per-platform smart download links)**: v0.2.3 reverted download
-  buttons to bare `releases/latest` after the VERSION-placeholder landmine.
-  Restore per-platform smart links via inline JS that fetches GitHub API
-  on page load and rewrites hrefs. Deferred to v0.3.
-- **P5-006 (Sidecar lifecycle on crash + port 11434 collision detection)**: Graceful coexistence with external Ollama instances and clean process reaping on closing/panic exits. Resolved in v0.2.4.
-- **P5-007 (Linux GPU Shared Libraries Bundling)**: Extract `lib/ollama/*` alongside `bin/ollama` in `fetch-ollama-binaries.sh`, bundle in `tauri.conf.json` `externalBin`, and verify via `ldd` post-installation to enable GPU acceleration on Linux rather than falling back to CPU. Deferred to v0.3.
+  `test_daily_scan_uses_settings_model_not_hardcoded`) plus the two pull tests
+  (`test_pull_ollama_model_propagates_http_error`,
+  `test_cancel_ollama_pull_is_per_model`) no longer construct `tauri::test::mock_app()`.
+  The business logic was decoupled from `AppHandle`: `run_daily_scan` and
+  `plain_language_rewrite` now take an injected `Arc<dyn LlmClient>` + prompt, and
+  the ollama pull was split into `core::llm::run_ollama_pull(model, base_url, sink)`
+  driven by a `PullProgressSink` trait. The Tauri command wrappers resolve the
+  client/prompt/sink from `AppHandle` and delegate. Tests call the core functions
+  directly with fake clients/sinks and an ephemeral-port stub server, so they run
+  on every platform including Windows. The platform-gate whitelist
+  (`.agent-workflows/section2-auth.json`) is now empty.
+- **P5-004 — RESOLVED (v0.2.6, `OllamaSidecar::start_for_test`)** (OllamaSidecar AppHandle coupling): The two sidecar
+  lifecycle tests (`test_ollama_sidecar_spawns_with_expected_pid_pattern`,
+  `test_ollama_sidecar_terminates_cleanly_on_drop`) and the collision-skip test
+  (`test_sidecar_skips_spawn_when_port_occupied`) run cross-platform via
+  `OllamaSidecar::start_for_test(probe_addr)`, which spawns the bundled test
+  fixture without the shell-plugin `AppHandle` lookup and injects the collision
+  probe address (so tests neither bind the real 11434 nor kill a developer's
+  local `ollama serve`). The port-collision check remains extracted into
+  `port_in_use(addr)` / `ollama_port_in_use()`. No test constructs `mock_app()`.
+- **P5-005 — RESOLVED (v0.2.6, `docs/script.js` per-platform resolver)** (Per-platform smart download links): The landing-page
+  download buttons resolve to the matching installer from the latest GitHub
+  release — Windows `.exe`/`.msi`, Linux `.deb`, macOS `.dmg` with architecture
+  detection — and fall back to the `releases/latest` page when the API is
+  unavailable or an asset is missing. See `pickWindowsAsset` / `pickLinuxAsset` /
+  `pickMacAsset` / `setButtonHref` in `docs/script.js`.
+- **P5-006 — RESOLVED (v0.2.4)** (Sidecar lifecycle on crash + port 11434 collision detection): Graceful coexistence with external Ollama instances and clean process reaping on closing/panic exits.
+- **P5-007 — DEFERRED (→ v0.3)** (Linux GPU shared libraries not bundled): Linux GPU
+  acceleration falls back to CPU at runtime because the bundled `.deb` extracts
+  only the monolithic `bin/ollama` and not the upstream `lib/ollama/` shared
+  libraries. Inference still works on CPU; GPU acceleration is not yet bundled on
+  Linux. Referenced from the v0.2.4 "Known Limitations" entry in `CHANGELOG.md`.
+
+**Reference (not a debt item).** The branch `forensic/phase-4-gamed-2026-05-25` contains historical diagnostic artifacts and code revisions related to the Phase 4 audit-lite and director overrides.
 
 ## Pipeline Integrity Incidents
 

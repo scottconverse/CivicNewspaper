@@ -2,6 +2,7 @@
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Source, DiscoveredSource, DiscoveredSourceCategory } from "../ipc";
+import { Modal } from "./Modal";
 
 interface SourcesPanelProps {
   sources: Source[];
@@ -125,7 +126,7 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
               <tbody>
                 {sources.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="text-center">No feeds or portals registered yet. Add one in the right panel.</td>
+                    <td colSpan={7} className="text-center">No feeds or portals registered yet. Add one in the right panel.</td>
                   </tr>
                 ) : (
                   sources.map((src) => (
@@ -221,10 +222,14 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
 
       {/* Bulk Import Modal */}
       {showBulkImportModal && (
-        <div className="modal-overlay" id="modal-bulk-import">
-          <div className="modal-content" style={{ maxWidth: "600px", width: "90%", display: "flex", flexDirection: "column" }}>
+        <Modal
+          id="modal-bulk-import"
+          labelledBy="bulk-import-title"
+          contentStyle={{ maxWidth: "600px", width: "90%", display: "flex", flexDirection: "column" }}
+          onClose={() => onShowBulkImportModalChange(false)}
+        >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "1rem", marginBottom: "1rem" }}>
-              <h3 style={{ margin: 0 }}>Bulk Import Sources</h3>
+              <h3 id="bulk-import-title" style={{ margin: 0 }}>Bulk Import Sources</h3>
               <button className="btn btn-secondary btn-sm" onClick={() => onShowBulkImportModalChange(false)}>Close</button>
             </div>
             
@@ -268,16 +273,19 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                 </button>
               </div>
             </form>
-          </div>
-        </div>
+        </Modal>
       )}
 
       {/* Discovery Modal */}
       {showDiscoveryModal && (
-        <div className="modal-overlay" id="modal-discovery">
-          <div className="modal-content" style={{ maxWidth: "800px", width: "90%", maxHeight: "85vh", display: "flex", flexDirection: "column" }}>
+        <Modal
+          id="modal-discovery"
+          labelledBy="discovery-title"
+          contentStyle={{ maxWidth: "800px", width: "90%", maxHeight: "85vh", display: "flex", flexDirection: "column" }}
+          onClose={() => onShowDiscoveryModalChange(false)}
+        >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "1rem", marginBottom: "1rem" }}>
-              <h3 style={{ margin: 0 }}>Town Setup & Source Auto-Discovery</h3>
+              <h3 id="discovery-title" style={{ margin: 0 }}>Town Setup & Source Auto-Discovery</h3>
               <button className="btn btn-secondary btn-sm" onClick={() => onShowDiscoveryModalChange(false)}>Close</button>
             </div>
             
@@ -382,8 +390,7 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                 </div>
               </div>
             )}
-          </div>
-        </div>
+        </Modal>
       )}
     </div>
   );

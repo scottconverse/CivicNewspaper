@@ -1,14 +1,14 @@
 [
   {
     "test": "test_plain_language_rewrite_invokes_ollama",
-    "file": "src-tauri/src/tauri_cmds.rs",
+    "file": "src-tauri/src/core/llm.rs",
     "function": "pub async fn plain_language_rewrite",
     "language": "rust",
     "platforms": ["linux", "darwin"]
   },
   {
     "test": "test_daily_scan_command_does_not_panic_when_state_registered",
-    "file": "src-tauri/src/tauri_cmds.rs",
+    "file": "src-tauri/src/core/daily_scan.rs",
     "function": "pub async fn run_daily_scan",
     "language": "rust",
     "platforms": ["linux", "darwin"]
@@ -23,7 +23,7 @@
   {
     "test": "test_ollama_sidecar_spawns_with_expected_pid_pattern",
     "file": "src-tauri/src/core/llm.rs",
-    "function": "pub fn start",
+    "function": "pub(crate) fn start_for_test",
     "language": "rust",
     "platforms": ["linux", "darwin"]
   },
@@ -36,22 +36,22 @@
   },
   {
     "test": "test_pull_ollama_model_propagates_http_error",
-    "file": "src-tauri/src/tauri_cmds.rs",
-    "function": "pub async fn pull_ollama_model",
-    "language": "rust",
-    "platforms": ["linux", "darwin"]
-  },
-  {
-    "test": "test_cancel_ollama_pull_is_per_pull",
-    "file": "src-tauri/src/tauri_cmds.rs",
-    "function": "pub async fn pull_ollama_model",
-    "language": "rust",
-    "platforms": ["linux", "darwin"]
-  },
-  {
-    "test": "test_sidecar_skips_spawn_when_port_11434_occupied",
     "file": "src-tauri/src/core/llm.rs",
-    "function": "pub fn start",
+    "function": "pub async fn run_ollama_pull",
+    "language": "rust",
+    "platforms": ["linux", "darwin"]
+  },
+  {
+    "test": "test_cancel_ollama_pull_is_per_model",
+    "file": "src-tauri/src/core/llm.rs",
+    "function": "pub fn cancel_pull",
+    "language": "rust",
+    "platforms": ["linux", "darwin"]
+  },
+  {
+    "test": "test_sidecar_skips_spawn_when_port_occupied",
+    "file": "src-tauri/src/core/llm.rs",
+    "function": "pub(crate) fn start_for_test",
     "language": "rust",
     "platforms": ["linux", "darwin"]
   }
