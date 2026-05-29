@@ -5,7 +5,6 @@ import { Newspaper, Rss, Cpu, Link as LinkIcon, FileText, Settings, BookOpen } f
 interface LayoutProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
-  updateAvailable: any;
   ollamaOnline: boolean;
   selectedDraft: any;
   children: React.ReactNode;
@@ -14,30 +13,12 @@ interface LayoutProps {
 export const Layout: React.FC<LayoutProps> = ({
   activeTab,
   onTabChange,
-  updateAvailable,
   ollamaOnline,
   selectedDraft,
   children
 }) => {
   return (
     <div className="app-container">
-      {/* Top Banner for Updates */}
-      {updateAvailable && (
-        <div style={{ background: '#3b82f6', color: 'white', padding: '8px', textAlign: 'center', fontWeight: 'bold' }} id="update-banner">
-          Update available: {updateAvailable.version}. 
-          <button 
-            style={{ marginLeft: '10px', padding: '2px 8px', borderRadius: '4px', border: 'none', background: 'white', color: '#3b82f6', cursor: 'pointer' }}
-            onClick={async () => {
-              await updateAvailable.downloadAndInstall();
-              const { relaunch } = await import('@tauri-apps/plugin-process');
-              await relaunch();
-            }}
-          >
-            Install & Restart
-          </button>
-        </div>
-      )}
-
       {/* Sidebar Navigation */}
       <aside className="sidebar">
         <div className="brand">

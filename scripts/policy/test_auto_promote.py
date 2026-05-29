@@ -7,22 +7,6 @@ import pytest
 from unittest.mock import patch, MagicMock
 from auto_promote import audit_team_zero_blockers
 
-def mock_urlopen(req, *args, **kwargs):
-    url = req.full_url if hasattr(req, "full_url") else req
-    mock_resp = MagicMock()
-    mock_resp.__enter__.return_value = mock_resp
-    if "valid-url" in url:
-        mock_resp.status = 200
-    elif "github.com" in url and (url.endswith("github.com") or url.endswith("github.com/")):
-        mock_resp.status = 200
-    elif "404-url" in url:
-        mock_resp.status = 404
-        from urllib.error import HTTPError
-        raise HTTPError(url, 404, "Not Found", {}, None)
-    else:
-        mock_resp.status = 404
-    return mock_resp
-
 def mock_subprocess_run(cmd, *args, **kwargs):
     mock_res = MagicMock()
     sha = cmd[-1]
@@ -356,10 +340,8 @@ def test_severity_rollup_regex_anchored(temp_run_env):
         audit_team_zero_blockers(verdict_path=p, expected_sha=sha)
     assert "No blocker count found" in str(excinfo.value)
 
-@patch("urllib.request.urlopen")
 @patch("subprocess.run")
-def test_citation_valid_url(mock_run, mock_open, temp_run_env):
-    mock_open.side_effect = mock_urlopen
+def test_citation_valid_url(mock_run, temp_run_env):
     mock_run.side_effect = mock_subprocess_run
     
     temp_dir, audits_dir = temp_run_env
@@ -383,12 +365,15 @@ def test_citation_valid_url(mock_run, mock_open, temp_run_env):
     sha = _compute_sha256(p)
     assert audit_team_zero_blockers(verdict_path=p, expected_sha=sha) == "PASS"
 
-@patch("urllib.request.urlopen")
 @patch("subprocess.run")
-def test_citation_404_url(mock_run, mock_open, temp_run_env):
-    mock_open.side_effect = mock_urlopen
+def test_citation_url_accepted_without_network_check(mock_run, temp_run_env):
+    # ENG-012: _is_valid_url is structural-only — it no longer issues a live
+    # HEAD/GET, so a well-formed http(s) URL with a real path is accepted as a
+    # citation even if the endpoint would 404. Network liveness is deliberately
+    # NOT verified (non-deterministic in CI, slow, SSRF surface). This pins that
+    # contract so a future change can't quietly reintroduce a network probe.
     mock_run.side_effect = mock_subprocess_run
-    
+
     temp_dir, audits_dir = temp_run_env
     p = os.path.join(temp_dir, "verdict.json")
     write_json(p, {
@@ -397,25 +382,22 @@ def test_citation_404_url(mock_run, mock_open, temp_run_env):
         'clippy_platforms_run': ['linux'], 'mutation_checks_platforms': ['linux'],
         'checkpoint_audits_clean': True
     })
-    
+
     chk_file = os.path.join(temp_dir, "checkpoint-1.md")
     write_text(chk_file, "## Severity rollup\n- Blocker: 0\n- Critical: 0\n")
     chk_sha = _compute_sha256(chk_file)
     write_text(os.path.join(audits_dir, "checkpoint-shas.txt"), f"{chk_sha}  {chk_file}\n")
-    
-    # Create stage report with 404 URL
+
+    # A structurally valid URL with a path — would 404 over the network, but the
+    # gate only checks structure now, so it counts as a valid citation.
     report_file = os.path.join(temp_dir, "stage-1-report.md")
     write_text(report_file, "This is by design.\nSee details: https://example.com/404-url\n")
-    
-    sha = _compute_sha256(p)
-    with pytest.raises(ValueError) as excinfo:
-        audit_team_zero_blockers(verdict_path=p, expected_sha=sha)
-    assert "lacks valid cited evidence" in str(excinfo.value)
 
-@patch("urllib.request.urlopen")
+    sha = _compute_sha256(p)
+    assert audit_team_zero_blockers(verdict_path=p, expected_sha=sha) == "PASS"
+
 @patch("subprocess.run")
-def test_citation_generic_url(mock_run, mock_open, temp_run_env):
-    mock_open.side_effect = mock_urlopen
+def test_citation_generic_url(mock_run, temp_run_env):
     mock_run.side_effect = mock_subprocess_run
     
     temp_dir, audits_dir = temp_run_env
@@ -441,10 +423,8 @@ def test_citation_generic_url(mock_run, mock_open, temp_run_env):
         audit_team_zero_blockers(verdict_path=p, expected_sha=sha)
     assert "lacks valid cited evidence" in str(excinfo.value)
 
-@patch("urllib.request.urlopen")
 @patch("subprocess.run")
-def test_citation_fabricated_sha(mock_run, mock_open, temp_run_env):
-    mock_open.side_effect = mock_urlopen
+def test_citation_fabricated_sha(mock_run, temp_run_env):
     mock_run.side_effect = mock_subprocess_run
     
     temp_dir, audits_dir = temp_run_env
@@ -470,10 +450,8 @@ def test_citation_fabricated_sha(mock_run, mock_open, temp_run_env):
         audit_team_zero_blockers(verdict_path=p, expected_sha=sha)
     assert "lacks valid cited evidence" in str(excinfo.value)
 
-@patch("urllib.request.urlopen")
 @patch("subprocess.run")
-def test_citation_valid_sha(mock_run, mock_open, temp_run_env):
-    mock_open.side_effect = mock_urlopen
+def test_citation_valid_sha(mock_run, temp_run_env):
     mock_run.side_effect = mock_subprocess_run
     
     temp_dir, audits_dir = temp_run_env
@@ -497,10 +475,8 @@ def test_citation_valid_sha(mock_run, mock_open, temp_run_env):
     sha = _compute_sha256(p)
     assert audit_team_zero_blockers(verdict_path=p, expected_sha=sha) == "PASS"
 
-@patch("urllib.request.urlopen")
 @patch("subprocess.run")
-def test_citation_no_citation(mock_run, mock_open, temp_run_env):
-    mock_open.side_effect = mock_urlopen
+def test_citation_no_citation(mock_run, temp_run_env):
     mock_run.side_effect = mock_subprocess_run
     
     temp_dir, audits_dir = temp_run_env

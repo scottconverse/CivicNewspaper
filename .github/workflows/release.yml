@@ -87,3 +87,50 @@ jobs:
       - name: Verify release artifacts
         run: |
           bash scripts/verify-release.sh
+
+  # After every platform build has uploaded its installers, aggregate a single
+  # SHA256SUMS manifest covering all published assets and attach it to the release.
+  # This is the manifest docs/install.md, README.md, and FAQ.md tell users to verify
+  # against — without this job it 404s and the "trust-without-signing" model is unactionable.
+  checksums:
+    needs: release
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all published release assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p release-assets
+          gh release download "${{ github.ref_name }}" \
+            --repo "${{ github.repository }}" \
+            --dir release-assets
+
+      - name: Generate combined SHA256SUMS
+        run: |
+          : > SHA256SUMS
+          while IFS= read -r f; do
+            ( cd release-assets && sha256sum "$f" ) >> SHA256SUMS
+          done < <(find release-assets -maxdepth 1 -type f ! -name 'SHA256SUMS*' -printf '%P\n' | sort)
+          if [ ! -s SHA256SUMS ]; then
+            echo "FAIL: no release assets were found to checksum"
+            exit 1
+          fi
+          echo "=== SHA256SUMS ==="
+          cat SHA256SUMS
+
+      - name: Upload SHA256SUMS to the release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${{ github.ref_name }}" SHA256SUMS \
+            --repo "${{ github.repository }}" --clobber
+
+      - name: Release-integrity gate (manifest present + every listed artifact published)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/verify-release-assets.sh "${{ github.ref_name }}"

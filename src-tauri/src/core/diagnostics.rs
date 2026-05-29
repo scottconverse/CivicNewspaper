@@ -25,7 +25,7 @@ pub async fn gather_diagnostics(db: &DbConn, app_data_dir: PathBuf) -> Result<Di
     let app_version = env!("CARGO_PKG_VERSION").to_string();
     let os_name = System::name().unwrap_or_else(|| "Unknown".to_string());
     let os_version = System::os_version().unwrap_or_else(|| "Unknown".to_string());
-    let tauri_version = "2.0.0".to_string(); // Fallback if tauri::VERSION isn't directly exposed in v2
+    let tauri_version = tauri::VERSION.to_string();
 
     let ollama_state = crate::tauri_cmds::ollama_health()
         .await

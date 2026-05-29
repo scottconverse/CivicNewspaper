@@ -490,7 +490,6 @@ mod tests {
     fn test_compiler_xss_safe() {
         let conn = init_db("file:test_compiler_xss_safe?mode=memory&cache=shared").unwrap();
         let temp_dir = tempdir().unwrap();
-        assert!("&lt;script&gt;".contains("&lt;script"));
 
         // Use insert_source so we have a source for the lead
         let _source_id = crate::core::db::insert_source(
@@ -569,6 +568,66 @@ mod tests {
         assert!(html2.contains("&lt;script&gt;"));
         assert!(!html2.contains("<script"));
         assert!(!html2.contains("onerror="));
+    }
+
+    #[test]
+    fn test_compiler_xss_safe_profile_fields() {
+        // ENG-002: author-controlled CommunityProfile fields (site_title,
+        // site_subtitle, about_text) are interpolated into every generated page
+        // and the RSS feed. They must be entity-encoded in all sinks, not just
+        // the draft-derived fields covered by test_compiler_xss_safe (which uses
+        // an empty profile and never exercises these paths).
+        let conn = init_db("file:test_compiler_xss_safe_profile?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+
+        let profile_json = r#"{
+            "site_title": "<script>alert('title')</script>",
+            "site_subtitle": "<img src=x onerror=alert('sub')>",
+            "about_text": "<script>alert('about')</script>",
+            "ethics_text": "ok",
+            "how_we_report_text": "ok"
+        }"#;
+
+        crate::core::compiler::compile_static_site(
+            &conn,
+            temp_dir.path().to_str().unwrap(),
+            profile_json,
+        )
+        .unwrap();
+
+        // index.html carries site_title/site_subtitle (header) and about_text (sidebar).
+        let index_html = std::fs::read_to_string(temp_dir.path().join("index.html")).unwrap();
+        assert!(
+            index_html.contains("&lt;script&gt;"),
+            "profile fields must be entity-encoded in index.html"
+        );
+        assert!(
+            !index_html.contains("<script"),
+            "no live <script> tag may form in index.html"
+        );
+        assert!(
+            !index_html.contains("<img"),
+            "no live <img> tag may form in index.html"
+        );
+
+        // feed.xml carries site_title/site_subtitle in <title>/<description>.
+        let feed_xml = std::fs::read_to_string(temp_dir.path().join("feed.xml")).unwrap();
+        assert!(
+            !feed_xml.contains("<script"),
+            "no live <script> tag may form in feed.xml"
+        );
+        assert!(
+            !feed_xml.contains("<img"),
+            "no live <img> tag may form in feed.xml"
+        );
+
+        // corrections.html and the info pages also interpolate site_title/subtitle.
+        let corrections_html =
+            std::fs::read_to_string(temp_dir.path().join("corrections.html")).unwrap();
+        assert!(
+            !corrections_html.contains("<script"),
+            "no live <script> tag may form in corrections.html"
+        );
     }
 
     #[test]
@@ -852,7 +911,7 @@ mod tests {
     // including Windows: start_for_test spawns the bundled fixture without a
     // Tauri AppHandle, so no mock_app() is constructed (P5-004 resolved).
     #[test]
-    fn test_ollama_sidecar_spawns_with_expected_pid_pattern() {
+    fn test_ollama_sidecar_spawns_a_live_child() {
         // Reserve an OS-assigned port, then release it, so the collision probe
         // sees a free port and start_for_test proceeds to spawn the fixture.
         let probe = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
@@ -915,7 +974,7 @@ mod tests {
     // returns Ok — an Ok with zero rows would pass a bare is_ok() check while
     // silently dropping every lead.
     #[tokio::test]
-    async fn test_daily_scan_command_does_not_panic_when_state_registered() {
+    async fn test_daily_scan_persists_model_leads_and_marks_run_completed() {
         let mut conn = rusqlite::Connection::open_in_memory().unwrap();
         crate::core::migrations::run_migrations(&mut conn).unwrap();
         let db_conn: DbConn = Arc::new(Mutex::new(conn));
@@ -1318,36 +1377,8 @@ mod tests {
         );
     }
 
-    // ENG-003: the orphan-`ollama serve` sweep predicate, exercised with
-    // synthetic process descriptors so the matching rule is verified without
-    // enumerating (and risking killing) real processes.
-    #[test]
-    fn test_is_orphan_ollama_serve_predicate() {
-        use crate::core::llm::OllamaSidecar as S;
-
-        // Matches: ollama by binary name running serve.
-        assert!(S::is_orphan_ollama_serve("ollama", "ollama serve"));
-        // Matches: ollama.exe with a full path command line.
-        assert!(S::is_orphan_ollama_serve(
-            "ollama.exe",
-            "C:\\Program Files\\Ollama\\ollama.exe serve"
-        ));
-        // Matches: generic process name but command line references ollama serve.
-        assert!(S::is_orphan_ollama_serve(
-            "node",
-            "/usr/local/bin/ollama serve"
-        ));
-
-        // Non-match: ollama running a different subcommand (not serve).
-        assert!(!S::is_orphan_ollama_serve("ollama", "ollama run llama3"));
-        // Non-match: a different daemon that merely uses the word "serve".
-        assert!(!S::is_orphan_ollama_serve("vite", "vite serve --port 5173"));
-        // Non-match: neither name nor command references ollama.
-        assert!(!S::is_orphan_ollama_serve("postgres", "postgres -D /data"));
-    }
-
     // B-1 remediation: the collision-detection that drives start()'s skip path
-    // is extracted into ollama_port_in_use(), so the cross-platform coexistence
+    // is extracted into port_in_use(), so the cross-platform coexistence
     // guarantee is verified on every platform (including Windows) without
     // constructing a Tauri AppHandle. mock_app() is incompatible with Windows
     // console-mode lib unit tests, which is why the prior test was ignored there
@@ -1391,5 +1422,127 @@ mod tests {
         // No child should have been spawned because the port was in use.
         let child_guard = sidecar.child.lock().unwrap();
         assert!(child_guard.is_none());
+    }
+
+    // TEST-002: the spawn side of start()'s control flow — when the probed port
+    // is free, start_internal acquires the guard and spawns a child. Exercised
+    // via start_for_test (a faithful mirror of start() post-ENG-004) so the loop
+    // wiring, not just the port-check predicate, is covered without a Tauri
+    // AppHandle. The bundled fixture runs until killed; OllamaSidecar's Drop (and
+    // the explicit stop() here) reaps it so no process leaks.
+    #[test]
+    fn test_sidecar_spawns_when_port_free() {
+        // Bind then immediately release to obtain a port number that is free for
+        // the spawn attempt.
+        let addr = {
+            let l = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+            l.local_addr().unwrap().to_string()
+        };
+
+        let sidecar = crate::core::llm::OllamaSidecar::new();
+        let res = sidecar.start_for_test(&addr);
+        assert!(res.is_ok(), "spawn path should succeed, got {:?}", res);
+
+        {
+            let child_guard = sidecar.child.lock().unwrap();
+            assert!(
+                child_guard.is_some(),
+                "a child must be spawned when the probed port is free"
+            );
+        }
+
+        // Reap the spawned fixture deterministically.
+        let _ = sidecar.stop();
+        let child_guard = sidecar.child.lock().unwrap();
+        assert!(
+            child_guard.is_none(),
+            "stop() must clear the spawned child"
+        );
+    }
+
+    // ENG-004: start() must never kill a process it did not spawn. The orphan
+    // sweep that previously enumerated processes and force-killed anything
+    // matching `ollama ... serve` has been removed; coexistence is delivered
+    // solely by the port-collision early-return. This test pins that policy by
+    // asserting an already-listening port causes start_for_test to return Ok
+    // while spawning nothing (no enumeration, no kill).
+    #[test]
+    fn test_sidecar_does_not_kill_external_listener() {
+        let _occupied = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        let addr = _occupied.local_addr().unwrap().to_string();
+
+        let sidecar = crate::core::llm::OllamaSidecar::new();
+        let res = sidecar.start_for_test(&addr);
+        assert!(res.is_ok());
+
+        // The external listener is untouched and still accepting connections.
+        assert!(
+            crate::core::llm::OllamaSidecar::port_in_use(&addr),
+            "an external listener must survive start(): we never kill processes we did not spawn"
+        );
+        let child_guard = sidecar.child.lock().unwrap();
+        assert!(child_guard.is_none());
+    }
+
+    // TEST-001: compute_hash is the sole dedup key for evidence. A silent change
+    // to its output (e.g. normalizing whitespace/case, or a crate swap) would
+    // re-ingest every item as "new" and flood the lead queue. Pin the algorithm
+    // with a golden vector and assert the raw, no-normalization contract.
+    #[test]
+    fn test_compute_hash_is_stable_and_pinned() {
+        use crate::core::scraper::compute_hash;
+
+        // Golden: SHA-256("hello world") as lowercase hex. If this ever changes,
+        // dedup semantics changed and every stored content_hash is invalidated.
+        assert_eq!(
+            compute_hash("hello world"),
+            "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"
+        );
+
+        // Deterministic: same input always hashes the same.
+        assert_eq!(compute_hash("Council agenda"), compute_hash("Council agenda"));
+
+        // Distinct inputs hash differently.
+        assert_ne!(compute_hash("a"), compute_hash("b"));
+
+        // No normalization: case and surrounding whitespace are significant, so
+        // these must NOT collide (otherwise trivially-different excerpts would be
+        // treated as duplicates and dropped).
+        assert_ne!(compute_hash("Hello"), compute_hash("hello"));
+        assert_ne!(compute_hash("agenda"), compute_hash("agenda "));
+        assert_ne!(compute_hash("agenda"), compute_hash(" agenda"));
+    }
+
+    // TEST-001: extract_entities feeds the Money-Threshold and Watchlist
+    // detectors. Pin exactly which dollar amounts and formal-org names a fixture
+    // excerpt yields, the empty-on-no-match case, and the sort+dedup contract.
+    // Known quirk pinned on purpose: the org regex greedily absorbs a preceding
+    // capitalized word, so a sentence-initial "The City Council" is captured with
+    // the leading article, while a mid-sentence "the new Parks Department" (after
+    // lowercase words) is captured clean. This fixture locks that exact behavior
+    // so any change to the regex's leading-word handling is caught as a regression.
+    #[test]
+    fn test_extract_entities_fixture() {
+        use crate::core::scraper::extract_entities;
+
+        let excerpt = "The City Council approved $1,250,000 for the new Parks Department. \
+                       The School Board also met. Total was $500. A refund of $500 was issued.";
+        let entities = extract_entities(excerpt);
+
+        // Sorted (ASCII: '$' < uppercase letters) and de-duplicated ($500 twice).
+        assert_eq!(
+            entities,
+            vec![
+                "$1,250,000".to_string(),
+                "$500".to_string(),
+                "Parks Department".to_string(),
+                "The City Council".to_string(),
+                "The School Board".to_string(),
+            ]
+        );
+
+        // Negative case: prose with no dollar amounts and no capitalized
+        // org-suffix phrase yields nothing (lowercase "council" must not match).
+        assert!(extract_entities("the council met to discuss the budget at city hall.").is_empty());
     }
 }

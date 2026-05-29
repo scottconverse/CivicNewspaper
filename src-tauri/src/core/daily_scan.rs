@@ -89,17 +89,7 @@ pub async fn run_daily_scan(
         city, state, context
     );
 
-    let model = {
-        let conn = db.lock().map_err(|_| "Failed to lock db")?;
-        let mut stmt = conn
-            .prepare("SELECT value FROM settings WHERE key = 'model.selected'")
-            .map_err(|e| e.to_string())?;
-        let val: Result<String, _> = stmt.query_row([], |row| row.get(0));
-        match val {
-            Ok(v) => v,
-            Err(_) => "phi3:mini".to_string(), // Fallback if not set
-        }
-    };
+    let model = crate::tauri_cmds::get_selected_model_or_fallback(db).await;
 
     let llm_res = llm_client
         .call(&model, &final_prompt, prompt_template)

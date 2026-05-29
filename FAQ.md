@@ -92,10 +92,11 @@ Whatever drafts you've moved to the "Approved for Static Publish" state (status 
 
 ### What does "Factual Guardrail Inspector" actually check?
 
-Three things, all keyword-based:
+Four things — the first three keyword-based, the fourth sequence-based:
 1. **Citation coverage**: every paragraph longer than 30 characters that isn't a heading or code block must contain the literal substring `evidence:` (e.g. `[Source](evidence:12)`).
 2. **Accusatory language**: if a paragraph contains any of ~20 words (`corrupt`, `stole`, `fraud`, `embezzle`, etc.), it must also contain a citation. If it doesn't, the UI flags a warning.
 3. **Presumption of innocence**: if a paragraph contains arrest-related words (`arrested`, `charged`, `indicted`, `convicted`, `prosecuted`), it must also contain a modifier like `alleged` / `allegedly` / `suspected` / `accused` nearby.
+4. **Verbatim overlap**: warns when a paragraph copies a sequence of 7+ words verbatim from a linked evidence excerpt. Rewrite it in your own words or format it as a blockquote.
 
 It is a lint rule. It is not an inspector in any AI/NLP sense.
 

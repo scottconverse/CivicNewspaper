@@ -1,0 +1,21 @@
+name: Check Design Tokens
+
+on:
+  push:
+    branches: [ "main", "v*" ]
+  pull_request:
+    branches: [ "main", "v*" ]
+
+jobs:
+  check-tokens:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Verify all var(--token) references are declared in App.css
+        run: node scripts/check-design-tokens.mjs

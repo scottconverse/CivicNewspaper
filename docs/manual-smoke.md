@@ -1,10 +1,10 @@
-# CivicNews v0.1.0-alpha Manual Smoke Test
+# CivicNews v0.2.6 Manual Smoke Test
 
 Since CivicNews is a local-first desktop application with sensitive GUI workflows, it requires manual verification on a clean system to ensure packaging and onboarding flows work as expected.
 
 ## Prerequisites
 - A clean Windows User Account or a fresh Windows Sandbox / VM.
-- No existing `%APPDATA%\com.tauri.dev\` folder.
+- No existing `%APPDATA%\org.civicnews.app\` folder.
 - No local Ollama instance running yet (the bundled sidecar will be used).
 
 ## Test Steps
@@ -51,4 +51,4 @@ Since CivicNews is a local-first desktop application with sensitive GUI workflow
 7. Verify the article page does not execute any raw HTML (XSS test: insert `<script>alert(1)</script>` into the draft body before compile, verify it is escaped or stripped).
 
 ---
-*Note: This smoke test replaces the automated clean-VM verification for v0.1.0-alpha, as AI assistants cannot natively drive the Tauri desktop GUI.*
+*Note: This smoke test stands in for automated clean-VM verification, as AI assistants cannot natively drive the Tauri desktop GUI.*

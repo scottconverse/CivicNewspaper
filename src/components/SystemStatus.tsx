@@ -1,7 +1,7 @@
 // src/components/SystemStatus.tsx
 import React, { useState } from "react";
 import { Cpu, Database, Cpu as ScraperIcon, ShieldAlert, Download } from "lucide-react";
-import { invoke } from "@tauri-apps/api/core";
+import { exportDiagnostics, toUserMessage } from "../ipc";
 import { save } from "@tauri-apps/plugin-dialog";
 
 interface SystemStatusProps {
@@ -25,12 +25,12 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
       });
       if (path) {
         setExportStatus("Exporting...");
-        await invoke('export_diagnostics', { path });
+        await exportDiagnostics(path);
         setExportStatus("Export successful!");
         setTimeout(() => setExportStatus(""), 3000);
       }
     } catch (e) {
-      setExportStatus(`Export failed: ${e}`);
+      setExportStatus(`Export failed: ${toUserMessage(e)}`);
     }
   };
 
@@ -48,7 +48,7 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
       </div>
       
       {exportStatus && (
-        <div style={{ marginBottom: "1rem", padding: "0.5rem", backgroundColor: "var(--bg-secondary)", borderRadius: "4px", fontSize: "0.9rem" }}>
+        <div style={{ marginBottom: "1rem", padding: "0.5rem", backgroundColor: "var(--bg-app)", borderRadius: "4px", fontSize: "0.9rem" }}>
           {exportStatus}
         </div>
       )}

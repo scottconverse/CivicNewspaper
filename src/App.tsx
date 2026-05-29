@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { invoke } from "@tauri-apps/api/core";
+import { isOnboardingComplete } from "./ipc";
 import { useApp } from "./useApp";
 import { Layout } from "./components/Layout";
 import { AppContent } from "./components/AppContent";
@@ -11,7 +11,7 @@ function App() {
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null);
 
   useEffect(() => {
-    invoke<boolean>("is_onboarding_complete")
+    isOnboardingComplete()
       .then(setOnboardingComplete)
       .catch((e) => {
         console.error(e);
@@ -25,7 +25,7 @@ function App() {
 
   if (!onboardingComplete) {
     return (
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'var(--bg-primary)', zIndex: 9999, overflow: 'auto' }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'var(--bg-app)', zIndex: 9999, overflow: 'auto' }}>
         <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
           <OnboardingWizard
             ollamaOnline={app.ollamaOnline}
@@ -44,7 +44,6 @@ function App() {
         app.setActiveTab(tab);
         app.setSelectedLead(null);
       }}
-      updateAvailable={app.updateAvailable}
       ollamaOnline={app.ollamaOnline}
       selectedDraft={app.selectedDraft}
     >

@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Progressive enhancement: mark that JS is running. The scroll-reveal
+         animation hides `.fade-up` sections until JS reveals them, but that
+         hidden state is scoped to `.js` in the CSS. Without this class (JS
+         disabled, or this script never runs) every section stays visible
+         instead of rendering a blank page. -->
+    <script>document.documentElement.classList.add('js');</script>
     <title>CivicNews | Reclaiming Factual Local News</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="https://unpkg.com/lucide@0.456.0"></script>
 </head>
 <body>
 
@@ -25,7 +30,7 @@
                 <a href="#features">Features</a>
                 <a href="#how-it-works">How It Works</a>
                 <a href="#architecture">Architecture</a>
-                <a href="./user_manual.md" class="nav-btn-secondary" target="_blank">User Manual</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/user_manual.md" class="nav-btn-secondary" target="_blank">User Manual</a>
                 <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank" class="nav-btn-primary">GitHub</a>
             </div>
         </div>
@@ -46,7 +51,7 @@
                         <i data-lucide="monitor"></i> Download for Windows
                     </a>
                     <div class="install-callout">
-                        <a href="install.md" class="callout-link" aria-label="First time installing on Windows?">
+                        <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/install.md" class="callout-link" aria-label="First time installing on Windows?">
                             <i data-lucide="help-circle"></i> First time installing?
                         </a>
                     </div>
@@ -57,7 +62,7 @@
                         <i data-lucide="apple"></i> Download for macOS
                     </a>
                     <div class="install-callout">
-                        <a href="install.md" class="callout-link" aria-label="First time installing on macOS?">
+                        <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/install.md" class="callout-link" aria-label="First time installing on macOS?">
                             <i data-lucide="help-circle"></i> First time installing?
                         </a>
                     </div>
@@ -68,16 +73,11 @@
                         <i data-lucide="terminal"></i> Download for Linux
                     </a>
                     <div class="install-callout">
-                        <a href="install.md" class="callout-link" aria-label="First time installing on Linux?">
+                        <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/install.md" class="callout-link" aria-label="First time installing on Linux?">
                             <i data-lucide="help-circle"></i> First time installing?
                         </a>
                     </div>
                 </div>
-            </div>
-
-            <div class="hero-preview-placeholder">
-                <h3>Interactive Preview Coming Soon</h3>
-                <p>The screenshot preview of the new dashboard interface is temporarily offline while we update the layout mockups to match the final production VM state.</p>
             </div>
         </div>
     </header>
@@ -132,7 +132,7 @@
                     <div class="step-number">1</div>
                     <div class="step-content">
                         <h3>Scrape Sources</h3>
-                        <p>Link your local city hall, school board, or police department feeds. CivicNews pulls down their public documents and PDFs securely.</p>
+                        <p>Link your local city hall, school board, or police department feeds. CivicNews pulls down their public documents securely.</p>
                     </div>
                 </div>
                 
@@ -156,7 +156,7 @@
                     <div class="step-number">4</div>
                     <div class="step-content">
                         <h3>Publish Statically</h3>
-                        <p>Use the built-in wizard to compile a beautiful flat HTML site and social media promo posts. Drag and drop the folder to Netlify, Vercel, or GitHub Pages for free, fast hosting.</p>
+                        <p>Use the built-in wizard to compile a beautiful flat HTML site (and, if you like, generate copy-ready social blurbs with the optional local-AI social-pack task). Drag and drop the folder to Netlify, Vercel, or GitHub Pages for free, fast hosting.</p>
                     </div>
                 </div>
             </div>
@@ -188,14 +188,49 @@
                     </div>
                     <div class="arch-visual">
                         <div class="mermaid-container">
-                            <div class="mermaid">
-graph TD
-    A[Browser Extension / UI] <-->|Pairing PIN / API| B[Tauri HTTP Loopback Server Axum]
-    B <--> C[Tauri Rust Core]
-    C <--> D[SQLite DB WAL Mode]
-    C <--> E["Ollama Sidecar (Mach-O Universal / PE / ELF)"]
-    C --> F[Flat HTML Compiler]
-                            </div>
+                            <svg class="arch-svg" viewBox="0 0 560 460" role="img" aria-labelledby="arch-svg-title arch-svg-desc" xmlns="http://www.w3.org/2000/svg">
+                                <title id="arch-svg-title">CivicNews architecture diagram</title>
+                                <desc id="arch-svg-desc">The browser extension or UI connects via a pairing PIN and API to the Tauri HTTP loopback server (Axum), which talks to the Tauri Rust core. The Rust core connects bidirectionally to a SQLite WAL database and the Ollama sidecar, and one-way to the flat HTML compiler.</desc>
+                                <defs>
+                                    <marker id="arch-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                                        <path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"></path>
+                                    </marker>
+                                </defs>
+
+                                <g stroke="#94a3b8" stroke-width="2" fill="none">
+                                    <line x1="280" y1="80" x2="280" y2="122" marker-start="url(#arch-arrow)" marker-end="url(#arch-arrow)"></line>
+                                    <line x1="280" y1="180" x2="280" y2="222" marker-start="url(#arch-arrow)" marker-end="url(#arch-arrow)"></line>
+                                    <line x1="220" y1="280" x2="100" y2="356" marker-start="url(#arch-arrow)" marker-end="url(#arch-arrow)"></line>
+                                    <line x1="280" y1="280" x2="280" y2="356" marker-start="url(#arch-arrow)" marker-end="url(#arch-arrow)"></line>
+                                    <line x1="340" y1="280" x2="460" y2="356" marker-end="url(#arch-arrow)"></line>
+                                </g>
+
+                                <text x="292" y="105" fill="#94a3b8" font-size="11" font-family="Inter, sans-serif">Pairing PIN / API</text>
+
+                                <g font-family="Outfit, sans-serif" font-weight="700" font-size="14" text-anchor="middle">
+                                    <rect x="160" y="24" width="240" height="56" rx="10" fill="#1e40af" stroke="#3b82f6" stroke-width="1.5"></rect>
+                                    <text x="280" y="57" fill="#f8fafc">Browser Extension / UI</text>
+
+                                    <rect x="160" y="124" width="240" height="56" rx="10" fill="#4c1d95" stroke="#8b5cf6" stroke-width="1.5"></rect>
+                                    <text x="280" y="148" fill="#f8fafc">Tauri HTTP Loopback</text>
+                                    <text x="280" y="167" fill="#f8fafc">Server (Axum)</text>
+
+                                    <rect x="160" y="224" width="240" height="56" rx="10" fill="#065f46" stroke="#10b981" stroke-width="1.5"></rect>
+                                    <text x="280" y="257" fill="#f8fafc">Tauri Rust Core</text>
+
+                                    <rect x="16" y="356" width="168" height="76" rx="10" fill="#374151" stroke="#6b7280" stroke-width="1.5"></rect>
+                                    <text x="100" y="388" fill="#f8fafc">SQLite DB</text>
+                                    <text x="100" y="407" fill="#f8fafc">(WAL Mode)</text>
+
+                                    <rect x="196" y="356" width="168" height="76" rx="10" fill="#374151" stroke="#6b7280" stroke-width="1.5"></rect>
+                                    <text x="280" y="388" fill="#f8fafc">Ollama Sidecar</text>
+                                    <text x="280" y="407" fill="#cbd5e1" font-size="10" font-weight="400">PE / ELF / Mach-O</text>
+
+                                    <rect x="376" y="356" width="168" height="76" rx="10" fill="#374151" stroke="#6b7280" stroke-width="1.5"></rect>
+                                    <text x="460" y="388" fill="#f8fafc">Flat HTML</text>
+                                    <text x="460" y="407" fill="#f8fafc">Compiler</text>
+                                </g>
+                            </svg>
                         </div>
                     </div>
                 </div>
@@ -213,7 +248,7 @@ graph TD
                 <p>Open-source civic intelligence.</p>
             </div>
             <div class="footer-links">
-                <a href="./user_manual.md" target="_blank">User Manual</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/user_manual.md" target="_blank">User Manual</a>
                 <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/architecture.md" target="_blank">Architecture Specs</a>
                 <a href="https://github.com/scottconverse/CivicNewspaper/discussions" target="_blank">Community Discussions</a>
                 <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank">GitHub</a>

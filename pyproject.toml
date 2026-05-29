@@ -1,0 +1,11 @@
+# Python tooling config for this otherwise Rust+TS repo. The only Python lives
+# under scripts/; this file exists so the policy-gate tests can be run from the
+# repo root.
+[tool.pytest.ini_options]
+# scripts/policy is a package (has __init__.py), and its tests do a top-level
+# `from auto_promote import ...`. Without this, `python -m pytest scripts/policy/`
+# from the repo root fails to import auto_promote (it only resolves when pytest
+# is invoked from inside scripts/policy, where -m puts the cwd on sys.path).
+# Putting the dir on pythonpath makes the tests pass regardless of invocation cwd.
+pythonpath = ["scripts/policy"]
+testpaths = ["scripts/policy"]

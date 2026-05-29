@@ -1,6 +1,5 @@
 // src/useApp.ts
 import { useState, useEffect, useRef } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { documentDir, join } from "@tauri-apps/api/path";
 import {
@@ -39,9 +38,20 @@ import {
   DiscoveredSource,
   DiscoveredSourceCategory,
   GuardrailsReport,
-  runDailyScan
+  runDailyScan,
+  getSetting,
+  setSetting,
+  toUserMessage
 } from "./ipc";
 import modelsConfig from "./models.json";
+
+export interface ConfirmDialogState {
+  title: string;
+  message: string;
+  confirmLabel: string;
+  danger: boolean;
+  onConfirm: () => void | Promise<void>;
+}
 
 export interface OllamaPullProgress {
   model?: string;
@@ -67,9 +77,6 @@ export function useApp() {
   // Navigation
   const [activeTab, setActiveTab] = useState<string>("queue");
   const [onboardingStep, setOnboardingStep] = useState<number>(1);
-
-  // Updater
-  const [updateAvailable, setUpdateAvailable] = useState<any>(null);
 
   // App Data
   const [sources, setSources] = useState<Source[]>([]);
@@ -103,6 +110,10 @@ export function useApp() {
 
   const [correctionNote, setCorrectionNote] = useState("");
   const [showCorrectionModal, setShowCorrectionModal] = useState(false);
+
+  // Generic confirmation dialog (replaces native window.confirm so destructive
+  // actions get consequence-specific copy in the styled, accessible Modal).
+  const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState | null>(null);
 
   // Discovery State
   const [showDiscoveryModal, setShowDiscoveryModal] = useState(false);
@@ -172,19 +183,6 @@ export function useApp() {
       }
     }
     loadAppVersion();
-
-    async function checkForUpdates() {
-      try {
-        const { check } = await import('@tauri-apps/plugin-updater');
-        const update = await check();
-        if (update) {
-          setUpdateAvailable(update);
-        }
-      } catch (err) {
-        console.error("Updater check failed", err);
-      }
-    }
-    checkForUpdates();
   }, []);
 
   // Initial Load
@@ -195,10 +193,10 @@ export function useApp() {
     getSystemRam().then(async (ram) => {
       setSystemRam(ram);
       try {
-        let model = await invoke<string | null>("get_setting", { key: "model.selected" });
+        let model = await getSetting("model.selected");
         if (!model) {
           model = ram >= 12 ? modelsConfig.high : ram >= 8 ? modelsConfig.medium : modelsConfig.low;
-          await invoke("set_setting", { key: "model.selected", value: model });
+          await setSetting("model.selected", model);
         }
         setWizardModel(model);
       } catch (err) {
@@ -259,7 +257,7 @@ export function useApp() {
       setPairedClients(clients);
 
       try {
-        const model = await invoke<string | null>("get_setting", { key: "model.selected" });
+        const model = await getSetting("model.selected");
         if (model) {
           setWizardModel(model);
         }
@@ -269,7 +267,7 @@ export function useApp() {
 
       setErrorMessage("");
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setLoading(false);
     }
@@ -293,7 +291,7 @@ export function useApp() {
       setStatusMessage(`Ingest complete. Detected ${newLeadsCount} new lead(s).`);
       await loadInitialData();
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setLoading(false);
     }
@@ -305,7 +303,7 @@ export function useApp() {
       setStatusMessage("Checking AI model presence...");
       setErrorMessage("");
 
-      const model = await invoke<string | null>("get_setting", { key: "model.selected" });
+      const model = await getSetting("model.selected");
       if (!model) {
         setErrorMessage("Daily Scan requires a selected AI model, but none was configured.");
         setOnboardingStep(3);
@@ -328,7 +326,7 @@ export function useApp() {
       setStatusMessage(`Daily Scan complete (Scan ID: ${scanId}).`);
       await loadInitialData();
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setLoading(false);
     }
@@ -346,7 +344,7 @@ export function useApp() {
       const s = await getSources();
       setSources(s);
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setLoading(false);
     }
@@ -360,7 +358,7 @@ export function useApp() {
       const s = await getSources();
       setSources(s);
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setLoading(false);
     }
@@ -382,7 +380,7 @@ export function useApp() {
       });
       setSelectedDiscovered(allDiscovered);
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setDiscoveryLoading(false);
     }
@@ -421,7 +419,7 @@ export function useApp() {
       const s = await getSources();
       setSources(s);
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setLoading(false);
     }
@@ -486,7 +484,7 @@ export function useApp() {
       const s = await getSources();
       setSources(s);
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setBulkImportLoading(false);
     }
@@ -504,7 +502,7 @@ export function useApp() {
       const clients = await listPairedClients();
       setPairedClients(clients);
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setLoading(false);
     }
@@ -518,7 +516,7 @@ export function useApp() {
       const clients = await listPairedClients();
       setPairedClients(clients);
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setLoading(false);
     }
@@ -531,7 +529,7 @@ export function useApp() {
       setCommunityProfile(profile);
       setStatusMessage("Ethics standard and community profile updated.");
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setLoading(false);
     }
@@ -576,7 +574,7 @@ export function useApp() {
       setStatusMessage("Draft generated successfully.");
       await loadInitialData();
     } catch (e: any) {
-      setErrorMessage(`Ollama drafting failed: ${e.toString()}.`);
+      setErrorMessage(`Ollama drafting failed: ${toUserMessage(e)}`);
     } finally {
       setGeneratingText(false);
     }
@@ -600,7 +598,7 @@ export function useApp() {
         setGuardrailsReport(report);
       }
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     }
   };
 
@@ -618,7 +616,7 @@ export function useApp() {
       
       await loadInitialData();
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setLoading(false);
     }
@@ -633,7 +631,7 @@ export function useApp() {
       setStatusMessage(`Story status updated to '${status}'.`);
       await loadInitialData();
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setLoading(false);
     }
@@ -649,7 +647,7 @@ export function useApp() {
       setStatusMessage("Static Newspaper compiled successfully!");
       setPublishStep(3);
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setLoading(false);
     }
@@ -677,14 +675,21 @@ export function useApp() {
       }
       await loadInitialData();
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDeleteDraft = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this draft?")) return;
+  const closeConfirmDialog = () => setConfirmDialog(null);
+
+  const handleConfirmDialogConfirm = async () => {
+    const action = confirmDialog?.onConfirm;
+    setConfirmDialog(null);
+    if (action) await action();
+  };
+
+  const performDeleteDraft = async (id: number) => {
     try {
       setLoading(true);
       await deleteDraft(id);
@@ -693,10 +698,21 @@ export function useApp() {
       setStatusMessage("Draft deleted.");
       await loadInitialData();
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDeleteDraft = (id: number) => {
+    setConfirmDialog({
+      title: "Delete draft?",
+      message:
+        "This draft will be permanently deleted. This can't be undone.",
+      confirmLabel: "Delete draft",
+      danger: true,
+      onConfirm: () => performDeleteDraft(id),
+    });
   };
 
   const handleGenerateSocial = async () => {
@@ -713,7 +729,7 @@ export function useApp() {
       setSocialPackResult(result);
       setStatusMessage("Social media pack generated!");
     } catch (e: any) {
-      setErrorMessage(`Failed to generate social posts: ${e.toString()}`);
+      setErrorMessage(`Failed to generate social posts: ${toUserMessage(e)}`);
     } finally {
       setIsGeneratingSocial(false);
     }
@@ -727,15 +743,13 @@ export function useApp() {
       await backupSave(backupPathInput);
       setStatusMessage(`Backup database successfully written to: ${backupPathInput}`);
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setLoading(false);
     }
   };
 
-  const handleBackupRestore = async () => {
-    if (!backupPathInput) return;
-    if (!confirm("WARNING: Proceed?")) return;
+  const performBackupRestore = async () => {
     try {
       setLoading(true);
       setErrorMessage("");
@@ -743,10 +757,22 @@ export function useApp() {
       setStatusMessage("Database successfully restored from backup.");
       await loadInitialData();
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleBackupRestore = () => {
+    if (!backupPathInput) return;
+    setConfirmDialog({
+      title: "Restore from backup?",
+      message:
+        "Restoring this backup will replace all current drafts, sources, and settings. This can't be undone.",
+      confirmLabel: "Restore backup",
+      danger: true,
+      onConfirm: performBackupRestore,
+    });
   };
 
   const handlePullModel = () => {
@@ -755,7 +781,7 @@ export function useApp() {
     setPullProgressText(["Initializing download..."]);
     pullOllamaModel(wizardModel).catch((e) => {
       setPullingModel(false);
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     });
   };
 
@@ -769,7 +795,7 @@ export function useApp() {
       const result = await llmTask(customLlmPrompt, customLlmSystem);
       setCustomLlmResult(result);
     } catch (e: any) {
-      setErrorMessage(e.toString());
+      setErrorMessage(toUserMessage(e));
     } finally {
       setCustomLlmRunning(false);
     }
@@ -778,7 +804,6 @@ export function useApp() {
   return {
     activeTab,
     setActiveTab,
-    updateAvailable,
     sources,
     leads,
     drafts,
@@ -815,6 +840,9 @@ export function useApp() {
     setCorrectionNote,
     showCorrectionModal,
     setShowCorrectionModal,
+    confirmDialog,
+    closeConfirmDialog,
+    handleConfirmDialogConfirm,
     showDiscoveryModal,
     setShowDiscoveryModal,
     discoveryCity,

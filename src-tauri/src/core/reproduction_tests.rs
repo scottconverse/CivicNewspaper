@@ -1,4 +1,27 @@
 // core/reproduction_tests.rs
+//
+// TEST-006: This file is a MIX of two kinds of guard — read the per-test
+// comments before trusting any one of them as behavioral coverage.
+//
+//   * BEHAVIORAL guards: `reproduce_m1_cfg_family_bypass` and its detector
+//     self-test parse cfg predicates and check the *compiled* test set against
+//     the authorization whitelist — they assert an outcome, not a string, and
+//     are immune to source wording. `reproduce_m3_test_verifies_model_gating_
+//     behavior` additionally asserts the real negative-path test exists.
+//
+//   * SOURCE-TEXT ANTI-REGRESSION guards: `reproduce_m2_*`, `reproduce_m4_*`,
+//     `reproduce_m5_*` (and the grep-bait clauses inside m3) import files as
+//     strings and assert specific gamed strings (past audit findings M-2/M-4/
+//     M-5 etc.) cannot return. They prove the text is ABSENT, NOT that the
+//     rendered UI or runtime behaves correctly — a new way to hardcode a model
+//     that doesn't match the pinned string would slip past them. The behavioral
+//     coverage for those lives elsewhere and must not be replaced by these:
+//       - src/test_useapp_daily_scan_passes_settings_model.test.tsx renders
+//         useApp with a mocked IPC and proves the selected model gates the scan.
+//       - src/components/OnboardingWizard.test.tsx exercises the real step flow.
+//       - core/tests.rs / core/daily_scan.rs cover the Rust scan path.
+// Do NOT expand the source-grep guards to new features; render/run and assert
+// behavior instead.
 #[cfg(test)]
 mod tests {
     use std::fs;

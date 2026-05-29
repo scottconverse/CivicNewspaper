@@ -425,15 +425,28 @@ footer {
 }
 
 /* Animations */
-.fade-up {
+/* Only hide sections for the scroll-reveal when JS is actually running (the
+   inline head script adds `.js`). If JS is disabled or the reveal script never
+   runs, `.fade-up` keeps its default visible state rather than leaving the page
+   blank. */
+.js .fade-up {
     opacity: 0;
     transform: translateY(30px);
     transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.fade-up.visible {
+.js .fade-up.visible {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* Respect users who prefer reduced motion: show content immediately, no slide. */
+@media (prefers-reduced-motion: reduce) {
+    .js .fade-up {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
 }
 
 /* Responsive */
@@ -441,23 +454,29 @@ footer {
     .nav-toggle-label {
         display: flex;
         align-items: center;
-        width: 30px;
-        height: 30px;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
         position: relative;
     }
-    
+
     .nav-toggle-label span,
     .nav-toggle-label span::before,
     .nav-toggle-label span::after {
         display: block;
         background: var(--text-primary);
         height: 2px;
-        width: 100%;
+        width: 26px;
         border-radius: 2px;
         position: absolute;
         transition: all 0.3s ease;
     }
-    
+
+    .nav-toggle-label span {
+        left: 9px;
+        top: 50%;
+    }
+
     .nav-toggle-label span::before {
         content: '';
         top: -8px;
@@ -536,30 +555,6 @@ footer {
     .download-card.highlighted {
         transform: translateY(-2px) scale(1.02);
     }
-}
-
-/* Hero Image Showcase Preview */
-.hero-preview-placeholder {
-    border: 2px dashed rgba(255, 255, 255, 0.15);
-    border-radius: 12px;
-    padding: 40px;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.03);
-    margin-top: 40px;
-    width: 100%;
-}
-
-.hero-preview-placeholder h3 {
-    color: #fff;
-    margin-bottom: 12px;
-}
-
-.hero-preview-placeholder p {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    max-width: 600px;
-    margin: 0 auto;
 }
 
 /* Download Cards Grid */
@@ -705,32 +700,12 @@ footer {
     width: 100%;
 }
 
-.mermaid {
+.arch-svg {
     width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-/* Mermaid visual overrides (applying modern aesthetic adjustments) */
-.mermaid svg {
-    max-width: 100% !important;
-    height: auto !important;
-}
-
-.mermaid svg .node rect, 
-.mermaid svg .node circle, 
-.mermaid svg .node polygon {
-    fill: rgba(30, 41, 59, 0.9) !important;
-    stroke: rgba(255, 255, 255, 0.15) !important;
-    stroke-width: 1.5px !important;
-    transition: all 0.3s ease;
-}
-
-.mermaid svg .node:hover rect,
-.mermaid svg .node:hover circle,
-.mermaid svg .node:hover polygon {
-    stroke: var(--accent-primary) !important;
-    filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.5));
+    max-width: 560px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
 }
 
 /* Accessibility focus styles for navigation hamburger menu */
@@ -749,4 +724,78 @@ footer {
     outline: 2px solid var(--accent-primary);
     outline-offset: 3px;
     border-radius: 8px;
+}
+
+/* Light-theme token set. Mirrors the dark palette for visitors whose OS
+   requests a light color scheme. Placed last so these overrides win on source
+   order when the media query matches. */
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg-base: #f8fafc;
+        --bg-surface: #ffffff;
+        --bg-surface-elevated: rgba(255, 255, 255, 0.75);
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --accent-primary: #2563eb;
+        --accent-secondary: #7c3aed;
+        --border-color: rgba(15, 23, 42, 0.12);
+        --shadow-sm: 0 4px 6px -1px rgba(15, 23, 42, 0.08);
+        --shadow-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.12);
+    }
+
+    a:hover {
+        color: #1d4ed8;
+    }
+
+    nav {
+        background: rgba(248, 250, 252, 0.85);
+    }
+
+    .pill {
+        color: #2563eb;
+    }
+
+    .btn-secondary,
+    .nav-btn-secondary {
+        background: rgba(15, 23, 42, 0.05);
+    }
+
+    .btn-secondary:hover,
+    .nav-btn-secondary:hover {
+        background: rgba(15, 23, 42, 0.1);
+        color: var(--text-primary);
+    }
+
+    .download-card {
+        background: rgba(255, 255, 255, 0.7);
+        border-color: rgba(15, 23, 42, 0.1);
+    }
+
+    .download-card:hover {
+        background: #ffffff;
+        border-color: rgba(15, 23, 42, 0.2);
+    }
+
+    .download-btn {
+        background: rgba(15, 23, 42, 0.04);
+        border-color: rgba(15, 23, 42, 0.12);
+    }
+
+    .download-btn:hover {
+        background: rgba(15, 23, 42, 0.08);
+        border-color: rgba(15, 23, 42, 0.2);
+        color: var(--text-primary);
+    }
+
+    .mermaid-container {
+        background: rgba(255, 255, 255, 0.8);
+        border-color: rgba(15, 23, 42, 0.08);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+    }
+}
+
+@media (max-width: 768px) and (prefers-color-scheme: light) {
+    .nav-links {
+        background: rgba(248, 250, 252, 0.97);
+    }
 }

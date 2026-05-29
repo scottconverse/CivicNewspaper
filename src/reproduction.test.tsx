@@ -1,4 +1,16 @@
 // src/reproduction.test.tsx
+//
+// TEST-006: These are SOURCE-TEXT ANTI-REGRESSION GUARDS, not behavioral tests.
+// They import component/hook source as raw strings and assert specific gamed
+// strings (from past audit findings M-2/M-4 etc.) cannot return. They prove the
+// text is absent, NOT that the rendered UI behaves correctly — a new way to
+// hardcode a model that doesn't match the pinned string would slip past them.
+// The behavioral coverage lives elsewhere and must not be replaced by these:
+//   - test_useapp_daily_scan_passes_settings_model.test.tsx renders useApp with
+//     a mocked IPC and proves the selected model actually gates the scan.
+//   - OnboardingWizard.test.tsx exercises the real step flow and model picker.
+// Do NOT expand this source-grep pattern to new features; render and assert
+// behavior instead.
 import { describe, test, expect } from "vitest";
 import OnboardingWizardText from "./components/OnboardingWizard.tsx?raw";
 import useAppText from "./useApp.ts?raw";

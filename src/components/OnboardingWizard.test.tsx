@@ -24,7 +24,6 @@ vi.mock("@tauri-apps/plugin-opener", () => ({
 describe("OnboardingWizard Component Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    window.confirm = vi.fn(() => true);
   });
 
   test("Happy path: completes onboarding and calls onComplete", async () => {
@@ -47,7 +46,9 @@ describe("OnboardingWizard Component Tests", () => {
 
     // Step 2
     await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
-    expect(screen.getByText(new RegExp(gemma2_9b))).toBeInTheDocument();
+    // The RAM-based model recommendation renders via a separate async path from
+    // the step indicator, so await it rather than asserting synchronously.
+    await waitFor(() => expect(screen.getByText(new RegExp(gemma2_9b))).toBeInTheDocument());
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
     // Step 3
@@ -84,6 +85,10 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(screen.getByText("Bundled Ollama Sidecar Starting")).toBeInTheDocument());
     expect(screen.getByRole("button", { name: /Skip for now/i })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Skip for now/i }));
+
+    // Confirm the skip in the styled dialog (replaces native window.confirm)
+    await waitFor(() => expect(screen.getByRole("button", { name: /Skip setup/i })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: /Skip setup/i }));
 
     // Should skip to step 4 because step 3 (pull model) is also skipped
     await waitFor(() => expect(screen.getByText("Step 4 of 5")).toBeInTheDocument());

@@ -57,7 +57,7 @@ for d in "${SEARCH_DIRS[@]}"; do
       if [ -f "$file" ]; then
         ARTIFACTS+=("$file")
       fi
-    done < <(find "$d" -type f -name "*.deb" -o -name "*.dmg" -o -name "*.msi" -o -name "*.AppImage" -o -name "*.zip" 2>/dev/null)
+    done < <(find "$d" -type f -name "*.deb" -o -name "*.dmg" -o -name "*.msi" -o -name "*.zip" 2>/dev/null)
   fi
 done
 
@@ -108,17 +108,6 @@ for artifact in "${ARTIFACTS[@]}"; do
         msiexec /a "$artifact" /qb TARGETDIR="$tmp_extract"
       else
         7z x -o"$tmp_extract" "$artifact" || true
-      fi
-      ;;
-    *.AppImage)
-      echo "Extracting AppImage..."
-      if command -v 7z &>/dev/null; then
-        7z x -o"$tmp_extract" "$artifact"
-      else
-        cd "$tmp_extract"
-        chmod +x "$artifact"
-        "$artifact" --appimage-extract >/dev/null
-        cd - >/dev/null
       fi
       ;;
     *.zip)

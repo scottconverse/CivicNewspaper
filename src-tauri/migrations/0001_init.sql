@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS paired_clients (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     token TEXT NOT NULL UNIQUE,
     label TEXT NOT NULL,
-    pairing_pin TEXT, -- 6-digit short-lived PIN
+    pairing_pin TEXT, -- SHA-256 hash of the one-time 22-char base64 pairing token (legacy column name; not a numeric PIN)
     pin_expires_at TEXT, -- Timestamp
     created_at TEXT NOT NULL,
     last_used_at TEXT,

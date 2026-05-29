@@ -1,7 +1,7 @@
 // src/components/Workbench.tsx
 import React, { useState, useEffect } from "react";
 import { CheckCircle, AlertTriangle, Info, FileText } from "lucide-react";
-import { Lead, Draft, EvidenceItem, GuardrailsReport } from "../ipc";
+import { Lead, Draft, EvidenceItem, GuardrailsReport, plainLanguageRewrite } from "../ipc";
 import { Modal } from "./Modal";
 
 type DiffRow = { text: string; type: "same" | "removed" | "added" };
@@ -306,7 +306,6 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                       setIsRewriting(true);
                       setError(null);
                       try {
-                        const { plainLanguageRewrite } = await import('../ipc');
                         const rewrite = await plainLanguageRewrite(selectedDraft.content, selectedDraft.format);
                         setRewritePreview(rewrite);
                       } catch (error: any) {

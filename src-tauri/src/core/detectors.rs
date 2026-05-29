@@ -50,6 +50,16 @@ pub fn run_detectors(
     // High-risk legal keywords raising warning levels
     let re_high_risk = Regex::new(r"(?i)\b(arrested|charged|indicted|felony|misdemeanor|prosecute|lawsuit|alleged|defendant|plaintiff|litigation)\b").unwrap();
 
+    // Pre-compile watchlist regexes once, not per evidence item (regex compilation is
+    // the expensive step; matching is cheap). Mirrors the pre-compiled detectors above.
+    let watchlist_res: Vec<(&String, Regex)> = watchlist
+        .iter()
+        .map(|term| {
+            let re = Regex::new(&format!(r"(?i)\b{}\b", regex::escape(term))).unwrap();
+            (term, re)
+        })
+        .collect();
+
     // 1. Check "Source went quiet" detector (Source-level)
     for source in &sources {
         if let (Some(last_success), Some(last_scrape)) =
@@ -275,9 +285,7 @@ pub fn run_detectors(
             }
 
             // 8. Watchlist Hit Detector
-            for term in &watchlist {
-                let term_escaped = regex::escape(term);
-                let re_term = Regex::new(&format!(r"(?i)\b{}\b", term_escaped)).unwrap();
+            for (term, re_term) in &watchlist_res {
                 if re_term.is_match(&excerpt) {
                     let why = format!("WATCHLIST HIT: The tracked keyword '{}' was found in a new record from '{}'.", term, source_name);
                     let checklist = vec![
@@ -322,8 +330,8 @@ fn lead_exists(conn: &Connection, detector_name: &str, why: &str) -> Result<bool
 fn format_money(val: f64) -> String {
     let s = format!("{:.2}", val);
     let parts: Vec<&str> = s.split('.').collect();
-    let integer_part = parts[0];
-    let decimal_part = parts[1];
+    let integer_part = parts.first().copied().unwrap_or("0");
+    let decimal_part = parts.get(1).copied().unwrap_or("00");
 
     let mut result = String::new();
     let num_bytes = integer_part.len();

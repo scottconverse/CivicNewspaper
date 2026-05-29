@@ -18,17 +18,10 @@
       }
     ],
     "security": {
-      "csp": "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:* ws://localhost:* https://github.com; img-src 'self' asset: https: data:; font-src 'self';"
+      "csp": "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:* ws://localhost:*; img-src 'self' asset: https: data:; font-src 'self';"
     }
   },
-  "plugins": {
-    "updater": {
-      "active": false,
-      "endpoints": [
-        "https://github.com/scottconverse/CivicNewspaper/releases/latest/download/latest.json"
-      ]
-    }
-  },
+  "plugins": {},
   "bundle": {
     "active": true,
     "targets": "all",

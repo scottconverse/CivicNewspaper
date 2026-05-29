@@ -265,15 +265,14 @@ pub struct OllamaSidecar {
 }
 
 impl OllamaSidecar {
+    /// The default loopback address Ollama listens on. `start()` probes this to
+    /// decide whether to coexist with an already-running instance.
+    const OLLAMA_LOCAL_ADDR: &'static str = "127.0.0.1:11434";
+
     pub fn new() -> Self {
         Self {
             child: Mutex::new(None),
         }
-    }
-
-    /// Returns true if something is already listening on the Ollama port (11434).
-    pub(crate) fn ollama_port_in_use() -> bool {
-        Self::port_in_use("127.0.0.1:11434")
     }
 
     /// Returns true if a TCP listener is reachable at `addr`. Extracted and
@@ -290,34 +289,28 @@ impl OllamaSidecar {
         }
     }
 
-    /// Decides whether a process — identified by its `name` and full `cmd` line —
-    /// is an orphaned `ollama serve` the startup sweep should reap. Extracted as a
-    /// pure function so the matching rule is unit-testable with synthetic inputs
-    /// without enumerating real processes (which would be non-deterministic and,
-    /// worse, could match a developer's intentional `ollama serve`). A process
-    /// qualifies only when it both references ollama (by binary name or command)
-    /// and is running the `serve` subcommand.
-    pub(crate) fn is_orphan_ollama_serve(name: &str, cmd: &str) -> bool {
-        (name.contains("ollama") || cmd.contains("ollama")) && cmd.contains("serve")
-    }
-
-    pub fn start<R: tauri::Runtime>(
+    /// Shared, testable control flow for bringing up the sidecar. The only
+    /// production-vs-test divergence is the `spawn` closure: production spawns the
+    /// shell-plugin `ollama` sidecar (which needs an `AppHandle`), tests spawn the
+    /// bundled fixture. Everything else lives here so it is exercised identically
+    /// by the shipping `start()` and by `start_for_test`.
+    ///
+    /// ENG-004: we deliberately do **not** sweep/kill other `ollama serve`
+    /// processes. Coexistence with a user-managed Ollama is delivered solely by
+    /// the port-collision early-return below — a previous version enumerated
+    /// processes and force-killed anything matching `ollama ... serve`, which
+    /// could reap a user's deliberate instance running on a non-default port (or
+    /// one still mid-startup). The upside of reaping a truly-orphaned child is
+    /// small next to the cost of killing a process we did not spawn.
+    fn start_internal(
         &self,
-        app: &AppHandle<R>,
+        probe_addr: &str,
+        spawn: impl FnOnce() -> Result<SidecarChild, Box<dyn Error + Send + Sync>>,
     ) -> Result<(), Box<dyn Error + Send + Sync>> {
-        // Port 11434 collision check: graceful coexistence
-        if Self::ollama_port_in_use() {
+        // If something is already listening on the port, attach to it rather than
+        // starting anything new.
+        if Self::port_in_use(probe_addr) {
             return Ok(());
-        }
-
-        // Startup sweep for orphan ollama processes
-        let sys = sysinfo::System::new_all();
-        for process in sys.processes().values() {
-            let name = process.name();
-            let cmd = process.cmd().join(" ");
-            if Self::is_orphan_ollama_serve(name, &cmd) {
-                let _ = process.kill();
-            }
         }
 
         let mut guard = self
@@ -327,28 +320,39 @@ impl OllamaSidecar {
         if guard.is_some() {
             return Ok(());
         }
+        *guard = Some(spawn()?);
+        Ok(())
+    }
 
+    pub fn start<R: tauri::Runtime>(
+        &self,
+        app: &AppHandle<R>,
+    ) -> Result<(), Box<dyn Error + Send + Sync>> {
         #[cfg(test)]
         {
             let _app = app;
-            *guard = Some(Self::spawn_test_fixture()?);
-            Ok(())
+            self.start_internal(Self::OLLAMA_LOCAL_ADDR, Self::spawn_test_fixture)
         }
 
         #[cfg(not(test))]
         {
-            let sidecar_command = app
-                .shell()
-                .sidecar("ollama")
-                .map_err(|e| format!("Sidecar error: {}", e))?
-                .args(["serve"]);
+            // The shell-plugin spawn is the one branch with no unit coverage — it
+            // needs a real Tauri runtime. All of the testable control flow lives
+            // in start_internal, verified cross-platform via start_for_test
+            // (TEST-002).
+            self.start_internal(Self::OLLAMA_LOCAL_ADDR, || {
+                let sidecar_command = app
+                    .shell()
+                    .sidecar("ollama")
+                    .map_err(|e| format!("Sidecar error: {}", e))?
+                    .args(["serve"]);
 
-            let (_rx, child_proc) = sidecar_command
-                .spawn()
-                .map_err(|e| format!("Spawn error: {}", e))?;
+                let (_rx, child_proc) = sidecar_command
+                    .spawn()
+                    .map_err(|e| format!("Spawn error: {}", e))?;
 
-            *guard = Some(SidecarChild::Tauri(child_proc));
-            Ok(())
+                Ok(SidecarChild::Tauri(child_proc))
+            })
         }
     }
 
@@ -383,32 +387,21 @@ impl OllamaSidecar {
         Ok(SidecarChild::Std(child_proc))
     }
 
-    /// Test-only mirror of `start()`'s control flow with an injectable address
-    /// to probe for collisions. Spawns the bundled test fixture in place of the
-    /// real `ollama` sidecar, so the spawn / skip / drop behavior can be verified
-    /// cross-platform (including Windows) without constructing a Tauri
-    /// `AppHandle` — which `start()` only needs for the production shell-plugin
-    /// sidecar lookup.
+    /// Test-only entry that drives the exact same control flow as `start()` (both
+    /// route through `start_internal`) but takes an injectable probe address, so
+    /// the skip / spawn / already-running behavior is verified cross-platform
+    /// (including Windows) without constructing a Tauri `AppHandle` — which
+    /// `start()` only needs for the production shell-plugin sidecar lookup.
     ///
-    /// Deliberately omits the orphan-process sweep that `start()` performs so
-    /// running the suite never kills a developer's real local `ollama serve`.
+    /// Post-ENG-004 there is no orphan sweep, so this is now a faithful mirror of
+    /// `start()`'s entire testable path; the only thing it does not exercise is
+    /// the production shell-plugin spawn, which requires a real Tauri runtime.
     #[cfg(test)]
     pub(crate) fn start_for_test(
         &self,
         probe_addr: &str,
     ) -> Result<(), Box<dyn Error + Send + Sync>> {
-        if Self::port_in_use(probe_addr) {
-            return Ok(());
-        }
-        let mut guard = self
-            .child
-            .lock()
-            .map_err(|e| format!("Lock error: {}", e))?;
-        if guard.is_some() {
-            return Ok(());
-        }
-        *guard = Some(Self::spawn_test_fixture()?);
-        Ok(())
+        self.start_internal(probe_addr, Self::spawn_test_fixture)
     }
 
     pub fn stop(&self) -> Result<(), Box<dyn Error + Send + Sync>> {

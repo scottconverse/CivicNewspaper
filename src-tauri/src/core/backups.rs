@@ -17,12 +17,10 @@ pub fn restore_backup(
     backup_path: &str,
     live_db_path: &str,
 ) -> Result<(), Box<dyn Error>> {
-    println!("[debug] restore_backup: copying backup to temp path");
     // 1. Copy selected backup to a temporary file
     let temp_db_path = format!("{}.restore_temp", live_db_path);
     std::fs::copy(backup_path, &temp_db_path)?;
 
-    println!("[debug] restore_backup: validating integrity of temp db");
     // 2. Open temporary DB and validate integrity & version
     {
         // Validate SQLite magic header first to prevent SQLite from hanging on raw garbage files
@@ -58,7 +56,6 @@ pub fn restore_backup(
         }
     }
 
-    println!("[debug] restore_backup: acquiring database lock");
     // 3. Create rollback recovery snapshot of the live DB
     let rollback_backup_path = format!("{}.rollback_temp", live_db_path);
 
@@ -67,7 +64,6 @@ pub fn restore_backup(
         .lock()
         .map_err(|_| "Failed to acquire database lock")?;
 
-    println!("[debug] restore_backup: creating rollback snapshot");
     {
         let mut rollback_conn = Connection::open(&rollback_backup_path)?;
         let backup = rusqlite::backup::Backup::new(&conn, &mut rollback_conn)?;
@@ -75,18 +71,12 @@ pub fn restore_backup(
         drop(backup);
     }
 
-    println!("[debug] restore_backup: replacing connection with open_in_memory");
     // 4. Temporarily point active connection to an in-memory database
     // This releases all open file handles on live_db_path, allowing us to rename files on Windows
     *conn = Connection::open_in_memory()?;
 
-    println!("[debug] restore_backup: swapping files via std::fs::rename");
     // 5. Atomic Swap of files
     if let Err(e) = std::fs::rename(&temp_db_path, live_db_path) {
-        println!(
-            "[debug] restore_backup: Swap failed: {}. Restoring from rollback snapshot.",
-            e
-        );
         eprintln!("Swap failed: {}. Restoring from rollback snapshot.", e);
 
         // Rollback: copy rollback snapshot back to live_db_path
@@ -103,15 +93,10 @@ pub fn restore_backup(
         return Err(format!("Failed to rename restored database file: {}", e).into());
     }
 
-    println!("[debug] restore_backup: connecting to the newly swapped live database");
     // 6. Connect to the newly swapped live database
     let mut new_conn = match Connection::open(live_db_path) {
         Ok(c) => c,
         Err(err) => {
-            println!(
-                "[debug] restore_backup: failed to open new database: {}. Restoring from rollback.",
-                err
-            );
             eprintln!(
                 "Failed to open new database: {}. Restoring from rollback.",
                 err
@@ -130,13 +115,8 @@ pub fn restore_backup(
 
     new_conn.pragma_update(None, "journal_mode", "WAL")?;
 
-    println!("[debug] restore_backup: running migrations on restored database");
     // 7. Run migrations on the restored database just in case it is older
     if let Err(migration_err) = super::migrations::run_migrations(&mut new_conn) {
-        println!(
-            "[debug] restore_backup: migrations failed: {}. Rolling back.",
-            migration_err
-        );
         eprintln!(
             "Failed to run migrations on restored database: {}. Rolling back.",
             migration_err
@@ -152,15 +132,12 @@ pub fn restore_backup(
         return Err(format!("Migrations failed on restored database: {}", migration_err).into());
     }
 
-    println!("[debug] restore_backup: replacing connection handle");
     // Successfully restored! Replace the connection handle
     *conn = new_conn;
 
-    println!("[debug] restore_backup: cleaning up temp files");
     // Clean up temp files
     let _ = std::fs::remove_file(&rollback_backup_path);
     let _ = std::fs::remove_file(&temp_db_path);
 
-    println!("[debug] restore_backup: done");
     Ok(())
 }

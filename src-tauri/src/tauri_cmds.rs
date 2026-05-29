@@ -114,6 +114,11 @@ pub fn add_source(
     if tier != "official_record" && tier != "news_reporting" && tier != "community_signal" {
         return Err("Invalid tier".to_string());
     }
+    // SSRF defense-in-depth: reject non-http(s) schemes and blocked-IP literals
+    // at the storage boundary so a discovered/auto-imported URL can never point
+    // the scraper at loopback/private/link-local hosts. DNS-based hosts are
+    // re-validated (with resolution) at scrape time.
+    scraper::validate_source_url(&url)?;
     let conn = db
         .lock()
         .map_err(|_| "Failed to lock database".to_string())?;

@@ -1,11 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize Mermaid
-    if (typeof mermaid !== 'undefined') {
-        mermaid.initialize({ startOnLoad: true, theme: 'dark' });
-    }
+    // Reveal the scroll-animated sections FIRST, before touching any
+    // third-party dependency. The `.fade-up` sections start at opacity:0 (see
+    // style.css) and are only shown once revealed; if a later line in this
+    // handler threw, the page would render blank. Doing this first guarantees
+    // content always appears.
+    revealOnScroll();
 
-    // Initialize Lucide Icons
-    lucide.createIcons();
+    // Initialize Lucide icons. Guarded: the library loads from a CDN
+    // (unpkg, see index.html), so a blocked/slow/offline CDN would make
+    // `lucide` undefined. Without this guard the resulting ReferenceError would
+    // abort the whole handler and leave the page unstyled/blank.
+    try {
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            window.lucide.createIcons();
+        }
+    } catch (err) {
+        console.error('Lucide icons failed to initialize:', err);
+    }
 
     // Platform detection for download highlights
     const userAgent = navigator.userAgent.toLowerCase();
@@ -26,29 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
             targetCard.classList.add('highlighted');
         }
     }
-
-    // Intersection Observer for scroll animations
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-    };
-
-    const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                // Stop observing once it has faded in
-                observer.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-
-    // Select all elements with fade-up class
-    const fadeElements = document.querySelectorAll('.fade-up');
-    fadeElements.forEach(el => {
-        observer.observe(el);
-    });
 
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -165,3 +153,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })();
 });
+
+// Reveal `.fade-up` sections as they scroll into view. Defined as a standalone
+// function so it can run as the very first thing in the load handler. Falls
+// back to revealing everything immediately when IntersectionObserver is
+// unavailable, so content is never left hidden.
+function revealOnScroll() {
+    const fadeElements = document.querySelectorAll('.fade-up');
+
+    if (!('IntersectionObserver' in window)) {
+        fadeElements.forEach((el) => el.classList.add('visible'));
+        return;
+    }
+
+    const observer = new IntersectionObserver(
+        (entries, obs) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    obs.unobserve(entry.target);
+                }
+            });
+        },
+        { root: null, rootMargin: '0px', threshold: 0.1 }
+    );
+
+    fadeElements.forEach((el) => observer.observe(el));
+}

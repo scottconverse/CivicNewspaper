@@ -11,7 +11,7 @@ You can download the latest pre-compiled installers for your platform from the [
 ### Installation Instructions
 * **Windows**: Download the `.msi` or `.exe` installer. When launching, Windows SmartScreen will display a warning because the installer is currently unsigned. Click **"More info"** and then **"Run anyway"** to proceed.
 * **macOS**: Download the `.dmg` or `.app` file. Because the app is not signed with an Apple developer certificate, macOS Gatekeeper will block execution. Right-click the application icon, select **Open**, and then confirm the prompt. Alternatively, go to **System Settings > Privacy & Security** and scroll down to click **"Open Anyway"** for CivicNewspaper.
-* **Linux**: Download the `.deb` package (for Debian/Ubuntu) or the `.AppImage`. Install the `.deb` via your package manager (e.g., `sudo dpkg -i civicnewspaper_*.deb`) or make the `.AppImage` executable (`chmod +x CivicNewspaper.AppImage`) and run it.
+* **Linux**: Download the `.deb` package (for Debian/Ubuntu) and install it via your package manager (e.g., `sudo dpkg -i civicnewspaper_*.deb`). Linux builds are deb-only.
 
 ## First Run
 
@@ -33,7 +33,7 @@ No accounts or internet connections are required after this initial setup.
   - Scrapes RSS/HTML feeds (`scraper.rs`).
   - Stores everything in a local SQLite database in WAL mode (`db.rs`).
   - Runs **eight hand-written regex detectors** against scraped text — for money amounts, vote/decision keywords, personnel-change keywords, meeting/deadline keywords, watchlist hits, and a "source went quiet" timer (`detectors.rs`). This is regular expressions in a loop.
-  - Runs **pre-publication checks** on drafts — alerts on accusatory terms, checks for the literal substring `evidence:` in paragraphs, and flags missing presumption-of-innocence modifiers near arrest-related words (`guardrails.rs`). Note: this is a lint-like helper in the UI, not a compilation block.
+  - Runs **pre-publication checks** on drafts — alerts on accusatory terms, checks for the literal substring `evidence:` in paragraphs, flags missing presumption-of-innocence modifiers near arrest-related words, and warns when a paragraph copies a 7+-word sequence verbatim from a linked evidence excerpt (`guardrails.rs`). Note: this is a lint-like helper in the UI, not a compilation block.
   - Calls a local Ollama instance (`llm.rs`) for draft generation. Output quality depends on your local model configuration.
   - Compiles approved drafts into a flat HTML site using `pulldown-cmark` and templates in `templates/` (`compiler.rs`).
   - Exposes a localhost-only Axum HTTP server on `127.0.0.1:12053` for browser-extension and assistant-skill pairing (`server.rs`, `auth.rs`).
@@ -111,11 +111,16 @@ For details: [docs/architecture.md](docs/architecture.md).
 ├── assistant-skill/            # SKILL.md + client.js for CLI/IDE integrations
 └── docs/
     ├── architecture.md
+    ├── api.md                  # Loopback HTTP API route reference
     ├── user_manual.md
+    ├── install.md              # Download / checksum / install steps
+    ├── manual-smoke.md         # Manual smoke-test checklist
     ├── discussion_seeds.md
     ├── index.html              # GitHub Pages landing
     ├── script.js
-    └── style.css
+    ├── style.css
+    └── spec/
+        └── v0.2-phase-4.md     # Canonical phase-4 spec
 ```
 
 ## Building from source
@@ -160,6 +165,7 @@ If `npm run tauri` errors with "tauri: command not found", install the Tauri CLI
 
 - [docs/user_manual.md](docs/user_manual.md) — for non-technical editors.
 - [docs/architecture.md](docs/architecture.md) — for developers and reviewers.
+- [docs/api.md](docs/api.md) — loopback HTTP API route reference (for building a second client).
 - [docs/discussion_seeds.md](docs/discussion_seeds.md) — templates for GitHub Discussions.
 - [FAQ.md](FAQ.md).
 

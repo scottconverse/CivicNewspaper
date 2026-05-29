@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { DailyScanLead, listDailyScanLeads } from "../ipc";
+import React, { useCallback, useEffect, useState } from "react";
+import { DailyScanLead, listDailyScanLeads, toUserMessage } from "../ipc";
 
 interface Props {
   scanId: number;
+  onRunScan?: () => void;
 }
 
-export const DailyScanResults: React.FC<Props> = ({ scanId }) => {
+export const DailyScanResults: React.FC<Props> = ({ scanId, onRunScan }) => {
   const [leads, setLeads] = useState<DailyScanLead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = useCallback(() => {
     let mounted = true;
     setLoading(true);
+    setError(null);
     listDailyScanLeads(scanId)
       .then(data => {
         if (mounted) {
@@ -22,21 +24,63 @@ export const DailyScanResults: React.FC<Props> = ({ scanId }) => {
       })
       .catch(err => {
         if (mounted) {
-          setError(String(err));
+          setError(toUserMessage(err));
           setLoading(false);
         }
       });
     return () => { mounted = false; };
   }, [scanId]);
 
-  if (loading) return <div>Loading scan results...</div>;
-  if (error) return <div className="error-text">Error loading results: {error}</div>;
+  useEffect(() => load(), [load]);
+
+  if (loading) {
+    return (
+      <div className="card mt-4" data-testid="daily-scan-results-loading" style={{ marginTop: '1rem', padding: '1rem' }} aria-busy="true">
+        <h3>Scan Results for Scan #{scanId}</h3>
+        <div aria-hidden="true">
+          {[0, 1, 2].map(i => (
+            <div
+              key={i}
+              className="skeleton-line"
+              style={{
+                height: '1rem',
+                marginBottom: '0.75rem',
+                borderRadius: '4px',
+                background: 'var(--border-color)',
+                width: i === 2 ? '60%' : '100%',
+              }}
+            />
+          ))}
+        </div>
+        <span className="sr-only">Loading scan results…</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="card mt-4" data-testid="daily-scan-results-error" style={{ marginTop: '1rem', padding: '1rem' }}>
+        <h3>Scan Results for Scan #{scanId}</h3>
+        <p className="error-text">Couldn't load scan results: {error}</p>
+        <button className="btn btn-secondary btn-sm" onClick={load} data-testid="daily-scan-retry">
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="card mt-4" data-testid="daily-scan-results" style={{ marginTop: '1rem', padding: '1rem' }}>
       <h3>Scan Results for Scan #{scanId}</h3>
       {leads.length === 0 ? (
-        <p>No leads found in this scan.</p>
+        <div data-testid="daily-scan-empty">
+          <p>No new leads found in this scan.</p>
+          {onRunScan && (
+            <button className="btn btn-secondary btn-sm" onClick={onRunScan} data-testid="daily-scan-run-again">
+              Run scan again
+            </button>
+          )}
+        </div>
       ) : (
         <ul style={{ listStyleType: 'none', padding: 0 }}>
           {leads.map((lead, idx) => (
@@ -48,7 +92,7 @@ export const DailyScanResults: React.FC<Props> = ({ scanId }) => {
                 {lead.source_id === undefined || lead.source_id === null ? (
                   <span className="badge badge-info" data-testid="aggregated-badge">Aggregated across sources</span>
                 ) : (
-                  <span className="badge badge-secondary">Source ID: {lead.source_id}</span>
+                  <span className="badge badge-neutral">Source ID: {lead.source_id}</span>
                 )}
               </div>
             </li>

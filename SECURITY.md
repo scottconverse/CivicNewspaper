@@ -6,7 +6,9 @@ CivicNewspaper is pre-alpha software with no formal security review. The threat 
 
 Please **do not** open public GitHub issues for security reports.
 
-Email: `security@example.invalid` *(maintainer: replace with a real address before publishing)*.
+Email: `sconverse@gmail.com`.
+
+You may also use GitHub's private vulnerability reporting (the "Report a vulnerability" button under the repository's Security tab) if you prefer a tracked, confidential channel.
 
 Include:
 - A description of the vulnerability.
@@ -76,6 +78,7 @@ The diagnostic report captures the following fields:
 These are documented so reporters don't burn time finding them:
 
 - **Other local processes can reach `127.0.0.1:12053`.** The bearer token is the only gate. Any process running as the same user can attempt to brute-force the pairing token, but it is 16 random bytes of `OsRng` encoded as a 22-char base64 string, making an online brute-force during the 5-minute pairing window virtually impossible. A malicious local process would have to read the token directly out of the SQLite file or intercept IPC.
+- **Any local process running as you can use a paired token.** This is by design: the loopback API exists so IDE coding agents (which run as your user) can drive the app. Once a client pairs, its token is written to a config file (`%APPDATA%\civicnews-token.json` on Windows, `~/Library/Application Support/` or `~/.config/` on macOS). That file is restricted to your user (mode `0600` on Unix; per-user ACL on `%APPDATA%`), but the trust boundary is the user account, not the process: anything you can run can read that file and act as a paired client. The `/api/llm/task` endpoint in particular lets a paired client run arbitrary local-LLM prompts. We do not defend against malware already executing as you — see "Physical access" and "Social engineering" under Out of scope. Revoke a leaked token from the desktop app's "Browser Pairing" tab.
 - **No code signing.** Built binaries will be flagged by Windows SmartScreen and macOS Gatekeeper. There is no way for a user to verify their build hasn't been tampered with downstream other than building from source.
 
 ## Disclosure timing

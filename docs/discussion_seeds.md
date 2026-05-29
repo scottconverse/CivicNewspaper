@@ -15,8 +15,8 @@ This document provides ready-made discussion templates to kickstart the GitHub D
 
   Our goal is to give a single editor (often a citizen observer with limited technical skills but a passion for local transparency) a complete, local-first desktop workspace that does all of the following:
   * Automatically scans city council minutes, agendas, and boards for critical OSINT signals (meetings, large expenditures, watchlists).
-  * Uses private, local AI models (running fully on your own computer) to draft neutral summaries and generate optimized social media promotional packs for Twitter, Facebook, and Reddit.
-  * Enforces strict pre-publication guardrails to ensure every claim links to a primary record citation.
+  * Uses private, local AI models (running fully on your own computer) to draft neutral summaries, translate dense municipal jargon into plain-language community news, and (optionally) generate copy-ready social blurbs you can paste into your own channels.
+  * Runs advisory pre-publication guardrails that flag any claim missing a primary-record citation (warnings help you self-edit; they do not block publishing).
   * Compiles articles into a static, fast, flat HTML folder using a guided drag-and-drop wizard that can be hosted online for free.
 
   #### 🤝 How to Get Involved:
@@ -36,7 +36,7 @@ This document provides ready-made discussion templates to kickstart the GitHub D
 
   #### 1. Why local AI instead of ChatGPT or Claude APIs?
   * **Privacy**: Your database, leads, and drafts never leave your device.
-  * **Cost**: Running local models is **100% free**. There are no API keys, paywalls, or monthly subscriptions.
+  * **Cost**: Running local models is **free of software cost** — no API keys, paywalls, or monthly subscriptions. (You do supply your own hardware and electricity; inference runs on your machine.)
   * **Offline Support**: You can draft and review reports even without an active internet connection.
 
   #### 2. What are the system requirements?
@@ -78,7 +78,7 @@ This document provides ready-made discussion templates to kickstart the GitHub D
 ### 🏷️ Topic 4: Editorial Standards: Evidence vs. Outrage
 * **Title**: Factual Guidelines: Writing for the Flat HTML Compiler
 * **Body**:
-  CivicNews enforces pre-publication guardrails to maintain strict neutrality. As an editor, here is the style template we recommend:
+  CivicNews runs advisory pre-publication guardrails to help you maintain strict neutrality (they flag issues for you to fix; they don't block publishing). As an editor, here is the style template we recommend:
 
   #### 🚫 Avoid "Outrage" Wording
   Do not use adjectives that assign motive or pass judgment.
@@ -94,4 +94,4 @@ This document provides ready-made discussion templates to kickstart the GitHub D
   When writing about police records or audits, always include qualifier terms.
   * **Incorrect**: *"A town administrator embezzled funds from the sewer department."*
   * **Correct**: *"A town administrator was arrested for the alleged embezzlement of sewer department funds (evidence:54)."*
-  * *Note: The CivicNews compiler will block publication if arrest keywords are used without a presumption-of-innocence modifier like "alleged".*
+  * *Note: When arrest keywords are used without a presumption-of-innocence modifier like "alleged", the Workbench raises an advisory **Legal Naming** guardrail warning so you can fix the wording. Guardrails are advisory only — they flag issues in the Workbench but do **not** block saving, approval, or publication, and the static-site compiler never runs them.*

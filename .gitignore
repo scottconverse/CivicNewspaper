@@ -45,3 +45,14 @@ check.sh
 
 # Mutation checks results
 mutation-checks-results.json
+
+# Repo-hygiene: scratch artifacts and review outputs (ENG-009)
+# Regenerable CI/scratch artifacts — never source.
+ci_log.txt
+scratch/
+*.restore_temp
+search_response.html
+# Audit outputs are review artifacts, not tracked project source. Keep them in
+# their dated dirs locally; do not commit them (forensic/ holds kept postmortems).
+audit-*/
+audit-lite-*.md

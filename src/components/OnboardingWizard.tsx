@@ -1,11 +1,22 @@
 // STEPS DEFINED HERE ARE DOCUMENTED IN docs/user_manual.md PART 1. Update both together.
 import React, { useState, useEffect } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { documentDir, appDataDir, join } from "@tauri-apps/api/path";
 import { ChevronRight, Download, CheckCircle, RefreshCcw, AlertCircle } from "lucide-react";
 import { save } from "@tauri-apps/plugin-dialog";
+import {
+  getSystemRam,
+  getSetting,
+  setSetting,
+  ollamaHealth,
+  pullOllamaModel,
+  cancelOllamaPull,
+  exportDiagnostics,
+  setOnboardingComplete,
+  toUserMessage,
+} from "../ipc";
 import modelsConfig from "../models.json";
+import { ConfirmModal } from "./ConfirmModal";
 
 // Minimum system RAM (GB) for the smallest bundled model (phi3:mini) to run at
 // usable speed. Below this floor we still allow setup but warn the user that AI
@@ -33,6 +44,12 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 }) => {
   const [step, setStep] = useState<number>(initialStep || 1);
   const [model, setModel] = useState<string>("");
+  const [skipConfirm, setSkipConfirm] = useState<{
+    title: string;
+    message: string;
+    confirmLabel: string;
+    onConfirm: () => void | Promise<void>;
+  } | null>(null);
   
   // Step 1 State
   const [pubName, setPubName] = useState("");
@@ -82,10 +99,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         const bPath = await join(appData, "backups");
         setBackupPath(bPath);
 
-        const ram = systemRam || await invoke<number>("get_system_ram");
+        const ram = systemRam || await getSystemRam();
         setSysRam(ram);
 
-        const selected = await invoke<string | null>("get_setting", { key: "model.selected" });
+        const selected = await getSetting("model.selected");
         if (selected) {
           setModel(selected);
         } else {
@@ -116,7 +133,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       
       const check = async () => {
         try {
-          const result = await invoke<OllamaState>("ollama_health");
+          const result = await ollamaHealth();
           setHealth(result);
           
           if (result.reachable) {
@@ -160,12 +177,12 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       });
       if (path) {
         setExportStatus("Exporting...");
-        await invoke('export_diagnostics', { path });
+        await exportDiagnostics(path);
         setExportStatus("Export successful!");
         setTimeout(() => setExportStatus(""), 3000);
       }
-    } catch (e: any) {
-      setExportStatus(`Export failed: ${e?.message || String(e)}`);
+    } catch (e) {
+      setExportStatus(`Export failed: ${toUserMessage(e)}`);
     }
   };
 
@@ -218,11 +235,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         }
       );
 
-      await invoke("pull_ollama_model", { modelId: modelToPull });
-      await invoke("set_setting", { key: "model.selected", value: modelToPull });
-    } catch (e: any) {
+      await pullOllamaModel(modelToPull);
+      await setSetting("model.selected", modelToPull);
+    } catch (e) {
       console.error(e);
-      const reason = (e?.message || String(e) || "").trim();
+      const reason = (e instanceof Error ? e.message : String(e)).trim();
       setPullError(
         `Download failed${reason ? `: ${reason}` : "."} ` +
           `Make sure Ollama is running and your internet connection is working, then click "Download ${modelToPull}" to try again.`
@@ -234,7 +251,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
   const cancelPullModel = async () => {
     try {
-      await invoke("cancel_ollama_pull", { model: model });
+      await cancelOllamaPull(model);
       setPulling(false);
       setPullComplete(false);
       setPullProgress("Pull cancelled.");
@@ -244,34 +261,43 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   };
 
   const handleNext = async () => {
-    if (step === 1) {
-      // Persist identity settings
-      await invoke("set_setting", { key: "identity.newsroom_name", value: pubName });
-      await invoke("set_setting", { key: "identity.editor_name", value: editorName });
-      await invoke("set_setting", { key: "identity.city", value: city });
-      await invoke("set_setting", { key: "identity.state", value: state });
-      
-      setStep(2);
-    } else if (step === 2) {
-      if (health && health.reachable && health.models.includes(model)) {
-        // Model is already installed, skip Step 3 and go directly to Step 4
-        await invoke("set_setting", { key: "model.selected", value: model });
+    // QA-005: every branch persists settings over IPC, any of which can reject.
+    // Without this guard a failed write left the wizard silently stuck (no
+    // advance, no message). Surface failures via the existing initError banner.
+    try {
+      setInitError(null);
+      if (step === 1) {
+        // Persist identity settings
+        await setSetting("identity.newsroom_name", pubName);
+        await setSetting("identity.editor_name", editorName);
+        await setSetting("identity.city", city);
+        await setSetting("identity.state", state);
+
+        setStep(2);
+      } else if (step === 2) {
+        if (health && health.reachable && health.models.includes(model)) {
+          // Model is already installed, skip Step 3 and go directly to Step 4
+          await setSetting("model.selected", model);
+          setStep(4);
+        } else {
+          setStep(3);
+        }
+      } else if (step === 3) {
+        await setSetting("model.selected", model);
         setStep(4);
-      } else {
-        setStep(3);
+      } else if (step === 4) {
+        // Persist defaults
+        await setSetting("paths.publish", publishPath);
+        await setSetting("paths.backup", backupPath);
+
+        setStep(5);
+      } else if (step === 5) {
+        await setOnboardingComplete(true);
+        onComplete();
       }
-    } else if (step === 3) {
-      await invoke("set_setting", { key: "model.selected", value: model });
-      setStep(4);
-    } else if (step === 4) {
-      // Persist defaults
-      await invoke("set_setting", { key: "paths.publish", value: publishPath });
-      await invoke("set_setting", { key: "paths.backup", value: backupPath });
-      
-      setStep(5);
-    } else if (step === 5) {
-      await invoke("set_onboarding_complete", { value: true });
-      onComplete();
+    } catch (e) {
+      console.error(e);
+      setInitError(toUserMessage(e));
     }
   };
 
@@ -282,9 +308,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   return (
     <div className="wizard-container card" id="onboarding-wizard">
       {initError && (
-        <div style={{ background: "rgba(239, 68, 68, 0.05)", borderLeft: "4px solid var(--color-danger)", padding: "0.75rem", borderRadius: "4px", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <AlertCircle size={16} style={{ color: "var(--color-danger)" }} />
-          <span style={{ fontSize: "0.85rem", color: "var(--color-danger)" }}>Initialization Error: {initError}</span>
+        <div style={{ background: "rgba(239, 68, 68, 0.05)", borderLeft: "4px solid var(--color-error)", padding: "0.75rem", borderRadius: "4px", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <AlertCircle size={16} style={{ color: "var(--color-error)" }} />
+          <span style={{ fontSize: "0.85rem", color: "var(--color-error)" }}>Initialization Error: {initError}</span>
         </div>
       )}
 
@@ -356,7 +382,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 {/* Timeout State (WU-2) */}
                 {healthTimeout && (
                   <div style={{ background: "rgba(239, 68, 68, 0.05)", padding: "1rem", borderRadius: "8px" }}>
-                    <h4 style={{ color: "var(--color-danger)" }}>Couldn't reach the AI service</h4>
+                    <h4 style={{ color: "var(--color-error)" }}>Couldn't reach the AI service</h4>
                     <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>
                       The Ollama sidecar took too long to respond. This might be due to system resources or path permissions.
                     </p>
@@ -376,7 +402,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
                 {!healthTimeout && health && !health.reachable && (
                   <div style={{ background: "rgba(239, 68, 68, 0.05)", padding: "1rem", borderRadius: "8px" }}>
-                    <h4 style={{ color: "var(--color-danger)" }}>Bundled Ollama Sidecar Starting</h4>
+                    <h4 style={{ color: "var(--color-error)" }}>Bundled Ollama Sidecar Starting</h4>
                     <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>The application includes a bundled Ollama sidecar to run AI features completely offline. It may take a moment to initialize.</p>
                     <div style={{ display: "flex", gap: "1rem" }}>
                       <button className="btn btn-secondary" onClick={() => setRetryCount(c => c + 1)} disabled={checkingHealth}>
@@ -395,7 +421,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                     {sysRam > 0 && sysRam < LOW_RAM_FLOOR_GB && (
                       <p
                         data-testid="low-ram-warning"
-                        style={{ fontSize: "0.85rem", color: "var(--color-danger)", marginTop: "0.5rem", display: "flex", alignItems: "center", gap: "0.4rem" }}
+                        style={{ fontSize: "0.85rem", color: "var(--color-error)", marginTop: "0.5rem", display: "flex", alignItems: "center", gap: "0.4rem" }}
                       >
                         <AlertCircle size={16} />
                         Your system has {sysRam}GB of RAM, below the {LOW_RAM_FLOOR_GB}GB recommended for local AI. {model} will still run, but generation may be slow.
@@ -415,7 +441,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                     <select 
                       value={model} 
                       onChange={e => setModel(e.target.value)}
-                      style={{ width: "100%", padding: "0.5rem", borderRadius: "4px", border: "1px solid var(--border-color)", background: "var(--bg-primary)", color: "var(--text-primary)" }}
+                      style={{ width: "100%", padding: "0.5rem", borderRadius: "4px", border: "1px solid var(--border-color)", background: "var(--bg-card)", color: "var(--text-primary)" }}
                     >
                       {health.models.map(m => <option key={m} value={m}>{m}</option>)}
                       <option value="" disabled hidden>-- Or pull a recommended model --</option>
@@ -442,7 +468,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 {pullError && (
                   <div
                     data-testid="pull-error"
-                    style={{ marginBottom: "1rem", background: "rgba(239, 68, 68, 0.06)", borderLeft: "4px solid var(--color-danger)", padding: "0.75rem", borderRadius: "4px" }}
+                    style={{ marginBottom: "1rem", background: "rgba(239, 68, 68, 0.06)", borderLeft: "4px solid var(--color-error)", padding: "0.75rem", borderRadius: "4px" }}
                   >
                     <p style={{ fontSize: "0.85rem", margin: 0, color: "var(--text-primary)", display: "flex", alignItems: "flex-start", gap: "0.4rem" }}>
                       <AlertCircle size={16} style={{ flexShrink: 0, marginTop: "0.1rem" }} />
@@ -471,7 +497,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   <div 
                     style={{ 
                       height: "100%", 
-                      background: "var(--color-primary)", 
+                      background: "var(--accent-primary)",
                       width: `${pullPercent || 0}%`,
                       transition: "width 0.2s"
                     }} 
@@ -539,16 +565,24 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         
         <div style={{ display: "flex", gap: "1rem" }}>
           {(step === 2 || step === 3) && (
-            <button className="btn btn-secondary" onClick={async () => {
+            <button className="btn btn-secondary" onClick={() => {
               if (step === 2) {
-                const confirmSkip = window.confirm("Skip Ollama setup? You won't be able to use AI features until you complete setup from Settings.");
-                if (!confirmSkip) return;
-                setStep(4);
+                setSkipConfirm({
+                  title: "Skip Ollama setup?",
+                  message: "You won't be able to use AI features until you complete setup from Settings.",
+                  confirmLabel: "Skip setup",
+                  onConfirm: () => setStep(4),
+                });
               } else if (step === 3) {
-                const confirmSkip = window.confirm("Skip the model download? You won't be able to use AI features until you download a model from Settings.");
-                if (!confirmSkip) return;
-                await cancelPullModel();
-                setStep(4);
+                setSkipConfirm({
+                  title: "Skip the model download?",
+                  message: "You won't be able to use AI features until you download a model from Settings.",
+                  confirmLabel: "Skip download",
+                  onConfirm: async () => {
+                    await cancelPullModel();
+                    setStep(4);
+                  },
+                });
               }
             }}>
               Skip for now
@@ -561,6 +595,20 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           </button>
         </div>
       </div>
+
+      {skipConfirm && (
+        <ConfirmModal
+          title={skipConfirm.title}
+          message={skipConfirm.message}
+          confirmLabel={skipConfirm.confirmLabel}
+          onConfirm={async () => {
+            const action = skipConfirm.onConfirm;
+            setSkipConfirm(null);
+            await action();
+          }}
+          onCancel={() => setSkipConfirm(null)}
+        />
+      )}
     </div>
   );
 };

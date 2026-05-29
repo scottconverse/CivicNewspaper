@@ -38,7 +38,9 @@ pub async fn auth_middleware(
         .unwrap_or("");
 
     if !is_valid_host(host) {
-        println!("Auth Block: Invalid Host header: '{}'", host);
+        if cfg!(debug_assertions) {
+            eprintln!("Auth Block: Invalid Host header: '{}'", host);
+        }
         return Err(StatusCode::FORBIDDEN);
     }
 
@@ -51,7 +53,9 @@ pub async fn auth_middleware(
         if let Some(origin_header) = request.headers().get(header::ORIGIN) {
             if let Ok(origin_str) = origin_header.to_str() {
                 if !is_valid_origin(origin_str) {
-                    println!("Auth Block: Untrusted Origin header: '{}'", origin_str);
+                    if cfg!(debug_assertions) {
+                        eprintln!("Auth Block: Untrusted Origin header: '{}'", origin_str);
+                    }
                     return Err(StatusCode::FORBIDDEN);
                 }
             } else {
@@ -76,7 +80,9 @@ pub async fn auth_middleware(
             auth_val.trim_start_matches("Bearer ").trim()
         }
         _ => {
-            println!("Auth Block: Missing or malformed Bearer token");
+            if cfg!(debug_assertions) {
+                eprintln!("Auth Block: Missing or malformed Bearer token");
+            }
             return Err(StatusCode::UNAUTHORIZED);
         }
     };
@@ -98,7 +104,9 @@ pub async fn auth_middleware(
     };
 
     if !is_valid {
-        println!("Auth Block: Token not found or revoked");
+        if cfg!(debug_assertions) {
+            eprintln!("Auth Block: Token not found or revoked");
+        }
         return Err(StatusCode::UNAUTHORIZED);
     }
 

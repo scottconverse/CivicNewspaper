@@ -221,20 +221,7 @@ async fn llm_task_handler(
     State(state): State<AppState>,
     Json(payload): Json<LlmTaskRequest>,
 ) -> Result<Json<LlmTaskResponse>, StatusCode> {
-    let model = {
-        let conn = state
-            .db
-            .lock()
-            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-        let mut stmt = conn
-            .prepare("SELECT value FROM settings WHERE key = 'model.selected'")
-            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-        let val: Result<String, _> = stmt.query_row([], |row| row.get(0));
-        match val {
-            Ok(v) => v,
-            Err(_) => "phi3:mini".to_string(),
-        }
-    };
+    let model = crate::tauri_cmds::get_selected_model_or_fallback(&state.db).await;
 
     match state
         .llm_client

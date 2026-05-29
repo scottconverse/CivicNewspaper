@@ -16,6 +16,18 @@ Access is authorized via a paired token saved in the user's home configuration d
 
 A CLI utility is provided at [client.js](./client.js) to automate these calls.
 
+## Token file security
+
+The paired token is the *only* gate on the loopback API, so the token file must be readable only by the owning user.
+
+* **macOS / Linux:** `client.js` writes the file with mode `0600` and runs `chmod 0600` after writing, so only your user account can read or write it. No action needed.
+* **Windows:** Unix file modes are ignored by the filesystem, so `client.js` cannot tighten the ACL programmatically. `%APPDATA%` (`C:\Users\<you>\AppData\Roaming`) already inherits a per-user ACL that excludes other standard users, so the default location is private. If you relocate the token file, confirm its ACL grants access only to your user — for example:
+  ```powershell
+  icacls "$env:APPDATA\civicnews-token.json" /inheritance:r /grant:r "$($env:USERNAME):(R,W)"
+  ```
+
+Treat the token like a password: any local process running as your user can read this file and drive the API. Revoke a leaked token from the desktop app's "Browser Pairing" tab.
+
 ## Available Actions via CLI Bridge
 
 You can run the CLI bridge using the `node` environment:

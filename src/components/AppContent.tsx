@@ -9,6 +9,7 @@ import { PublishPanel } from "./PublishPanel";
 import { SystemStatus } from "./SystemStatus";
 import { SourcesPanel } from "./SourcesPanel";
 import { Modal } from "./Modal";
+import { ConfirmModal } from "./ConfirmModal";
 import { resolveResource } from "@tauri-apps/api/path";
 import { openLocalPath } from "../ipc";
 
@@ -19,6 +20,18 @@ interface AppContentProps {
 export const AppContent: React.FC<AppContentProps> = ({ app }) => {
   return (
     <>
+      {/* Global confirmation dialog (destructive actions) */}
+      {app.confirmDialog && (
+        <ConfirmModal
+          title={app.confirmDialog.title}
+          message={app.confirmDialog.message}
+          confirmLabel={app.confirmDialog.confirmLabel}
+          danger={app.confirmDialog.danger}
+          onConfirm={app.handleConfirmDialogConfirm}
+          onCancel={app.closeConfirmDialog}
+        />
+      )}
+
       {/* Global Notifications */}
       {app.statusMessage && (
         <div className="card" style={{ borderLeft: "4px solid var(--color-success)", background: "rgba(16, 185, 129, 0.05)" }}>

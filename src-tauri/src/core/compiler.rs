@@ -77,6 +77,16 @@ pub fn compile_static_site(
     let profile: CompilerProfile = serde_json::from_str(profile_json).unwrap_or_default();
     let current_year = Utc::now().year().to_string();
 
+    // ENG-002: profile fields are author-controlled local config, but the realistic
+    // trigger is an author pasting boilerplate (a city blurb, an LLM tagline) that
+    // contains markup. Escape them once here so every HTML and RSS sink emits them
+    // as inert text instead of live script. encode_safe escapes &<>"' which is
+    // sufficient for both the HTML element contexts and the RSS/XML text nodes
+    // below (matching how titles/excerpts are already escaped).
+    let safe_site_title = html_escape::encode_safe(&profile.site_title).to_string();
+    let safe_site_subtitle = html_escape::encode_safe(&profile.site_subtitle).to_string();
+    let safe_about_text = html_escape::encode_safe(&profile.about_text).to_string();
+
     // 3. Copy Stylesheets
     fs::write(output_dir.join("styles.css"), STYLES_CSS)?;
     fs::write(output_dir.join("print.css"), PRINT_CSS)?;
@@ -150,8 +160,8 @@ pub fn compile_static_site(
 
         // Generate Post Page
         let mut post_html = POST_TEMPLATE.to_string();
-        post_html = post_html.replace("{{SITE_TITLE}}", &profile.site_title);
-        post_html = post_html.replace("{{SITE_SUBTITLE}}", &profile.site_subtitle);
+        post_html = post_html.replace("{{SITE_TITLE}}", &safe_site_title);
+        post_html = post_html.replace("{{SITE_SUBTITLE}}", &safe_site_subtitle);
         post_html = post_html.replace("{{POST_TITLE}}", &safe_title);
         post_html = post_html.replace("{{POST_DESCRIPTION}}", &safe_title);
         post_html = post_html.replace("{{POST_DATE}}", &draft.updated_at);
@@ -234,14 +244,14 @@ pub fn compile_static_site(
 
     // 6. Build index.html
     let mut index_html = INDEX_TEMPLATE.to_string();
-    index_html = index_html.replace("{{SITE_TITLE}}", &profile.site_title);
-    index_html = index_html.replace("{{SITE_SUBTITLE}}", &profile.site_subtitle);
+    index_html = index_html.replace("{{SITE_TITLE}}", &safe_site_title);
+    index_html = index_html.replace("{{SITE_SUBTITLE}}", &safe_site_subtitle);
     index_html = index_html.replace("{{ARTICLES}}", &article_list_html);
 
     // Sidebar: list of latest 5 posts + profile description
     let mut sidebar_html = format!(
         "<div class=\"sidebar-section\">\n  <h3 class=\"sidebar-title\">About this Site</h3>\n  <p>{}</p>\n</div>\n",
-        profile.about_text
+        safe_about_text
     );
     sidebar_html.push_str("<div class=\"sidebar-section\">\n  <h3 class=\"sidebar-title\">Ethics Standards</h3>\n  <p>Every claim published here is strictly bound to public evidence records. We run zero ads.</p>\n</div>");
     index_html = index_html.replace("{{SIDEBAR}}", &sidebar_html);
@@ -253,8 +263,8 @@ pub fn compile_static_site(
         |filename: &str, title: &str, content_md: &str| -> Result<(), Box<dyn Error>> {
             let body_html = render_markdown(content_md);
             let mut page_html = POST_TEMPLATE.to_string();
-            page_html = page_html.replace("{{SITE_TITLE}}", &profile.site_title);
-            page_html = page_html.replace("{{SITE_SUBTITLE}}", &profile.site_subtitle);
+            page_html = page_html.replace("{{SITE_TITLE}}", &safe_site_title);
+            page_html = page_html.replace("{{SITE_SUBTITLE}}", &safe_site_subtitle);
             page_html = page_html.replace("{{POST_TITLE}}", title);
             page_html = page_html.replace("{{POST_DESCRIPTION}}", title);
             page_html = page_html.replace("{{POST_DATE}}", &Utc::now().to_rfc3339());
@@ -288,8 +298,8 @@ pub fn compile_static_site(
 
     // 8. Build corrections.html ledger
     let mut corrections_html = POST_TEMPLATE.to_string();
-    corrections_html = corrections_html.replace("{{SITE_TITLE}}", &profile.site_title);
-    corrections_html = corrections_html.replace("{{SITE_SUBTITLE}}", &profile.site_subtitle);
+    corrections_html = corrections_html.replace("{{SITE_TITLE}}", &safe_site_title);
+    corrections_html = corrections_html.replace("{{SITE_SUBTITLE}}", &safe_site_subtitle);
     corrections_html = corrections_html.replace("{{POST_TITLE}}", "Public Corrections Ledger");
     corrections_html =
         corrections_html.replace("{{POST_DESCRIPTION}}", "Public Corrections Ledger");
@@ -304,7 +314,7 @@ pub fn compile_static_site(
     // 9. Build RSS feed.xml
     let rss_feed = format!(
         "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<rss version=\"2.0\">\n  <channel>\n    <title>{}</title>\n    <link>index.html</link>\n    <description>{}</description>\n    <language>en-us</language>\n    <pubDate>{}</pubDate>\n    <lastBuildDate>{}</lastBuildDate>\n{}\n  </channel>\n</rss>\n",
-        profile.site_title, profile.site_subtitle, Utc::now().to_rfc2822(), Utc::now().to_rfc2822(), rss_items
+        safe_site_title, safe_site_subtitle, Utc::now().to_rfc2822(), Utc::now().to_rfc2822(), rss_items
     );
     fs::write(output_dir.join("feed.xml"), rss_feed)?;
 

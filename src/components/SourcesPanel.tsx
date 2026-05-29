@@ -320,7 +320,7 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
             <div style={{ flex: 1, overflowY: "auto", paddingRight: "0.5rem" }}>
               {discoveryLoading && (
                 <div style={{ textAlign: "center", padding: "3rem 0" }} id="discovery-loading-indicator">
-                  <div className="animate-spin" style={{ display: "inline-block", border: "4px solid rgba(255,255,255,0.1)", borderTop: "4px solid var(--color-primary)", borderRadius: "50%", width: "40px", height: "40px", marginBottom: "1rem" }} />
+                  <div className="animate-spin" style={{ display: "inline-block", border: "4px solid rgba(255,255,255,0.1)", borderTop: "4px solid var(--accent-primary)", borderRadius: "50%", width: "40px", height: "40px", marginBottom: "1rem" }} />
                   <p>Searching DuckDuckGo for agendas, subreddits, library calendars, and local news...</p>
                   <p className="help-text" style={{ fontSize: "0.85rem", marginTop: "0.5rem" }}>Running priority checklist queries sequentially. This takes a few seconds.</p>
                 </div>
@@ -362,7 +362,7 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                                 />
                                 <div>
                                   <div style={{ fontWeight: 600 }}>{cand.name}</div>
-                                  <a href={cand.url} target="_blank" rel="noreferrer" style={{ fontSize: "0.8rem", color: "var(--color-primary)", wordBreak: "break-all" }}>
+                                  <a href={cand.url} target="_blank" rel="noreferrer" style={{ fontSize: "0.8rem", color: "var(--accent-primary)", wordBreak: "break-all" }}>
                                     {cand.url}
                                   </a>
                                 </div>

@@ -74,17 +74,6 @@ export const PairDialog: React.FC<PairDialogProps> = ({
               </button>
             </form>
 
-            <div style={{ marginTop: "1.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem" }} id="verify-token-section">
-              <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Verify Extracted Token</label>
-              <input
-                type="text"
-                placeholder="Paste 22-char token to test"
-                maxLength={22}
-                id="input-paste-token"
-                data-testid="input-paste-token"
-              />
-            </div>
-
             {generatedPin && (
               <div id="pin-display-box">
                 <div className="pairing-pin-box" style={{ wordBreak: "break-all", fontSize: "1rem" }} data-testid="pin-display">{generatedPin}</div>

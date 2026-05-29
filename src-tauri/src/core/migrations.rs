@@ -2,6 +2,13 @@
 use rusqlite::Connection;
 use std::error::Error;
 
+// IMPORTANT: the applied schema version is the *array position* (index + 1), NOT the
+// numeric prefix in the filename. The filenames are non-contiguous (there is no `0002`),
+// so `0003_settings` is applied as `user_version = 2`. When adding a migration, ALWAYS
+// append to the end of this array — never insert in the middle, or every later migration's
+// applied version shifts and existing databases will re-run or skip migrations. The
+// debug-assert in `run_migrations` enforces that filename prefixes stay monotonically
+// increasing so an out-of-order insertion fails loudly in debug/test builds.
 const MIGRATIONS: &[(&str, &str)] = &[
     ("0001_init", include_str!("../../migrations/0001_init.sql")),
     (
@@ -27,6 +34,16 @@ const MIGRATIONS: &[(&str, &str)] = &[
 ];
 
 pub fn run_migrations(conn: &mut Connection) -> Result<(), Box<dyn Error>> {
+    // Guard the append-only invariant: filename numeric prefixes must be strictly
+    // increasing. A mid-array insertion (which would silently shift applied versions)
+    // makes this fail loudly in debug/test builds.
+    debug_assert!(
+        MIGRATIONS
+            .windows(2)
+            .all(|w| filename_ordinal(w[0].0) < filename_ordinal(w[1].0)),
+        "migration filename prefixes must be strictly increasing; do not insert mid-array"
+    );
+
     // Enforce foreign keys
     conn.execute("PRAGMA foreign_keys = ON;", [])?;
 
@@ -58,4 +75,14 @@ pub fn get_current_version(conn: &Connection) -> Result<i32, rusqlite::Error> {
 
 pub fn get_expected_version() -> i32 {
     MIGRATIONS.len() as i32
+}
+
+/// Parse the leading numeric prefix of a migration name (e.g. "0003_settings" -> 3).
+/// Used only by the debug-assert monotonicity guard, not for the applied version.
+fn filename_ordinal(name: &str) -> u32 {
+    name.chars()
+        .take_while(|c| c.is_ascii_digit())
+        .collect::<String>()
+        .parse()
+        .unwrap_or(0)
 }

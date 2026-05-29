@@ -97,7 +97,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
       </div>
 
       {latestScanId && (
-        <DailyScanResults scanId={latestScanId} />
+        <DailyScanResults scanId={latestScanId} onRunScan={onDailyScan} />
       )}
 
       <div className="queue-tabs">

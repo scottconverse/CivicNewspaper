@@ -2,40 +2,30 @@ import os
 import json
 import hashlib
 import subprocess
-import urllib.request
 import urllib.parse
 import re
 import glob
 
 def _is_valid_url(url):
+    # Structural validation only — deliberately NO network I/O (ENG-012). This
+    # runs inside the citation-policy gate in CI, where a live HEAD/GET would be
+    # non-deterministic (a flaky or offline endpoint would fail an otherwise
+    # valid citation), slow (two 5s timeouts per URL), and an SSRF surface
+    # (following attacker-controlled URLs from promoted text). We only assert the
+    # citation is a well-formed http(s) URL that points at a specific resource.
     try:
         parsed = urllib.parse.urlparse(url)
-        if not parsed.scheme or parsed.scheme not in ("http", "https"):
+        if parsed.scheme not in ("http", "https"):
             return False
-            
-        # GENERIC_URL check: reject root url without path (WP-1)
-        path = parsed.path.strip("/")
-        if not path:
+        if not parsed.netloc:
             return False
-            
-        # Verify URL via HTTP HEAD request (or GET fallback)
-        req = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "Mozilla/5.0"})
-        try:
-            with urllib.request.urlopen(req, timeout=5) as response:
-                if 200 <= response.status < 400:
-                    return True
-        except Exception:
-            # Fallback to GET
-            try:
-                req = urllib.request.Request(url, method="GET", headers={"User-Agent": "Mozilla/5.0"})
-                with urllib.request.urlopen(req, timeout=5) as response:
-                    if 200 <= response.status < 400:
-                        return True
-            except Exception:
-                pass
+        # GENERIC_URL check: reject a bare host without a path (WP-1) — a
+        # citation must point at a specific page, not just a domain root.
+        if not parsed.path.strip("/"):
+            return False
+        return True
     except Exception:
-        pass
-    return False
+        return False
 
 def _is_valid_sha(sha):
     # Check if git SHA is valid

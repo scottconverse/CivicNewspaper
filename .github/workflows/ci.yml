@@ -166,3 +166,56 @@ jobs:
       - name: Run Phase 3 DoD verification
         if: hashFiles('scripts/verify-v0.2-phase-3-dod.sh') != ''
         run: bash scripts/verify-v0.2-phase-3-dod.sh
+
+  # TEST-005: report-only coverage. This job NEVER gates a merge
+  # (continue-on-error at both job and step level) — it exists to surface
+  # Rust + frontend coverage numbers in the logs so coverage drift is visible
+  # without making a flaky coverage tool able to block the branch. Runs after
+  # `rust` so the two heavy cargo builds serialize on the single self-hosted runner.
+  coverage:
+    needs: rust
+    runs-on: [self-hosted, Linux, scott-desktop]
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.94.0
+          components: llvm-tools-preview
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Fetch Ollama binaries
+        run: bash scripts/fetch-ollama-binaries.sh
+
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-llvm-cov
+
+      - name: Rust coverage (report-only)
+        continue-on-error: true
+        working-directory: ./src-tauri
+        run: cargo llvm-cov --lib --summary-only
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Frontend coverage (report-only)
+        continue-on-error: true
+        run: |
+          npm install --no-save @vitest/coverage-v8@2
+          npx vitest run --coverage

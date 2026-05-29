@@ -29,7 +29,18 @@ function saveToken(token) {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    fs.writeFileSync(TOKEN_PATH, JSON.stringify({ token }, null, 2), 'utf8');
+    // ENG-005: the bearer token is the only gate on the loopback API, so keep it
+    // readable only by the owner. mode on writeFileSync only applies when the
+    // file is newly created, so chmod afterward to also tighten an existing file.
+    // Unix file modes are no-ops on Windows; ACL guidance is documented in SKILL.md.
+    fs.writeFileSync(TOKEN_PATH, JSON.stringify({ token }, null, 2), { encoding: 'utf8', mode: 0o600 });
+    if (process.platform !== 'win32') {
+      try {
+        fs.chmodSync(TOKEN_PATH, 0o600);
+      } catch (e) {
+        console.error('Warning: could not restrict token file permissions:', e.message);
+      }
+    }
     console.log(`Pairing token saved to ${TOKEN_PATH}`);
   } catch (e) {
     console.error('Failed to save pairing token:', e.message);

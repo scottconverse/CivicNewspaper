@@ -8,7 +8,7 @@ This guide explains how to install CivicNewspaper on Windows, macOS, and Linux, 
 
 As an open-source, community-focused project, CivicNewspaper does not participate in the costly commercial developer programs run by Microsoft and Apple. Paying hundreds of dollars annually to corporate gatekeepers for signing certificates contradicts our decentralized, grassroots mission.
 
-Instead of code-signing certificates, we establish trust through **cryptographic verification**. Every release on GitHub includes the pre-compiled installer files and a `SHA256SUMS.txt` manifest containing the SHA256 checksum of each binary. By verifying the checksum of your download, you can guarantee that the file has not been altered or corrupted in transit.
+Instead of code-signing certificates, we establish trust through **cryptographic verification**. Every release on GitHub includes the pre-compiled installer files and a `SHA256SUMS` manifest containing the SHA256 checksum of each binary. By verifying the checksum of your download, you can guarantee that the file has not been altered or corrupted in transit.
 
 ---
 
@@ -49,7 +49,7 @@ This screenshot placeholder describes the macOS Gatekeeper warning popup, which 
 6. *Alternative workaround:* On macOS 14+ (Sonoma) and later, if the app fails to open or is blocked, go to **System Settings > Privacy & Security**, scroll down to the **Security** section, locate the notification that CivicNewspaper was blocked, and click the **"Open Anyway"** button.
 
 ### 3. Linux Installation
-We provide Debian/Ubuntu package archives (`.deb`) and portable `.AppImage` packages.
+We provide Debian/Ubuntu package archives (`.deb`). Linux builds are deb-only — there is no AppImage build.
 
 * **Debian/Ubuntu (`.deb`)**:
   1. Download the `.deb` package.
@@ -57,13 +57,6 @@ We provide Debian/Ubuntu package archives (`.deb`) and portable `.AppImage` pack
      ```bash
      sudo dpkg -i civicnewspaper_*.deb
      sudo apt-get install -f # Install any missing dependencies
-     ```
-* **AppImage**:
-  1. Download the `.AppImage` file.
-  2. Make the file executable and run it:
-     ```bash
-     chmod +x CivicNewspaper-*.AppImage
-     ./CivicNewspaper-*.AppImage
      ```
 
 ---
@@ -74,13 +67,13 @@ To verify that your downloaded binary is safe and matches the exact code compile
 
 ### Step 1: Get the Release Hash
 1. Open the [latest GitHub Releases page](https://github.com/scottconverse/CivicNewspaper/releases/latest).
-2. Locate and copy the SHA256 hash listed next to your file, or open the uploaded `SHA256SUMS.txt` file in your browser to view the hashes.
+2. Locate and copy the SHA256 hash listed next to your file, or open the uploaded `SHA256SUMS` file in your browser to view the hashes.
 
 ### Step 2: Compute the Hash on Your Computer
 
 Open a terminal or command prompt and run the command matching your operating system:
 
-*(Note: Replace `<version>` with the actual version you downloaded, e.g., `0.2.3`. You can find the canonical checksums in the `SHA256SUMS` file on the GitHub Releases page.)*
+*(Note: Replace `<version>` with the version number in the filename you downloaded — it matches the release tag. You can find the canonical checksums in the `SHA256SUMS` file on the GitHub Releases page.)*
 
 * **Windows (PowerShell)**:
   ```powershell
