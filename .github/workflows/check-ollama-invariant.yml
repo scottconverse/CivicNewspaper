@@ -1,3 +1,7 @@
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 # fix(v0.2.3): WI-INV-2-2 check-ollama-invariant workflow
 name: Check Ollama Invariant
 

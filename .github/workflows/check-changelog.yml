@@ -1,5 +1,9 @@
 name: Check Changelog
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [ main, v0.2.1-hotpatch ]
