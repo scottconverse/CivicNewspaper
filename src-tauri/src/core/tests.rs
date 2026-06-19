@@ -849,6 +849,96 @@ mod tests {
         assert_eq!(count, 1);
     }
 
+    // ENG-Min4: parse_and_save_scan_response must validate the untrusted,
+    // model-asserted `original_url` against the same SSRF/scheme allow-list used
+    // for real sources (scraper::validate_source_url) and DROP a blocked target
+    // (blank it out) before persisting, so a poisoned/hallucinated LLM link never
+    // enters the evidence/lead trail as a verified URL. This is mutation-resistant:
+    // the prior fixture test fed only a benign URL and asserted a row count, so
+    // deleting the validation gate would leave it green. Here we feed BOTH a benign
+    // URL and blocked ones (cloud-metadata IP + file:// scheme), then read the
+    // persisted rows back and assert the benign URL is preserved while every
+    // blocked URL is stored blank — removing the gate would persist the raw
+    // attacker URL and fail this test.
+    #[test]
+    fn test_daily_scan_drops_blocked_model_urls_keeps_benign() {
+        let response = r#"
+        {
+          "leads": [
+            {
+              "title": "Benign lead",
+              "summary": "A normal civic item",
+              "original_url": "https://example.gov/x"
+            },
+            {
+              "title": "Metadata SSRF lead",
+              "summary": "Poisoned cloud-metadata link",
+              "original_url": "http://169.254.169.254/meta"
+            },
+            {
+              "title": "File scheme lead",
+              "summary": "Poisoned local-file link",
+              "original_url": "file:///etc/passwd"
+            }
+          ]
+        }
+        "#;
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT INTO daily_scan_runs (started_at, run_status) VALUES ('', 'running')",
+            [],
+        )
+        .unwrap();
+
+        let saved =
+            crate::core::daily_scan::parse_and_save_scan_response(&conn, 1, response).unwrap();
+        // All three leads are kept (the lead text is preserved); only the bogus
+        // URLs are dropped, not the rows.
+        assert_eq!(saved, 3, "every lead row should be kept");
+
+        let leads = list_daily_scan_leads(&conn, 1).unwrap();
+        assert_eq!(leads.len(), 3);
+
+        let benign = leads
+            .iter()
+            .find(|l| l.title == "Benign lead")
+            .expect("benign lead should be persisted");
+        assert_eq!(
+            benign.original_url, "https://example.gov/x",
+            "the benign, allow-listed URL must be preserved intact"
+        );
+
+        let metadata = leads
+            .iter()
+            .find(|l| l.title == "Metadata SSRF lead")
+            .expect("metadata lead row should be persisted");
+        assert_eq!(
+            metadata.original_url, "",
+            "a blocked cloud-metadata URL must be dropped (stored blank), not persisted as a link"
+        );
+
+        let file_lead = leads
+            .iter()
+            .find(|l| l.title == "File scheme lead")
+            .expect("file-scheme lead row should be persisted");
+        assert_eq!(
+            file_lead.original_url, "",
+            "a blocked file:// URL must be dropped (stored blank), not persisted as a link"
+        );
+
+        // Belt-and-suspenders: the raw attacker strings must appear in NO
+        // persisted original_url. If the validation gate were removed, the
+        // metadata IP / file path would round-trip here and this would fail.
+        assert!(
+            leads
+                .iter()
+                .all(|l| l.original_url != "http://169.254.169.254/meta"
+                    && l.original_url != "file:///etc/passwd"),
+            "no blocked URL may survive into a persisted original_url"
+        );
+    }
+
     // MUTATION-RESISTANT (per Amendments 001/002). Runs on every platform,
     // including Windows: exercises the real model-selection path
     // (get_selected_model_or_fallback) plus the core rewrite logic with an
