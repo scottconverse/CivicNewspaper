@@ -29,7 +29,7 @@ function App() {
         <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
           <OnboardingWizard
             ollamaOnline={app.ollamaOnline}
-            systemRam={8} // Real RAM fetched inside wizard or we can just pass a dummy since wizard will fetch it
+            systemRam={app.systemRam}
             onComplete={() => setOnboardingComplete(true)}
           />
         </div>

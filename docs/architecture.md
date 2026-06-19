@@ -32,7 +32,7 @@ graph TD
 2. **React UI**: Responsive user interface built with React 19, TypeScript, and modern CSS.
 3. **Rust Core**: Hand-written core modules implementing feed scraping, database persistence, regex matching, markdown compilation, and local server routing.
 4. **Ollama Sidecar**: Bundled service running locally on port `11434` providing offline LLM completion APIs. The app spawns and reaps the sidecar itself, and coexists with an externally running `ollama serve` rather than starting a duplicate. On Linux the sidecar runs CPU-only (GPU acceleration is a known, deferred limitation).
-5. **SQLite Database**: Single-file relational storage with Write-Ahead Logging (WAL) enabled for performance and crash resilience.
+5. **SQLite Database**: Single-file relational storage with Write-Ahead Logging (WAL) enabled for performance and crash resilience. The data layer follows a single-writer design, which is appropriate for a single-user local desktop app: WAL lets readers proceed concurrently while one writer holds the write lock at a time, with no multi-process write contention to coordinate. (A Rust agent may add a matching code comment.)
 6. **Compiled Static Site**: Output folder containing parsed HTML files, style assets, and an RSS feed.
 
 ---

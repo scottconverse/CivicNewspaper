@@ -8,7 +8,8 @@ use reqwest::Client;
 use serde_json;
 use sha2::{Digest, Sha256};
 use std::error::Error;
-use std::net::{IpAddr, ToSocketAddrs};
+use std::net::{IpAddr, SocketAddr, ToSocketAddrs};
+use std::sync::LazyLock;
 use std::time::Duration;
 use tokio::time::sleep;
 
@@ -18,9 +19,11 @@ use tokio::time::sleep;
 // `http://127.0.0.1:11434` (local Ollama), `http://169.254.169.254` (cloud
 // metadata), or internal-LAN hosts. `validate_source_url` is the cheap,
 // network-free gate used when a source is *stored* (rejects bad schemes and
-// blocked IP literals); `validate_source_url_resolved` additionally resolves
-// DNS and is used at *scrape* time, where the network is in play anyway and DNS
-// may have changed since the source was added.
+// blocked IP literals); `validate_and_pin` additionally resolves DNS, validates
+// the resolved IP, and returns it so the scrape-time connection is pinned to the
+// exact address that was validated (defeating DNS rebinding). It is used at
+// *scrape* time, where the network is in play anyway and DNS may have changed
+// since the source was added.
 pub fn validate_source_url(url: &str) -> Result<reqwest::Url, String> {
     let parsed = reqwest::Url::parse(url.trim()).map_err(|e| format!("Invalid URL: {}", e))?;
 
@@ -59,26 +62,43 @@ fn host_as_ip(host: &str) -> Result<IpAddr, std::net::AddrParseError> {
         .parse::<IpAddr>()
 }
 
-pub fn validate_source_url_resolved(url: &str) -> Result<(), String> {
+/// Resolve `url`'s host ONCE, validate every resolved IP, and return a single
+/// pinned `SocketAddr` to connect to (or `None` for a literal-IP host, which
+/// reqwest will connect to directly with no further DNS).
+///
+/// ENG-M3 (DNS-rebinding TOCTOU): the previous design validated the host's DNS
+/// in one lookup and then let reqwest perform an INDEPENDENT lookup at connect
+/// time. A low-TTL attacker domain could resolve to a public IP during
+/// validation and to `169.254.169.254`/RFC1918 during the connect, sailing past
+/// the gate. By resolving once here and pinning the connection to the validated
+/// IP (via `ClientBuilder::resolve`), the IP we checked is the IP we connect to.
+/// The storage-time `validate_source_url` check remains a cheap best-effort
+/// filter; THIS function is the real gate.
+pub fn validate_and_pin(url: &str) -> Result<Option<SocketAddr>, String> {
     let parsed = validate_source_url(url)?;
     let host = parsed
         .host_str()
         .ok_or_else(|| "URL has no host".to_string())?;
 
-    // Literal IPs were already vetted by validate_source_url; only domains need
-    // resolution.
+    // Literal IPs were already vetted by validate_source_url; reqwest connects
+    // to them directly, so there is no DNS step to pin.
     if host_as_ip(host).is_ok() {
-        return Ok(());
+        return Ok(None);
     }
 
     let port = parsed.port_or_known_default().unwrap_or(80);
-    let addrs = (host, port)
+    let addrs: Vec<SocketAddr> = (host, port)
         .to_socket_addrs()
-        .map_err(|e| format!("Could not resolve host '{}': {}", host, e))?;
+        .map_err(|e| format!("Could not resolve host '{}': {}", host, e))?
+        .collect();
 
-    let mut resolved_any = false;
-    for addr in addrs {
-        resolved_any = true;
+    if addrs.is_empty() {
+        return Err(format!("Host '{}' did not resolve to any address", host));
+    }
+
+    // Reject if ANY resolved address is blocked (so we never connect to a host
+    // that round-robins between a public and an internal IP).
+    for addr in &addrs {
         if is_blocked_ip(&addr.ip()) {
             return Err(format!(
                 "URL host '{}' resolves to a blocked address ({}): loopback, private, and link-local destinations are not allowed",
@@ -86,10 +106,10 @@ pub fn validate_source_url_resolved(url: &str) -> Result<(), String> {
             ));
         }
     }
-    if !resolved_any {
-        return Err(format!("Host '{}' did not resolve to any address", host));
-    }
-    Ok(())
+
+    // Pin to the first validated address. Because we already rejected the whole
+    // set if any member was blocked, this address is guaranteed safe.
+    Ok(Some(addrs[0]))
 }
 
 fn is_blocked_ip(ip: &IpAddr) -> bool {
@@ -123,19 +143,26 @@ pub fn compute_hash(text: &str) -> String {
     format!("{:x}", hasher.finalize())
 }
 
+// Pre-compiled entity-extraction regexes (ENG-Nit1). Compiling a `Regex` is
+// expensive; `extract_entities` runs once per evidence chunk, so build these
+// once and reuse them (mirrors the pattern used in detectors.rs).
+static RE_DOLLAR: LazyLock<regex::Regex> =
+    LazyLock::new(|| regex::Regex::new(r"\$[0-9,]+(?:\.[0-9]+)?").unwrap());
+static RE_ORG: LazyLock<regex::Regex> = LazyLock::new(|| {
+    regex::Regex::new(r"\b[A-Z][a-zA-Z0-9&]+(?:\s+[A-Z][a-zA-Z0-9&]+)*\s+(?:Board|Council|Committee|Department|District|Commission|Agency|Association|Corp|Inc|LLC)\b").unwrap()
+});
+
 // Simple entity extraction using regex/keywords for our evidence entities list
 pub fn extract_entities(text: &str) -> Vec<String> {
     let mut entities = Vec::new();
-    let re_dollar = regex::Regex::new(r"\$[0-9,]+(?:\.[0-9]+)?").unwrap();
-    let re_org = regex::Regex::new(r"\b[A-Z][a-zA-Z0-9&]+(?:\s+[A-Z][a-zA-Z0-9&]+)*\s+(?:Board|Council|Committee|Department|District|Commission|Agency|Association|Corp|Inc|LLC)\b").unwrap();
 
     // Extract dollar amounts
-    for mat in re_dollar.find_iter(text) {
+    for mat in RE_DOLLAR.find_iter(text) {
         entities.push(mat.as_str().to_string());
     }
 
     // Extract formal organizations
-    for mat in re_org.find_iter(text) {
+    for mat in RE_ORG.find_iter(text) {
         entities.push(mat.as_str().to_string());
     }
 
@@ -144,12 +171,13 @@ pub fn extract_entities(text: &str) -> Vec<String> {
     entities
 }
 
-pub async fn scrape_all_sources(db: &DbConn) -> Result<(), Box<dyn Error>> {
-    let sources = {
-        let conn = db.lock().map_err(|_| "Failed to lock database")?;
-        super::db::list_sources(&conn)?
-    };
-    let client = Client::builder()
+/// Build the scraper HTTP client. When `pin` is supplied, the client is
+/// configured to resolve `host` to that exact `SocketAddr` (ENG-M3), so the IP
+/// we validated is the IP we connect to — defeating DNS rebinding. Redirect
+/// following is always disabled; `fetch_validated` follows hops manually so each
+/// one is re-validated and re-pinned.
+fn build_scraper_client(pin: Option<(&str, SocketAddr)>) -> Result<Client, Box<dyn Error>> {
+    let mut builder = Client::builder()
         .timeout(Duration::from_secs(10))
         .user_agent("CivicNewsScraper/1.0 (+http://127.0.0.1:12053)")
         // Disable reqwest's automatic redirect following. The default policy
@@ -159,8 +187,22 @@ pub async fn scrape_all_sources(db: &DbConn) -> Result<(), Box<dyn Error>> {
         // would be followed straight past the SSRF gate. We follow redirects
         // manually in `fetch_validated`, re-running the resolved-IP check on
         // every hop.
-        .redirect(reqwest::redirect::Policy::none())
-        .build()?;
+        .redirect(reqwest::redirect::Policy::none());
+
+    if let Some((host, addr)) = pin {
+        // Override DNS for this host so reqwest connects to the pre-validated IP
+        // (with the correct Host header / SNI preserved from the URL).
+        builder = builder.resolve(host, addr);
+    }
+
+    Ok(builder.build()?)
+}
+
+pub async fn scrape_all_sources(db: &DbConn) -> Result<(), Box<dyn Error>> {
+    let sources = {
+        let conn = db.lock().map_err(|_| "Failed to lock database")?;
+        super::db::list_sources(&conn)?
+    };
 
     for source in sources {
         // Enforce 3-second politeness delay between source scraping
@@ -169,7 +211,7 @@ pub async fn scrape_all_sources(db: &DbConn) -> Result<(), Box<dyn Error>> {
         let source_id = source.id.unwrap_or(0);
         println!("Scraping source: {} ({})", source.name, source.url);
 
-        match scrape_source(&client, db, &source).await {
+        match scrape_source(db, &source).await {
             Ok(_) => {
                 println!("Scraped source successfully: {}", source.name);
                 let conn = db.lock().map_err(|_| "Failed to lock database")?;
@@ -199,20 +241,64 @@ fn resolve_redirect_target(current: &str, location: &str) -> Result<String, Box<
 // `redirect::Policy::none()`; otherwise reqwest would follow redirects itself,
 // having validated only the original URL — a redirect-SSRF gap (a public feed
 // 302-ing to an internal/metadata address).
-async fn fetch_validated(
-    client: &Client,
+const MAX_REDIRECTS: usize = 10;
+
+async fn fetch_validated(initial_url: &str) -> Result<reqwest::Response, Box<dyn Error>> {
+    // Production path: validate (and DNS-pin) every hop with the real
+    // `validate_and_pin` gate. The loop itself lives in `fetch_validated_with` so
+    // it can be driven against local axum stubs in tests with an injected
+    // validator (the real gate blocks loopback, which is where stubs must live).
+    fetch_validated_with(initial_url, |url| {
+        let url = url.to_string();
+        Box::pin(async move {
+            tokio::task::spawn_blocking(move || validate_and_pin(&url))
+                .await
+                .map_err(|e| -> Box<dyn Error> { e.to_string().into() })?
+                .map_err(|e| -> Box<dyn Error> { e.into() })
+        })
+    })
+    .await
+}
+
+/// The redirect-following loop, generic over the per-hop validator so the
+/// security-critical control flow (re-validate-then-connect on EVERY hop, the
+/// max-redirect cap, the missing-Location branch) is testable end-to-end against
+/// local stub servers without the real `validate_and_pin` (which blocks loopback).
+/// TEST-M2.
+///
+/// `validate` is called with each hop's URL before it is fetched and returns the
+/// `SocketAddr` to pin the connection to (or `None` to let reqwest resolve a
+/// literal-IP host directly). Returning `Err` from `validate` aborts the fetch —
+/// this is how an internal/blocked redirect target is rejected mid-loop rather
+/// than followed.
+async fn fetch_validated_with<F>(
     initial_url: &str,
-) -> Result<reqwest::Response, Box<dyn Error>> {
-    const MAX_REDIRECTS: usize = 10;
+    validate: F,
+) -> Result<reqwest::Response, Box<dyn Error>>
+where
+    F: Fn(
+        &str,
+    ) -> std::pin::Pin<
+        Box<dyn std::future::Future<Output = Result<Option<SocketAddr>, Box<dyn Error>>> + Send>,
+    >,
+{
     let mut current = initial_url.to_string();
 
     for _ in 0..=MAX_REDIRECTS {
-        // Re-validate (with DNS resolution) before each fetch. A stored URL may
-        // predate this check, a host's DNS can change between add and scrape,
-        // and a redirect target is attacker-influenced. Run the blocking
-        // resolver off the async runtime.
-        let url_for_check = current.clone();
-        tokio::task::spawn_blocking(move || validate_source_url_resolved(&url_for_check)).await??;
+        // Re-validate before each fetch AND capture the single resolved IP we
+        // validated, so we can pin the connection to it. A stored URL may predate
+        // this check, a host's DNS can change between add and scrape, and a
+        // redirect target is attacker-influenced. (ENG-M3: resolve-once /
+        // connect-to-pinned-IP closes the DNS-rebinding TOCTOU.)
+        let pinned_addr = validate(&current).await?;
+
+        // Build a client pinned to the validated IP for this exact host. For a
+        // literal-IP host (`pinned_addr` is None) the default resolver connects
+        // straight to that already-vetted literal.
+        let parsed = reqwest::Url::parse(&current)?;
+        let host = parsed.host_str().ok_or("URL has no host")?.to_string();
+        let pin = pinned_addr.map(|addr| (host.as_str(), addr));
+        let client = build_scraper_client(pin)?;
 
         let response = client.get(&current).send().await?;
 
@@ -236,15 +322,11 @@ async fn fetch_validated(
     .into())
 }
 
-async fn scrape_source(
-    client: &Client,
-    db: &DbConn,
-    source: &Source,
-) -> Result<(), Box<dyn Error>> {
+async fn scrape_source(db: &DbConn, source: &Source) -> Result<(), Box<dyn Error>> {
     // Fetch through a manual redirect loop that re-validates (with DNS
-    // resolution) on every hop. See `fetch_validated` for why automatic
-    // redirect following is unsafe here.
-    let response = fetch_validated(client, &source.url).await?;
+    // resolution) and re-pins the connection IP on every hop. See
+    // `fetch_validated` for why automatic redirect following is unsafe here.
+    let response = fetch_validated(&source.url).await?;
     if !response.status().is_success() {
         return Err(format!("HTTP error status: {}", response.status()).into());
     }
@@ -273,13 +355,9 @@ async fn scrape_source(
             let description = entry.summary.map(|s| s.content).unwrap_or_default();
             let url = entry.links.first().map(|l| l.href.clone());
 
-            // Build excerpt based on source type constraints
-            let excerpt = if source.r#type == "media_lead" {
-                // Media headlines: NEVER store body text. Title/Headline only.
-                format!("Headline: {}", title)
-            } else {
-                format!("Title: {}\nDescription: {}", title, description)
-            };
+            // Build excerpt based on source type constraints (pure fn so the
+            // media_lead headline-only privacy rule is unit-testable — TEST-M1).
+            let excerpt = build_excerpt(&source.r#type, &title, &description);
 
             if excerpt.trim().is_empty() {
                 continue;
@@ -358,13 +436,30 @@ async fn scrape_source(
     Ok(())
 }
 
-fn clean_html(html: &str) -> String {
-    let re_script_style =
-        regex::Regex::new(r"(?s)<(script|style)[^>]*>.*?</(script|style)>").unwrap();
-    let re_tags = regex::Regex::new(r"<[^>]*>").unwrap();
+/// Build a feed-entry excerpt subject to per-source-type constraints.
+///
+/// TEST-M1 — the `media_lead` rule is an editorial/copyright invariant: media
+/// sources store the HEADLINE ONLY and NEVER the body/description text, so the app
+/// cannot over-collect or republish copyrighted media body content. Every other
+/// source type keeps the full title + description. Kept pure (no I/O) so this
+/// invariant is directly unit-testable and a refactor that started storing body
+/// text for media leads would fail a test.
+pub(crate) fn build_excerpt(source_type: &str, title: &str, description: &str) -> String {
+    if source_type == "media_lead" {
+        // Media headlines: NEVER store body text. Title/Headline only.
+        format!("Headline: {}", title)
+    } else {
+        format!("Title: {}\nDescription: {}", title, description)
+    }
+}
 
-    let step1 = re_script_style.replace_all(html, "");
-    let step2 = re_tags.replace_all(&step1, " ");
+static RE_SCRIPT_STYLE: LazyLock<regex::Regex> =
+    LazyLock::new(|| regex::Regex::new(r"(?s)<(script|style)[^>]*>.*?</(script|style)>").unwrap());
+static RE_TAGS: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r"<[^>]*>").unwrap());
+
+pub(crate) fn clean_html(html: &str) -> String {
+    let step1 = RE_SCRIPT_STYLE.replace_all(html, "");
+    let step2 = RE_TAGS.replace_all(&step1, " ");
 
     // Normalize whitespace
     let mut cleaned = String::new();
@@ -378,7 +473,7 @@ fn clean_html(html: &str) -> String {
     cleaned
 }
 
-fn chunk_text(text: &str, chunk_size: usize) -> Vec<String> {
+pub(crate) fn chunk_text(text: &str, chunk_size: usize) -> Vec<String> {
     let mut chunks = Vec::new();
     let mut current_chunk = String::new();
 
@@ -442,7 +537,11 @@ mod url_validation_tests {
             "http://[::ffff:127.0.0.1]/x",
         ] {
             let res = validate_source_url(url);
-            assert!(res.is_err(), "blocked IP literal should be rejected: {}", url);
+            assert!(
+                res.is_err(),
+                "blocked IP literal should be rejected: {}",
+                url
+            );
         }
     }
 
@@ -455,7 +554,11 @@ mod url_validation_tests {
             "https://www.brightoncolorado.gov/rss",
             "https://203.0.113.10/feed", // TEST-NET-3, a routable-looking literal
         ] {
-            assert!(validate_source_url(url).is_ok(), "should be accepted: {}", url);
+            assert!(
+                validate_source_url(url).is_ok(),
+                "should be accepted: {}",
+                url
+            );
         }
     }
 
@@ -463,8 +566,8 @@ mod url_validation_tests {
     fn resolved_check_rejects_blocked_literal_without_dns() {
         // The resolving variant must still reject IP literals (it short-circuits
         // before DNS for literals) — no network required for this assertion.
-        assert!(validate_source_url_resolved("http://127.0.0.1/feed").is_err());
-        assert!(validate_source_url_resolved("http://169.254.169.254/").is_err());
+        assert!(validate_and_pin("http://127.0.0.1/feed").is_err());
+        assert!(validate_and_pin("http://169.254.169.254/").is_err());
     }
 
     #[test]
@@ -517,7 +620,7 @@ mod url_validation_tests {
 
     #[test]
     fn redirect_target_to_internal_address_is_rejected_by_validator() {
-        // The redirect loop validates every hop via validate_source_url_resolved.
+        // The redirect loop validates and pins every hop via validate_and_pin.
         // A public feed that redirects to the cloud-metadata IP (literal, so no
         // DNS needed) must be rejected — this is the redirect-SSRF gap the manual
         // redirect loop closes.
@@ -526,8 +629,329 @@ mod url_validation_tests {
                 .unwrap();
         assert_eq!(next, "http://169.254.169.254/latest/");
         assert!(
-            validate_source_url_resolved(&next).is_err(),
+            validate_and_pin(&next).is_err(),
             "redirect to metadata IP must be rejected"
+        );
+    }
+
+    // ===== TEST-M1: pure scrape-execution helpers =====
+
+    #[test]
+    fn build_excerpt_media_lead_is_headline_only_never_body() {
+        // The privacy/copyright invariant: media_lead sources store the headline
+        // ONLY and NEVER the description/body text.
+        let excerpt = build_excerpt(
+            "media_lead",
+            "City approves new budget",
+            "The full body text of the article that must never be stored.",
+        );
+        assert_eq!(excerpt, "Headline: City approves new budget");
+        assert!(
+            !excerpt.contains("body text"),
+            "media_lead excerpt must NOT contain the description/body: {}",
+            excerpt
+        );
+    }
+
+    #[test]
+    fn build_excerpt_primary_record_keeps_title_and_description() {
+        // Non-media sources retain the full title + description (the body IS the
+        // public record we are collecting).
+        let excerpt = build_excerpt(
+            "primary_record",
+            "Agenda item 4",
+            "Council will vote on the road contract.",
+        );
+        assert_eq!(
+            excerpt,
+            "Title: Agenda item 4\nDescription: Council will vote on the road contract."
+        );
+        assert!(excerpt.contains("Council will vote"));
+    }
+
+    #[test]
+    fn build_excerpt_official_comm_also_keeps_body() {
+        let excerpt = build_excerpt("official_comm", "Notice", "Public hearing scheduled.");
+        assert!(excerpt.contains("Public hearing scheduled."));
+    }
+
+    #[test]
+    fn clean_html_strips_scripts_styles_and_tags() {
+        let html = "<html><head><style>body{color:red}</style></head>\
+            <body><script>alert('x')</script><h1>Headline</h1><p>Body paragraph.</p></body></html>";
+        let cleaned = clean_html(html);
+        assert!(!cleaned.contains("alert"), "script body must be removed");
+        assert!(!cleaned.contains("color:red"), "style body must be removed");
+        assert!(!cleaned.contains('<'), "all tags must be stripped");
+        assert!(cleaned.contains("Headline"));
+        assert!(cleaned.contains("Body paragraph."));
+    }
+
+    #[test]
+    fn clean_html_collapses_blank_lines() {
+        let html = "<div>  </div>\n<p>Real content</p>\n<div>   </div>";
+        let cleaned = clean_html(html);
+        // No empty lines should survive.
+        for line in cleaned.lines() {
+            assert!(!line.trim().is_empty(), "no blank lines: {:?}", cleaned);
+        }
+        assert!(cleaned.contains("Real content"));
+    }
+
+    #[test]
+    fn chunk_text_splits_on_size_boundary() {
+        // Each "paragraph" is ~50 chars; chunk_size 120 should pack 2 per chunk.
+        let para = "x".repeat(50);
+        let text = format!("{para}\n{para}\n{para}\n{para}");
+        let chunks = chunk_text(&text, 120);
+        assert!(chunks.len() >= 2, "expected multiple chunks: {:?}", chunks);
+        for chunk in &chunks {
+            // No single chunk should wildly exceed the size (allow one paragraph
+            // of overshoot, which is the documented packing behavior).
+            assert!(
+                chunk.len() <= 120 + 51,
+                "chunk too large ({}): {:?}",
+                chunk.len(),
+                chunk
+            );
+        }
+        // Round-trip: all original content survives across the chunks.
+        let joined: String = chunks.join("");
+        assert_eq!(joined.matches(&para).count(), 4);
+    }
+
+    #[test]
+    fn chunk_text_single_small_text_is_one_chunk() {
+        let chunks = chunk_text("Just a little text.", 2000);
+        assert_eq!(chunks.len(), 1);
+        assert_eq!(chunks[0].trim(), "Just a little text.");
+    }
+
+    #[test]
+    fn chunk_text_empty_input_yields_no_chunks() {
+        assert!(chunk_text("   \n  \n", 2000).is_empty());
+    }
+
+    // ===== TEST-M2: fetch_validated redirect-SSRF loop =====
+    //
+    // The real validator (validate_and_pin) blocks loopback, but the stub servers
+    // these tests drive must run on 127.0.0.1. We exercise the actual redirect
+    // loop (fetch_validated_with) with an INJECTED validator that mirrors the real
+    // gate's contract: it permits one explicitly-allowed benign loopback authority
+    // (the external stub) and REJECTS everything else (standing in for an
+    // internal/blocked target). This proves the loop re-validates and aborts on
+    // every hop, honors the redirect cap, and errors on a missing Location — the
+    // wiring the two separately-tested halves (join logic + validator) cannot prove.
+
+    use std::future::Future;
+    use std::net::SocketAddr;
+    use std::pin::Pin;
+
+    // The future returned by an injected per-hop validator (mirrors the bound on
+    // `fetch_validated_with`'s `validate` param). Aliased to keep clippy's
+    // type-complexity lint happy in the test helpers.
+    type ValidatorFut =
+        Pin<Box<dyn Future<Output = Result<Option<SocketAddr>, Box<dyn Error>>> + Send>>;
+
+    // Build an injected validator that allows ONLY `allowed_authority` (host:port)
+    // and pins it to `pin_addr`; any other URL is rejected (Err), modeling the
+    // real gate blocking an internal/metadata target mid-loop.
+    fn allow_only_validator(
+        allowed_authority: String,
+        pin_addr: SocketAddr,
+    ) -> impl Fn(&str) -> ValidatorFut {
+        move |url: &str| {
+            let parsed = reqwest::Url::parse(url);
+            let allowed = allowed_authority.clone();
+            Box::pin(async move {
+                let parsed = parsed.map_err(|e| -> Box<dyn Error> { e.to_string().into() })?;
+                let authority = format!(
+                    "{}:{}",
+                    parsed.host_str().unwrap_or(""),
+                    parsed.port_or_known_default().unwrap_or(0)
+                );
+                if authority == allowed {
+                    Ok(Some(pin_addr))
+                } else {
+                    Err(format!("blocked by injected validator: {}", authority).into())
+                }
+            })
+        }
+    }
+
+    #[tokio::test]
+    async fn fetch_validated_blocks_redirect_to_internal_target() {
+        // Stub A 302-redirects to an "internal" authority that the validator
+        // rejects. The fetch must Err (the internal target is never fetched),
+        // proving the loop re-validates the REDIRECT target, not just the original.
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let addr_a = listener.local_addr().unwrap();
+        let app = axum::Router::new().route(
+            "/feed",
+            axum::routing::get(|| async {
+                axum::response::Response::builder()
+                    .status(302)
+                    // A different (unallowed) authority stands in for an internal host.
+                    .header("Location", "http://10.0.0.5/internal")
+                    .body(axum::body::Body::empty())
+                    .unwrap()
+            }),
+        );
+        tokio::spawn(async move {
+            axum::serve(listener, app).await.unwrap();
+        });
+
+        let allowed = format!("{}:{}", addr_a.ip(), addr_a.port());
+        let url = format!("http://{}/feed", allowed);
+        let res = fetch_validated_with(&url, allow_only_validator(allowed, addr_a)).await;
+        assert!(
+            res.is_err(),
+            "a redirect to an internal/blocked target must be rejected, not followed"
+        );
+        assert!(
+            res.unwrap_err()
+                .to_string()
+                .contains("blocked by injected validator"),
+            "the rejection must come from the per-hop validator on the redirect target"
+        );
+    }
+
+    #[tokio::test]
+    async fn fetch_validated_follows_benign_external_redirect() {
+        // Stub A 302-redirects to stub B; both are "allowed" by the validator
+        // (benign external redirect). The final 200 from B must be returned Ok.
+        let listener_b = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let addr_b = listener_b.local_addr().unwrap();
+        let app_b = axum::Router::new().route(
+            "/final",
+            axum::routing::get(|| async { (axum::http::StatusCode::OK, "destination body") }),
+        );
+        tokio::spawn(async move {
+            axum::serve(listener_b, app_b).await.unwrap();
+        });
+
+        let auth_b = format!("{}:{}", addr_b.ip(), addr_b.port());
+        let final_url = format!("http://{}/final", auth_b);
+
+        let listener_a = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let addr_a = listener_a.local_addr().unwrap();
+        let redirect_to = final_url.clone();
+        let app_a = axum::Router::new().route(
+            "/start",
+            axum::routing::get(move || {
+                let loc = redirect_to.clone();
+                async move {
+                    axum::response::Response::builder()
+                        .status(302)
+                        .header("Location", loc)
+                        .body(axum::body::Body::empty())
+                        .unwrap()
+                }
+            }),
+        );
+        tokio::spawn(async move {
+            axum::serve(listener_a, app_a).await.unwrap();
+        });
+
+        let auth_a = format!("{}:{}", addr_a.ip(), addr_a.port());
+        let start_url = format!("http://{}/start", auth_a);
+
+        // A validator that allows BOTH stub authorities and pins each to itself.
+        let allowed_a = auth_a.clone();
+        let allowed_b = auth_b.clone();
+        let validator = move |url: &str| -> ValidatorFut {
+            let parsed = reqwest::Url::parse(url);
+            let (a, b) = (allowed_a.clone(), allowed_b.clone());
+            let (pa, pb) = (addr_a, addr_b);
+            Box::pin(async move {
+                let parsed = parsed.map_err(|e| -> Box<dyn Error> { e.to_string().into() })?;
+                let authority = format!(
+                    "{}:{}",
+                    parsed.host_str().unwrap_or(""),
+                    parsed.port_or_known_default().unwrap_or(0)
+                );
+                if authority == a {
+                    Ok(Some(pa))
+                } else if authority == b {
+                    Ok(Some(pb))
+                } else {
+                    Err("unexpected authority".into())
+                }
+            })
+        };
+
+        let res = fetch_validated_with(&start_url, validator).await;
+        assert!(
+            res.is_ok(),
+            "a benign external redirect should be followed: {:?}",
+            res.err()
+        );
+        let body = res.unwrap().text().await.unwrap();
+        assert_eq!(body, "destination body");
+    }
+
+    #[tokio::test]
+    async fn fetch_validated_enforces_max_redirect_cap() {
+        // A stub that always 302s back to itself must hit the redirect cap and
+        // error, rather than looping forever.
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+        let auth = format!("{}:{}", addr.ip(), addr.port());
+        let self_loc = format!("http://{}/loop", auth);
+        let loc_for_handler = self_loc.clone();
+        let app = axum::Router::new().route(
+            "/loop",
+            axum::routing::get(move || {
+                let loc = loc_for_handler.clone();
+                async move {
+                    axum::response::Response::builder()
+                        .status(302)
+                        .header("Location", loc)
+                        .body(axum::body::Body::empty())
+                        .unwrap()
+                }
+            }),
+        );
+        tokio::spawn(async move {
+            axum::serve(listener, app).await.unwrap();
+        });
+
+        let res = fetch_validated_with(&self_loc, allow_only_validator(auth, addr)).await;
+        assert!(res.is_err(), "an infinite redirect loop must be capped");
+        assert!(
+            res.unwrap_err().to_string().contains("Too many redirects"),
+            "the cap error should mention too many redirects"
+        );
+    }
+
+    #[tokio::test]
+    async fn fetch_validated_errors_on_redirect_missing_location() {
+        // A 302 with no Location header is malformed; the loop must error rather
+        // than silently treat it as a terminal response.
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+        let app = axum::Router::new().route(
+            "/noloc",
+            axum::routing::get(|| async {
+                axum::response::Response::builder()
+                    .status(302)
+                    .body(axum::body::Body::empty())
+                    .unwrap()
+            }),
+        );
+        tokio::spawn(async move {
+            axum::serve(listener, app).await.unwrap();
+        });
+
+        let auth = format!("{}:{}", addr.ip(), addr.port());
+        let url = format!("http://{}/noloc", auth);
+        let res = fetch_validated_with(&url, allow_only_validator(auth, addr)).await;
+        assert!(res.is_err(), "a redirect missing Location must error");
+        assert!(
+            res.unwrap_err()
+                .to_string()
+                .contains("missing a valid Location"),
+            "the error should explain the missing Location header"
         );
     }
 }

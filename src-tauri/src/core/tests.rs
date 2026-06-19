@@ -325,6 +325,13 @@ mod tests {
             let sources_restored = list_sources(&conn_after).unwrap();
             assert_eq!(sources_restored.len(), 1);
             assert_eq!(sources_restored[0].name, "Original Source");
+
+            // C-2 regression: foreign-key enforcement is per-connection and must
+            // survive a restore (the live handle is reopened during restore).
+            let fk_on: i64 = conn_after
+                .query_row("PRAGMA foreign_keys;", [], |r| r.get(0))
+                .unwrap();
+            assert_eq!(fk_on, 1, "foreign_keys must be ON after restore (C-2)");
         }
 
         // 6. Test Corrupt File Restore (Should reject and keep live DB safe)
@@ -798,9 +805,16 @@ mod tests {
         assert!(!prompts.is_empty());
     }
 
+    // TEST-Nit1: resolve the prompt path from CARGO_MANIFEST_DIR (the crate root)
+    // rather than a CWD-relative path, mirroring the sidecar fixture loader. This
+    // is robust no matter what working directory the test harness runs from.
+    fn manifest_path(rel: &str) -> std::path::PathBuf {
+        std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join(rel)
+    }
+
     #[test]
     fn test_get_prompt_loads_aggregator() {
-        let content = std::fs::read_to_string("prompts/aggregator.md").unwrap();
+        let content = std::fs::read_to_string(manifest_path("prompts/aggregator.md")).unwrap();
         assert!(content.contains("original_url"));
     }
 
@@ -833,6 +847,96 @@ mod tests {
             })
             .unwrap();
         assert_eq!(count, 1);
+    }
+
+    // ENG-Min4: parse_and_save_scan_response must validate the untrusted,
+    // model-asserted `original_url` against the same SSRF/scheme allow-list used
+    // for real sources (scraper::validate_source_url) and DROP a blocked target
+    // (blank it out) before persisting, so a poisoned/hallucinated LLM link never
+    // enters the evidence/lead trail as a verified URL. This is mutation-resistant:
+    // the prior fixture test fed only a benign URL and asserted a row count, so
+    // deleting the validation gate would leave it green. Here we feed BOTH a benign
+    // URL and blocked ones (cloud-metadata IP + file:// scheme), then read the
+    // persisted rows back and assert the benign URL is preserved while every
+    // blocked URL is stored blank — removing the gate would persist the raw
+    // attacker URL and fail this test.
+    #[test]
+    fn test_daily_scan_drops_blocked_model_urls_keeps_benign() {
+        let response = r#"
+        {
+          "leads": [
+            {
+              "title": "Benign lead",
+              "summary": "A normal civic item",
+              "original_url": "https://example.gov/x"
+            },
+            {
+              "title": "Metadata SSRF lead",
+              "summary": "Poisoned cloud-metadata link",
+              "original_url": "http://169.254.169.254/meta"
+            },
+            {
+              "title": "File scheme lead",
+              "summary": "Poisoned local-file link",
+              "original_url": "file:///etc/passwd"
+            }
+          ]
+        }
+        "#;
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT INTO daily_scan_runs (started_at, run_status) VALUES ('', 'running')",
+            [],
+        )
+        .unwrap();
+
+        let saved =
+            crate::core::daily_scan::parse_and_save_scan_response(&conn, 1, response).unwrap();
+        // All three leads are kept (the lead text is preserved); only the bogus
+        // URLs are dropped, not the rows.
+        assert_eq!(saved, 3, "every lead row should be kept");
+
+        let leads = list_daily_scan_leads(&conn, 1).unwrap();
+        assert_eq!(leads.len(), 3);
+
+        let benign = leads
+            .iter()
+            .find(|l| l.title == "Benign lead")
+            .expect("benign lead should be persisted");
+        assert_eq!(
+            benign.original_url, "https://example.gov/x",
+            "the benign, allow-listed URL must be preserved intact"
+        );
+
+        let metadata = leads
+            .iter()
+            .find(|l| l.title == "Metadata SSRF lead")
+            .expect("metadata lead row should be persisted");
+        assert_eq!(
+            metadata.original_url, "",
+            "a blocked cloud-metadata URL must be dropped (stored blank), not persisted as a link"
+        );
+
+        let file_lead = leads
+            .iter()
+            .find(|l| l.title == "File scheme lead")
+            .expect("file-scheme lead row should be persisted");
+        assert_eq!(
+            file_lead.original_url, "",
+            "a blocked file:// URL must be dropped (stored blank), not persisted as a link"
+        );
+
+        // Belt-and-suspenders: the raw attacker strings must appear in NO
+        // persisted original_url. If the validation gate were removed, the
+        // metadata IP / file path would round-trip here and this would fail.
+        assert!(
+            leads
+                .iter()
+                .all(|l| l.original_url != "http://169.254.169.254/meta"
+                    && l.original_url != "file:///etc/passwd"),
+            "no blocked URL may survive into a persisted original_url"
+        );
     }
 
     // MUTATION-RESISTANT (per Amendments 001/002). Runs on every platform,
@@ -880,7 +984,8 @@ mod tests {
 
     #[test]
     fn test_prompt_schema_drift() {
-        let content = std::fs::read_to_string("prompts/aggregator.md").unwrap();
+        // TEST-Nit1: CARGO_MANIFEST_DIR-relative, not CWD-relative.
+        let content = std::fs::read_to_string(manifest_path("prompts/aggregator.md")).unwrap();
         // Extract the fenced JSON example block
         let start_idx = content
             .find("```json")
@@ -977,6 +1082,37 @@ mod tests {
     async fn test_daily_scan_persists_model_leads_and_marks_run_completed() {
         let mut conn = rusqlite::Connection::open_in_memory().unwrap();
         crate::core::migrations::run_migrations(&mut conn).unwrap();
+        // QA-M2: the scan now short-circuits when there is no evidence in-window,
+        // so seed a source + a recent evidence item first; otherwise the scan
+        // would return the no-evidence signal and never reach the persist path.
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Test Source".to_string(),
+                url: "https://example.gov/feed.xml".to_string(),
+                r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://example.gov/feed.xml".to_string()),
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "Council discussed the road maintenance budget.".to_string(),
+                content_hash: "hash_persist_test".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
         let db_conn: DbConn = Arc::new(Mutex::new(conn));
 
         struct FakeLlmClient;
@@ -1099,6 +1235,36 @@ mod tests {
             [],
         )
         .unwrap();
+        // QA-M2: seed in-window evidence so the scan does not short-circuit before
+        // it resolves and passes the selected model to the LLM client.
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Test Source".to_string(),
+                url: "https://example.gov/feed.xml".to_string(),
+                r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://example.gov/feed.xml".to_string()),
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "Some recent civic evidence.".to_string(),
+                content_hash: "hash_model_test".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
         let db_conn: DbConn = Arc::new(Mutex::new(conn));
 
         struct FakeLlmClient;
@@ -1127,6 +1293,435 @@ mod tests {
         .await;
 
         assert!(res.is_ok());
+    }
+
+    // QA-M2: with zero evidence in the window, run_daily_scan must short-circuit
+    // BEFORE calling the LLM and return the distinct no-evidence signal — no run
+    // row is created, and the (panicking) fake client is never invoked.
+    #[tokio::test]
+    async fn test_daily_scan_short_circuits_on_zero_evidence() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        crate::core::migrations::run_migrations(&mut conn).unwrap();
+        let db_conn: DbConn = Arc::new(Mutex::new(conn));
+
+        struct PanicLlmClient;
+        #[async_trait::async_trait]
+        impl crate::core::llm::LlmClient for PanicLlmClient {
+            async fn call(&self, _m: &str, _p: &str, _s: &str) -> Result<String, String> {
+                panic!("the LLM must NOT be called when there is zero evidence");
+            }
+        }
+        let llm_client: Arc<dyn crate::core::llm::LlmClient> = Arc::new(PanicLlmClient);
+
+        let res = crate::core::daily_scan::run_daily_scan(
+            &db_conn,
+            &llm_client,
+            "aggregator prompt template",
+            "Brighton",
+            "CO",
+            24,
+        )
+        .await;
+
+        let err = res.expect_err("zero-evidence scan must return an error signal");
+        assert_eq!(
+            err,
+            crate::core::daily_scan::NO_EVIDENCE_SIGNAL,
+            "the error must be the recognizable no-evidence signal"
+        );
+
+        // No run row should have been created by the short-circuit.
+        let conn = db_conn.lock().unwrap();
+        let run_count: i32 = conn
+            .query_row("SELECT COUNT(*) FROM daily_scan_runs", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(
+            run_count, 0,
+            "no run row should be created on short-circuit"
+        );
+    }
+
+    // ===== C-6 / CRIT-1: add_source storage gate (SSRF + tier) =====
+    //
+    // add_source is the single chokepoint every source-ingestion path funnels
+    // through (manual / discovery auto-import / bulk import). These tests pin that
+    // the SSRF gate and tier allow-list remain WIRED at the command layer: a
+    // blocked URL, bad scheme, or bad tier is rejected AND never inserted. If a
+    // refactor dropped the validate_source_url call, the "never inserted" assertion
+    // would fail even though the validator's own unit tests still pass.
+
+    #[test]
+    fn test_add_source_rejects_blocked_urls_and_never_inserts() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        let db_conn: DbConn = Arc::new(Mutex::new(conn));
+
+        let blocked = [
+            ("Metadata", "http://169.254.169.254/latest/meta-data/"),
+            ("Local Ollama", "http://127.0.0.1:11434/api/tags"),
+            ("RFC1918", "http://10.0.0.5/feed"),
+            ("Bad scheme", "file:///etc/passwd"),
+            ("FTP scheme", "ftp://example.com/feed"),
+        ];
+        for (name, url) in blocked {
+            let res = crate::tauri_cmds::add_source_inner(
+                &db_conn,
+                name.to_string(),
+                url.to_string(),
+                "primary_record".to_string(),
+                "official_record".to_string(),
+            );
+            assert!(res.is_err(), "blocked URL must be rejected: {}", url);
+        }
+
+        // A bad tier must also be rejected even with an otherwise-valid URL.
+        let bad_tier = crate::tauri_cmds::add_source_inner(
+            &db_conn,
+            "Bad tier".to_string(),
+            "https://example.gov/feed.xml".to_string(),
+            "primary_record".to_string(),
+            "not_a_real_tier".to_string(),
+        );
+        assert!(bad_tier.is_err(), "an invalid tier must be rejected");
+
+        // NOTHING from the rejected attempts may have been inserted.
+        let conn = db_conn.lock().unwrap();
+        let count: i32 = conn
+            .query_row("SELECT COUNT(*) FROM sources", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(count, 0, "no rejected source may be inserted");
+    }
+
+    #[test]
+    fn test_add_source_accepts_valid_public_source() {
+        // Positive control: a well-formed public https source with a valid tier
+        // is accepted and inserted (so the rejection tests above aren't vacuous).
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        let db_conn: DbConn = Arc::new(Mutex::new(conn));
+
+        let res = crate::tauri_cmds::add_source_inner(
+            &db_conn,
+            "Brighton Gov".to_string(),
+            "https://www.brightoncolorado.gov/rss".to_string(),
+            "primary_record".to_string(),
+            "official_record".to_string(),
+        );
+        assert!(
+            res.is_ok(),
+            "a valid public source should be accepted: {:?}",
+            res.err()
+        );
+
+        let conn = db_conn.lock().unwrap();
+        let count: i32 = conn
+            .query_row("SELECT COUNT(*) FROM sources", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(count, 1, "the valid source should be inserted exactly once");
+    }
+
+    // ===== TEST-Mn2: detector edge cases =====
+
+    #[test]
+    fn test_detector_malformed_profile_json_falls_back_to_defaults() {
+        // A malformed profile must NOT panic; parse_profile_config falls back to
+        // the default config (threshold 250000, empty watchlist), so a $300k item
+        // still fires Money Threshold.
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Src".to_string(),
+                url: "https://x.gov/a".to_string(),
+                r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        let ev = insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: None,
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "Contract awarded for $300,000.".to_string(),
+                content_hash: "h_malformed".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
+
+        // Totally malformed JSON.
+        let res = run_detectors(&conn, &[ev], "{ this is not json ]");
+        assert!(res.is_ok(), "malformed profile_json must not panic/error");
+        let leads = list_leads(&conn).unwrap();
+        assert!(
+            leads.iter().any(|l| l.detector_name == "Money Threshold"),
+            "default threshold should still fire on $300k"
+        );
+    }
+
+    #[test]
+    fn test_detector_threshold_exactly_at_boundary_fires() {
+        // The money detector uses `>=`, so an amount EXACTLY at the threshold must
+        // fire (boundary correctness).
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Src".to_string(),
+                url: "https://x.gov/a".to_string(),
+                r#type: "community_signal".to_string(),
+                tier: "community_signal".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        let ev = insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: None,
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "Budget line of exactly $250,000 approved.".to_string(),
+                content_hash: "h_boundary".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
+        let profile = r#"{"money_threshold": 250000.0, "watchlist": []}"#;
+        run_detectors(&conn, &[ev], profile).unwrap();
+        let leads = list_leads(&conn).unwrap();
+        assert!(
+            leads
+                .iter()
+                .any(|l| l.detector_name == "Money Threshold" && l.why.contains("250,000")),
+            "an amount exactly at the threshold must fire (>= boundary)"
+        );
+    }
+
+    #[test]
+    fn test_detector_empty_watchlist_fires_no_watchlist_hit() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Src".to_string(),
+                url: "https://x.gov/a".to_string(),
+                r#type: "community_signal".to_string(),
+                tier: "community_signal".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        let ev = insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: None,
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "John Doe attended the meeting.".to_string(),
+                content_hash: "h_empty_wl".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
+        let profile = r#"{"money_threshold": 250000.0, "watchlist": []}"#;
+        run_detectors(&conn, &[ev], profile).unwrap();
+        let leads = list_leads(&conn).unwrap();
+        assert!(
+            !leads.iter().any(|l| l.detector_name == "Watchlist Hit"),
+            "an empty watchlist must produce no Watchlist Hit leads"
+        );
+    }
+
+    #[test]
+    fn test_detector_multiple_fire_on_one_item_no_panic() {
+        // One evidence item triggering several detectors at once must not panic and
+        // must fire each applicable detector exactly as expected.
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Src".to_string(),
+                url: "https://x.gov/a".to_string(),
+                r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        let ev = insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: None,
+                fetched_at: Utc::now().to_rfc3339(),
+                // Hits: New Primary Record (primary), Money Threshold ($400k),
+                // Decision/Vote ("approved"), Watchlist Hit ("Jane Roe").
+                excerpt: "The board unanimously approved a $400,000 contract involving Jane Roe."
+                    .to_string(),
+                content_hash: "h_multi".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
+        let profile = r#"{"money_threshold": 250000.0, "watchlist": ["Jane Roe"]}"#;
+        let new_leads = run_detectors(&conn, &[ev], profile).unwrap();
+        assert!(
+            new_leads.len() >= 4,
+            "multiple detectors should fire: {:?}",
+            new_leads
+        );
+        let leads = list_leads(&conn).unwrap();
+        for expected in [
+            "New Primary Record",
+            "Money Threshold",
+            "Decision / Vote",
+            "Watchlist Hit",
+        ] {
+            assert!(
+                leads.iter().any(|l| l.detector_name == expected),
+                "expected detector '{}' to fire",
+                expected
+            );
+        }
+    }
+
+    // ===== TEST-Mn3: list_evidence_since window boundary =====
+
+    #[test]
+    fn test_list_evidence_since_window_boundary() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Src".to_string(),
+                url: "https://x.gov/a".to_string(),
+                r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+
+        let now = Utc::now();
+        let insert_at = |conn: &Connection, when: chrono::DateTime<Utc>, hash: &str| {
+            insert_evidence_item(
+                conn,
+                &EvidenceItem {
+                    id: None,
+                    source_id,
+                    url: None,
+                    fetched_at: when.to_rfc3339(),
+                    excerpt: format!("evidence {}", hash),
+                    content_hash: hash.to_string(),
+                    entities: "[]".to_string(),
+                },
+            )
+            .unwrap();
+        };
+
+        // 24h window: one item 1h ago (inside), one 25h ago (outside).
+        insert_at(&conn, now - chrono::Duration::hours(1), "inside_24");
+        insert_at(&conn, now - chrono::Duration::hours(25), "outside_24");
+        let within_24 = list_evidence_since(&conn, 24).unwrap();
+        assert!(
+            within_24.iter().any(|e| e.content_hash == "inside_24"),
+            "an item 1h old must be inside the 24h window"
+        );
+        assert!(
+            !within_24.iter().any(|e| e.content_hash == "outside_24"),
+            "an item 25h old must be outside the 24h window"
+        );
+
+        // 168h (7d) window: one item 167h ago (inside), one 169h ago (outside).
+        insert_at(&conn, now - chrono::Duration::hours(167), "inside_168");
+        insert_at(&conn, now - chrono::Duration::hours(169), "outside_168");
+        let within_168 = list_evidence_since(&conn, 168).unwrap();
+        assert!(
+            within_168.iter().any(|e| e.content_hash == "inside_168"),
+            "an item 167h old must be inside the 168h window"
+        );
+        assert!(
+            !within_168.iter().any(|e| e.content_hash == "outside_168"),
+            "an item 169h old must be outside the 168h window"
+        );
+    }
+
+    // ===== TEST-M1: feed entry -> excerpt mapping on a real feed fixture =====
+
+    #[test]
+    fn test_feed_media_lead_excerpt_is_headline_only() {
+        // Parse a real RSS feed via feed_rs and assert that the per-entry excerpt
+        // built for a media_lead source carries the HEADLINE ONLY (never the body),
+        // while a primary_record source keeps the description. This exercises the
+        // same build_excerpt path scrape_source uses, against parsed feed entries.
+        let rss = r#"<?xml version="1.0"?>
+        <rss version="2.0"><channel>
+          <title>Test Feed</title>
+          <item>
+            <title>Mayor announces new park</title>
+            <description>SECRET BODY TEXT that must never be stored for media leads.</description>
+            <link>https://news.example.com/park</link>
+          </item>
+        </channel></rss>"#;
+        let feed = feed_rs::parser::parse(rss.as_bytes()).unwrap();
+        let entry = &feed.entries[0];
+        let title = entry
+            .title
+            .as_ref()
+            .map(|t| t.content.clone())
+            .unwrap_or_default();
+        let description = entry
+            .summary
+            .as_ref()
+            .map(|s| s.content.clone())
+            .unwrap_or_default();
+
+        let media = crate::core::scraper::build_excerpt("media_lead", &title, &description);
+        assert_eq!(media, "Headline: Mayor announces new park");
+        assert!(
+            !media.contains("SECRET BODY TEXT"),
+            "media_lead must never store body text: {}",
+            media
+        );
+
+        let record = crate::core::scraper::build_excerpt("primary_record", &title, &description);
+        assert!(
+            record.contains("SECRET BODY TEXT"),
+            "primary_record must retain the description body"
+        );
     }
 
     struct NoopPullSink;
@@ -1454,10 +2049,7 @@ mod tests {
         // Reap the spawned fixture deterministically.
         let _ = sidecar.stop();
         let child_guard = sidecar.child.lock().unwrap();
-        assert!(
-            child_guard.is_none(),
-            "stop() must clear the spawned child"
-        );
+        assert!(child_guard.is_none(), "stop() must clear the spawned child");
     }
 
     // ENG-004: start() must never kill a process it did not spawn. The orphan
@@ -1500,7 +2092,10 @@ mod tests {
         );
 
         // Deterministic: same input always hashes the same.
-        assert_eq!(compute_hash("Council agenda"), compute_hash("Council agenda"));
+        assert_eq!(
+            compute_hash("Council agenda"),
+            compute_hash("Council agenda")
+        );
 
         // Distinct inputs hash differently.
         assert_ne!(compute_hash("a"), compute_hash("b"));

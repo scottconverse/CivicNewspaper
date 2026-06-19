@@ -26,12 +26,14 @@ otherwise it stays here with a RESOLVED or WITHDRAWN tag so cross-references in
   (right) with line-level LCS highlighting (removed lines red, added lines
   green). The editor explicitly Accepts (applies via `onUpdateDraftContent`)
   or Rejects (discards) before any change lands.
-- **P5-002 — DEFERRED (→ future)** (Tauri auto-updater dormant): The auto-updater
-  is intentionally inactive — `src-tauri/tauri.conf.json` sets
-  `plugins.updater.active = false`. The updater plugin ships but performs no
-  update checks; updates are manual via the GitHub releases page. User-facing
-  documentation of this state lives in `FAQ.md` ("The Tauri updater is dormant")
-  and `README.md`.
+- **P5-002 — RESOLVED (v0.2.6, CHANGELOG ENG-001)** (Tauri auto-updater removed):
+  The Tauri updater was removed entirely in v0.2.6 rather than left dormant. The
+  `tauri-plugin-updater`/`tauri-plugin-process` crates and their npm counterparts
+  were dropped, the `plugins.updater` config was deleted (`tauri.conf.json` now
+  has `"plugins": {}`), and the on-launch `check()` call and update banner were
+  removed. The app performs no update checks; updates are a manual download from
+  the GitHub Releases page. User-facing documentation of this state lives in
+  `FAQ.md` and `README.md`.
 - **P5-003 — RESOLVED (v0.2.6, AppHandle decoupling)** (Tauri mock_app() Windows test harness): The three
   Tauri-state-dependent tests (`test_plain_language_rewrite_invokes_ollama`,
   `test_daily_scan_command_does_not_panic_when_state_registered`,

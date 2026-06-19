@@ -32,6 +32,27 @@ fn default_state() -> String {
     "CO".to_string()
 }
 
+/// Normalize an Ollama model tag for EXACT comparison. Ollama treats an untagged
+/// name as `:latest`, so `qwen3` and `qwen3:latest` are the same model. QA-mn1:
+/// match exact tags (with this `:latest` normalization) instead of loose
+/// substring/`starts_with`/`contains` matching, which could select the wrong
+/// model (e.g. `qwen3:4b` selected vs `qwen3:14b` installed).
+pub(crate) fn normalize_model_tag(tag: &str) -> String {
+    let t = tag.trim();
+    if t.contains(':') {
+        t.to_string()
+    } else {
+        format!("{}:latest", t)
+    }
+}
+
+/// True if `selected` exactly matches one of the `installed` tags (after
+/// `:latest` normalization on both sides). QA-mn1.
+pub(crate) fn model_is_installed(selected: &str, installed: &[String]) -> bool {
+    let want = normalize_model_tag(selected);
+    installed.iter().any(|m| normalize_model_tag(m) == want)
+}
+
 pub(crate) async fn get_selected_model_or_fallback(db: &DbConn) -> String {
     let saved = {
         if let Ok(conn) = db.lock() {
@@ -51,7 +72,9 @@ pub(crate) async fn get_selected_model_or_fallback(db: &DbConn) -> String {
         return m;
     }
 
-    let default_m = "phi3:mini".to_string();
+    // Default to the smallest qwen3 tier (qwen3:4b) — the model family the app
+    // ships with. This fallback only runs when no model is saved in settings.
+    let default_m = "qwen3:4b".to_string();
     let mut model = default_m.clone();
     if let Ok(resp) = reqwest::get("http://127.0.0.1:11434/api/tags").await {
         if resp.status().is_success() {
@@ -65,12 +88,18 @@ pub(crate) async fn get_selected_model_or_fallback(db: &DbConn) -> String {
             }
             if let Ok(tags) = resp.json::<TagsResp>().await {
                 if !tags.models.is_empty() {
-                    if tags.models.iter().any(|m| m.name.starts_with(&default_m)) {
+                    let names: Vec<String> = tags.models.iter().map(|m| m.name.clone()).collect();
+                    // QA-mn1: prefer the default model only if it is EXACTLY
+                    // installed (with :latest normalization), then fall back to
+                    // any preferred-family exact-ish tag, then the first model.
+                    if model_is_installed(&default_m, &names) {
                         model = default_m;
                     } else if let Some(m) = tags.models.iter().find(|m| {
-                        m.name.contains("gemma")
-                            || m.name.contains("llama")
-                            || m.name.contains("phi")
+                        // Match by model FAMILY on the tag's base name (the part
+                        // before ':'), not a loose whole-string contains. The app
+                        // ships with the qwen3 family (qwen3:14b/8b/4b).
+                        let base = m.name.split(':').next().unwrap_or("");
+                        base.starts_with("qwen")
                     }) {
                         model = m.name.clone();
                     } else {
@@ -81,6 +110,34 @@ pub(crate) async fn get_selected_model_or_fallback(db: &DbConn) -> String {
         }
     }
     model
+}
+
+/// Fetch the list of installed model tags from the local Ollama. Returns an
+/// empty vec if Ollama is unreachable or returns no models.
+pub(crate) async fn list_installed_models() -> Vec<String> {
+    let client = match reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(2))
+        .build()
+    {
+        Ok(c) => c,
+        Err(_) => return Vec::new(),
+    };
+    if let Ok(resp) = client.get("http://127.0.0.1:11434/api/tags").send().await {
+        if resp.status().is_success() {
+            #[derive(Deserialize)]
+            struct ModelItem {
+                name: String,
+            }
+            #[derive(Deserialize)]
+            struct TagsResp {
+                models: Vec<ModelItem>,
+            }
+            if let Ok(tags) = resp.json::<TagsResp>().await {
+                return tags.models.into_iter().map(|m| m.name).collect();
+            }
+        }
+    }
+    Vec::new()
 }
 
 #[derive(Serialize, Deserialize)]
@@ -106,6 +163,23 @@ pub fn get_sources(db: tauri::State<'_, DbConn>) -> Result<Vec<Source>, String> 
 #[tauri::command]
 pub fn add_source(
     db: tauri::State<'_, DbConn>,
+    name: String,
+    url: String,
+    r#type: String,
+    tier: String,
+) -> Result<i32, String> {
+    add_source_inner(&db, name, url, r#type, tier)
+}
+
+/// The storage chokepoint for every source-ingestion path (manual add, discovery
+/// auto-import, bulk import — all funnel through the `add_source` command). This
+/// is the single place the tier allow-list and the SSRF storage gate are enforced
+/// before a source is persisted; it is factored out of the `#[tauri::command]`
+/// wrapper so it can be tested directly without a Tauri `AppHandle` (C-6 /
+/// CRIT-1). Both gates MUST run before `insert_source`, and a rejected source MUST
+/// NOT be inserted — the tests in `tests.rs` pin exactly that.
+pub(crate) fn add_source_inner(
+    db: &DbConn,
     name: String,
     url: String,
     r#type: String,
@@ -367,6 +441,19 @@ pub async fn generate_draft<R: tauri::Runtime>(
     let sys = system_prompt.unwrap_or_else(|| "You are an AI assistant for a local community newspaper reporter. You write factual, objective drafts based strictly on provided records. You always cite evidence IDs.".to_string());
 
     let model = get_selected_model_or_fallback(&db).await;
+
+    // QA-C1: pre-flight that the resolved model is actually installed. The
+    // frontend gates the button on sidecar-reachability only, so a user who
+    // skipped the model download in onboarding could reach this with no model.
+    // Fail with a clear, typed remedy instead of an opaque "model not found"
+    // surfaced from Ollama mid-call. (The frontend will also pre-flight.)
+    let installed = list_installed_models().await;
+    if !installed.is_empty() && !model_is_installed(&model, &installed) {
+        return Err(format!(
+            "MODEL_NOT_INSTALLED: The selected AI model '{}' is not installed. Open Setup and download a model before drafting.",
+            model
+        ));
+    }
 
     let llm_client = app
         .state::<std::sync::Arc<dyn crate::core::llm::LlmClient>>()

@@ -30,7 +30,9 @@ describe("OnboardingWizard Component Tests", () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
 
-    const gemma2_9b = 'gemma2:9b';
+    // 16 GB RAM maps to the high tier (qwen3:14b) per OnboardingWizard's
+    // ram >= 16 ? high : ram >= 8 ? medium : low recommendation logic.
+    const recommendedModel = 'qwen3:14b';
     invokeMock.mockImplementation((cmd: string) => {
       if (cmd === "get_system_ram") return Promise.resolve(16);
       if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: [], version: "0.1.0" });
@@ -48,7 +50,7 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
     // The RAM-based model recommendation renders via a separate async path from
     // the step indicator, so await it rather than asserting synchronously.
-    await waitFor(() => expect(screen.getByText(new RegExp(gemma2_9b))).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(new RegExp(recommendedModel))).toBeInTheDocument());
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
     // Step 3
@@ -81,8 +83,8 @@ describe("OnboardingWizard Component Tests", () => {
     // Step 1
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
-    // Step 2
-    await waitFor(() => expect(screen.getByText("Bundled Ollama Sidecar Starting")).toBeInTheDocument());
+    // Step 2 — unreachable AI service shows the "starting" notice
+    await waitFor(() => expect(screen.getByText("Starting the local AI service")).toBeInTheDocument());
     expect(screen.getByRole("button", { name: /Skip for now/i })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Skip for now/i }));
 
@@ -109,10 +111,10 @@ describe("OnboardingWizard Component Tests", () => {
     // Step 1
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
-    // Step 2
-    const gemma2_9b = 'gemma2:9b';
-    await waitFor(() => expect(screen.getByText(/Pull a recommended model/i)).toBeInTheDocument());
-    expect(screen.getByText(new RegExp(gemma2_9b))).toBeInTheDocument();
+    // Step 2 — service reachable but no models installed shows the ready/download prompt
+    const recommendedModel = 'qwen3:14b';
+    await waitFor(() => expect(screen.getByText(/Download a recommended model/i)).toBeInTheDocument());
+    expect(screen.getByText(new RegExp(recommendedModel))).toBeInTheDocument();
   });
 
   test("Model Pull: streams progress and completes", async () => {
@@ -141,12 +143,12 @@ describe("OnboardingWizard Component Tests", () => {
     expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
     
     // Click pull recommended model button
-    const gemma2_9b = 'gemma2:9b';
-    const pullBtn = await screen.findByRole("button", { name: new RegExp("Download " + gemma2_9b, "i") });
+    const recommendedModel = 'qwen3:14b';
+    const pullBtn = await screen.findByRole("button", { name: new RegExp("Download " + recommendedModel, "i") });
     fireEvent.click(pullBtn);
 
     // Verify it called pull_ollama_model command
-    await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("pull_ollama_model", { modelId: gemma2_9b }));
+    await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("pull_ollama_model", { modelId: recommendedModel }));
 
     // Simulate progress event at 50%
     await waitFor(() => expect(progressCallback).not.toBeNull());
@@ -155,7 +157,7 @@ describe("OnboardingWizard Component Tests", () => {
     act(() => {
       progressCallback({
         payload: {
-          model: gemma2_9b,
+          model: recommendedModel,
           status: "downloading",
           completed: 50,
           total: 100,
@@ -170,7 +172,7 @@ describe("OnboardingWizard Component Tests", () => {
     act(() => {
       progressCallback({
         payload: {
-          model: gemma2_9b,
+          model: recommendedModel,
           status: "success",
           completed: 100,
           total: 100,
@@ -210,7 +212,7 @@ describe("OnboardingWizard Component Tests", () => {
     });
 
     await vi.waitFor(() => {
-      expect(screen.getByText("Checking Ollama sidecar initialization status...")).toBeInTheDocument();
+      expect(screen.getByText("Starting the local AI service...")).toBeInTheDocument();
     });
 
     act(() => {

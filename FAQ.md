@@ -26,9 +26,11 @@ The tradeoff is real: local models in the 3B–9B range are significantly weaker
 ### What hardware do I need?
 
 The Onboarding wizard inspects your system memory and suggests a model. Rough guide:
-- **16 GB RAM or more**: `gemma2:9b` (recommended for the standard workflow).
-- **8 GB RAM**: `llama3:8b` or `qwen2.5:3b`.
-- **4 GB RAM**: `qwen2.5:1.5b` or `tinyllama` — drafting quality will be noticeably worse.
+- **16 GB RAM or more**: `qwen3:14b` (≈9.3 GB download — recommended for the standard workflow).
+- **8 GB RAM or more**: `qwen3:8b` (≈5.2 GB download).
+- **Below 8 GB RAM**: `qwen3:4b` (≈2.5 GB download) — drafting quality will be noticeably worse.
+
+CivicNewspaper uses Qwen3 because it is a best-in-class local model in 2026 with notably reliable JSON/structured output, which the Daily Scan feature relies on.
 
 CPU inference works but is slow. A modern Apple Silicon Mac or any machine with a GPU that Ollama can use will be much faster.
 
@@ -48,13 +50,13 @@ Pre-compiled installers for Windows, macOS, and Linux are available on the [late
 
 ### Why does Windows/Mac warn me about this app?
 
-Windows SmartScreen and macOS Gatekeeper warn you because the installers are not digitally signed with an expensive, recurring Microsoft/Apple developer certificate. CivicNewspaper is an open-source, community-led project and operates on a "trust-without-signing" model. You can verify the integrity of the downloaded files manually by computing their SHA256 checksums and matching them against the hashes published on the GitHub Release page. For details on how to bypass the warnings and verify the files, see the [Installation Guide](docs/install.md).
+Windows SmartScreen and macOS Gatekeeper warn you because the installers are not digitally signed with a (paid, recurring) Microsoft/Apple developer certificate. CivicNewspaper is an open-source, community-led public beta, so the installers are unsigned and these warnings are expected. You can confirm a download matches the file published on the GitHub Release page by computing its SHA256 checksum and comparing it to the `SHA256SUMS` manifest there — that verifies the file wasn't corrupted or altered in transit. Note the limit: a checksum is not a substitute for code signing and doesn't prove who built the binary; for an end-to-end-trustworthy build, build from source. For step-by-step instructions to proceed past the warnings and verify the files, see the [Installation Guide](docs/install.md).
 
 ### How much disk space do I need?
 
 You will need:
 - **Application space**: Around 330 MB for the installed application.
-- **AI Model space**: Around 5.4 GB for the default `gemma2:9b` offline writing model.
+- **AI Model space**: Around 5.2 GB for the `qwen3:8b` offline writing model (the default for 8 GB-class machines). The larger `qwen3:14b` is ≈9.3 GB; the smaller `qwen3:4b` is ≈2.5 GB.
 - **Database space**: The SQLite database starts at less than 1 MB, but will grow depending on how many sources you monitor and how many text excerpts you scrape. Typically, a year of municipal monitoring uses under 100 MB.
 
 Total recommended free space: **6 GB to 10 GB**.
@@ -140,4 +142,4 @@ Outbound HTTP from the Rust backend goes to:
 1. Whatever feed URLs you configured (RSS, HTML pages).
 2. `127.0.0.1:11434` (your local Ollama).
 
-The Tauri updater is dormant and inactive. No automatic checks are performed. Users must manually check the GitHub Releases page to download updates. If you want to update, a manual download is required.
+There is no auto-updater. The Tauri updater plugin was removed entirely in v0.2.6 (see CHANGELOG ENG-001), so the app performs no automatic update checks and contacts no update server. To update, manually download the newer installer from the GitHub Releases page.

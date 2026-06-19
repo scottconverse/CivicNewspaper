@@ -1,0 +1,29 @@
+# cargo-audit configuration — ENG-Nit3
+#
+# `cargo audit` reports 0 vulnerabilities for this project. The remaining noise
+# is "unmaintained" / "unsound"-class advisories on TRANSITIVE crates we do not
+# depend on directly and cannot upgrade independently — they are pulled in by
+# Tauri's GTK3 Linux stack and by proc-macro tooling. Until upstream Tauri moves
+# off them, ignore them here so a real, actionable vulnerability is not lost in
+# the noise. Re-review this list whenever Tauri is upgraded.
+#
+# Each entry is a RUSTSEC advisory id. To see why an advisory still applies,
+# run `cargo audit` with this file removed.
+[advisories]
+ignore = [
+    # GTK3 bindings — unmaintained; transitive via tauri on Linux only.
+    "RUSTSEC-2024-0411", # atk
+    "RUSTSEC-2024-0412", # atk-sys
+    "RUSTSEC-2024-0413", # gdk
+    "RUSTSEC-2024-0414", # gdk-sys
+    "RUSTSEC-2024-0415", # gdkwayland-sys / gdkx11
+    "RUSTSEC-2024-0416", # gdkx11-sys
+    "RUSTSEC-2024-0417", # gtk
+    "RUSTSEC-2024-0418", # gtk-sys
+    "RUSTSEC-2024-0419", # gtk3-macros
+    "RUSTSEC-2024-0420", # atk / glib family
+    # proc-macro-error — unmaintained; transitive via macro tooling.
+    "RUSTSEC-2024-0370",
+    # unic-char-property family — unmaintained; transitive.
+    "RUSTSEC-2025-0081",
+]

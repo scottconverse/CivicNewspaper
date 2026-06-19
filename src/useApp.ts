@@ -44,6 +44,7 @@ import {
   toUserMessage
 } from "./ipc";
 import modelsConfig from "./models.json";
+import { parseBulkImportLine } from "./bulkImportParser";
 
 export interface ConfirmDialogState {
   title: string;
@@ -58,6 +59,19 @@ export interface OllamaPullProgress {
   status?: string;
   completed?: number;
   total?: number;
+}
+
+// QA-mn1: exact model-tag match. A loose `.includes()` let `phi3:mini` "match"
+// `phi3:medium` (or any tag sharing a prefix), so the pre-flight could pass while
+// the actual generate call later fails with "model not found." Ollama implicitly
+// appends `:latest` when a bare name is requested, so we treat `name` and
+// `name:latest` as equivalent and otherwise require an exact tag match.
+export function modelInstalled(selected: string, installed: string[]): boolean {
+  const want = selected.includes(":") ? selected : `${selected}:latest`;
+  return installed.some((m) => {
+    const have = m.includes(":") ? m : `${m}:latest`;
+    return have === want;
+  });
 }
 
 // Formats a structured `ollama-pull-progress` event into a single log line.
@@ -195,7 +209,7 @@ export function useApp() {
       try {
         let model = await getSetting("model.selected");
         if (!model) {
-          model = ram >= 12 ? modelsConfig.high : ram >= 8 ? modelsConfig.medium : modelsConfig.low;
+          model = ram >= 16 ? modelsConfig.high : ram >= 8 ? modelsConfig.medium : modelsConfig.low;
           await setSetting("model.selected", model);
         }
         setWizardModel(model);
@@ -221,16 +235,50 @@ export function useApp() {
         setPullProgressText(prev => [...prev, `Error: ${event.payload}`]);
       });
 
+      // ENG-Min-R1: the Rust backend emits `http-server-error` when the local
+      // pairing server can't bind (e.g. port 12053 already in use). Without a
+      // listener the failure is silent. Surface it through the existing error
+      // banner so the user understands why browser pairing is unavailable.
+      const serverErrorUnlisten = await listen<string>("http-server-error", (event) => {
+        const detail = event.payload || "another app may be using port 12053.";
+        setErrorMessage(`Browser pairing is unavailable: ${detail}`);
+      });
+
       return () => {
         progressUnlisten();
         completeUnlisten();
         errorUnlisten();
+        serverErrorUnlisten();
       };
     };
 
     const cleanupListeners = setupListeners();
+
+    // QA-R2-M1: the bundled Ollama sidecar takes a moment to bind 127.0.0.1:11434
+    // after launch, so the single mount poll can lose the cold-start race and
+    // leave `ollamaOnline=false` stuck — disabling Generate Draft and showing
+    // "AI Offline" on a healthy sidecar. Re-poll on an interval AND whenever the
+    // window regains focus / becomes visible, so a transient offline state
+    // self-heals without an app relaunch. Lightweight: pollOllamaStatus is a
+    // single 2s-timeout health GET, and it never spams the pull flow (the pull's
+    // own completion handler already triggers a status refresh).
+    const statusInterval = window.setInterval(() => {
+      pollOllamaStatus();
+    }, 10000);
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        pollOllamaStatus();
+      }
+    };
+    window.addEventListener("focus", pollOllamaStatus);
+    document.addEventListener("visibilitychange", handleVisibility);
+
     return () => {
       cleanupListeners.then(cleanup => cleanup && cleanup());
+      window.clearInterval(statusInterval);
+      window.removeEventListener("focus", pollOllamaStatus);
+      document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, []);
 
@@ -265,6 +313,19 @@ export function useApp() {
         console.error("Failed to load selected model setting", err);
       }
 
+      // QA-mn3: restore the most recent scan id so its results render on relaunch.
+      try {
+        const savedScanId = await getSetting("scan.latest_id");
+        if (savedScanId) {
+          const parsed = parseInt(savedScanId, 10);
+          if (!Number.isNaN(parsed)) {
+            setLatestScanId(parsed);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load latest scan id setting", err);
+      }
+
       setErrorMessage("");
     } catch (e: any) {
       setErrorMessage(toUserMessage(e));
@@ -285,7 +346,7 @@ export function useApp() {
   const handleIngest = async () => {
     try {
       setLoading(true);
-      setStatusMessage("Scraping feeds and running OSINT detectors... (this may take a few moments)");
+      setStatusMessage("Scraping feeds and scanning for story leads... (this may take a few moments)");
       setErrorMessage("");
       const newLeadsCount = await ingest();
       setStatusMessage(`Ingest complete. Detected ${newLeadsCount} new lead(s).`);
@@ -311,18 +372,25 @@ export function useApp() {
         return;
       }
       const health = await ollamaHealth();
-      if (!health.reachable || !health.models.some(m => m.includes(model))) {
+      if (!health.reachable || !modelInstalled(model, health.models)) {
         setErrorMessage(`Daily Scan requires the ${model} model, which was not found. Redirecting to model download setup...`);
         setOnboardingStep(3);
         setActiveTab("onboarding");
         return;
       }
 
-      setStatusMessage("Running daily scan on evidence using the aggregator prompt...");
+      setStatusMessage("Running the daily scan across your collected evidence...");
       const city = communityProfile?.city || "Brighton";
       const state = communityProfile?.state || "CO";
       const scanId = await runDailyScan(city, state, 24);
       setLatestScanId(scanId);
+      // QA-mn3: persist the latest scan id so the results view survives a
+      // relaunch instead of disappearing until the next scan.
+      try {
+        await setSetting("scan.latest_id", String(scanId));
+      } catch (err) {
+        console.error("Failed to persist latest scan id", err);
+      }
       setStatusMessage(`Daily Scan complete (Scan ID: ${scanId}).`);
       await loadInitialData();
     } catch (e: any) {
@@ -434,49 +502,11 @@ export function useApp() {
       setStatusMessage("Bulk importing sources...");
       const lines = bulkImportText.split("\n");
       let importedCount = 0;
-      for (let line of lines) {
-        line = line.trim();
-        if (!line) continue;
-
-        let name = "";
-        let url = "";
-        let type = bulkImportType;
-
-        if (line.includes(",")) {
-          const parts = line.split(",").map(p => p.trim());
-          if (parts.length >= 2) {
-            if (parts[0].startsWith("http://") || parts[0].startsWith("https://")) {
-              url = parts[0];
-              name = parts[1];
-              if (parts.length >= 3 && parts[2]) {
-                type = parts[2];
-              }
-            } else {
-              name = parts[0];
-              url = parts[1];
-              if (parts.length >= 3 && parts[2]) {
-                type = parts[2];
-              }
-            }
-          }
-        } else {
-          url = line;
-          try {
-            const parsedUrl = new URL(url);
-            name = parsedUrl.hostname.replace("www.", "");
-          } catch {
-            name = url;
-          }
-        }
-
-        if (url.startsWith("http://") || url.startsWith("https://")) {
-          const validTypes = ["primary_record", "official_comm", "community_signal", "media_lead"];
-          if (!validTypes.includes(type)) {
-            type = bulkImportType;
-          }
-          await addSource(name, url, type, "community_signal");
-          importedCount++;
-        }
+      for (const rawLine of lines) {
+        const parsed = parseBulkImportLine(rawLine, bulkImportType);
+        if (!parsed) continue;
+        await addSource(parsed.name, parsed.url, parsed.type, "community_signal");
+        importedCount++;
       }
       setStatusMessage(`Bulk imported ${importedCount} source(s) successfully.`);
       setShowBulkImportModal(false);
@@ -550,17 +580,45 @@ export function useApp() {
     try {
       setGeneratingText(true);
       setErrorMessage("");
-      setStatusMessage("Asking local Ollama model to write a draft from evidence... (this may take a moment)");
+
+      // QA-C1: mirror handleDailyScan's pre-flight. The Generate Draft button is
+      // gated only on the sidecar being reachable, not on the selected model
+      // actually being installed — so a user who skipped the model download could
+      // click it and hit an opaque "model not found." Check model presence first
+      // and route to the model-download step instead of failing cryptically.
+      if (!manualLlmMode) {
+        setStatusMessage("Checking AI model presence...");
+        const model = await getSetting("model.selected");
+        if (!model) {
+          setErrorMessage("Generating a draft requires a selected AI model, but none was configured. Redirecting to model download setup...");
+          setOnboardingStep(3);
+          setActiveTab("onboarding");
+          return;
+        }
+        const health = await ollamaHealth();
+        if (!health.reachable || !modelInstalled(model, health.models)) {
+          setErrorMessage(`Generating a draft requires the ${model} model, which isn't downloaded yet. Redirecting to model download setup...`);
+          setOnboardingStep(3);
+          setActiveTab("onboarding");
+          return;
+        }
+      }
+
+      setStatusMessage("Asking the local AI model to write a draft from evidence... (this may take a moment)");
       const text = await generateDraft(
         selectedLead.id,
         draftFormat,
         customSystemPrompt ? customSystemPrompt : undefined
       );
 
+      // UX-m2: persist a clean working title instead of an ellipsis-truncated
+      // stub like "Draft: City approves new zoning…". Use the full lead summary,
+      // collapsed to a single line; the editor lets the user rename it.
+      const cleanTitle = selectedLead.why.replace(/\s+/g, " ").trim();
       const draftObj: Draft = {
         lead_id: selectedLead.id,
         format: draftFormat,
-        title: `Draft: ${selectedLead.why.slice(0, 40)}...`,
+        title: cleanTitle ? `Draft: ${cleanTitle}` : "Untitled draft",
         content: text,
         status: "draft_generated",
         verification_checklist: "[]"
@@ -574,7 +632,7 @@ export function useApp() {
       setStatusMessage("Draft generated successfully.");
       await loadInitialData();
     } catch (e: any) {
-      setErrorMessage(`Ollama drafting failed: ${toUserMessage(e)}`);
+      setErrorMessage(`Draft generation failed: ${toUserMessage(e)}`);
     } finally {
       setGeneratingText(false);
     }
@@ -635,6 +693,20 @@ export function useApp() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // UX-m5: "Kill Story" is destructive and was a single unguarded click, unlike
+  // draft delete which is confirmed. Route it through the same confirm dialog.
+  const handleKillStory = () => {
+    if (!selectedDraft || !selectedDraft.id) return;
+    setConfirmDialog({
+      title: "Kill this story?",
+      message:
+        "Killing this story marks it as killed and removes it from the publishing pipeline. You can reopen it later, but any in-progress review state is cleared.",
+      confirmLabel: "Kill story",
+      danger: true,
+      onConfirm: () => handleDecision("killed"),
+    });
   };
 
   const handlePublish = async () => {
@@ -720,7 +792,7 @@ export function useApp() {
     try {
       setIsGeneratingSocial(true);
       setErrorMessage("");
-      setStatusMessage("Asking Ollama to generate social media promo pack...");
+      setStatusMessage("Generating a social media promo pack...");
       
       const systemPrompt = "You are a social media manager for a local news organization.";
       const promptText = `Please create a social media pack for this story:\n\nTitle: ${selectedDraft.title}\n\nContent:\n${selectedDraft.content}`;
@@ -906,6 +978,7 @@ export function useApp() {
     handleOpenDraftEditor,
     handleSaveDraftEditor,
     handleDecision,
+    handleKillStory,
     handlePublish,
     openCorrectionModal,
     handleRegisterCorrection,

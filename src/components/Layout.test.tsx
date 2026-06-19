@@ -21,14 +21,14 @@ describe("Layout Component Tests", () => {
     // Verify children and basic layouts render
     expect(screen.getByTestId("children-content")).toBeInTheDocument();
     expect(screen.getByText("Story Queue")).toBeInTheDocument();
-    expect(screen.getByText("Sources Setup")).toBeInTheDocument();
+    expect(screen.getByText("Sources")).toBeInTheDocument();
 
     // Click tabs and verify callback
-    const sourcesBtn = screen.getByText("Sources Setup");
+    const sourcesBtn = screen.getByText("Sources");
     fireEvent.click(sourcesBtn);
     expect(handleTabChange).toHaveBeenCalledWith("sources");
 
-    const onboardingBtn = screen.getByText("Ollama Wizard");
+    const onboardingBtn = screen.getByText("AI Setup");
     fireEvent.click(onboardingBtn);
     expect(handleTabChange).toHaveBeenCalledWith("onboarding");
   });

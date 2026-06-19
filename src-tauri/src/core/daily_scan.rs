@@ -4,6 +4,15 @@ use crate::core::llm::LlmClient;
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 
+/// Distinct error signal returned by [`run_daily_scan`] when there is zero
+/// evidence in the requested window, so the scan is reported as a real `Err`
+/// rather than an empty-but-successful run (QA-M2). The `NO_EVIDENCE:` prefix is
+/// a typed marker the frontend's `toUserMessage` (src/ipc.ts) recognizes: it
+/// strips the prefix and surfaces the plain "run Scrape & Detect first" guidance
+/// instead of a raw "Something went wrong: NO_EVIDENCE: …" leak.
+pub const NO_EVIDENCE_SIGNAL: &str =
+    "NO_EVIDENCE: There is no evidence in the selected window. Run Scrape & Detect first.";
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ScanResultItem {
     pub title: String,
@@ -21,16 +30,37 @@ pub fn parse_and_save_scan_response(
     run_id: i32,
     json_response: &str,
 ) -> Result<usize, String> {
-    let result: ScanResult = serde_json::from_str(json_response).map_err(|e| e.to_string())?;
+    // The model output is frequently raw JSON, but small local models sometimes
+    // wrap it in a ```json fence or add prose. Strip a leading/trailing code
+    // fence before parsing so a well-formed-but-fenced response still succeeds;
+    // anything still unparseable propagates as a real error (QA-M2).
+    let cleaned = strip_json_fence(json_response);
+    let result: ScanResult = serde_json::from_str(cleaned).map_err(|e| e.to_string())?;
     let mut saved = 0;
     for item in result.leads {
+        // ENG-Min4: the model-asserted `original_url` is untrusted. Validate it
+        // against the same scheme/host allowlist used for real sources before
+        // persisting; a hallucinated/poisoned URL must not enter the evidence
+        // trail unvetted. Invalid URLs are stored as empty (the lead is kept,
+        // but the bogus URL is dropped and logged) so the model's text is not
+        // silently treated as a verified link.
+        let original_url = match crate::core::scraper::validate_source_url(&item.original_url) {
+            Ok(_) => item.original_url,
+            Err(e) => {
+                eprintln!(
+                    "Dropping invalid model-asserted original_url '{}': {}",
+                    item.original_url, e
+                );
+                String::new()
+            }
+        };
         let lead = DailyScanLead {
             id: None,
             scan_id: run_id,
             title: item.title,
             summary: item.summary,
             source_id: None, // Assume None, aggregated logic (D5)
-            original_url: item.original_url,
+            original_url,
         };
         match db::insert_daily_scan_lead(conn, &lead) {
             Ok(_) => saved += 1,
@@ -38,6 +68,23 @@ pub fn parse_and_save_scan_response(
         }
     }
     Ok(saved)
+}
+
+/// Strip a surrounding markdown code fence (```json ... ``` or ``` ... ```) from
+/// a model response, returning the inner JSON. Returns the trimmed input
+/// unchanged when there is no fence.
+fn strip_json_fence(s: &str) -> &str {
+    let t = s.trim();
+    if let Some(rest) = t.strip_prefix("```") {
+        // Drop an optional language tag on the first line (e.g. "json").
+        let rest = match rest.find('\n') {
+            Some(nl) => &rest[nl + 1..],
+            None => rest,
+        };
+        rest.trim().strip_suffix("```").unwrap_or(rest).trim()
+    } else {
+        t
+    }
 }
 
 pub async fn run_daily_scan(
@@ -66,14 +113,25 @@ pub async fn run_daily_scan(
         run_status: "in_progress".to_string(),
     };
 
-    let run_id = {
-        let conn = db.lock().map_err(|_| "Failed to lock db")?;
-        db::insert_daily_scan_run(&conn, &run).map_err(|e| e.to_string())?
-    };
-
+    // QA-M2: short-circuit when there is no evidence in the window BEFORE creating
+    // a run row or calling the LLM. A daily scan over zero evidence can only return
+    // "no leads," so spending a (potentially minute-long, CPU-bound) LLM round trip
+    // to produce nothing is wasted work — and on first run / a fresh DB it is the
+    // common case. Return a distinct, recognizable signal so the UI can tell the
+    // user to "Scrape & Detect first" instead of reporting an empty success. No run
+    // row is created, so this does not pollute the scan history with empty runs.
     let evidence_items = {
         let conn = db.lock().map_err(|_| "Failed to lock db")?;
         db::list_evidence_since(&conn, since_hours).unwrap_or_default()
+    };
+
+    if evidence_items.is_empty() {
+        return Err(NO_EVIDENCE_SIGNAL.to_string());
+    }
+
+    let run_id = {
+        let conn = db.lock().map_err(|_| "Failed to lock db")?;
+        db::insert_daily_scan_run(&conn, &run).map_err(|e| e.to_string())?
     };
 
     let mut context = String::new();
@@ -108,16 +166,32 @@ pub async fn run_daily_scan(
 
     match llm_res {
         Ok(json_response) => {
-            if let Err(e) = parse_and_save_scan_response(&conn, run_id, &json_response) {
-                eprintln!("Failed to parse and save scan response: {}", e);
-                updated_run.run_status = "failed".to_string();
-            } else {
-                updated_run.run_status = "completed".to_string();
+            // QA-M2: a model that returns non-JSON (or fenced/garbage output)
+            // must NOT be treated as a successful empty scan. Mark the run failed
+            // AND propagate the parse failure as a real Err so the UI can
+            // distinguish "0 leads found" from "the AI returned an unreadable
+            // response." (A valid JSON response with an empty leads array still
+            // counts as a successful, completed scan.)
+            match parse_and_save_scan_response(&conn, run_id, &json_response) {
+                Ok(_) => {
+                    updated_run.run_status = "completed".to_string();
+                    if let Err(e) = db::update_daily_scan_run(&conn, &updated_run) {
+                        eprintln!("Failed to update daily scan run status: {}", e);
+                    }
+                    Ok(run_id)
+                }
+                Err(e) => {
+                    eprintln!("Failed to parse and save scan response: {}", e);
+                    updated_run.run_status = "failed".to_string();
+                    if let Err(e2) = db::update_daily_scan_run(&conn, &updated_run) {
+                        eprintln!("Failed to update daily scan run status: {}", e2);
+                    }
+                    Err(format!(
+                        "The AI returned an unreadable response (could not parse scan results): {}",
+                        e
+                    ))
+                }
             }
-            if let Err(e) = db::update_daily_scan_run(&conn, &updated_run) {
-                eprintln!("Failed to update daily scan run status: {}", e);
-            }
-            Ok(run_id)
         }
         Err(e) => {
             updated_run.run_status = "failed".to_string();

@@ -37,6 +37,12 @@
     ],
     "externalBin": [
       "binaries/ollama"
-    ]
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "installerHooks": "installer-hooks.nsh"
+      }
+    }
   }
 }

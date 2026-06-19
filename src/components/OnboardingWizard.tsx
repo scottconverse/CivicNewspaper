@@ -18,10 +18,23 @@ import {
 import modelsConfig from "../models.json";
 import { ConfirmModal } from "./ConfirmModal";
 
-// Minimum system RAM (GB) for the smallest bundled model (phi3:mini) to run at
-// usable speed. Below this floor we still allow setup but warn the user that AI
+// Minimum system RAM (GB) for the smallest model (qwen3:4b) to run at usable
+// speed. Below this floor we still allow setup but warn the user that AI
 // features may run slowly.
 const LOW_RAM_FLOOR_GB = 8;
+
+// QA-M3: a local model on CPU is slow even with adequate RAM, so caution at the
+// medium/high tiers too — not just below the low-RAM floor.
+const SLOW_CPU_CAUTION =
+  "Heads up: the AI model runs on your CPU, so generating a draft or daily scan can take a minute or more — this is normal.";
+
+// Approximate one-time download sizes, sourced from models.json so the wizard
+// can disclose the size up front (UX-C1) instead of springing a multi-GB
+// download on the user.
+const modelSizes: Record<string, string> = (modelsConfig as any).sizes || {};
+function downloadSizeFor(modelTag: string): string {
+  return modelSizes[modelTag] || "a few GB";
+}
 
 interface OnboardingWizardProps {
   ollamaOnline: boolean;
@@ -81,8 +94,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
   const steps = [
     { title: "Identity", desc: "Define your local news outlet name and mission." },
-    { title: "AI Service Setup", desc: "Check connection with the local Ollama LLM endpoint." },
-    { title: "Download AI Model", desc: "Downloading AI model. This is a one-time setup." },
+    { title: "AI Service Setup", desc: "Check the connection to the local AI service that runs on your computer." },
+    { title: "Download AI Model", desc: "Download the local AI model. One-time setup — needs an internet connection." },
     { title: "Defaults", desc: "Configure publication directories and backup database paths." },
     { title: "Done", desc: "Onboarding completed. Ready to inspect local stories." }
   ];
@@ -106,7 +119,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         if (selected) {
           setModel(selected);
         } else {
-          const fallback = ram >= 12 ? modelsConfig.high : ram >= 8 ? modelsConfig.medium : modelsConfig.low;
+          const fallback = ram >= 16 ? modelsConfig.high : ram >= 8 ? modelsConfig.medium : modelsConfig.low;
           setModel(fallback);
         }
 
@@ -242,7 +255,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       const reason = (e instanceof Error ? e.message : String(e)).trim();
       setPullError(
         `Download failed${reason ? `: ${reason}` : "."} ` +
-          `Make sure Ollama is running and your internet connection is working, then click "Download ${modelToPull}" to try again.`
+          `Make sure the AI service is running and your internet connection is working, then click "Download ${modelToPull}" to try again.`
       );
       setPullProgress("");
       setPulling(false);
@@ -315,7 +328,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       )}
 
       <div className="flex-between">
-        <h2>Setup Wizard</h2>
+        <h2>AI Setup</h2>
         <span style={{ fontWeight: 600, fontSize: "0.9rem", color: "var(--text-secondary)" }}>
           Step {step} of {steps.length}
         </span>
@@ -365,14 +378,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             {checkingHealth ? (
               <div style={{ textAlign: "center", padding: "2rem 0" }}>
                 <RefreshCcw className="animate-spin" size={32} style={{ color: "var(--accent-primary)", marginBottom: "1rem" }} />
-                <p style={{ fontSize: "0.95rem" }}>Checking Ollama sidecar initialization status...</p>
+                <p style={{ fontSize: "0.95rem" }}>Starting the local AI service...</p>
               </div>
             ) : (
               <>
                 {health && (
                   <div className="flex-between" style={{ marginBottom: "1rem" }}>
                     <div>
-                      <strong>Local Ollama Connection</strong>
+                      <strong>Local AI Service Connection</strong>
                       <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>Local Ram: {sysRam} GB</p>
                     </div>
                     <span className={`status-dot ${health.reachable ? "online" : "offline"}`} />
@@ -384,7 +397,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   <div style={{ background: "rgba(239, 68, 68, 0.05)", padding: "1rem", borderRadius: "8px" }}>
                     <h4 style={{ color: "var(--color-error)" }}>Couldn't reach the AI service</h4>
                     <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>
-                      The Ollama sidecar took too long to respond. This might be due to system resources or path permissions.
+                      The local AI service took too long to respond. This might be due to system resources or path permissions.
                     </p>
                     {exportStatus && (
                       <p style={{ fontSize: "0.85rem", color: "var(--accent-primary)", marginBottom: "0.5rem" }}>{exportStatus}</p>
@@ -402,8 +415,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
                 {!healthTimeout && health && !health.reachable && (
                   <div style={{ background: "rgba(239, 68, 68, 0.05)", padding: "1rem", borderRadius: "8px" }}>
-                    <h4 style={{ color: "var(--color-error)" }}>Bundled Ollama Sidecar Starting</h4>
-                    <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>The application includes a bundled Ollama sidecar to run AI features completely offline. It may take a moment to initialize.</p>
+                    <h4 style={{ color: "var(--color-error)" }}>Starting the local AI service</h4>
+                    <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>CivicNews includes a local AI service that runs on your computer. It may take a moment to start up. Once it's running, you'll download a model in the next step.</p>
                     <div style={{ display: "flex", gap: "1rem" }}>
                       <button className="btn btn-secondary" onClick={() => setRetryCount(c => c + 1)} disabled={checkingHealth}>
                         <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} />
@@ -416,15 +429,22 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 {/* Reachable, no models (WU-7 action hint) */}
                 {!healthTimeout && health && health.reachable && health.models.length === 0 && (
                   <div style={{ background: "rgba(16, 185, 129, 0.05)", padding: "1rem", borderRadius: "8px" }}>
-                    <h4 style={{ color: "var(--color-success)" }}>Ollama is ready. Pull a recommended model?</h4>
-                    <p style={{ fontSize: "0.9rem" }}>Based on your {sysRam}GB of RAM, we recommend: <strong>{model}</strong></p>
-                    {sysRam > 0 && sysRam < LOW_RAM_FLOOR_GB && (
+                    <h4 style={{ color: "var(--color-success)" }}>The AI service is ready. Download a recommended model?</h4>
+                    <p style={{ fontSize: "0.9rem" }}>
+                      Based on your {sysRam}GB of RAM, we recommend: <strong>{model}</strong> (one-time download, {downloadSizeFor(model)}, needs internet).
+                    </p>
+                    {sysRam > 0 && sysRam < LOW_RAM_FLOOR_GB ? (
                       <p
                         data-testid="low-ram-warning"
-                        style={{ fontSize: "0.85rem", color: "var(--color-error)", marginTop: "0.5rem", display: "flex", alignItems: "center", gap: "0.4rem" }}
+                        style={{ fontSize: "0.85rem", color: "var(--color-error)", marginTop: "0.5rem", display: "flex", alignItems: "flex-start", gap: "0.4rem" }}
                       >
-                        <AlertCircle size={16} />
+                        <AlertCircle size={16} style={{ flexShrink: 0, marginTop: "0.1rem" }} />
                         Your system has {sysRam}GB of RAM, below the {LOW_RAM_FLOOR_GB}GB recommended for local AI. {model} will still run, but generation may be slow.
+                      </p>
+                    ) : (
+                      <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.5rem", display: "flex", alignItems: "flex-start", gap: "0.4rem" }}>
+                        <AlertCircle size={16} style={{ flexShrink: 0, marginTop: "0.1rem" }} />
+                        {SLOW_CPU_CAUTION}
                       </p>
                     )}
                   </div>
@@ -435,7 +455,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   <div style={{ background: "rgba(16, 185, 129, 0.05)", padding: "1rem", borderRadius: "8px" }}>
                     <h4 style={{ color: "var(--color-success)" }}>Use an existing model?</h4>
                     <p style={{ fontSize: "0.9rem", marginBottom: "0.5rem" }}>
-                      We detected the following installed models in your local Ollama. Select one to use it and skip downloading:
+                      We detected the following models already installed on your computer. Select one to use it and skip downloading:
                     </p>
                     {/* installedModels from api/tags are selectable: Use existing model if you already have it. */}
                     <select 
@@ -456,10 +476,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         {/* STEP 3: DOWNLOAD AI MODEL */}
         {step === 3 && (
           <div>
-            <div style={{ background: "rgba(0,0,0,0.02)", padding: "1rem", borderRadius: "8px", marginBottom: "1rem" }}>
+            <div style={{ background: "var(--accent-light)", padding: "1rem", borderRadius: "8px", marginBottom: "1rem" }}>
               <strong>AI Model: {model} (Recommended)</strong>
               <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
-                Downloading AI model. This is a one-time setup.
+                CivicNews will download this local AI model now — a one-time download of about {downloadSizeFor(model)} that needs an internet connection. After this, the AI runs fully offline on your computer.
               </p>
             </div>
             
@@ -568,7 +588,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             <button className="btn btn-secondary" onClick={() => {
               if (step === 2) {
                 setSkipConfirm({
-                  title: "Skip Ollama setup?",
+                  title: "Skip AI setup?",
                   message: "You won't be able to use AI features until you complete setup from Settings.",
                   confirmLabel: "Skip setup",
                   onConfirm: () => setStep(4),

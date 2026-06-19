@@ -33,7 +33,7 @@ const MIGRATIONS: &[(&str, &str)] = &[
     ),
 ];
 
-pub fn run_migrations(conn: &mut Connection) -> Result<(), Box<dyn Error>> {
+pub fn run_migrations(conn: &mut Connection) -> Result<(), Box<dyn Error + Send + Sync>> {
     // Guard the append-only invariant: filename numeric prefixes must be strictly
     // increasing. A mid-array insertion (which would silently shift applied versions)
     // makes this fail loudly in debug/test builds.

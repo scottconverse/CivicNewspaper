@@ -12,7 +12,7 @@
         {
           "name": "binaries/ollama",
           "sidecar": true,
-          "args": true
+          "args": ["serve"]
         }
       ]
     },
@@ -22,7 +22,7 @@
         {
           "name": "binaries/ollama",
           "sidecar": true,
-          "args": true
+          "args": ["serve"]
         }
       ]
     }

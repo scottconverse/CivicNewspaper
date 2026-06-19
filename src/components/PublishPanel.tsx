@@ -1,6 +1,6 @@
 // src/components/PublishPanel.tsx
 import React, { useState } from "react";
-import { FileDown, ChevronRight, AlertTriangle } from "lucide-react";
+import { FileDown, ChevronRight, AlertTriangle, CheckCircle } from "lucide-react";
 
 interface PublishPanelProps {
   publishPath: string;
@@ -111,7 +111,9 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
 
         {publishStep === 3 && (
           <div className="wizard-step" style={{ background: "rgba(16, 185, 129, 0.05)", border: "1px solid rgba(16, 185, 129, 0.2)", padding: "1rem", borderRadius: "8px" }} id="publish-step-3">
-            <h4 style={{ marginBottom: "0.5rem", color: "var(--color-success)" }}>✓ Step 3: Publish to the Web</h4>
+            <h4 style={{ marginBottom: "0.5rem", color: "var(--color-success)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+              <CheckCircle size={18} /> Step 3: Publish to the Web
+            </h4>
             <p className="help-text" style={{ marginBottom: "1rem" }}>
               Your site has been generated locally. To make it live for readers:
             </p>

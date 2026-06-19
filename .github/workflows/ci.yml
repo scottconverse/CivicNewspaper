@@ -139,7 +139,56 @@ jobs:
 
       - name: Cargo test
         working-directory: ./src-tauri
-        run: cargo test
+        # TEST-M4: run the FULL test set here too (parity with the hosted-test job
+        # and the self-hosted `rust` job), so the cross-platform matrix actually
+        # exercises every target — a bare `cargo test` could skip non-default ones.
+        run: cargo test --all
+
+  # TEST-M4: an ALWAYS-AVAILABLE full test run on a hosted runner. The primary
+  # `rust`/`frontend` jobs run on a single self-hosted desktop; if that runner is
+  # offline a PR could appear green without the suite ever executing. This job runs
+  # `cargo test --all` + `npm test` on ubuntu-latest (after the same Ollama-binary
+  # fetch CI already does), so a green check ALWAYS means the suite actually ran.
+  # Hosted runners cannot bundle the Tauri app (that stays on the self-hosted
+  # runner / release.yml), but they CAN run the test suites.
+  hosted-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.94.0
+          components: rustfmt, clippy
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Fetch Ollama binaries
+        run: bash scripts/fetch-ollama-binaries.sh
+
+      - name: Cargo test (full)
+        working-directory: ./src-tauri
+        run: cargo test --all
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Vitest
+        run: npm test
 
 
   frontend:

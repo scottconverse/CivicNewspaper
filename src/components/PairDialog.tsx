@@ -28,7 +28,7 @@ export const PairDialog: React.FC<PairDialogProps> = ({
     <div style={{ maxWidth: "850px", margin: "0 auto" }} id="pairing-panel-container">
       <div className="page-header">
         <div className="page-title">
-          <h1>Browser Integration Pairing</h1>
+          <h1>Browser Pairing</h1>
           <p>Securely connect web browsers or external AI coding plugins (Codex, Agent Pipeline) to access story queues and evidence records.</p>
         </div>
       </div>

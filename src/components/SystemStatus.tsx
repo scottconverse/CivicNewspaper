@@ -58,7 +58,7 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
         <div className="flex-between" style={{ padding: "0.5rem 0", borderBottom: "1px solid var(--border-color)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <Cpu size={16} style={{ color: "var(--text-secondary)" }} />
-            <span>Ollama Inference Engine</span>
+            <span>Local AI Service</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <span 
@@ -84,9 +84,12 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
         <div className="flex-between" style={{ padding: "0.5rem 0", borderBottom: "1px solid var(--border-color)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <ScraperIcon size={16} style={{ color: "var(--text-secondary)" }} />
-            <span>OSINT Scraper Agent</span>
+            <span>Source Scanner</span>
           </div>
-          <span className="badge badge-success" data-testid="scraper-status-text">Ready / Idle</span>
+          {/* UX-n2: there's no live scraper-state signal in the frontend, so a
+              hardcoded green "Ready" badge was a false status. State it honestly:
+              the scanner runs on demand when you click "Scrape & Detect". */}
+          <span className="badge badge-neutral" data-testid="scraper-status-text">Runs on demand</span>
         </div>
 
         {/* App Version */}

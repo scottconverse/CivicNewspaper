@@ -1,0 +1,24 @@
+CivicNewspaper - PRE-RELEASE BETA (Unsigned)
+
+PLEASE READ BEFORE INSTALLING
+
+This is an unsigned, pre-release BETA build of CivicNewspaper. It has not been
+code-signed with a commercial certificate.
+
+What this means for you:
+
+ * Windows SmartScreen (and some antivirus tools) will likely show a warning
+   such as "Windows protected your PC" or "unknown publisher" when you run the
+   installer or the app. This is EXPECTED for an unsigned beta - it is not a sign
+   that the software is malicious. To proceed, choose "More info" and then
+   "Run anyway".
+
+ * As beta software, this build may contain bugs and is provided AS IS, without
+   warranty of any kind. Do not rely on it for anything critical, and keep
+   backups of any data you care about.
+
+ * CivicNewspaper runs a local AI model and a local-only HTTP server on your
+   machine (loopback / 127.0.0.1). No data is sent to the cloud by the core app.
+
+By continuing, you acknowledge that this is unsigned beta software and that the
+SmartScreen / unknown-publisher warnings described above are expected.

@@ -66,6 +66,11 @@ struct LlmTaskResponse {
     result: String,
 }
 
+#[derive(Serialize)]
+struct ErrorResponse {
+    error: String,
+}
+
 #[derive(Deserialize)]
 struct GuardrailsRequest {
     draft_id: i32,
@@ -220,18 +225,35 @@ async fn create_draft_handler(
 async fn llm_task_handler(
     State(state): State<AppState>,
     Json(payload): Json<LlmTaskRequest>,
-) -> Result<Json<LlmTaskResponse>, StatusCode> {
+) -> Result<Json<LlmTaskResponse>, (StatusCode, Json<ErrorResponse>)> {
     let model = crate::tauri_cmds::get_selected_model_or_fallback(&state.db).await;
 
     match state
         .llm_client
-        .call(&model, &payload.prompt, &payload.system)
+        .call_typed(&model, &payload.prompt, &payload.system)
         .await
     {
         Ok(result) => Ok(Json(LlmTaskResponse { result })),
         Err(e) => {
+            // ENG-M4: surface the real error text (incl. the timeout-specific
+            // message) instead of a bare 503 with the cause only on stderr. A
+            // timeout means the model is working-but-slow (treat as a gateway
+            // timeout); everything else is reported as service-unavailable.
+            //
+            // ENG-Nit-R1: classify by the typed `LlmError::Timeout` variant, NOT
+            // by substring-matching the Display string — so reworded messages
+            // can't silently flip the status code.
             eprintln!("Ollama task execution failed: {}", e);
-            Err(StatusCode::SERVICE_UNAVAILABLE)
+            let status = match e {
+                crate::core::llm::LlmError::Timeout(_) => StatusCode::GATEWAY_TIMEOUT,
+                _ => StatusCode::SERVICE_UNAVAILABLE,
+            };
+            Err((
+                status,
+                Json(ErrorResponse {
+                    error: e.to_string(),
+                }),
+            ))
         }
     }
 }

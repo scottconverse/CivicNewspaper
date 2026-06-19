@@ -41,9 +41,9 @@ On your very first launch, the **Onboarding Wizard** will walk you through five 
 1. **Identity**:
    * Enter your community profile details including **Publication Name** (e.g. *Oak Valley Council Watch*), **Editor Name**, **City**, and **State**.
 2. **AI Service Setup**:
-   * The application checks the connection status of the bundled offline Ollama sidecar AI engine. You do not need to install Ollama separately.
+   * The application checks the connection status of the bundled offline Ollama sidecar AI engine. If you installed CivicNewspaper from a release installer, Ollama is already bundled inside it — you do not need to install Ollama separately. (Developers building from source fetch the sidecar with a build script; see Part 3.)
 3. **Download AI Model**:
-   * Pull the recommended offline AI model based on your system RAM (e.g. `gemma2:9b` for RAM >= 12GB, `llama3:8b` for RAM >= 8GB, or `phi3:mini` for lower specs).
+   * Pull the recommended offline AI model based on your system RAM (`qwen3:14b`, ≈9.3 GB download, for RAM >= 16GB; `qwen3:8b`, ≈5.2 GB, for RAM >= 8GB; or `qwen3:4b`, ≈2.5 GB, below 8GB). CivicNewspaper uses Qwen3 because it is a best-in-class local model in 2026 with notably reliable JSON/structured output, which the Daily Scan feature relies on.
 4. **Defaults**:
    * Configure your publication paths: **Publish Path** (where static HTML sites are compiled) and **Backup Path** (where database backups are stored).
 5. **Done**:
@@ -189,7 +189,8 @@ This section provides details on how to build, test, and contribute to the Civic
 To build and run CivicNewspaper from source, ensure you have:
 * **Node.js 18+** & `npm`
 * **Rust compiler (Stable)** via `rustup`
-* **Ollama**: For developers building from source only, you may install Ollama locally to test custom or external configurations.
+* **Ollama**: You do not install Ollama into the app yourself — the build bundles it as a sidecar. That binary is not committed to the repo; a build script downloads and SHA-verifies it (see step 2 below), and the build fails without it. (Separately, you *may* install Ollama on your own machine if you want to test against custom or external configurations.)
+* **A bash shell**: The fetch script (`scripts/fetch-ollama-binaries.sh`) is bash-only and calls `python`/`python3`. On Windows, run it from Git Bash or WSL — it will not run in PowerShell or `cmd`.
 * **Platform Dependencies**:
   * *Windows*: C++ Build Tools (via Visual Studio Installer).
   * *macOS*: Xcode Command Line Tools.
@@ -202,11 +203,15 @@ To build and run CivicNewspaper from source, ensure you have:
    cd CivicNewspaper
    npm install
    ```
-2. Start the development server (runs Vite with hot-reloading for the frontend, and compiles/runs Tauri in debug mode):
+2. **Required before any dev or build run** — fetch and SHA-verify the Ollama sidecar binary. This downloads the pinned Ollama release into `src-tauri/binaries/` and aborts on a checksum mismatch. The binary is not committed, so the next step fails without this one (`external-bin not found: binaries/ollama-...`). Bash-only — use Git Bash or WSL on Windows:
+   ```bash
+   bash scripts/fetch-ollama-binaries.sh
+   ```
+3. Start the development server (runs Vite with hot-reloading for the frontend, and compiles/runs Tauri in debug mode):
    ```bash
    npm run tauri dev
    ```
-3. To package the application for production (creates installer files for your current OS in `src-tauri/target/release/bundle/`):
+4. To package the application for production (creates installer files for your current OS in `src-tauri/target/release/bundle/`):
    ```bash
    npm run tauri build
    ```

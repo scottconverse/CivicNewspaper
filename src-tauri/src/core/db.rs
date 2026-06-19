@@ -5,7 +5,45 @@ use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
+use subtle::ConstantTimeEq;
 
+/// Constant-time string equality for auth secrets (bearer tokens, hashed
+/// pairing PINs). A plain `==` (or a SQL `WHERE secret = ?`) can leak the length
+/// and matching-prefix of a secret through how long the comparison takes. The
+/// secrets here are high-entropy (UUID v4 tokens, 16-byte OsRng PINs hashed with
+/// SHA-256), so practical exploitation over loopback is close to theoretical —
+/// but treating these as a security boundary means comparing them in constant
+/// time, and it keeps us safe if a future change ever shortens a secret. See
+/// ENG-M2. Length is intentionally compared in variable time first (the length
+/// of a hash is not itself secret) so the byte comparison runs over equal-length
+/// inputs.
+fn secret_eq(a: &str, b: &str) -> bool {
+    let a = a.as_bytes();
+    let b = b.as_bytes();
+    if a.len() != b.len() {
+        return false;
+    }
+    a.ct_eq(b).into()
+}
+
+/// The application's single shared SQLite handle.
+///
+/// ENG-Min3 — deliberate architecture decision (single writer, not a pool):
+/// CivicNewspaper is a single-user, local desktop app. One `Arc<Mutex<Connection>>`
+/// is shared by every Tauri command and the loopback Axum server (which only the
+/// paired browser extension on the same machine reaches). The DB is opened WAL
+/// (`open_conn`), and for a single-user workload a single writer under WAL is the
+/// correct shape: there is no multi-client write contention to relieve, and SQLite
+/// itself serializes writers anyway. A connection pool (e.g. r2d2_sqlite) would add
+/// a dependency, change this type at ~40 call sites and every test constructor, and
+/// complicate the backup/restore connection-swap (`backups.rs`) — real regression
+/// risk on the data layer for no functional gain at this concurrency level.
+///
+/// The two genuinely long operations (backup save / restore) hold the lock for the
+/// duration of a full-DB copy. They are bounded, complete on their own, and are
+/// invoked from explicit user actions with their own UI progress state, so they do
+/// not "appear hung" — they are not unbounded or polling. If this app ever grows a
+/// real multi-writer workload, revisit with a pool; until then a pool is premature.
 pub type DbConn = Arc<Mutex<Connection>>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -100,15 +138,31 @@ pub struct PairedClient {
 }
 
 // Database Initialization
-pub fn init_db(path: &str) -> Result<Connection, Box<dyn Error>> {
-    let mut conn = Connection::open(path)?;
+
+/// Open a SQLite connection with the invariant pragmas this app relies on: WAL
+/// journaling and foreign-key enforcement. `foreign_keys` is per-connection in
+/// SQLite and does NOT persist, so EVERY connection that becomes a live handle
+/// must be opened through here — otherwise ON DELETE CASCADE / SET NULL silently
+/// stop firing (notably on the backup-restore rollback paths, which previously
+/// reopened the live DB without re-enabling foreign keys). See finding C-2.
+pub fn open_conn(path: &str) -> Result<Connection, Box<dyn Error + Send + Sync>> {
+    let conn = Connection::open(path)?;
     conn.pragma_update(None, "journal_mode", "WAL")?;
+    conn.execute("PRAGMA foreign_keys = ON;", [])?;
+    Ok(conn)
+}
+
+pub fn init_db(path: &str) -> Result<Connection, Box<dyn Error + Send + Sync>> {
+    let mut conn = open_conn(path)?;
     super::migrations::run_migrations(&mut conn)?;
     Ok(conn)
 }
 
-// App Data Path Resolver for Tauri v2
-pub fn get_app_db_path(app: &tauri::AppHandle) -> Result<PathBuf, Box<dyn Error>> {
+// App Data Path Resolver for Tauri v2.
+// ENG-Nit2: returns a `Send + Sync` boxed error so it composes with async/
+// multithreaded callers (and the rest of the core error surface) without
+// fighting auto-trait bounds.
+pub fn get_app_db_path(app: &tauri::AppHandle) -> Result<PathBuf, Box<dyn Error + Send + Sync>> {
     use tauri::Manager;
     let app_data = app.path().app_data_dir()?;
     std::fs::create_dir_all(&app_data)?;
@@ -500,10 +554,14 @@ pub fn get_paired_client_by_token(
     conn: &Connection,
     token: &str,
 ) -> SqlResult<Option<PairedClient>> {
-    let mut stmt = conn.prepare("SELECT id, token, label, pairing_pin, pin_expires_at, created_at, last_used_at, revoked FROM paired_clients WHERE token = ?1 AND revoked = 0 AND pairing_pin IS NULL")?;
-    let mut rows = stmt.query(params![token])?;
-    if let Some(row) = rows.next()? {
-        Ok(Some(PairedClient {
+    // ENG-M2: do NOT look the token up with a SQL `WHERE token = ?` equality —
+    // SQLite's string comparison is not constant-time. Instead enumerate the
+    // active (paired, non-revoked) clients and compare each stored token against
+    // the supplied one in constant time. The set of paired browser clients is
+    // tiny, so the full scan is negligible.
+    let mut stmt = conn.prepare("SELECT id, token, label, pairing_pin, pin_expires_at, created_at, last_used_at, revoked FROM paired_clients WHERE revoked = 0 AND pairing_pin IS NULL")?;
+    let iter = stmt.query_map([], |row| {
+        Ok(PairedClient {
             id: Some(row.get(0)?),
             token: row.get(1)?,
             label: row.get(2)?,
@@ -512,18 +570,23 @@ pub fn get_paired_client_by_token(
             created_at: row.get(5)?,
             last_used_at: row.get(6)?,
             revoked: row.get::<_, i32>(7)? == 1,
-        }))
-    } else {
-        Ok(None)
+        })
+    })?;
+    for client in iter {
+        let client = client?;
+        if secret_eq(&client.token, token) {
+            return Ok(Some(client));
+        }
     }
+    Ok(None)
 }
 
 #[allow(dead_code)]
 pub fn get_paired_client_by_pin(conn: &Connection, pin: &str) -> SqlResult<Option<PairedClient>> {
-    let mut stmt = conn.prepare("SELECT id, token, label, pairing_pin, pin_expires_at, created_at, last_used_at, revoked FROM paired_clients WHERE pairing_pin = ?1 AND revoked = 0")?;
-    let mut rows = stmt.query(params![pin])?;
-    if let Some(row) = rows.next()? {
-        Ok(Some(PairedClient {
+    // ENG-M2: constant-time PIN comparison (see `secret_eq` / `confirm_pairing`).
+    let mut stmt = conn.prepare("SELECT id, token, label, pairing_pin, pin_expires_at, created_at, last_used_at, revoked FROM paired_clients WHERE revoked = 0 AND pairing_pin IS NOT NULL")?;
+    let iter = stmt.query_map([], |row| {
+        Ok(PairedClient {
             id: Some(row.get(0)?),
             token: row.get(1)?,
             label: row.get(2)?,
@@ -532,10 +595,17 @@ pub fn get_paired_client_by_pin(conn: &Connection, pin: &str) -> SqlResult<Optio
             created_at: row.get(5)?,
             last_used_at: row.get(6)?,
             revoked: row.get::<_, i32>(7)? == 1,
-        }))
-    } else {
-        Ok(None)
+        })
+    })?;
+    for client in iter {
+        let client = client?;
+        if let Some(stored) = client.pairing_pin.as_deref() {
+            if secret_eq(stored, pin) {
+                return Ok(Some(client));
+            }
+        }
     }
+    Ok(None)
 }
 
 pub fn create_pairing_pin(
@@ -556,21 +626,31 @@ pub fn create_pairing_pin(
 
 pub fn confirm_pairing(conn: &Connection, pin: &str) -> SqlResult<Option<String>> {
     let now = Utc::now().to_rfc3339();
-    // Find client with active pin that is not expired
-    let mut stmt = conn.prepare("SELECT id, token, pin_expires_at FROM paired_clients WHERE pairing_pin = ?1 AND revoked = 0")?;
-    let mut rows = stmt.query(params![pin])?;
-    if let Some(row) = rows.next()? {
-        let id: i32 = row.get(0)?;
-        let token: String = row.get(1)?;
-        let expires_at: String = row.get(2)?;
+    // ENG-M2: enumerate candidate clients with a pending PIN and compare the
+    // hashed PIN in constant time, rather than a SQL `WHERE pairing_pin = ?`
+    // equality (not constant-time). The candidate set is tiny (one pending pair
+    // at a time in practice).
+    let mut stmt = conn.prepare(
+        "SELECT id, token, pairing_pin, pin_expires_at FROM paired_clients WHERE revoked = 0 AND pairing_pin IS NOT NULL",
+    )?;
+    let rows: Vec<(i32, String, String, String)> = stmt
+        .query_map([], |row| {
+            Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?))
+        })?
+        .collect::<SqlResult<Vec<_>>>()?;
 
-        if expires_at > now {
-            // Pair successful! Clear PIN and set last_used_at
-            conn.execute(
-                "UPDATE paired_clients SET pairing_pin = NULL, pin_expires_at = NULL, last_used_at = ?1 WHERE id = ?2",
-                params![now, id],
-            )?;
-            return Ok(Some(token));
+    for (id, token, stored_pin, expires_at) in rows {
+        if secret_eq(&stored_pin, pin) {
+            if expires_at > now {
+                // Pair successful! Clear PIN and set last_used_at
+                conn.execute(
+                    "UPDATE paired_clients SET pairing_pin = NULL, pin_expires_at = NULL, last_used_at = ?1 WHERE id = ?2",
+                    params![now, id],
+                )?;
+                return Ok(Some(token));
+            }
+            // Matched but expired — stop (the PIN is unique per pending pair).
+            return Ok(None);
         }
     }
     Ok(None)
