@@ -20,7 +20,7 @@ jobs:
       matrix:
         include:
           - platform: ubuntu-latest
-            os: [self-hosted, Linux, scott-desktop]
+            os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
           - platform: macos-latest
             os: macos-latest
@@ -85,7 +85,7 @@ jobs:
           releaseName: "CivicNewspaper ${{ github.ref_name }}"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: false
-          prerelease: false
+          prerelease: ${{ contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') || contains(github.ref_name, '-alpha') }}
           args: --target ${{ matrix.target }}
           
       - name: Verify release artifacts
