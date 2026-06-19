@@ -26,9 +26,11 @@ The tradeoff is real: local models in the 3B–9B range are significantly weaker
 ### What hardware do I need?
 
 The Onboarding wizard inspects your system memory and suggests a model. Rough guide:
-- **16 GB RAM or more**: `gemma2:9b` (recommended for the standard workflow).
-- **8 GB RAM**: `llama3:8b` or `qwen2.5:3b`.
-- **4 GB RAM**: `qwen2.5:1.5b` or `tinyllama` — drafting quality will be noticeably worse.
+- **16 GB RAM or more**: `qwen3:14b` (≈9.3 GB download — recommended for the standard workflow).
+- **8 GB RAM or more**: `qwen3:8b` (≈5.2 GB download).
+- **Below 8 GB RAM**: `qwen3:4b` (≈2.5 GB download) — drafting quality will be noticeably worse.
+
+CivicNewspaper uses Qwen3 because it is a best-in-class local model in 2026 with notably reliable JSON/structured output, which the Daily Scan feature relies on.
 
 CPU inference works but is slow. A modern Apple Silicon Mac or any machine with a GPU that Ollama can use will be much faster.
 
@@ -54,7 +56,7 @@ Windows SmartScreen and macOS Gatekeeper warn you because the installers are not
 
 You will need:
 - **Application space**: Around 330 MB for the installed application.
-- **AI Model space**: Around 5.4 GB for the default `gemma2:9b` offline writing model.
+- **AI Model space**: Around 5.2 GB for the `qwen3:8b` offline writing model (the default for 8 GB-class machines). The larger `qwen3:14b` is ≈9.3 GB; the smaller `qwen3:4b` is ≈2.5 GB.
 - **Database space**: The SQLite database starts at less than 1 MB, but will grow depending on how many sources you monitor and how many text excerpts you scrape. Typically, a year of municipal monitoring uses under 100 MB.
 
 Total recommended free space: **6 GB to 10 GB**.

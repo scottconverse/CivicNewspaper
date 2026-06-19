@@ -43,7 +43,7 @@ On your very first launch, the **Onboarding Wizard** will walk you through five 
 2. **AI Service Setup**:
    * The application checks the connection status of the bundled offline Ollama sidecar AI engine. If you installed CivicNewspaper from a release installer, Ollama is already bundled inside it — you do not need to install Ollama separately. (Developers building from source fetch the sidecar with a build script; see Part 3.)
 3. **Download AI Model**:
-   * Pull the recommended offline AI model based on your system RAM (e.g. `gemma2:9b` for RAM >= 12GB, `llama3:8b` for RAM >= 8GB, or `phi3:mini` for lower specs).
+   * Pull the recommended offline AI model based on your system RAM (`qwen3:14b`, ≈9.3 GB download, for RAM >= 16GB; `qwen3:8b`, ≈5.2 GB, for RAM >= 8GB; or `qwen3:4b`, ≈2.5 GB, below 8GB). CivicNewspaper uses Qwen3 because it is a best-in-class local model in 2026 with notably reliable JSON/structured output, which the Daily Scan feature relies on.
 4. **Defaults**:
    * Configure your publication paths: **Publish Path** (where static HTML sites are compiled) and **Backup Path** (where database backups are stored).
 5. **Done**:

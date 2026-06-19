@@ -44,6 +44,7 @@ import {
   toUserMessage
 } from "./ipc";
 import modelsConfig from "./models.json";
+import { parseBulkImportLine } from "./bulkImportParser";
 
 export interface ConfirmDialogState {
   title: string;
@@ -467,49 +468,11 @@ export function useApp() {
       setStatusMessage("Bulk importing sources...");
       const lines = bulkImportText.split("\n");
       let importedCount = 0;
-      for (let line of lines) {
-        line = line.trim();
-        if (!line) continue;
-
-        let name = "";
-        let url = "";
-        let type = bulkImportType;
-
-        if (line.includes(",")) {
-          const parts = line.split(",").map(p => p.trim());
-          if (parts.length >= 2) {
-            if (parts[0].startsWith("http://") || parts[0].startsWith("https://")) {
-              url = parts[0];
-              name = parts[1];
-              if (parts.length >= 3 && parts[2]) {
-                type = parts[2];
-              }
-            } else {
-              name = parts[0];
-              url = parts[1];
-              if (parts.length >= 3 && parts[2]) {
-                type = parts[2];
-              }
-            }
-          }
-        } else {
-          url = line;
-          try {
-            const parsedUrl = new URL(url);
-            name = parsedUrl.hostname.replace("www.", "");
-          } catch {
-            name = url;
-          }
-        }
-
-        if (url.startsWith("http://") || url.startsWith("https://")) {
-          const validTypes = ["primary_record", "official_comm", "community_signal", "media_lead"];
-          if (!validTypes.includes(type)) {
-            type = bulkImportType;
-          }
-          await addSource(name, url, type, "community_signal");
-          importedCount++;
-        }
+      for (const rawLine of lines) {
+        const parsed = parseBulkImportLine(rawLine, bulkImportType);
+        if (!parsed) continue;
+        await addSource(parsed.name, parsed.url, parsed.type, "community_signal");
+        importedCount++;
       }
       setStatusMessage(`Bulk imported ${importedCount} source(s) successfully.`);
       setShowBulkImportModal(false);

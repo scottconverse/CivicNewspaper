@@ -90,6 +90,11 @@ describe("useApp Hook Tests", () => {
       render(<TestComp />);
     });
 
+    // The invoke spy is shared across tests in this file; clear its call history
+    // (the mount-time IPC calls) so the assertions below prove THIS
+    // handleDailyScan call issued the invokes — matching the negative test.
+    vi.mocked(invoke).mockClear();
+
     await act(async () => {
       await hookResult.handleDailyScan();
     });

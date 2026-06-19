@@ -239,19 +239,22 @@ mod tests {
         }
     }
 
-    // M-2: hardcoded 'gemma2:9b' and exclusions in grep-checks.sh
+    // M-2: hardcoded high-tier model and exclusions in grep-checks.sh. The model
+    // family is now qwen3 (qwen3:14b/8b/4b); the guard pins that the high-tier tag
+    // is NOT inlined in the RAM ternary — the tier mapping must come from
+    // models.json, not a hardcoded literal in the wizard/useApp code.
     #[test]
     fn reproduce_m2_hardcoded_model_and_grep_exclusions() {
         let wizard_content = read_file("src/components/OnboardingWizard.tsx");
         assert!(
-            !wizard_content.contains("ram >= 12 ? 'gemma2:9b'"),
-            "M-2 violation: OnboardingWizard contains hardcoded 'gemma2:9b'"
+            !wizard_content.contains("ram >= 12 ? 'qwen3:14b'"),
+            "M-2 violation: OnboardingWizard contains hardcoded 'qwen3:14b'"
         );
 
         let useapp_content = read_file("src/useApp.ts");
         assert!(
-            !useapp_content.contains("ram >= 12 ? 'gemma2:9b'"),
-            "M-2 violation: useApp contains hardcoded 'gemma2:9b'"
+            !useapp_content.contains("ram >= 12 ? 'qwen3:14b'"),
+            "M-2 violation: useApp contains hardcoded 'qwen3:14b'"
         );
 
         let grep_checks = read_file("scripts/audit/grep-checks.sh");
@@ -275,17 +278,19 @@ mod tests {
     fn reproduce_m3_test_verifies_model_gating_behavior() {
         let test_content = read_file("src/test_useapp_daily_scan_passes_settings_model.test.tsx");
 
-        // Prior grep-bait comments that simulated coverage must be absent.
+        // Prior grep-bait comments that simulated coverage must be absent. The
+        // model family is now qwen3, so the pinned bait literal tracks the current
+        // model rather than the retired phi3 tag.
         assert!(
-            !test_content.contains("mockLlm expect: phi3:mini"),
-            "M-3 violation: test contains grep-bait comment 'mockLlm expect: phi3:mini'"
+            !test_content.contains("mockLlm expect: qwen3:4b"),
+            "M-3 violation: test contains grep-bait comment 'mockLlm expect: qwen3:4b'"
         );
         assert!(
             !test_content.contains("llmCall receivedModel"),
             "M-3 violation: test contains grep-bait comment 'llmCall receivedModel'"
         );
 
-        // The tautological assertion (expectedModel === "phi3:mini") must be gone.
+        // The tautological assertion (expectedModel === "<model>") must be gone.
         assert!(
             !test_content.contains("expect(expectedModel).toBe"),
             "M-3 violation: test still contains the tautological assertion comparing a local constant to itself"

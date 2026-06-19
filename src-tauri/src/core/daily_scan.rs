@@ -4,6 +4,13 @@ use crate::core::llm::LlmClient;
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 
+/// Distinct error signal returned by [`run_daily_scan`] when there is zero
+/// evidence in the requested window. The frontend matches on this to show a
+/// "no evidence — run Scrape & Detect first" message rather than treating the
+/// scan as an empty-but-successful run (QA-M2).
+pub const NO_EVIDENCE_SIGNAL: &str =
+    "NO_EVIDENCE: There is no evidence in the selected window. Run Scrape & Detect first.";
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ScanResultItem {
     pub title: String,
@@ -104,14 +111,25 @@ pub async fn run_daily_scan(
         run_status: "in_progress".to_string(),
     };
 
-    let run_id = {
-        let conn = db.lock().map_err(|_| "Failed to lock db")?;
-        db::insert_daily_scan_run(&conn, &run).map_err(|e| e.to_string())?
-    };
-
+    // QA-M2: short-circuit when there is no evidence in the window BEFORE creating
+    // a run row or calling the LLM. A daily scan over zero evidence can only return
+    // "no leads," so spending a (potentially minute-long, CPU-bound) LLM round trip
+    // to produce nothing is wasted work — and on first run / a fresh DB it is the
+    // common case. Return a distinct, recognizable signal so the UI can tell the
+    // user to "Scrape & Detect first" instead of reporting an empty success. No run
+    // row is created, so this does not pollute the scan history with empty runs.
     let evidence_items = {
         let conn = db.lock().map_err(|_| "Failed to lock db")?;
         db::list_evidence_since(&conn, since_hours).unwrap_or_default()
+    };
+
+    if evidence_items.is_empty() {
+        return Err(NO_EVIDENCE_SIGNAL.to_string());
+    }
+
+    let run_id = {
+        let conn = db.lock().map_err(|_| "Failed to lock db")?;
+        db::insert_daily_scan_run(&conn, &run).map_err(|e| e.to_string())?
     };
 
     let mut context = String::new();

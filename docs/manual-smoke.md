@@ -25,7 +25,7 @@ Since CivicNews is a local-first desktop application with sensitive GUI workflow
 3. Arrive at the "Local AI / Ollama" step.
 4. Verify the RAM inspection correctly identifies system memory and recommends an appropriate model.
 5. Verify the wizard detects the bundled Ollama sidecar and reports it is initializing.
-6. Pull the recommended model in the background (e.g. `gemma2:9b` or `llama3:8b`).
+6. Pull the recommended model in the background (e.g. `qwen3:14b` for >= 16 GB RAM, `qwen3:8b` for >= 8 GB RAM, or `qwen3:4b` below 8 GB).
 7. Complete the wizard and arrive at the main Newsroom dashboard.
 
 ### 3. Pairing Flow (Browser Extension)

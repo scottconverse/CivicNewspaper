@@ -26,6 +26,24 @@ fn secret_eq(a: &str, b: &str) -> bool {
     a.ct_eq(b).into()
 }
 
+/// The application's single shared SQLite handle.
+///
+/// ENG-Min3 — deliberate architecture decision (single writer, not a pool):
+/// CivicNewspaper is a single-user, local desktop app. One `Arc<Mutex<Connection>>`
+/// is shared by every Tauri command and the loopback Axum server (which only the
+/// paired browser extension on the same machine reaches). The DB is opened WAL
+/// (`open_conn`), and for a single-user workload a single writer under WAL is the
+/// correct shape: there is no multi-client write contention to relieve, and SQLite
+/// itself serializes writers anyway. A connection pool (e.g. r2d2_sqlite) would add
+/// a dependency, change this type at ~40 call sites and every test constructor, and
+/// complicate the backup/restore connection-swap (`backups.rs`) — real regression
+/// risk on the data layer for no functional gain at this concurrency level.
+///
+/// The two genuinely long operations (backup save / restore) hold the lock for the
+/// duration of a full-DB copy. They are bounded, complete on their own, and are
+/// invoked from explicit user actions with their own UI progress state, so they do
+/// not "appear hung" — they are not unbounded or polling. If this app ever grows a
+/// real multi-writer workload, revisit with a pool; until then a pool is premature.
 pub type DbConn = Arc<Mutex<Connection>>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -144,9 +162,7 @@ pub fn init_db(path: &str) -> Result<Connection, Box<dyn Error + Send + Sync>> {
 // ENG-Nit2: returns a `Send + Sync` boxed error so it composes with async/
 // multithreaded callers (and the rest of the core error surface) without
 // fighting auto-trait bounds.
-pub fn get_app_db_path(
-    app: &tauri::AppHandle,
-) -> Result<PathBuf, Box<dyn Error + Send + Sync>> {
+pub fn get_app_db_path(app: &tauri::AppHandle) -> Result<PathBuf, Box<dyn Error + Send + Sync>> {
     use tauri::Manager;
     let app_data = app.path().app_data_dir()?;
     std::fs::create_dir_all(&app_data)?;

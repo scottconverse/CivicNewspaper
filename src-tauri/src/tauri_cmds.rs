@@ -33,10 +33,10 @@ fn default_state() -> String {
 }
 
 /// Normalize an Ollama model tag for EXACT comparison. Ollama treats an untagged
-/// name as `:latest`, so `phi3` and `phi3:latest` are the same model. QA-mn1:
+/// name as `:latest`, so `qwen3` and `qwen3:latest` are the same model. QA-mn1:
 /// match exact tags (with this `:latest` normalization) instead of loose
 /// substring/`starts_with`/`contains` matching, which could select the wrong
-/// model (e.g. `phi3:mini` selected vs `phi3:medium` installed).
+/// model (e.g. `qwen3:4b` selected vs `qwen3:14b` installed).
 pub(crate) fn normalize_model_tag(tag: &str) -> String {
     let t = tag.trim();
     if t.contains(':') {
@@ -50,9 +50,7 @@ pub(crate) fn normalize_model_tag(tag: &str) -> String {
 /// `:latest` normalization on both sides). QA-mn1.
 pub(crate) fn model_is_installed(selected: &str, installed: &[String]) -> bool {
     let want = normalize_model_tag(selected);
-    installed
-        .iter()
-        .any(|m| normalize_model_tag(m) == want)
+    installed.iter().any(|m| normalize_model_tag(m) == want)
 }
 
 pub(crate) async fn get_selected_model_or_fallback(db: &DbConn) -> String {
@@ -74,7 +72,9 @@ pub(crate) async fn get_selected_model_or_fallback(db: &DbConn) -> String {
         return m;
     }
 
-    let default_m = "phi3:mini".to_string();
+    // Default to the smallest qwen3 tier (qwen3:4b) — the model family the app
+    // ships with. This fallback only runs when no model is saved in settings.
+    let default_m = "qwen3:4b".to_string();
     let mut model = default_m.clone();
     if let Ok(resp) = reqwest::get("http://127.0.0.1:11434/api/tags").await {
         if resp.status().is_success() {
@@ -88,8 +88,7 @@ pub(crate) async fn get_selected_model_or_fallback(db: &DbConn) -> String {
             }
             if let Ok(tags) = resp.json::<TagsResp>().await {
                 if !tags.models.is_empty() {
-                    let names: Vec<String> =
-                        tags.models.iter().map(|m| m.name.clone()).collect();
+                    let names: Vec<String> = tags.models.iter().map(|m| m.name.clone()).collect();
                     // QA-mn1: prefer the default model only if it is EXACTLY
                     // installed (with :latest normalization), then fall back to
                     // any preferred-family exact-ish tag, then the first model.
@@ -97,11 +96,10 @@ pub(crate) async fn get_selected_model_or_fallback(db: &DbConn) -> String {
                         model = default_m;
                     } else if let Some(m) = tags.models.iter().find(|m| {
                         // Match by model FAMILY on the tag's base name (the part
-                        // before ':'), not a loose whole-string contains.
+                        // before ':'), not a loose whole-string contains. The app
+                        // ships with the qwen3 family (qwen3:14b/8b/4b).
                         let base = m.name.split(':').next().unwrap_or("");
-                        base.starts_with("gemma")
-                            || base.starts_with("llama")
-                            || base.starts_with("phi")
+                        base.starts_with("qwen")
                     }) {
                         model = m.name.clone();
                     } else {
@@ -165,6 +163,23 @@ pub fn get_sources(db: tauri::State<'_, DbConn>) -> Result<Vec<Source>, String> 
 #[tauri::command]
 pub fn add_source(
     db: tauri::State<'_, DbConn>,
+    name: String,
+    url: String,
+    r#type: String,
+    tier: String,
+) -> Result<i32, String> {
+    add_source_inner(&db, name, url, r#type, tier)
+}
+
+/// The storage chokepoint for every source-ingestion path (manual add, discovery
+/// auto-import, bulk import — all funnel through the `add_source` command). This
+/// is the single place the tier allow-list and the SSRF storage gate are enforced
+/// before a source is persisted; it is factored out of the `#[tauri::command]`
+/// wrapper so it can be tested directly without a Tauri `AppHandle` (C-6 /
+/// CRIT-1). Both gates MUST run before `insert_source`, and a rejected source MUST
+/// NOT be inserted — the tests in `tests.rs` pin exactly that.
+pub(crate) fn add_source_inner(
+    db: &DbConn,
     name: String,
     url: String,
     r#type: String,

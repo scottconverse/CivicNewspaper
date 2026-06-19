@@ -23,7 +23,11 @@ fn check_ollama_sidecar_present() {
         return;
     }
 
-    let exe_suffix = if target.contains("windows") { ".exe" } else { "" };
+    let exe_suffix = if target.contains("windows") {
+        ".exe"
+    } else {
+        ""
+    };
     let expected = format!("binaries/ollama-{}{}", target, exe_suffix);
     let expected_path = Path::new(&manifest_dir).join(&expected);
 

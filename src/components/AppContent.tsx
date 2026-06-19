@@ -10,6 +10,7 @@ import { SystemStatus } from "./SystemStatus";
 import { SourcesPanel } from "./SourcesPanel";
 import { Modal } from "./Modal";
 import { ConfirmModal } from "./ConfirmModal";
+import { BetaNotice } from "./BetaNotice";
 import { resolveResource } from "@tauri-apps/api/path";
 import { openLocalPath } from "../ipc";
 
@@ -29,6 +30,9 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
 
   return (
     <>
+      {/* First-run beta notice (#12): unsigned-beta / SmartScreen disclosure */}
+      <BetaNotice />
+
       {/* Global confirmation dialog (destructive actions) */}
       {app.confirmDialog && (
         <ConfirmModal

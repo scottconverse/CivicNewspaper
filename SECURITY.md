@@ -48,7 +48,7 @@ CivicNewspaper is designed with a strict "local-LLM only" architecture. All AI t
 
 - **No API Keys:** The application does not accept or use API keys for external services like OpenAI, Anthropic, or Google.
 - **No Data Exfiltration:** Your drafts, evidence, and prompts never leave your local machine.
-- **Offline Capable:** The entire AI pipeline operates without an internet connection once your selected model (e.g., `gemma2:9b`) is downloaded.
+- **Offline Capable:** The entire AI pipeline operates without an internet connection once your selected model (e.g., `qwen3:8b`) is downloaded.
 
 ## Local Sidecar Attack Surface
 
