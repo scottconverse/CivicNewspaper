@@ -12,8 +12,10 @@
   --border-color: #e2e8f0;
   
   --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --text-muted: #94a3b8;
+  /* UX-M6: darkened to meet WCAG AA 4.5:1 on the translucent --bg-card.
+     #64748b muted text measured ~2.6:1 and failed; these are slate-600/slate-500. */
+  --text-secondary: #475569;
+  --text-muted: #64748b;
   
   --accent-primary: #0f172a;
   --accent-hover: #334155;
@@ -45,8 +47,9 @@
     --border-color: rgba(255, 255, 255, 0.08);
     
     --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
+    /* UX-M6: lightened to meet WCAG AA 4.5:1 on the translucent dark --bg-card. */
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
     
     --accent-primary: #38bdf8;
     --accent-hover: #7dd3fc;
@@ -520,6 +523,30 @@ textarea:focus {
   border: 1px solid transparent;
   cursor: pointer;
   transition: all var(--transition-fast);
+}
+
+/* UX-M1: a visible keyboard focus indicator on every interactive control.
+   The app reset removes default outlines and the dark primary button hid the
+   UA outline entirely, leaving keyboard users unable to see focus. :focus-visible
+   keeps the ring keyboard-only so mouse clicks don't show it. */
+.btn:focus-visible,
+.nav-link:focus-visible,
+.queue-tab:focus-visible,
+.lead-card:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--accent-light);
+  border-radius: var(--radius-sm);
+}
+
+/* UX-M2: disabled controls must read as disabled. With no rule, disabled
+   buttons rendered at full color with a pointer cursor and silently no-op'd. */
+.btn:disabled,
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .btn-primary {

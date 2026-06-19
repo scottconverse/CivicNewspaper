@@ -44,7 +44,7 @@ export const Layout: React.FC<LayoutProps> = ({
                 id="nav-tab-sources"
               >
                 <Rss size={18} />
-                Sources Setup
+                Sources
               </button>
             </li>
             <li>
@@ -54,7 +54,7 @@ export const Layout: React.FC<LayoutProps> = ({
                 id="nav-tab-onboarding"
               >
                 <Cpu size={18} />
-                Ollama Wizard
+                AI Setup
               </button>
             </li>
             <li>
@@ -95,7 +95,7 @@ export const Layout: React.FC<LayoutProps> = ({
         <div className="sidebar-footer">
           <div className="ollama-status-indicator">
             <span className={`status-dot ${ollamaOnline ? "online" : "offline"}`} />
-            Ollama Status: {ollamaOnline ? "Online" : "Offline"}
+            AI Status: {ollamaOnline ? "Online" : "Offline"}
           </div>
         </div>
       </aside>

@@ -16,6 +16,7 @@ See the "Building from source" section of [README.md](README.md) for prerequisit
 git clone https://github.com/scottconverse/CivicNewspaper.git
 cd CivicNewspaper
 npm install
+bash scripts/fetch-ollama-binaries.sh   # REQUIRED: downloads + SHA-verifies the Ollama sidecar; build fails without it. Bash-only (Git Bash/WSL on Windows).
 npm run tauri dev
 ```
 

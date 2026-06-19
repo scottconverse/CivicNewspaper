@@ -36,7 +36,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
     <div style={{ maxWidth: "900px", margin: "0 auto" }} id="settings-panel-container">
       <div className="page-header">
         <div className="page-title">
-          <h1>Ethics Profile & Core Backups</h1>
+          <h1>Ethics &amp; Backups</h1>
           <p>Adjust guardrails parameters, define ethics policies, and backup the local SQLite database.</p>
         </div>
       </div>
@@ -68,7 +68,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 />
               </div>
               <div>
-                <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Public Inquest Threshold ($)</label>
+                <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>High-Cost Contract Alert Threshold ($)</label>
                 <input
                   type="number"
                   value={profileForm.money_threshold}
@@ -126,11 +126,27 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   id="input-backup-path"
                 />
               </div>
+              {/* QA-mn2: with an empty path the handlers silently no-op'd. Disable
+                  the buttons and explain why via a tooltip instead. */}
               <div className="btn-group">
-                <button className="btn btn-secondary" style={{ flexGrow: 1 }} onClick={onBackupSave} id="btn-backup-save">
+                <button
+                  className="btn btn-secondary"
+                  style={{ flexGrow: 1 }}
+                  onClick={onBackupSave}
+                  disabled={!backupPathInput.trim()}
+                  title={!backupPathInput.trim() ? "Enter a backup file path first" : "Create a backup at the path above"}
+                  id="btn-backup-save"
+                >
                   Create Backup
                 </button>
-                <button className="btn btn-danger" style={{ flexGrow: 1 }} onClick={onBackupRestore} id="btn-backup-restore">
+                <button
+                  className="btn btn-danger"
+                  style={{ flexGrow: 1 }}
+                  onClick={onBackupRestore}
+                  disabled={!backupPathInput.trim()}
+                  title={!backupPathInput.trim() ? "Enter a backup file path first" : "Restore from the backup file at the path above"}
+                  id="btn-backup-restore"
+                >
                   Restore Backup
                 </button>
               </div>

@@ -66,6 +66,11 @@ struct LlmTaskResponse {
     result: String,
 }
 
+#[derive(Serialize)]
+struct ErrorResponse {
+    error: String,
+}
+
 #[derive(Deserialize)]
 struct GuardrailsRequest {
     draft_id: i32,
@@ -220,7 +225,7 @@ async fn create_draft_handler(
 async fn llm_task_handler(
     State(state): State<AppState>,
     Json(payload): Json<LlmTaskRequest>,
-) -> Result<Json<LlmTaskResponse>, StatusCode> {
+) -> Result<Json<LlmTaskResponse>, (StatusCode, Json<ErrorResponse>)> {
     let model = crate::tauri_cmds::get_selected_model_or_fallback(&state.db).await;
 
     match state
@@ -230,8 +235,17 @@ async fn llm_task_handler(
     {
         Ok(result) => Ok(Json(LlmTaskResponse { result })),
         Err(e) => {
+            // ENG-M4: surface the real error text (incl. the timeout-specific
+            // message) instead of a bare 503 with the cause only on stderr. A
+            // timeout means the model is working-but-slow (treat as a gateway
+            // timeout); everything else is reported as service-unavailable.
             eprintln!("Ollama task execution failed: {}", e);
-            Err(StatusCode::SERVICE_UNAVAILABLE)
+            let status = if e.contains("took longer than") {
+                StatusCode::GATEWAY_TIMEOUT
+            } else {
+                StatusCode::SERVICE_UNAVAILABLE
+            };
+            Err((status, Json(ErrorResponse { error: e })))
         }
     }
 }

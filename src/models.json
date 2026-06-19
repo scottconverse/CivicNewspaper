@@ -1,5 +1,10 @@
 {
-  "high": "gemma2:9b",
-  "medium": "llama3:8b",
-  "low": "phi3:mini"
+  "high": "qwen3:14b",
+  "medium": "qwen3:8b",
+  "low": "qwen3:4b",
+  "sizes": {
+    "qwen3:14b": "~9 GB",
+    "qwen3:8b": "~5 GB",
+    "qwen3:4b": "~2.5 GB"
+  }
 }

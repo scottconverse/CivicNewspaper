@@ -1,6 +1,6 @@
 // src/components/SourcesPanel.tsx
 import React from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, RefreshCcw } from "lucide-react";
 import { Source, DiscoveredSource, DiscoveredSourceCategory } from "../ipc";
 import { Modal } from "./Modal";
 
@@ -87,8 +87,8 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
     <div>
       <div className="page-header">
         <div className="page-title">
-          <h1>Sources Manager</h1>
-          <p>Configure feeds, portals, and records systems scanned by CivicNews' OSINT detectors.</p>
+          <h1>Sources</h1>
+          <p>Configure the feeds, portals, and record systems CivicNews scans for story leads.</p>
         </div>
         <div className="btn-group">
           <button 
@@ -320,8 +320,10 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
             <div style={{ flex: 1, overflowY: "auto", paddingRight: "0.5rem" }}>
               {discoveryLoading && (
                 <div style={{ textAlign: "center", padding: "3rem 0" }} id="discovery-loading-indicator">
-                  <div className="animate-spin" style={{ display: "inline-block", border: "4px solid rgba(255,255,255,0.1)", borderTop: "4px solid var(--accent-primary)", borderRadius: "50%", width: "40px", height: "40px", marginBottom: "1rem" }} />
-                  <p>Searching DuckDuckGo for agendas, subreddits, library calendars, and local news...</p>
+                  {/* UX-m4: unified spinner idiom (lucide RefreshCcw + .animate-spin),
+                      matching the onboarding wizard, instead of a hand-rolled div. */}
+                  <RefreshCcw className="animate-spin" size={40} style={{ color: "var(--accent-primary)", marginBottom: "1rem" }} />
+                  <p>Searching for agendas, subreddits, library calendars, and local news...</p>
                   <p className="help-text" style={{ fontSize: "0.85rem", marginTop: "0.5rem" }}>Running priority checklist queries sequentially. This takes a few seconds.</p>
                 </div>
               )}

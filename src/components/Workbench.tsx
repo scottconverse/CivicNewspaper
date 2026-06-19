@@ -75,6 +75,7 @@ interface WorkbenchProps {
   onCloseWorkbench: () => void;
   onDeleteDraft: (id: number) => void;
   onDecision: (status: string) => void;
+  onKillStory?: () => void;
   isGeneratingSocial: boolean;
   socialPackResult: string;
   onSocialPackResultChange: (val: string) => void;
@@ -101,6 +102,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   onCloseWorkbench,
   onDeleteDraft,
   onDecision,
+  onKillStory,
   isGeneratingSocial,
   socialPackResult,
   onSocialPackResultChange,
@@ -170,7 +172,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
               <option value="brief">Brief (Under 200 words summary)</option>
               <option value="watch">Watch Alert (Highlights specific public safety or procurement issues)</option>
               <option value="explainer">Explainer (Detailed review of a policy or decision background)</option>
-              <option value="investigation">Investigation (Highlights specific money Trails/risk linkages)</option>
+              <option value="investigation">Investigation (Traces spending and connections behind a story)</option>
               <option value="opinion">Editorial / Opinion Piece (Presents a structured argument)</option>
             </select>
           </div>
@@ -189,11 +191,20 @@ export const Workbench: React.FC<WorkbenchProps> = ({
           <div className="card" style={{ background: "var(--accent-light)", marginTop: "1rem" }}>
             <h4>Linked Records ({evidenceList.length})</h4>
             <div style={{ maxHeight: "150px", overflowY: "auto", marginTop: "0.5rem" }}>
-              {evidenceList.map((item, idx) => (
-                <div key={idx} style={{ padding: "0.25rem 0", fontSize: "0.85rem", borderBottom: "1px solid var(--border-color)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                  <FileText size={14} /> <em>"{item.excerpt.slice(0, 100)}..."</em>
-                </div>
-              ))}
+              {evidenceList.length === 0 ? (
+                // UX-M3: the wizard previously showed an empty "Linked Records (0)"
+                // box with no explanation. Mirror the editor's empty state.
+                <p className="help-text" style={{ display: "flex", alignItems: "flex-start", gap: "0.4rem", margin: 0 }}>
+                  <AlertTriangle size={14} style={{ flexShrink: 0, marginTop: "0.15rem", color: "var(--color-warning)" }} />
+                  No public records are linked to this lead yet. You can still generate a draft, but it won't be backed by cited evidence.
+                </p>
+              ) : (
+                evidenceList.map((item, idx) => (
+                  <div key={idx} style={{ padding: "0.25rem 0", fontSize: "0.85rem", borderBottom: "1px solid var(--border-color)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                    <FileText size={14} /> <em>"{item.excerpt.slice(0, 100)}..."</em>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
@@ -208,7 +219,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
           
           {!ollamaOnline && !manualLlmMode && (
             <div className="error-text" id="ollama-offline-warning" style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-              <AlertTriangle size={14} /> Local Ollama is offline. Open the "Ollama Wizard" tab to set up or use "Manual Mode" settings.
+              <AlertTriangle size={14} /> The local AI service is offline. Open the "AI Setup" tab to set it up, or use "Manual Mode" in settings.
             </div>
           )}
         </div>
@@ -222,7 +233,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
       <div id="workbench-editor-panel">
         <div className="page-header" style={{ marginBottom: "1rem" }}>
           <div className="page-title">
-            <h1>Story Editorial Workbench</h1>
+            <h1>Story Workbench</h1>
             <p>Modify drafted content, review guardrails violations, and link citations to raw public evidence.</p>
           </div>
           <div className="btn-group">
@@ -341,7 +352,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                   <button className="btn btn-secondary btn-sm" onClick={() => onDecision("hold")} id="btn-status-hold">
                     Hold
                   </button>
-                  <button className="btn btn-danger btn-sm" onClick={() => onDecision("killed")} id="btn-status-kill">
+                  <button className="btn btn-danger btn-sm" onClick={() => (onKillStory ? onKillStory() : onDecision("killed"))} id="btn-status-kill">
                     Kill Story
                   </button>
                   <button className="btn btn-primary btn-sm" onClick={() => onDecision("ready_to_publish")} id="btn-status-publish">

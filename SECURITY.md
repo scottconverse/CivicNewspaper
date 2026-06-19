@@ -53,7 +53,7 @@ CivicNewspaper is designed with a strict "local-LLM only" architecture. All AI t
 ## Local Sidecar Attack Surface
 
 CivicNewspaper bundles Ollama as an external binary sidecar process to perform local AI inference. This introduces specific security aspects:
-- **Bundled Binary**: The Ollama executable is packaged inside the application bundle and verified via SHA256 checksum checks during build time.
+- **Bundled Binary**: The Ollama executable is packaged inside the application bundle. It is fetched and verified against a pinned SHA256 by `scripts/fetch-ollama-binaries.sh`, which aborts on a checksum mismatch; that script is run before every official release build (and is the required first step for from-source builds — see README "Building from source"). The checksum guarantee therefore holds for any build that provisions the binary through that script, including all release binaries.
 - **Process Lifecycle**: The backend Rust core spawns and manages the Ollama sidecar process, binding it to the default port `11434`. The process is terminated automatically when the main desktop app exits.
 - **Tauri Capability `args` Config**: The sidecar execution argument list is explicitly restricted by Tauri's capability policies. Arbitrary command-line arguments are not permitted.
 - **Renderer-Compromise Implications**: If the frontend renderer is compromised (e.g., via stored XSS in a scraped feed), the attacker cannot execute arbitrary commands or access the host filesystem directly through the sidecar, but they could perform unauthorized local inference or query local models via the loopback port `11434`.

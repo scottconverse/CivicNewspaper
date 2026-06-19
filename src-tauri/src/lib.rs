@@ -22,7 +22,9 @@ pub fn run() {
                 let log_path = log_dir.join("civicnews.log");
                 let sidecar_clone = sidecar.clone();
                 std::panic::set_hook(Box::new(move |info| {
-                    let _ = sidecar_clone.stop();
+                    // ENG-Min2: best-effort, non-blocking stop so the hook can
+                    // never deadlock on the sidecar mutex during a panic.
+                    sidecar_clone.stop_best_effort();
                     let msg = match info.payload().downcast_ref::<&'static str>() {
                         Some(s) => *s,
                         None => match info.payload().downcast_ref::<String>() {
@@ -68,10 +70,22 @@ pub fn run() {
             // 3. Manage database connection state in Tauri
             app.manage(db_conn.clone());
 
-            // 4. Start Axum server in a background tokio task for browser pairing
+            // 4. Start Axum server in a background tokio task for browser pairing.
+            //    ENG-Min5: a bind failure (e.g. port 12053 already in use) must
+            //    not be swallowed to stderr only — emit a Tauri event so the
+            //    pairing UI can explain that browser pairing is unavailable.
+            let server_app_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
                 if let Err(e) = crate::core::server::start_server(db_conn).await {
                     eprintln!("HTTP Axum Server failed to start: {}", e);
+                    use tauri::Emitter;
+                    let _ = server_app_handle.emit(
+                        "http-server-error",
+                        format!(
+                            "The local pairing server could not start ({}). Browser pairing will be unavailable — another app may be using port 12053.",
+                            e
+                        ),
+                    );
                 }
             });
 

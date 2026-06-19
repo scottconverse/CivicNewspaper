@@ -8,7 +8,8 @@ use reqwest::Client;
 use serde_json;
 use sha2::{Digest, Sha256};
 use std::error::Error;
-use std::net::{IpAddr, ToSocketAddrs};
+use std::net::{IpAddr, SocketAddr, ToSocketAddrs};
+use std::sync::LazyLock;
 use std::time::Duration;
 use tokio::time::sleep;
 
@@ -18,9 +19,11 @@ use tokio::time::sleep;
 // `http://127.0.0.1:11434` (local Ollama), `http://169.254.169.254` (cloud
 // metadata), or internal-LAN hosts. `validate_source_url` is the cheap,
 // network-free gate used when a source is *stored* (rejects bad schemes and
-// blocked IP literals); `validate_source_url_resolved` additionally resolves
-// DNS and is used at *scrape* time, where the network is in play anyway and DNS
-// may have changed since the source was added.
+// blocked IP literals); `validate_and_pin` additionally resolves DNS, validates
+// the resolved IP, and returns it so the scrape-time connection is pinned to the
+// exact address that was validated (defeating DNS rebinding). It is used at
+// *scrape* time, where the network is in play anyway and DNS may have changed
+// since the source was added.
 pub fn validate_source_url(url: &str) -> Result<reqwest::Url, String> {
     let parsed = reqwest::Url::parse(url.trim()).map_err(|e| format!("Invalid URL: {}", e))?;
 
@@ -59,26 +62,43 @@ fn host_as_ip(host: &str) -> Result<IpAddr, std::net::AddrParseError> {
         .parse::<IpAddr>()
 }
 
-pub fn validate_source_url_resolved(url: &str) -> Result<(), String> {
+/// Resolve `url`'s host ONCE, validate every resolved IP, and return a single
+/// pinned `SocketAddr` to connect to (or `None` for a literal-IP host, which
+/// reqwest will connect to directly with no further DNS).
+///
+/// ENG-M3 (DNS-rebinding TOCTOU): the previous design validated the host's DNS
+/// in one lookup and then let reqwest perform an INDEPENDENT lookup at connect
+/// time. A low-TTL attacker domain could resolve to a public IP during
+/// validation and to `169.254.169.254`/RFC1918 during the connect, sailing past
+/// the gate. By resolving once here and pinning the connection to the validated
+/// IP (via `ClientBuilder::resolve`), the IP we checked is the IP we connect to.
+/// The storage-time `validate_source_url` check remains a cheap best-effort
+/// filter; THIS function is the real gate.
+pub fn validate_and_pin(url: &str) -> Result<Option<SocketAddr>, String> {
     let parsed = validate_source_url(url)?;
     let host = parsed
         .host_str()
         .ok_or_else(|| "URL has no host".to_string())?;
 
-    // Literal IPs were already vetted by validate_source_url; only domains need
-    // resolution.
+    // Literal IPs were already vetted by validate_source_url; reqwest connects
+    // to them directly, so there is no DNS step to pin.
     if host_as_ip(host).is_ok() {
-        return Ok(());
+        return Ok(None);
     }
 
     let port = parsed.port_or_known_default().unwrap_or(80);
-    let addrs = (host, port)
+    let addrs: Vec<SocketAddr> = (host, port)
         .to_socket_addrs()
-        .map_err(|e| format!("Could not resolve host '{}': {}", host, e))?;
+        .map_err(|e| format!("Could not resolve host '{}': {}", host, e))?
+        .collect();
 
-    let mut resolved_any = false;
-    for addr in addrs {
-        resolved_any = true;
+    if addrs.is_empty() {
+        return Err(format!("Host '{}' did not resolve to any address", host));
+    }
+
+    // Reject if ANY resolved address is blocked (so we never connect to a host
+    // that round-robins between a public and an internal IP).
+    for addr in &addrs {
         if is_blocked_ip(&addr.ip()) {
             return Err(format!(
                 "URL host '{}' resolves to a blocked address ({}): loopback, private, and link-local destinations are not allowed",
@@ -86,10 +106,10 @@ pub fn validate_source_url_resolved(url: &str) -> Result<(), String> {
             ));
         }
     }
-    if !resolved_any {
-        return Err(format!("Host '{}' did not resolve to any address", host));
-    }
-    Ok(())
+
+    // Pin to the first validated address. Because we already rejected the whole
+    // set if any member was blocked, this address is guaranteed safe.
+    Ok(Some(addrs[0]))
 }
 
 fn is_blocked_ip(ip: &IpAddr) -> bool {
@@ -123,19 +143,26 @@ pub fn compute_hash(text: &str) -> String {
     format!("{:x}", hasher.finalize())
 }
 
+// Pre-compiled entity-extraction regexes (ENG-Nit1). Compiling a `Regex` is
+// expensive; `extract_entities` runs once per evidence chunk, so build these
+// once and reuse them (mirrors the pattern used in detectors.rs).
+static RE_DOLLAR: LazyLock<regex::Regex> =
+    LazyLock::new(|| regex::Regex::new(r"\$[0-9,]+(?:\.[0-9]+)?").unwrap());
+static RE_ORG: LazyLock<regex::Regex> = LazyLock::new(|| {
+    regex::Regex::new(r"\b[A-Z][a-zA-Z0-9&]+(?:\s+[A-Z][a-zA-Z0-9&]+)*\s+(?:Board|Council|Committee|Department|District|Commission|Agency|Association|Corp|Inc|LLC)\b").unwrap()
+});
+
 // Simple entity extraction using regex/keywords for our evidence entities list
 pub fn extract_entities(text: &str) -> Vec<String> {
     let mut entities = Vec::new();
-    let re_dollar = regex::Regex::new(r"\$[0-9,]+(?:\.[0-9]+)?").unwrap();
-    let re_org = regex::Regex::new(r"\b[A-Z][a-zA-Z0-9&]+(?:\s+[A-Z][a-zA-Z0-9&]+)*\s+(?:Board|Council|Committee|Department|District|Commission|Agency|Association|Corp|Inc|LLC)\b").unwrap();
 
     // Extract dollar amounts
-    for mat in re_dollar.find_iter(text) {
+    for mat in RE_DOLLAR.find_iter(text) {
         entities.push(mat.as_str().to_string());
     }
 
     // Extract formal organizations
-    for mat in re_org.find_iter(text) {
+    for mat in RE_ORG.find_iter(text) {
         entities.push(mat.as_str().to_string());
     }
 
@@ -144,12 +171,13 @@ pub fn extract_entities(text: &str) -> Vec<String> {
     entities
 }
 
-pub async fn scrape_all_sources(db: &DbConn) -> Result<(), Box<dyn Error>> {
-    let sources = {
-        let conn = db.lock().map_err(|_| "Failed to lock database")?;
-        super::db::list_sources(&conn)?
-    };
-    let client = Client::builder()
+/// Build the scraper HTTP client. When `pin` is supplied, the client is
+/// configured to resolve `host` to that exact `SocketAddr` (ENG-M3), so the IP
+/// we validated is the IP we connect to — defeating DNS rebinding. Redirect
+/// following is always disabled; `fetch_validated` follows hops manually so each
+/// one is re-validated and re-pinned.
+fn build_scraper_client(pin: Option<(&str, SocketAddr)>) -> Result<Client, Box<dyn Error>> {
+    let mut builder = Client::builder()
         .timeout(Duration::from_secs(10))
         .user_agent("CivicNewsScraper/1.0 (+http://127.0.0.1:12053)")
         // Disable reqwest's automatic redirect following. The default policy
@@ -159,8 +187,22 @@ pub async fn scrape_all_sources(db: &DbConn) -> Result<(), Box<dyn Error>> {
         // would be followed straight past the SSRF gate. We follow redirects
         // manually in `fetch_validated`, re-running the resolved-IP check on
         // every hop.
-        .redirect(reqwest::redirect::Policy::none())
-        .build()?;
+        .redirect(reqwest::redirect::Policy::none());
+
+    if let Some((host, addr)) = pin {
+        // Override DNS for this host so reqwest connects to the pre-validated IP
+        // (with the correct Host header / SNI preserved from the URL).
+        builder = builder.resolve(host, addr);
+    }
+
+    Ok(builder.build()?)
+}
+
+pub async fn scrape_all_sources(db: &DbConn) -> Result<(), Box<dyn Error>> {
+    let sources = {
+        let conn = db.lock().map_err(|_| "Failed to lock database")?;
+        super::db::list_sources(&conn)?
+    };
 
     for source in sources {
         // Enforce 3-second politeness delay between source scraping
@@ -169,7 +211,7 @@ pub async fn scrape_all_sources(db: &DbConn) -> Result<(), Box<dyn Error>> {
         let source_id = source.id.unwrap_or(0);
         println!("Scraping source: {} ({})", source.name, source.url);
 
-        match scrape_source(&client, db, &source).await {
+        match scrape_source(db, &source).await {
             Ok(_) => {
                 println!("Scraped source successfully: {}", source.name);
                 let conn = db.lock().map_err(|_| "Failed to lock database")?;
@@ -199,20 +241,28 @@ fn resolve_redirect_target(current: &str, location: &str) -> Result<String, Box<
 // `redirect::Policy::none()`; otherwise reqwest would follow redirects itself,
 // having validated only the original URL — a redirect-SSRF gap (a public feed
 // 302-ing to an internal/metadata address).
-async fn fetch_validated(
-    client: &Client,
-    initial_url: &str,
-) -> Result<reqwest::Response, Box<dyn Error>> {
+async fn fetch_validated(initial_url: &str) -> Result<reqwest::Response, Box<dyn Error>> {
     const MAX_REDIRECTS: usize = 10;
     let mut current = initial_url.to_string();
 
     for _ in 0..=MAX_REDIRECTS {
-        // Re-validate (with DNS resolution) before each fetch. A stored URL may
-        // predate this check, a host's DNS can change between add and scrape,
-        // and a redirect target is attacker-influenced. Run the blocking
-        // resolver off the async runtime.
+        // Re-validate (with DNS resolution) before each fetch AND capture the
+        // single resolved IP we validated, so we can pin the connection to it.
+        // A stored URL may predate this check, a host's DNS can change between
+        // add and scrape, and a redirect target is attacker-influenced. Run the
+        // blocking resolver off the async runtime. (ENG-M3: resolve-once /
+        // connect-to-pinned-IP closes the DNS-rebinding TOCTOU.)
         let url_for_check = current.clone();
-        tokio::task::spawn_blocking(move || validate_source_url_resolved(&url_for_check)).await??;
+        let pinned_addr =
+            tokio::task::spawn_blocking(move || validate_and_pin(&url_for_check)).await??;
+
+        // Build a client pinned to the validated IP for this exact host. For a
+        // literal-IP host (`pinned_addr` is None) the default resolver connects
+        // straight to that already-vetted literal.
+        let parsed = reqwest::Url::parse(&current)?;
+        let host = parsed.host_str().ok_or("URL has no host")?.to_string();
+        let pin = pinned_addr.map(|addr| (host.as_str(), addr));
+        let client = build_scraper_client(pin)?;
 
         let response = client.get(&current).send().await?;
 
@@ -236,15 +286,11 @@ async fn fetch_validated(
     .into())
 }
 
-async fn scrape_source(
-    client: &Client,
-    db: &DbConn,
-    source: &Source,
-) -> Result<(), Box<dyn Error>> {
+async fn scrape_source(db: &DbConn, source: &Source) -> Result<(), Box<dyn Error>> {
     // Fetch through a manual redirect loop that re-validates (with DNS
-    // resolution) on every hop. See `fetch_validated` for why automatic
-    // redirect following is unsafe here.
-    let response = fetch_validated(client, &source.url).await?;
+    // resolution) and re-pins the connection IP on every hop. See
+    // `fetch_validated` for why automatic redirect following is unsafe here.
+    let response = fetch_validated(&source.url).await?;
     if !response.status().is_success() {
         return Err(format!("HTTP error status: {}", response.status()).into());
     }
@@ -358,13 +404,13 @@ async fn scrape_source(
     Ok(())
 }
 
-fn clean_html(html: &str) -> String {
-    let re_script_style =
-        regex::Regex::new(r"(?s)<(script|style)[^>]*>.*?</(script|style)>").unwrap();
-    let re_tags = regex::Regex::new(r"<[^>]*>").unwrap();
+static RE_SCRIPT_STYLE: LazyLock<regex::Regex> =
+    LazyLock::new(|| regex::Regex::new(r"(?s)<(script|style)[^>]*>.*?</(script|style)>").unwrap());
+static RE_TAGS: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r"<[^>]*>").unwrap());
 
-    let step1 = re_script_style.replace_all(html, "");
-    let step2 = re_tags.replace_all(&step1, " ");
+fn clean_html(html: &str) -> String {
+    let step1 = RE_SCRIPT_STYLE.replace_all(html, "");
+    let step2 = RE_TAGS.replace_all(&step1, " ");
 
     // Normalize whitespace
     let mut cleaned = String::new();
@@ -463,8 +509,8 @@ mod url_validation_tests {
     fn resolved_check_rejects_blocked_literal_without_dns() {
         // The resolving variant must still reject IP literals (it short-circuits
         // before DNS for literals) — no network required for this assertion.
-        assert!(validate_source_url_resolved("http://127.0.0.1/feed").is_err());
-        assert!(validate_source_url_resolved("http://169.254.169.254/").is_err());
+        assert!(validate_and_pin("http://127.0.0.1/feed").is_err());
+        assert!(validate_and_pin("http://169.254.169.254/").is_err());
     }
 
     #[test]
@@ -517,7 +563,7 @@ mod url_validation_tests {
 
     #[test]
     fn redirect_target_to_internal_address_is_rejected_by_validator() {
-        // The redirect loop validates every hop via validate_source_url_resolved.
+        // The redirect loop validates and pins every hop via validate_and_pin.
         // A public feed that redirects to the cloud-metadata IP (literal, so no
         // DNS needed) must be rejected — this is the redirect-SSRF gap the manual
         // redirect loop closes.
@@ -526,7 +572,7 @@ mod url_validation_tests {
                 .unwrap();
         assert_eq!(next, "http://169.254.169.254/latest/");
         assert!(
-            validate_source_url_resolved(&next).is_err(),
+            validate_and_pin(&next).is_err(),
             "redirect to metadata IP must be rejected"
         );
     }

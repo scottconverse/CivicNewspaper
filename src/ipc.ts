@@ -60,6 +60,15 @@ export function toUserMessage(e: unknown): string {
   if (lower.includes("desktop bridge is unavailable") || lower.includes("__tauri")) {
     return "This action needs the CivicNews desktop app. It can't run in a browser preview.";
   }
+  // QA-C1: a missing model surfaces from Ollama as e.g. `model "qwen3:8b" not
+  // found`. Catch it before the generic connection / not-found branches and give
+  // a plain-language remedy that points at the model download.
+  if (
+    lower.includes("model") &&
+    (lower.includes("not found") || lower.includes("try pulling") || lower.includes("no such model"))
+  ) {
+    return "The selected AI model isn't downloaded yet. Open the AI Setup wizard to download it, then try again.";
+  }
   if (
     lower.includes("ollama") ||
     lower.includes("connection refused") ||

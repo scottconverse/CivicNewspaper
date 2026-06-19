@@ -1,6 +1,6 @@
 // src/components/LeadQueue.tsx
 import React, { useState } from "react";
-import { RefreshCw, Play, Trash2, Info, ChevronRight, Search } from "lucide-react";
+import { RefreshCw, Play, Trash2, Info, ChevronRight, Search, AlertTriangle } from "lucide-react";
 import { Lead, Draft } from "../ipc";
 import { DailyScanResults } from "./DailyScanResults";
 
@@ -11,6 +11,8 @@ interface LeadQueueProps {
   latestScanId?: number | null;
   selectedLeadId?: number | null;
   filter?: string;
+  sourceCount?: number;
+  onGoToSources?: () => void;
   onSelect: (id: number) => void;
   onSyncList: () => void;
   onIngest: () => void;
@@ -27,6 +29,8 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
   latestScanId,
   selectedLeadId,
   filter = "",
+  sourceCount,
+  onGoToSources,
   onSelect,
   onSyncList,
   onIngest,
@@ -77,13 +81,13 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
     <div>
       <div className="page-header">
         <div className="page-title">
-          <h1>Daily Story Queue</h1>
+          <h1>Story Queue</h1>
           <p>Verify municipal leads, review drafted articles, and compile your local community gazette.</p>
         </div>
         <div className="btn-group">
           <button className="btn btn-secondary" onClick={onSyncList} disabled={loading} id="btn-sync-list">
             <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
-            Sync List
+            Refresh
           </button>
           <button className="btn btn-secondary" onClick={onDailyScan} disabled={loading} id="btn-daily-scan">
             <Play size={16} />
@@ -148,11 +152,28 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
 
           <div className="lead-grid">
             {sortedLeads.length === 0 ? (
-              <div className="card text-center" style={{ gridColumn: "1 / -1", padding: "3rem" }}>
-                <Info size={36} style={{ color: "var(--text-muted)", marginBottom: "1rem" }} />
-                <h3>No unlinked leads available</h3>
-                <p className="help-text">Click "Scrape & Detect" above to scrape primary sources and trigger OSINT alerts.</p>
-              </div>
+              sourceCount === 0 ? (
+                // UX-M5 / QA-M1: with zero sources, "Scrape & Detect" is a no-op.
+                // Point the user at the real next step — add a source — instead.
+                <div className="card text-center" style={{ gridColumn: "1 / -1", padding: "3rem" }}>
+                  <Info size={36} style={{ color: "var(--text-muted)", marginBottom: "1rem" }} />
+                  <h3>Add your first source</h3>
+                  <p className="help-text" style={{ marginBottom: "1rem" }}>
+                    CivicNews scans the feeds and record portals you add. Add a source to start finding local story leads.
+                  </p>
+                  {onGoToSources && (
+                    <button className="btn btn-primary" onClick={onGoToSources} id="btn-empty-go-to-sources">
+                      Go to Sources
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="card text-center" style={{ gridColumn: "1 / -1", padding: "3rem" }}>
+                  <Info size={36} style={{ color: "var(--text-muted)", marginBottom: "1rem" }} />
+                  <h3>No story leads yet</h3>
+                  <p className="help-text">Click "Scrape & Detect" above to scan your sources for new story leads.</p>
+                </div>
+              )
             ) : (
               sortedLeads.map((lead) => (
                 <div 
@@ -220,8 +241,8 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                       <td>
                         <strong>{draft.title}</strong>
                         {draft.correction_note && (
-                          <div style={{ fontSize: "0.75rem", color: "var(--color-warning)", marginTop: "2px" }}>
-                            ⚠️ Correction Registered: {draft.correction_note.slice(0, 50)}...
+                          <div style={{ fontSize: "0.75rem", color: "var(--color-warning)", marginTop: "2px", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                            <AlertTriangle size={12} /> Correction Registered: {draft.correction_note.slice(0, 50)}...
                           </div>
                         )}
                       </td>

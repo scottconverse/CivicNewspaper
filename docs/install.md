@@ -4,11 +4,11 @@ This guide explains how to install CivicNewspaper on Windows, macOS, and Linux, 
 
 ---
 
-## 🛡️ The "Trust-Without-Signing" Philosophy
+## 🛡️ Unsigned public beta, and what checksums do (and don't) prove
 
-As an open-source, community-focused project, CivicNewspaper does not participate in the costly commercial developer programs run by Microsoft and Apple. Paying hundreds of dollars annually to corporate gatekeepers for signing certificates contradicts our decentralized, grassroots mission.
+CivicNewspaper is a public beta, and its installers are **not code-signed**. As an open-source, community-led project, it does not currently participate in the paid Microsoft and Apple developer-signing programs. Because the installers are unsigned, Windows SmartScreen and macOS Gatekeeper will warn you on first launch — this is expected, and the steps to proceed are in the OS sections below.
 
-Instead of code-signing certificates, we establish trust through **cryptographic verification**. Every release on GitHub includes the pre-compiled installer files and a `SHA256SUMS` manifest containing the SHA256 checksum of each binary. By verifying the checksum of your download, you can guarantee that the file has not been altered or corrupted in transit.
+Every release on GitHub includes the installer files and a `SHA256SUMS` manifest listing the SHA256 checksum of each binary. Verifying that checksum confirms your download **matches the file published on the release page** — i.e. that it was not corrupted or altered in transit. Be clear about the limit of this guarantee: a checksum file fetched from the *same* release page as the binary is **not** a substitute for code signing. It does not prove who built the binary or that the publisher's account or build pipeline was not compromised. If you need a build you can fully trust end-to-end, **building from source is the only tamper-proof path** (see the README's "Building from source" section). This matches the "No code signing" note in [SECURITY.md](../SECURITY.md).
 
 ---
 
@@ -63,7 +63,7 @@ We provide Debian/Ubuntu package archives (`.deb`). Linux builds are deb-only �
 
 ## 🔍 How to Verify the SHA256 Checksum
 
-To verify that your downloaded binary is safe and matches the exact code compiled by the developers, compare its SHA256 hash.
+To confirm your download matches the file published on the release page (i.e. it was not corrupted or altered in transit), compare its SHA256 hash against the published manifest.
 
 ### Step 1: Get the Release Hash
 1. Open the [latest GitHub Releases page](https://github.com/scottconverse/CivicNewspaper/releases/latest).
@@ -89,7 +89,7 @@ Open a terminal or command prompt and run the command matching your operating sy
   ```
 
 ### Step 3: Compare the Hashes
-Compare the hex string output by your terminal to the hash listed on the GitHub Release page. If they match exactly (case-insensitive), the file is safe to run and has not been modified.
+Compare the hex string output by your terminal to the hash listed on the GitHub Release page. If they match exactly (case-insensitive), your download is identical to the file published on the release page and was not altered in transit. (As noted above, this confirms transit integrity, not publisher authenticity — it is not the same assurance code signing provides.)
 
 > [!WARNING]
 > If the computed hash does not match the hash published on the official GitHub Release page, do not run the installer. Delete the file immediately and report the discrepancy on our issue tracker.

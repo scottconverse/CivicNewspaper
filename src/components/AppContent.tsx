@@ -18,6 +18,15 @@ interface AppContentProps {
 }
 
 export const AppContent: React.FC<AppContentProps> = ({ app }) => {
+  // UX-C2: auto-dismiss success banners so a stale "success" message doesn't
+  // linger across unrelated navigation. Errors are left until the user dismisses
+  // them (or the next action clears errorMessage) so failures aren't missed.
+  React.useEffect(() => {
+    if (!app.statusMessage) return;
+    const t = setTimeout(() => app.setStatusMessage(""), 6000);
+    return () => clearTimeout(t);
+  }, [app.statusMessage]);
+
   return (
     <>
       {/* Global confirmation dialog (destructive actions) */}
@@ -34,7 +43,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
 
       {/* Global Notifications */}
       {app.statusMessage && (
-        <div className="card" style={{ borderLeft: "4px solid var(--color-success)", background: "rgba(16, 185, 129, 0.05)" }}>
+        <div className="card" role="status" aria-live="polite" style={{ borderLeft: "4px solid var(--color-success)", background: "rgba(16, 185, 129, 0.05)" }}>
           <div className="flex-between">
             <span style={{ fontSize: "0.9rem", color: "var(--text-primary)" }}>{app.statusMessage}</span>
             <button className="btn btn-secondary btn-sm" onClick={() => app.setStatusMessage("")}>Dismiss</button>
@@ -43,7 +52,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
       )}
 
       {app.errorMessage && (
-        <div className="card" style={{ borderLeft: "4px solid var(--color-error)", background: "rgba(239, 68, 68, 0.05)" }}>
+        <div className="card" role="alert" aria-live="assertive" style={{ borderLeft: "4px solid var(--color-error)", background: "rgba(239, 68, 68, 0.05)" }}>
           <div className="flex-between">
             <span style={{ fontSize: "0.9rem", color: "var(--color-error)" }}>{app.errorMessage}</span>
             <button className="btn btn-secondary btn-sm" onClick={() => app.setErrorMessage("")}>Dismiss</button>
@@ -75,6 +84,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
             }}
             onDeleteDraft={app.handleDeleteDraft}
             onDecision={app.handleDecision}
+            onKillStory={app.handleKillStory}
             isGeneratingSocial={app.isGeneratingSocial}
             socialPackResult={app.socialPackResult}
             onSocialPackResultChange={app.setSocialPackResult}
@@ -88,6 +98,8 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
             drafts={app.drafts}
             loading={app.loading}
             latestScanId={app.latestScanId}
+            sourceCount={app.sources.length}
+            onGoToSources={() => app.setActiveTab("sources")}
             onSelect={app.handleOpenDraftWizard}
             onSyncList={app.loadInitialData}
             onIngest={app.handleIngest}
@@ -220,6 +232,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           }}
           onDeleteDraft={app.handleDeleteDraft}
           onDecision={app.handleDecision}
+            onKillStory={app.handleKillStory}
           isGeneratingSocial={app.isGeneratingSocial}
           socialPackResult={app.socialPackResult}
           onSocialPackResultChange={app.setSocialPackResult}

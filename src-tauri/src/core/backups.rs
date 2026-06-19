@@ -4,7 +4,7 @@ use rusqlite::Connection;
 use std::error::Error;
 use std::time::Duration;
 
-pub fn save_backup(conn: &Connection, dest_path: &str) -> Result<(), Box<dyn Error>> {
+pub fn save_backup(conn: &Connection, dest_path: &str) -> Result<(), Box<dyn Error + Send + Sync>> {
     let mut dest_conn = Connection::open(dest_path)?;
     let backup = rusqlite::backup::Backup::new(conn, &mut dest_conn)?;
     // Run the backup to completion (batch size 5 pages, sleep 10ms between batches to keep responsive)
@@ -16,7 +16,7 @@ pub fn restore_backup(
     db_conn_arc: &DbConn,
     backup_path: &str,
     live_db_path: &str,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<(), Box<dyn Error + Send + Sync>> {
     // 1. Copy selected backup to a temporary file
     let temp_db_path = format!("{}.restore_temp", live_db_path);
     std::fs::copy(backup_path, &temp_db_path)?;

@@ -19,10 +19,73 @@ struct OllamaGenerateRequest<'a> {
     stream: bool,
 }
 
+/// One line of a streaming `/api/generate` response. Ollama emits newline-
+/// delimited JSON objects; each carries an incremental `response` token and the
+/// final object has `done: true` (and may also carry an `error`).
 #[derive(Debug, Deserialize)]
-struct OllamaGenerateResponse {
+struct OllamaStreamChunk {
+    #[serde(default)]
     response: String,
+    #[serde(default)]
+    done: bool,
+    #[serde(default)]
+    error: Option<String>,
 }
+
+/// Default per-generation timeout. CPU-only inference of a multi-paragraph draft
+/// on a 7-9B model routinely exceeds a minute, so this is deliberately generous
+/// (ENG-M4/QA-M4). Override at runtime with `CIVICNEWS_LLM_TIMEOUT_SECS` (set it
+/// to `0` to disable the timeout entirely in favor of a cancel control).
+const DEFAULT_LLM_TIMEOUT_SECS: u64 = 600;
+
+/// Resolve the generation timeout: `CIVICNEWS_LLM_TIMEOUT_SECS` if set and
+/// parseable (`0` => no timeout), otherwise [`DEFAULT_LLM_TIMEOUT_SECS`].
+fn generation_timeout() -> Option<Duration> {
+    match std::env::var("CIVICNEWS_LLM_TIMEOUT_SECS") {
+        Ok(v) => match v.trim().parse::<u64>() {
+            Ok(0) => None,
+            Ok(secs) => Some(Duration::from_secs(secs)),
+            Err(_) => Some(Duration::from_secs(DEFAULT_LLM_TIMEOUT_SECS)),
+        },
+        Err(_) => Some(Duration::from_secs(DEFAULT_LLM_TIMEOUT_SECS)),
+    }
+}
+
+/// A user-surfaceable error from a local LLM generation. The timeout variant is
+/// distinguished so the UI can say "this is just slow on CPU" rather than
+/// reporting a generic failure (ENG-M4/QA-M4).
+#[derive(Debug)]
+pub enum LlmError {
+    /// Generation exceeded the configured timeout.
+    Timeout(u64),
+    /// Ollama is unreachable (sidecar down / connection refused).
+    Unreachable(String),
+    /// Ollama returned a non-success HTTP status (e.g. model not installed).
+    Api(String),
+    /// Transport / decode error while streaming the response.
+    Stream(String),
+}
+
+impl std::fmt::Display for LlmError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LlmError::Timeout(secs) => write!(
+                f,
+                "The AI took longer than {}s to respond. Local generation on CPU can be slow — try a shorter format or a smaller model, or raise CIVICNEWS_LLM_TIMEOUT_SECS.",
+                secs
+            ),
+            LlmError::Unreachable(e) => write!(
+                f,
+                "Could not reach the local AI (Ollama). Make sure the AI is running. ({})",
+                e
+            ),
+            LlmError::Api(e) => write!(f, "The local AI returned an error: {}", e),
+            LlmError::Stream(e) => write!(f, "The AI response stream failed: {}", e),
+        }
+    }
+}
+
+impl std::error::Error for LlmError {}
 
 pub async fn check_ollama_status() -> bool {
     let client = Client::builder()
@@ -36,35 +99,115 @@ pub async fn check_ollama_status() -> bool {
     }
 }
 
-pub async fn call_local_ollama(
+/// Stream a generation from the local Ollama, accumulating tokens as they
+/// arrive. `on_token` is invoked with each incremental chunk so a caller can
+/// surface partial output to the UI; pass a no-op closure if you only want the
+/// final text.
+///
+/// ENG-M4/QA-M4: switched from a fixed 60s non-streaming call to a STREAMING
+/// call with a generous, configurable timeout that bounds the *whole* stream.
+/// Timeouts are reported distinctly from other failures (see [`LlmError`]).
+pub async fn call_local_ollama_streaming(
     model: &str,
     prompt: &str,
     system: &str,
-) -> Result<String, Box<dyn Error + Send + Sync>> {
+    mut on_token: impl FnMut(&str),
+) -> Result<String, LlmError> {
+    // No reqwest client-level timeout: we bound the whole stream with our own
+    // tokio timeout below so a slow-but-progressing CPU generation isn't killed
+    // by reqwest's idle/read timeout.
     let client = Client::builder()
-        .timeout(Duration::from_secs(60)) // Long timeout for generation on slower CPU
-        .build()?;
+        .build()
+        .map_err(|e| LlmError::Unreachable(e.to_string()))?;
 
     let req_payload = OllamaGenerateRequest {
         model,
         prompt,
         system,
-        stream: false,
+        stream: true,
     };
 
-    let resp = client
-        .post("http://127.0.0.1:11434/api/generate")
-        .json(&req_payload)
-        .send()
-        .await?;
+    let timeout = generation_timeout();
 
-    if !resp.status().is_success() {
-        let err_text = resp.text().await.unwrap_or_default();
-        return Err(format!("Ollama API returned error: {}", err_text).into());
+    let fut = async {
+        let resp = client
+            .post("http://127.0.0.1:11434/api/generate")
+            .json(&req_payload)
+            .send()
+            .await
+            .map_err(|e| LlmError::Unreachable(e.to_string()))?;
+
+        if !resp.status().is_success() {
+            let err_text = resp.text().await.unwrap_or_default();
+            return Err(LlmError::Api(err_text));
+        }
+
+        let mut resp = resp;
+        let mut accumulated = String::new();
+        let mut buf = String::new();
+
+        // Ollama streams newline-delimited JSON objects. Chunks can split a line,
+        // so buffer until we see a newline before parsing.
+        while let Some(chunk) = resp
+            .chunk()
+            .await
+            .map_err(|e| LlmError::Stream(e.to_string()))?
+        {
+            buf.push_str(&String::from_utf8_lossy(&chunk));
+            while let Some(nl) = buf.find('\n') {
+                let line = buf[..nl].trim().to_string();
+                buf.drain(..=nl);
+                if line.is_empty() {
+                    continue;
+                }
+                if let Ok(parsed) = serde_json::from_str::<OllamaStreamChunk>(&line) {
+                    if let Some(err) = parsed.error {
+                        return Err(LlmError::Api(err));
+                    }
+                    if !parsed.response.is_empty() {
+                        on_token(&parsed.response);
+                        accumulated.push_str(&parsed.response);
+                    }
+                    if parsed.done {
+                        return Ok(accumulated);
+                    }
+                }
+            }
+        }
+
+        // Stream ended without an explicit done:true — parse any trailing line.
+        let tail = buf.trim();
+        if !tail.is_empty() {
+            if let Ok(parsed) = serde_json::from_str::<OllamaStreamChunk>(tail) {
+                if let Some(err) = parsed.error {
+                    return Err(LlmError::Api(err));
+                }
+                if !parsed.response.is_empty() {
+                    on_token(&parsed.response);
+                    accumulated.push_str(&parsed.response);
+                }
+            }
+        }
+        Ok(accumulated)
+    };
+
+    match timeout {
+        Some(d) => match tokio::time::timeout(d, fut).await {
+            Ok(res) => res,
+            Err(_) => Err(LlmError::Timeout(d.as_secs())),
+        },
+        None => fut.await,
     }
+}
 
-    let body: OllamaGenerateResponse = resp.json().await?;
-    Ok(body.response)
+pub async fn call_local_ollama(
+    model: &str,
+    prompt: &str,
+    system: &str,
+) -> Result<String, Box<dyn Error + Send + Sync>> {
+    call_local_ollama_streaming(model, prompt, system, |_| {})
+        .await
+        .map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)
 }
 
 #[async_trait::async_trait]
@@ -409,7 +552,35 @@ impl OllamaSidecar {
             .child
             .lock()
             .map_err(|e| format!("Lock error: {}", e))?;
-        if let Some(child_proc) = guard.take() {
+        Self::kill_guarded(guard.take())
+    }
+
+    /// Best-effort, non-blocking stop for use inside the panic hook (ENG-Min2).
+    ///
+    /// The panic hook runs `stop()` while the process is unwinding. If a panic
+    /// ever occurred while the `child` mutex was already held, a blocking
+    /// `lock()` inside the hook would deadlock (or, with a poisoned lock, hang
+    /// the very crash-logging the hook exists to perform). `try_lock` makes the
+    /// hook give up rather than block: failing to reap the child is far less bad
+    /// than a hung panic handler. Acquiring a poisoned lock is also handled (we
+    /// reap through the poison).
+    pub fn stop_best_effort(&self) {
+        match self.child.try_lock() {
+            Ok(mut guard) => {
+                let _ = Self::kill_guarded(guard.take());
+            }
+            Err(std::sync::TryLockError::Poisoned(poisoned)) => {
+                let mut guard = poisoned.into_inner();
+                let _ = Self::kill_guarded(guard.take());
+            }
+            Err(std::sync::TryLockError::WouldBlock) => {
+                // Lock held elsewhere; skip rather than block the panic hook.
+            }
+        }
+    }
+
+    fn kill_guarded(child: Option<SidecarChild>) -> Result<(), Box<dyn Error + Send + Sync>> {
+        if let Some(child_proc) = child {
             match child_proc {
                 SidecarChild::Tauri(c) => {
                     c.kill().map_err(|e| format!("Kill error: {}", e))?;

@@ -21,16 +21,37 @@ pub fn parse_and_save_scan_response(
     run_id: i32,
     json_response: &str,
 ) -> Result<usize, String> {
-    let result: ScanResult = serde_json::from_str(json_response).map_err(|e| e.to_string())?;
+    // The model output is frequently raw JSON, but small local models sometimes
+    // wrap it in a ```json fence or add prose. Strip a leading/trailing code
+    // fence before parsing so a well-formed-but-fenced response still succeeds;
+    // anything still unparseable propagates as a real error (QA-M2).
+    let cleaned = strip_json_fence(json_response);
+    let result: ScanResult = serde_json::from_str(cleaned).map_err(|e| e.to_string())?;
     let mut saved = 0;
     for item in result.leads {
+        // ENG-Min4: the model-asserted `original_url` is untrusted. Validate it
+        // against the same scheme/host allowlist used for real sources before
+        // persisting; a hallucinated/poisoned URL must not enter the evidence
+        // trail unvetted. Invalid URLs are stored as empty (the lead is kept,
+        // but the bogus URL is dropped and logged) so the model's text is not
+        // silently treated as a verified link.
+        let original_url = match crate::core::scraper::validate_source_url(&item.original_url) {
+            Ok(_) => item.original_url,
+            Err(e) => {
+                eprintln!(
+                    "Dropping invalid model-asserted original_url '{}': {}",
+                    item.original_url, e
+                );
+                String::new()
+            }
+        };
         let lead = DailyScanLead {
             id: None,
             scan_id: run_id,
             title: item.title,
             summary: item.summary,
             source_id: None, // Assume None, aggregated logic (D5)
-            original_url: item.original_url,
+            original_url,
         };
         match db::insert_daily_scan_lead(conn, &lead) {
             Ok(_) => saved += 1,
@@ -38,6 +59,23 @@ pub fn parse_and_save_scan_response(
         }
     }
     Ok(saved)
+}
+
+/// Strip a surrounding markdown code fence (```json ... ``` or ``` ... ```) from
+/// a model response, returning the inner JSON. Returns the trimmed input
+/// unchanged when there is no fence.
+fn strip_json_fence(s: &str) -> &str {
+    let t = s.trim();
+    if let Some(rest) = t.strip_prefix("```") {
+        // Drop an optional language tag on the first line (e.g. "json").
+        let rest = match rest.find('\n') {
+            Some(nl) => &rest[nl + 1..],
+            None => rest,
+        };
+        rest.trim().strip_suffix("```").unwrap_or(rest).trim()
+    } else {
+        t
+    }
 }
 
 pub async fn run_daily_scan(
@@ -108,16 +146,32 @@ pub async fn run_daily_scan(
 
     match llm_res {
         Ok(json_response) => {
-            if let Err(e) = parse_and_save_scan_response(&conn, run_id, &json_response) {
-                eprintln!("Failed to parse and save scan response: {}", e);
-                updated_run.run_status = "failed".to_string();
-            } else {
-                updated_run.run_status = "completed".to_string();
+            // QA-M2: a model that returns non-JSON (or fenced/garbage output)
+            // must NOT be treated as a successful empty scan. Mark the run failed
+            // AND propagate the parse failure as a real Err so the UI can
+            // distinguish "0 leads found" from "the AI returned an unreadable
+            // response." (A valid JSON response with an empty leads array still
+            // counts as a successful, completed scan.)
+            match parse_and_save_scan_response(&conn, run_id, &json_response) {
+                Ok(_) => {
+                    updated_run.run_status = "completed".to_string();
+                    if let Err(e) = db::update_daily_scan_run(&conn, &updated_run) {
+                        eprintln!("Failed to update daily scan run status: {}", e);
+                    }
+                    Ok(run_id)
+                }
+                Err(e) => {
+                    eprintln!("Failed to parse and save scan response: {}", e);
+                    updated_run.run_status = "failed".to_string();
+                    if let Err(e2) = db::update_daily_scan_run(&conn, &updated_run) {
+                        eprintln!("Failed to update daily scan run status: {}", e2);
+                    }
+                    Err(format!(
+                        "The AI returned an unreadable response (could not parse scan results): {}",
+                        e
+                    ))
+                }
             }
-            if let Err(e) = db::update_daily_scan_run(&conn, &updated_run) {
-                eprintln!("Failed to update daily scan run status: {}", e);
-            }
-            Ok(run_id)
         }
         Err(e) => {
             updated_run.run_status = "failed".to_string();

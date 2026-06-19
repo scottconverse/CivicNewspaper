@@ -10,7 +10,12 @@ Since CivicNews is a local-first desktop application with sensitive GUI workflow
 ## Test Steps
 
 ### 1. Installation
-1. Build the release binary: `npm run tauri build` (or download the artifact if available).
+1. Build the release binary (or download the artifact if available). If building from source, you must first fetch the Ollama sidecar — the binary is not committed and the build fails without it:
+   ```bash
+   npm install
+   bash scripts/fetch-ollama-binaries.sh   # bash-only (Git Bash/WSL on Windows); downloads + SHA-verifies the sidecar
+   npm run tauri build
+   ```
 2. Install the application on the clean system.
 3. Launch CivicNewspaper.
 
