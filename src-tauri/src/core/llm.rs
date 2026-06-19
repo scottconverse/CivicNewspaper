@@ -99,6 +99,54 @@ pub async fn check_ollama_status() -> bool {
     }
 }
 
+/// Outcome of feeding one buffered NDJSON line to the streaming parser. Pulling
+/// this out of the network loop makes the fragile line-by-line parsing logic a
+/// pure, unit-testable function (NEW-Nit1 / ENG-Tests).
+#[derive(Debug, PartialEq)]
+pub(crate) enum StreamLineOutcome {
+    /// A token to append to the accumulated output.
+    Token(String),
+    /// The stream's terminal `done: true` object was seen — stop reading.
+    Done,
+    /// An `error` field was present mid-stream — abort with this message.
+    Error(String),
+    /// A blank/unparseable line that carries nothing — skip it.
+    Skip,
+}
+
+/// Parse a single (already newline-stripped) NDJSON line from Ollama's
+/// `/api/generate` stream into a [`StreamLineOutcome`]. Pure: no I/O, no state.
+/// Blank lines and lines that don't parse as a chunk are [`StreamLineOutcome::Skip`]
+/// (matching the original loop's permissive behavior). `error` takes precedence
+/// over `done`, and an empty `response` on a non-done line is skipped.
+pub(crate) fn parse_stream_line(line: &str) -> StreamLineOutcome {
+    let line = line.trim();
+    if line.is_empty() {
+        return StreamLineOutcome::Skip;
+    }
+    match serde_json::from_str::<OllamaStreamChunk>(line) {
+        Ok(parsed) => {
+            if let Some(err) = parsed.error {
+                return StreamLineOutcome::Error(err);
+            }
+            if !parsed.response.is_empty() {
+                // A token may co-occur with done:true; emit the token and let the
+                // caller append it before checking `done` at the call site. To keep
+                // this a single-outcome function we prioritize the token here and
+                // rely on a following Done line; Ollama emits the final token and
+                // the done marker such that the accumulated text is complete either
+                // way (the terminal object's `response` is empty in practice).
+                return StreamLineOutcome::Token(parsed.response);
+            }
+            if parsed.done {
+                return StreamLineOutcome::Done;
+            }
+            StreamLineOutcome::Skip
+        }
+        Err(_) => StreamLineOutcome::Skip,
+    }
+}
+
 /// Stream a generation from the local Ollama, accumulating tokens as they
 /// arrive. `on_token` is invoked with each incremental chunk so a caller can
 /// surface partial output to the UI; pass a no-op closure if you only want the
@@ -155,38 +203,28 @@ pub async fn call_local_ollama_streaming(
         {
             buf.push_str(&String::from_utf8_lossy(&chunk));
             while let Some(nl) = buf.find('\n') {
-                let line = buf[..nl].trim().to_string();
+                let line = buf[..nl].to_string();
                 buf.drain(..=nl);
-                if line.is_empty() {
-                    continue;
-                }
-                if let Ok(parsed) = serde_json::from_str::<OllamaStreamChunk>(&line) {
-                    if let Some(err) = parsed.error {
-                        return Err(LlmError::Api(err));
+                match parse_stream_line(&line) {
+                    StreamLineOutcome::Token(t) => {
+                        on_token(&t);
+                        accumulated.push_str(&t);
                     }
-                    if !parsed.response.is_empty() {
-                        on_token(&parsed.response);
-                        accumulated.push_str(&parsed.response);
-                    }
-                    if parsed.done {
-                        return Ok(accumulated);
-                    }
+                    StreamLineOutcome::Done => return Ok(accumulated),
+                    StreamLineOutcome::Error(err) => return Err(LlmError::Api(err)),
+                    StreamLineOutcome::Skip => {}
                 }
             }
         }
 
         // Stream ended without an explicit done:true — parse any trailing line.
-        let tail = buf.trim();
-        if !tail.is_empty() {
-            if let Ok(parsed) = serde_json::from_str::<OllamaStreamChunk>(tail) {
-                if let Some(err) = parsed.error {
-                    return Err(LlmError::Api(err));
-                }
-                if !parsed.response.is_empty() {
-                    on_token(&parsed.response);
-                    accumulated.push_str(&parsed.response);
-                }
+        match parse_stream_line(&buf) {
+            StreamLineOutcome::Token(t) => {
+                on_token(&t);
+                accumulated.push_str(&t);
             }
+            StreamLineOutcome::Error(err) => return Err(LlmError::Api(err)),
+            StreamLineOutcome::Done | StreamLineOutcome::Skip => {}
         }
         Ok(accumulated)
     };
@@ -213,6 +251,24 @@ pub async fn call_local_ollama(
 #[async_trait::async_trait]
 pub trait LlmClient: Send + Sync {
     async fn call(&self, model: &str, prompt: &str, system: &str) -> Result<String, String>;
+
+    /// Typed variant of [`call`](LlmClient::call) that preserves the [`LlmError`]
+    /// variant up to the caller, so an HTTP boundary can classify a timeout
+    /// (`LlmError::Timeout` → 504) distinctly from other failures (→ 503)
+    /// WITHOUT substring-matching the Display string (ENG-Nit-R1). The default
+    /// implementation falls back to [`call`](LlmClient::call) and wraps any
+    /// error as [`LlmError::Api`]; the real Ollama client overrides it to carry
+    /// the genuine variant.
+    async fn call_typed(
+        &self,
+        model: &str,
+        prompt: &str,
+        system: &str,
+    ) -> Result<String, LlmError> {
+        self.call(model, prompt, system)
+            .await
+            .map_err(LlmError::Api)
+    }
 }
 
 pub struct OllamaClient;
@@ -223,6 +279,15 @@ impl LlmClient for OllamaClient {
         call_local_ollama(model, prompt, system)
             .await
             .map_err(|e| e.to_string())
+    }
+
+    async fn call_typed(
+        &self,
+        model: &str,
+        prompt: &str,
+        system: &str,
+    ) -> Result<String, LlmError> {
+        call_local_ollama_streaming(model, prompt, system, |_| {}).await
     }
 }
 
@@ -598,5 +663,165 @@ impl OllamaSidecar {
 impl Drop for OllamaSidecar {
     fn drop(&mut self) {
         let _ = self.stop();
+    }
+}
+
+#[cfg(test)]
+mod stream_parser_tests {
+    use super::*;
+
+    // --- parse_stream_line: the pure NDJSON-per-line parser (NEW-Nit1) ---
+
+    #[test]
+    fn parses_a_token_line() {
+        assert_eq!(
+            parse_stream_line(r#"{"response":"Hello","done":false}"#),
+            StreamLineOutcome::Token("Hello".to_string())
+        );
+    }
+
+    #[test]
+    fn done_terminator_line_returns_done() {
+        // The terminal object in practice carries an empty `response` + done:true.
+        assert_eq!(
+            parse_stream_line(r#"{"response":"","done":true}"#),
+            StreamLineOutcome::Done
+        );
+    }
+
+    #[test]
+    fn error_object_takes_precedence_over_everything() {
+        assert_eq!(
+            parse_stream_line(r#"{"error":"model 'qwen3:8b' not found","done":true}"#),
+            StreamLineOutcome::Error("model 'qwen3:8b' not found".to_string())
+        );
+    }
+
+    #[test]
+    fn blank_and_garbage_lines_are_skipped() {
+        assert_eq!(parse_stream_line(""), StreamLineOutcome::Skip);
+        assert_eq!(parse_stream_line("   "), StreamLineOutcome::Skip);
+        assert_eq!(
+            parse_stream_line("not json at all"),
+            StreamLineOutcome::Skip
+        );
+        // Whitespace around a valid line is tolerated.
+        assert_eq!(
+            parse_stream_line("  {\"response\":\"x\",\"done\":false}\r"),
+            StreamLineOutcome::Token("x".to_string())
+        );
+    }
+
+    /// Drive the same parse/accumulate logic the streaming loop uses, but over an
+    /// in-memory buffer fed in arbitrary chunks. This pins the multi-chunk line
+    /// buffering (a token split across two pushes) and the `done` terminator
+    /// without needing a live socket (the real call hardcodes 127.0.0.1:11434).
+    fn accumulate_chunks(chunks: &[&str]) -> Result<String, String> {
+        let mut buf = String::new();
+        let mut accumulated = String::new();
+        for chunk in chunks {
+            buf.push_str(chunk);
+            while let Some(nl) = buf.find('\n') {
+                let line = buf[..nl].to_string();
+                buf.drain(..=nl);
+                match parse_stream_line(&line) {
+                    StreamLineOutcome::Token(t) => accumulated.push_str(&t),
+                    StreamLineOutcome::Done => return Ok(accumulated),
+                    StreamLineOutcome::Error(e) => return Err(e),
+                    StreamLineOutcome::Skip => {}
+                }
+            }
+        }
+        match parse_stream_line(&buf) {
+            StreamLineOutcome::Token(t) => accumulated.push_str(&t),
+            StreamLineOutcome::Error(e) => return Err(e),
+            StreamLineOutcome::Done | StreamLineOutcome::Skip => {}
+        }
+        Ok(accumulated)
+    }
+
+    #[test]
+    fn multi_chunk_line_buffering_reassembles_split_lines() {
+        // A single JSON object's newline arrives in a later chunk; a second
+        // object is split across the chunk boundary mid-object.
+        let out = accumulate_chunks(&[
+            "{\"response\":\"Hel",
+            "lo \",\"done\":false}\n{\"response\":\"World\",\"done\":false}\n",
+            "{\"response\":\"\",\"done\":true}\n",
+        ])
+        .unwrap();
+        assert_eq!(out, "Hello World");
+    }
+
+    #[test]
+    fn error_in_stream_aborts_accumulation() {
+        let err = accumulate_chunks(&[
+            "{\"response\":\"partial \",\"done\":false}\n",
+            "{\"error\":\"context length exceeded\"}\n",
+            "{\"response\":\"never seen\",\"done\":true}\n",
+        ])
+        .unwrap_err();
+        assert_eq!(err, "context length exceeded");
+    }
+
+    #[test]
+    fn done_terminator_stops_reading_remaining_lines() {
+        let out = accumulate_chunks(&[
+            "{\"response\":\"A\",\"done\":false}\n{\"response\":\"\",\"done\":true}\n{\"response\":\"B\",\"done\":false}\n",
+        ])
+        .unwrap();
+        assert_eq!(out, "A");
+    }
+
+    #[test]
+    fn trailing_line_without_newline_is_parsed() {
+        // Stream ends with a final object and no trailing newline.
+        let out = accumulate_chunks(&["{\"response\":\"tail\",\"done\":false}"]).unwrap();
+        assert_eq!(out, "tail");
+    }
+
+    // --- generation_timeout: env-var resolution (NEW-Nit1) ---
+
+    #[test]
+    fn generation_timeout_resolves_env_values() {
+        // Serialized within one test to avoid cross-test env-var races.
+        let key = "CIVICNEWS_LLM_TIMEOUT_SECS";
+        let prev = std::env::var(key).ok();
+
+        std::env::remove_var(key);
+        assert_eq!(
+            generation_timeout(),
+            Some(Duration::from_secs(DEFAULT_LLM_TIMEOUT_SECS)),
+            "unset → default"
+        );
+
+        std::env::set_var(key, "120");
+        assert_eq!(
+            generation_timeout(),
+            Some(Duration::from_secs(120)),
+            "valid integer → that many seconds"
+        );
+
+        std::env::set_var(key, "0");
+        assert_eq!(generation_timeout(), None, "0 → no timeout");
+
+        std::env::set_var(key, "  90 ");
+        assert_eq!(
+            generation_timeout(),
+            Some(Duration::from_secs(90)),
+            "whitespace is trimmed"
+        );
+
+        std::env::set_var(key, "garbage");
+        assert_eq!(
+            generation_timeout(),
+            Some(Duration::from_secs(DEFAULT_LLM_TIMEOUT_SECS)),
+            "unparseable → default"
+        );
+
+        match prev {
+            Some(v) => std::env::set_var(key, v),
+            None => std::env::remove_var(key),
+        }
     }
 }

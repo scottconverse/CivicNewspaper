@@ -235,16 +235,50 @@ export function useApp() {
         setPullProgressText(prev => [...prev, `Error: ${event.payload}`]);
       });
 
+      // ENG-Min-R1: the Rust backend emits `http-server-error` when the local
+      // pairing server can't bind (e.g. port 12053 already in use). Without a
+      // listener the failure is silent. Surface it through the existing error
+      // banner so the user understands why browser pairing is unavailable.
+      const serverErrorUnlisten = await listen<string>("http-server-error", (event) => {
+        const detail = event.payload || "another app may be using port 12053.";
+        setErrorMessage(`Browser pairing is unavailable: ${detail}`);
+      });
+
       return () => {
         progressUnlisten();
         completeUnlisten();
         errorUnlisten();
+        serverErrorUnlisten();
       };
     };
 
     const cleanupListeners = setupListeners();
+
+    // QA-R2-M1: the bundled Ollama sidecar takes a moment to bind 127.0.0.1:11434
+    // after launch, so the single mount poll can lose the cold-start race and
+    // leave `ollamaOnline=false` stuck — disabling Generate Draft and showing
+    // "AI Offline" on a healthy sidecar. Re-poll on an interval AND whenever the
+    // window regains focus / becomes visible, so a transient offline state
+    // self-heals without an app relaunch. Lightweight: pollOllamaStatus is a
+    // single 2s-timeout health GET, and it never spams the pull flow (the pull's
+    // own completion handler already triggers a status refresh).
+    const statusInterval = window.setInterval(() => {
+      pollOllamaStatus();
+    }, 10000);
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        pollOllamaStatus();
+      }
+    };
+    window.addEventListener("focus", pollOllamaStatus);
+    document.addEventListener("visibilitychange", handleVisibility);
+
     return () => {
       cleanupListeners.then(cleanup => cleanup && cleanup());
+      window.clearInterval(statusInterval);
+      window.removeEventListener("focus", pollOllamaStatus);
+      document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, []);
 

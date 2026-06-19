@@ -107,7 +107,7 @@ Returns every lead and every draft in the local database.
       "id": 1,
       "detector_name": "Money Threshold",
       "why": "…",
-      "confidence": "med",
+      "confidence": "medium",
       "risk_level": "low",
       "confirmation_checklist": "[]",
       "from_scan_lead_id": null,

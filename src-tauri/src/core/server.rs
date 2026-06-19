@@ -230,7 +230,7 @@ async fn llm_task_handler(
 
     match state
         .llm_client
-        .call(&model, &payload.prompt, &payload.system)
+        .call_typed(&model, &payload.prompt, &payload.system)
         .await
     {
         Ok(result) => Ok(Json(LlmTaskResponse { result })),
@@ -239,13 +239,21 @@ async fn llm_task_handler(
             // message) instead of a bare 503 with the cause only on stderr. A
             // timeout means the model is working-but-slow (treat as a gateway
             // timeout); everything else is reported as service-unavailable.
+            //
+            // ENG-Nit-R1: classify by the typed `LlmError::Timeout` variant, NOT
+            // by substring-matching the Display string — so reworded messages
+            // can't silently flip the status code.
             eprintln!("Ollama task execution failed: {}", e);
-            let status = if e.contains("took longer than") {
-                StatusCode::GATEWAY_TIMEOUT
-            } else {
-                StatusCode::SERVICE_UNAVAILABLE
+            let status = match e {
+                crate::core::llm::LlmError::Timeout(_) => StatusCode::GATEWAY_TIMEOUT,
+                _ => StatusCode::SERVICE_UNAVAILABLE,
             };
-            Err((status, Json(ErrorResponse { error: e })))
+            Err((
+                status,
+                Json(ErrorResponse {
+                    error: e.to_string(),
+                }),
+            ))
         }
     }
 }

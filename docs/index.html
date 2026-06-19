@@ -180,7 +180,7 @@
                             <li><i data-lucide="check-circle-2"></i> <strong>Tauri v2 Desktop Wrapper:</strong> React + TypeScript Glassmorphic UI connected via secure IPC.</li>
                             <li><i data-lucide="check-circle-2"></i> <strong>SQLite WAL Database:</strong> Supports concurrent reads/writes for robust local data handling.</li>
                             <li><i data-lucide="check-circle-2"></i> <strong>DNS Rebinding Guards:</strong> Strict host header validation prevents external network access.</li>
-                            <li><i data-lucide="check-circle-2"></i> <strong>Browser Pairing:</strong> Connect your Chrome extensions using secure PIN-pairing tokens to capture articles as you browse.</li>
+                            <li><i data-lucide="check-circle-2"></i> <strong>Browser Pairing:</strong> Connect your Chrome extensions using a secure pairing token to capture articles as you browse.</li>
                         </ul>
                         <div style="margin-top: 1.5rem;">
                             <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/architecture.md" target="_blank" class="btn btn-secondary">Read Full Architecture Specs</a>
@@ -190,7 +190,7 @@
                         <div class="mermaid-container">
                             <svg class="arch-svg" viewBox="0 0 560 460" role="img" aria-labelledby="arch-svg-title arch-svg-desc" xmlns="http://www.w3.org/2000/svg">
                                 <title id="arch-svg-title">CivicNews architecture diagram</title>
-                                <desc id="arch-svg-desc">The browser extension or UI connects via a pairing PIN and API to the Tauri HTTP loopback server (Axum), which talks to the Tauri Rust core. The Rust core connects bidirectionally to a SQLite WAL database and the Ollama sidecar, and one-way to the flat HTML compiler.</desc>
+                                <desc id="arch-svg-desc">The browser extension or UI connects via a pairing token and API to the Tauri HTTP loopback server (Axum), which talks to the Tauri Rust core. The Rust core connects bidirectionally to a SQLite WAL database and the Ollama sidecar, and one-way to the flat HTML compiler.</desc>
                                 <defs>
                                     <marker id="arch-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
                                         <path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"></path>
@@ -205,7 +205,7 @@
                                     <line x1="340" y1="280" x2="460" y2="356" marker-end="url(#arch-arrow)"></line>
                                 </g>
 
-                                <text x="292" y="105" fill="#94a3b8" font-size="11" font-family="Inter, sans-serif">Pairing PIN / API</text>
+                                <text x="292" y="105" fill="#94a3b8" font-size="11" font-family="Inter, sans-serif">Pairing token / API</text>
 
                                 <g font-family="Outfit, sans-serif" font-weight="700" font-size="14" text-anchor="middle">
                                     <rect x="160" y="24" width="240" height="56" rx="10" fill="#1e40af" stroke="#3b82f6" stroke-width="1.5"></rect>

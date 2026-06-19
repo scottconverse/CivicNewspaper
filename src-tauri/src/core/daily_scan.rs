@@ -5,9 +5,11 @@ use chrono::Utc;
 use serde::{Deserialize, Serialize};
 
 /// Distinct error signal returned by [`run_daily_scan`] when there is zero
-/// evidence in the requested window. The frontend matches on this to show a
-/// "no evidence — run Scrape & Detect first" message rather than treating the
-/// scan as an empty-but-successful run (QA-M2).
+/// evidence in the requested window, so the scan is reported as a real `Err`
+/// rather than an empty-but-successful run (QA-M2). The `NO_EVIDENCE:` prefix is
+/// a typed marker the frontend's `toUserMessage` (src/ipc.ts) recognizes: it
+/// strips the prefix and surfaces the plain "run Scrape & Detect first" guidance
+/// instead of a raw "Something went wrong: NO_EVIDENCE: …" leak.
 pub const NO_EVIDENCE_SIGNAL: &str =
     "NO_EVIDENCE: There is no evidence in the selected window. Run Scrape & Detect first.";
 

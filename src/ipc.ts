@@ -57,6 +57,27 @@ export function toUserMessage(e: unknown): string {
   if (!raw.trim()) {
     return "Something went wrong, but no details were reported. Please try again.";
   }
+
+  // QA-R2-mn1 / QA-R2-mn2: the backend tags some conditions with a typed
+  // `UPPER_SNAKE:` prefix (e.g. `NO_EVIDENCE:`, `MODEL_NOT_INSTALLED:`). Strip the
+  // machine token and translate to plain-language guidance, rather than leaking
+  // the raw "Something went wrong: NO_EVIDENCE: …" debug string to the user.
+  const typedPrefix = raw.match(/^([A-Z][A-Z0-9_]+):\s*(.*)$/s);
+  if (typedPrefix) {
+    const [, token, rest] = typedPrefix;
+    const message = rest.trim();
+    switch (token) {
+      case "NO_EVIDENCE":
+        return "There's nothing to scan yet — run Scrape & Detect first to collect evidence, then try again.";
+      case "MODEL_NOT_INSTALLED":
+        return "The selected AI model isn't installed yet. Open the AI Setup wizard to download it, then try again.";
+      default:
+        // Unknown typed prefix: surface the human-readable remainder without the
+        // raw token, falling back to the whole message if there's nothing after it.
+        return message || raw;
+    }
+  }
+
   if (lower.includes("desktop bridge is unavailable") || lower.includes("__tauri")) {
     return "This action needs the CivicNews desktop app. It can't run in a browser preview.";
   }
