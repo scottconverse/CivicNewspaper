@@ -80,7 +80,7 @@ pub fn restore_backup(
         eprintln!("Swap failed: {}. Restoring from rollback snapshot.", e);
 
         // Rollback: copy rollback snapshot back to live_db_path
-        let mut original_conn = Connection::open(live_db_path)?;
+        let mut original_conn = super::db::open_conn(live_db_path)?;
         let rollback_conn = Connection::open(&rollback_backup_path)?;
         let backup = rusqlite::backup::Backup::new(&rollback_conn, &mut original_conn)?;
         let _ = backup.run_to_completion(5, Duration::from_millis(10), None);
@@ -93,8 +93,8 @@ pub fn restore_backup(
         return Err(format!("Failed to rename restored database file: {}", e).into());
     }
 
-    // 6. Connect to the newly swapped live database
-    let mut new_conn = match Connection::open(live_db_path) {
+    // 6. Connect to the newly swapped live database (WAL + foreign_keys via open_conn)
+    let mut new_conn = match super::db::open_conn(live_db_path) {
         Ok(c) => c,
         Err(err) => {
             eprintln!(
@@ -102,7 +102,7 @@ pub fn restore_backup(
                 err
             );
             // Restore from rollback
-            let mut original_conn = Connection::open(live_db_path)?;
+            let mut original_conn = super::db::open_conn(live_db_path)?;
             let rollback_conn = Connection::open(&rollback_backup_path)?;
             let backup = rusqlite::backup::Backup::new(&rollback_conn, &mut original_conn)?;
             let _ = backup.run_to_completion(5, Duration::from_millis(10), None);
@@ -113,7 +113,7 @@ pub fn restore_backup(
         }
     };
 
-    new_conn.pragma_update(None, "journal_mode", "WAL")?;
+    // WAL + foreign_keys are already set by db::open_conn above (C-2).
 
     // 7. Run migrations on the restored database just in case it is older
     if let Err(migration_err) = super::migrations::run_migrations(&mut new_conn) {
@@ -122,7 +122,7 @@ pub fn restore_backup(
             migration_err
         );
         // Restore from rollback
-        let mut original_conn = Connection::open(live_db_path)?;
+        let mut original_conn = super::db::open_conn(live_db_path)?;
         let rollback_conn = Connection::open(&rollback_backup_path)?;
         let backup = rusqlite::backup::Backup::new(&rollback_conn, &mut original_conn)?;
         let _ = backup.run_to_completion(5, Duration::from_millis(10), None);

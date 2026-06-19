@@ -325,6 +325,13 @@ mod tests {
             let sources_restored = list_sources(&conn_after).unwrap();
             assert_eq!(sources_restored.len(), 1);
             assert_eq!(sources_restored[0].name, "Original Source");
+
+            // C-2 regression: foreign-key enforcement is per-connection and must
+            // survive a restore (the live handle is reopened during restore).
+            let fk_on: i64 = conn_after
+                .query_row("PRAGMA foreign_keys;", [], |r| r.get(0))
+                .unwrap();
+            assert_eq!(fk_on, 1, "foreign_keys must be ON after restore (C-2)");
         }
 
         // 6. Test Corrupt File Restore (Should reject and keep live DB safe)

@@ -100,9 +100,22 @@ pub struct PairedClient {
 }
 
 // Database Initialization
-pub fn init_db(path: &str) -> Result<Connection, Box<dyn Error>> {
-    let mut conn = Connection::open(path)?;
+
+/// Open a SQLite connection with the invariant pragmas this app relies on: WAL
+/// journaling and foreign-key enforcement. `foreign_keys` is per-connection in
+/// SQLite and does NOT persist, so EVERY connection that becomes a live handle
+/// must be opened through here — otherwise ON DELETE CASCADE / SET NULL silently
+/// stop firing (notably on the backup-restore rollback paths, which previously
+/// reopened the live DB without re-enabling foreign keys). See finding C-2.
+pub fn open_conn(path: &str) -> Result<Connection, Box<dyn Error>> {
+    let conn = Connection::open(path)?;
     conn.pragma_update(None, "journal_mode", "WAL")?;
+    conn.execute("PRAGMA foreign_keys = ON;", [])?;
+    Ok(conn)
+}
+
+pub fn init_db(path: &str) -> Result<Connection, Box<dyn Error>> {
+    let mut conn = open_conn(path)?;
     super::migrations::run_migrations(&mut conn)?;
     Ok(conn)
 }
