@@ -189,7 +189,7 @@ This section provides details on how to build, test, and contribute to the Civic
 To build and run CivicNewspaper from source, ensure you have:
 * **Node.js 18+** & `npm`
 * **Rust compiler (Stable)** via `rustup`
-* **Ollama**: You do not install Ollama into the app yourself — the build bundles it as a sidecar. That binary is not committed to the repo; a build script downloads and SHA-verifies it (see step 2 below), and the build fails without it. (Separately, you *may* install Ollama on your own machine if you want to test against custom or external configurations.)
+* **Ollama**: No separate Ollama install is needed for normal use. For developers building from source, the build bundles Ollama as a sidecar; that binary is not committed to the repo — a fetch script downloads and SHA-verifies it (see step 2 below), and the build fails without it. (You may also run your own Ollama instance to test against custom or external configurations.)
 * **A bash shell**: The fetch script (`scripts/fetch-ollama-binaries.sh`) is bash-only and calls `python`/`python3`. On Windows, run it from Git Bash or WSL — it will not run in PowerShell or `cmd`.
 * **Platform Dependencies**:
   * *Windows*: C++ Build Tools (via Visual Studio Installer).

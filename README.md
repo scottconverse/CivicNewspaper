@@ -140,7 +140,7 @@ You can build the application locally for development or packaging.
 **Prerequisites (all OSes):**
 - Rust toolchain — install via [rustup.rs](https://rustup.rs/).
 - Node.js 18+ and npm — [nodejs.org](https://nodejs.org/).
-- Ollama — you do not install Ollama yourself. The build bundles it as a sidecar binary, but that binary is **not** committed to the repo: a build script downloads it and verifies it against a pinned SHA256 (see the required fetch step below). You must run that script before building.
+- Ollama — no separate Ollama install is needed for normal use. For developers building from source, the build bundles Ollama as a sidecar binary that is **not** committed to the repo: a fetch script downloads it and verifies it against a pinned SHA256 (see the required fetch step below), and you must run that script before building.
 - A bash shell — the fetch script (`scripts/fetch-ollama-binaries.sh`) is bash-only and calls `python`/`python3`. On Windows, run it from Git Bash or WSL (it will not run in PowerShell or `cmd`).
 
 **Platform prerequisites for Tauri v2:**
