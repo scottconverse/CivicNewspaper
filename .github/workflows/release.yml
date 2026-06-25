@@ -14,7 +14,61 @@ env:
   APPIMAGE_EXTRACT_AND_RUN: 1
 
 jobs:
+  # GG-C2: mandatory test gate. release.yml previously built & published
+  # installers on a tag push with NO test run (ci.yml keys on branch pushes, not
+  # tags), so the full test suite was bypassed at exactly the moment it matters.
+  # This job runs the whole suite (after the same Ollama-binary fetch CI does) and
+  # every build job `needs:` it, so a red suite aborts the release before any
+  # artifact is produced or uploaded.
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.94.0
+          components: rustfmt, clippy
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Fetch Ollama binaries
+        run: bash scripts/fetch-ollama-binaries.sh
+
+      - name: Cargo fmt check
+        working-directory: ./src-tauri
+        run: cargo fmt --check
+
+      - name: Cargo clippy
+        working-directory: ./src-tauri
+        run: cargo clippy --all-targets --locked -- -D warnings
+
+      - name: Cargo test (full)
+        working-directory: ./src-tauri
+        run: cargo test --all --locked
+
+      - name: Setup Node.js for tests
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Vitest
+        run: npm test
+
   release:
+    needs: test
     strategy:
       fail-fast: false
       matrix:
@@ -82,11 +136,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: "CivicNewspaper ${{ github.ref_name }}"
+          releaseName: "The Civic Desk ${{ github.ref_name }}"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: false
           prerelease: ${{ contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') || contains(github.ref_name, '-alpha') }}
-          args: --target ${{ matrix.target }}
+          # GG-C2: --locked forces the build to use the committed Cargo.lock, so a
+          # drifting transitive dependency can't enter a release that CI never saw.
+          args: --target ${{ matrix.target }} --locked
           
       - name: Verify release artifacts
         run: |

@@ -99,7 +99,7 @@ jobs:
 
       - name: Cargo test
         working-directory: ./src-tauri
-        run: cargo test --all
+        run: cargo test --all --locked
 
   clippy:
     runs-on: ${{ matrix.os }}
@@ -135,14 +135,14 @@ jobs:
 
       - name: Cargo clippy
         working-directory: ./src-tauri
-        run: cargo clippy --all-targets -- -D warnings
+        run: cargo clippy --all-targets --locked -- -D warnings
 
       - name: Cargo test
         working-directory: ./src-tauri
         # TEST-M4: run the FULL test set here too (parity with the hosted-test job
         # and the self-hosted `rust` job), so the cross-platform matrix actually
         # exercises every target — a bare `cargo test` could skip non-default ones.
-        run: cargo test --all
+        run: cargo test --all --locked
 
   # TEST-M4: an ALWAYS-AVAILABLE full test run on a hosted runner. The primary
   # `rust`/`frontend` jobs run on a single self-hosted desktop; if that runner is
@@ -177,7 +177,7 @@ jobs:
 
       - name: Cargo test (full)
         working-directory: ./src-tauri
-        run: cargo test --all
+        run: cargo test --all --locked
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
