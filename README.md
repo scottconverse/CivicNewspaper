@@ -1,6 +1,8 @@
 # CivicNewspaper
 
-> Pre-alpha. Not production software. No security review. APIs and database schema may break without notice.
+> **The installed app ships as "The Civic Desk."** "CivicNewspaper" is the project/repository name; the desktop window, installer, and Start-menu shortcut are branded **The Civic Desk** (renamed in v0.2.7).
+>
+> Public beta — unsigned. Not production software. No security review. APIs and database schema may break without notice.
 
 CivicNewspaper is a local-first, privacy-focused desktop application designed for local journalists, newsroom operators, and community organizers who want to monitor public municipal feeds without relying on complex, cloud-based software. It automatically scans local RSS feeds and websites for public records and meeting notices, identifies important civic signals, and helps draft plain-language summaries using a private, offline language model running directly on your computer. By storing all database records and drafts locally, CivicNewspaper provides a secure, independent toolkit to help you track municipal actions and compile a static website ready for publishing.
 
@@ -15,8 +17,8 @@ You can download the latest pre-compiled installers for your platform from the [
 Because this is an unsigned public beta, your operating system will warn you the first time you run it. This is expected for unsigned software and does not mean the file is unsafe. To proceed:
 
 * **Windows**: Download the `.msi` or `.exe` installer. When launching, Windows SmartScreen will display a "Windows protected your PC" warning because the installer is unsigned. Click **"More info"**, then click **"Run anyway"** to proceed.
-* **macOS**: Download the `.dmg` or `.app` file. Because the app is not signed with an Apple developer certificate, macOS Gatekeeper will block execution. Right-click the application icon, select **Open**, and then confirm the prompt. Alternatively, go to **System Settings > Privacy & Security** and scroll down to click **"Open Anyway"** for CivicNewspaper.
-* **Linux**: Download the `.deb` package (for Debian/Ubuntu) and install it via your package manager (e.g., `sudo dpkg -i civicnewspaper_*.deb`). Linux builds are deb-only.
+* **macOS**: Download the `.dmg` or `.app` file. Because the app is not signed with an Apple developer certificate, macOS Gatekeeper will block execution. Right-click the application icon, select **Open**, and then confirm the prompt. Alternatively, go to **System Settings > Privacy & Security** and scroll down to click **"Open Anyway"** for The Civic Desk.
+* **Linux**: Download the `.deb` package (for Debian/Ubuntu) and install it via your package manager (e.g., `sudo dpkg -i ./*.deb` on the downloaded file). Linux builds are deb-only.
 
 ## First Run
 
@@ -85,7 +87,7 @@ For details: [docs/architecture.md](docs/architecture.md).
 │   ├── tauri.conf.json         # Tauri configs (no updater plugin — updates are manual; see CHANGELOG ENG-001)
 │   ├── capabilities/
 │   ├── icons/
-│   ├── migrations/             # schema migrations 0001–0007 (ten tables)
+│   ├── migrations/             # schema migrations 0001–0008 (ten tables + publish-gate columns)
 │   │   ├── 0001_init.sql
 │   │   ├── 0003_settings.sql
 │   │   ├── 0004_source_tier.sql
@@ -173,7 +175,7 @@ If `npm run tauri` errors with "tauri: command not found", install the Tauri CLI
 
 ## Status, license, contributing
 
-- **Status:** pre-alpha. The eight detectors and the guardrails check are usable but unsophisticated.
+- **Status:** public beta (unsigned). The eight detectors and the guardrails check are usable but unsophisticated.
 - **License:** MIT. See [LICENSE](LICENSE).
 - **Contributing:** see [CONTRIBUTING.md](CONTRIBUTING.md). The detector regexes in `detectors.rs` are an easy, valuable place to start — every municipality uses slightly different boilerplate, and broader regex coverage directly improves the tool.
 - **Security:** see [SECURITY.md](SECURITY.md). The app opens a localhost HTTP server; please report any issues that bypass the host-header / origin / bearer-token checks.

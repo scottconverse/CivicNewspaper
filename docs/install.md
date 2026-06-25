@@ -73,19 +73,19 @@ To confirm your download matches the file published on the release page (i.e. it
 
 Open a terminal or command prompt and run the command matching your operating system:
 
-*(Note: Replace `<version>` with the version number in the filename you downloaded — it matches the release tag. You can find the canonical checksums in the `SHA256SUMS` file on the GitHub Releases page.)*
+*(Note: use the **exact filename you downloaded** — match it against the asset names on the GitHub Releases page and in the `SHA256SUMS` manifest. As of v0.2.7 the installers are branded **The Civic Desk** (e.g. `The Civic Desk_<version>_x64-setup.exe`); pre-rename builds used `CivicNewspaper_...`. Replace `<version>` with the release tag's version, and quote the path because the product name contains spaces.)*
 
 * **Windows (PowerShell)**:
   ```powershell
-  Get-FileHash -Algorithm SHA256 C:\Users\YourUsername\Downloads\CivicNewspaper_<version>_x64_en-US.msi
+  Get-FileHash -Algorithm SHA256 "C:\Users\YourUsername\Downloads\The Civic Desk_<version>_x64_en-US.msi"
   ```
 * **macOS (Terminal)**:
   ```bash
-  shasum -a 256 ~/Downloads/CivicNewspaper_<version>_x64.dmg
+  shasum -a 256 "$HOME/Downloads/The Civic Desk_<version>_x64.dmg"
   ```
 * **Linux (Terminal)**:
   ```bash
-  sha256sum ~/Downloads/civicnewspaper_<version>_amd64.deb
+  sha256sum "$HOME/Downloads/The Civic Desk_<version>_amd64.deb"
   ```
 
 ### Step 3: Compare the Hashes

@@ -22,7 +22,7 @@ CivicNewspaper runs entirely on your local computer to keep your notes, articles
 
 * **macOS**:
   1. Download the latest `.dmg` file from the [GitHub Release Page](https://github.com/scottconverse/CivicNewspaper/releases/latest).
-  2. Double-click the `.dmg` and drag **CivicNewspaper** into your **Applications** folder.
+  2. Double-click the `.dmg` and drag **The Civic Desk** into your **Applications** folder.
   3. Right-click (or Control-click) the **CivicNewspaper** icon in your Applications folder and select **Open**.
   4. A Gatekeeper warning will appear saying macOS cannot verify the developer. Click **Open** anyway.
   5. If the app is blocked, open your Mac's **System Settings > Privacy & Security**, scroll down to the Security section, and click **"Open Anyway"** for CivicNewspaper.
@@ -31,7 +31,7 @@ CivicNewspaper runs entirely on your local computer to keep your notes, articles
   1. Download the `.deb` package (Ubuntu/Debian). Linux builds are deb-only.
   2. Install it using your system package manager:
      ```bash
-     sudo dpkg -i civicnewspaper_*.deb
+     sudo dpkg -i ./*.deb
      ```
   3. **Note:** On Linux, the bundled Ollama engine runs on the CPU only. GPU acceleration is not bundled on Linux yet (tracked as a known limitation); inference still works, just slower.
 
@@ -75,7 +75,7 @@ Once a lead is promoted, open the **Workbench** tab:
 1. **Choose a Story Format**: Select whether you want to write a short *Brief*, a deeper *Watch*, or an in-depth *Investigation*.
 2. **Click Generate Draft**: The local AI reads the specific raw government minutes attached to the lead and writes a factual draft article.
 3. **Citations (Evidence)**: The AI automatically embeds links like `[Record](evidence:12)`. Do not remove these! When published, readers can hover or click these links to see the exact paragraph or sentence from the official city hall record.
-4. **Guardrail Warnings**: In the workbench sidebar, CivicNewspaper checks your text and shows advisory warnings. These guardrails are a *lint-like helper* — they flag issues for you to fix, but they do **not** block you from saving, approving, or publishing a draft. They will warn you if:
+4. **Guardrails & Attestation**: In the Workbench sidebar, The Civic Desk scans your text against an **editor-managed word list** (Settings → *Story guardrails*). By default a match only **warns** you, but an editor can mark specific words as **blocking** — those, plus a required human **attestation** ("I verified this against the cited evidence"), are enforced before a story can be approved or compiled to the site. The checks flag if:
    * A paragraph makes a factual claim but has no citation to official evidence (*Citation Coverage*).
    * You used accusatory words (like *stole*, *corrupt*, *fraud*) without a supporting citation (*Accusatory Language*).
    * You mentioned an arrest or charge without a presumption-of-innocence modifier (like *alleged* or *allegedly*) (*Legal Naming*).
@@ -152,18 +152,18 @@ The application runs incoming scraped text through a synchronous loop of **eight
 > There is **no** "Ordinances & Resolutions" detector. Any document mentioning a vote on an ordinance would surface through the **Decision / Vote** detector.
 
 ## 4. Linting Guardrails
-To support journalistic integrity, the Workbench runs four advisory checks in [guardrails.rs](../src-tauri/src/core/guardrails.rs). **These are advisory only.** They surface in the Workbench UI and via the `/api/guardrails/check` route; the static-site compiler never runs them. Nothing here blocks saving, status changes, or publication — a draft in `ready_to_publish`/`published`/`corrected` compiles regardless of guardrail state.
+To support journalistic integrity, the Workbench runs four checks in [guardrails.rs](../src-tauri/src/core/guardrails.rs). The accusatory/legal word lists are **editable per newsroom** in Settings → *Story guardrails* (seeded with the defaults below); matching uses whole-word/inflection matching, so "charged" no longer fires inside "surcharged". By default a match is a **warning** and blocks nothing. An editor can opt specific words into **blocking**: a draft with an unresolved *blocking* issue cannot be approved (`story_decision`) or compiled into the site (`compile_static_site`) unless a logged **override reason** is supplied. Independently, **publishing requires a recorded human attestation** — `story_decision` rejects `ready_to_publish` / `published` / `corrected` with `ATTESTATION_REQUIRED` until a person confirms they verified the draft, and the compiler skips any unattested draft as defense-in-depth.
 
 * **Citation Coverage** *(warning)*: Each substantive paragraph (longer than ~30 characters) that contains no `evidence:` / `evidence://` link is flagged as a factual claim missing its citation.
-* **Accusatory Language** *(error)*: If a paragraph contains a high-risk term (`corrupt`, `stole`, `illegal`, `fraud`, `embezzle`, `bribe`, `scam`, `theft`, `criminal`, `guilty`, `conspiracy`, `extortion`, `misconduct`, `kickback`, `laundering`, `arrested`, `charged`, `indicted`, `convicted`, `prosecuted`) **and** has no citation, it is flagged.
-* **Legal Naming / Presumption of Innocence** *(error)*: If a paragraph uses charge/legal terms (`arrested`, `charged`, `indicted`, `accused`, `suspect`, `theft`, `embezzle`, `fraud`, `misconduct`) but contains neither `alleged` nor `allegedly`, it is flagged so you can add the modifier.
+* **Accusatory Language** *(warning by default; error if a matched word is marked blocking)*: If a paragraph contains a high-risk term from the (editable) default list — `corrupt`, `stole`, `illegal`, `fraud`, `embezzle`, `bribe`, `scam`, `theft`, `criminal`, `guilty`, `conspiracy`, `extortion`, `misconduct`, `kickback`, `laundering`, `arrested`, `charged`, `indicted`, `convicted`, `prosecuted` — **and** has no citation, it is flagged.
+* **Legal Naming / Presumption of Innocence** *(warning by default; error if a matched word is marked blocking)*: If a paragraph uses charge/legal terms (default list: `arrested`, `charged`, `indicted`, `accused`, `suspect`, `theft`, `embezzle`, `fraud`, `misconduct`) but contains neither `alleged` nor `allegedly`, it is flagged so you can add the modifier.
 * **Verbatim Overlap** *(warning)*: For drafts tied to a lead, every paragraph is compared against the linked evidence excerpts; any run of **7+ consecutive words** copied verbatim from a source is flagged with the evidence ID and source URL, prompting you to rewrite it in your own words or set it as a blockquote.
 
-A report is considered "clean" only when no **error**-severity issue is present; warnings do not affect cleanliness and never block anything.
+A report is "clean" only when no **error**-severity issue is present. With the default (warn-only) word list every issue is a warning, so reports are clean by default; once an editor marks a matched word *blocking*, that issue becomes an error and blocks publishing (absent a logged override). Separately, every published page carries a fixed reader-facing line disclosing that drafts are AI-assisted and human-reviewed.
 
 ## 5. Database Migrations
 Database schema updates are handled automatically by a migration runner on application launch:
-* Migrations are stored as plain SQL files in `src-tauri/migrations/` (`0001`, `0003`–`0007`; there is no `0002`).
+* Migrations are stored as plain SQL files in `src-tauri/migrations/` (`0001`, `0003`–`0008`; there is no `0002`). `0008_draft_publish_gate` adds the `attested_by` / `attested_at` / `guardrail_override_reason` columns to `drafts` (the publish gate).
 * On startup, the runner compares the database's `PRAGMA user_version` against the available migrations and applies any unapplied ones.
 * Migrations run inside a transaction; on failure the transaction rolls back and the app halts with an error rather than running on a half-migrated schema. (See Part 3 §3 for the live table list.)
 
@@ -217,12 +217,14 @@ To build and run CivicNewspaper from source, ensure you have:
    ```
 
 ## 3. Database Management & Inspecting State
-The SQLite database file is located in the standard application data directory:
-* **Windows**: `%APPDATA%\org.civicnews.app\civicnews.db`
-* **macOS**: `~/Library/Application Support/org.civicnews.app/civicnews.db`
-* **Linux**: `~/.local/share/org.civicnews.app/civicnews.db`
+The SQLite database file (`civicdesk.db`) is located in the standard application data directory:
+* **Windows**: `%APPDATA%\com.scottconverse.civicdesk\civicdesk.db`
+* **macOS**: `~/Library/Application Support/com.scottconverse.civicdesk/civicdesk.db`
+* **Linux**: `~/.local/share/com.scottconverse.civicdesk/civicdesk.db`
 
-You can open this database using any SQLite client (e.g., `sqlite3`, DB Browser for SQLite, or a VS Code extension). The live schema (across migrations `0001`–`0007`) contains these tables:
+> **Upgrading from before v0.2.7?** Earlier builds stored data at `org.civicnews.app/civicnews.db`. The app migrates that database into the new location and `civicdesk.db` automatically on first launch; the old folder is left in place.
+
+You can open this database using any SQLite client (e.g., `sqlite3`, DB Browser for SQLite, or a VS Code extension). The live schema (across migrations `0001`–`0008`) contains these tables (and, as of `0008`, the `drafts` table also has `attested_by`, `attested_at`, and `guardrail_override_reason` columns):
 
 * `sources` — monitored feeds (includes a `tier` column added in `0004`/`0007`).
 * `evidence_items` — raw scraped text chunks. *(This is the table that holds scraped content — there is no `scraped_items` table.)*

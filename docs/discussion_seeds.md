@@ -16,7 +16,7 @@ This document provides ready-made discussion templates to kickstart the GitHub D
   Our goal is to give a single editor (often a citizen observer with limited technical skills but a passion for local transparency) a complete, local-first desktop workspace that does all of the following:
   * Automatically scans city council minutes, agendas, and boards for critical OSINT signals (meetings, large expenditures, watchlists).
   * Uses private, local AI models (running fully on your own computer) to draft neutral summaries, translate dense municipal jargon into plain-language community news, and (optionally) generate copy-ready social blurbs you can paste into your own channels.
-  * Runs advisory pre-publication guardrails that flag any claim missing a primary-record citation (warnings help you self-edit; they do not block publishing).
+  * Runs pre-publication guardrails: matches warn by default, but an editor can mark specific words as blocking, and publishing requires a recorded human attestation — so the gate blocks when you want it to.
   * Compiles articles into a static, fast, flat HTML folder using a guided drag-and-drop wizard that can be hosted online for free.
 
   #### 🤝 How to Get Involved:
@@ -78,7 +78,7 @@ This document provides ready-made discussion templates to kickstart the GitHub D
 ### 🏷️ Topic 4: Editorial Standards: Evidence vs. Outrage
 * **Title**: Factual Guidelines: Writing for the Flat HTML Compiler
 * **Body**:
-  CivicNews runs advisory pre-publication guardrails to help you maintain strict neutrality (they flag issues for you to fix; they don't block publishing). As an editor, here is the style template we recommend:
+  CivicNews runs pre-publication guardrails to help you maintain strict neutrality. By default they warn; an editor can mark specific words as *blocking* (Settings → Story guardrails), and publishing also requires a recorded human attestation, which the app enforces. As an editor, here is the style template we recommend:
 
   #### 🚫 Avoid "Outrage" Wording
   Do not use adjectives that assign motive or pass judgment.
@@ -94,4 +94,4 @@ This document provides ready-made discussion templates to kickstart the GitHub D
   When writing about police records or audits, always include qualifier terms.
   * **Incorrect**: *"A town administrator embezzled funds from the sewer department."*
   * **Correct**: *"A town administrator was arrested for the alleged embezzlement of sewer department funds (evidence:54)."*
-  * *Note: When arrest keywords are used without a presumption-of-innocence modifier like "alleged", the Workbench raises an advisory **Legal Naming** guardrail warning so you can fix the wording. Guardrails are advisory only — they flag issues in the Workbench but do **not** block saving, approval, or publication, and the static-site compiler never runs them.*
+  * *Note: When arrest keywords are used without a presumption-of-innocence modifier like "alleged", the Workbench raises a **Legal Naming** guardrail. By default it warns; if an editor marks those charge words as *blocking*, the issue blocks approval/compilation unless a logged override is supplied. Publishing also requires a recorded human attestation, and the static-site compiler re-checks each draft as defense-in-depth.*

@@ -1,6 +1,6 @@
 # Contributing to CivicNewspaper
 
-Thanks for considering a contribution. CivicNewspaper is pre-alpha; the most valuable contributions right now are the small, concrete ones: a regex that catches your city's meeting-notice phrasing, a bug report with a reproducer, a doc fix.
+Thanks for considering a contribution. CivicNewspaper is in public beta; the most valuable contributions right now are the small, concrete ones: a regex that catches your city's meeting-notice phrasing, a bug report with a reproducer, a doc fix.
 
 ## Ground rules
 
@@ -20,7 +20,7 @@ bash scripts/fetch-ollama-binaries.sh   # REQUIRED: downloads + SHA-verifies the
 npm run tauri dev
 ```
 
-For backend-only work you can run the Rust tests without launching Tauri:
+For backend-only work you can run the Rust tests without launching Tauri (no running Ollama is needed) — but you must still have run the `fetch-ollama-binaries.sh` step above first, because Tauri's build script validates the sidecar binary's presence even for `cargo test`:
 
 ```bash
 cd src-tauri

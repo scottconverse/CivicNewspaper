@@ -58,7 +58,7 @@ graph LR
 5. **Drafts**: Factual markdown articles written on the Workbench tab.
 6. **Compiled Site & RSS**: Finished static HTML documents and an RSS feed exported to the output directory.
 
-> **Note on guardrails:** the journalistic-integrity guardrails (`guardrails.rs`) run *advisory* checks in the Workbench UI and via the `/api/guardrails/check` route. They are **not** part of the compile step — `compile_static_site` never calls `run_guardrails_check`, so guardrail warnings do not block publication.
+> **Note on guardrails:** the journalistic-integrity guardrails (`guardrails.rs`) warn by default, but an editor can mark words as *blocking* (Settings → Story guardrails). A blocking issue, and a missing human attestation, are **enforced** at publish time: `story_decision` rejects publish-advancing transitions, and `compile_static_site` re-checks each draft (requiring attestation, and clean-or-overridden) as defense-in-depth, so it can skip a draft that reached a publishable status by another path.
 
 ---
 
@@ -151,9 +151,9 @@ graph TD
 
 ## 🗃️ Database Schema
 
-The SQLite schema is **not** a single static file — it is built additively by a migration runner from the SQL files in `src-tauri/migrations/`. The current set is `0001_init.sql`, `0003_settings.sql`, `0004_source_tier.sql`, `0005_daily_scans.sql`, `0006_daily_scan_lead_source_nullable.sql`, and `0007_source_tier_check.sql` (there is no `0002`). The runner tracks applied migrations via `PRAGMA user_version` and applies each unapplied file in a transaction.
+The SQLite schema is **not** a single static file — it is built additively by a migration runner from the SQL files in `src-tauri/migrations/`. The current set is `0001_init.sql`, `0003_settings.sql`, `0004_source_tier.sql`, `0005_daily_scans.sql`, `0006_daily_scan_lead_source_nullable.sql`, `0007_source_tier_check.sql`, and `0008_draft_publish_gate.sql` (there is no `0002`). The runner tracks applied migrations via `PRAGMA user_version` and applies each unapplied file in a transaction.
 
-The live schema is **ten tables**: the seven defined in `0001_init.sql` below, plus `settings` (0003) and `daily_scan_runs` / `daily_scan_leads` (0005). Migrations also added the `sources.tier` column (0004/0007) and the `leads.from_scan_lead_id` column (0005).
+The live schema is **ten tables**: the seven defined in `0001_init.sql` below, plus `settings` (0003) and `daily_scan_runs` / `daily_scan_leads` (0005). Migrations also added the `sources.tier` column (0004/0007), the `leads.from_scan_lead_id` column (0005), and the `drafts.attested_by` / `attested_at` / `guardrail_override_reason` columns (0008, for the publish gate).
 
 ### `sources`
 Stores details of the public municipal feeds to monitor.

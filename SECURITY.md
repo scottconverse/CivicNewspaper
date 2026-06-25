@@ -1,6 +1,6 @@
 # Security Policy
 
-CivicNewspaper is pre-alpha software with no formal security review. The threat surface is small (the app runs entirely on a single user's machine, no cloud) but non-trivial (it opens a localhost HTTP server, executes a local LLM, and writes user-controlled markdown into compiled HTML).
+CivicNewspaper is public-beta software with no formal security review. The threat surface is small (the app runs entirely on a single user's machine, no cloud) but non-trivial (it opens a localhost HTTP server, executes a local LLM, and writes user-controlled markdown into compiled HTML).
 
 ## Reporting a vulnerability
 
@@ -25,7 +25,7 @@ The following components are in scope for security reports:
 | Component | Notes |
 |---|---|
 | `src-tauri/src/core/server.rs` | Axum loopback server on `127.0.0.1:12053`. |
-| `src-tauri/src/core/auth.rs` | Host-header validation, Origin whitelist, PIN pairing, bearer-token enforcement. |
+| `src-tauri/src/core/auth.rs` | Host-header validation, Origin whitelist, token pairing (one-time PIN exchanged for a SHA-256-hashed bearer token), bearer-token enforcement. |
 | `src-tauri/src/core/db.rs` | SQL injection, schema integrity, backup/restore handling. |
 | `src-tauri/src/core/backups.rs` | Atomic backup/restore — file-overwrite, path traversal. |
 | `src-tauri/src/core/compiler.rs` | Markdown-to-HTML compilation. Reports of stored-XSS in compiled output (e.g. via raw HTML in evidence excerpts) are in scope. |
@@ -65,7 +65,7 @@ The application allows you to manually export a diagnostic JSON report via the S
 **There is no automatic upload or telemetery.** The report is generated only when you click "Export Diagnostic Report", and you choose exactly where on your local machine the JSON file is saved. You can inspect it before sharing it with anyone.
 
 The diagnostic report captures the following fields:
-- `app_version`: The current version of CivicNews
+- `app_version`: The current version of The Civic Desk
 - `os_name` / `os_version`: Your operating system details
 - `tauri_version`: The underlying Tauri framework version
 - `ollama_reachable` / `ollama_models`: Local AI inference status and available models

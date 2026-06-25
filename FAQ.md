@@ -6,7 +6,7 @@ Honest answers. If something here contradicts the marketing copy on the landing 
 
 ### Is this production software?
 
-No. CivicNewspaper is pre-alpha. There are no signed installers, no security review, and no formal QA. Use it for experimentation. Do not stake legal or journalistic claims on it without independent verification of every output.
+No. CivicNewspaper is in public beta. There are no signed installers, no security review, and no formal QA. Use it for experimentation. Do not stake legal or journalistic claims on it without independent verification of every output.
 
 ### Should I use it to publish public-records reporting today?
 
@@ -100,7 +100,7 @@ Four things — the first three keyword-based, the fourth sequence-based:
 3. **Presumption of innocence**: if a paragraph contains arrest-related words (`arrested`, `charged`, `indicted`, `convicted`, `prosecuted`), it must also contain a modifier like `alleged` / `allegedly` / `suspected` / `accused` nearby.
 4. **Verbatim overlap**: warns when a paragraph copies a sequence of 7+ words verbatim from a linked evidence excerpt. Rewrite it in your own words or format it as a blockquote.
 
-It is a lint rule. It is not an inspector in any AI/NLP sense.
+It is a lint rule, not an inspector in any AI/NLP sense. By default it only warns; an editor can mark specific words as **blocking** (Settings → Story guardrails), and publishing also requires a recorded human **attestation** — both are enforced before a draft can be approved or compiled.
 
 ### What does the "OSINT Detector Engine" actually do?
 
@@ -124,7 +124,7 @@ Cost (compute), latency (must run on a 4-8 GB-RAM target machine), and complexit
 
 ### Where is my data stored?
 
-In a single SQLite file in the OS app-data directory (Windows: `%APPDATA%\org.civicnews.app\`; macOS: `~/Library/Application Support/org.civicnews.app/`; Linux: `~/.local/share/org.civicnews.app/`). Exact path depends on the `identifier` in `tauri.conf.json`.
+In a single SQLite file (`civicdesk.db`) in the OS app-data directory (Windows: `%APPDATA%\com.scottconverse.civicdesk\`; macOS: `~/Library/Application Support/com.scottconverse.civicdesk/`; Linux: `~/.local/share/com.scottconverse.civicdesk/`). Exact path depends on the `identifier` in `tauri.conf.json`. (Installs before v0.2.7 used `org.civicnews.app/civicnews.db`; the app migrates that into `civicdesk.db` automatically on first launch.)
 
 ### How do I back up?
 

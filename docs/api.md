@@ -222,9 +222,11 @@ reached or the call failed).
 
 ### `POST /api/guardrails/check`
 
-Runs the guardrail lint over an existing draft and returns the findings. These
-are advisory warnings only — the guardrails never block compilation or a status
-change.
+Runs the guardrail checks over an existing draft and returns the findings. By
+default matches are warnings, but an editor can mark words as *blocking* (Settings
+→ Story guardrails). A blocking issue — and a missing human attestation — are
+enforced by `story_decision` and by the static-site compiler, so this endpoint's
+report reflects what can block a publish, not advisory-only output.
 
 **Request body**
 

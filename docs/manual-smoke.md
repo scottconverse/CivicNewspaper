@@ -4,7 +4,7 @@ Since CivicNews is a local-first desktop application with sensitive GUI workflow
 
 ## Prerequisites
 - A clean Windows User Account or a fresh Windows Sandbox / VM.
-- No existing `%APPDATA%\org.civicnews.app\` folder.
+- No existing `%APPDATA%\com.scottconverse.civicdesk\` folder.
 - No local Ollama instance running yet (the bundled sidecar will be used).
 
 ## Test Steps
