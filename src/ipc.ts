@@ -257,8 +257,21 @@ export async function deleteDraft(id: number): Promise<void> {
   return invokeGuarded<void>("delete_draft", { id });
 }
 
-export async function storyDecision(id: number, decision: string): Promise<void> {
-  return invokeGuarded<void>("story_decision", { id, decision });
+export async function storyDecision(
+  id: number,
+  decision: string,
+  overrideReason?: string
+): Promise<void> {
+  return invokeGuarded<void>(
+    "story_decision",
+    overrideReason === undefined ? { id, decision } : { id, decision, overrideReason }
+  );
+}
+
+// GG-C1: record a human attestation that the editor verified the draft against
+// its cited evidence. Required before a draft can be approved for publishing.
+export async function attestDraft(id: number, editor: string): Promise<void> {
+  return invokeGuarded<void>("attest_draft", { id, editor });
 }
 
 export async function generateDraft(leadId: number, format: string, systemPrompt?: string): Promise<string> {
@@ -271,6 +284,22 @@ export async function llmTask(prompt: string, system: string): Promise<string> {
 
 export async function guardrailsCheck(draftId: number): Promise<GuardrailsReport> {
   return invokeGuarded<GuardrailsReport>("guardrails_check", { draftId });
+}
+
+// Editor-editable guardrail word lists (per newsroom). Words warn by default;
+// only words in `blocking` hard-stop publishing.
+export interface GuardrailConfig {
+  accusatory: string[];
+  legal: string[];
+  blocking: string[];
+}
+
+export async function getGuardrailTerms(): Promise<GuardrailConfig> {
+  return invokeGuarded<GuardrailConfig>("get_guardrail_terms");
+}
+
+export async function setGuardrailTerms(config: GuardrailConfig): Promise<void> {
+  return invokeGuarded<void>("set_guardrail_terms", { config });
 }
 
 export async function publish(outputDir: string): Promise<void> {

@@ -244,4 +244,47 @@ describe("Workbench Component Tests", () => {
     renderEditor({ selectedDraft: { ...mockDraft, content: "" } });
     expect(screen.getByRole("button", { name: /Plain Language Rewrite/i })).toBeDisabled();
   });
+
+  test("Approve is disabled until the editor attests, then publishes a clean draft", () => {
+    const onApprovePublish = vi.fn();
+    renderEditor({ onApprovePublish, guardrailsReport: null });
+
+    const approve = screen.getByRole("button", { name: /Approve for Static Publish/i });
+    expect(approve).toBeDisabled();
+
+    fireEvent.click(screen.getByLabelText(/I have verified this story/i));
+    expect(approve).toBeEnabled();
+
+    fireEvent.click(approve);
+    expect(onApprovePublish).toHaveBeenCalledWith();
+  });
+
+  test("a blocking (error) guardrail issue routes Approve through the override modal", async () => {
+    const onApprovePublish = vi.fn();
+    const report: GuardrailsReport = {
+      is_clean: false,
+      issues: [
+        { category: "Accusatory Language", message: "fraud without citation", severity: "error" },
+      ],
+    };
+    renderEditor({ onApprovePublish, guardrailsReport: report });
+
+    fireEvent.click(screen.getByLabelText(/I have verified this story/i));
+    fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
+
+    // Override modal appears; nothing is published until a reason is supplied.
+    expect(await screen.findByText(/Publish despite blocking issues/i)).toBeInTheDocument();
+    expect(onApprovePublish).not.toHaveBeenCalled();
+
+    const confirm = screen.getByRole("button", { name: /Publish anyway \(logged\)/i });
+    expect(confirm).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText(/Reason for overriding/i), {
+      target: { value: "Verified against indictment." },
+    });
+    expect(confirm).toBeEnabled();
+    fireEvent.click(confirm);
+
+    expect(onApprovePublish).toHaveBeenCalledWith("Verified against indictment.");
+  });
 });

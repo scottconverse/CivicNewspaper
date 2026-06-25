@@ -17,6 +17,7 @@ import {
   saveDraft,
   deleteDraft,
   storyDecision,
+  attestDraft,
   generateDraft,
   llmTask,
   guardrailsCheck,
@@ -40,6 +41,7 @@ import {
   GuardrailsReport,
   isTauri,
   runDailyScan,
+  isOnboardingComplete,
   getSetting,
   setSetting,
   toUserMessage
@@ -156,6 +158,9 @@ export function useApp() {
   // Ollama & Wizard
   const [ollamaOnline, setOllamaOnline] = useState(false);
   const [systemRam, setSystemRam] = useState<number>(8);
+  // GG-C4: gate the first-run guided OnboardingWizard. null = still loading.
+  const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
+  const [selectedModel, setSelectedModel] = useState<string>("");
   const [wizardModel, setWizardModel] = useState("");
   const [pullingModel, setPullingModel] = useState(false);
   const [pullProgressText, setPullProgressText] = useState<string[]>([]);
@@ -346,6 +351,11 @@ export function useApp() {
 
       const p = await getCommunityProfile();
       setCommunityProfile(p);
+
+      // RE-AUDIT (model-badge): keep the selected-model label fresh after a pull
+      // or settings change, instead of only at app start.
+      const selModel = await getSetting("model.selected");
+      if (selModel) setSelectedModel(selModel);
 
       const clients = await listPairedClients();
       setPairedClients(clients);
@@ -888,6 +898,61 @@ export function useApp() {
     }
   };
 
+  // GG-B2 / GG-C1: approving for publish records a human attestation, then asks
+  // the backend to advance the status. The backend re-checks guardrails and
+  // refuses error-severity (editor-marked blocking) issues unless an override
+  // reason is supplied — which the Workbench collects before calling this.
+  const handleApprovePublish = async (overrideReason?: string) => {
+    if (!selectedDraft || !selectedDraft.id) return;
+    try {
+      setLoading(true);
+      setErrorMessage("");
+      const editorName = (await getSetting("identity.editor_name"))?.trim() || "Editor";
+      await attestDraft(selectedDraft.id, editorName);
+      await storyDecision(selectedDraft.id, "ready_to_publish", overrideReason);
+      setSelectedDraft({ ...selectedDraft, status: "ready_to_publish" });
+      setStatusMessage("Story approved for publishing — a verification record was saved.");
+      await loadInitialData();
+    } catch (e: any) {
+      setErrorMessage(toUserMessage(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // GG-C4: load first-run completion + selected-model state once on mount.
+  useEffect(() => {
+    isOnboardingComplete()
+      .then(setOnboardingDone)
+      // In a browser preview / no-IPC context, don't trap the user on a blank
+      // wizard — fall through to the app.
+      .catch(() => setOnboardingDone(true));
+    getSetting("model.selected")
+      .then((m) => {
+        if (m) setSelectedModel(m);
+      })
+      .catch(() => {});
+  }, []);
+
+  const completeOnboarding = async () => {
+    // RE-AUDIT M2: onboarding writes the community profile (city/state/title) and
+    // a selected model; reload both so the masthead reflects the user's entries
+    // immediately rather than the defaults loaded at mount.
+    try {
+      const profile = await getCommunityProfile();
+      setCommunityProfile(profile);
+    } catch {
+      /* non-fatal */
+    }
+    try {
+      const m = await getSetting("model.selected");
+      if (m) setSelectedModel(m);
+    } catch {
+      /* non-fatal */
+    }
+    setOnboardingDone(true);
+  };
+
   // UX-m5: "Kill Story" is destructive and was a single unguarded click, unlike
   // draft delete which is confirmed. Route it through the same confirm dialog.
   const handleKillStory = () => {
@@ -1138,6 +1203,9 @@ export function useApp() {
     setPublishStep,
     ollamaOnline,
     systemRam,
+    onboardingDone,
+    completeOnboarding,
+    selectedModel,
     wizardModel,
     setWizardModel,
     pullingModel,
@@ -1178,6 +1246,7 @@ export function useApp() {
     handleOpenDraftEditor,
     handleSaveDraftEditor,
     handleDecision,
+    handleApprovePublish,
     handleKillStory,
     handlePublish,
     openCorrectionModal,

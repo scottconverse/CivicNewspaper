@@ -75,6 +75,7 @@ interface WorkbenchProps {
   onCloseWorkbench: () => void;
   onDeleteDraft: (id: number) => void;
   onDecision: (status: string) => void;
+  onApprovePublish?: (overrideReason?: string) => void;
   onKillStory?: () => void;
   isGeneratingSocial: boolean;
   socialPackResult: string;
@@ -102,6 +103,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   onCloseWorkbench,
   onDeleteDraft,
   onDecision,
+  onApprovePublish,
   onKillStory,
   isGeneratingSocial,
   socialPackResult,
@@ -113,11 +115,37 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   const [isRewriting, setIsRewriting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [rewritePreview, setRewritePreview] = useState<string | null>(null);
+  const [attested, setAttested] = useState(false);
+  const [showOverrideModal, setShowOverrideModal] = useState(false);
+  const [overrideReason, setOverrideReason] = useState("");
 
   useEffect(() => {
     setError(null);
     setRewritePreview(null);
+    setAttested(false);
+    setShowOverrideModal(false);
+    setOverrideReason("");
   }, [selectedDraft?.id]);
+
+  // Error-severity issues = words the newsroom marked "blocking". These are the
+  // only issues that gate publishing; everything else is an advisory warning.
+  const errorIssues = guardrailsReport?.issues.filter((i) => i.severity === "error") ?? [];
+
+  const handleApproveClick = () => {
+    if (!attested) return;
+    if (errorIssues.length > 0) {
+      setShowOverrideModal(true);
+    } else {
+      onApprovePublish?.();
+    }
+  };
+
+  const confirmOverride = () => {
+    const reason = overrideReason.trim();
+    if (!reason) return;
+    setShowOverrideModal(false);
+    onApprovePublish?.(reason);
+  };
 
   const handleInsertCitation = (evidenceId: number) => {
     const textarea = document.getElementById("draft-editor-textarea") as HTMLTextAreaElement;
@@ -258,28 +286,48 @@ export const Workbench: React.FC<WorkbenchProps> = ({
           >
             <div className="flex-between">
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                {guardrailsReport.is_clean ? (
+                {guardrailsReport.is_clean && guardrailsReport.issues.length === 0 ? (
                   <CheckCircle size={18} />
                 ) : (
-                  <AlertTriangle size={18} style={{ color: "var(--color-warning)" }} />
+                  <AlertTriangle
+                    size={18}
+                    style={{ color: guardrailsReport.is_clean ? "var(--color-warning)" : "var(--color-error)" }}
+                  />
                 )}
-                <strong>
-                  {guardrailsReport.is_clean 
-                    ? "Pre-publication Guardrails Passed: No major issues detected." 
-                    : "Verification Issues Detected:"}
+                <strong style={{ color: guardrailsReport.is_clean ? undefined : "var(--color-error)" }}>
+                  {!guardrailsReport.is_clean
+                    ? "Publishing is blocked — fix these issues, or approve with a logged override."
+                    : guardrailsReport.issues.length > 0
+                      ? "Advisory warnings — these do not block publishing."
+                      : "Pre-publication guardrails passed: no issues detected."}
                 </strong>
               </div>
               <span style={{ fontSize: "0.8rem", textTransform: "uppercase" }}>
                 {guardrailsReport.issues.length} issue(s)
               </span>
             </div>
-            {!guardrailsReport.is_clean && (
+            {guardrailsReport.issues.length > 0 && (
               <div style={{ marginTop: "0.5rem" }} id="guardrails-issues-list">
-                {guardrailsReport.issues.map((issue: any, idx: number) => (
-                  <div key={idx} className={`guardrail-issue ${issue.severity}`}>
-                    <AlertTriangle size={14} style={{ marginRight: "0.25rem", verticalAlign: "middle" }} /> [Category: {issue.category.replace(/_/g, " ")}] {issue.message}
-                  </div>
-                ))}
+                {guardrailsReport.issues.map((issue: any, idx: number) => {
+                  const isError = issue.severity === "error";
+                  return (
+                    <div
+                      key={idx}
+                      className={`guardrail-issue ${issue.severity}`}
+                      style={{ color: isError ? "var(--color-error)" : "var(--text-secondary)" }}
+                    >
+                      <AlertTriangle
+                        size={14}
+                        style={{
+                          marginRight: "0.25rem",
+                          verticalAlign: "middle",
+                          color: isError ? "var(--color-error)" : "var(--color-warning)",
+                        }}
+                      />
+                      <strong>{isError ? "BLOCKS" : "warns"}</strong> · [{issue.category.replace(/_/g, " ")}] {issue.message}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -341,24 +389,56 @@ export const Workbench: React.FC<WorkbenchProps> = ({
             </div>
 
             <div className="card" style={{ padding: "1rem", background: "var(--bg-sidebar)" }}>
-              <div className="flex-between">
-                <div>
-                  <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>Current Status: </span>
-                  <strong className={`badge badge-${getStatusColor(selectedDraft.status)}`} style={{ fontSize: "0.85rem" }}>
-                    {selectedDraft.status.replace(/_/g, " ")}
-                  </strong>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                <div className="flex-between">
+                  <div>
+                    <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>Current Status: </span>
+                    <strong className={`badge badge-${getStatusColor(selectedDraft.status)}`} style={{ fontSize: "0.85rem" }}>
+                      {selectedDraft.status.replace(/_/g, " ")}
+                    </strong>
+                  </div>
+                  <div className="btn-group">
+                    <button className="btn btn-secondary btn-sm" onClick={() => onDecision("hold")} id="btn-status-hold">
+                      Hold
+                    </button>
+                    <button className="btn btn-danger btn-sm" onClick={() => (onKillStory ? onKillStory() : onDecision("killed"))} id="btn-status-kill">
+                      Kill Story
+                    </button>
+                    <button
+                      className="btn btn-primary btn-sm"
+                      onClick={handleApproveClick}
+                      disabled={!attested}
+                      title={
+                        !attested
+                          ? "Confirm you verified this story before approving"
+                          : errorIssues.length > 0
+                            ? "This story has blocking issues — you'll be asked to confirm an override"
+                            : "Approve this story for publishing"
+                      }
+                      id="btn-status-publish"
+                    >
+                      Approve for Static Publish
+                    </button>
+                  </div>
                 </div>
-                <div className="btn-group">
-                  <button className="btn btn-secondary btn-sm" onClick={() => onDecision("hold")} id="btn-status-hold">
-                    Hold
-                  </button>
-                  <button className="btn btn-danger btn-sm" onClick={() => (onKillStory ? onKillStory() : onDecision("killed"))} id="btn-status-kill">
-                    Kill Story
-                  </button>
-                  <button className="btn btn-primary btn-sm" onClick={() => onDecision("ready_to_publish")} id="btn-status-publish">
-                    Approve for Static Publish
-                  </button>
-                </div>
+                {/* GG-C1: a human must affirm they verified the story before it can
+                    be approved for publishing. Gates the Approve button. */}
+                <label
+                  htmlFor="chk-attest"
+                  style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", fontSize: "0.85rem", cursor: "pointer", color: "var(--text-secondary)" }}
+                >
+                  <input
+                    id="chk-attest"
+                    type="checkbox"
+                    checked={attested}
+                    onChange={(e) => setAttested(e.target.checked)}
+                    style={{ marginTop: "0.15rem" }}
+                  />
+                  <span>
+                    I have verified this story against its cited evidence and take responsibility for
+                    publishing it. <em>(Required to approve.)</em>
+                  </span>
+                </label>
               </div>
             </div>
 
@@ -471,6 +551,48 @@ export const Workbench: React.FC<WorkbenchProps> = ({
             </Modal>
           );
         })()}
+
+        {showOverrideModal && (
+          <Modal id="override-modal" labelledBy="override-modal-title" onClose={() => setShowOverrideModal(false)}>
+            <h3 id="override-modal-title" style={{ marginTop: 0, color: "var(--color-error)" }}>
+              Publish despite blocking issues?
+            </h3>
+            <p className="help-text" style={{ marginTop: 0 }}>
+              This story has {errorIssues.length} issue(s) your newsroom marked as blocking. You can
+              publish anyway, but your reason is recorded with the story.
+            </p>
+            <ul style={{ fontSize: "0.85rem", margin: "0 0 1rem 0", paddingLeft: "1.2rem" }}>
+              {errorIssues.map((iss: any, idx: number) => (
+                <li key={idx}>
+                  [{iss.category.replace(/_/g, " ")}] {iss.message}
+                </li>
+              ))}
+            </ul>
+            <label htmlFor="override-reason" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>
+              Reason for overriding (required)
+            </label>
+            <textarea
+              id="override-reason"
+              value={overrideReason}
+              onChange={(e) => setOverrideReason(e.target.value)}
+              placeholder="e.g. Verified against the filed indictment; charge language is accurate and attributed."
+              style={{ width: "100%", height: "90px" }}
+            />
+            <div className="flex-between" style={{ marginTop: "1rem" }}>
+              <button className="btn btn-secondary" onClick={() => setShowOverrideModal(false)} id="btn-override-cancel">
+                Cancel
+              </button>
+              <button
+                className="btn btn-danger"
+                onClick={confirmOverride}
+                disabled={!overrideReason.trim()}
+                id="btn-override-confirm"
+              >
+                Publish anyway (logged)
+              </button>
+            </div>
+          </Modal>
+        )}
       </div>
     );
   }

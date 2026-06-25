@@ -8,6 +8,8 @@ import {
   getSystemRam,
   getSetting,
   setSetting,
+  getCommunityProfile,
+  saveCommunityProfile,
   ollamaHealth,
   pullOllamaModel,
   cancelOllamaPull,
@@ -285,6 +287,21 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         await setSetting("identity.editor_name", editorName);
         await setSetting("identity.city", city);
         await setSetting("identity.state", state);
+
+        // RE-AUDIT M2: also write the community profile so the masthead and the
+        // published site reflect the entered identity — the masthead reads the
+        // community profile (city/state/title), not the identity.* settings.
+        try {
+          const profile = await getCommunityProfile();
+          await saveCommunityProfile({
+            ...profile,
+            site_title: pubName.trim() || profile.site_title,
+            city: city.trim() || profile.city,
+            state: state.trim() || profile.state,
+          });
+        } catch {
+          /* non-fatal — identity settings above are still saved */
+        }
 
         setStep(2);
       } else if (step === 2) {

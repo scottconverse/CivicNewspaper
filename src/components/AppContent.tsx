@@ -11,6 +11,7 @@ import { AiModelPanel } from "./AiModelPanel";
 import { Modal } from "./Modal";
 import { ConfirmModal } from "./ConfirmModal";
 import { BetaNotice } from "./BetaNotice";
+import { SystemStatus } from "./SystemStatus";
 import { resolveResource } from "@tauri-apps/api/path";
 import { openLocalPath } from "../ipc";
 
@@ -88,6 +89,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
             }}
             onDeleteDraft={app.handleDeleteDraft}
             onDecision={app.handleDecision}
+            onApprovePublish={app.handleApprovePublish}
             onKillStory={app.handleKillStory}
             isGeneratingSocial={app.isGeneratingSocial}
             socialPackResult={app.socialPackResult}
@@ -215,6 +217,17 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
         />
       )}
 
+      {/* GG-M3: mount the previously-dead SystemStatus so a returning user has a
+          reachable status/diagnostics surface (the only place to export a
+          diagnostic report after onboarding). */}
+      {app.activeTab === "system" && (
+        <SystemStatus
+          ollamaOnline={app.ollamaOnline}
+          dbVersion=""
+          appVersion="0.2.7"
+        />
+      )}
+
       {app.activeTab === "publish" && (
         <PublishPanel
           publishPath={app.publishPath}
@@ -250,6 +263,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
             }}
             onDeleteDraft={app.handleDeleteDraft}
             onDecision={app.handleDecision}
+            onApprovePublish={app.handleApprovePublish}
             onKillStory={app.handleKillStory}
             isGeneratingSocial={app.isGeneratingSocial}
             socialPackResult={app.socialPackResult}

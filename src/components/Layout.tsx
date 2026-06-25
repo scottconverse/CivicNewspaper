@@ -2,6 +2,7 @@
 import React from "react";
 import {
   Bot,
+  Cpu,
   FileText,
   Globe2,
   Link as LinkIcon,
@@ -16,6 +17,8 @@ interface LayoutProps {
   onTabChange: (tab: string) => void;
   ollamaOnline: boolean;
   selectedDraft: any;
+  kicker?: string;
+  modelLabel?: string;
   children: React.ReactNode;
 }
 
@@ -24,6 +27,8 @@ export const Layout: React.FC<LayoutProps> = ({
   onTabChange,
   ollamaOnline,
   selectedDraft: _selectedDraft,
+  kicker,
+  modelLabel,
   children
 }) => {
   const navGroups = [
@@ -48,6 +53,7 @@ export const Layout: React.FC<LayoutProps> = ({
       items: [
         { id: "pairing", label: "Browser Pairing", icon: LinkIcon },
         { id: "settings", label: "Ethics & Backups", icon: Settings },
+        { id: "system", label: "System & Status", icon: Cpu },
       ],
     },
   ];
@@ -61,7 +67,7 @@ export const Layout: React.FC<LayoutProps> = ({
           </span>
           <div>
             <span className="brand-name">The Civic Desk</span>
-            <span className="brand-kicker">RIVERTON - OHIO</span>
+            <span className="brand-kicker">{kicker ?? "Local newsroom"}</span>
           </div>
         </div>
         <nav>
@@ -94,7 +100,7 @@ export const Layout: React.FC<LayoutProps> = ({
             <span className={`status-dot ${ollamaOnline ? "online" : "offline"}`} />
             <div>
               <strong>{ollamaOnline ? "Local AI ready" : "Local AI offline"}</strong>
-              <span>qwen3:14b - private</span>
+              <span>{modelLabel ?? "private"}</span>
             </div>
           </div>
         </div>
