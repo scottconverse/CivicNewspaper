@@ -4,6 +4,24 @@ All notable changes to CivicNewspaper will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.7] - 2026-06-25
+
+### Added
+- Implemented the Civic Desk redesign handoff across the desktop app, including the compact newsroom rail, Story Queue, Daily Scan, Workbench, Sources, AI Model, Publishing, Browser Pairing, and Ethics & Backups screens.
+- Added dedicated Daily Scan and AI Model panels so the primary setup and newsroom flows match the product design instead of the old onboarding/dashboard layout.
+- Added browser-preview-safe workflows for source bulk import, source discovery, pairing-code generation, profile saves, and local model-download preview so Playwright can verify the UI without Tauri bridge crashes.
+
+### Changed
+- Renamed the installed product surface to **The Civic Desk** for the window title, installer, beta warning, shortcut, and user-facing copy.
+- Bumped the application version to 0.2.7 across the frontend package, Tauri config, and Rust package metadata.
+- Moved app data to the new `com.scottconverse.civicdesk` namespace and added first-launch migration from the legacy `org.civicnews.app/civicnews.db` database into `civicdesk.db`.
+- Updated default publication naming and static-site compiler defaults to The Civic Desk.
+
+### Fixed
+- Restored full install/uninstall coverage for the NSIS installer and ensured silent install mode does not hang on the unsigned-beta warning dialog.
+- Removed stale visible `CivicNews`/`CivicNewspaper` labels from the main product UI where they made the new install look like the old app.
+- Preserved the release-integrity CI dependency repairs carried from the release-integrity branch, including executable Linux/macOS sidecar fixtures.
+
 ## [0.2.6] - 2026-05-28
 
 Remediation of the v0.2.5 audit (2 Blocker / 4 Critical / 5 Major / 3 Minor / 2 Nit). See the v0.2.5 postmortem below for what was rejected and why.
@@ -206,7 +224,9 @@ Initial pre-alpha snapshot of the codebase. Not released.
 - Integrated upload to hosting providers (the "wizard" opens your output folder; you drag-and-drop into Netlify/Vercel/GitHub Pages yourself).
 - CI/CD.
 
-[Unreleased]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.5..HEAD
+[Unreleased]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.7..HEAD
+[0.2.7]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.6..v0.2.7
+[0.2.6]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.5..v0.2.6
 [0.2.5]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.4..v0.2.5
 [0.2.4]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.3..v0.2.4
 [0.2.3]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.2..v0.2.3
