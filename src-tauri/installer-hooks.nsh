@@ -1,4 +1,4 @@
-; CivicNewspaper NSIS installer hooks
+; The Civic Desk NSIS installer hooks
 ;
 ; Beta / unsigned notice (installer-warning task). Tauri's NSIS template invokes
 ; the NSIS_HOOK_PREINSTALL macro at the start of the install. We show a single
@@ -12,7 +12,7 @@
 
 !macro NSIS_HOOK_PREINSTALL
   MessageBox MB_OKCANCEL|MB_ICONINFORMATION \
-"CivicNewspaper - PRE-RELEASE BETA (Unsigned)$\r$\n$\r$\n\
+"The Civic Desk - PRE-RELEASE BETA (Unsigned)$\r$\n$\r$\n\
 This is an unsigned, pre-release BETA build. It is NOT code-signed.$\r$\n$\r$\n\
 Windows SmartScreen (and some antivirus tools) will likely warn that the$\r$\n\
 publisher is unknown when you run the installer or the app. This is EXPECTED$\r$\n\
@@ -20,6 +20,7 @@ for an unsigned beta - choose 'More info' then 'Run anyway' to proceed.$\r$\n$\r
 Beta software is provided AS IS, without warranty. Keep backups of any data$\r$\n\
 you care about.$\r$\n$\r$\n\
 Click OK to continue installing, or Cancel to abort." \
+    /SD IDOK \
     IDOK civicnews_beta_continue
   Abort
   civicnews_beta_continue:

@@ -219,7 +219,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
           
           {!ollamaOnline && !manualLlmMode && (
             <div className="error-text" id="ollama-offline-warning" style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-              <AlertTriangle size={14} /> The local AI service is offline. Open the "AI Setup" tab to set it up, or use "Manual Mode" in settings.
+              <AlertTriangle size={14} /> The local AI service is offline. Open the "AI Model" tab to set it up, or use "Manual Mode" in settings.
             </div>
           )}
         </div>
@@ -438,8 +438,8 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                     <div className="diff-pane-header">Original</div>
                     {left.map((row, idx) => (
                       <span key={idx} className={row.type === "removed" ? "diff-line diff-line-removed" : "diff-line"}>
-                        <span className="diff-gutter" aria-hidden="true">{row.type === "removed" ? "−" : " "}</span>
-                        {row.text || " "}
+                        <span className="diff-gutter" aria-hidden="true">{row.type === "removed" ? "-" : " "}</span>
+                        {row.text || " "}
                       </span>
                     ))}
                   </div>
@@ -448,7 +448,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                     {right.map((row, idx) => (
                       <span key={idx} className={row.type === "added" ? "diff-line diff-line-added" : "diff-line"}>
                         <span className="diff-gutter" aria-hidden="true">{row.type === "added" ? "+" : " "}</span>
-                        {row.text || " "}
+                        {row.text || " "}
                       </span>
                     ))}
                   </div>

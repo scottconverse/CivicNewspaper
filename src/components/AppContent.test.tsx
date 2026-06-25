@@ -15,25 +15,34 @@ vi.mock("./LeadQueue", () => ({
 }));
 
 describe("AppContent Component Tests", () => {
-  test("renders settings and publish panels when activeTab is settings", () => {
-    const mockApp = {
-      activeTab: "settings",
-      statusMessage: "",
-      errorMessage: "",
-      communityProfile: {},
-      backupPathInput: "",
-      publishPath: "",
-      publishStep: 1,
-      loading: false,
-      handleSaveProfile: vi.fn(),
-      handleBackupSave: vi.fn(),
-      handleBackupRestore: vi.fn(),
-      handlePublish: vi.fn()
-    };
+  const makeMockApp = (activeTab: string) => ({
+    activeTab,
+    statusMessage: "",
+    errorMessage: "",
+    communityProfile: {},
+    backupPathInput: "",
+    publishPath: "",
+    publishStep: 1,
+    loading: false,
+    handleSaveProfile: vi.fn(),
+    handleBackupSave: vi.fn(),
+    handleBackupRestore: vi.fn(),
+    handlePublish: vi.fn(),
+  });
+
+  test("renders settings panel when activeTab is settings", () => {
+    const mockApp = makeMockApp("settings");
 
     render(<AppContent app={mockApp} />);
 
     expect(screen.getByTestId("settings-panel")).toBeInTheDocument();
+  });
+
+  test("renders publish panel when activeTab is publish", () => {
+    const mockApp = makeMockApp("publish");
+
+    render(<AppContent app={mockApp} />);
+
     expect(screen.getByTestId("publish-panel")).toBeInTheDocument();
   });
 });

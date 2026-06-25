@@ -25,7 +25,7 @@ pub struct CompilerProfile {
 impl Default for CompilerProfile {
     fn default() -> Self {
         CompilerProfile {
-            site_title: "CivicNews Observer".to_string(),
+            site_title: "The Civic Desk".to_string(),
             site_subtitle: "Transparent Local Public Records & Evidence".to_string(),
             about_text: "We report on local government activities using raw public records."
                 .to_string(),
@@ -280,11 +280,7 @@ pub fn compile_static_site(
             Ok(())
         };
 
-    compile_info_page(
-        "about.html",
-        "About CivicNews Observer",
-        &profile.about_text,
-    )?;
+    compile_info_page("about.html", "About The Civic Desk", &profile.about_text)?;
     compile_info_page(
         "ethics.html",
         "Reporting Ethics & Standards",

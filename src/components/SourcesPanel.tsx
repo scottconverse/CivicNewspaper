@@ -1,6 +1,6 @@
 // src/components/SourcesPanel.tsx
 import React from "react";
-import { Plus, Trash2, RefreshCcw } from "lucide-react";
+import { Plus, Trash2, RefreshCcw, Search, Upload } from "lucide-react";
 import { Source, DiscoveredSource, DiscoveredSourceCategory } from "../ipc";
 import { Modal } from "./Modal";
 
@@ -80,7 +80,24 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
   onClearDiscovered
 }) => {
   const getStatusColor = (status: string) => {
-    return status === "online" ? "online" : "offline";
+    if (status === "online") return "online";
+    if (status === "quiet") return "warning";
+    return "offline";
+  };
+
+  const formatSourceKind = (value: string) => {
+    if (value === "primary_record") return "Primary";
+    if (value === "official_comm") return "Official";
+    if (value === "community_signal") return "Watch";
+    if (value === "media_lead") return "Media";
+    return value.replace(/_/g, " ");
+  };
+
+  const formatTier = (value?: string) => {
+    if (value === "official_record") return "Primary";
+    if (value === "news_reporting") return "Secondary";
+    if (value === "community_signal") return "Watch";
+    return value ? value.replace(/_/g, " ") : "Watch";
   };
 
   return (
@@ -88,72 +105,65 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
       <div className="page-header">
         <div className="page-title">
           <h1>Sources</h1>
-          <p>Configure the feeds, portals, and record systems CivicNews scans for story leads.</p>
+          <p>The municipal feeds and record portals The Civic Desk watches for you.</p>
         </div>
         <div className="btn-group">
           <button 
             className="btn btn-secondary" 
-            onClick={() => onShowBulkImportModalChange(true)} 
+            onClick={() => onShowDiscoveryModalChange(true)}
             style={{ marginRight: "0.5rem" }}
-            id="btn-trigger-bulk-import"
+            id="btn-trigger-discovery"
           >
-            <Plus size={16} />
-            Bulk Import URLs
+            <Search size={16} />
+            Discover for my city
           </button>
-          <button className="btn btn-primary" onClick={() => onShowDiscoveryModalChange(true)} id="btn-trigger-discovery">
-            <Plus size={16} />
-            Auto-Discover Town Feeds
+          <button className="btn btn-secondary" onClick={() => onShowBulkImportModalChange(true)} id="btn-trigger-bulk-import">
+            <Upload size={16} />
+            Bulk import
           </button>
         </div>
       </div>
 
       <div className="sources-grid">
-        {/* Left Pane: Sources List */}
-        <div className="card">
+        <div className="card source-list-card">
           <div className="table-container">
-            <table>
+            <table className="sources-table">
               <thead>
                 <tr>
                   <th>Source</th>
-                  <th>URL</th>
-                  <th>Type</th>
                   <th>Tier</th>
-                  <th>Status</th>
-                  <th>Scraped</th>
-                  <th>Action</th>
+                  <th>Last check</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 {sources.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center">No feeds or portals registered yet. Add one in the right panel.</td>
+                    <td colSpan={4} className="text-center">No feeds or portals registered yet. Add one in the right panel.</td>
                   </tr>
                 ) : (
                   sources.map((src) => (
                     <tr key={src.id} data-testid={`source-row-${src.id}`}>
-                      <td><strong>{src.name}</strong></td>
-                      <td style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-                        <a href={src.url} target="_blank" rel="noreferrer" style={{ wordBreak: "break-all" }}>{src.url}</a>
+                      <td>
+                        <div className="source-cell">
+                          <span className={`status-dot ${getStatusColor(src.status)}`} />
+                          <div className="source-copy">
+                            <div>
+                              <strong>{src.name}</strong>
+                              <span className="source-type-chip">{formatSourceKind(src.type)}</span>
+                            </div>
+                            <a href={src.url} target="_blank" rel="noreferrer">{src.url}</a>
+                          </div>
+                        </div>
                       </td>
                       <td>
-                        <span className="badge badge-neutral" style={{ textTransform: "capitalize" }}>
-                          {src.type.replace(/_/g, " ")}
-                        </span>
+                        <span className="badge badge-neutral">{formatTier(src.tier)}</span>
                       </td>
-                      <td>
-                        <span className="badge badge-neutral" style={{ textTransform: "capitalize" }}>
-                          {src.tier ? src.tier.replace(/_/g, " ") : "Community Signal"}
-                        </span>
-                      </td>
-                      <td>
-                        <span className={`status-dot ${getStatusColor(src.status)}`} />
-                        <span style={{ marginLeft: "0.25rem", fontSize: "0.85rem" }}>{src.status}</span>
-                      </td>
-                      <td style={{ fontSize: "0.8rem" }}>
+                      <td className={src.status === "offline" ? "source-last source-last-error" : "source-last"}>
                         {src.last_scraped ? new Date(src.last_scraped).toLocaleDateString() : "Never"}
                       </td>
                       <td>
-                        <button className="btn btn-danger btn-sm" onClick={() => onDeleteSource(src.id!)} id={`btn-delete-source-${src.id}`} aria-label="Delete source">
+                        <button className="icon-button danger" onClick={() => onDeleteSource(src.id!)} id={`btn-delete-source-${src.id}`} aria-label="Delete source">
                           <Trash2 size={12} />
                         </button>
                       </td>
@@ -165,12 +175,12 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
           </div>
         </div>
 
-        {/* Right Pane: Add Source Form */}
         <div className="card">
-          <h3 className="card-title">Register Portal/Feed</h3>
+          <h3 className="card-title">Add a source</h3>
+          <p className="help-text">Paste a city webpage or RSS feed. The Civic Desk figures out the rest.</p>
           <form onSubmit={onAddSource} style={{ display: "flex", flexDirection: "column", gap: "1rem" }} id="form-add-source">
             <div>
-              <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Source Name</label>
+              <label htmlFor="input-new-source-name" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Name</label>
               <input
                 type="text"
                 placeholder="e.g. City Council Agendas"
@@ -182,7 +192,7 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
             </div>
 
             <div>
-              <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Feed URL (RSS or static HTML)</label>
+              <label htmlFor="input-new-source-url" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>URL</label>
               <input
                 type="url"
                 placeholder="e.g. https://city.gov/agendas/rss"
@@ -193,23 +203,25 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
               />
             </div>
 
-            <div>
-              <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Classification Type</label>
-              <select value={newSourceType} onChange={(e) => onNewSourceTypeChange(e.target.value)} id="select-new-source-type">
-                <option value="primary_record">Primary Record (Agendas, budgets, public notices)</option>
-                <option value="official_comm">Official Communication (Press releases, announcements)</option>
-                <option value="community_signal">Community Signal (Local forums, neighborhood boards)</option>
-                <option value="media_lead">Media Lead (Newspapers, regional feeds)</option>
-              </select>
-            </div>
+            <div className="form-grid-two">
+              <div>
+                <label htmlFor="select-new-source-type" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Type</label>
+                <select value={newSourceType} onChange={(e) => onNewSourceTypeChange(e.target.value)} id="select-new-source-type">
+                  <option value="primary_record">Auto-detect</option>
+                  <option value="official_comm">RSS</option>
+                  <option value="community_signal">HTML</option>
+                  <option value="media_lead">Media</option>
+                </select>
+              </div>
 
-            <div>
-              <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Source Tier</label>
-              <select value={newSourceTier} onChange={(e) => onNewSourceTierChange(e.target.value)} id="select-new-source-tier">
-                <option value="official_record">Official Record</option>
-                <option value="news_reporting">News Reporting</option>
-                <option value="community_signal">Community Signal</option>
-              </select>
+              <div>
+                <label htmlFor="select-new-source-tier" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Tier</label>
+                <select value={newSourceTier} onChange={(e) => onNewSourceTierChange(e.target.value)} id="select-new-source-tier">
+                  <option value="official_record">Primary</option>
+                  <option value="news_reporting">Secondary</option>
+                  <option value="community_signal">Watch</option>
+                </select>
+              </div>
             </div>
 
             <button className="btn btn-primary" type="submit" disabled={loading} id="btn-submit-add-source">
@@ -235,8 +247,8 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
             
             <form onSubmit={onBulkImport} style={{ display: "flex", flexDirection: "column", gap: "1rem" }} id="form-bulk-import">
               <div>
-                <label style={{ fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>Default Classification Type</label>
-                <select value={bulkImportType} onChange={(e) => onBulkImportTypeChange(e.target.value)}>
+                <label htmlFor="select-bulk-import-type" style={{ fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>Default Classification Type</label>
+                <select id="select-bulk-import-type" value={bulkImportType} onChange={(e) => onBulkImportTypeChange(e.target.value)}>
                   <option value="primary_record">Primary Record (Agendas, budgets, public notices)</option>
                   <option value="official_comm">Official Communication (Press releases, announcements)</option>
                   <option value="community_signal">Community Signal (Local forums, neighborhood boards)</option>
@@ -245,7 +257,7 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
               </div>
 
               <div>
-                <label style={{ fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>
+                <label htmlFor="textarea-bulk-import" style={{ fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>
                   Source List (one per line)
                 </label>
                 <p className="help-text" style={{ margin: "0 0 0.5rem 0", fontSize: "0.8rem" }}>

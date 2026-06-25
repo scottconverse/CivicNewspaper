@@ -1,6 +1,6 @@
 // src/components/PublishPanel.tsx
 import React, { useState } from "react";
-import { FileDown, ChevronRight, AlertTriangle, CheckCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle, FileDown, FolderOpen, UploadCloud } from "lucide-react";
 
 interface PublishPanelProps {
   publishPath: string;
@@ -42,11 +42,13 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   };
 
   return (
-    <div className="card" id="publish-panel-container">
-      <h3 className="card-title">Static Compilation & Publishing Wizard</h3>
-      <p className="help-text">
-        Compile approved stories into a clean, standalone, responsive newspaper static directory.
-      </p>
+    <div id="publish-panel-container">
+      <div className="page-header">
+        <div className="page-title">
+          <h1>Publishing</h1>
+          <p>Compile your approved stories into a ready-to-host website folder.</p>
+        </div>
+      </div>
 
       {error && (
         <div 
@@ -59,79 +61,70 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
           {error}
         </div>
       )}
-      
-      <div style={{ marginTop: "1rem" }}>
-        {publishStep === 1 && (
-          <div className="wizard-step" id="publish-step-1">
-            <h4 style={{ marginBottom: "0.5rem" }}>Step 1: Choose Output Folder</h4>
-            <p className="help-text" style={{ marginBottom: "1rem" }}>
-              Select an empty directory on your computer where the generated HTML, CSS, and RSS files will be placed.
-            </p>
-            <div>
-              <input
-                type="text"
-                value={publishPath}
-                onChange={(e) => {
-                  setError("");
-                  onPublishPathChange(e.target.value);
-                }}
-                placeholder="C:\my-local-news-site"
-                required
-                id="input-publish-path"
-              />
-            </div>
-            <div className="btn-group" style={{ marginTop: "1rem" }}>
-              <button 
-                className="btn btn-primary" 
-                onClick={handleNextClick}
-                id="btn-publish-next"
-              >
-                Next: Compile <ChevronRight size={16} />
-              </button>
-            </div>
-          </div>
-        )}
 
-        {publishStep === 2 && (
-          <div className="wizard-step" id="publish-step-2">
-            <h4 style={{ marginBottom: "0.5rem" }}>Step 2: Generate Files</h4>
-            <p className="help-text" style={{ marginBottom: "1rem" }}>
-              We will now compile your approved stories into static HTML files at <strong>{publishPath}</strong>.
-            </p>
-            <div className="btn-group" style={{ marginTop: "1rem" }}>
-              <button className="btn btn-secondary" onClick={() => onPublishStepChange(1)} id="btn-publish-back">
-                Back
-              </button>
-              <button className="btn btn-primary" onClick={handleCompileClick} disabled={loading} id="btn-publish-compile">
-                <FileDown size={16} /> {loading ? "Compiling..." : "Compile Static Site"}
-              </button>
-            </div>
+      <div className="publish-grid">
+        <div className="card publish-compile-card">
+          <h3 className="card-title">Compile your gazette</h3>
+          <label htmlFor="input-publish-path" style={{ fontWeight: 600, display: "block", marginBottom: "0.35rem" }}>Output folder</label>
+          <div className="path-row">
+            <input
+              type="text"
+              value={publishPath}
+              onChange={(e) => {
+                setError("");
+                onPublishPathChange(e.target.value);
+              }}
+              placeholder="C:\\CivicDesk\\site"
+              required
+              id="input-publish-path"
+            />
+            <button className="btn btn-secondary" type="button" onClick={() => publishPath && onOpenLocalPath(publishPath)}>
+              <FolderOpen size={16} />
+              Browse
+            </button>
           </div>
-        )}
 
-        {publishStep === 3 && (
-          <div className="wizard-step" style={{ background: "rgba(16, 185, 129, 0.05)", border: "1px solid rgba(16, 185, 129, 0.2)", padding: "1rem", borderRadius: "8px" }} id="publish-step-3">
-            <h4 style={{ marginBottom: "0.5rem", color: "var(--color-success)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
-              <CheckCircle size={18} /> Step 3: Publish to the Web
-            </h4>
-            <p className="help-text" style={{ marginBottom: "1rem" }}>
-              Your site has been generated locally. To make it live for readers:
+          <div className="publish-step-list">
+            {[
+              ["Render approved stories to HTML", "stories"],
+              ["Copy styles and assets", "files"],
+              ["Generate RSS feed", "feed.xml"],
+              ["Append correction notices", "notices"],
+            ].map(([label, meta]) => (
+              <div className="publish-step-row" key={label}>
+                <CheckCircle size={19} />
+                <span>{label}</span>
+                <code>{meta}</code>
+              </div>
+            ))}
+          </div>
+
+          <button className="btn btn-primary btn-full" onClick={publishStep === 1 ? handleNextClick : handleCompileClick} disabled={loading} id={publishStep === 1 ? "btn-publish-next" : "btn-publish-compile"}>
+            <FileDown size={16} />
+            {loading ? "Compiling..." : "Compile site"}
+          </button>
+        </div>
+
+        <div className="publish-side">
+          <div className="card">
+            <div className="last-compiled">
+              <span className={publishStep === 3 ? "status-dot online" : "status-dot warning"} />
+              <strong>{publishStep === 3 ? "Last compiled" : "Ready to compile"}</strong>
+            </div>
+            <p className="help-text">
+              {publishStep === 3 ? "Generated locally. Open the folder and drag it into your hosting provider when you are ready." : "The Civic Desk will render a static site folder from approved stories and correction notices."}
             </p>
-            <ol style={{ marginLeft: "1.5rem", marginBottom: "1rem", fontSize: "0.9rem" }}>
-              <li>Open <a href="https://app.netlify.com/drop" target="_blank" rel="noreferrer">Netlify Drop</a> or <a href="https://vercel.com/new/drop" target="_blank" rel="noreferrer">Vercel Drop</a> in your browser.</li>
-              <li>Click the button below to open your local output folder.</li>
-              <li>Drag and drop the entire folder directly into the browser window.</li>
-            </ol>
-            <div className="btn-group" style={{ marginTop: "1rem" }}>
-              <button className="btn btn-secondary" onClick={() => onPublishStepChange(1)} id="btn-publish-restart">
-                Start Over
-              </button>
-              <button className="btn btn-primary" onClick={() => onOpenLocalPath(publishPath)} id="btn-publish-open-folder">
-                Open Folder in Explorer
-              </button>
+            <div className="btn-group">
+              <button className="btn btn-secondary" onClick={() => publishPath && onOpenLocalPath(publishPath)} id="btn-publish-open-folder">Open folder</button>
+              <button className="btn btn-secondary" onClick={() => onPublishStepChange(1)} id="btn-publish-restart">Reset</button>
             </div>
           </div>
-        )}
+
+          <div className="publish-next-card">
+            <UploadCloud size={20} />
+            <p><strong>Next step:</strong> drag this folder into Netlify or a GitHub Pages repo to put it online.</p>
+          </div>
+        </div>
       </div>
     </div>
   );

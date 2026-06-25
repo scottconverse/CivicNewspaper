@@ -275,7 +275,7 @@ pub fn get_community_profile(app: tauri::AppHandle) -> Result<CommunityProfile, 
     let path = get_config_path(&app)?;
     if !path.exists() {
         return Ok(CommunityProfile {
-            site_title: "CivicNews Observer".to_string(),
+            site_title: "The Civic Desk".to_string(),
             site_subtitle: "Transparent Local Public Records & Evidence".to_string(),
             about_text: "We report on local government activities using raw public records."
                 .to_string(),
@@ -497,7 +497,7 @@ pub fn publish(
         if path.exists() {
             std::fs::read_to_string(path).unwrap_or_default()
         } else {
-            r#"{"site_title": "CivicNews Observer", "site_subtitle": "Transparent Local Public Records", "about_text": "", "ethics_text": "", "how_we_report_text": ""}"#.to_string()
+            r#"{"site_title": "The Civic Desk", "site_subtitle": "Transparent Local Public Records", "about_text": "", "ethics_text": "", "how_we_report_text": ""}"#.to_string()
         }
     };
 

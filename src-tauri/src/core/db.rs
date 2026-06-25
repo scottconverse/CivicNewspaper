@@ -45,6 +45,9 @@ fn secret_eq(a: &str, b: &str) -> bool {
 /// not "appear hung" — they are not unbounded or polling. If this app ever grows a
 /// real multi-writer workload, revisit with a pool; until then a pool is premature.
 pub type DbConn = Arc<Mutex<Connection>>;
+const DB_FILE_NAME: &str = "civicdesk.db";
+const LEGACY_DB_FILE_NAME: &str = "civicnews.db";
+const LEGACY_APP_DATA_DIR: &str = "org.civicnews.app";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Source {
@@ -166,7 +169,25 @@ pub fn get_app_db_path(app: &tauri::AppHandle) -> Result<PathBuf, Box<dyn Error 
     use tauri::Manager;
     let app_data = app.path().app_data_dir()?;
     std::fs::create_dir_all(&app_data)?;
-    Ok(app_data.join("civicnews.db"))
+    let db_path = app_data.join(DB_FILE_NAME);
+
+    if !db_path.exists() {
+        let legacy_same_dir = app_data.join(LEGACY_DB_FILE_NAME);
+        let legacy_old_dir = app_data
+            .parent()
+            .map(|parent| parent.join(LEGACY_APP_DATA_DIR).join(LEGACY_DB_FILE_NAME));
+        let legacy_source = if legacy_same_dir.exists() {
+            Some(legacy_same_dir)
+        } else {
+            legacy_old_dir.filter(|path| path.exists())
+        };
+
+        if let Some(legacy_path) = legacy_source {
+            std::fs::copy(legacy_path, &db_path)?;
+        }
+    }
+
+    Ok(db_path)
 }
 
 // CRUD Operations

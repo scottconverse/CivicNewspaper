@@ -38,8 +38,8 @@ export const BetaNotice: React.FC = () => {
             style={{ color: "var(--color-warning)", flexShrink: 0, marginTop: "0.15rem" }}
           />
           <p style={{ fontSize: "0.9rem", margin: 0, color: "var(--text-primary)" }}>
-            You're running an <strong>unsigned public beta</strong> of CivicNewspaper.
-            Windows SmartScreen may warn on install — that's expected.{" "}
+            You're running an <strong>unsigned public beta</strong> of The Civic Desk.
+            Windows SmartScreen may warn on install; that's expected.{" "}
             <a
               href={issuesUrl}
               target="_blank"

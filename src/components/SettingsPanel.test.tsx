@@ -33,17 +33,17 @@ describe("SettingsPanel Component Tests", () => {
     );
 
     // 1. Verify backup path input is editable
-    const backupInput = screen.getByLabelText(/Backup \/ Restore Path/i) as HTMLInputElement;
+    const backupInput = screen.getByLabelText(/Backup folder/i) as HTMLInputElement;
     expect(backupInput.value).toBe("C:\\backup.db");
     
     fireEvent.change(backupInput, { target: { value: "C:\\new-backup.db" } });
     expect(handleBackupPathChange).toHaveBeenCalledWith("C:\\new-backup.db");
 
     // 2. Modify publication name and verify save profile fires with correct profile data
-    const titleInput = screen.getByLabelText(/Publication Name/i) as HTMLInputElement;
+    const titleInput = screen.getByLabelText(/Publication name/i) as HTMLInputElement;
     fireEvent.change(titleInput, { target: { value: "Updated Observer" } });
 
-    const saveBtn = screen.getByRole("button", { name: /Save Profile & Policies/i });
+    const saveBtn = screen.getByRole("button", { name: /Save identity/i });
     fireEvent.click(saveBtn);
 
     expect(handleSaveProfile).toHaveBeenCalledWith({

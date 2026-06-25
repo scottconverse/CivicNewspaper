@@ -1,6 +1,6 @@
 // src/components/LeadQueue.tsx
 import React, { useState } from "react";
-import { RefreshCw, Play, Trash2, Info, ChevronRight, Search, AlertTriangle } from "lucide-react";
+import { RefreshCw, Play, Trash2, Info, ChevronRight, Search, AlertTriangle, ShieldCheck } from "lucide-react";
 import { Lead, Draft } from "../ipc";
 import { DailyScanResults } from "./DailyScanResults";
 
@@ -77,12 +77,14 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
     }
   };
 
+  const highRiskCount = leads.filter((lead) => lead.risk_level === "high").length;
+
   return (
     <div>
       <div className="page-header">
         <div className="page-title">
           <h1>Story Queue</h1>
-          <p>Verify municipal leads, review drafted articles, and compile your local community gazette.</p>
+          <p>Civic signals your sources surfaced, ready to verify and turn into plain-language stories.</p>
         </div>
         <div className="btn-group">
           <button className="btn btn-secondary" onClick={onSyncList} disabled={loading} id="btn-sync-list">
@@ -100,6 +102,33 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
         </div>
       </div>
 
+      <div className="stat-grid">
+        <div className="stat-card stat-blue">
+          <span>New leads</span>
+          <strong>{leads.length}</strong>
+        </div>
+        <div className="stat-card stat-amber">
+          <span>In drafting</span>
+          <strong>{drafts.length}</strong>
+        </div>
+        <div className="stat-card stat-red">
+          <span>High priority</span>
+          <strong>{highRiskCount}</strong>
+        </div>
+        <div className="stat-card stat-green">
+          <span>Sources</span>
+          <strong>{sourceCount ?? 0}</strong>
+        </div>
+      </div>
+
+      <div className="desk-banner">
+        <ShieldCheck size={22} />
+        <div>
+          <strong>Local-first workflow</strong>
+          <span>Scan sources, draft from linked evidence, run guardrails, then publish a static paper.</span>
+        </div>
+      </div>
+
       {latestScanId && (
         <DailyScanResults scanId={latestScanId} onRunScan={onDailyScan} />
       )}
@@ -110,21 +139,21 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
           onClick={() => setQueueSubTab("leads")}
           id="queue-tab-leads"
         >
-          Generated Leads <span className="badge badge-neutral">{leads.length}</span>
+          Leads <span className="badge badge-neutral">{leads.length}</span>
         </button>
         <button
           className={`queue-tab ${queueSubTab === "drafts" ? "active" : ""}`}
           onClick={() => setQueueSubTab("drafts")}
           id="queue-tab-drafts"
         >
-          Editorial Workbench <span className="badge badge-neutral">{drafts.length}</span>
+          Drafts <span className="badge badge-neutral">{drafts.length}</span>
         </button>
       </div>
 
       {queueSubTab === "leads" ? (
         <div>
           {/* Filter and Sort controls */}
-          <div className="card" style={{ display: "flex", gap: "1rem", alignItems: "center", padding: "1rem", marginBottom: "1rem" }}>
+          <div className="card queue-filter-card">
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexGrow: 1 }}>
               <Search size={18} style={{ color: "var(--text-secondary)" }} />
               <input
@@ -159,7 +188,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                   <Info size={36} style={{ color: "var(--text-muted)", marginBottom: "1rem" }} />
                   <h3>Add your first source</h3>
                   <p className="help-text" style={{ marginBottom: "1rem" }}>
-                    CivicNews scans the feeds and record portals you add. Add a source to start finding local story leads.
+                    The Civic Desk scans the feeds and record portals you add. Add a source to start finding local story leads.
                   </p>
                   {onGoToSources && (
                     <button className="btn btn-primary" onClick={onGoToSources} id="btn-empty-go-to-sources">
@@ -180,7 +209,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                   key={lead.id} 
                   className={`card lead-card ${selectedLeadId === lead.id ? "selected-lead" : ""}`}
                   onClick={() => lead.id && onSelect(lead.id)}
-                  style={{ cursor: "pointer", border: selectedLeadId === lead.id ? "2px solid var(--accent-primary)" : "" }}
+                  style={{ cursor: "pointer", borderColor: selectedLeadId === lead.id ? "var(--accent-primary)" : undefined }}
                   data-testid={`lead-card-${lead.id}`}
                 >
                   <div>
@@ -208,7 +237,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                         if (lead.id) onSelect(lead.id);
                       }}
                     >
-                      Draft Article <ChevronRight size={14} />
+                      Draft <ChevronRight size={14} />
                     </button>
                   </div>
                 </div>
@@ -259,7 +288,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                       <td>
                         <div className="btn-group">
                           <button className="btn btn-secondary btn-sm" onClick={() => onOpenDraftEditor(draft)} id={`btn-open-workbench-${draft.id}`}>
-                            Open Workbench
+                            Open
                           </button>
                           <button className="btn btn-secondary btn-sm" onClick={() => onOpenCorrectionModal(draft.id!)} id={`btn-correction-${draft.id}`}>
                             Correction

@@ -1,6 +1,15 @@
 // src/components/Layout.tsx
 import React from "react";
-import { Newspaper, Rss, Cpu, Link as LinkIcon, FileText, Settings, BookOpen } from "lucide-react";
+import {
+  Bot,
+  FileText,
+  Globe2,
+  Link as LinkIcon,
+  Newspaper,
+  Rss,
+  ScanSearch,
+  Settings,
+} from "lucide-react";
 
 interface LayoutProps {
   activeTab: string;
@@ -14,93 +23,83 @@ export const Layout: React.FC<LayoutProps> = ({
   activeTab,
   onTabChange,
   ollamaOnline,
-  selectedDraft,
+  selectedDraft: _selectedDraft,
   children
 }) => {
+  const navGroups = [
+    {
+      label: "Newsroom",
+      items: [
+        { id: "queue", label: "Story Queue", icon: Newspaper },
+        { id: "dailyScan", label: "Daily Scan", icon: ScanSearch },
+        { id: "workbench", label: "Workbench", icon: FileText },
+      ],
+    },
+    {
+      label: "Set up",
+      items: [
+        { id: "sources", label: "Sources", icon: Rss },
+        { id: "onboarding", label: "AI Model", icon: Bot },
+        { id: "publish", label: "Publishing", icon: Globe2 },
+      ],
+    },
+    {
+      label: "Tools",
+      items: [
+        { id: "pairing", label: "Browser Pairing", icon: LinkIcon },
+        { id: "settings", label: "Ethics & Backups", icon: Settings },
+      ],
+    },
+  ];
+
   return (
     <div className="app-container">
-      {/* Sidebar Navigation */}
       <aside className="sidebar">
         <div className="brand">
-          <Newspaper className="brand-icon" />
-          <span className="brand-name">CivicNews</span>
+          <span className="brand-icon-shell">
+            <Newspaper className="brand-icon" aria-hidden="true" />
+          </span>
+          <div>
+            <span className="brand-name">The Civic Desk</span>
+            <span className="brand-kicker">RIVERTON - OHIO</span>
+          </div>
         </div>
         <nav>
-          <ul className="nav-links">
-            <li>
-              <button
-                className={`nav-link ${activeTab === "queue" ? "active" : ""}`}
-                onClick={() => onTabChange("queue")}
-                id="nav-tab-queue"
-              >
-                <BookOpen size={18} />
-                Story Queue
-              </button>
-            </li>
-            <li>
-              <button
-                className={`nav-link ${activeTab === "sources" ? "active" : ""}`}
-                onClick={() => onTabChange("sources")}
-                id="nav-tab-sources"
-              >
-                <Rss size={18} />
-                Sources
-              </button>
-            </li>
-            <li>
-              <button
-                className={`nav-link ${activeTab === "onboarding" ? "active" : ""}`}
-                onClick={() => onTabChange("onboarding")}
-                id="nav-tab-onboarding"
-              >
-                <Cpu size={18} />
-                AI Setup
-              </button>
-            </li>
-            <li>
-              <button
-                className={`nav-link ${activeTab === "pairing" ? "active" : ""}`}
-                onClick={() => onTabChange("pairing")}
-                id="nav-tab-pairing"
-              >
-                <LinkIcon size={18} />
-                Browser Pairing
-              </button>
-            </li>
-            <li>
-              <button
-                className={`nav-link ${activeTab === "settings" ? "active" : ""}`}
-                onClick={() => onTabChange("settings")}
-                id="nav-tab-settings"
-              >
-                <Settings size={18} />
-                Ethics & Backups
-              </button>
-            </li>
-            {selectedDraft && (
-              <li>
-                <button
-                  className={`nav-link ${activeTab === "workbench" ? "active" : ""}`}
-                  onClick={() => onTabChange("workbench")}
-                  id="nav-tab-workbench"
-                >
-                  <FileText size={18} />
-                  Story Workbench
-                </button>
-              </li>
-            )}
-          </ul>
+          {navGroups.map((group) => (
+            <div className="nav-group" key={group.label}>
+              <div className="nav-group-label">{group.label}</div>
+              <ul className="nav-links">
+                {group.items.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <li key={item.id}>
+                      <button
+                        className={`nav-link ${activeTab === item.id ? "active" : ""}`}
+                        onClick={() => onTabChange(item.id)}
+                        id={`nav-tab-${item.id}`}
+                      >
+                        <Icon size={18} />
+                        {item.label}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
         </nav>
 
         <div className="sidebar-footer">
           <div className="ollama-status-indicator">
             <span className={`status-dot ${ollamaOnline ? "online" : "offline"}`} />
-            AI Status: {ollamaOnline ? "Online" : "Offline"}
+            <div>
+              <strong>{ollamaOnline ? "Local AI ready" : "Local AI offline"}</strong>
+              <span>qwen3:14b - private</span>
+            </div>
           </div>
         </div>
       </aside>
 
-      {/* Main Content Area */}
       <main className="main-content">
         {children}
       </main>

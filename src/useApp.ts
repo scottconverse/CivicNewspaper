@@ -38,6 +38,7 @@ import {
   DiscoveredSource,
   DiscoveredSourceCategory,
   GuardrailsReport,
+  isTauri,
   runDailyScan,
   getSetting,
   setSetting,
@@ -177,6 +178,13 @@ export function useApp() {
   const pullLogEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!isTauri()) {
+      setPublishPath("C:\\CivicDesk\\site");
+      setBackupPathInput("C:\\CivicDesk\\backups\\civic-desk.db");
+      setAppVersion("browser preview");
+      return;
+    }
+
     async function loadDefaultPaths() {
       try {
         const docDir = await documentDir();
@@ -203,22 +211,30 @@ export function useApp() {
   useEffect(() => {
     loadInitialData();
     pollOllamaStatus();
-    
-    getSystemRam().then(async (ram) => {
-      setSystemRam(ram);
-      try {
-        let model = await getSetting("model.selected");
-        if (!model) {
-          model = ram >= 16 ? modelsConfig.high : ram >= 8 ? modelsConfig.medium : modelsConfig.low;
-          await setSetting("model.selected", model);
+
+    if (!isTauri()) {
+      setSystemRam(16);
+      setWizardModel(modelsConfig.high);
+      setOllamaOnline(true);
+    } else {
+      getSystemRam().then(async (ram) => {
+        setSystemRam(ram);
+        try {
+          let model = await getSetting("model.selected");
+          if (!model) {
+            model = ram >= 16 ? modelsConfig.high : ram >= 8 ? modelsConfig.medium : modelsConfig.low;
+            await setSetting("model.selected", model);
+          }
+          setWizardModel(model);
+        } catch (err) {
+          console.error("Failed to load or initialize selected model setting", err);
         }
-        setWizardModel(model);
-      } catch (err) {
-        console.error("Failed to load or initialize selected model setting", err);
-      }
-    }).catch(console.error);
+      }).catch(console.error);
+    }
 
     const setupListeners = async () => {
+      if (!isTauri()) return () => {};
+
       const progressUnlisten = await listen<OllamaPullProgress>("ollama-pull-progress", (event) => {
         const progressLine = formatPullProgressLine(event.payload);
         setPullProgressText(prev => [...prev.slice(-30), progressLine]);
@@ -289,6 +305,36 @@ export function useApp() {
   }, [pullProgressText]);
 
   const loadInitialData = async () => {
+    if (!isTauri()) {
+      setSources(prev => prev.length ? prev : [
+        {
+          id: 1,
+          name: "Riverton Council Agendas",
+          url: "https://riverton-oh.gov/council/agendas",
+          type: "primary_record",
+          tier: "official_record",
+          status: "online",
+          last_scraped: new Date().toISOString(),
+        },
+      ]);
+      setLeads([]);
+      setDrafts([]);
+      setPairedClients([]);
+      setCommunityProfile({
+        site_title: "The Civic Desk",
+        site_subtitle: "Local records, readable stories.",
+        about_text: "Browser preview profile.",
+        ethics_text: "Verify claims against public evidence before publishing.",
+        how_we_report_text: "We collect public records, summarize carefully, and preserve links to source material.",
+        money_threshold: 50000,
+        watchlist: [],
+        city: "Riverton",
+        state: "OH",
+      });
+      setErrorMessage("");
+      return;
+    }
+
     try {
       setLoading(true);
       const s = await getSources();
@@ -335,6 +381,11 @@ export function useApp() {
   };
 
   const pollOllamaStatus = async () => {
+    if (!isTauri()) {
+      setOllamaOnline(true);
+      return;
+    }
+
     try {
       const status = await checkOllama();
       setOllamaOnline(status);
@@ -359,6 +410,11 @@ export function useApp() {
   };
 
   const handleDailyScan = async () => {
+    if (!isTauri()) {
+      setStatusMessage("Daily Scan completed in browser preview.");
+      return;
+    }
+
     try {
       setLoading(true);
       setStatusMessage("Checking AI model presence...");
@@ -403,6 +459,22 @@ export function useApp() {
   const handleAddSource = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newSourceName || !newSourceUrl) return;
+    if (!isTauri()) {
+      const next: Source = {
+        id: Date.now(),
+        name: newSourceName,
+        url: newSourceUrl,
+        type: newSourceType,
+        tier: newSourceTier,
+        status: "online",
+        last_scraped: new Date().toISOString(),
+      };
+      setSources(prev => [...prev, next]);
+      setNewSourceName("");
+      setNewSourceUrl("");
+      setStatusMessage("Source added in browser preview.");
+      return;
+    }
     try {
       setLoading(true);
       await addSource(newSourceName, newSourceUrl, newSourceType, newSourceTier);
@@ -419,6 +491,11 @@ export function useApp() {
   };
 
   const handleDeleteSource = async (id: number) => {
+    if (!isTauri()) {
+      setSources(prev => prev.filter(source => source.id !== id));
+      setStatusMessage("Source removed in browser preview.");
+      return;
+    }
     try {
       setLoading(true);
       await deleteSource(id);
@@ -435,6 +512,52 @@ export function useApp() {
   const handleRunDiscovery = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!discoveryCity || !discoveryState) return;
+    if (!isTauri()) {
+      setDiscoveryLoading(true);
+      setErrorMessage("");
+      window.setTimeout(() => {
+        const citySlug = discoveryCity.trim().toLowerCase().replace(/\s+/g, "-");
+        const stateSlug = discoveryState.trim().toLowerCase();
+        setDiscoveredCats([
+          {
+            category_name: "Official records",
+            type: "primary_record",
+            candidates: [
+              {
+                name: `${discoveryCity} Council Agendas`,
+                url: `https://${citySlug}-${stateSlug}.gov/council/agendas`,
+                type: "primary_record",
+              },
+              {
+                name: `${discoveryCity} Public Notices`,
+                url: `https://${citySlug}-${stateSlug}.gov/public-notices`,
+                type: "official_comm",
+              },
+            ],
+          },
+          {
+            category_name: "Community signals",
+            type: "community_signal",
+            candidates: [
+              {
+                name: `${discoveryCity} Library Events`,
+                url: `https://library.${citySlug}-${stateSlug}.org/events`,
+                type: "community_signal",
+              },
+            ],
+          },
+        ]);
+        setSelectedDiscovered([
+          {
+            name: `${discoveryCity} Council Agendas`,
+            url: `https://${citySlug}-${stateSlug}.gov/council/agendas`,
+            type: "primary_record",
+          },
+        ]);
+        setDiscoveryLoading(false);
+      }, 250);
+      return;
+    }
     try {
       setDiscoveryLoading(true);
       setErrorMessage("");
@@ -466,6 +589,25 @@ export function useApp() {
   };
 
   const handleImportDiscoveredSources = async () => {
+    if (!isTauri()) {
+      const imported = selectedDiscovered.map((item, index): Source => ({
+        id: Date.now() + index,
+        name: item.name,
+        url: item.url,
+        type: item.type,
+        tier: "community_signal",
+        status: "online",
+        last_scraped: new Date().toISOString(),
+      }));
+      setSources(prev => [...prev, ...imported]);
+      setShowDiscoveryModal(false);
+      setDiscoveryCity("");
+      setDiscoveryState("");
+      setDiscoveredCats([]);
+      setSelectedDiscovered([]);
+      setStatusMessage(`Imported ${imported.length} source(s) in browser preview.`);
+      return;
+    }
     try {
       setLoading(true);
       setStatusMessage("Importing selected sources...");
@@ -496,6 +638,26 @@ export function useApp() {
   const handleBulkImport = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!bulkImportText.trim()) return;
+    if (!isTauri()) {
+      const imported: Source[] = bulkImportText
+        .split("\n")
+        .map((rawLine) => parseBulkImportLine(rawLine, bulkImportType))
+        .filter((parsed): parsed is NonNullable<ReturnType<typeof parseBulkImportLine>> => Boolean(parsed))
+        .map((parsed, index) => ({
+          id: Date.now() + index,
+          name: parsed.name,
+          url: parsed.url,
+          type: parsed.type,
+          tier: "community_signal",
+          status: "online",
+          last_scraped: new Date().toISOString(),
+        }));
+      setSources(prev => [...prev, ...imported]);
+      setShowBulkImportModal(false);
+      setBulkImportText("");
+      setStatusMessage(`Imported ${imported.length} source(s) in browser preview.`);
+      return;
+    }
     try {
       setBulkImportLoading(true);
       setErrorMessage("");
@@ -523,6 +685,23 @@ export function useApp() {
   const handleGeneratePin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!pairingLabel) return;
+    if (!isTauri()) {
+      const seg = () => Array.from({ length: 4 }, () => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random() * 32)]).join("");
+      setGeneratedPin(`${seg()}-${seg()}-${seg()}`);
+      setPinExpiryMsg("PIN expires in 5 minutes. Enter this PIN in your browser extension config.");
+      setPairedClients(prev => [
+        ...prev,
+        {
+          id: Date.now(),
+          token: "browser-preview",
+          label: pairingLabel,
+          created_at: new Date().toISOString(),
+          revoked: false,
+        },
+      ]);
+      setPairingLabel("");
+      return;
+    }
     try {
       setLoading(true);
       const pin = await generatePairingPin(pairingLabel);
@@ -539,6 +718,12 @@ export function useApp() {
   };
 
   const handleRevokeClient = async (id: number) => {
+    if (!isTauri()) {
+      setPairedClients(prev => prev.filter(client => client.id !== id));
+      setStatusMessage("Paired client access revoked in browser preview.");
+      return;
+    }
+
     try {
       setLoading(true);
       await revokePairing(id);
@@ -553,6 +738,12 @@ export function useApp() {
   };
 
   const handleSaveProfile = async (profile: CommunityProfile) => {
+    if (!isTauri()) {
+      setCommunityProfile(profile);
+      setStatusMessage("Publication identity updated in browser preview.");
+      return;
+    }
+
     try {
       setLoading(true);
       await saveCommunityProfile(profile);
@@ -571,7 +762,9 @@ export function useApp() {
     setEvidenceList([]);
     setGuardrailsReport(null);
     if (lead.id) {
-      getEvidence(lead.id).then(setEvidenceList).catch(console.error);
+      if (isTauri()) {
+        getEvidence(lead.id).then(setEvidenceList).catch(console.error);
+      }
     }
   };
 
@@ -849,6 +1042,13 @@ export function useApp() {
 
   const handlePullModel = () => {
     if (!wizardModel) return;
+    if (!isTauri()) {
+      setPullingModel(true);
+      setPullProgressText(["Preparing preview download...", "Preview download complete (100%)"]);
+      window.setTimeout(() => setPullingModel(false), 350);
+      return;
+    }
+
     setPullingModel(true);
     setPullProgressText(["Initializing download..."]);
     pullOllamaModel(wizardModel).catch((e) => {

@@ -1,8 +1,8 @@
-CivicNewspaper - PRE-RELEASE BETA (Unsigned)
+The Civic Desk - PRE-RELEASE BETA (Unsigned)
 
 PLEASE READ BEFORE INSTALLING
 
-This is an unsigned, pre-release BETA build of CivicNewspaper. It has not been
+This is an unsigned, pre-release BETA build of The Civic Desk. It has not been
 code-signed with a commercial certificate.
 
 What this means for you:
@@ -17,7 +17,7 @@ What this means for you:
    warranty of any kind. Do not rely on it for anything critical, and keep
    backups of any data you care about.
 
- * CivicNewspaper runs a local AI model and a local-only HTTP server on your
+ * The Civic Desk runs a local AI model and a local-only HTTP server on your
    machine (loopback / 127.0.0.1). No data is sent to the cloud by the core app.
 
 By continuing, you acknowledge that this is unsigned beta software and that the

@@ -28,8 +28,12 @@ describe("Layout Component Tests", () => {
     fireEvent.click(sourcesBtn);
     expect(handleTabChange).toHaveBeenCalledWith("sources");
 
-    const onboardingBtn = screen.getByText("AI Setup");
+    const onboardingBtn = screen.getByText("AI Model");
     fireEvent.click(onboardingBtn);
     expect(handleTabChange).toHaveBeenCalledWith("onboarding");
+
+    const publishBtn = screen.getByText("Publishing");
+    fireEvent.click(publishBtn);
+    expect(handleTabChange).toHaveBeenCalledWith("publish");
   });
 });

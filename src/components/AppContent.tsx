@@ -2,12 +2,12 @@
 import React from "react";
 import { LeadQueue } from "./LeadQueue";
 import { Workbench } from "./Workbench";
-import { OnboardingWizard } from "./OnboardingWizard";
 import { PairDialog } from "./PairDialog";
 import { SettingsPanel } from "./SettingsPanel";
 import { PublishPanel } from "./PublishPanel";
-import { SystemStatus } from "./SystemStatus";
 import { SourcesPanel } from "./SourcesPanel";
+import { DailyScanPage } from "./DailyScanPage";
+import { AiModelPanel } from "./AiModelPanel";
 import { Modal } from "./Modal";
 import { ConfirmModal } from "./ConfirmModal";
 import { BetaNotice } from "./BetaNotice";
@@ -104,7 +104,10 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
             latestScanId={app.latestScanId}
             sourceCount={app.sources.length}
             onGoToSources={() => app.setActiveTab("sources")}
-            onSelect={app.handleOpenDraftWizard}
+            onSelect={(id) => {
+              const lead = app.leads.find((item: any) => item.id === id);
+              if (lead) app.handleOpenDraftWizard(lead);
+            }}
             onSyncList={app.loadInitialData}
             onIngest={app.handleIngest}
             onDailyScan={app.handleDailyScan}
@@ -113,6 +116,19 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
             onDeleteDraft={app.handleDeleteDraft}
           />
         )
+      )}
+
+      {app.activeTab === "dailyScan" && (
+        <DailyScanPage
+          latestScanId={app.latestScanId}
+          leadCount={app.leads.length}
+          draftCount={app.drafts.length}
+          sourceCount={app.sources.length}
+          loading={app.loading}
+          ollamaOnline={app.ollamaOnline}
+          onRunScan={app.handleDailyScan}
+          onRefresh={app.loadInitialData}
+        />
       )}
 
       {app.activeTab === "sources" && (
@@ -157,19 +173,15 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
       )}
 
       {app.activeTab === "onboarding" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          <OnboardingWizard
-            ollamaOnline={app.ollamaOnline}
-            systemRam={app.systemRam}
-            initialStep={app.onboardingStep}
-            onComplete={() => app.setActiveTab("queue")}
-          />
-          <SystemStatus
-            ollamaOnline={app.ollamaOnline}
-            dbVersion="v1.1.0"
-            appVersion={app.appVersion}
-          />
-        </div>
+        <AiModelPanel
+          ollamaOnline={app.ollamaOnline}
+          systemRam={app.systemRam}
+          wizardModel={app.wizardModel}
+          onWizardModelChange={app.setWizardModel}
+          pullingModel={app.pullingModel}
+          pullProgressText={app.pullProgressText}
+          onPullModel={app.handlePullModel}
+        />
       )}
 
       {app.activeTab === "pairing" && (
@@ -193,57 +205,66 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
       )}
 
       {app.activeTab === "settings" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          <SettingsPanel
-            communityProfile={app.communityProfile}
-            onSaveProfile={app.handleSaveProfile}
-            backupPathInput={app.backupPathInput}
-            onBackupPathInputChange={app.setBackupPathInput}
-            onBackupSave={app.handleBackupSave}
-            onBackupRestore={app.handleBackupRestore}
-          />
-          <PublishPanel
-            publishPath={app.publishPath}
-            onPublishPathChange={app.setPublishPath}
-            publishStep={app.publishStep}
-            onPublishStepChange={app.setPublishStep}
-            loading={app.loading}
-            onPublish={app.handlePublish}
-            onOpenLocalPath={openLocalPath}
-          />
-        </div>
+        <SettingsPanel
+          communityProfile={app.communityProfile}
+          onSaveProfile={app.handleSaveProfile}
+          backupPathInput={app.backupPathInput}
+          onBackupPathInputChange={app.setBackupPathInput}
+          onBackupSave={app.handleBackupSave}
+          onBackupRestore={app.handleBackupRestore}
+        />
       )}
 
-      {app.activeTab === "workbench" && app.selectedDraft && (
-        <Workbench
-          selectedLead={app.selectedLead}
-          selectedDraft={app.selectedDraft}
-          evidenceList={app.evidenceList}
-          guardrailsReport={app.guardrailsReport}
-          ollamaOnline={app.ollamaOnline}
-          manualLlmMode={app.manualLlmMode}
-          draftFormat={app.draftFormat}
-          onDraftFormatChange={app.setDraftFormat}
-          customSystemPrompt={app.customSystemPrompt}
-          onCustomSystemPromptChange={app.setCustomSystemPrompt}
-          generatingText={app.generatingText}
-          onGenerateText={app.handleGenerateText}
-          onCancelDraftWizard={() => app.setSelectedLead(null)}
-          onSaveDraftEditor={app.handleSaveDraftEditor}
-          onCloseWorkbench={() => {
-            app.setActiveTab("queue");
-            app.setSelectedDraft(null);
-          }}
-          onDeleteDraft={app.handleDeleteDraft}
-          onDecision={app.handleDecision}
-            onKillStory={app.handleKillStory}
-          isGeneratingSocial={app.isGeneratingSocial}
-          socialPackResult={app.socialPackResult}
-          onSocialPackResultChange={app.setSocialPackResult}
-          onGenerateSocial={app.handleGenerateSocial}
-          onUpdateDraftTitle={(title) => app.selectedDraft && app.setSelectedDraft({ ...app.selectedDraft, title })}
-          onUpdateDraftContent={(content) => app.selectedDraft && app.setSelectedDraft({ ...app.selectedDraft, content })}
+      {app.activeTab === "publish" && (
+        <PublishPanel
+          publishPath={app.publishPath}
+          onPublishPathChange={app.setPublishPath}
+          publishStep={app.publishStep}
+          onPublishStepChange={app.setPublishStep}
+          loading={app.loading}
+          onPublish={app.handlePublish}
+          onOpenLocalPath={openLocalPath}
         />
+      )}
+
+      {app.activeTab === "workbench" && (
+        app.selectedDraft ? (
+          <Workbench
+            selectedLead={app.selectedLead}
+            selectedDraft={app.selectedDraft}
+            evidenceList={app.evidenceList}
+            guardrailsReport={app.guardrailsReport}
+            ollamaOnline={app.ollamaOnline}
+            manualLlmMode={app.manualLlmMode}
+            draftFormat={app.draftFormat}
+            onDraftFormatChange={app.setDraftFormat}
+            customSystemPrompt={app.customSystemPrompt}
+            onCustomSystemPromptChange={app.setCustomSystemPrompt}
+            generatingText={app.generatingText}
+            onGenerateText={app.handleGenerateText}
+            onCancelDraftWizard={() => app.setSelectedLead(null)}
+            onSaveDraftEditor={app.handleSaveDraftEditor}
+            onCloseWorkbench={() => {
+              app.setActiveTab("queue");
+              app.setSelectedDraft(null);
+            }}
+            onDeleteDraft={app.handleDeleteDraft}
+            onDecision={app.handleDecision}
+            onKillStory={app.handleKillStory}
+            isGeneratingSocial={app.isGeneratingSocial}
+            socialPackResult={app.socialPackResult}
+            onSocialPackResultChange={app.setSocialPackResult}
+            onGenerateSocial={app.handleGenerateSocial}
+            onUpdateDraftTitle={(title) => app.selectedDraft && app.setSelectedDraft({ ...app.selectedDraft, title })}
+            onUpdateDraftContent={(content) => app.selectedDraft && app.setSelectedDraft({ ...app.selectedDraft, content })}
+          />
+        ) : (
+          <div className="empty-state-card">
+            <h1>Workbench</h1>
+            <p>Open a draft from the Story Queue to review evidence, edit the story, and approve it for publishing.</p>
+            <button className="btn btn-primary" onClick={() => app.setActiveTab("queue")}>Go to Story Queue</button>
+          </div>
+        )
       )}
 
       {/* Correction Modal */}

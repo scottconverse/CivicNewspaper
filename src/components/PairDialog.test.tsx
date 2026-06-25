@@ -34,7 +34,7 @@ describe("PairDialog Component Tests", () => {
     );
 
     // 1. Submit form (clicking generate button)
-    const generateBtn = screen.getByRole("button", { name: /Generate Pairing Token/i });
+    const generateBtn = screen.getByRole("button", { name: /Generate new code/i });
     fireEvent.click(generateBtn);
     expect(handleGeneratePin).toHaveBeenCalled();
 

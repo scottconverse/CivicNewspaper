@@ -19,7 +19,7 @@ describe("PublishPanel Component Tests", () => {
       />
     );
 
-    const nextBtn = screen.getByRole("button", { name: /Next: Compile/i });
+    const nextBtn = screen.getByRole("button", { name: /Compile site/i });
     fireEvent.click(nextBtn);
 
     // Expect validation error to appear and no state change to be triggered
@@ -43,7 +43,7 @@ describe("PublishPanel Component Tests", () => {
       />
     );
 
-    const compileBtn = screen.getByRole("button", { name: /Compile Static Site/i });
+    const compileBtn = screen.getByRole("button", { name: /Compile site/i });
     fireEvent.click(compileBtn);
 
     // Verify error is empty and action is triggered

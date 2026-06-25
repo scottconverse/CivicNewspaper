@@ -18,7 +18,7 @@ function ipcUnavailable(command: string): never {
   if (!warnedIpcUnavailable) {
     warnedIpcUnavailable = true;
     console.warn(
-      "Desktop bridge unavailable: IPC commands cannot run outside the CivicNews desktop app. " +
+      "Desktop bridge unavailable: IPC commands cannot run outside The Civic Desk desktop app. " +
         "This is expected in a browser preview or test harness."
     );
   }
@@ -70,7 +70,7 @@ export function toUserMessage(e: unknown): string {
       case "NO_EVIDENCE":
         return "There's nothing to scan yet — run Scrape & Detect first to collect evidence, then try again.";
       case "MODEL_NOT_INSTALLED":
-        return "The selected AI model isn't installed yet. Open the AI Setup wizard to download it, then try again.";
+        return "The selected AI model isn't installed yet. Open AI Model to download it, then try again.";
       default:
         // Unknown typed prefix: surface the human-readable remainder without the
         // raw token, falling back to the whole message if there's nothing after it.
@@ -79,7 +79,7 @@ export function toUserMessage(e: unknown): string {
   }
 
   if (lower.includes("desktop bridge is unavailable") || lower.includes("__tauri")) {
-    return "This action needs the CivicNews desktop app. It can't run in a browser preview.";
+    return "This action needs The Civic Desk desktop app. It can't run in a browser preview.";
   }
   // QA-C1: a missing model surfaces from Ollama as e.g. `model "qwen3:8b" not
   // found`. Catch it before the generic connection / not-found branches and give
@@ -88,7 +88,7 @@ export function toUserMessage(e: unknown): string {
     lower.includes("model") &&
     (lower.includes("not found") || lower.includes("try pulling") || lower.includes("no such model"))
   ) {
-    return "The selected AI model isn't downloaded yet. Open the AI Setup wizard to download it, then try again.";
+    return "The selected AI model isn't downloaded yet. Open AI Model to download it, then try again.";
   }
   if (
     lower.includes("ollama") ||
@@ -99,7 +99,7 @@ export function toUserMessage(e: unknown): string {
     return "Couldn't reach the local AI model service (Ollama). Make sure it's installed and running, then try again.";
   }
   if (lower.includes("permission") || lower.includes("denied") || lower.includes("access is denied")) {
-    return "CivicNews didn't have permission to complete this. Check the file or folder permissions and try again.";
+    return "The Civic Desk didn't have permission to complete this. Check the file or folder permissions and try again.";
   }
   if (lower.includes("not found") || lower.includes("no such file")) {
     return "The requested item couldn't be found. It may have been moved or deleted.";

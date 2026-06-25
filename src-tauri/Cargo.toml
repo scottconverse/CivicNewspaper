@@ -1,6 +1,6 @@
 [package]
 name = "civicnews"
-version = "0.2.6"
+version = "0.2.7"
 description = "A local-first newsroom tool with verifiable trust chain."
 authors = ["Scott Converse <sconverse@gmail.com>"]
 license = "MIT"
@@ -55,4 +55,3 @@ futures-util = "0.3"
 # production server builds its Router without any `tower` layers, so it belongs
 # in dev-dependencies. See ENG-Min1.
 tower = { version = "0.4", features = ["util"] }
-

@@ -14,13 +14,13 @@ describe("toUserMessage typed-prefix translation", () => {
     expect(msg.toLowerCase()).toContain("scrape & detect");
   });
 
-  it("translates MODEL_NOT_INSTALLED: into an AI Setup remedy", () => {
+  it("translates MODEL_NOT_INSTALLED: into an AI Model remedy", () => {
     const msg = toUserMessage(
       "MODEL_NOT_INSTALLED: The selected AI model 'qwen3:8b' is not installed. Open Setup and download a model before drafting."
     );
     expect(msg).not.toContain("MODEL_NOT_INSTALLED");
     expect(msg).not.toContain("Something went wrong");
-    expect(msg.toLowerCase()).toContain("ai setup");
+    expect(msg.toLowerCase()).toContain("ai model");
   });
 
   it("strips an unknown typed prefix and surfaces the human-readable remainder", () => {
