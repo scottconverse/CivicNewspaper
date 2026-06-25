@@ -7,6 +7,9 @@
 *.sha256    text eol=lf
 *.yml       text eol=lf
 *.yaml      text eol=lf
+src-tauri/tests/fixtures/test-ollama-fixture-aarch64-apple-darwin       text eol=lf
+src-tauri/tests/fixtures/test-ollama-fixture-x86_64-apple-darwin        text eol=lf
+src-tauri/tests/fixtures/test-ollama-fixture-x86_64-unknown-linux-gnu   text eol=lf
 
 # Migration SQL stays LF — Linux/macOS dev parity and rusqlite parser.
 *.sql       text eol=lf

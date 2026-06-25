@@ -653,6 +653,7 @@ impl OllamaSidecar {
                 #[cfg(test)]
                 SidecarChild::Std(mut c) => {
                     c.kill().map_err(|e| format!("Kill error: {}", e))?;
+                    c.wait().map_err(|e| format!("Wait error: {}", e))?;
                 }
             }
         }

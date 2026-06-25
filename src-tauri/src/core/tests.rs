@@ -1017,11 +1017,10 @@ mod tests {
     // Tauri AppHandle, so no mock_app() is constructed (P5-004 resolved).
     #[test]
     fn test_ollama_sidecar_spawns_a_live_child() {
-        // Reserve an OS-assigned port, then release it, so the collision probe
-        // sees a free port and start_for_test proceeds to spawn the fixture.
-        let probe = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
-        let free_addr = probe.local_addr().unwrap().to_string();
-        drop(probe);
+        // Port 0 cannot have a listener, so the collision probe deterministically
+        // sees a free address without racing other parallel tests for an
+        // OS-assigned ephemeral port.
+        let free_addr = "127.0.0.1:0".to_string();
 
         let sidecar = crate::core::llm::OllamaSidecar::new();
         assert!(sidecar.child.lock().unwrap().is_none());
@@ -1044,9 +1043,7 @@ mod tests {
     // MUTATION-RESISTANT (per Amendments 001/002). Cross-platform: no mock_app().
     #[test]
     fn test_ollama_sidecar_terminates_cleanly_on_drop() {
-        let probe = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
-        let free_addr = probe.local_addr().unwrap().to_string();
-        drop(probe);
+        let free_addr = "127.0.0.1:0".to_string();
 
         // test calls sidecar.stop() via drop
         let pid = {
@@ -2027,12 +2024,9 @@ mod tests {
     // the explicit stop() here) reaps it so no process leaks.
     #[test]
     fn test_sidecar_spawns_when_port_free() {
-        // Bind then immediately release to obtain a port number that is free for
-        // the spawn attempt.
-        let addr = {
-            let l = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
-            l.local_addr().unwrap().to_string()
-        };
+        // Port 0 cannot have a listener, so this avoids a race where another
+        // parallel test grabs a just-released ephemeral port before the probe.
+        let addr = "127.0.0.1:0".to_string();
 
         let sidecar = crate::core::llm::OllamaSidecar::new();
         let res = sidecar.start_for_test(&addr);
