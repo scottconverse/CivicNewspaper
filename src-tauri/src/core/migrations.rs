@@ -31,6 +31,10 @@ const MIGRATIONS: &[(&str, &str)] = &[
         "0007_source_tier_check",
         include_str!("../../migrations/0007_source_tier_check.sql"),
     ),
+    (
+        "0008_draft_publish_gate",
+        include_str!("../../migrations/0008_draft_publish_gate.sql"),
+    ),
 ];
 
 pub fn run_migrations(conn: &mut Connection) -> Result<(), Box<dyn Error + Send + Sync>> {

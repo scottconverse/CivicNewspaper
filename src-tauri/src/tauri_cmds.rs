@@ -386,16 +386,80 @@ pub fn delete_draft(db: tauri::State<'_, DbConn>, id: i32) -> Result<(), String>
     db::delete_draft(&conn, id).map_err(|e| e.to_string())
 }
 
+/// GG-B2 / GG-C1 / RE-AUDIT M1+M5: the editorial publish gate, factored out of the
+/// Tauri command so it is directly unit-testable. Returns Ok(()) when `decision`
+/// may proceed. Non-publish transitions (hold, kill, draft_generated, …) always
+/// pass. Publish-advancing transitions (ready_to_publish / published / corrected)
+/// require a recorded human attestation and must be guardrail-clean OR carry a
+/// logged override (which this records). "corrected" is included so the
+/// corrections path cannot bypass the gate (RE-AUDIT M1).
+pub(crate) fn enforce_publish_gate(
+    conn: &rusqlite::Connection,
+    id: i32,
+    decision: &str,
+    override_reason: Option<&str>,
+) -> Result<(), String> {
+    const PUBLISH_STATES: [&str; 3] = ["ready_to_publish", "published", "corrected"];
+    if !PUBLISH_STATES.contains(&decision) {
+        return Ok(());
+    }
+
+    // 1. Require a recorded human attestation (GG-C1).
+    let (attested_at, _existing_override) =
+        db::get_draft_publish_gate(conn, id).map_err(|e| e.to_string())?;
+    if attested_at.as_deref().unwrap_or("").trim().is_empty() {
+        return Err("ATTESTATION_REQUIRED: A person must confirm they verified this draft against its cited evidence before it can be approved for publishing.".to_string());
+    }
+
+    // 2. Block on error-severity guardrail issues unless an explicit, logged
+    //    override reason is supplied (GG-B2).
+    let report =
+        crate::core::guardrails::run_guardrails_check(conn, id).map_err(|e| e.to_string())?;
+    if !report.is_clean {
+        match override_reason.map(str::trim).filter(|s| !s.is_empty()) {
+            Some(reason) => {
+                db::record_guardrail_override(conn, id, reason).map_err(|e| e.to_string())?;
+            }
+            None => {
+                let errs: Vec<String> = report
+                    .issues
+                    .iter()
+                    .filter(|i| i.severity == "error")
+                    .map(|i| i.message.clone())
+                    .collect();
+                return Err(format!(
+                    "GUARDRAILS_BLOCKED: This draft has {} unresolved editorial issue(s) that must be fixed before publishing (or published with an explicit override): {}",
+                    errs.len(),
+                    errs.join(" | ")
+                ));
+            }
+        }
+    }
+    Ok(())
+}
+
 #[tauri::command]
 pub fn story_decision(
     db: tauri::State<'_, DbConn>,
     id: i32,
     decision: String,
+    override_reason: Option<String>,
 ) -> Result<(), String> {
     let conn = db
         .lock()
         .map_err(|_| "Failed to lock database".to_string())?;
+    enforce_publish_gate(&conn, id, &decision, override_reason.as_deref())?;
     db::update_draft_status(&conn, id, &decision).map_err(|e| e.to_string())
+}
+
+/// GG-C1: record that a human has verified this draft against its cited evidence.
+/// Required before `story_decision` will advance a draft to a publishable status.
+#[tauri::command]
+pub fn attest_draft(db: tauri::State<'_, DbConn>, id: i32, editor: String) -> Result<(), String> {
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
+    db::attest_draft(&conn, id, &editor).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -484,6 +548,32 @@ pub fn guardrails_check(
 ) -> Result<GuardrailsReport, String> {
     let conn = db.lock().map_err(|_| "Failed to lock database")?;
     guardrails::run_guardrails_check(&conn, draft_id).map_err(|e| e.to_string())
+}
+
+/// GG (editor-editable guardrails): return the newsroom's guardrail word lists,
+/// seeded with the built-in defaults when unset.
+#[tauri::command]
+pub fn get_guardrail_terms(
+    db: tauri::State<'_, DbConn>,
+) -> Result<guardrails::GuardrailConfig, String> {
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
+    Ok(guardrails::load_guardrail_config(&conn))
+}
+
+/// GG (editor-editable guardrails): persist the newsroom's guardrail word lists.
+/// `blocking` is the subset of words that hard-block publishing; everything else
+/// only warns.
+#[tauri::command]
+pub fn set_guardrail_terms(
+    db: tauri::State<'_, DbConn>,
+    config: guardrails::GuardrailConfig,
+) -> Result<(), String> {
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
+    guardrails::save_guardrail_config(&conn, &config).map_err(|e| e.to_string())
 }
 
 #[tauri::command]

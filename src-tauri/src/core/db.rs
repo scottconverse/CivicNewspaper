@@ -512,6 +512,41 @@ pub fn update_draft_status(conn: &Connection, id: i32, status: &str) -> SqlResul
     Ok(())
 }
 
+/// GG-C1: record that a human verified this draft against its cited evidence.
+/// Stamped before a draft may be approved for publishing (see `story_decision`).
+pub fn attest_draft(conn: &Connection, id: i32, editor: &str) -> SqlResult<()> {
+    let now = Utc::now().to_rfc3339();
+    conn.execute(
+        "UPDATE drafts SET attested_by = ?1, attested_at = ?2, updated_at = ?2 WHERE id = ?3",
+        params![editor, now, id],
+    )?;
+    Ok(())
+}
+
+/// GG-B2: record an explicit, logged decision to publish despite error-severity
+/// guardrail issues, for the audit trail.
+pub fn record_guardrail_override(conn: &Connection, id: i32, reason: &str) -> SqlResult<()> {
+    conn.execute(
+        "UPDATE drafts SET guardrail_override_reason = ?1 WHERE id = ?2",
+        params![reason, id],
+    )?;
+    Ok(())
+}
+
+/// GG-B2 / GG-C1: read the publish-gate state for a draft as
+/// `(attested_at, guardrail_override_reason)`. Kept separate from `get_draft`
+/// so the `Draft` struct and its many SELECT sites stay unchanged.
+pub fn get_draft_publish_gate(
+    conn: &Connection,
+    id: i32,
+) -> SqlResult<(Option<String>, Option<String>)> {
+    conn.query_row(
+        "SELECT attested_at, guardrail_override_reason FROM drafts WHERE id = ?1",
+        params![id],
+        |row| Ok((row.get(0)?, row.get(1)?)),
+    )
+}
+
 pub fn list_drafts(conn: &Connection) -> SqlResult<Vec<Draft>> {
     let mut stmt = conn.prepare("SELECT id, lead_id, format, title, content, status, verification_checklist, missing_evidence_notes, correction_note, created_at, updated_at FROM drafts ORDER BY updated_at DESC")?;
     let iter = stmt.query_map([], |row| {

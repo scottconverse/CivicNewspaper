@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- SEC (GG-B1): defense-in-depth CSP for the published site. script-src 'none'
+         blocks inline and external scripts, including script-based URL navigations;
+         style-src allows the bundled stylesheet plus this template's inline style= attributes. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'">
     <title>{{SITE_TITLE}} - Community Observer</title>
     <meta name="description" content="Transparent, evidence-based local public observations.">
     <link rel="stylesheet" href="styles.css">
@@ -36,7 +40,8 @@
 
     <footer>
         <p>© {{YEAR}} {{SITE_TITLE}}. Built using transparent public records. Under no circumstances does this site run advertisements or trackers.</p>
-        <p>Published via CivicNews.</p>
+        {{AI_DISCLOSURE}}
+        <p>Published via The Civic Desk.</p>
     </footer>
 </body>
 </html>

@@ -1,7 +1,7 @@
 // core/compiler.rs
 use super::db::{get_evidence_by_lead, insert_published_post, list_drafts, PublishedPost};
 use chrono::{Datelike, Utc};
-use pulldown_cmark::{html, Options, Parser};
+use pulldown_cmark::{html, CowStr, Event, Options, Parser, Tag};
 use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
@@ -12,6 +12,12 @@ const INDEX_TEMPLATE: &str = include_str!("../../../templates/index.html");
 const POST_TEMPLATE: &str = include_str!("../../../templates/post.html");
 const STYLES_CSS: &str = include_str!("../../../templates/styles.css");
 const PRINT_CSS: &str = include_str!("../../../templates/print.css");
+
+// GG-C1: reader-facing AI-provenance disclosure rendered in every page footer.
+// Truthful for this product — all articles pass through the local-LLM draft flow,
+// and a recorded human attestation is now required before publishing (see
+// `story_decision`'s ATTESTATION_REQUIRED gate).
+const AI_DISCLOSURE_HTML: &str = "<p class=\"ai-disclosure\" style=\"font-size: 0.85rem; opacity: 0.85;\">Articles on this site are drafted with on-device AI assistance from primary public records and reviewed by a human editor before publication.</p>";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CompilerProfile {
@@ -33,19 +39,92 @@ impl Default for CompilerProfile {
                 "Our core ethics: evidence, not rumor. We link every fact to primary documentation."
                     .to_string(),
             how_we_report_text:
-                "We collect agendas, minutes, and documents directly from municipal feeds."
+                "We collect agendas, minutes, and documents directly from municipal feeds. Draft articles are generated with on-device AI assistance and reviewed by a human editor before publication."
                     .to_string(),
         }
     }
 }
 
+/// SEC (GG-B1): allow-list URL schemes for any href/src that reaches the
+/// published static site. A markdown link/image whose scheme is not safe is a
+/// stored-XSS vector (`javascript:`/`data:`/`vbscript:`). URLs with no scheme
+/// (relative paths, `#fragment`, `?query`, protocol-relative `//host`) are safe.
+/// `evidence` is allowed because the compiler rewrites `href="evidence:..."` to
+/// local `#evidence-N` anchors AFTER rendering.
+pub(crate) fn is_safe_url_scheme(dest: &str) -> bool {
+    let d = dest.trim_start();
+    let mut scheme_end = None;
+    for (i, c) in d.char_indices() {
+        match c {
+            ':' => {
+                scheme_end = Some(i);
+                break;
+            }
+            // Reached the path/query/fragment before any ':' => no scheme.
+            '/' | '?' | '#' => break,
+            _ => {
+                let valid = if i == 0 {
+                    c.is_ascii_alphabetic()
+                } else {
+                    c.is_ascii_alphanumeric() || matches!(c, '+' | '-' | '.')
+                };
+                if !valid {
+                    break;
+                }
+            }
+        }
+    }
+    match scheme_end {
+        None => true,
+        Some(i) => matches!(
+            d[..i].to_ascii_lowercase().as_str(),
+            "http" | "https" | "mailto" | "evidence"
+        ),
+    }
+}
+
+/// Replace a link/image destination with an inert `#` when its scheme is not
+/// allow-listed, so dangerous URIs cannot reach the rendered HTML.
+fn sanitize_dest(dest: CowStr<'_>) -> CowStr<'_> {
+    if is_safe_url_scheme(&dest) {
+        dest
+    } else {
+        CowStr::Borrowed("#")
+    }
+}
+
 pub fn render_markdown(markdown: &str) -> String {
     let options = Options::empty();
-    let parser = Parser::new_ext(markdown, options).filter(|event| {
-        !matches!(
-            event,
-            pulldown_cmark::Event::Html(_) | pulldown_cmark::Event::InlineHtml(_)
-        )
+    // SEC (GG-B1): strip raw HTML events AND neutralize dangerous URI schemes on
+    // markdown-syntax links/images. pulldown-cmark otherwise emits link/image
+    // destinations verbatim into href/src, so `[x](javascript:...)` /
+    // `![x](data:...)` in a draft (LLM-authored or pasted) would become live
+    // script vectors on the public static site.
+    let parser = Parser::new_ext(markdown, options).filter_map(|event| match event {
+        Event::Html(_) | Event::InlineHtml(_) => None,
+        Event::Start(Tag::Link {
+            link_type,
+            dest_url,
+            title,
+            id,
+        }) => Some(Event::Start(Tag::Link {
+            link_type,
+            dest_url: sanitize_dest(dest_url),
+            title,
+            id,
+        })),
+        Event::Start(Tag::Image {
+            link_type,
+            dest_url,
+            title,
+            id,
+        }) => Some(Event::Start(Tag::Image {
+            link_type,
+            dest_url: sanitize_dest(dest_url),
+            title,
+            id,
+        })),
+        other => Some(other),
     });
     let mut html_output = String::new();
     html::push_html(&mut html_output, parser);
@@ -109,6 +188,57 @@ pub fn compile_static_site(
     // 5. Compile each published article
     for draft in &published_drafts {
         let draft_id = draft.id.unwrap_or(0);
+
+        // SEC (GG-B2 / GG-C1 / RE-AUDIT M1+NEW-5): defense-in-depth publish gate at
+        // the sink. A draft only compiles into the public site if (a) a human
+        // attestation is on record AND (b) it is guardrail-clean OR carries a
+        // logged override. This catches EVERY path to a publishable status
+        // (story_decision, register_correction, a direct status write, a future
+        // code path), so the corrections path cannot bypass attestation (M1). Fail
+        // CLOSED on any check error (NEW-5).
+        let (attested, overridden) = match super::db::get_draft_publish_gate(conn, draft_id) {
+            Ok((att, ovr)) => (
+                att.as_deref()
+                    .map(|s| !s.trim().is_empty())
+                    .unwrap_or(false),
+                ovr.as_deref()
+                    .map(|s| !s.trim().is_empty())
+                    .unwrap_or(false),
+            ),
+            Err(_) => (false, false),
+        };
+        if !attested {
+            eprintln!(
+                "Skipping draft {} during compile: no human attestation on record.",
+                draft_id
+            );
+            continue;
+        }
+        if !overridden {
+            match super::guardrails::run_guardrails_check(conn, draft_id) {
+                Ok(report) if report.is_clean => {}
+                Ok(report) => {
+                    let errs = report
+                        .issues
+                        .iter()
+                        .filter(|i| i.severity == "error")
+                        .count();
+                    eprintln!(
+                        "Skipping draft {} during compile: {} error-severity guardrail issue(s) and no logged override.",
+                        draft_id, errs
+                    );
+                    continue;
+                }
+                Err(e) => {
+                    eprintln!(
+                        "Skipping draft {} during compile: guardrails check failed ({}); failing closed.",
+                        draft_id, e
+                    );
+                    continue;
+                }
+            }
+        }
+
         let subfolder = match draft.format.as_str() {
             "brief" => "briefs",
             "watch" => "watch",
@@ -130,7 +260,16 @@ pub fn compile_static_site(
             let items = get_evidence_by_lead(conn, lid)?;
             for item in items {
                 let item_id = item.id.unwrap_or(0);
-                let source_url = item.url.clone().unwrap_or_else(|| "#".to_string());
+                let raw_url = item.url.clone().unwrap_or_else(|| "#".to_string());
+                // SEC (GG-B1 / QA-Min1): defense-in-depth at the publish sink —
+                // neutralize non-allowlisted schemes even though ingest validates
+                // source URLs upstream. encode_safe only escapes characters; it
+                // does not stop a `javascript:` scheme from being a live href.
+                let source_url = if is_safe_url_scheme(&raw_url) {
+                    raw_url
+                } else {
+                    "#".to_string()
+                };
                 let safe_url = html_escape::encode_safe(&source_url);
                 let safe_excerpt = html_escape::encode_safe(&item.excerpt);
                 evidence_html.push_str(&format!(
@@ -170,6 +309,7 @@ pub fn compile_static_site(
         post_html = post_html.replace("{{EVIDENCE_CITATIONS}}", &evidence_html);
         post_html = post_html.replace("{{CORRECTION_BANNER}}", &correction_banner);
         post_html = post_html.replace("{{YEAR}}", &current_year);
+        post_html = post_html.replace("{{AI_DISCLOSURE}}", AI_DISCLOSURE_HTML);
 
         // Prepend "../" to relative assets and links since post page is in a subfolder
         post_html = post_html.replace("href=\"styles.css\"", "href=\"../styles.css\"");
@@ -256,6 +396,7 @@ pub fn compile_static_site(
     sidebar_html.push_str("<div class=\"sidebar-section\">\n  <h3 class=\"sidebar-title\">Ethics Standards</h3>\n  <p>Every claim published here is strictly bound to public evidence records. We run zero ads.</p>\n</div>");
     index_html = index_html.replace("{{SIDEBAR}}", &sidebar_html);
     index_html = index_html.replace("{{YEAR}}", &current_year);
+    index_html = index_html.replace("{{AI_DISCLOSURE}}", AI_DISCLOSURE_HTML);
     fs::write(output_dir.join("index.html"), index_html)?;
 
     // 7. Build About, Ethics, and How We Report pages
@@ -276,6 +417,7 @@ pub fn compile_static_site(
             );
             page_html = page_html.replace("{{CORRECTION_BANNER}}", "");
             page_html = page_html.replace("{{YEAR}}", &current_year);
+            page_html = page_html.replace("{{AI_DISCLOSURE}}", AI_DISCLOSURE_HTML);
             fs::write(output_dir.join(filename), page_html)?;
             Ok(())
         };
@@ -305,6 +447,7 @@ pub fn compile_static_site(
     corrections_html = corrections_html.replace("{{EVIDENCE_CITATIONS}}", "");
     corrections_html = corrections_html.replace("{{CORRECTION_BANNER}}", "");
     corrections_html = corrections_html.replace("{{YEAR}}", &current_year);
+    corrections_html = corrections_html.replace("{{AI_DISCLOSURE}}", AI_DISCLOSURE_HTML);
     fs::write(output_dir.join("corrections.html"), corrections_html)?;
 
     // 9. Build RSS feed.xml

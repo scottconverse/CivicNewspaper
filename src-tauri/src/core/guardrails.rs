@@ -2,6 +2,7 @@
 use super::db::{get_draft, get_evidence_by_lead};
 use rusqlite::Connection;
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 use std::error::Error;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16,6 +17,121 @@ pub struct GuardrailsIssue {
 pub struct GuardrailsReport {
     pub is_clean: bool,
     pub issues: Vec<GuardrailsIssue>,
+}
+
+// Editor-editable guardrails: these are only the built-in STARTING lists. A
+// newsroom edits them via Settings (persisted under the `guardrails.terms`
+// setting). Matching any word raises a WARNING by default; only words an editor
+// explicitly marks as blocking escalate to a publish-blocking ERROR — so the
+// machine never imposes a stop the editor didn't choose.
+pub const DEFAULT_ACCUSATORY: &[&str] = &[
+    "corrupt",
+    "stole",
+    "illegal",
+    "fraud",
+    "embezzle",
+    "bribe",
+    "scam",
+    "theft",
+    "criminal",
+    "guilty",
+    "conspiracy",
+    "extortion",
+    "misconduct",
+    "kickback",
+    "laundering",
+    "arrested",
+    "charged",
+    "indicted",
+    "convicted",
+    "prosecuted",
+];
+pub const DEFAULT_LEGAL: &[&str] = &[
+    "arrested",
+    "charged",
+    "indicted",
+    "accused",
+    "suspect",
+    "theft",
+    "embezzle",
+    "fraud",
+    "misconduct",
+];
+
+const GUARDRAIL_SETTINGS_KEY: &str = "guardrails.terms";
+
+/// Editor-editable guardrail configuration (per newsroom).
+/// - `accusatory`: words that, used without an evidence link, raise an
+///   "Accusatory Language" issue.
+/// - `legal`: charge/legal words that, used without "alleged", raise a
+///   "Legal Naming" (presumption-of-innocence) issue.
+/// - `blocking`: the subset of words (case-insensitive, from either list) that
+///   escalate a raised issue from a warning to a publish-blocking error. Empty
+///   by default => warn-only.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GuardrailConfig {
+    pub accusatory: Vec<String>,
+    pub legal: Vec<String>,
+    pub blocking: Vec<String>,
+}
+
+impl Default for GuardrailConfig {
+    fn default() -> Self {
+        GuardrailConfig {
+            accusatory: DEFAULT_ACCUSATORY.iter().map(|s| s.to_string()).collect(),
+            legal: DEFAULT_LEGAL.iter().map(|s| s.to_string()).collect(),
+            blocking: Vec::new(),
+        }
+    }
+}
+
+/// Load the newsroom's guardrail config from settings, falling back to the
+/// built-in defaults when unset or unparseable.
+pub fn load_guardrail_config(conn: &Connection) -> GuardrailConfig {
+    let raw: Option<String> = conn
+        .query_row(
+            "SELECT value FROM settings WHERE key = ?1",
+            [GUARDRAIL_SETTINGS_KEY],
+            |r| r.get::<_, String>(0),
+        )
+        .ok();
+    match raw {
+        Some(json) => serde_json::from_str(&json).unwrap_or_default(),
+        None => GuardrailConfig::default(),
+    }
+}
+
+/// Persist the newsroom's guardrail config to settings.
+pub fn save_guardrail_config(
+    conn: &Connection,
+    config: &GuardrailConfig,
+) -> Result<(), Box<dyn Error>> {
+    // RE-AUDIT NEW-4: a blocking word that isn't in the accusatory/legal lists can
+    // never fire, so keep the persisted config self-consistent by dropping any
+    // blocking word not present in either list (case-insensitive).
+    let known: HashSet<String> = config
+        .accusatory
+        .iter()
+        .chain(config.legal.iter())
+        .map(|w| w.trim().to_lowercase())
+        .filter(|w| !w.is_empty())
+        .collect();
+    let normalized = GuardrailConfig {
+        accusatory: config.accusatory.clone(),
+        legal: config.legal.clone(),
+        blocking: config
+            .blocking
+            .iter()
+            .filter(|w| known.contains(&w.trim().to_lowercase()))
+            .cloned()
+            .collect(),
+    };
+    let json = serde_json::to_string(&normalized)?;
+    conn.execute(
+        "INSERT OR REPLACE INTO settings (key, value) VALUES (?1, ?2)",
+        rusqlite::params![GUARDRAIL_SETTINGS_KEY, json],
+    )?;
+    Ok(())
 }
 
 pub fn run_guardrails_check(
@@ -47,28 +163,28 @@ pub fn run_guardrails_check(
         .filter(|p| !p.is_empty())
         .collect();
 
-    let accusatory_words = vec![
-        "corrupt",
-        "stole",
-        "illegal",
-        "fraud",
-        "embezzle",
-        "bribe",
-        "scam",
-        "theft",
-        "criminal",
-        "guilty",
-        "conspiracy",
-        "extortion",
-        "misconduct",
-        "kickback",
-        "laundering",
-        "arrested",
-        "charged",
-        "indicted",
-        "convicted",
-        "prosecuted",
-    ];
+    // Editor-editable lists. Words warn by default; only words in `blocking`
+    // (which the editor opts in via Settings) escalate an issue to a publish-
+    // blocking error.
+    let config = load_guardrail_config(conn);
+    let blocking: HashSet<String> = config
+        .blocking
+        .iter()
+        .map(|w| w.trim().to_lowercase())
+        .filter(|w| !w.is_empty())
+        .collect();
+    let accusatory_words: Vec<String> = config
+        .accusatory
+        .iter()
+        .map(|w| w.trim().to_lowercase())
+        .filter(|w| !w.is_empty())
+        .collect();
+    let legal_terms: Vec<String> = config
+        .legal
+        .iter()
+        .map(|w| w.trim().to_lowercase())
+        .filter(|w| !w.is_empty())
+        .collect();
 
     for (p_idx, paragraph) in paragraphs.iter().enumerate() {
         // Skip headers and markdown code blocks
@@ -92,46 +208,59 @@ pub fn run_guardrails_check(
 
         // 2. Accusatory Language & Citation Link Check
         let lower_p = paragraph.to_lowercase();
-        let mut found_accusatory = Vec::new();
-        for &word in &accusatory_words {
-            if lower_p.contains(word) {
-                found_accusatory.push(word);
-            }
-        }
+        // RE-AUDIT NEW-3: match on whole words (with common inflections) rather
+        // than raw substrings, so "charged" no longer fires inside "surcharged"
+        // and "scam" no longer fires inside "scampi", while "embezzle" still
+        // matches "embezzled"/"embezzlement".
+        let tokens = tokenize(paragraph);
+        let found_accusatory: Vec<&String> = accusatory_words
+            .iter()
+            .filter(|word| term_in_tokens(&tokens, word.as_str()))
+            .collect();
 
         if !found_accusatory.is_empty() {
             if !has_citation {
+                // Warn by default; escalate to a publish-blocking error only when a
+                // matched word was explicitly marked blocking by the editor.
+                let severity = if found_accusatory
+                    .iter()
+                    .any(|w| blocking.contains(w.as_str()))
+                {
+                    "error"
+                } else {
+                    "warning"
+                };
                 issues.push(GuardrailsIssue {
                     category: "Accusatory Language".to_string(),
                     message: format!(
                         "Accusatory term(s) {:?} used without a supporting evidence citation link. Add evidence link to substantiate.",
                         found_accusatory
                     ),
-                    severity: "error".to_string(),
+                    severity: severity.to_string(),
                     paragraph_index: p_idx,
                 });
             }
 
             // 3. Presumption of Innocence / Legal Naming Rule
-            // If legal/accusatory charge terms are present, the word 'alleged' or 'allegedly' must also be present
-            let legal_terms = vec![
-                "arrested",
-                "charged",
-                "indicted",
-                "accused",
-                "suspect",
-                "theft",
-                "embezzle",
-                "fraud",
-                "misconduct",
-            ];
-            let contains_legal = legal_terms.iter().any(|&term| lower_p.contains(term));
+            // If legal/charge terms are present, 'alleged'/'allegedly' must also appear.
+            let found_legal: Vec<&String> = legal_terms
+                .iter()
+                .filter(|term| term_in_tokens(&tokens, term.as_str()))
+                .collect();
 
-            if contains_legal && !lower_p.contains("alleged") && !lower_p.contains("allegedly") {
+            if !found_legal.is_empty()
+                && !lower_p.contains("alleged")
+                && !lower_p.contains("allegedly")
+            {
+                let severity = if found_legal.iter().any(|w| blocking.contains(w.as_str())) {
+                    "error"
+                } else {
+                    "warning"
+                };
                 issues.push(GuardrailsIssue {
                     category: "Legal Naming".to_string(),
                     message: "Presumption of innocence safeguard: Accusatory/charge words are used, but the modifier 'alleged' or 'allegedly' is missing. Please rephrase to clarify these are indicators/accusations under review.".to_string(),
-                    severity: "error".to_string(),
+                    severity: severity.to_string(),
                     paragraph_index: p_idx,
                 });
             }
@@ -219,6 +348,28 @@ fn find_verbatim_overlap(paragraph: &str, excerpt: &str, min_words: usize) -> Ve
     }
 
     filtered
+}
+
+/// Common English inflection suffixes used to match a guard term against a token
+/// without over-matching unrelated words. "" = exact match. This deliberately
+/// favours precision (fewer false positives) over recall — the editor owns the
+/// word list and can add inflected forms explicitly (RE-AUDIT NEW-3).
+const INFLECTION_SUFFIXES: &[&str] = &[
+    "", "s", "es", "d", "ed", "ing", "ings", "ment", "ments", "er", "ers", "ion", "ions",
+];
+
+/// True if `token` is `term` or a common inflection of it (prefix + allow-listed
+/// suffix). Both must already be lower-case (tokenize lower-cases).
+fn token_matches_term(token: &str, term: &str) -> bool {
+    token
+        .strip_prefix(term)
+        .map(|suffix| INFLECTION_SUFFIXES.contains(&suffix))
+        .unwrap_or(false)
+}
+
+/// True if any token in the paragraph matches `term` as a whole word/inflection.
+fn term_in_tokens(tokens: &[String], term: &str) -> bool {
+    tokens.iter().any(|t| token_matches_term(t, term))
 }
 
 fn tokenize(text: &str) -> Vec<String> {

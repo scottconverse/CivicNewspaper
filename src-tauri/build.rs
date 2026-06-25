@@ -35,10 +35,12 @@ fn check_ollama_sidecar_present() {
     println!("cargo:rerun-if-changed=binaries");
 
     if !expected_path.exists() {
-        // A warning (not a hard error) keeps `cargo check`/`cargo test` usable
-        // on machines where the sidecar isn't needed for the task at hand, while
-        // still loudly telling the developer what to do. The Tauri bundler will
-        // hard-fail later if the binary is genuinely required for a bundle.
+        // Emit a CLEAR, actionable warning naming the fix. NOTE: tauri_build's own
+        // externalBin validation (in tauri_build::build(), called right after this)
+        // HARD-FAILS any `cargo build`/`cargo test`/bundle when the sidecar is
+        // missing — so `scripts/fetch-ollama-binaries.sh` is required even to run
+        // `cargo test`. This check exists only to turn that late, opaque
+        // "resource path ... doesn't exist" error into an up-front, fixable message.
         println!(
             "cargo:warning=Ollama sidecar binary not found at `{}`.",
             expected_path.display()

