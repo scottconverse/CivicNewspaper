@@ -16,10 +16,11 @@ describe("PublishPanel Component Tests", () => {
         loading={false}
         onPublish={vi.fn()}
         onOpenLocalPath={vi.fn()}
+        onChoosePublishPath={vi.fn()}
       />
     );
 
-    const nextBtn = screen.getByRole("button", { name: /Compile site/i });
+    const nextBtn = screen.getByRole("button", { name: /Review compile checklist/i });
     fireEvent.click(nextBtn);
 
     // Expect validation error to appear and no state change to be triggered
@@ -40,6 +41,7 @@ describe("PublishPanel Component Tests", () => {
         loading={false}
         onPublish={handlePublish}
         onOpenLocalPath={vi.fn()}
+        onChoosePublishPath={vi.fn()}
       />
     );
 
@@ -49,5 +51,25 @@ describe("PublishPanel Component Tests", () => {
     // Verify error is empty and action is triggered
     expect(screen.queryByTestId("validation-error")).not.toBeInTheDocument();
     expect(handlePublish).toHaveBeenCalled();
+  });
+
+  test("browse calls the folder picker handler", () => {
+    const handleChoosePublishPath = vi.fn();
+
+    render(
+      <PublishPanel
+        publishPath="C:\\my-site"
+        onPublishPathChange={vi.fn()}
+        publishStep={1}
+        onPublishStepChange={vi.fn()}
+        loading={false}
+        onPublish={vi.fn()}
+        onOpenLocalPath={vi.fn()}
+        onChoosePublishPath={handleChoosePublishPath}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Browse/i }));
+    expect(handleChoosePublishPath).toHaveBeenCalledTimes(1);
   });
 });

@@ -861,7 +861,12 @@ mod tests {
             {
               "title": "Topic",
               "summary": "Sum",
-              "original_url": "http"
+              "original_url": "https://example.gov/topic",
+              "why_flagged": "The agenda includes a public hearing.",
+              "source_name": "Council Agenda Center",
+              "source_type": "agenda",
+              "priority": "high",
+              "suggested_next_step": "Confirm the hearing date and agenda item number."
             }
           ]
         }
@@ -882,6 +887,18 @@ mod tests {
             })
             .unwrap();
         assert_eq!(count, 1);
+        let lead = list_daily_scan_leads(&conn, 1).unwrap().pop().unwrap();
+        assert_eq!(
+            lead.why_flagged.as_deref(),
+            Some("The agenda includes a public hearing.")
+        );
+        assert_eq!(lead.source_name.as_deref(), Some("Council Agenda Center"));
+        assert_eq!(lead.source_type.as_deref(), Some("agenda"));
+        assert_eq!(lead.priority.as_deref(), Some("high"));
+        assert_eq!(
+            lead.suggested_next_step.as_deref(),
+            Some("Confirm the hearing date and agenda item number.")
+        );
     }
 
     // ENG-Min4: parse_and_save_scan_response must validate the untrusted,
@@ -993,7 +1010,9 @@ I should produce JSON only.
 
         assert_eq!(saved, 1);
         let count: i32 = conn
-            .query_row("SELECT COUNT(*) FROM daily_scan_leads", [], |row| row.get(0))
+            .query_row("SELECT COUNT(*) FROM daily_scan_leads", [], |row| {
+                row.get(0)
+            })
             .unwrap();
         assert_eq!(count, 1);
     }
@@ -1209,6 +1228,12 @@ I should produce JSON only.
         assert_eq!(
             title, "Council overspend",
             "the persisted lead should carry the model's title"
+        );
+        let persisted = list_daily_scan_leads(&conn, run_id).unwrap();
+        assert_eq!(
+            persisted[0].suggested_next_step.as_deref(),
+            Some("Open the original source and confirm the key dates, names, and decision points before drafting."),
+            "older/simple model JSON should receive a Terry-facing next step"
         );
 
         let status: String = conn
@@ -1490,6 +1515,20 @@ I should produce JSON only.
             .unwrap();
         assert_eq!(status, "completed");
         assert!(saved > 0, "fallback should save an editor packet");
+        let fallback_leads = list_daily_scan_leads(&conn, run_id).unwrap();
+        assert_eq!(
+            fallback_leads[0].source_name.as_deref(),
+            Some("Agenda Source"),
+            "fallback leads should use the source name instead of exposing only a raw ID"
+        );
+        assert!(
+            fallback_leads[0]
+                .why_flagged
+                .as_deref()
+                .unwrap_or_default()
+                .contains("model did not return usable JSON"),
+            "fallback leads should explain why an evidence packet was created"
+        );
         let events = progress_events.lock().unwrap();
         assert!(events.iter().any(|stage| stage == "fallback"));
         assert!(events.iter().any(|stage| stage == "complete"));

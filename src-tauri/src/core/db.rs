@@ -101,6 +101,11 @@ pub struct DailyScanLead {
     pub summary: String,
     pub source_id: Option<i32>,
     pub original_url: String,
+    pub why_flagged: Option<String>,
+    pub source_name: Option<String>,
+    pub source_type: Option<String>,
+    pub priority: Option<String>,
+    pub suggested_next_step: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -214,6 +219,28 @@ pub fn list_sources(conn: &Connection) -> SqlResult<Vec<Source>> {
         sources.push(source?);
     }
     Ok(sources)
+}
+
+pub fn get_source(conn: &Connection, id: i32) -> SqlResult<Option<Source>> {
+    let mut stmt = conn.prepare(
+        "SELECT id, name, url, type, status, last_success_at, last_failed_at, last_scraped, tier FROM sources WHERE id = ?1",
+    )?;
+    let mut rows = stmt.query(params![id])?;
+    if let Some(row) = rows.next()? {
+        Ok(Some(Source {
+            id: Some(row.get(0)?),
+            name: row.get(1)?,
+            url: row.get(2)?,
+            r#type: row.get(3)?,
+            status: row.get(4)?,
+            last_success_at: row.get(5)?,
+            last_failed_at: row.get(6)?,
+            last_scraped: row.get(7)?,
+            tier: row.get(8)?,
+        }))
+    } else {
+        Ok(None)
+    }
 }
 
 pub fn insert_source(conn: &Connection, source: &Source) -> SqlResult<i32> {
@@ -413,15 +440,26 @@ pub fn update_daily_scan_run(conn: &Connection, run: &DailyScanRun) -> SqlResult
 
 pub fn insert_daily_scan_lead(conn: &Connection, lead: &DailyScanLead) -> SqlResult<i32> {
     conn.execute(
-        "INSERT INTO daily_scan_leads (scan_id, title, summary, source_id, original_url) VALUES (?1, ?2, ?3, ?4, ?5)",
-        params![lead.scan_id, lead.title, lead.summary, lead.source_id, lead.original_url],
+        "INSERT INTO daily_scan_leads (scan_id, title, summary, source_id, original_url, why_flagged, source_name, source_type, priority, suggested_next_step) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
+        params![
+            lead.scan_id,
+            lead.title,
+            lead.summary,
+            lead.source_id,
+            lead.original_url,
+            lead.why_flagged,
+            lead.source_name,
+            lead.source_type,
+            lead.priority,
+            lead.suggested_next_step
+        ],
     )?;
     Ok(conn.last_insert_rowid() as i32)
 }
 
 #[allow(dead_code)]
 pub fn list_daily_scan_leads(conn: &Connection, scan_id: i32) -> SqlResult<Vec<DailyScanLead>> {
-    let mut stmt = conn.prepare("SELECT id, scan_id, title, summary, source_id, original_url FROM daily_scan_leads WHERE scan_id = ?1")?;
+    let mut stmt = conn.prepare("SELECT id, scan_id, title, summary, source_id, original_url, why_flagged, source_name, source_type, priority, suggested_next_step FROM daily_scan_leads WHERE scan_id = ?1")?;
     let iter = stmt.query_map(params![scan_id], |row| {
         Ok(DailyScanLead {
             id: Some(row.get(0)?),
@@ -430,6 +468,11 @@ pub fn list_daily_scan_leads(conn: &Connection, scan_id: i32) -> SqlResult<Vec<D
             summary: row.get(3)?,
             source_id: row.get(4)?,
             original_url: row.get(5)?,
+            why_flagged: row.get(6)?,
+            source_name: row.get(7)?,
+            source_type: row.get(8)?,
+            priority: row.get(9)?,
+            suggested_next_step: row.get(10)?,
         })
     })?;
     let mut leads = Vec::new();
@@ -713,7 +756,7 @@ pub fn confirm_pairing(conn: &Connection, pin: &str) -> SqlResult<Option<String>
 }
 
 pub fn list_paired_clients(conn: &Connection) -> SqlResult<Vec<PairedClient>> {
-    let mut stmt = conn.prepare("SELECT id, token, label, pairing_pin, pin_expires_at, created_at, last_used_at, revoked FROM paired_clients WHERE revoked = 0")?;
+    let mut stmt = conn.prepare("SELECT id, token, label, pairing_pin, pin_expires_at, created_at, last_used_at, revoked FROM paired_clients WHERE revoked = 0 AND pairing_pin IS NULL")?;
     let iter = stmt.query_map([], |row| {
         Ok(PairedClient {
             id: Some(row.get(0)?),

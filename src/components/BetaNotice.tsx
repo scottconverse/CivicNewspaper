@@ -5,18 +5,30 @@
 // betaNoticeStore) so the banner only shows until the user acknowledges it once.
 import React, { useState } from "react";
 import { AlertTriangle, X } from "lucide-react";
+import { openExternalUrl, toUserMessage } from "../ipc";
 import { betaNoticeIsDismissed, betaNoticeMarkDismissed } from "./betaNoticeStore";
 
 const issuesUrl = "https://" + "github.com/scottconverse/CivicNewspaper/issues";
 
 export const BetaNotice: React.FC = () => {
   const [dismissed, setDismissed] = useState<boolean>(() => betaNoticeIsDismissed());
+  const [linkError, setLinkError] = useState("");
 
   if (dismissed) return null;
 
   const handleDismiss = () => {
     betaNoticeMarkDismissed();
     setDismissed(true);
+  };
+
+  const handleOpenIssues = async (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    setLinkError("");
+    try {
+      await openExternalUrl(issuesUrl);
+    } catch (err) {
+      setLinkError(toUserMessage(err));
+    }
   };
 
   return (
@@ -42,13 +54,13 @@ export const BetaNotice: React.FC = () => {
             Windows SmartScreen may warn on install; that's expected.{" "}
             <a
               href={issuesUrl}
-              target="_blank"
-              rel="noreferrer"
+              onClick={handleOpenIssues}
               style={{ color: "var(--accent-primary)", fontWeight: 600 }}
             >
               Report issues on GitHub
             </a>
             .
+            {linkError && <span className="error-text"> Couldn't open link: {linkError}</span>}
           </p>
         </div>
         <button

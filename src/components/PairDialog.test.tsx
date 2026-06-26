@@ -43,4 +43,23 @@ describe("PairDialog Component Tests", () => {
     fireEvent.click(revokeBtn);
     expect(handleRevoke).toHaveBeenCalledWith(7);
   });
+
+  test("explains how to install the unpacked browser extension", () => {
+    render(
+      <PairDialog
+        pairingLabel=""
+        onPairingLabelChange={vi.fn()}
+        generatedPin={null}
+        pinExpiryMsg=""
+        onGeneratePin={vi.fn()}
+        pairedClients={[]}
+        onRevokeClient={vi.fn()}
+        onOpenExtensionFolder={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText(/Load unpacked/i)).toBeInTheDocument();
+    expect(screen.getByText(/extension icon popup/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Open extension folder/i })).toBeInTheDocument();
+  });
 });

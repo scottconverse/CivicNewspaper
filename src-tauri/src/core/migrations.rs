@@ -35,6 +35,10 @@ const MIGRATIONS: &[(&str, &str)] = &[
         "0008_draft_publish_gate",
         include_str!("../../migrations/0008_draft_publish_gate.sql"),
     ),
+    (
+        "0009_daily_scan_lead_context",
+        include_str!("../../migrations/0009_daily_scan_lead_context.sql"),
+    ),
 ];
 
 pub fn run_migrations(conn: &mut Connection) -> Result<(), Box<dyn Error + Send + Sync>> {

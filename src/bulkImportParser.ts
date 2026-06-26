@@ -14,7 +14,33 @@ export interface ParsedImportLine {
   type: string;
 }
 
+export interface ImportReviewItem extends ParsedImportLine {
+  id: string;
+  row: number;
+  tier: string;
+  credibility: string;
+  review_note: string;
+  selected: boolean;
+}
+
+export interface RejectedImportLine {
+  row: number;
+  text: string;
+  reason: string;
+}
+
+export interface BulkImportReview {
+  accepted: ImportReviewItem[];
+  rejected: RejectedImportLine[];
+  duplicates: RejectedImportLine[];
+}
+
 const HTTP_URL_RE = /https?:\/\/[^\s<>"')\]]+/i;
+const KNOWN_OFFICIAL_HOSTS = [
+  "denvergov.org",
+  "denver.legistar.com",
+  "dpsk12.org",
+];
 
 function cleanField(value: string): string {
   return value
@@ -42,6 +68,61 @@ function deriveNameFromUrl(url: string): string {
   } catch {
     return url;
   }
+}
+
+export function tierForSourceType(type: string): string {
+  if (type === "primary_record" || type === "official_comm") return "official_record";
+  if (type === "media_lead") return "news_reporting";
+  return "community_signal";
+}
+
+export function credibilityForSource(source: ParsedImportLine): { credibility: string; note: string; selected: boolean } {
+  let host = "";
+  try {
+    host = new URL(source.url).hostname.toLowerCase();
+  } catch {
+    return { credibility: "Invalid URL", note: "The URL could not be parsed.", selected: false };
+  }
+  const comparableHost = host.replace(/^www\./, "");
+
+  if (/google\.[^/]+$|bing\.com$|duckduckgo\.com$|search\.yahoo\.com$/.test(comparableHost)) {
+    return {
+      credibility: "Search helper",
+      note: "Use this link to find a real source, but do not import it as a watched feed.",
+      selected: false,
+    };
+  }
+  if (comparableHost.includes("facebook.com") || comparableHost.includes("reddit.com") || comparableHost.includes("nextdoor.com")) {
+    return {
+      credibility: "Community signal",
+      note: "Useful for leads, but verify against public records before publishing.",
+      selected: false,
+    };
+  }
+  if (
+    comparableHost.endsWith(".gov")
+    || comparableHost.includes(".gov.")
+    || KNOWN_OFFICIAL_HOSTS.includes(comparableHost)
+    || comparableHost.endsWith(".legistar.com")
+  ) {
+    return {
+      credibility: "Official record",
+      note: "Likely a primary civic source. Confirm it is the right department/feed.",
+      selected: true,
+    };
+  }
+  if (source.type === "media_lead") {
+    return {
+      credibility: "News source",
+      note: "Good for leads and context; verify facts against primary records.",
+      selected: false,
+    };
+  }
+  return {
+    credibility: "Needs review",
+    note: "Check ownership and usefulness before importing.",
+    selected: false,
+  };
 }
 
 function parseDelimitedLine(line: string, delimiter: string): string[] {
@@ -174,4 +255,45 @@ export function parseBulkImportLine(
     url,
     type,
   };
+}
+
+export function buildBulkImportReview(
+  text: string,
+  defaultType: string,
+  existingUrls: string[] = []
+): BulkImportReview {
+  const existing = new Set(existingUrls.map((url) => url.trim().toLowerCase()).filter(Boolean));
+  const seen = new Set<string>();
+  const accepted: ImportReviewItem[] = [];
+  const rejected: RejectedImportLine[] = [];
+  const duplicates: RejectedImportLine[] = [];
+
+  text.split(/\r?\n/).forEach((rawLine, index) => {
+    const row = index + 1;
+    const line = rawLine.trim();
+    if (!line) return;
+    const parsed = parseBulkImportLine(line, defaultType);
+    if (!parsed) {
+      rejected.push({ row, text: line, reason: "No valid http(s) URL found." });
+      return;
+    }
+    const key = parsed.url.toLowerCase();
+    if (existing.has(key) || seen.has(key)) {
+      duplicates.push({ row, text: line, reason: "Duplicate URL already in this import or source list." });
+      return;
+    }
+    seen.add(key);
+    const credibility = credibilityForSource(parsed);
+    accepted.push({
+      ...parsed,
+      id: `${row}-${key}`,
+      row,
+      tier: tierForSourceType(parsed.type),
+      credibility: credibility.credibility,
+      review_note: credibility.note,
+      selected: credibility.selected,
+    });
+  });
+
+  return { accepted, rejected, duplicates };
 }

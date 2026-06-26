@@ -8,6 +8,7 @@ use crate::core::guardrails::{self, GuardrailsReport};
 use crate::core::llm;
 use crate::core::scraper;
 use serde::{Deserialize, Serialize};
+use std::io::Read;
 use tauri::Emitter;
 use tauri::Manager;
 
@@ -264,6 +265,170 @@ pub fn get_browser_extension_path() -> Result<String, String> {
         ));
     }
     Ok(path.to_string_lossy().to_string())
+}
+
+fn spawn_platform_opener(target: &str) -> Result<(), String> {
+    #[cfg(target_os = "windows")]
+    let mut command = {
+        let mut command = std::process::Command::new("explorer.exe");
+        command.arg(target);
+        command
+    };
+
+    #[cfg(target_os = "macos")]
+    let mut command = {
+        let mut command = std::process::Command::new("open");
+        command.arg(target);
+        command
+    };
+
+    #[cfg(all(unix, not(target_os = "macos")))]
+    let mut command = {
+        let mut command = std::process::Command::new("xdg-open");
+        command.arg(target);
+        command
+    };
+
+    command
+        .spawn()
+        .map(|_| ())
+        .map_err(|e| format!("Could not open requested item: {}", e))
+}
+
+#[tauri::command]
+pub fn open_local_path(path: String) -> Result<(), String> {
+    let path = std::path::PathBuf::from(path.trim());
+    if path.as_os_str().is_empty() {
+        return Err("No path was provided".to_string());
+    }
+    if !path.exists() {
+        return Err(format!(
+            "The folder or file does not exist: {}",
+            path.display()
+        ));
+    }
+    let canonical = std::fs::canonicalize(&path).map_err(|e| e.to_string())?;
+    spawn_platform_opener(&canonical.to_string_lossy())
+}
+
+#[tauri::command]
+pub fn open_external_url(url: String) -> Result<(), String> {
+    let parsed = reqwest::Url::parse(url.trim()).map_err(|e| format!("Invalid URL: {}", e))?;
+    match parsed.scheme() {
+        "http" | "https" => spawn_platform_opener(parsed.as_str()),
+        scheme => Err(format!("Unsupported URL scheme: {}", scheme)),
+    }
+}
+
+fn strip_xml_tags(xml: &str) -> String {
+    let mut out = String::new();
+    let mut in_tag = false;
+    for ch in xml.chars() {
+        match ch {
+            '<' => {
+                in_tag = true;
+                out.push(' ');
+            }
+            '>' => in_tag = false,
+            _ if !in_tag => out.push(ch),
+            _ => {}
+        }
+    }
+    html_escape::decode_html_entities(&out)
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+fn read_zip_entry_text<R: std::io::Read + std::io::Seek>(
+    archive: &mut zip::ZipArchive<R>,
+    name: &str,
+) -> Result<Option<String>, String> {
+    match archive.by_name(name) {
+        Ok(mut file) => {
+            let mut text = String::new();
+            file.read_to_string(&mut text)
+                .map_err(|e| format!("Could not read {name}: {e}"))?;
+            Ok(Some(text))
+        }
+        Err(zip::result::ZipError::FileNotFound) => Ok(None),
+        Err(e) => Err(format!("Could not read {name}: {e}")),
+    }
+}
+
+fn extract_docx_text(path: &std::path::Path) -> Result<String, String> {
+    let file = std::fs::File::open(path).map_err(|e| e.to_string())?;
+    let mut archive =
+        zip::ZipArchive::new(file).map_err(|e| format!("Could not open Word document: {e}"))?;
+    let xml = read_zip_entry_text(&mut archive, "word/document.xml")?
+        .ok_or_else(|| "This Word document does not contain readable document text.".to_string())?;
+    let text = strip_xml_tags(&xml);
+    if text.trim().is_empty() {
+        Err("No readable text was found in this Word document.".to_string())
+    } else {
+        Ok(text)
+    }
+}
+
+fn extract_xlsx_text(path: &std::path::Path) -> Result<String, String> {
+    let file = std::fs::File::open(path).map_err(|e| e.to_string())?;
+    let mut archive =
+        zip::ZipArchive::new(file).map_err(|e| format!("Could not open spreadsheet: {e}"))?;
+    let mut chunks = Vec::new();
+    if let Some(shared) = read_zip_entry_text(&mut archive, "xl/sharedStrings.xml")? {
+        chunks.push(strip_xml_tags(&shared));
+    }
+    for index in 1..=50 {
+        let sheet_name = format!("xl/worksheets/sheet{index}.xml");
+        if let Some(sheet) = read_zip_entry_text(&mut archive, &sheet_name)? {
+            chunks.push(strip_xml_tags(&sheet));
+        }
+    }
+
+    let text = chunks.join("\n");
+    if text.trim().is_empty() {
+        Err("No readable text was found in this spreadsheet.".to_string())
+    } else {
+        Ok(text)
+    }
+}
+
+#[tauri::command]
+pub fn extract_source_import_text(path: String) -> Result<String, String> {
+    let trimmed = path.trim();
+    if trimmed.is_empty() {
+        return Err("Choose a file to import first.".to_string());
+    }
+    let path = std::path::PathBuf::from(trimmed);
+    if !path.exists() {
+        return Err(format!("The file does not exist: {}", path.display()));
+    }
+    if !path.is_file() {
+        return Err("Choose a source-list file, not a folder.".to_string());
+    }
+    let metadata = std::fs::metadata(&path).map_err(|e| e.to_string())?;
+    if metadata.len() > 25 * 1024 * 1024 {
+        return Err(
+            "This source-list file is too large. Export a smaller list or paste the URLs directly."
+                .to_string(),
+        );
+    }
+
+    let ext = path
+        .extension()
+        .and_then(|ext| ext.to_str())
+        .unwrap_or("")
+        .to_ascii_lowercase();
+
+    match ext.as_str() {
+        "txt" | "csv" | "tsv" | "md" | "markdown" | "html" | "htm" | "json" => {
+            std::fs::read_to_string(&path).map_err(|e| format!("Could not read file as text: {e}"))
+        }
+        "docx" => extract_docx_text(&path),
+        "xlsx" => extract_xlsx_text(&path),
+        "pdf" => Err("PDF source lists need text extraction before import. Export or copy the PDF text, then paste it here.".to_string()),
+        _ => Err("Unsupported source-list file type. Use CSV, TSV, TXT, DOCX, XLSX, or paste URLs directly.".to_string()),
+    }
 }
 
 #[tauri::command]
@@ -943,4 +1108,106 @@ pub async fn plain_language_rewrite<R: tauri::Runtime>(
         .inner()
         .clone();
     crate::core::llm::plain_language_rewrite(&llm_client, &model, &text, &draft_format).await
+}
+
+#[cfg(test)]
+mod source_import_extraction_tests {
+    use super::extract_source_import_text;
+    use std::io::Write;
+    use std::path::{Path, PathBuf};
+
+    fn temp_dir(name: &str) -> PathBuf {
+        let dir = std::env::temp_dir().join(format!(
+            "civicnews-source-import-{name}-{}",
+            std::process::id()
+        ));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        dir
+    }
+
+    fn write_zip(path: &Path, entries: &[(&str, &str)]) {
+        let file = std::fs::File::create(path).unwrap();
+        let mut zip = zip::ZipWriter::new(file);
+        let options = zip::write::SimpleFileOptions::default();
+        for (name, content) in entries {
+            zip.start_file(name, options).unwrap();
+            zip.write_all(content.as_bytes()).unwrap();
+        }
+        zip.finish().unwrap();
+    }
+
+    #[test]
+    fn extracts_plain_text_source_list() {
+        let dir = temp_dir("txt");
+        let path = dir.join("sources.txt");
+        std::fs::write(
+            &path,
+            "Denver Council, https://www.denvergov.org/Government/Agencies-Departments-Offices/Agencies-Departments-Offices-Directory/City-Council\n",
+        )
+        .unwrap();
+
+        let text = extract_source_import_text(path.to_string_lossy().to_string()).unwrap();
+
+        assert!(text.contains("Denver Council"));
+        assert!(text.contains("https://www.denvergov.org/"));
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn extracts_docx_source_list_text() {
+        let dir = temp_dir("docx");
+        let path = dir.join("sources.docx");
+        write_zip(
+            &path,
+            &[(
+                "word/document.xml",
+                r#"<w:document><w:body><w:p><w:r><w:t>Denver Agendas https://denver.legistar.com/Calendar.aspx</w:t></w:r></w:p></w:body></w:document>"#,
+            )],
+        );
+
+        let text = extract_source_import_text(path.to_string_lossy().to_string()).unwrap();
+
+        assert!(text.contains("Denver Agendas"));
+        assert!(text.contains("https://denver.legistar.com/Calendar.aspx"));
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn extracts_xlsx_shared_strings_and_sheet_text() {
+        let dir = temp_dir("xlsx");
+        let path = dir.join("sources.xlsx");
+        write_zip(
+            &path,
+            &[
+                (
+                    "xl/sharedStrings.xml",
+                    r#"<sst><si><t>Denver Open Data</t></si><si><t>https://www.denvergov.org/opendata</t></si></sst>"#,
+                ),
+                (
+                    "xl/worksheets/sheet1.xml",
+                    r#"<worksheet><sheetData><row><c><v>Denver Maps https://www.denvergov.org/maps</v></c></row></sheetData></worksheet>"#,
+                ),
+            ],
+        );
+
+        let text = extract_source_import_text(path.to_string_lossy().to_string()).unwrap();
+
+        assert!(text.contains("Denver Open Data"));
+        assert!(text.contains("https://www.denvergov.org/opendata"));
+        assert!(text.contains("Denver Maps https://www.denvergov.org/maps"));
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn pdf_source_lists_return_actionable_guidance() {
+        let dir = temp_dir("pdf");
+        let path = dir.join("sources.pdf");
+        std::fs::write(&path, "%PDF-1.4").unwrap();
+
+        let err = extract_source_import_text(path.to_string_lossy().to_string()).unwrap_err();
+
+        assert!(err.contains("Export or copy the PDF text"));
+        let _ = std::fs::remove_dir_all(dir);
+    }
 }

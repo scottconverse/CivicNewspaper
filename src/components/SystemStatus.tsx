@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Cpu, Database, Cpu as ScraperIcon, ShieldAlert, Download } from "lucide-react";
 import { exportDiagnostics, toUserMessage } from "../ipc";
-import { save } from "@tauri-apps/plugin-dialog";
+import { downloadDir, join } from "@tauri-apps/api/path";
 
 interface SystemStatusProps {
   ollamaOnline: boolean;
@@ -19,16 +19,11 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
 
   const handleExportDiagnostics = async () => {
     try {
-      const path = await save({
-        defaultPath: 'civicnews-diagnostics.json',
-        filters: [{ name: 'JSON', extensions: ['json'] }]
-      });
-      if (path) {
-        setExportStatus("Exporting...");
-        await exportDiagnostics(path);
-        setExportStatus("Export successful!");
-        setTimeout(() => setExportStatus(""), 3000);
-      }
+      setExportStatus("Exporting...");
+      const downloads = await downloadDir();
+      const path = await join(downloads, "civicnews-diagnostics.json");
+      await exportDiagnostics(path);
+      setExportStatus(`Exported diagnostics to ${path}`);
     } catch (e) {
       setExportStatus(`Export failed: ${toUserMessage(e)}`);
     }

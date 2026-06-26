@@ -36,7 +36,13 @@ export const PairDialog: React.FC<PairDialogProps> = ({
       <div className="pairing-grid" id="pairing-grid">
         <div className="card" id="card-pair-token-generator">
           <h3 className="card-title">Pair a new device</h3>
-          <p className="help-text">Generate a code, then type it into the extension. The code expires in 5 minutes.</p>
+          <p className="help-text">Install the local browser extension, generate a code, then paste it into the extension popup. The code expires in 5 minutes.</p>
+
+          <div className="setup-steps" aria-label="Browser extension setup steps">
+            <div><strong>1.</strong> Click <span>Open extension folder</span>.</div>
+            <div><strong>2.</strong> In Chrome or Edge, open Extensions, turn on Developer mode, and choose Load unpacked.</div>
+            <div><strong>3.</strong> Select the opened <span>chromium</span> folder, then paste the code into the extension icon popup.</div>
+          </div>
 
           <form onSubmit={onGeneratePin} style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "1rem" }} id="form-generate-pin">
             <label className="sr-only" htmlFor="input-pairing-label">Device label</label>
@@ -72,7 +78,7 @@ export const PairDialog: React.FC<PairDialogProps> = ({
 
           <div className="pairing-lockout">
             <Lock size={18} />
-            <span>Pairing only works on this computer. Nothing is exposed to the internet.</span>
+            <span>The bridge only talks to the Civic Desk app on this computer. Nothing is exposed to the internet.</span>
           </div>
         </div>
 

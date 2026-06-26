@@ -18,6 +18,16 @@ pub struct ScanResultItem {
     pub title: String,
     pub summary: String,
     pub original_url: String,
+    #[serde(default)]
+    pub why_flagged: Option<String>,
+    #[serde(default)]
+    pub source_name: Option<String>,
+    #[serde(default)]
+    pub source_type: Option<String>,
+    #[serde(default)]
+    pub priority: Option<String>,
+    #[serde(default)]
+    pub suggested_next_step: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -73,6 +83,14 @@ pub fn parse_and_save_scan_response(
             summary: item.summary,
             source_id: None, // Assume None, aggregated logic (D5)
             original_url,
+            why_flagged: normalize_optional(item.why_flagged)
+                .or_else(|| Some("The local scan found language that may deserve an editor's review.".to_string())),
+            source_name: normalize_optional(item.source_name)
+                .or_else(|| Some("Watched sources".to_string())),
+            source_type: normalize_optional(item.source_type),
+            priority: normalize_priority(item.priority),
+            suggested_next_step: normalize_optional(item.suggested_next_step)
+                .or_else(|| Some("Open the original source and confirm the key dates, names, and decision points before drafting.".to_string())),
         };
         match db::insert_daily_scan_lead(conn, &lead) {
             Ok(_) => saved += 1,
@@ -99,6 +117,26 @@ fn strip_json_fence(s: &str) -> &str {
     }
 }
 
+fn normalize_optional(value: Option<String>) -> Option<String> {
+    value.and_then(|text| {
+        let trimmed = text.trim();
+        if trimmed.is_empty() {
+            None
+        } else {
+            Some(trimmed.to_string())
+        }
+    })
+}
+
+fn normalize_priority(value: Option<String>) -> Option<String> {
+    let normalized = normalize_optional(value)?.to_lowercase();
+    match normalized.as_str() {
+        "high" | "medium" | "low" => Some(normalized),
+        "med" => Some("medium".to_string()),
+        _ => Some("review".to_string()),
+    }
+}
+
 fn extract_json_object(s: &str) -> Result<&str, String> {
     let trimmed = s.trim();
     if trimmed.starts_with('{') && trimmed.ends_with('}') {
@@ -117,10 +155,7 @@ fn extract_json_object(s: &str) -> Result<&str, String> {
     Ok(&trimmed[start..=end])
 }
 
-fn scan_progress(
-    stage: &str,
-    message: impl Into<String>,
-) -> DailyScanProgress {
+fn scan_progress(stage: &str, message: impl Into<String>) -> DailyScanProgress {
     DailyScanProgress {
         stage: stage.to_string(),
         message: message.into(),
@@ -133,7 +168,12 @@ fn scan_progress(
     }
 }
 
-fn build_batch_prompt(city: &str, state: &str, batch_index: usize, batch: &[EvidenceItem]) -> String {
+fn build_batch_prompt(
+    city: &str,
+    state: &str,
+    batch_index: usize,
+    batch: &[EvidenceItem],
+) -> String {
     let mut context = String::new();
     for (idx, item) in batch.iter().enumerate() {
         context.push_str(&format!(
@@ -151,8 +191,9 @@ fn build_batch_prompt(city: &str, state: &str, batch_index: usize, batch: &[Evid
          Batch: {batch_number}\n\n\
          Evidence Context:\n{context}\n\
          Return ONLY valid JSON. No markdown. No prose. No code fence.\n\
-         Schema: {{\"leads\":[{{\"title\":\"short civic lead title\",\"summary\":\"1-2 evidence-grounded sentences\",\"original_url\":\"source URL from evidence or empty string\"}}]}}\n\
-         Include at most 3 leads. Use an empty leads array if nothing deserves an editor's look.",
+         Schema: {{\"leads\":[{{\"title\":\"short civic lead title\",\"summary\":\"1-2 evidence-grounded sentences\",\"original_url\":\"source URL from evidence or empty string\",\"why_flagged\":\"plain-language reason this deserves review\",\"source_name\":\"name or short description of source\",\"source_type\":\"agenda, public notice, budget, official update, community signal, or unknown\",\"priority\":\"high, medium, or low\",\"suggested_next_step\":\"specific editor action before drafting\"}}]}}\n\
+         Include at most 3 leads. Use an empty leads array if nothing deserves an editor's look.\n\
+         Explain why each lead matters to a local civic reporter. Avoid vague reasons like 'interesting item'.",
         city = city,
         state = state,
         batch_number = batch_index + 1,
@@ -163,7 +204,7 @@ fn build_batch_prompt(city: &str, state: &str, batch_index: usize, batch: &[Evid
 fn repair_prompt(raw: &str) -> String {
     format!(
         "Repair the following model output into ONLY valid JSON matching this schema: \
-         {{\"leads\":[{{\"title\":\"...\",\"summary\":\"...\",\"original_url\":\"...\"}}]}}. \
+         {{\"leads\":[{{\"title\":\"...\",\"summary\":\"...\",\"original_url\":\"...\",\"why_flagged\":\"...\",\"source_name\":\"...\",\"source_type\":\"...\",\"priority\":\"high|medium|low\",\"suggested_next_step\":\"...\"}}]}}. \
          Do not add markdown or explanation.\n\nOutput to repair:\n{}",
         raw
     )
@@ -176,6 +217,12 @@ fn save_fallback_leads(
 ) -> usize {
     let mut saved = 0;
     for item in evidence_items.iter().take(5) {
+        let source = db::get_source(conn, item.source_id).ok().flatten();
+        let source_name = source
+            .as_ref()
+            .map(|source| source.name.clone())
+            .unwrap_or_else(|| format!("Source #{}", item.source_id));
+        let source_type = source.as_ref().map(|source| source.r#type.clone());
         let excerpt = item.excerpt.replace('\n', " ");
         let summary = if excerpt.chars().count() > 260 {
             format!("{}...", excerpt.chars().take(260).collect::<String>())
@@ -189,6 +236,11 @@ fn save_fallback_leads(
             summary,
             source_id: Some(item.source_id),
             original_url: item.url.clone().unwrap_or_default(),
+            why_flagged: Some("The model did not return usable JSON, so this evidence was preserved for editor review instead of being discarded.".to_string()),
+            source_name: Some(source_name),
+            source_type,
+            priority: Some("review".to_string()),
+            suggested_next_step: Some("Open the source, decide whether it contains a reportable civic action, then save or dismiss it from the queue.".to_string()),
         };
         if db::insert_daily_scan_lead(conn, &lead).is_ok() {
             saved += 1;
@@ -297,7 +349,10 @@ where
         batch_count: Some(batch_count),
         ..scan_progress(
             "generating",
-            format!("Starting local scan with {} across {} batch(es).", model, batch_count),
+            format!(
+                "Starting local scan with {} across {} batch(es).",
+                model, batch_count
+            ),
         )
     });
 

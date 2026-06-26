@@ -17,11 +17,13 @@ vi.mock('@tauri-apps/api/event', () => ({
 vi.mock('@tauri-apps/api/path', () => ({
   documentDir: vi.fn(),
   appDataDir: vi.fn(),
-  join: vi.fn(),
+  downloadDir: vi.fn(() => Promise.resolve('C:\\Users\\tester\\Downloads')),
+  join: vi.fn((...parts: string[]) => Promise.resolve(parts.join('\\'))),
 }));
 vi.mock('@tauri-apps/api/app', () => ({
   getVersion: vi.fn(() => Promise.resolve('0.2.6')),
 }));
-vi.mock('@tauri-apps/plugin-opener', () => ({
+vi.mock('@tauri-apps/plugin-dialog', () => ({
   open: vi.fn(),
+  save: vi.fn(),
 }));

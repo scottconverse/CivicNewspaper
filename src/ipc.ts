@@ -1,6 +1,5 @@
 // src/ipc.ts
 import { invoke } from "@tauri-apps/api/core";
-import { openPath, openUrl } from "@tauri-apps/plugin-opener";
 
 // QA-003: every IPC call goes through invokeGuarded, which checks isTauri()
 // once before touching @tauri-apps. In a plain browser (no Tauri runtime)
@@ -185,6 +184,11 @@ export interface DailyScanLead {
   summary: string;
   source_id?: number;
   original_url: string;
+  why_flagged?: string;
+  source_name?: string;
+  source_type?: string;
+  priority?: string;
+  suggested_next_step?: string;
 }
 
 export interface QueueData {
@@ -360,14 +364,16 @@ export async function discoverSources(city: string, state: string): Promise<Disc
   return invokeGuarded<DiscoveredSourceCategory[]>("discover_sources", { city, state });
 }
 
+export async function extractSourceImportText(path: string): Promise<string> {
+  return invokeGuarded<string>("extract_source_import_text", { path });
+}
+
 export async function openLocalPath(path: string): Promise<void> {
-  if (!isTauri()) return ipcUnavailable("open_local_path");
-  await openPath(path);
+  return invokeGuarded<void>("open_local_path", { path });
 }
 
 export async function openExternalUrl(url: string): Promise<void> {
-  if (!isTauri()) return ipcUnavailable("open_external_url");
-  await openUrl(url);
+  return invokeGuarded<void>("open_external_url", { url });
 }
 
 export async function runDailyScan(city: string, state: string, sinceHours: number): Promise<number> {

@@ -1,7 +1,9 @@
 // src/components/SourcesPanel.tsx
 import React from "react";
-import { Plus, Trash2, RefreshCcw, Search, Upload } from "lucide-react";
+import { FileUp, Plus, Trash2, RefreshCcw, Search, Upload } from "lucide-react";
 import { Source, DiscoveredSource, DiscoveredSourceCategory } from "../ipc";
+import { openExternalUrl, toUserMessage } from "../ipc";
+import { BulkImportReview, credibilityForSource } from "../bulkImportParser";
 import { Modal } from "./Modal";
 
 interface SourcesPanelProps {
@@ -26,6 +28,10 @@ interface SourcesPanelProps {
   bulkImportType: string;
   onBulkImportTypeChange: (val: string) => void;
   bulkImportLoading: boolean;
+  bulkImportReview: BulkImportReview;
+  onBuildBulkImportReview: () => void;
+  onToggleBulkImportItem: (id: string) => void;
+  onChooseBulkImportFile: () => void;
   onBulkImport: (e: React.FormEvent) => void;
   
   // Discovery
@@ -64,6 +70,10 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
   bulkImportType,
   onBulkImportTypeChange,
   bulkImportLoading,
+  bulkImportReview,
+  onBuildBulkImportReview,
+  onToggleBulkImportItem,
+  onChooseBulkImportFile,
   onBulkImport,
   showDiscoveryModal,
   onShowDiscoveryModalChange,
@@ -79,6 +89,18 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
   onImportDiscoveredSources,
   onClearDiscovered
 }) => {
+  const [linkError, setLinkError] = React.useState("");
+
+  const handleOpenUrl = async (url: string, event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    setLinkError("");
+    try {
+      await openExternalUrl(url);
+    } catch (err) {
+      setLinkError(toUserMessage(err));
+    }
+  };
+
   const getStatusColor = (status: string) => {
     if (status === "online") return "online";
     if (status === "quiet") return "warning";
@@ -99,6 +121,15 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
     if (value === "community_signal") return "Watch";
     return value ? value.replace(/_/g, " ") : "Watch";
   };
+
+  const credibilityBadgeClass = (credibility: string) => {
+    if (credibility === "Official record") return "badge-success";
+    if (credibility === "Search helper") return "badge-warning";
+    if (credibility === "Community signal") return "badge-info";
+    return "badge-neutral";
+  };
+
+  const selectedBulkCount = bulkImportReview.accepted.filter(item => item.selected).length;
 
   return (
     <div>
@@ -125,6 +156,11 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
       </div>
 
       <div className="sources-grid">
+        {linkError && (
+          <div className="card" role="alert" style={{ gridColumn: "1 / -1", borderLeft: "4px solid var(--color-error)" }}>
+            <span className="error-text">Couldn't open source link: {linkError}</span>
+          </div>
+        )}
         <div className="card source-list-card">
           <div className="table-container">
             <table className="sources-table">
@@ -152,7 +188,7 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                               <strong>{src.name}</strong>
                               <span className="source-type-chip">{formatSourceKind(src.type)}</span>
                             </div>
-                            <a href={src.url} target="_blank" rel="noreferrer">{src.url}</a>
+                            <a href={src.url} onClick={(event) => handleOpenUrl(src.url, event)}>{src.url}</a>
                           </div>
                         </div>
                       </td>
@@ -246,6 +282,13 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
             </div>
             
             <form onSubmit={onBulkImport} style={{ display: "flex", flexDirection: "column", gap: "1rem" }} id="form-bulk-import">
+              <div className="card" style={{ padding: "0.85rem", background: "var(--bg-sidebar)" }}>
+                <strong>Import review</strong>
+                <p className="help-text" style={{ margin: "0.25rem 0 0 0" }}>
+                  Paste URLs or load a source-list file. Civic Desk reviews the rows first, flags duplicates and search-helper links, and imports only the checked sources.
+                </p>
+              </div>
+
               <div>
                 <label htmlFor="select-bulk-import-type" style={{ fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>Default Classification Type</label>
                 <select id="select-bulk-import-type" value={bulkImportType} onChange={(e) => onBulkImportTypeChange(e.target.value)}>
@@ -258,12 +301,12 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
 
               <div>
                 <label htmlFor="textarea-bulk-import" style={{ fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>
-                  Source List (one per line)
+                  Source list
                 </label>
                 <p className="help-text" style={{ margin: "0 0 0.5rem 0", fontSize: "0.8rem" }}>
-                  Paste a list of URLs. You can optionally prefix with a name, e.g.,<br />
+                  Paste a list or load CSV, TSV, TXT, DOCX, or XLSX. You can optionally prefix with a name, e.g.,<br />
                   <code>Brighton Council, https://brightonco.gov/agenda</code><br />
-                  If only a URL is pasted, we will automatically extract the name from its domain.
+                  PDF source lists should be copied/exported to text first.
                 </p>
                 <textarea
                   placeholder="https://example.com/feed.xml&#10;Brighton School District, https://sd27j.org/board-agenda&#10;https://reddit.com/r/brightonco"
@@ -276,12 +319,74 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                 />
               </div>
 
+              <div className="btn-group">
+                <button className="btn btn-secondary" type="button" onClick={onChooseBulkImportFile} disabled={bulkImportLoading}>
+                  <FileUp size={16} />
+                  Load file
+                </button>
+                <button className="btn btn-secondary" type="button" onClick={onBuildBulkImportReview} disabled={bulkImportLoading || !bulkImportText.trim()}>
+                  Review list
+                </button>
+              </div>
+
+              {(bulkImportReview.accepted.length > 0 || bulkImportReview.rejected.length > 0 || bulkImportReview.duplicates.length > 0) && (
+                <div className="card" style={{ padding: "1rem" }} data-testid="bulk-import-review">
+                  <div className="flex-between" style={{ alignItems: "flex-start", gap: "1rem" }}>
+                    <div>
+                      <h4 style={{ margin: "0 0 0.25rem 0" }}>Review before importing</h4>
+                      <p className="help-text" style={{ margin: 0 }}>
+                        {bulkImportReview.accepted.length} importable, {bulkImportReview.duplicates.length} duplicate, {bulkImportReview.rejected.length} skipped. Selected: {selectedBulkCount}.
+                      </p>
+                    </div>
+                    <span className="badge badge-info">{selectedBulkCount} checked</span>
+                  </div>
+
+                  {bulkImportReview.accepted.length > 0 && (
+                    <div style={{ display: "grid", gap: "0.75rem", marginTop: "1rem" }}>
+                      {bulkImportReview.accepted.map(item => (
+                        <label key={item.id} style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "0.75rem", alignItems: "flex-start" }}>
+                          <input
+                            type="checkbox"
+                            checked={item.selected}
+                            onChange={() => onToggleBulkImportItem(item.id)}
+                            style={{ marginTop: "0.25rem" }}
+                          />
+                          <div>
+                            <div className="flex-between" style={{ gap: "0.5rem", alignItems: "flex-start" }}>
+                              <strong>{item.name}</strong>
+                              <span className={`badge ${credibilityBadgeClass(item.credibility)}`}>{item.credibility}</span>
+                            </div>
+                            <a href={item.url} onClick={(event) => handleOpenUrl(item.url, event)} style={{ wordBreak: "break-all" }}>{item.url}</a>
+                            <p className="help-text" style={{ margin: "0.25rem 0 0 0" }}>
+                              {item.review_note} Type: {formatSourceKind(item.type)}. Tier: {formatTier(item.tier)}.
+                            </p>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+
+                  {(bulkImportReview.duplicates.length > 0 || bulkImportReview.rejected.length > 0) && (
+                    <details style={{ marginTop: "1rem" }}>
+                      <summary>Skipped rows</summary>
+                      <ul style={{ marginBottom: 0 }}>
+                        {[...bulkImportReview.duplicates, ...bulkImportReview.rejected].map(item => (
+                          <li key={`${item.row}-${item.text}`}>
+                            Row {item.row}: {item.reason}
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  )}
+                </div>
+              )}
+
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem", marginTop: "1rem" }}>
                 <button className="btn btn-secondary" type="button" onClick={() => onShowBulkImportModalChange(false)} disabled={bulkImportLoading}>
                   Cancel
                 </button>
-                <button className="btn btn-primary" type="submit" disabled={bulkImportLoading} id="btn-submit-bulk-import">
-                  {bulkImportLoading ? "Importing..." : "Import List"}
+                <button className="btn btn-primary" type="submit" disabled={bulkImportLoading || (bulkImportReview.accepted.length > 0 && selectedBulkCount === 0)} id="btn-submit-bulk-import">
+                  {bulkImportLoading ? "Importing..." : bulkImportReview.accepted.length > 0 ? "Import Checked Sources" : "Review List"}
                 </button>
               </div>
             </form>
@@ -349,7 +454,7 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
               {!discoveryLoading && discoveredCats.length > 0 && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }} id="discovery-results-container">
                   <p className="help-text">
-                    Select the feeds you want to import. We recommend keeping the primary record portals and your town's local newspaper or subreddit checked.
+                    Select only the sources you trust. Search links are helpers for review, not verified feeds.
                   </p>
                   {discoveredCats.map((cat, idx) => (
                     <div key={idx} className="card" style={{ padding: "1rem", background: "var(--bg-sidebar)", border: "1px solid var(--border-color)" }}>
@@ -366,6 +471,7 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                           {cat.candidates.map((cand: any, cIdx: number) => {
                             const isChecked = selectedDiscovered.some(item => item.url === cand.url);
+                            const credibility = credibilityForSource(cand);
                             return (
                               <label key={cIdx} style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", cursor: "pointer", fontSize: "0.9rem" }}>
                                 <input
@@ -375,10 +481,14 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                                   style={{ marginTop: "0.25rem" }}
                                 />
                                 <div>
-                                  <div style={{ fontWeight: 600 }}>{cand.name}</div>
-                                  <a href={cand.url} target="_blank" rel="noreferrer" style={{ fontSize: "0.8rem", color: "var(--accent-primary)", wordBreak: "break-all" }}>
+                                  <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+                                    <strong>{cand.name}</strong>
+                                    <span className={`badge ${credibilityBadgeClass(credibility.credibility)}`}>{credibility.credibility}</span>
+                                  </div>
+                                  <a href={cand.url} onClick={(event) => handleOpenUrl(cand.url, event)} style={{ fontSize: "0.8rem", color: "var(--accent-primary)", wordBreak: "break-all" }}>
                                     {cand.url}
                                   </a>
+                                  <p className="help-text" style={{ margin: "0.2rem 0 0 0" }}>{credibility.note}</p>
                                 </div>
                               </label>
                             );

@@ -94,7 +94,8 @@ fn slugify_city(city: &str, separator: &str) -> String {
 }
 
 fn search_url(query: &str) -> String {
-    let mut url = reqwest::Url::parse("https://www.google.com/search").expect("static URL is valid");
+    let mut url =
+        reqwest::Url::parse("https://www.google.com/search").expect("static URL is valid");
     url.query_pairs_mut().append_pair("q", query);
     url.to_string()
 }
@@ -232,6 +233,95 @@ fn fallback_candidates_for_category(
         .collect()
 }
 
+fn known_city_candidates(
+    category_name: &str,
+    src_type: &str,
+    city: &str,
+    state: &str,
+) -> Vec<DiscoveredSource> {
+    let city_key = slugify_city(city, " ");
+    let state_key = state.trim().to_ascii_lowercase();
+
+    let candidates: Vec<(&str, &str, &str)> = match (city_key.as_str(), state_key.as_str()) {
+        ("denver", "co") | ("denver", "colorado") => match category_name {
+            "Municipal Website" => vec![(
+                "Denver official city website",
+                "https://www.denvergov.org/",
+                "primary_record",
+            )],
+            "City Council Agenda" => vec![
+                (
+                    "Denver City Council",
+                    "https://www.denvergov.org/Government/Agencies-Departments-Offices/Agencies-Departments-Offices-Directory/City-Council",
+                    "primary_record",
+                ),
+                (
+                    "Denver City Council agendas",
+                    "https://denver.legistar.com/Calendar.aspx",
+                    "primary_record",
+                ),
+            ],
+            "Public & Legal Notices" => vec![(
+                "Denver public notices",
+                "https://www.denvergov.org/Government/Citywide-Programs-and-Initiatives/Public-Notices",
+                "primary_record",
+            )],
+            "School Board Agenda" => vec![(
+                "Denver Public Schools Board of Education",
+                "https://www.dpsk12.org/page/board-of-education",
+                "primary_record",
+            )],
+            "Police Department Facebook" => vec![(
+                "Denver Police Department Facebook",
+                "https://www.facebook.com/DenverPolice",
+                "official_comm",
+            )],
+            "Local Reddit Community" => vec![(
+                "Denver Reddit community",
+                "https://www.reddit.com/r/Denver/",
+                "community_signal",
+            )],
+            "Local Newspaper Headlines" => vec![
+                (
+                    "Denverite",
+                    "https://denverite.com/",
+                    "media_lead",
+                ),
+                (
+                    "Colorado Public Radio Denver",
+                    "https://www.cpr.org/tags/denver/",
+                    "media_lead",
+                ),
+            ],
+            "Chamber of Commerce" => vec![(
+                "Denver Metro Chamber of Commerce",
+                "https://denverchamber.org/",
+                "community_signal",
+            )],
+            "Library Events" => vec![(
+                "Denver Public Library events",
+                "https://www.denverlibrary.org/events/upcoming",
+                "community_signal",
+            )],
+            _ => Vec::new(),
+        },
+        _ => Vec::new(),
+    };
+
+    candidates
+        .into_iter()
+        .map(|(name, url, known_type)| DiscoveredSource {
+            name: name.to_string(),
+            url: url.to_string(),
+            r#type: if known_type.is_empty() {
+                src_type.to_string()
+            } else {
+                known_type.to_string()
+            },
+        })
+        .collect()
+}
+
 #[cfg(test)]
 fn fallback_discovery_categories(city: &str, state: &str) -> Vec<DiscoveredSourceCategory> {
     discovery_targets(city, state)
@@ -239,9 +329,25 @@ fn fallback_discovery_categories(city: &str, state: &str) -> Vec<DiscoveredSourc
         .map(|(cat_name, src_type, _query)| DiscoveredSourceCategory {
             category_name: cat_name.to_string(),
             r#type: src_type.to_string(),
-            candidates: fallback_candidates_for_category(cat_name, src_type, city, state),
+            candidates: merge_candidates(
+                known_city_candidates(cat_name, src_type, city, state),
+                fallback_candidates_for_category(cat_name, src_type, city, state),
+            ),
         })
         .collect()
+}
+
+#[cfg(test)]
+fn merge_candidates(
+    mut primary: Vec<DiscoveredSource>,
+    secondary: Vec<DiscoveredSource>,
+) -> Vec<DiscoveredSource> {
+    for candidate in secondary {
+        if !primary.iter().any(|existing| existing.url == candidate.url) {
+            primary.push(candidate);
+        }
+    }
+    primary
 }
 
 pub async fn search_duckduckgo(
@@ -335,15 +441,21 @@ pub async fn discover_all_sources(
         // Politeness delay of 500ms between requests to prevent rate-limiting
         sleep(Duration::from_millis(500)).await;
 
-        let mut candidates = Vec::new();
+        let mut candidates = known_city_candidates(cat_name, src_type, city, state);
         match search_duckduckgo(&client, &query).await {
             Ok(results) => {
                 for (title, url) in results.into_iter().take(3) {
-                    candidates.push(DiscoveredSource {
+                    let candidate = DiscoveredSource {
                         name: title,
                         url,
                         r#type: src_type.to_string(),
-                    });
+                    };
+                    if !candidates
+                        .iter()
+                        .any(|existing| existing.url == candidate.url)
+                    {
+                        candidates.push(candidate);
+                    }
                 }
             }
             Err(e) => {
@@ -387,7 +499,9 @@ mod tests {
         let categories = fallback_discovery_categories("Brighton", "CO");
 
         assert_eq!(categories.len(), 9);
-        assert!(categories.iter().all(|category| !category.candidates.is_empty()));
+        assert!(categories
+            .iter()
+            .all(|category| !category.candidates.is_empty()));
 
         let council = categories
             .iter()
@@ -406,5 +520,30 @@ mod tests {
             .candidates
             .iter()
             .any(|candidate| candidate.url.starts_with("https://www.google.com/search")));
+    }
+
+    #[test]
+    fn denver_discovery_includes_known_civic_portals() {
+        let categories = fallback_discovery_categories("Denver", "CO");
+
+        let council = categories
+            .iter()
+            .find(|category| category.category_name == "City Council Agenda")
+            .expect("city council category");
+        assert!(council
+            .candidates
+            .iter()
+            .any(|candidate| candidate.url == "https://denver.legistar.com/Calendar.aspx"));
+
+        let notices = categories
+            .iter()
+            .find(|category| category.category_name == "Public & Legal Notices")
+            .expect("public notices category");
+        assert!(notices
+            .candidates
+            .iter()
+            .any(|candidate| candidate.url.contains(
+                "denvergov.org/Government/Citywide-Programs-and-Initiatives/Public-Notices"
+            )));
     }
 }

@@ -3,7 +3,7 @@
 // well-formed lines, malformed/skippable lines, type handling, and an
 // imported-count check that mirrors how useApp.handleBulkImport loops the parser.
 import { describe, test, expect } from "vitest";
-import { parseBulkImportLine } from "./bulkImportParser";
+import { buildBulkImportReview, parseBulkImportLine } from "./bulkImportParser";
 
 describe("parseBulkImportLine", () => {
   test("parses a bare URL and derives the hostname (stripping www.)", () => {
@@ -127,5 +127,44 @@ describe("parseBulkImportLine", () => {
       "https://d.com",
     ]);
     expect(parsed[2].type).toBe("media_lead");
+  });
+
+  test("builds an import review with credibility labels, duplicates, and skipped rows", () => {
+    const review = buildBulkImportReview([
+      "Council, https://city.gov/agendas",
+      "Search, https://www.google.com/search?q=city+agenda",
+      "Forum, https://reddit.com/r/city",
+      "Duplicate, https://city.gov/agendas",
+      "not a url",
+    ].join("\n"), "primary_record", ["https://existing.gov/rss"]);
+
+    expect(review.accepted).toHaveLength(3);
+    expect(review.accepted[0]).toMatchObject({
+      name: "Council",
+      credibility: "Official record",
+      selected: true,
+      tier: "official_record",
+    });
+    expect(review.accepted[1]).toMatchObject({
+      credibility: "Search helper",
+      selected: false,
+    });
+    expect(review.accepted[2]).toMatchObject({
+      credibility: "Community signal",
+      selected: false,
+    });
+    expect(review.duplicates).toHaveLength(1);
+    expect(review.rejected).toHaveLength(1);
+  });
+
+  test("treats known civic portal hosts as official records even when they are not dot-gov", () => {
+    const review = buildBulkImportReview([
+      "Denver official website, https://www.denvergov.org/",
+      "Denver City Council agendas, https://denver.legistar.com/Calendar.aspx",
+    ].join("\n"), "primary_record", []);
+
+    expect(review.accepted).toHaveLength(2);
+    expect(review.accepted.every((item) => item.credibility === "Official record")).toBe(true);
+    expect(review.accepted.every((item) => item.selected)).toBe(true);
   });
 });

@@ -62,7 +62,7 @@ export const AiModelPanel: React.FC<AiModelPanelProps> = ({
           </div>
         </div>
 
-        <p className="ai-card-copy">We picked a model that fits your computer. This downloads once and then works completely offline.</p>
+        <p className="ai-card-copy">We picked a model that fits your computer. This downloads once and then works completely offline. Large models can take 10-60+ minutes on slower connections.</p>
 
         <div className="ai-ram-callout">
           <HardDrive size={19} />
@@ -85,6 +85,9 @@ export const AiModelPanel: React.FC<AiModelPanelProps> = ({
             {pullingModel && <RefreshCcw className="animate-spin" size={15} />}
             <span>{pullingModel ? progressLine : `${modelSizes[recommended] || "One-time download"} - local after setup`}</span>
           </div>
+          <p className="help-text" style={{ margin: "0.5rem 0 0 0" }}>
+            You can leave this running, or cancel and resume later. If progress stops for several minutes, check internet access, restart Civic Desk, then retry.
+          </p>
         </div>
 
         <div className="ai-options-label">Other options</div>

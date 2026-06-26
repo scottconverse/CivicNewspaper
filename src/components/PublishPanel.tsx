@@ -9,7 +9,8 @@ interface PublishPanelProps {
   onPublishStepChange: (step: number) => void;
   loading: boolean;
   onPublish: () => void;
-  onOpenLocalPath: (path: string) => void;
+  onOpenLocalPath: (path: string) => void | Promise<void>;
+  onChoosePublishPath: () => void;
 }
 
 export const PublishPanel: React.FC<PublishPanelProps> = ({
@@ -19,7 +20,8 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   onPublishStepChange,
   loading,
   onPublish,
-  onOpenLocalPath
+  onOpenLocalPath,
+  onChoosePublishPath
 }) => {
   const [error, setError] = useState<string>("");
 
@@ -40,6 +42,8 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
     setError("");
     onPublishStepChange(2);
   };
+
+  const primaryLabel = publishStep === 1 ? "Review compile checklist" : "Compile site";
 
   return (
     <div id="publish-panel-container">
@@ -78,7 +82,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
               required
               id="input-publish-path"
             />
-            <button className="btn btn-secondary" type="button" onClick={() => publishPath && onOpenLocalPath(publishPath)}>
+            <button className="btn btn-secondary" type="button" onClick={onChoosePublishPath} id="btn-publish-browse">
               <FolderOpen size={16} />
               Browse
             </button>
@@ -101,7 +105,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
 
           <button className="btn btn-primary btn-full" onClick={publishStep === 1 ? handleNextClick : handleCompileClick} disabled={loading} id={publishStep === 1 ? "btn-publish-next" : "btn-publish-compile"}>
             <FileDown size={16} />
-            {loading ? "Compiling..." : "Compile site"}
+            {loading ? "Compiling..." : primaryLabel}
           </button>
         </div>
 
@@ -109,10 +113,14 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
           <div className="card">
             <div className="last-compiled">
               <span className={publishStep === 3 ? "status-dot online" : "status-dot warning"} />
-              <strong>{publishStep === 3 ? "Last compiled" : "Ready to compile"}</strong>
+              <strong>{publishStep === 3 ? "Last compiled" : publishStep === 2 ? "Ready for final compile" : "Review before compiling"}</strong>
             </div>
             <p className="help-text">
-              {publishStep === 3 ? "Generated locally. Open the folder and drag it into your hosting provider when you are ready." : "The Civic Desk will render a static site folder from approved stories and correction notices."}
+              {publishStep === 3
+                ? "Generated locally. Open the folder and drag it into your hosting provider when you are ready."
+                : publishStep === 2
+                  ? "Click Compile site to write the static website files to the output folder."
+                  : "Choose an output folder, then review the compile checklist before writing files."}
             </p>
             <div className="btn-group">
               <button className="btn btn-secondary" onClick={() => publishPath && onOpenLocalPath(publishPath)} id="btn-publish-open-folder">Open folder</button>

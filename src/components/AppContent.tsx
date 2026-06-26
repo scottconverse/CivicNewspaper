@@ -154,6 +154,10 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           bulkImportType={app.bulkImportType}
           onBulkImportTypeChange={app.setBulkImportType}
           bulkImportLoading={app.bulkImportLoading}
+          bulkImportReview={app.bulkImportReview}
+          onBuildBulkImportReview={app.handleBuildBulkImportReview}
+          onToggleBulkImportItem={app.handleToggleBulkImportItem}
+          onChooseBulkImportFile={app.handleChooseBulkImportFile}
           onBulkImport={app.handleBulkImport}
           showDiscoveryModal={app.showDiscoveryModal}
           onShowDiscoveryModalChange={app.setShowDiscoveryModal}
@@ -234,10 +238,23 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           publishPath={app.publishPath}
           onPublishPathChange={app.setPublishPath}
           publishStep={app.publishStep}
-          onPublishStepChange={app.setPublishStep}
+          onPublishStepChange={(step) => {
+            app.setPublishStep(step);
+            if (step === 2) {
+              app.setStatusMessage("Review the compile checklist, then click Compile site to write files.");
+            }
+          }}
           loading={app.loading}
           onPublish={app.handlePublish}
-          onOpenLocalPath={openLocalPath}
+          onOpenLocalPath={async (path) => {
+            try {
+              await openLocalPath(path);
+              app.setStatusMessage("Opened folder.");
+            } catch (e) {
+              app.setErrorMessage(`Couldn't open folder: ${toUserMessage(e)}`);
+            }
+          }}
+          onChoosePublishPath={app.handleChoosePublishPath}
         />
       )}
 

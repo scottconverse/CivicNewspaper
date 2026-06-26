@@ -632,6 +632,9 @@ button:disabled {
   padding: 2rem;
   width: 100%;
   max-width: 500px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  box-sizing: border-box;
   box-shadow: var(--shadow-lg);
   position: relative;
 }
@@ -1525,6 +1528,36 @@ tr:hover td {
   color: #7c8472;
   font-size: 12px;
   line-height: 1.5;
+}
+
+.setup-steps {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0;
+  padding: 13px 14px;
+  border: 1px solid #dce5f4;
+  border-radius: 8px;
+  background: #f5f8fd;
+  color: #3f4854;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.setup-steps strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 21px;
+  height: 21px;
+  margin-right: 6px;
+  border-radius: 999px;
+  color: #ffffff;
+  background: var(--accent-primary);
+  font-size: 12px;
+}
+
+.setup-steps span {
+  font-weight: 700;
 }
 
 .paired-list {

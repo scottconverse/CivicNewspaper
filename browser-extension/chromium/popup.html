@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Civic Desk Bridge</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <img src="icon.png" alt="" />
+        <div>
+          <h1>Civic Desk Bridge</h1>
+          <p id="statusText">Checking pairing...</p>
+        </div>
+      </header>
+
+      <section id="pairPanel" hidden>
+        <label for="pinInput">Pairing code</label>
+        <input id="pinInput" autocomplete="off" placeholder="ABCD-1234-EFGH" />
+        <button id="pairButton" type="button">Pair extension</button>
+        <p class="hint">Generate a code in The Civic Desk, then paste it here within 5 minutes.</p>
+      </section>
+
+      <section id="pairedPanel" hidden>
+        <p class="ok">This browser is paired with the local Civic Desk app.</p>
+        <button id="openAssistantButton" type="button">Open ChatGPT</button>
+        <button id="forgetButton" class="secondary" type="button">Forget this browser</button>
+      </section>
+
+      <p id="message" role="status"></p>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>

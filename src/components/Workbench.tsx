@@ -1,4 +1,4 @@
-// src/components/Workbench.tsx
+﻿// src/components/Workbench.tsx
 import React, { useState, useEffect } from "react";
 import { CheckCircle, AlertTriangle, Info, FileText } from "lucide-react";
 import { Lead, Draft, EvidenceItem, GuardrailsReport, plainLanguageRewrite } from "../ipc";
@@ -83,6 +83,39 @@ interface WorkbenchProps {
   onGenerateSocial: () => void;
   onUpdateDraftTitle: (title: string) => void;
   onUpdateDraftContent: (content: string) => void;
+}
+
+function guardrailInstruction(issue: any): { title: string; action: string } {
+  const category = String(issue.category ?? "").toLowerCase();
+  const message = String(issue.message ?? "");
+  if (category.includes("citation")) {
+    return {
+      title: "Add a public-record citation",
+      action: "This passage makes a factual claim without a linked record. Highlight the sentence, use Cite from the evidence pane, or rewrite/remove the claim.",
+    };
+  }
+  if (category.includes("accusatory")) {
+    return {
+      title: "Attribute or soften accusatory wording",
+      action: "Use careful attribution such as according to the filed record, add a citation, or rewrite the claim so it does not state an unsupported accusation.",
+    };
+  }
+  if (category.includes("legal")) {
+    return {
+      title: "Use legally careful language",
+      action: "Use alleged, charged with, or attributed language unless the public record supports a final finding.",
+    };
+  }
+  if (category.includes("verbatim")) {
+    return {
+      title: "Rewrite source wording",
+      action: "This wording is too close to the source. Rewrite it in your own words or format it as a direct quote with a citation.",
+    };
+  }
+  return {
+    title: "Review this guardrail issue",
+    action: message || "Check this passage before approval.",
+  };
 }
 
 export const Workbench: React.FC<WorkbenchProps> = ({
@@ -296,9 +329,9 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                 )}
                 <strong style={{ color: guardrailsReport.is_clean ? undefined : "var(--color-error)" }}>
                   {!guardrailsReport.is_clean
-                    ? "Publishing is blocked — fix these issues, or approve with a logged override."
+                    ? "Publishing is blocked â€” fix these issues, or approve with a logged override."
                     : guardrailsReport.issues.length > 0
-                      ? "Advisory warnings — these do not block publishing."
+                      ? "Advisory warnings â€” these do not block publishing."
                       : "Pre-publication guardrails passed: no issues detected."}
                 </strong>
               </div>
@@ -310,6 +343,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
               <div style={{ marginTop: "0.5rem" }} id="guardrails-issues-list">
                 {guardrailsReport.issues.map((issue: any, idx: number) => {
                   const isError = issue.severity === "error";
+                  const instruction = guardrailInstruction(issue);
                   return (
                     <div
                       key={idx}
@@ -324,7 +358,12 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                           color: isError ? "var(--color-error)" : "var(--color-warning)",
                         }}
                       />
-                      <strong>{isError ? "BLOCKS" : "warns"}</strong> · [{issue.category.replace(/_/g, " ")}] {issue.message}
+                      <strong>{isError ? "BLOCKS" : "warns"}</strong> - {instruction.title}
+                      <p className="help-text" style={{ margin: "0.25rem 0 0 1.4rem" }}>{instruction.action}</p>
+                      <details style={{ margin: "0.35rem 0 0 1.4rem" }}>
+                        <summary>Technical details</summary>
+                        <p className="help-text" style={{ margin: "0.25rem 0 0 0" }}>[{String(issue.category).replace(/_/g, " ")}] {issue.message}</p>
+                      </details>
                     </div>
                   );
                 })}
@@ -412,7 +451,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                         !attested
                           ? "Confirm you verified this story before approving"
                           : errorIssues.length > 0
-                            ? "This story has blocking issues — you'll be asked to confirm an override"
+                            ? "This story has blocking issues â€” you'll be asked to confirm an override"
                             : "Approve this story for publishing"
                       }
                       id="btn-status-publish"
@@ -605,3 +644,4 @@ export const Workbench: React.FC<WorkbenchProps> = ({
     </div>
   );
 };
+

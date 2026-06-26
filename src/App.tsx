@@ -37,6 +37,8 @@ function App() {
     <Layout
       activeTab={app.activeTab}
       onTabChange={(tab) => {
+        app.setErrorMessage("");
+        app.setStatusMessage("");
         app.setActiveTab(tab);
         app.setSelectedLead(null);
       }}

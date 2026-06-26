@@ -12,6 +12,10 @@
   "background": {
     "service_worker": "background.js"
   },
+  "action": {
+    "default_title": "Civic Desk Bridge",
+    "default_popup": "popup.html"
+  },
   "content_scripts": [
     {
       "matches": [

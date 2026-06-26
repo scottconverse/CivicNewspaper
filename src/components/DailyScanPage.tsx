@@ -15,6 +15,29 @@ interface DailyScanPageProps {
   onRefresh: () => void;
 }
 
+function progressStageLabel(stage: string): string {
+  switch (stage) {
+    case "preflight":
+      return "Checking setup";
+    case "preparing":
+      return "Preparing records";
+    case "generating":
+      return "Local AI review";
+    case "parsing":
+      return "Repairing response";
+    case "saving":
+      return "Saving leads";
+    case "fallback":
+      return "Building review packet";
+    case "complete":
+      return "Complete";
+    case "failed":
+      return "Needs attention";
+    default:
+      return stage.replace(/_/g, " ");
+  }
+}
+
 export const DailyScanPage: React.FC<DailyScanPageProps> = ({
   latestScanId,
   leadCount,
@@ -91,9 +114,14 @@ export const DailyScanPage: React.FC<DailyScanPageProps> = ({
                   ? ` Batch ${dailyScanProgress.batch_index} of ${dailyScanProgress.batch_count}.`
                   : ""}
               </p>
+              {dailyScanProgress.stage !== "complete" && dailyScanProgress.stage !== "failed" && (
+                <p className="help-text" style={{ margin: "0.35rem 0 0 0" }}>
+                  Local scans move in stages rather than a fake percent. It is normal for the AI review stage to take a while on CPU-only machines.
+                </p>
+              )}
             </div>
             <span className={`badge ${dailyScanProgress.stage === "failed" ? "badge-warning" : dailyScanProgress.stage === "complete" ? "badge-success" : "badge-info"}`}>
-              {dailyScanProgress.stage}
+              {progressStageLabel(dailyScanProgress.stage)}
             </span>
           </div>
         </section>
@@ -105,7 +133,7 @@ export const DailyScanPage: React.FC<DailyScanPageProps> = ({
         <div className="card empty-state">
           <ScanSearch size={36} />
           <h3>Start today's scan</h3>
-          <p className="help-text">The results panel will fill with surfaced civic leads after the first run.</p>
+          <p className="help-text">The results panel will fill with surfaced civic leads after the first run. If this is a fresh setup, add sources and run Scrape & Detect first so there are records to review.</p>
           <button className="btn btn-primary" onClick={onRunScan} disabled={loading}>
             <Play size={16} />
             Run Daily Scan

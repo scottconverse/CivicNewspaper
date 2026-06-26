@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { documentDir, join } from "@tauri-apps/api/path";
+import { open } from "@tauri-apps/plugin-dialog";
 import {
   getSources,
   addSource,
@@ -44,10 +45,11 @@ import {
   isOnboardingComplete,
   getSetting,
   setSetting,
-  toUserMessage
+  toUserMessage,
+  extractSourceImportText
 } from "./ipc";
 import modelsConfig from "./models.json";
-import { parseBulkImportLine } from "./bulkImportParser";
+import { buildBulkImportReview, BulkImportReview } from "./bulkImportParser";
 
 export interface ConfirmDialogState {
   title: string;
@@ -157,6 +159,7 @@ export function useApp() {
   const [bulkImportText, setBulkImportText] = useState("");
   const [bulkImportType, setBulkImportType] = useState("primary_record");
   const [bulkImportLoading, setBulkImportLoading] = useState(false);
+  const [bulkImportReview, setBulkImportReview] = useState<BulkImportReview>({ accepted: [], rejected: [], duplicates: [] });
 
   const [correctionDraftId, setCorrectionDraftId] = useState<number | null>(null);
 
@@ -588,13 +591,7 @@ export function useApp() {
             ],
           },
         ]);
-        setSelectedDiscovered([
-          {
-            name: `${discoveryCity} Council Agendas`,
-            url: `https://${citySlug}-${stateSlug}.gov/council/agendas`,
-            type: "primary_record",
-          },
-        ]);
+        setSelectedDiscovered([]);
         setDiscoveryLoading(false);
       }, 250);
       return;
@@ -604,14 +601,9 @@ export function useApp() {
       setErrorMessage("");
       const results = await discoverSources(discoveryCity, discoveryState);
       setDiscoveredCats(results);
-      const allDiscovered: DiscoveredSource[] = [];
-      results.forEach(cat => {
-        cat.candidates.forEach(cand => {
-          allDiscovered.push(cand);
-        });
-      });
-      setSelectedDiscovered(allDiscovered);
-      setStatusMessage(`Found ${allDiscovered.length} candidate source(s). Review and import the ones you trust.`);
+      const candidateCount = results.reduce((sum, cat) => sum + cat.candidates.length, 0);
+      setSelectedDiscovered([]);
+      setStatusMessage(`Found ${candidateCount} candidate source(s). Select only the sources you trust, then import them.`);
     } catch (e: any) {
       setErrorMessage(toUserMessage(e));
     } finally {
@@ -680,41 +672,48 @@ export function useApp() {
   const handleBulkImport = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!bulkImportText.trim()) return;
+    const review = buildBulkImportReview(bulkImportText, bulkImportType, sources.map(source => source.url));
+    if (bulkImportReview.accepted.length === 0 || bulkImportReview.accepted.some(item => !review.accepted.some(next => next.id === item.id))) {
+      setBulkImportReview(review);
+      setStatusMessage(`Reviewed ${review.accepted.length} importable source(s). Select the ones you trust, then import.`);
+      return;
+    }
+    const selected = bulkImportReview.accepted.filter(item => item.selected);
+    if (selected.length === 0) {
+      setStatusMessage("No sources selected. Select at least one reviewed source to import.");
+      return;
+    }
     if (!isTauri()) {
-      const imported: Source[] = bulkImportText
-        .split("\n")
-        .map((rawLine) => parseBulkImportLine(rawLine, bulkImportType))
-        .filter((parsed): parsed is NonNullable<ReturnType<typeof parseBulkImportLine>> => Boolean(parsed))
+      const imported: Source[] = selected
         .map((parsed, index) => ({
           id: Date.now() + index,
           name: parsed.name,
           url: parsed.url,
           type: parsed.type,
-          tier: "community_signal",
+          tier: parsed.tier,
           status: "online",
           last_scraped: new Date().toISOString(),
         }));
       setSources(prev => [...prev, ...imported]);
       setShowBulkImportModal(false);
       setBulkImportText("");
+      setBulkImportReview({ accepted: [], rejected: [], duplicates: [] });
       setStatusMessage(`Imported ${imported.length} source(s) in browser preview.`);
       return;
     }
     try {
       setBulkImportLoading(true);
       setErrorMessage("");
-      setStatusMessage("Bulk importing sources...");
-      const lines = bulkImportText.split("\n");
+      setStatusMessage("Importing selected reviewed sources...");
       let importedCount = 0;
-      for (const rawLine of lines) {
-        const parsed = parseBulkImportLine(rawLine, bulkImportType);
-        if (!parsed) continue;
-        await addSource(parsed.name, parsed.url, parsed.type, "community_signal");
+      for (const parsed of selected) {
+        await addSource(parsed.name, parsed.url, parsed.type, parsed.tier);
         importedCount++;
       }
       setStatusMessage(`Bulk imported ${importedCount} source(s) successfully.`);
       setShowBulkImportModal(false);
       setBulkImportText("");
+      setBulkImportReview({ accepted: [], rejected: [], duplicates: [] });
       const s = await getSources();
       setSources(s);
     } catch (e: any) {
@@ -730,7 +729,7 @@ export function useApp() {
     if (!isTauri()) {
       const seg = () => Array.from({ length: 4 }, () => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random() * 32)]).join("");
       setGeneratedPin(`${seg()}-${seg()}-${seg()}`);
-      setPinExpiryMsg("PIN expires in 5 minutes. Enter this PIN in your browser extension config.");
+      setPinExpiryMsg("Code expires in 5 minutes. Paste it into the browser extension popup.");
       setPairedClients(prev => [
         ...prev,
         {
@@ -748,7 +747,7 @@ export function useApp() {
       setLoading(true);
       const pin = await generatePairingPin(pairingLabel);
       setGeneratedPin(pin);
-      setPinExpiryMsg("PIN expires in 5 minutes. Enter this PIN in your browser extension config.");
+      setPinExpiryMsg("Code expires in 5 minutes. Paste it into the browser extension popup.");
       setPairingLabel("");
       const clients = await listPairedClients();
       setPairedClients(clients);
@@ -1006,12 +1005,87 @@ export function useApp() {
       setErrorMessage("");
       setStatusMessage(`Compiling HTML, CSS, and RSS templates to static site at: ${publishPath}...`);
       await publish(publishPath);
-      setStatusMessage("Static Newspaper compiled successfully!");
+      setStatusMessage(`Static site compiled to: ${publishPath}. Open the folder, then drag its contents into Netlify or your GitHub Pages repo.`);
       setPublishStep(3);
     } catch (e: any) {
       setErrorMessage(toUserMessage(e));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleBulkImportTextChange = (value: string) => {
+    setBulkImportText(value);
+    setBulkImportReview({ accepted: [], rejected: [], duplicates: [] });
+  };
+
+  const handleBulkImportTypeChange = (value: string) => {
+    setBulkImportType(value);
+    setBulkImportReview({ accepted: [], rejected: [], duplicates: [] });
+  };
+
+  const handleBuildBulkImportReview = () => {
+    const review = buildBulkImportReview(bulkImportText, bulkImportType, sources.map(source => source.url));
+    setBulkImportReview(review);
+    setStatusMessage(`Reviewed ${review.accepted.length} importable source(s), ${review.duplicates.length} duplicate(s), and ${review.rejected.length} skipped row(s).`);
+  };
+
+  const handleToggleBulkImportItem = (id: string) => {
+    setBulkImportReview(prev => ({
+      ...prev,
+      accepted: prev.accepted.map(item => item.id === id ? { ...item, selected: !item.selected } : item),
+    }));
+  };
+
+  const handleChooseBulkImportFile = async () => {
+    if (!isTauri()) {
+      setStatusMessage("File import is available in the desktop app. Paste URLs here in browser preview.");
+      return;
+    }
+    try {
+      setBulkImportLoading(true);
+      setErrorMessage("");
+      const selected = await open({
+        multiple: false,
+        directory: false,
+        title: "Choose source list file",
+        filters: [
+          { name: "Source lists", extensions: ["txt", "csv", "tsv", "md", "html", "htm", "json", "docx", "xlsx", "pdf"] },
+        ],
+      });
+      if (typeof selected !== "string") return;
+      const text = await extractSourceImportText(selected);
+      setBulkImportText(text);
+      const review = buildBulkImportReview(text, bulkImportType, sources.map(source => source.url));
+      setBulkImportReview(review);
+      setStatusMessage(`Loaded ${review.accepted.length} importable source(s) from file for review.`);
+    } catch (e) {
+      setErrorMessage(toUserMessage(e));
+    } finally {
+      setBulkImportLoading(false);
+    }
+  };
+
+  const handleChoosePublishPath = async () => {
+    if (!isTauri()) {
+      setErrorMessage("Choosing a folder requires The Civic Desk desktop app.");
+      return;
+    }
+    try {
+      setErrorMessage("");
+      const selected = await open({
+        directory: true,
+        multiple: false,
+        title: "Choose publish output folder",
+        defaultPath: publishPath || undefined,
+      });
+      if (typeof selected === "string") {
+        setPublishPath(selected);
+        await setSetting("paths.publish", selected);
+        setStatusMessage("Publish folder selected.");
+      }
+    } catch (e: any) {
+      setErrorMessage(`Couldn't choose publish folder: ${toUserMessage(e)}`);
     }
   };
 
@@ -1224,15 +1298,17 @@ export function useApp() {
     showBulkImportModal,
     setShowBulkImportModal,
     bulkImportText,
-    setBulkImportText,
+    setBulkImportText: handleBulkImportTextChange,
     bulkImportType,
-    setBulkImportType,
+    setBulkImportType: handleBulkImportTypeChange,
     bulkImportLoading,
+    bulkImportReview,
     socialPackResult,
     setSocialPackResult,
     isGeneratingSocial,
     publishStep,
     setPublishStep,
+    handleChoosePublishPath,
     ollamaOnline,
     systemRam,
     onboardingDone,
@@ -1271,6 +1347,9 @@ export function useApp() {
     handleToggleDiscoveredSource,
     handleImportDiscoveredSources,
     handleBulkImport,
+    handleBuildBulkImportReview,
+    handleToggleBulkImportItem,
+    handleChooseBulkImportFile,
     handleGeneratePin,
     handleRevokeClient,
     handleSaveProfile,

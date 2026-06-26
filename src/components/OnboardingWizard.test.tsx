@@ -222,7 +222,7 @@ describe("OnboardingWizard Component Tests", () => {
     await vi.waitFor(() => {
       expect(screen.getByText("Couldn't reach the AI service")).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /retry/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /Open diagnostic log/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Save diagnostics file/i })).toBeInTheDocument();
     });
 
     vi.useRealTimers();

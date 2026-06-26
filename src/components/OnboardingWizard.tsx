@@ -414,7 +414,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   <div style={{ background: "rgba(239, 68, 68, 0.05)", padding: "1rem", borderRadius: "8px" }}>
                     <h4 style={{ color: "var(--color-error)" }}>Couldn't reach the AI service</h4>
                     <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>
-                      The local AI service took too long to respond. This might be due to system resources or path permissions.
+                      The private AI service did not start. First try restarting Civic Desk. If Windows or antivirus asked about this app, allow it, then retry. If it still fails, save a diagnostics file for support.
                     </p>
                     {exportStatus && (
                       <p style={{ fontSize: "0.85rem", color: "var(--accent-primary)", marginBottom: "0.5rem" }}>{exportStatus}</p>
@@ -424,7 +424,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                         <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} /> Retry
                       </button>
                       <button className="btn btn-secondary btn-sm" onClick={handleExportDiagnostics}>
-                        Open diagnostic log
+                        Save diagnostics file
                       </button>
                     </div>
                   </div>
@@ -449,6 +449,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                     <h4 style={{ color: "var(--color-success)" }}>The AI service is ready. Download a recommended model?</h4>
                     <p style={{ fontSize: "0.9rem" }}>
                       Based on your {sysRam}GB of RAM, we recommend: <strong>{model}</strong> (one-time download, {downloadSizeFor(model)}, needs internet).
+                    </p>
+                    <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.5rem" }}>
+                      This may take 10-60+ minutes depending on your connection. You can cancel and resume later from AI Model; already downloaded pieces are usually reused by the model service.
                     </p>
                     {sysRam > 0 && sysRam < LOW_RAM_FLOOR_GB ? (
                       <p
@@ -496,7 +499,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             <div style={{ background: "var(--accent-light)", padding: "1rem", borderRadius: "8px", marginBottom: "1rem" }}>
               <strong>AI Model: {model} (Recommended)</strong>
               <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
-                CivicNews will download this local AI model now — a one-time download of about {downloadSizeFor(model)} that needs an internet connection. After this, the AI runs fully offline on your computer.
+                CivicNews will download this local AI model now - a one-time download of about {downloadSizeFor(model)} that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.
+              </p>
+              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
+                It is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.
               </p>
             </div>
             

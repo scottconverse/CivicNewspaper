@@ -377,7 +377,7 @@ function render() {
   header.className = 'cn-header';
   header.innerHTML = `
     <span class="cn-title">CivicNews Bridge</span>
-    <button class="cn-close">×</button>
+    <button class="cn-close" aria-label="Close">x</button>
   `;
   header.querySelector('.cn-close').addEventListener('click', () => {
     drawer.classList.remove('open');
@@ -391,10 +391,10 @@ function render() {
     // Render pairing form
     body.innerHTML = `
       <div class="cn-pair-box">
-        <h4 style="margin:0 0 5px 0;">Pair local assistant</h4>
-        <p style="color:#94a3b8;margin:0 0 10px 0;line-height:1.4;">Enter the pairing Token from CivicNews Desktop App &gt; Browser Pairing.</p>
-        <input type="text" id="cn-pin-input" class="cn-input" placeholder="Paste 22-char token" />
-        <button id="cn-pair-btn" class="cn-button">Pair Client</button>
+        <h4 style="margin:0 0 5px 0;">Pair local bridge</h4>
+        <p style="color:#94a3b8;margin:0 0 10px 0;line-height:1.4;">Open The Civic Desk &gt; Browser Pairing, generate a code, then paste it here.</p>
+        <input type="text" id="cn-pin-input" class="cn-input" placeholder="Paste pairing code" />
+        <button id="cn-pair-btn" class="cn-button">Pair extension</button>
       </div>
     `;
     body.querySelector('#cn-pair-btn').addEventListener('click', () => {

@@ -21,8 +21,7 @@ function handlePair(pin, sendResponse) {
   fetch(`${API_URL}/api/pair`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      'Host': '127.0.0.1:12053'
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify({ pin })
   })
@@ -33,7 +32,7 @@ function handlePair(pin, sendResponse) {
           sendResponse({ success: true, token: data.token });
         });
       } else {
-        sendResponse({ success: false, error: 'Invalid PIN or pairing expired.' });
+        sendResponse({ success: false, error: 'Invalid code or pairing expired.' });
       }
     })
     .catch((err) => {
@@ -45,14 +44,13 @@ function handleGetQueue(sendResponse) {
   chrome.storage.local.get(['civicnews_token'], (result) => {
     const token = result.civicnews_token;
     if (!token) {
-      sendResponse({ success: false, error: 'Not paired. Click the CivicNews icon to pair.' });
+      sendResponse({ success: false, error: 'Not paired. Click the Civic Desk extension icon to pair.' });
       return;
     }
 
     fetch(`${API_URL}/api/queue`, {
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Host': '127.0.0.1:12053'
+        'Authorization': `Bearer ${token}`
       }
     })
       .then(async (res) => {
@@ -79,8 +77,7 @@ function handleGetEvidence(leadId, sendResponse) {
 
     fetch(`${API_URL}/api/evidence/${leadId}`, {
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Host': '127.0.0.1:12053'
+        'Authorization': `Bearer ${token}`
       }
     })
       .then(async (res) => {
@@ -109,8 +106,7 @@ function handleSubmitDraft(draft, sendResponse) {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'Host': '127.0.0.1:12053'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(draft)
     })
