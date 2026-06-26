@@ -41,9 +41,8 @@ This document provides ready-made discussion templates to kickstart the GitHub D
 
   #### 2. What are the system requirements?
   CivicNews automatically checks your system memory (RAM) during onboarding:
-  * **16 GB RAM or more (Recommended)**: The app pulls `qwen3:14b` (≈9.3 GB download — our standard model). Qwen3 is a best-in-class local model in 2026 with notably reliable JSON/structured output, which the Daily Scan feature relies on.
-  * **8 GB RAM or more**: The onboarding wizard will recommend pulling the smaller `qwen3:8b` (≈5.2 GB download).
-  * **Below 8 GB RAM**: The app will guide you to the lightweight `qwen3:4b` (≈2.5 GB download) or suggest running in manual drafting mode.
+  * **8 GB RAM or more (Recommended)**: The app pulls `qwen2.5:7b` (≈4.7 GB download), the current scan-tested default for reliable Daily Scan JSON.
+  * **Below 8 GB RAM**: The app will guide you to the lightweight `llama3.2:3b` (≈2 GB download) or suggest running in manual drafting mode.
 
   #### 3. How do I change my AI model after onboarding?
   Open the **Settings** tab in the CivicNews dashboard. You can enter any model name that you have pulled inside Ollama (e.g., `mistral`, `llama3.2`) and click Save.

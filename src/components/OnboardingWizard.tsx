@@ -20,7 +20,7 @@ import {
 import modelsConfig from "../models.json";
 import { ConfirmModal } from "./ConfirmModal";
 
-// Minimum system RAM (GB) for the smallest model (qwen3:4b) to run at usable
+// Minimum system RAM (GB) for the low-RAM model to run at usable
 // speed. Below this floor we still allow setup but warn the user that AI
 // features may run slowly.
 const LOW_RAM_FLOOR_GB = 8;

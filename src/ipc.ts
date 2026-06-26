@@ -225,6 +225,10 @@ export async function listPairedClients(): Promise<PairedClient[]> {
   return invokeGuarded<PairedClient[]>("list_paired_clients");
 }
 
+export async function getBrowserExtensionPath(): Promise<string> {
+  return invokeGuarded<string>("get_browser_extension_path");
+}
+
 export async function revokePairing(id: number): Promise<void> {
   return invokeGuarded<void>("revoke_pairing", { id });
 }

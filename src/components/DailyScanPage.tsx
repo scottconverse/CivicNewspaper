@@ -1,6 +1,7 @@
 import React from "react";
 import { Play, RefreshCw, ScanSearch, TrendingUp } from "lucide-react";
 import { DailyScanResults } from "./DailyScanResults";
+import { DailyScanProgress } from "../useApp";
 
 interface DailyScanPageProps {
   latestScanId?: number | null;
@@ -9,6 +10,7 @@ interface DailyScanPageProps {
   sourceCount: number;
   loading: boolean;
   ollamaOnline: boolean;
+  dailyScanProgress?: DailyScanProgress | null;
   onRunScan: () => void;
   onRefresh: () => void;
 }
@@ -20,6 +22,7 @@ export const DailyScanPage: React.FC<DailyScanPageProps> = ({
   sourceCount,
   loading,
   ollamaOnline,
+  dailyScanProgress,
   onRunScan,
   onRefresh,
 }) => {
@@ -73,6 +76,28 @@ export const DailyScanPage: React.FC<DailyScanPageProps> = ({
         </div>
         <TrendingUp className="scan-watermark" size={88} aria-hidden="true" />
       </section>
+
+      {dailyScanProgress && (
+        <section className="card" data-testid="daily-scan-progress" style={{ marginTop: "1rem" }}>
+          <div className="flex-between" style={{ alignItems: "flex-start", gap: "1rem" }}>
+            <div>
+              <p className="eyebrow">Scan progress</p>
+              <h3 style={{ marginTop: 0 }}>{dailyScanProgress.message}</h3>
+              <p className="help-text" style={{ marginBottom: 0 }}>
+                {dailyScanProgress.model ? `Model: ${dailyScanProgress.model}. ` : ""}
+                Evidence: {dailyScanProgress.evidence_count}.
+                {" "}Saved leads: {dailyScanProgress.saved_leads}.
+                {dailyScanProgress.batch_index && dailyScanProgress.batch_count
+                  ? ` Batch ${dailyScanProgress.batch_index} of ${dailyScanProgress.batch_count}.`
+                  : ""}
+              </p>
+            </div>
+            <span className={`badge ${dailyScanProgress.stage === "failed" ? "badge-warning" : dailyScanProgress.stage === "complete" ? "badge-success" : "badge-info"}`}>
+              {dailyScanProgress.stage}
+            </span>
+          </div>
+        </section>
+      )}
 
       {latestScanId ? (
         <DailyScanResults scanId={latestScanId} onRunScan={onRunScan} />

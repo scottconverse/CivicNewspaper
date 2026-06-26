@@ -8,6 +8,7 @@ use crate::core::guardrails::{self, GuardrailsReport};
 use crate::core::llm;
 use crate::core::scraper;
 use serde::{Deserialize, Serialize};
+use tauri::Emitter;
 use tauri::Manager;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -33,7 +34,7 @@ fn default_state() -> String {
 }
 
 /// Normalize an Ollama model tag for EXACT comparison. Ollama treats an untagged
-/// name as `:latest`, so `qwen3` and `qwen3:latest` are the same model. QA-mn1:
+/// name as `:latest`, so `qwen2.5` and `qwen2.5:latest` are the same model. QA-mn1:
 /// match exact tags (with this `:latest` normalization) instead of loose
 /// substring/`starts_with`/`contains` matching, which could select the wrong
 /// model (e.g. `qwen3:4b` selected vs `qwen3:14b` installed).
@@ -72,9 +73,9 @@ pub(crate) async fn get_selected_model_or_fallback(db: &DbConn) -> String {
         return m;
     }
 
-    // Default to the smallest qwen3 tier (qwen3:4b) — the model family the app
-    // ships with. This fallback only runs when no model is saved in settings.
-    let default_m = "qwen3:4b".to_string();
+    // Default to the scan-safe model verified by the local bakeoff. This
+    // fallback only runs when no model is saved in settings.
+    let default_m = "qwen2.5:7b".to_string();
     let mut model = default_m.clone();
     if let Ok(resp) = reqwest::get("http://127.0.0.1:11434/api/tags").await {
         if resp.status().is_success() {
@@ -91,15 +92,14 @@ pub(crate) async fn get_selected_model_or_fallback(db: &DbConn) -> String {
                     let names: Vec<String> = tags.models.iter().map(|m| m.name.clone()).collect();
                     // QA-mn1: prefer the default model only if it is EXACTLY
                     // installed (with :latest normalization), then fall back to
-                    // any preferred-family exact-ish tag, then the first model.
+                    // a known scan-capable family, then the first model.
                     if model_is_installed(&default_m, &names) {
                         model = default_m;
                     } else if let Some(m) = tags.models.iter().find(|m| {
                         // Match by model FAMILY on the tag's base name (the part
-                        // before ':'), not a loose whole-string contains. The app
-                        // ships with the qwen3 family (qwen3:14b/8b/4b).
+                        // before ':'), not a loose whole-string contains.
                         let base = m.name.split(':').next().unwrap_or("");
-                        base.starts_with("qwen")
+                        base == "qwen2.5" || base == "llama3.2"
                     }) {
                         model = m.name.clone();
                     } else {
@@ -248,6 +248,22 @@ pub fn list_paired_clients(db: tauri::State<'_, DbConn>) -> Result<Vec<PairedCli
         .lock()
         .map_err(|_| "Failed to lock database".to_string())?;
     db::list_paired_clients(&conn).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn get_browser_extension_path() -> Result<String, String> {
+    let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .ok_or_else(|| "Could not resolve project root".to_string())?
+        .join("browser-extension")
+        .join("chromium");
+    if !path.exists() {
+        return Err(format!(
+            "Browser extension folder was not found at {}",
+            path.display()
+        ));
+    }
+    Ok(path.to_string_lossy().to_string())
 }
 
 #[tauri::command]
@@ -688,9 +704,11 @@ pub async fn discover_sources(
     city: String,
     state: String,
 ) -> Result<Vec<DiscoveredSourceCategory>, String> {
-    discovery::discover_all_sources(&city, &state)
-        .await
-        .map_err(|e| e.to_string())
+    discovery::discover_all_sources(&city, &state).await.map_err(|e| {
+        eprintln!("Source discovery failed for {city}, {state}: {e}");
+        "Source discovery could not run. Check your connection, then try again or add sources manually."
+            .to_string()
+    })
 }
 
 #[derive(serde::Serialize)]
@@ -897,13 +915,17 @@ pub async fn run_daily_scan<R: tauri::Runtime>(
         .state::<std::sync::Arc<dyn crate::core::llm::LlmClient>>()
         .inner()
         .clone();
-    crate::core::daily_scan::run_daily_scan(
+    let progress_app = app.clone();
+    crate::core::daily_scan::run_daily_scan_with_progress(
         &db,
         &llm_client,
         &prompt_template,
         &city,
         &state,
         since_hours,
+        move |progress| {
+            let _ = progress_app.emit("daily-scan-progress", progress);
+        },
     )
     .await
 }

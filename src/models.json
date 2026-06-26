@@ -1,10 +1,9 @@
 {
-  "high": "qwen3:14b",
-  "medium": "qwen3:8b",
-  "low": "qwen3:4b",
+  "high": "qwen2.5:7b",
+  "medium": "qwen2.5:7b",
+  "low": "llama3.2:3b",
   "sizes": {
-    "qwen3:14b": "~9 GB",
-    "qwen3:8b": "~5 GB",
-    "qwen3:4b": "~2.5 GB"
+    "qwen2.5:7b": "~4.7 GB",
+    "llama3.2:3b": "~2 GB"
   }
 }

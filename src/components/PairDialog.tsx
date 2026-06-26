@@ -48,13 +48,18 @@ export const PairDialog: React.FC<PairDialogProps> = ({
               required
               id="input-pairing-label"
             />
+            {!pairingLabel.trim() && (
+              <p className="help-text" style={{ margin: "-0.5rem 0 0" }}>
+                Enter a device label before generating a code.
+              </p>
+            )}
 
             <div id="pin-display-box" className="pairing-pin-box" data-testid="pin-display">
               {generatedPin || "---- ---- ----"}
               <span>{generatedPin ? pinExpiryMsg : "No active code"}</span>
             </div>
 
-            <button className="btn btn-primary btn-full" type="submit" id="btn-submit-generate-pin">
+            <button className="btn btn-primary btn-full" type="submit" id="btn-submit-generate-pin" disabled={!pairingLabel.trim()}>
               <KeyRound size={16} />
               Generate new code
             </button>

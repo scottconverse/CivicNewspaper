@@ -30,9 +30,9 @@ describe("OnboardingWizard Component Tests", () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
 
-    // 16 GB RAM maps to the high tier (qwen3:14b) per OnboardingWizard's
+    // 16 GB RAM maps to the high tier per OnboardingWizard's
     // ram >= 16 ? high : ram >= 8 ? medium : low recommendation logic.
-    const recommendedModel = 'qwen3:14b';
+    const recommendedModel = 'qwen2.5:7b';
     invokeMock.mockImplementation((cmd: string) => {
       if (cmd === "get_system_ram") return Promise.resolve(16);
       if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: [], version: "0.1.0" });
@@ -112,7 +112,7 @@ describe("OnboardingWizard Component Tests", () => {
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
     // Step 2 — service reachable but no models installed shows the ready/download prompt
-    const recommendedModel = 'qwen3:14b';
+    const recommendedModel = 'qwen2.5:7b';
     await waitFor(() => expect(screen.getByText(/Download a recommended model/i)).toBeInTheDocument());
     expect(screen.getByText(new RegExp(recommendedModel))).toBeInTheDocument();
   });
@@ -143,7 +143,7 @@ describe("OnboardingWizard Component Tests", () => {
     expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
     
     // Click pull recommended model button
-    const recommendedModel = 'qwen3:14b';
+    const recommendedModel = 'qwen2.5:7b';
     const pullBtn = await screen.findByRole("button", { name: new RegExp("Download " + recommendedModel, "i") });
     fireEvent.click(pullBtn);
 

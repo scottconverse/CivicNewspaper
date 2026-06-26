@@ -12,8 +12,7 @@ import { Modal } from "./Modal";
 import { ConfirmModal } from "./ConfirmModal";
 import { BetaNotice } from "./BetaNotice";
 import { SystemStatus } from "./SystemStatus";
-import { resolveResource } from "@tauri-apps/api/path";
-import { openLocalPath } from "../ipc";
+import { getBrowserExtensionPath, openLocalPath, toUserMessage } from "../ipc";
 
 interface AppContentProps {
   app: any;
@@ -128,6 +127,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           sourceCount={app.sources.length}
           loading={app.loading}
           ollamaOnline={app.ollamaOnline}
+          dailyScanProgress={app.dailyScanProgress}
           onRunScan={app.handleDailyScan}
           onRefresh={app.loadInitialData}
         />
@@ -197,10 +197,11 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           onRevokeClient={app.handleRevokeClient}
           onOpenExtensionFolder={async () => {
             try {
-              const extPath = await resolveResource("browser-extension");
-              openLocalPath(extPath);
+              const extPath = await getBrowserExtensionPath();
+              await openLocalPath(extPath);
+              app.setStatusMessage("Opened the browser extension folder.");
             } catch (e) {
-              console.error("Failed to resolve extension path", e);
+              app.setErrorMessage(`Couldn't open the browser extension folder: ${toUserMessage(e)}`);
             }
           }}
         />

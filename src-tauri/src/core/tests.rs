@@ -974,6 +974,30 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_daily_scan_parses_json_after_thinking_preamble() {
+        let response = r#"<think>
+I should produce JSON only.
+</think>
+{"leads":[{"title":"Planning hearing","summary":"A hearing was posted for a zoning change.","original_url":"https://example.gov/hearing"}]}"#;
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT INTO daily_scan_runs (started_at, run_status) VALUES ('', 'running')",
+            [],
+        )
+        .unwrap();
+
+        let saved =
+            crate::core::daily_scan::parse_and_save_scan_response(&conn, 1, response).unwrap();
+
+        assert_eq!(saved, 1);
+        let count: i32 = conn
+            .query_row("SELECT COUNT(*) FROM daily_scan_leads", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(count, 1);
+    }
+
     // MUTATION-RESISTANT (per Amendments 001/002). Runs on every platform,
     // including Windows: exercises the real model-selection path
     // (get_selected_model_or_fallback) plus the core rewrite logic with an
@@ -1324,7 +1348,19 @@ mod tests {
         )
         .await;
 
-        assert!(res.is_ok());
+        let run_id = res.expect("valid empty scan response should still complete");
+        let conn = db_conn.lock().unwrap();
+        let saved: i32 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM daily_scan_leads WHERE scan_id = ?1",
+                [run_id],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(
+            saved, 0,
+            "valid empty JSON should not be replaced with fallback leads"
+        );
     }
 
     // QA-M2: with zero evidence in the window, run_daily_scan must short-circuit
@@ -1371,6 +1407,92 @@ mod tests {
             run_count, 0,
             "no run row should be created on short-circuit"
         );
+    }
+
+    #[tokio::test]
+    async fn test_daily_scan_falls_back_to_evidence_packet_when_model_fails() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        crate::core::migrations::run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT OR REPLACE INTO settings (key, value) VALUES ('model.selected', 'test-model')",
+            [],
+        )
+        .unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Agenda Source".to_string(),
+                url: "https://example.gov/agenda".to_string(),
+                r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        for idx in 0..6 {
+            insert_evidence_item(
+                &conn,
+                &EvidenceItem {
+                    id: None,
+                    source_id,
+                    url: Some(format!("https://example.gov/agenda#{}", idx)),
+                    fetched_at: Utc::now().to_rfc3339(),
+                    excerpt: format!("Council approved item {} with a public deadline.", idx),
+                    content_hash: format!("fallback_hash_{}", idx),
+                    entities: "[]".to_string(),
+                },
+            )
+            .unwrap();
+        }
+        let db_conn: DbConn = Arc::new(Mutex::new(conn));
+
+        struct FailingLlmClient;
+        #[async_trait::async_trait]
+        impl crate::core::llm::LlmClient for FailingLlmClient {
+            async fn call(&self, _m: &str, _p: &str, _s: &str) -> Result<String, String> {
+                Err("model timeout".to_string())
+            }
+        }
+        let llm_client: Arc<dyn crate::core::llm::LlmClient> = Arc::new(FailingLlmClient);
+        let progress_events = Arc::new(Mutex::new(Vec::new()));
+        let progress_sink = progress_events.clone();
+
+        let run_id = crate::core::daily_scan::run_daily_scan_with_progress(
+            &db_conn,
+            &llm_client,
+            "aggregator prompt template",
+            "Brighton",
+            "CO",
+            24,
+            move |progress| progress_sink.lock().unwrap().push(progress.stage),
+        )
+        .await
+        .expect("fallback packet should make the scan complete");
+
+        let conn = db_conn.lock().unwrap();
+        let status: String = conn
+            .query_row(
+                "SELECT run_status FROM daily_scan_runs WHERE id = ?1",
+                [run_id],
+                |row| row.get(0),
+            )
+            .unwrap();
+        let saved: i32 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM daily_scan_leads WHERE scan_id = ?1",
+                [run_id],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(status, "completed");
+        assert!(saved > 0, "fallback should save an editor packet");
+        let events = progress_events.lock().unwrap();
+        assert!(events.iter().any(|stage| stage == "fallback"));
+        assert!(events.iter().any(|stage| stage == "complete"));
     }
 
     // ===== C-6 / CRIT-1: add_source storage gate (SSRF + tier) =====

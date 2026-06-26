@@ -17,6 +17,8 @@ struct OllamaGenerateRequest<'a> {
     prompt: &'a str,
     system: &'a str,
     stream: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    format: Option<serde_json::Value>,
 }
 
 /// One line of a streaming `/api/generate` response. Ollama emits newline-
@@ -161,6 +163,32 @@ pub async fn call_local_ollama_streaming(
     system: &str,
     mut on_token: impl FnMut(&str),
 ) -> Result<String, LlmError> {
+    call_local_ollama_streaming_with_format(model, prompt, system, None, &mut on_token).await
+}
+
+pub async fn call_local_ollama_json(
+    model: &str,
+    prompt: &str,
+    system: &str,
+) -> Result<String, Box<dyn Error + Send + Sync>> {
+    call_local_ollama_streaming_with_format(
+        model,
+        prompt,
+        system,
+        Some(serde_json::json!("json")),
+        &mut |_| {},
+    )
+    .await
+    .map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)
+}
+
+async fn call_local_ollama_streaming_with_format(
+    model: &str,
+    prompt: &str,
+    system: &str,
+    format: Option<serde_json::Value>,
+    on_token: &mut impl FnMut(&str),
+) -> Result<String, LlmError> {
     // No reqwest client-level timeout: we bound the whole stream with our own
     // tokio timeout below so a slow-but-progressing CPU generation isn't killed
     // by reqwest's idle/read timeout.
@@ -173,6 +201,7 @@ pub async fn call_local_ollama_streaming(
         prompt,
         system,
         stream: true,
+        format,
     };
 
     let timeout = generation_timeout();
@@ -252,6 +281,10 @@ pub async fn call_local_ollama(
 pub trait LlmClient: Send + Sync {
     async fn call(&self, model: &str, prompt: &str, system: &str) -> Result<String, String>;
 
+    async fn call_json(&self, model: &str, prompt: &str, system: &str) -> Result<String, String> {
+        self.call(model, prompt, system).await
+    }
+
     /// Typed variant of [`call`](LlmClient::call) that preserves the [`LlmError`]
     /// variant up to the caller, so an HTTP boundary can classify a timeout
     /// (`LlmError::Timeout` → 504) distinctly from other failures (→ 503)
@@ -277,6 +310,12 @@ pub struct OllamaClient;
 impl LlmClient for OllamaClient {
     async fn call(&self, model: &str, prompt: &str, system: &str) -> Result<String, String> {
         call_local_ollama(model, prompt, system)
+            .await
+            .map_err(|e| e.to_string())
+    }
+
+    async fn call_json(&self, model: &str, prompt: &str, system: &str) -> Result<String, String> {
+        call_local_ollama_json(model, prompt, system)
             .await
             .map_err(|e| e.to_string())
     }

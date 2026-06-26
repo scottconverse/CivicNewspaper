@@ -46,6 +46,48 @@ describe("parseBulkImportLine", () => {
     });
   });
 
+  test("parses quoted CSV rows with commas in the source name", () => {
+    expect(parseBulkImportLine('"City Records, Clerk", "https://records.gov/rss", primary_record', "media_lead")).toEqual({
+      name: "City Records, Clerk",
+      url: "https://records.gov/rss",
+      type: "primary_record",
+    });
+  });
+
+  test("parses TSV and pipe-separated exports", () => {
+    expect(parseBulkImportLine("Library Events\thttps://library.gov/events\tcommunity_signal", "primary_record")).toEqual({
+      name: "Library Events",
+      url: "https://library.gov/events",
+      type: "community_signal",
+    });
+    expect(parseBulkImportLine("https://paper.example/news | Local Paper | media_lead", "primary_record")).toEqual({
+      name: "Local Paper",
+      url: "https://paper.example/news",
+      type: "media_lead",
+    });
+  });
+
+  test("parses markdown and HTML links", () => {
+    expect(parseBulkImportLine("[Council Agendas](https://city.gov/agendas)", "primary_record")).toEqual({
+      name: "Council Agendas",
+      url: "https://city.gov/agendas",
+      type: "primary_record",
+    });
+    expect(parseBulkImportLine('<a href="https://city.gov/notices">Public Notices</a>', "official_comm")).toEqual({
+      name: "Public Notices",
+      url: "https://city.gov/notices",
+      type: "official_comm",
+    });
+  });
+
+  test("parses label plus URL rows from copied documents", () => {
+    expect(parseBulkImportLine("City Council Agendas - https://city.gov/agendas.", "primary_record")).toEqual({
+      name: "City Council Agendas",
+      url: "https://city.gov/agendas",
+      type: "primary_record",
+    });
+  });
+
   test.each([
     ["blank line", "   "],
     ["empty string", ""],

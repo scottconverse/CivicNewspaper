@@ -26,7 +26,7 @@ When you open CivicNewspaper for the first time, you will be guided through an o
 
 1. **Identity**: Enter your Publication Name, Editor Name, City, and State.
 2. **AI Service Setup**: The wizard verifies connection to the bundled offline AI sidecar engine.
-3. **Download AI Model**: Pull the recommended AI model for offline draft generation. The wizard picks one based on your system RAM: `qwen3:14b` (≈9.3 GB download) for 16 GB or more, `qwen3:8b` (≈5.2 GB) for 8 GB or more, and `qwen3:4b` (≈2.5 GB) below 8 GB. CivicNewspaper uses Qwen3 because it is a best-in-class local model in 2026 with notably reliable JSON/structured output, which the Daily Scan feature depends on.
+3. **Download AI Model**: Pull the recommended AI model for offline draft generation and Daily Scan. The wizard recommends `qwen2.5:7b` (≈4.7 GB download) for 8 GB RAM or more, with `llama3.2:3b` (≈2 GB) as the low-RAM fallback. CivicNewspaper uses a scan-tested model because the Daily Scan depends on reliable JSON output, not just fluent prose.
 4. **Defaults**: Configure your Publish Path (where static sites are compiled) and Backup Path (for database backups).
 5. **Done**: Complete the setup to enter your workspace.
 

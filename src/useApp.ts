@@ -64,6 +64,18 @@ export interface OllamaPullProgress {
   total?: number;
 }
 
+export interface DailyScanProgress {
+  stage: string;
+  message: string;
+  run_id?: number | null;
+  model?: string | null;
+  evidence_count: number;
+  batch_index?: number | null;
+  batch_count?: number | null;
+  saved_leads: number;
+  receivedAt?: number;
+}
+
 // QA-mn1: exact model-tag match. A loose `.includes()` let `phi3:mini` "match"
 // `phi3:medium` (or any tag sharing a prefix), so the pre-flight could pass while
 // the actual generate call later fails with "model not found." Ollama implicitly
@@ -171,6 +183,7 @@ export function useApp() {
   const [customLlmRunning, setCustomLlmRunning] = useState(false);
 
   const [latestScanId, setLatestScanId] = useState<number | null>(null);
+  const [dailyScanProgress, setDailyScanProgress] = useState<DailyScanProgress | null>(null);
 
   // Real application version, read from the Tauri bundle at runtime.
   const [appVersion, setAppVersion] = useState("");
@@ -245,6 +258,10 @@ export function useApp() {
         setPullProgressText(prev => [...prev.slice(-30), progressLine]);
       });
 
+      const dailyScanProgressUnlisten = await listen<DailyScanProgress>("daily-scan-progress", (event) => {
+        setDailyScanProgress({ ...event.payload, receivedAt: Date.now() });
+      });
+
       const completeUnlisten = await listen<void>("ollama-pull-complete", () => {
         setPullingModel(false);
         setPullProgressText(prev => [...prev, "✓ Model pulled successfully!"]);
@@ -267,6 +284,7 @@ export function useApp() {
 
       return () => {
         progressUnlisten();
+        dailyScanProgressUnlisten();
         completeUnlisten();
         errorUnlisten();
         serverErrorUnlisten();
@@ -429,6 +447,13 @@ export function useApp() {
       setLoading(true);
       setStatusMessage("Checking AI model presence...");
       setErrorMessage("");
+      setDailyScanProgress({
+        stage: "preflight",
+        message: "Checking selected model and local AI service...",
+        evidence_count: 0,
+        saved_leads: 0,
+        receivedAt: Date.now(),
+      });
 
       const model = await getSetting("model.selected");
       if (!model) {
@@ -461,6 +486,12 @@ export function useApp() {
       await loadInitialData();
     } catch (e: any) {
       setErrorMessage(toUserMessage(e));
+      setDailyScanProgress(prev => prev ? {
+        ...prev,
+        stage: "failed",
+        message: toUserMessage(e),
+        receivedAt: Date.now(),
+      } : null);
     } finally {
       setLoading(false);
     }
@@ -580,6 +611,7 @@ export function useApp() {
         });
       });
       setSelectedDiscovered(allDiscovered);
+      setStatusMessage(`Found ${allDiscovered.length} candidate source(s). Review and import the ones you trust.`);
     } catch (e: any) {
       setErrorMessage(toUserMessage(e));
     } finally {
@@ -1221,6 +1253,7 @@ export function useApp() {
     customLlmResult,
     customLlmRunning,
     latestScanId,
+    dailyScanProgress,
     appVersion,
     loading,
     statusMessage,
