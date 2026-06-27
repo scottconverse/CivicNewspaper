@@ -1719,4 +1719,66 @@ mod source_import_extraction_tests {
         assert!(text.contains("https://www.longmontcolorado.gov/city-council"));
         let _ = std::fs::remove_dir_all(dir);
     }
+
+    #[test]
+    #[ignore = "local release-smoke fixture gate; set CIVICNEWS_IMPORT_FIXTURE_DIR"]
+    fn local_source_import_fixtures_extract_reviewable_text() {
+        let fixture_dir = std::env::var("CIVICNEWS_IMPORT_FIXTURE_DIR")
+            .expect("set CIVICNEWS_IMPORT_FIXTURE_DIR to the fixture folder");
+        let fixture_dir = PathBuf::from(fixture_dir);
+        let output_dir = std::env::var("CIVICNEWS_IMPORT_EXTRACTED_DIR")
+            .ok()
+            .map(PathBuf::from);
+        if let Some(dir) = &output_dir {
+            std::fs::create_dir_all(dir).unwrap();
+        }
+
+        let cases = [
+            ("colorado-source-list-clean.csv", 35usize, true),
+            ("colorado-source-list-messy.xlsx", 25usize, true),
+            ("colorado-source-list-human-notes.txt", 25usize, true),
+            ("colorado-source-list-briefing.docx", 35usize, true),
+            ("colorado-source-list-exported.pdf", 30usize, true),
+            ("colorado-source-list-edge-cases.xlsx", 15usize, true),
+            ("colorado-source-list-scanned-style.pdf", 0usize, false),
+        ];
+
+        let url_re = regex::Regex::new(r#"https?://[^\s<>"')\]]+"#).unwrap();
+        let mut report = Vec::new();
+        for (name, min_urls, should_extract) in cases {
+            let path = fixture_dir.join(name);
+            let result = extract_source_import_text(path.to_string_lossy().to_string());
+            match (result, should_extract) {
+                (Ok(text), true) => {
+                    let count = url_re.find_iter(&text).count();
+                    if let Some(dir) = &output_dir {
+                        let out_name = format!("{name}.txt");
+                        std::fs::write(dir.join(out_name), &text).unwrap();
+                    }
+                    report.push(format!("{name}: extracted {count} URL-like strings"));
+                    assert!(
+                        count >= min_urls,
+                        "{name} extracted {count} URL-like strings; expected at least {min_urls}"
+                    );
+                }
+                (Err(err), false) => {
+                    report.push(format!("{name}: expected extraction failure: {err}"));
+                    assert!(
+                        err.contains("OCR") || err.contains("readable text"),
+                        "{name} should fail with OCR/readable-text guidance, got: {err}"
+                    );
+                }
+                (Ok(text), false) => {
+                    panic!(
+                        "{name} unexpectedly extracted text from scanned-style fixture: {} chars",
+                        text.len()
+                    );
+                }
+                (Err(err), true) => {
+                    panic!("{name} should extract reviewable text, got error: {err}");
+                }
+            }
+        }
+        eprintln!("{}", report.join("\n"));
+    }
 }

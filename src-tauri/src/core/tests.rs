@@ -2779,6 +2779,60 @@ I should produce JSON only.
             .contains("Save the required provider credential"));
     }
 
+    #[tokio::test]
+    #[ignore = "live here.now publish gate; set CIVIC_DESK_HERENOW_OUTPUT_DIR"]
+    async fn local_herenow_anonymous_publishes_compiled_site() {
+        let output_dir = std::env::var("CIVIC_DESK_HERENOW_OUTPUT_DIR")
+            .expect("set CIVIC_DESK_HERENOW_OUTPUT_DIR to a compiled static site folder");
+        let connector = crate::core::publisher::publisher_for("here_now").unwrap();
+        let config = crate::core::publisher::PublisherConfig {
+            provider: "here_now".to_string(),
+            display_name: "Civic Desk Release Smoke".to_string(),
+            site_url: None,
+            project_hint: Some("Temporary release-smoke preview from CivicNewspaper.".to_string()),
+            site_id: None,
+            account_id: None,
+            repo: None,
+            branch: None,
+            path_prefix: None,
+            username: None,
+            has_credential: false,
+        };
+        let request = crate::core::publisher::PublisherPublishRequest {
+            output_dir,
+            provider: "here_now".to_string(),
+            published_url: None,
+            deployment_id: None,
+        };
+
+        let result = connector.publish_folder(&config, &request).await.unwrap();
+        assert_eq!(result.provider, "here_now");
+        assert!(result.published_url.starts_with("https://"));
+
+        let response = reqwest::get(&result.published_url).await.unwrap();
+        assert!(
+            response.status().is_success(),
+            "published URL returned {}",
+            response.status()
+        );
+        let body = response.text().await.unwrap();
+        assert!(body.contains("Longmont Civic Desk") || body.contains("Civic Desk"));
+
+        if let Ok(receipt_path) = std::env::var("CIVIC_DESK_HERENOW_RECEIPT") {
+            std::fs::write(
+                receipt_path,
+                serde_json::to_string_pretty(&serde_json::json!({
+                    "provider": result.provider,
+                    "published_url": result.published_url,
+                    "deployment_id": result.deployment_id,
+                    "message": result.message
+                }))
+                .unwrap(),
+            )
+            .unwrap();
+        }
+    }
+
     #[test]
     fn test_seeded_publish_fixture_generates_article_evidence_and_correction_package() {
         let conn = init_db("file:test_seeded_publish_fixture?mode=memory&cache=shared").unwrap();

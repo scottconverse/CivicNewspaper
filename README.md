@@ -189,6 +189,7 @@ If `npm run tauri` errors with "tauri: command not found", install the Tauri CLI
 - [docs/user_manual.md](docs/user_manual.md) — for non-technical editors.
 - [docs/architecture.md](docs/architecture.md) — for developers and reviewers.
 - [docs/api.md](docs/api.md) — loopback HTTP API route reference (for building a second client).
+- [docs/release-readiness.md](docs/release-readiness.md) — release-smoke, source-import, model-bakeoff, and stable-release gates.
 - [docs/discussion_seeds.md](docs/discussion_seeds.md) — templates for GitHub Discussions.
 - [FAQ.md](FAQ.md).
 

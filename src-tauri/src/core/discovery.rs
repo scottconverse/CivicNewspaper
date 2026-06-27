@@ -305,6 +305,145 @@ fn known_city_candidates(
             )],
             _ => Vec::new(),
         },
+        ("brighton", "co") | ("brighton", "colorado") => match category_name {
+            "Municipal Website" => vec![(
+                "Brighton official city website",
+                "https://www.brightonco.gov/",
+                "primary_record",
+            )],
+            "City Council Agenda" => vec![(
+                "Brighton Agenda Center",
+                "https://www.brightonco.gov/AgendaCenter",
+                "primary_record",
+            )],
+            "Public & Legal Notices" => vec![(
+                "Brighton News Flash",
+                "https://www.brightonco.gov/CivicAlerts.aspx",
+                "official_comm",
+            )],
+            "School Board Agenda" => vec![(
+                "School District 27J",
+                "https://www.sd27j.org/",
+                "primary_record",
+            )],
+            _ => Vec::new(),
+        },
+        ("aurora", "co") | ("aurora", "colorado") => match category_name {
+            "Municipal Website" => vec![(
+                "Aurora official city website",
+                "https://www.auroragov.org/",
+                "primary_record",
+            )],
+            "City Council Agenda" => vec![(
+                "Aurora City Council calendar",
+                "https://aurora.legistar.com/Calendar.aspx",
+                "primary_record",
+            )],
+            "School Board Agenda" => vec![(
+                "Aurora Public Schools",
+                "https://www.aurorak12.org/",
+                "primary_record",
+            )],
+            _ => Vec::new(),
+        },
+        ("boulder", "co") | ("boulder", "colorado") => match category_name {
+            "Municipal Website" => vec![(
+                "Boulder official city website",
+                "https://bouldercolorado.gov/",
+                "primary_record",
+            )],
+            "City Council Agenda" => vec![(
+                "Boulder City Council",
+                "https://bouldercolorado.gov/services/city-council",
+                "primary_record",
+            )],
+            "Local Newspaper Headlines" => vec![(
+                "Daily Camera",
+                "https://www.dailycamera.com/",
+                "media_lead",
+            )],
+            _ => Vec::new(),
+        },
+        ("longmont", "co") | ("longmont", "colorado") => match category_name {
+            "Municipal Website" => vec![(
+                "Longmont official city website",
+                "https://www.longmontcolorado.gov/",
+                "primary_record",
+            )],
+            "City Council Agenda" => vec![(
+                "Longmont agendas and minutes",
+                "https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk/agendas-and-minutes",
+                "primary_record",
+            )],
+            "School Board Agenda" => vec![(
+                "St. Vrain Valley Schools",
+                "https://www.svvsd.org/",
+                "primary_record",
+            )],
+            _ => Vec::new(),
+        },
+        ("fort collins", "co") | ("fort collins", "colorado") => match category_name {
+            "Municipal Website" => vec![(
+                "Fort Collins official city website",
+                "https://www.fcgov.com/",
+                "primary_record",
+            )],
+            "City Council Agenda" => vec![(
+                "Fort Collins City Council agendas",
+                "https://www.fcgov.com/cityclerk/councilagenda",
+                "primary_record",
+            )],
+            "Local Newspaper Headlines" => vec![(
+                "Coloradoan",
+                "https://www.coloradoan.com/",
+                "media_lead",
+            )],
+            _ => Vec::new(),
+        },
+        ("lakewood", "co") | ("lakewood", "colorado") => match category_name {
+            "Municipal Website" => vec![(
+                "Lakewood official city website",
+                "https://www.lakewood.org/",
+                "primary_record",
+            )],
+            "City Council Agenda" => vec![(
+                "Lakewood City Council",
+                "https://www.lakewood.org/Government/City-Council",
+                "primary_record",
+            )],
+            _ => Vec::new(),
+        },
+        ("pueblo", "co") | ("pueblo", "colorado") => match category_name {
+            "Municipal Website" => vec![(
+                "Pueblo official city website",
+                "https://www.pueblo.us/",
+                "primary_record",
+            )],
+            "City Council Agenda" => vec![(
+                "Pueblo Agenda Center",
+                "https://www.pueblo.us/AgendaCenter",
+                "primary_record",
+            )],
+            "Local Newspaper Headlines" => vec![(
+                "Pueblo Chieftain",
+                "https://www.chieftain.com/",
+                "media_lead",
+            )],
+            _ => Vec::new(),
+        },
+        ("grand junction", "co") | ("grand junction", "colorado") => match category_name {
+            "Municipal Website" => vec![(
+                "Grand Junction official city website",
+                "https://www.gjcity.org/",
+                "primary_record",
+            )],
+            "City Council Agenda" => vec![(
+                "Grand Junction Agenda Center",
+                "https://www.gjcity.org/AgendaCenter",
+                "primary_record",
+            )],
+            _ => Vec::new(),
+        },
         _ => Vec::new(),
     };
 
@@ -545,5 +684,41 @@ mod tests {
             .any(|candidate| candidate.url.contains(
                 "denvergov.org/Government/Citywide-Programs-and-Initiatives/Public-Notices"
             )));
+    }
+
+    #[test]
+    fn colorado_city_discovery_includes_known_official_seeds() {
+        let cities = [
+            ("Brighton", "brightonco.gov"),
+            ("Aurora", "auroragov.org"),
+            ("Boulder", "bouldercolorado.gov"),
+            ("Longmont", "longmontcolorado.gov"),
+            ("Fort Collins", "fcgov.com"),
+            ("Lakewood", "lakewood.org"),
+            ("Pueblo", "pueblo.us"),
+            ("Grand Junction", "gjcity.org"),
+        ];
+
+        for (city, expected_host) in cities {
+            let categories = fallback_discovery_categories(city, "CO");
+            let official_count = categories
+                .iter()
+                .flat_map(|category| category.candidates.iter())
+                .filter(|candidate| {
+                    candidate.r#type == "primary_record" && !candidate.url.contains("google.com")
+                })
+                .count();
+            assert!(
+                official_count >= 2,
+                "{city} should have at least two deterministic official seeds"
+            );
+            assert!(
+                categories
+                    .iter()
+                    .flat_map(|category| category.candidates.iter())
+                    .any(|candidate| candidate.url.contains(expected_host)),
+                "{city} should include {expected_host}"
+            );
+        }
     }
 }
