@@ -87,13 +87,16 @@ For details: [docs/architecture.md](docs/architecture.md).
 │   ├── tauri.conf.json         # Tauri configs (no updater plugin — updates are manual; see CHANGELOG ENG-001)
 │   ├── capabilities/
 │   ├── icons/
-│   ├── migrations/             # schema migrations 0001–0008 (ten tables + publish-gate columns)
+│   ├── migrations/             # schema migrations 0001, 0003–0010 (eleven tables + publish metadata)
 │   │   ├── 0001_init.sql
 │   │   ├── 0003_settings.sql
 │   │   ├── 0004_source_tier.sql
 │   │   ├── 0005_daily_scans.sql
 │   │   ├── 0006_daily_scan_lead_source_nullable.sql
-│   │   └── 0007_source_tier_check.sql
+│   │   ├── 0007_source_tier_check.sql
+│   │   ├── 0008_draft_publish_gate.sql
+│   │   ├── 0009_daily_scan_lead_context.sql
+│   │   └── 0010_publish_runs.sql
 │   └── src/
 │       ├── main.rs
 │       ├── lib.rs

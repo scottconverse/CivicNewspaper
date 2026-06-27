@@ -151,9 +151,9 @@ graph TD
 
 ## 🗃️ Database Schema
 
-The SQLite schema is **not** a single static file — it is built additively by a migration runner from the SQL files in `src-tauri/migrations/`. The current set is `0001_init.sql`, `0003_settings.sql`, `0004_source_tier.sql`, `0005_daily_scans.sql`, `0006_daily_scan_lead_source_nullable.sql`, `0007_source_tier_check.sql`, and `0008_draft_publish_gate.sql` (there is no `0002`). The runner tracks applied migrations via `PRAGMA user_version` and applies each unapplied file in a transaction.
+The SQLite schema is **not** a single static file — it is built additively by a migration runner from the SQL files in `src-tauri/migrations/`. The current set is `0001_init.sql`, `0003_settings.sql`, `0004_source_tier.sql`, `0005_daily_scans.sql`, `0006_daily_scan_lead_source_nullable.sql`, `0007_source_tier_check.sql`, `0008_draft_publish_gate.sql`, `0009_daily_scan_lead_context.sql`, and `0010_publish_runs.sql` (there is no `0002`). The runner tracks applied migrations via `PRAGMA user_version` and applies each unapplied file in a transaction.
 
-The live schema is **ten tables**: the seven defined in `0001_init.sql` below, plus `settings` (0003) and `daily_scan_runs` / `daily_scan_leads` (0005). Migrations also added the `sources.tier` column (0004/0007), the `leads.from_scan_lead_id` column (0005), and the `drafts.attested_by` / `attested_at` / `guardrail_override_reason` columns (0008, for the publish gate).
+The live schema is **eleven tables**: the seven defined in `0001_init.sql` below, plus `settings` (0003), `daily_scan_runs` / `daily_scan_leads` (0005), and `publish_runs` (0010). Migrations also added the `sources.tier` column (0004/0007), the `leads.from_scan_lead_id` column (0005), Daily Scan lead context columns (0009), and the `drafts.attested_by` / `attested_at` / `guardrail_override_reason` columns (0008, for the publish gate).
 
 ### `sources`
 Stores details of the public municipal feeds to monitor.
@@ -212,6 +212,16 @@ Records of compiled publications.
 * `url`: `TEXT NOT NULL`
 * `published_at`: `TEXT NOT NULL`
 * `correction_history`: `TEXT NOT NULL DEFAULT '[]'`
+
+### `publish_runs` *(added in `0010_publish_runs.sql`)*
+Issue-level records for generated static-site export and publish packages.
+* `id`: `INTEGER PRIMARY KEY AUTOINCREMENT`
+* `issue_id`: `TEXT NOT NULL`
+* `output_path`: `TEXT NOT NULL`
+* `generated_files`: `TEXT NOT NULL DEFAULT '[]'` (JSON array of generated file paths)
+* `provider`, `published_url`, `deployment_id`: `TEXT` (connector metadata; blank for local export-only runs)
+* `article_count`, `skipped_count`, `files_written`: `INTEGER NOT NULL DEFAULT 0`
+* `generated_at`: `TEXT NOT NULL`
 
 ### `paired_clients`
 Authorized external integrations.

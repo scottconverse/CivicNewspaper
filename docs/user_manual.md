@@ -164,7 +164,7 @@ A report is "clean" only when no **error**-severity issue is present. With the d
 
 ## 5. Database Migrations
 Database schema updates are handled automatically by a migration runner on application launch:
-* Migrations are stored as plain SQL files in `src-tauri/migrations/` (`0001`, `0003`–`0008`; there is no `0002`). `0008_draft_publish_gate` adds the `attested_by` / `attested_at` / `guardrail_override_reason` columns to `drafts` (the publish gate).
+* Migrations are stored as plain SQL files in `src-tauri/migrations/` (`0001`, `0003`–`0010`; there is no `0002`). `0008_draft_publish_gate` adds the `attested_by` / `attested_at` / `guardrail_override_reason` columns to `drafts` (the publish gate), `0009_daily_scan_lead_context` adds Daily Scan context fields, and `0010_publish_runs` records issue-level publish/export history.
 * On startup, the runner compares the database's `PRAGMA user_version` against the available migrations and applies any unapplied ones.
 * Migrations run inside a transaction; on failure the transaction rolls back and the app halts with an error rather than running on a half-migrated schema. (See Part 3 §3 for the live table list.)
 
@@ -225,7 +225,7 @@ The SQLite database file (`civicdesk.db`) is located in the standard application
 
 > **Upgrading from before v0.2.7?** Earlier builds stored data at `org.civicnews.app/civicnews.db`. The app migrates that database into the new location and `civicdesk.db` automatically on first launch; the old folder is left in place.
 
-You can open this database using any SQLite client (e.g., `sqlite3`, DB Browser for SQLite, or a VS Code extension). The live schema (across migrations `0001`–`0008`) contains these tables (and, as of `0008`, the `drafts` table also has `attested_by`, `attested_at`, and `guardrail_override_reason` columns):
+You can open this database using any SQLite client (e.g., `sqlite3`, DB Browser for SQLite, or a VS Code extension). The live schema (across migrations `0001`–`0010`) contains these tables (and, as of `0008`, the `drafts` table also has `attested_by`, `attested_at`, and `guardrail_override_reason` columns):
 
 * `sources` — monitored feeds (includes a `tier` column added in `0004`/`0007`).
 * `evidence_items` — raw scraped text chunks. *(This is the table that holds scraped content — there is no `scraped_items` table.)*
@@ -233,6 +233,7 @@ You can open this database using any SQLite client (e.g., `sqlite3`, DB Browser 
 * `lead_evidence` — many-to-many map of leads to evidence.
 * `drafts` — article documents and their status.
 * `published_posts` — compiled-publication records.
+* `publish_runs` — issue-level static-site export/publish package history (added in `0010`; records issue ID, output path, generated files, provider metadata, counts, and timestamp).
 * `paired_clients` — authorized external integrations.
 * `settings` — key/value app settings (added in `0003`; e.g. `model.selected`).
 * `daily_scan_runs` — Daily Scan run records (added in `0005`).
