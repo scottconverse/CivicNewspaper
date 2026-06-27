@@ -216,15 +216,25 @@ export interface CompiledArticle {
 }
 
 export interface PublishResult {
+  issue_id: string;
   output_dir: string;
   generated_at: string;
+  provider: string;
+  published_url?: string | null;
+  deployment_id?: string | null;
   article_count: number;
   skipped_count: number;
   files_written: number;
+  generated_files: string[];
   index_path: string;
   rss_path: string;
   newsletter_path: string;
+  substack_path: string;
   share_package_path: string;
+  facebook_post_path: string;
+  subreddit_post_path: string;
+  nextdoor_post_path: string;
+  short_link_blurb_path: string;
   manifest_path: string;
   zip_path: string;
   articles: CompiledArticle[];

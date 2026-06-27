@@ -2417,13 +2417,43 @@ I should produce JSON only.
         let result = compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
         assert_eq!(result.article_count, 1);
         assert_eq!(result.skipped_count, 0);
+        assert_eq!(result.provider, "local_export");
+        assert!(result.issue_id.starts_with("issue-"));
+        assert!(result.published_url.is_none());
+        assert!(result.deployment_id.is_none());
+        assert!(
+            result
+                .generated_files
+                .contains(&"site-package.zip".to_string()),
+            "ZIP missing from generated file manifest"
+        );
         assert!(
             temp_dir.path().join("newsletter.md").exists(),
             "newsletter export missing"
         );
         assert!(
+            temp_dir.path().join("substack.md").exists(),
+            "Substack export missing"
+        );
+        assert!(
             temp_dir.path().join("share-package.md").exists(),
             "share package export missing"
+        );
+        assert!(
+            temp_dir.path().join("facebook-post.txt").exists(),
+            "Facebook copy missing"
+        );
+        assert!(
+            temp_dir.path().join("subreddit-post.md").exists(),
+            "subreddit post missing"
+        );
+        assert!(
+            temp_dir.path().join("nextdoor-post.txt").exists(),
+            "Nextdoor copy missing"
+        );
+        assert!(
+            temp_dir.path().join("short-link-blurb.txt").exists(),
+            "short link blurb missing"
         );
         assert!(
             temp_dir.path().join("publish-manifest.json").exists(),

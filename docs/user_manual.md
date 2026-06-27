@@ -95,7 +95,7 @@ When you are ready to share your stories with the community:
 3. Select an **Output Directory** on your computer (e.g., a folder on your Desktop named `CivicNewsSite`).
 4. Review the compile checklist, then click **Compile site**.
 5. CivicNewspaper will take all approved drafts, convert them to clean HTML, apply your templates, generate an RSS feed (`feed.xml`), and write them to the selected folder along with the about / ethics / how-we-report / corrections pages.
-6. The compile receipt shows how many articles and files were written. It also creates `site-package.zip`, `newsletter.md`, `share-package.md`, and `publish-manifest.json`.
+6. The compile receipt shows how many articles and files were written. It also creates `site-package.zip`, `newsletter.md`, `substack.md`, `share-package.md`, Facebook/subreddit/Nextdoor copy, a short-link blurb, and `publish-manifest.json`.
 7. To put the issue online, upload the ZIP or folder to a static host such as **Netlify**, **Cloudflare Pages**, or **GitHub Pages**. Use the newsletter and share package to tell residents where to read it.
 
 ---

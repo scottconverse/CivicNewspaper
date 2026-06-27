@@ -98,10 +98,11 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
 
           <div className="publish-step-list">
             {[
-              ["Render approved stories to HTML", "stories"],
-              ["Copy styles and assets", "files"],
-              ["Generate RSS feed", "feed.xml"],
-              ["Append correction notices", "notices"],
+              ["Compile approved stories", "HTML"],
+              ["Preview local website", "index.html"],
+              ["Export hosting package", "ZIP"],
+              ["Publish to a host", "next"],
+              ["Share with residents", "posts"],
             ].map(([label, meta]) => (
               <div className="publish-step-row" key={label}>
                 <CheckCircle size={19} />
@@ -162,9 +163,25 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                   <FileDown size={16} />
                   Newsletter
                 </button>
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.substack_path))}>
+                  <FileDown size={16} />
+                  Substack draft
+                </button>
                 <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.share_package_path))}>
                   <UploadCloud size={16} />
                   Share package
+                </button>
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.facebook_post_path))}>
+                  <UploadCloud size={16} />
+                  Facebook copy
+                </button>
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.subreddit_post_path))}>
+                  <UploadCloud size={16} />
+                  Subreddit post
+                </button>
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.nextdoor_post_path))}>
+                  <UploadCloud size={16} />
+                  Nextdoor copy
                 </button>
                 <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.rss_path))}>
                   <Rss size={16} />

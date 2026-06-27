@@ -19,6 +19,7 @@ const PRINT_CSS: &str = include_str!("../../../templates/print.css");
 // and a recorded human attestation is now required before publishing (see
 // `story_decision`'s ATTESTATION_REQUIRED gate).
 const AI_DISCLOSURE_HTML: &str = "<p class=\"ai-disclosure\" style=\"font-size: 0.85rem; opacity: 0.85;\">Articles on this site are drafted with on-device AI assistance from primary public records and reviewed by a human editor before publication.</p>";
+const EVIDENCE_SECTION_TEMPLATE: &str = "<div class=\"citation-list\">\n                <h3 style=\"margin-top: 0; font-family: var(--font-sans); font-size: 0.9rem; text-transform: uppercase; color: var(--accent-color);\">Evidence & Sources Check</h3>\n                <p style=\"margin-bottom: 0.8rem; font-size: 0.85rem; color: var(--muted-color);\">This publication is backed by transparent primary documentation. Click references to view original records:</p>\n                <ol style=\"margin: 0; padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.5;\">\n                    {{EVIDENCE_CITATIONS}}\n                </ol>\n            </div>";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CompilerProfile {
@@ -39,15 +40,25 @@ pub struct CompiledArticle {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CompileStaticSiteResult {
+    pub issue_id: String,
     pub output_dir: String,
     pub generated_at: String,
+    pub provider: String,
+    pub published_url: Option<String>,
+    pub deployment_id: Option<String>,
     pub article_count: usize,
     pub skipped_count: usize,
     pub files_written: usize,
+    pub generated_files: Vec<String>,
     pub index_path: String,
     pub rss_path: String,
     pub newsletter_path: String,
+    pub substack_path: String,
     pub share_package_path: String,
+    pub facebook_post_path: String,
+    pub subreddit_post_path: String,
+    pub nextdoor_post_path: String,
+    pub short_link_blurb_path: String,
     pub manifest_path: String,
     pub zip_path: String,
     pub articles: Vec<CompiledArticle>,
@@ -222,7 +233,9 @@ pub fn compile_static_site(
 ) -> Result<CompileStaticSiteResult, Box<dyn Error>> {
     let output_dir = Path::new(output_dir_str);
     let generated_at = Utc::now().to_rfc3339();
+    let issue_id = format!("issue-{}", Utc::now().format("%Y%m%d-%H%M%S"));
     let mut files_written = 0usize;
+    let mut generated_files: Vec<String> = Vec::new();
     let mut skipped_count = 0usize;
     let mut compiled_articles: Vec<CompiledArticle> = Vec::new();
 
@@ -260,7 +273,9 @@ pub fn compile_static_site(
         STYLES_CSS,
         &mut files_written,
     )?;
+    generated_files.push("styles.css".to_string());
     write_site_file(output_dir.join("print.css"), PRINT_CSS, &mut files_written)?;
+    generated_files.push("print.css".to_string());
 
     // 4. Fetch drafts that are published, corrected, or ready_to_publish
     let drafts = list_drafts(conn)?;
@@ -401,7 +416,10 @@ pub fn compile_static_site(
         post_html = post_html.replace("{{POST_DATE}}", &draft.updated_at);
         post_html = post_html.replace("{{POST_FORMAT}}", &draft.format);
         post_html = post_html.replace("{{POST_CONTENT}}", &html_content);
-        post_html = post_html.replace("{{EVIDENCE_CITATIONS}}", &evidence_html);
+        post_html = post_html.replace(
+            "{{EVIDENCE_SECTION}}",
+            &EVIDENCE_SECTION_TEMPLATE.replace("{{EVIDENCE_CITATIONS}}", &evidence_html),
+        );
         post_html = post_html.replace("{{CORRECTION_BANNER}}", &correction_banner);
         post_html = post_html.replace("{{YEAR}}", &current_year);
         post_html = post_html.replace("{{AI_DISCLOSURE}}", AI_DISCLOSURE_HTML);
@@ -422,6 +440,7 @@ pub fn compile_static_site(
         let relative_path = format!("{}/{}.html", subfolder, draft_id);
         let dest_path = output_dir.join(&relative_path);
         write_site_file(dest_path, post_html, &mut files_written)?;
+        generated_files.push(relative_path.clone());
         compiled_articles.push(CompiledArticle {
             title: draft.title.clone(),
             format: draft.format.clone(),
@@ -503,6 +522,7 @@ pub fn compile_static_site(
         index_html,
         &mut files_written,
     )?;
+    generated_files.push("index.html".to_string());
 
     // 7. Build About, Ethics, and How We Report pages
     let mut compile_info_page =
@@ -516,14 +536,12 @@ pub fn compile_static_site(
             page_html = page_html.replace("{{POST_DATE}}", &Utc::now().to_rfc3339());
             page_html = page_html.replace("{{POST_FORMAT}}", "meta");
             page_html = page_html.replace("{{POST_CONTENT}}", &body_html);
-            page_html = page_html.replace(
-                "{{EVIDENCE_CITATIONS}}",
-                "<!-- No citations for info pages -->",
-            );
+            page_html = page_html.replace("{{EVIDENCE_SECTION}}", "");
             page_html = page_html.replace("{{CORRECTION_BANNER}}", "");
             page_html = page_html.replace("{{YEAR}}", &current_year);
             page_html = page_html.replace("{{AI_DISCLOSURE}}", AI_DISCLOSURE_HTML);
             write_site_file(output_dir.join(filename), page_html, &mut files_written)?;
+            generated_files.push(filename.to_string());
             Ok(())
         };
 
@@ -549,7 +567,7 @@ pub fn compile_static_site(
     corrections_html = corrections_html.replace("{{POST_DATE}}", &Utc::now().to_rfc3339());
     corrections_html = corrections_html.replace("{{POST_FORMAT}}", "ledger");
     corrections_html = corrections_html.replace("{{POST_CONTENT}}", &corrections_list_html);
-    corrections_html = corrections_html.replace("{{EVIDENCE_CITATIONS}}", "");
+    corrections_html = corrections_html.replace("{{EVIDENCE_SECTION}}", "");
     corrections_html = corrections_html.replace("{{CORRECTION_BANNER}}", "");
     corrections_html = corrections_html.replace("{{YEAR}}", &current_year);
     corrections_html = corrections_html.replace("{{AI_DISCLOSURE}}", AI_DISCLOSURE_HTML);
@@ -558,6 +576,7 @@ pub fn compile_static_site(
         corrections_html,
         &mut files_written,
     )?;
+    generated_files.push("corrections.html".to_string());
 
     // 9. Build RSS feed.xml
     let rss_feed = format!(
@@ -565,6 +584,7 @@ pub fn compile_static_site(
         safe_site_title, safe_site_subtitle, Utc::now().to_rfc2822(), Utc::now().to_rfc2822(), rss_items
     );
     write_site_file(output_dir.join("feed.xml"), rss_feed, &mut files_written)?;
+    generated_files.push("feed.xml".to_string());
 
     let mut newsletter = format!(
         "# {}\n\n{}\n\nGenerated: {}\n\n",
@@ -584,6 +604,25 @@ pub fn compile_static_site(
     newsletter.push_str("\n## Links\n\n- Website home: index.html\n- RSS feed: feed.xml\n");
     let newsletter_path = output_dir.join("newsletter.md");
     write_site_file(&newsletter_path, newsletter, &mut files_written)?;
+    generated_files.push("newsletter.md".to_string());
+
+    let mut substack = format!(
+        "# {}\n\n{}\n\n_Publication package generated by The Civic Desk on {}._\n\n",
+        profile.site_title, profile.site_subtitle, generated_at
+    );
+    if compiled_articles.is_empty() {
+        substack.push_str("No approved stories were included in this package.\n");
+    } else {
+        for article in &compiled_articles {
+            substack.push_str(&format!(
+                "## {}\n\nRead the full evidence-backed story on the public site: {}\n\n",
+                article.title, article.relative_path
+            ));
+        }
+    }
+    substack.push_str("---\n\nThis issue was compiled from local public-record reporting. Review links after pasting into Substack.\n");
+    write_site_file(output_dir.join("substack.md"), substack, &mut files_written)?;
+    generated_files.push("substack.md".to_string());
 
     let mut share_package = format!(
         "# Share Package\n\nGenerated: {}\n\nWebsite home: index.html\nRSS feed: feed.xml\n\n",
@@ -603,17 +642,79 @@ pub fn compile_static_site(
     share_package.push_str("## Hosting Notes\n\nUpload the whole folder or the ZIP file to a static host such as Netlify, Cloudflare Pages, or GitHub Pages.\n");
     let share_package_path = output_dir.join("share-package.md");
     write_site_file(&share_package_path, share_package, &mut files_written)?;
+    generated_files.push("share-package.md".to_string());
 
+    let headline = compiled_articles
+        .first()
+        .map(|article| article.title.as_str())
+        .unwrap_or("New local civic issue");
+    let article_count = compiled_articles.len();
+    let facebook_post = format!(
+        "{} is live. {} evidence-backed local update(s), with source links and an RSS feed for following future issues.\n\nRead it here: [add public URL]\n",
+        profile.site_title, article_count
+    );
+    write_site_file(
+        output_dir.join("facebook-post.txt"),
+        facebook_post,
+        &mut files_written,
+    )?;
+    generated_files.push("facebook-post.txt".to_string());
+
+    let subreddit_post = format!(
+        "# {}\n\n{} local civic update(s) compiled from public records.\n\nTop item: {}\n\nRead the issue: [add public URL]\n\nSources and corrections policy are included on the site.\n",
+        profile.site_title, article_count, headline
+    );
+    write_site_file(
+        output_dir.join("subreddit-post.md"),
+        subreddit_post,
+        &mut files_written,
+    )?;
+    generated_files.push("subreddit-post.md".to_string());
+
+    let nextdoor_post = format!(
+        "A new {} issue is ready with {} local civic update(s) and links back to source records. Top item: {}. Read it here: [add public URL]",
+        profile.site_title, article_count, headline
+    );
+    write_site_file(
+        output_dir.join("nextdoor-post.txt"),
+        nextdoor_post,
+        &mut files_written,
+    )?;
+    generated_files.push("nextdoor-post.txt".to_string());
+
+    let short_link_blurb = format!(
+        "{}: {} local civic update(s), with source links. Read: [short link]",
+        profile.site_title, article_count
+    );
+    write_site_file(
+        output_dir.join("short-link-blurb.txt"),
+        short_link_blurb,
+        &mut files_written,
+    )?;
+    generated_files.push("short-link-blurb.txt".to_string());
+
+    generated_files.push("publish-manifest.json".to_string());
+    generated_files.push("site-package.zip".to_string());
     let mut result = CompileStaticSiteResult {
+        issue_id,
         output_dir: path_for_manifest(output_dir),
         generated_at,
+        provider: "local_export".to_string(),
+        published_url: None,
+        deployment_id: None,
         article_count: compiled_articles.len(),
         skipped_count,
         files_written,
+        generated_files,
         index_path: path_for_manifest(&PathBuf::from("index.html")),
         rss_path: path_for_manifest(&PathBuf::from("feed.xml")),
         newsletter_path: path_for_manifest(&PathBuf::from("newsletter.md")),
+        substack_path: path_for_manifest(&PathBuf::from("substack.md")),
         share_package_path: path_for_manifest(&PathBuf::from("share-package.md")),
+        facebook_post_path: path_for_manifest(&PathBuf::from("facebook-post.txt")),
+        subreddit_post_path: path_for_manifest(&PathBuf::from("subreddit-post.md")),
+        nextdoor_post_path: path_for_manifest(&PathBuf::from("nextdoor-post.txt")),
+        short_link_blurb_path: path_for_manifest(&PathBuf::from("short-link-blurb.txt")),
         manifest_path: path_for_manifest(&PathBuf::from("publish-manifest.json")),
         zip_path: path_for_manifest(&PathBuf::from("site-package.zip")),
         articles: compiled_articles,
