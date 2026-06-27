@@ -240,6 +240,44 @@ export interface PublishResult {
   articles: CompiledArticle[];
 }
 
+export interface PublishRun {
+  id?: number;
+  issue_id: string;
+  output_path: string;
+  generated_files: string;
+  provider: string;
+  published_url?: string | null;
+  deployment_id?: string | null;
+  article_count: number;
+  skipped_count: number;
+  files_written: number;
+  generated_at: string;
+}
+
+export interface PublisherConfig {
+  provider: string;
+  display_name: string;
+  site_url?: string | null;
+  project_hint?: string | null;
+  has_credential: boolean;
+}
+
+export interface PublisherConfigInput {
+  provider: string;
+  display_name: string;
+  site_url?: string | null;
+  project_hint?: string | null;
+  credential?: string | null;
+  clear_credential: boolean;
+}
+
+export interface PublisherTestResult {
+  provider: string;
+  ok: boolean;
+  message: string;
+  credential_checked: boolean;
+}
+
 // IPC wrappers
 export async function getSources(): Promise<Source[]> {
   return invokeGuarded<Source[]>("get_sources");
@@ -358,6 +396,36 @@ export async function recordPublishDestination(
     publishedUrl,
     deploymentId: deploymentId?.trim() ? deploymentId : null,
   });
+}
+
+export async function savePublisherConfig(config: PublisherConfigInput): Promise<PublisherConfig> {
+  return invokeGuarded<PublisherConfig>("save_publisher_config", { config });
+}
+
+export async function getPublisherConfig(provider: string): Promise<PublisherConfig | null> {
+  return invokeGuarded<PublisherConfig | null>("get_publisher_config", { provider });
+}
+
+export async function testPublisherConnection(provider: string): Promise<PublisherTestResult> {
+  return invokeGuarded<PublisherTestResult>("test_publisher_connection", { provider });
+}
+
+export async function publishWithConnector(
+  outputDir: string,
+  provider: string,
+  publishedUrl: string,
+  deploymentId?: string
+): Promise<PublishResult> {
+  return invokeGuarded<PublishResult>("publish_with_connector", {
+    outputDir,
+    provider,
+    publishedUrl,
+    deploymentId: deploymentId?.trim() ? deploymentId : null,
+  });
+}
+
+export async function listPublishHistory(): Promise<PublishRun[]> {
+  return invokeGuarded<PublishRun[]>("list_publish_history");
 }
 
 export async function registerCorrection(draftId: number, correctionNote: string): Promise<void> {

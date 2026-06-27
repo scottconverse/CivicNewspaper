@@ -11,6 +11,7 @@ pub mod guardrails;
 pub mod llm;
 pub mod migrations;
 pub mod prompts;
+pub mod publisher;
 pub mod reproduction_tests;
 pub mod scraper;
 pub mod server;

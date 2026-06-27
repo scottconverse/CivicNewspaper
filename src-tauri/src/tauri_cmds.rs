@@ -6,6 +6,7 @@ use crate::core::detectors;
 use crate::core::discovery::{self, DiscoveredSourceCategory};
 use crate::core::guardrails::{self, GuardrailsReport};
 use crate::core::llm;
+use crate::core::publisher;
 use crate::core::scraper;
 use serde::{Deserialize, Serialize};
 use std::io::Read;
@@ -895,28 +896,8 @@ pub fn record_publish_destination(
     deployment_id: Option<String>,
 ) -> Result<compiler::CompileStaticSiteResult, String> {
     let provider = provider.trim();
-    let allowed_providers = [
-        "github_pages",
-        "netlify",
-        "cloudflare_pages",
-        "substack",
-        "wordpress",
-        "other",
-    ];
-    if !allowed_providers.contains(&provider) {
-        return Err("Unsupported publishing provider.".to_string());
-    }
-
-    let parsed = reqwest::Url::parse(published_url.trim())
-        .map_err(|e| format!("Invalid public URL: {}", e))?;
-    if !matches!(parsed.scheme(), "http" | "https") {
-        return Err("Public URL must start with http:// or https://.".to_string());
-    }
-    let normalized_url = parsed.as_str().trim_end_matches('/').to_string();
-    let output_path = std::path::PathBuf::from(output_dir.trim());
-    if !output_path.join("publish-manifest.json").exists() {
-        return Err("Compile the site before recording a public URL.".to_string());
-    }
+    let normalized_url = publisher::validate_public_url(&published_url)?;
+    let output_path = publisher::validate_publish_artifacts(&output_dir)?;
 
     let result = compiler::record_publish_destination_files(
         &output_path,
@@ -936,6 +917,108 @@ pub fn record_publish_destination(
     )
     .map_err(|e| e.to_string())?;
     Ok(result)
+}
+
+#[tauri::command]
+pub fn save_publisher_config(
+    db: tauri::State<'_, DbConn>,
+    config: publisher::PublisherConfigInput,
+) -> Result<publisher::PublisherConfig, String> {
+    let provider = config.provider.trim().to_string();
+    if config.clear_credential {
+        publisher::delete_provider_credential(&provider)?;
+    }
+    if let Some(credential) = config.credential.as_deref() {
+        if !credential.trim().is_empty() {
+            publisher::set_provider_credential(&provider, credential.trim())?;
+        }
+    }
+    let mut sanitized = publisher::sanitize_config(config)?;
+    sanitized.has_credential = publisher::has_provider_credential(&sanitized.provider);
+    let value = serde_json::to_string(&sanitized).map_err(|e| e.to_string())?;
+    let conn = db.lock().map_err(|_| "Failed to lock database")?;
+    conn.execute(
+        "INSERT OR REPLACE INTO settings (key, value) VALUES (?1, ?2)",
+        rusqlite::params![
+            publisher::provider_config_setting_key(&sanitized.provider),
+            value
+        ],
+    )
+    .map_err(|e| e.to_string())?;
+    Ok(sanitized)
+}
+
+#[tauri::command]
+pub fn get_publisher_config(
+    db: tauri::State<'_, DbConn>,
+    provider: String,
+) -> Result<Option<publisher::PublisherConfig>, String> {
+    let provider = publisher::PublisherProvider::from_str(provider.trim())
+        .ok_or_else(|| "Unsupported publishing provider.".to_string())?;
+    let key = publisher::provider_config_setting_key(provider.as_str());
+    let conn = db.lock().map_err(|_| "Failed to lock database")?;
+    let value: Option<String> = conn
+        .query_row(
+            "SELECT value FROM settings WHERE key = ?1",
+            rusqlite::params![key],
+            |row| row.get(0),
+        )
+        .ok();
+    let Some(value) = value else {
+        return Ok(None);
+    };
+    let mut config: publisher::PublisherConfig =
+        serde_json::from_str(&value).map_err(|e| e.to_string())?;
+    config.has_credential = publisher::has_provider_credential(provider.as_str());
+    Ok(Some(config))
+}
+
+#[tauri::command]
+pub async fn test_publisher_connection(
+    db: tauri::State<'_, DbConn>,
+    provider: String,
+) -> Result<publisher::PublisherTestResult, String> {
+    let config =
+        get_publisher_config(db, provider.clone())?.unwrap_or(publisher::PublisherConfig {
+            provider: provider.trim().to_string(),
+            display_name: provider.trim().replace('_', " "),
+            site_url: None,
+            project_hint: None,
+            has_credential: publisher::has_provider_credential(provider.trim()),
+        });
+    let connector = publisher::publisher_for(&config.provider)?;
+    Ok(connector.test_connection(&config).await)
+}
+
+#[tauri::command]
+pub async fn publish_with_connector(
+    db: tauri::State<'_, DbConn>,
+    output_dir: String,
+    provider: String,
+    published_url: String,
+    deployment_id: Option<String>,
+) -> Result<compiler::CompileStaticSiteResult, String> {
+    let connector = publisher::publisher_for(&provider)?;
+    let request = publisher::PublisherPublishRequest {
+        output_dir: output_dir.clone(),
+        provider,
+        published_url,
+        deployment_id,
+    };
+    let published = connector.publish_folder(&request).await?;
+    record_publish_destination(
+        db,
+        output_dir,
+        published.provider,
+        published.published_url,
+        published.deployment_id,
+    )
+}
+
+#[tauri::command]
+pub fn list_publish_history(db: tauri::State<'_, DbConn>) -> Result<Vec<db::PublishRun>, String> {
+    let conn = db.lock().map_err(|_| "Failed to lock database")?;
+    db::list_publish_runs(&conn).map_err(|e| e.to_string())
 }
 
 #[tauri::command]

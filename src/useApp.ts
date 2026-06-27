@@ -24,6 +24,11 @@ import {
   guardrailsCheck,
   publish,
   recordPublishDestination,
+  publishWithConnector,
+  savePublisherConfig,
+  getPublisherConfig,
+  testPublisherConnection,
+  listPublishHistory,
   registerCorrection,
   backupSave,
   backupRestore,
@@ -38,6 +43,10 @@ import {
   PairedClient,
   CommunityProfile,
   PublishResult,
+  PublishRun,
+  PublisherConfig,
+  PublisherConfigInput,
+  PublisherTestResult,
   DiscoveredSource,
   DiscoveredSourceCategory,
   GuardrailsReport,
@@ -139,6 +148,10 @@ export function useApp() {
 
   const [publishPath, setPublishPath] = useState("");
   const [publishResult, setPublishResult] = useState<PublishResult | null>(null);
+  const [publishHistory, setPublishHistory] = useState<PublishRun[]>([]);
+  const [publisherConfig, setPublisherConfig] = useState<PublisherConfig | null>(null);
+  const [publisherProvider, setPublisherProvider] = useState("netlify");
+  const [publisherTestResult, setPublisherTestResult] = useState<PublisherTestResult | null>(null);
   const [backupPathInput, setBackupPathInput] = useState("");
 
   const [correctionNote, setCorrectionNote] = useState("");
@@ -235,6 +248,8 @@ export function useApp() {
   useEffect(() => {
     loadInitialData();
     pollOllamaStatus();
+    refreshPublishHistory();
+    handleLoadPublisherConfig(publisherProvider);
 
     if (!isTauri()) {
       setSystemRam(16);
@@ -1043,6 +1058,7 @@ export function useApp() {
       setStatusMessage(`Compiling HTML, CSS, and RSS templates to static site at: ${publishPath}...`);
       const result = await publish(publishPath);
       setPublishResult(result);
+      await refreshPublishHistory();
       setStatusMessage(`Static site compiled: ${result.article_count} article(s), ${result.files_written} file(s), ZIP package ready.`);
       setPublishStep(3);
     } catch (e: any) {
@@ -1136,7 +1152,75 @@ export function useApp() {
       setStatusMessage("Recording public publishing URL and refreshing share files...");
       const result = await recordPublishDestination(publishPath, provider, publishedUrl, deploymentId);
       setPublishResult(result);
+      await refreshPublishHistory();
       setStatusMessage("Public URL saved. Manifest, ZIP, newsletter, Substack draft, and social copy now use the live link.");
+    } catch (e: any) {
+      setErrorMessage(toUserMessage(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePublishWithConnector = async (provider: string, publishedUrl: string, deploymentId?: string) => {
+    if (!publishPath) return;
+    try {
+      setLoading(true);
+      setErrorMessage("");
+      setStatusMessage("Publishing through connector layer...");
+      const result = await publishWithConnector(publishPath, provider, publishedUrl, deploymentId);
+      setPublishResult(result);
+      await refreshPublishHistory();
+      setStatusMessage("Connector publish completed and publish history was updated.");
+    } catch (e: any) {
+      setErrorMessage(toUserMessage(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const refreshPublishHistory = async () => {
+    try {
+      const runs = await listPublishHistory();
+      setPublishHistory(runs);
+    } catch (e) {
+      console.error("Failed to load publish history", e);
+    }
+  };
+
+  const handleLoadPublisherConfig = async (provider: string) => {
+    setPublisherProvider(provider);
+    setPublisherTestResult(null);
+    try {
+      const config = await getPublisherConfig(provider);
+      setPublisherConfig(config);
+    } catch (e: any) {
+      setErrorMessage(toUserMessage(e));
+    }
+  };
+
+  const handleSavePublisherConfig = async (config: PublisherConfigInput) => {
+    try {
+      setLoading(true);
+      setErrorMessage("");
+      const saved = await savePublisherConfig(config);
+      setPublisherProvider(saved.provider);
+      setPublisherConfig(saved);
+      setPublisherTestResult(null);
+      setStatusMessage("Publisher connector settings saved. Credentials are stored in the operating system credential store.");
+    } catch (e: any) {
+      setErrorMessage(toUserMessage(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTestPublisherConnection = async (provider: string) => {
+    try {
+      setLoading(true);
+      setErrorMessage("");
+      const result = await testPublisherConnection(provider);
+      setPublisherTestResult(result);
+      setStatusMessage(result.message);
     } catch (e: any) {
       setErrorMessage(toUserMessage(e));
     } finally {
@@ -1337,6 +1421,10 @@ export function useApp() {
     generatingText,
     publishPath,
     publishResult,
+    publishHistory,
+    publisherConfig,
+    publisherProvider,
+    publisherTestResult,
     setPublishPath: handlePublishPathChange,
     backupPathInput,
     setBackupPathInput,
@@ -1424,6 +1512,11 @@ export function useApp() {
     handleKillStory,
     handlePublish,
     handleRecordPublishDestination,
+    handlePublishWithConnector,
+    handleLoadPublisherConfig,
+    handleSavePublisherConfig,
+    handleTestPublisherConnection,
+    refreshPublishHistory,
     openCorrectionModal,
     handleRegisterCorrection,
     handleDeleteDraft,

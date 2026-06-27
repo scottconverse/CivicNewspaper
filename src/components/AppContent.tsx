@@ -238,6 +238,10 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
         <PublishPanel
           publishPath={app.publishPath}
           publishResult={app.publishResult}
+          publishHistory={app.publishHistory}
+          publisherConfig={app.publisherConfig}
+          publisherProvider={app.publisherProvider}
+          publisherTestResult={app.publisherTestResult}
           onPublishPathChange={app.setPublishPath}
           publishStep={app.publishStep}
           onPublishStepChange={(step) => {
@@ -266,6 +270,10 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           }}
           onChoosePublishPath={app.handleChoosePublishPath}
           onRecordPublishDestination={app.handleRecordPublishDestination}
+          onPublishWithConnector={app.handlePublishWithConnector}
+          onLoadPublisherConfig={app.handleLoadPublisherConfig}
+          onSavePublisherConfig={app.handleSavePublisherConfig}
+          onTestPublisherConnection={app.handleTestPublisherConnection}
         />
       )}
 

@@ -20,6 +20,7 @@ graph TD
     end
     subgraph Publishing
         RustCore -->|pulldown-cmark Compiler| CompiledSite[Compiled Static Site]
+        RustCore -->|Publisher Trait| PublisherLayer[Publisher Connector Layer]
     end
     subgraph Integrations
         Loopback[Axum Loopback Server 127.0.0.1:12053] <-->|Rust Core| RustCore
@@ -222,6 +223,18 @@ Issue-level records for generated static-site export and publish packages.
 * `provider`, `published_url`, `deployment_id`: `TEXT` (connector metadata; blank for local export-only runs)
 * `article_count`, `skipped_count`, `files_written`: `INTEGER NOT NULL DEFAULT 0`
 * `generated_at`: `TEXT NOT NULL`
+
+## Publisher Connector Layer
+
+The publisher layer lives in `src-tauri/src/core/publisher.rs`. It defines a provider-neutral `Publisher` trait with:
+
+* `validate_config` for non-secret connector metadata.
+* `test_connection` for dry-run/readiness checks.
+* `publish_folder` for the provider-neutral publish call that receives the compiled output folder/ZIP and returns provider URL/deployment metadata.
+
+The first shipped connectors are guided/manual connectors for GitHub Pages, Netlify, Cloudflare Pages, Substack, WordPress, and other static hosts. They validate local publish artifacts and public URLs, then route through the same manifest/share-package/update path used by the Publishing screen. This intentionally avoids pretending to perform token-based API uploads before a provider-specific API implementation is wired and tested.
+
+Connector metadata is stored in the existing `settings` table under `publisher.config.<provider>`. Secrets are not stored in SQLite; provider credentials are written to the operating system credential store through the Rust `keyring` crate. The frontend only receives `has_credential`, never the credential value.
 
 ### `paired_clients`
 Authorized external integrations.

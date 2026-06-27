@@ -1,11 +1,15 @@
 // src/components/PublishPanel.tsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AlertTriangle, CheckCircle, ExternalLink, FileArchive, FileDown, FolderOpen, Rss, UploadCloud } from "lucide-react";
-import type { PublishResult } from "../ipc";
+import type { PublishResult, PublishRun, PublisherConfig, PublisherConfigInput, PublisherTestResult } from "../ipc";
 
 interface PublishPanelProps {
   publishPath: string;
   publishResult: PublishResult | null;
+  publishHistory: PublishRun[];
+  publisherConfig: PublisherConfig | null;
+  publisherProvider: string;
+  publisherTestResult: PublisherTestResult | null;
   onPublishPathChange: (val: string) => void;
   publishStep: number;
   onPublishStepChange: (step: number) => void;
@@ -15,6 +19,10 @@ interface PublishPanelProps {
   onOpenExternalUrl: (url: string) => void | Promise<void>;
   onChoosePublishPath: () => void;
   onRecordPublishDestination: (provider: string, publishedUrl: string, deploymentId?: string) => void | Promise<void>;
+  onPublishWithConnector: (provider: string, publishedUrl: string, deploymentId?: string) => void | Promise<void>;
+  onLoadPublisherConfig: (provider: string) => void | Promise<void>;
+  onSavePublisherConfig: (config: PublisherConfigInput) => void | Promise<void>;
+  onTestPublisherConnection: (provider: string) => void | Promise<void>;
 }
 
 const PROVIDERS = [
@@ -59,6 +67,10 @@ const PROVIDERS = [
 export const PublishPanel: React.FC<PublishPanelProps> = ({
   publishPath,
   publishResult,
+  publishHistory,
+  publisherConfig,
+  publisherProvider,
+  publisherTestResult,
   onPublishPathChange,
   publishStep,
   onPublishStepChange,
@@ -67,14 +79,35 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   onOpenLocalPath,
   onOpenExternalUrl,
   onChoosePublishPath,
-  onRecordPublishDestination
+  onRecordPublishDestination,
+  onPublishWithConnector,
+  onLoadPublisherConfig,
+  onSavePublisherConfig,
+  onTestPublisherConnection
 }) => {
   const [error, setError] = useState<string>("");
-  const [provider, setProvider] = useState("netlify");
+  const [provider, setProvider] = useState(publisherProvider || "netlify");
+  const [displayName, setDisplayName] = useState("Netlify Drop");
+  const [siteUrl, setSiteUrl] = useState("");
+  const [projectHint, setProjectHint] = useState("");
+  const [credential, setCredential] = useState("");
+  const [clearCredential, setClearCredential] = useState(false);
   const [publishedUrl, setPublishedUrl] = useState("");
   const [deploymentId, setDeploymentId] = useState("");
 
   const selectedProvider = PROVIDERS.find(item => item.id === provider) ?? PROVIDERS[0];
+
+  useEffect(() => {
+    setProvider(publisherProvider || "netlify");
+  }, [publisherProvider]);
+
+  useEffect(() => {
+    setDisplayName(publisherConfig?.display_name || selectedProvider.label);
+    setSiteUrl(publisherConfig?.site_url || "");
+    setProjectHint(publisherConfig?.project_hint || "");
+    setCredential("");
+    setClearCredential(false);
+  }, [publisherConfig, selectedProvider.label]);
 
   const artifactPath = (relativePath: string) => {
     const separator = publishPath.includes("\\") ? "\\" : "/";
@@ -110,6 +143,37 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
     }
     setError("");
     onRecordPublishDestination(provider, publishedUrl, deploymentId);
+  };
+
+  const handleConnectorPublishClick = () => {
+    if (!publishResult) {
+      setError("Compile the site before publishing.");
+      return;
+    }
+    if (!publishedUrl.trim()) {
+      setError("Public URL cannot be empty.");
+      return;
+    }
+    setError("");
+    onPublishWithConnector(provider, publishedUrl, deploymentId);
+  };
+
+  const handleProviderChange = (nextProvider: string) => {
+    setProvider(nextProvider);
+    setError("");
+    onLoadPublisherConfig(nextProvider);
+  };
+
+  const handleSaveConnectorClick = () => {
+    setError("");
+    onSavePublisherConfig({
+      provider,
+      display_name: displayName,
+      site_url: siteUrl || null,
+      project_hint: projectHint || null,
+      credential: credential || null,
+      clear_credential: clearCredential,
+    });
   };
 
   const primaryLabel = publishStep === 1 ? "Review compile checklist" : "Compile site";
@@ -262,12 +326,67 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
 
           {publishResult && (
             <div className="card publish-destination-card">
-              <h3 className="card-title">Publish destination</h3>
+              <h3 className="card-title">Publisher connector</h3>
               <p className="help-text">{selectedProvider.guidance}</p>
               <label htmlFor="select-publish-provider" style={{ fontWeight: 600, display: "block", marginBottom: "0.35rem" }}>Provider</label>
-              <select id="select-publish-provider" value={provider} onChange={event => setProvider(event.target.value)}>
+              <select id="select-publish-provider" value={provider} onChange={event => handleProviderChange(event.target.value)}>
                 {PROVIDERS.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
               </select>
+              <label htmlFor="input-publisher-name" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Connector name</label>
+              <input
+                id="input-publisher-name"
+                type="text"
+                value={displayName}
+                onChange={event => setDisplayName(event.target.value)}
+              />
+              <label htmlFor="input-publisher-site-url" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Default public URL</label>
+              <input
+                id="input-publisher-site-url"
+                type="url"
+                value={siteUrl}
+                onChange={event => setSiteUrl(event.target.value)}
+                placeholder="https://your-town-news.example.com"
+              />
+              <label htmlFor="input-publisher-project" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Project/site note</label>
+              <input
+                id="input-publisher-project"
+                type="text"
+                value={projectHint}
+                onChange={event => setProjectHint(event.target.value)}
+                placeholder="optional project name, repo, or site ID"
+              />
+              <label htmlFor="input-publisher-credential" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>API token or credential</label>
+              <input
+                id="input-publisher-credential"
+                type="password"
+                value={credential}
+                onChange={event => setCredential(event.target.value)}
+                placeholder={publisherConfig?.has_credential ? "credential saved; enter a new one to replace" : "optional for guided publishing"}
+              />
+              <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.7rem" }}>
+                <input
+                  type="checkbox"
+                  checked={clearCredential}
+                  onChange={event => setClearCredential(event.target.checked)}
+                />
+                Clear saved credential
+              </label>
+              <div className="btn-group" style={{ marginTop: "0.75rem" }}>
+                <button className="btn btn-secondary" type="button" onClick={handleSaveConnectorClick} disabled={loading}>
+                  <CheckCircle size={16} />
+                  Save connector
+                </button>
+                <button className="btn btn-secondary" type="button" onClick={() => onTestPublisherConnection(provider)} disabled={loading}>
+                  <CheckCircle size={16} />
+                  Test connection
+                </button>
+              </div>
+              {publisherTestResult && (
+                <p className="help-text">
+                  {publisherTestResult.ok ? "Test passed: " : "Test needs attention: "}
+                  {publisherTestResult.message}
+                </p>
+              )}
               <div className="btn-group" style={{ marginTop: "0.75rem" }}>
                 <button className="btn btn-secondary" type="button" onClick={() => onOpenExternalUrl(selectedProvider.url)}>
                   <ExternalLink size={16} />
@@ -301,11 +420,39 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                 <CheckCircle size={16} />
                 Save public URL
               </button>
+              <button className="btn btn-secondary btn-full" type="button" onClick={handleConnectorPublishClick} disabled={loading} style={{ marginTop: "0.6rem" }}>
+                <UploadCloud size={16} />
+                Publish with connector
+              </button>
               {publishResult.published_url && (
                 <p className="help-text">Saved live URL: <a href={publishResult.published_url}>{publishResult.published_url}</a></p>
               )}
             </div>
           )}
+
+          <div className="card publish-history-card">
+            <h3 className="card-title">Publish history</h3>
+            {publishHistory.length === 0 ? (
+              <p className="help-text">No publish runs recorded yet.</p>
+            ) : (
+              <div className="publish-history-table" role="table" aria-label="Publish history">
+                <div className="publish-history-row publish-history-head" role="row">
+                  <span>Issue</span>
+                  <span>Provider</span>
+                  <span>Articles</span>
+                  <span>Generated</span>
+                </div>
+                {publishHistory.slice(0, 6).map(run => (
+                  <div className="publish-history-row" role="row" key={`${run.id}-${run.generated_at}`}>
+                    <span title={run.output_path}>{run.issue_id}</span>
+                    <span>{run.provider.replace(/_/g, " ")}</span>
+                    <span>{run.article_count}</span>
+                    <span>{new Date(run.generated_at).toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

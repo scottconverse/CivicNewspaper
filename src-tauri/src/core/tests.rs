@@ -2588,6 +2588,32 @@ I should produce JSON only.
     }
 
     #[test]
+    fn test_publisher_config_validation_and_public_url_normalization() {
+        let normalized =
+            crate::core::publisher::validate_public_url("https://example.org/civic/").unwrap();
+        assert_eq!(normalized, "https://example.org/civic");
+        assert!(crate::core::publisher::validate_public_url("file:///tmp/site").is_err());
+
+        let config =
+            crate::core::publisher::sanitize_config(crate::core::publisher::PublisherConfigInput {
+                provider: "github_pages".to_string(),
+                display_name: "  Town Pages  ".to_string(),
+                site_url: Some("https://example.org/civic/".to_string()),
+                project_hint: Some("  civic-paper  ".to_string()),
+                credential: None,
+                clear_credential: false,
+            })
+            .unwrap();
+        assert_eq!(config.provider, "github_pages");
+        assert_eq!(config.display_name, "Town Pages");
+        assert_eq!(
+            config.site_url.as_deref(),
+            Some("https://example.org/civic")
+        );
+        assert_eq!(config.project_hint.as_deref(), Some("civic-paper"));
+    }
+
+    #[test]
     fn test_seeded_publish_fixture_generates_article_evidence_and_correction_package() {
         let conn = init_db("file:test_seeded_publish_fixture?mode=memory&cache=shared").unwrap();
         let temp_dir = tempdir().unwrap();
