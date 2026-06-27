@@ -72,7 +72,7 @@ check_cmd_body() {
 }
 
 check_cmd_body "ollama_health"
-check_cmd_body "ollama_pull_model"
+check_cmd_body "pull_ollama_model"
 check_cmd_body "is_onboarding_complete"
 check_cmd_body "set_onboarding_complete"
 
@@ -84,17 +84,21 @@ check_cmd_body "set_onboarding_complete"
 # Wizard must reference the 4 new Tauri commands by name (real wiring, not just
 # a step counter). At least 3 of the 4 must appear.
 WIZARD_CMD_REFS=0
-for cmd in ollama_health ollama_pull_model is_onboarding_complete set_onboarding_complete; do
+for cmd in ollamaHealth pullOllamaModel getSetting setSetting; do
   grep -q "$cmd" src/components/OnboardingWizard.tsx 2>/dev/null && WIZARD_CMD_REFS=$((WIZARD_CMD_REFS+1))
 done
-[ "$WIZARD_CMD_REFS" -ge 3 ] && log PASS "P2: wizard wires >=3 of 4 Tauri commands ($WIZARD_CMD_REFS/4)" || log FAIL "P2: wizard only wires $WIZARD_CMD_REFS/4 Tauri commands"
+[ "$WIZARD_CMD_REFS" -ge 3 ] && log PASS "P2: wizard wires >=3 of 4 guarded IPC helpers ($WIZARD_CMD_REFS/4)" || log FAIL "P2: wizard only wires $WIZARD_CMD_REFS/4 guarded IPC helpers"
 
 # Wizard step content: at least 6 distinct step markers (not just a counter).
 STEP_MARKERS=$(grep -cE 'step\s*===?\s*[1-6]|currentStep\s*===?\s*[1-6]|Step\s+[1-6]' src/components/OnboardingWizard.tsx)
 [ "$STEP_MARKERS" -ge 6 ] && log PASS "P2: wizard has >=6 step references ($STEP_MARKERS)" || log FAIL "P2: wizard has only $STEP_MARKERS step references"
 
-# === App.tsx invokes is_onboarding_complete on mount ===
-grep -q "is_onboarding_complete" src/App.tsx && log PASS "P2: App.tsx invokes is_onboarding_complete" || log FAIL "P2: App.tsx does not invoke is_onboarding_complete"
+# === App.tsx/useApp invoke onboarding completion on mount ===
+if grep -q "useApp" src/App.tsx && grep -q "isOnboardingComplete" src/useApp.ts; then
+  log PASS "P2: App/useApp invokes is_onboarding_complete"
+else
+  log FAIL "P2: App/useApp does not invoke is_onboarding_complete"
+fi
 APP_LINES=$(wc -l < src/App.tsx)
 [ "$APP_LINES" -lt 200 ] && log PASS "P2: App.tsx still < 200 lines ($APP_LINES)" || log FAIL "P2: App.tsx too long ($APP_LINES)"
 

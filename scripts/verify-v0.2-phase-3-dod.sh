@@ -97,8 +97,8 @@ fi
 
 # === SystemStatus has Export button + invokes export_diagnostics ===
 grep -q "Export Diagnostic Report" src/components/SystemStatus.tsx 2>/dev/null && log PASS "P3: SystemStatus Export button literal" || log FAIL "P3: SystemStatus missing Export Diagnostic Report literal"
-grep -q "export_diagnostics" src/components/SystemStatus.tsx 2>/dev/null && log PASS "P3: SystemStatus invokes export_diagnostics" || log FAIL "P3: SystemStatus does not reference export_diagnostics"
-grep -qE "plugin-dialog|tauri-apps/plugin-dialog" src/components/SystemStatus.tsx 2>/dev/null && log PASS "P3: SystemStatus uses plugin-dialog" || log FAIL "P3: SystemStatus missing plugin-dialog import"
+grep -q "exportDiagnostics" src/components/SystemStatus.tsx 2>/dev/null && log PASS "P3: SystemStatus invokes exportDiagnostics helper" || log FAIL "P3: SystemStatus does not reference exportDiagnostics helper"
+grep -qE "plugin-dialog|tauri-apps/plugin-dialog" src/useApp.ts src/components/SystemStatus.tsx 2>/dev/null && log PASS "P3: diagnostics flow uses plugin-dialog" || log FAIL "P3: diagnostics flow missing plugin-dialog import"
 
 # === SECURITY.md updated ===
 grep -qiE "diagnostic report|diagnostics export|## diagnostic" SECURITY.md 2>/dev/null && log PASS "P3: SECURITY.md diagnostic section" || log FAIL "P3: SECURITY.md missing diagnostic section"
@@ -169,7 +169,11 @@ WIZARD_LINES=$(wc -l < src/components/OnboardingWizard.tsx 2>/dev/null || echo 0
 # === Phase 1 regression: App.tsx and components intact ===
 APP_LINES=$(wc -l < src/App.tsx 2>/dev/null || echo 0)
 [ "$APP_LINES" -gt 0 ] && [ "$APP_LINES" -lt 200 ] && log PASS "P3: App.tsx still < 200 lines ($APP_LINES)" || log FAIL "P3: App.tsx wrong size ($APP_LINES)"
-grep -q "is_onboarding_complete" src/App.tsx 2>/dev/null && log PASS "P3: App.tsx still invokes is_onboarding_complete" || log FAIL "P3: App.tsx onboarding gate removed"
+if grep -q "onboardingDone" src/App.tsx 2>/dev/null && grep -q "isOnboardingComplete" src/useApp.ts 2>/dev/null; then
+  log PASS "P3: App/useApp still gates onboarding"
+else
+  log FAIL "P3: App/useApp onboarding gate removed"
+fi
 
 PHASE1_REGRESSION=0
 for c in Layout LeadQueue Workbench PairDialog SystemStatus PublishPanel SettingsPanel SourcesPanel AppContent; do
