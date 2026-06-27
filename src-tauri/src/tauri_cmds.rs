@@ -320,24 +320,75 @@ pub fn open_external_url(url: String) -> Result<(), String> {
     }
 }
 
-fn strip_xml_tags(xml: &str) -> String {
+fn xml_text_with_breaks(xml: &str) -> String {
     let mut out = String::new();
+    let mut tag = String::new();
     let mut in_tag = false;
+
     for ch in xml.chars() {
         match ch {
             '<' => {
                 in_tag = true;
-                out.push(' ');
+                tag.clear();
             }
-            '>' => in_tag = false,
-            _ if !in_tag => out.push(ch),
-            _ => {}
+            '>' if in_tag => {
+                let tag_name = tag
+                    .trim()
+                    .trim_start_matches('/')
+                    .split_whitespace()
+                    .next()
+                    .unwrap_or("");
+                if matches!(
+                    tag_name,
+                    "w:p" | "w:tr" | "w:br" | "w:tab" | "row" | "c" | "si"
+                ) {
+                    out.push('\n');
+                }
+                in_tag = false;
+            }
+            _ if in_tag => tag.push(ch),
+            _ => out.push(ch),
         }
     }
-    html_escape::decode_html_entities(&out)
-        .split_whitespace()
+
+    normalize_extracted_text(&html_escape::decode_html_entities(&out))
+}
+
+fn normalize_extracted_text(text: &str) -> String {
+    text.lines()
+        .map(|line| line.split_whitespace().collect::<Vec<_>>().join(" "))
+        .filter(|line| !line.trim().is_empty())
         .collect::<Vec<_>>()
-        .join(" ")
+        .join("\n")
+}
+
+fn xml_text_values(xml: &str) -> Vec<String> {
+    let mut values = Vec::new();
+    let mut remaining = xml;
+    loop {
+        let Some(start) = remaining.find("<t") else {
+            break;
+        };
+        let after_start = &remaining[start..];
+        let Some(close) = after_start.find('>') else {
+            break;
+        };
+        let content_start = start + close + 1;
+        let after_content = &remaining[content_start..];
+        let Some(end) = after_content.find("</t>") else {
+            break;
+        };
+        let raw = &remaining[content_start..content_start + end];
+        let value = html_escape::decode_html_entities(raw)
+            .split_whitespace()
+            .collect::<Vec<_>>()
+            .join(" ");
+        if !value.is_empty() {
+            values.push(value);
+        }
+        remaining = &remaining[content_start + end + "</t>".len()..];
+    }
+    values
 }
 
 fn read_zip_entry_text<R: std::io::Read + std::io::Seek>(
@@ -362,7 +413,7 @@ fn extract_docx_text(path: &std::path::Path) -> Result<String, String> {
         zip::ZipArchive::new(file).map_err(|e| format!("Could not open Word document: {e}"))?;
     let xml = read_zip_entry_text(&mut archive, "word/document.xml")?
         .ok_or_else(|| "This Word document does not contain readable document text.".to_string())?;
-    let text = strip_xml_tags(&xml);
+    let text = xml_text_with_breaks(&xml);
     if text.trim().is_empty() {
         Err("No readable text was found in this Word document.".to_string())
     } else {
@@ -374,22 +425,81 @@ fn extract_xlsx_text(path: &std::path::Path) -> Result<String, String> {
     let file = std::fs::File::open(path).map_err(|e| e.to_string())?;
     let mut archive =
         zip::ZipArchive::new(file).map_err(|e| format!("Could not open spreadsheet: {e}"))?;
-    let mut chunks = Vec::new();
-    if let Some(shared) = read_zip_entry_text(&mut archive, "xl/sharedStrings.xml")? {
-        chunks.push(strip_xml_tags(&shared));
-    }
+    let shared_strings = read_zip_entry_text(&mut archive, "xl/sharedStrings.xml")?
+        .map(|shared| xml_text_values(&shared))
+        .unwrap_or_default();
+    let cell_re = regex::Regex::new(
+        r#"(?s)<c\b(?P<attrs>[^>]*)>\s*(?:<v>(?P<v>.*?)</v>|<is>(?P<is>.*?)</is>)"#,
+    )
+    .map_err(|e| e.to_string())?;
+    let row_re =
+        regex::Regex::new(r#"(?s)<row\b[^>]*>(?P<body>.*?)</row>"#).map_err(|e| e.to_string())?;
+    let mut rows = Vec::new();
     for index in 1..=50 {
         let sheet_name = format!("xl/worksheets/sheet{index}.xml");
         if let Some(sheet) = read_zip_entry_text(&mut archive, &sheet_name)? {
-            chunks.push(strip_xml_tags(&sheet));
+            for row_cap in row_re.captures_iter(&sheet) {
+                let body = row_cap.name("body").map(|m| m.as_str()).unwrap_or("");
+                let mut cells = Vec::new();
+                for cell_cap in cell_re.captures_iter(body) {
+                    let attrs = cell_cap.name("attrs").map(|m| m.as_str()).unwrap_or("");
+                    let cell_type = if attrs.contains(r#"t="s""#) {
+                        "s"
+                    } else if attrs.contains(r#"t="inlineStr""#) {
+                        "inlineStr"
+                    } else {
+                        ""
+                    };
+                    let raw_value = cell_cap
+                        .name("v")
+                        .or_else(|| cell_cap.name("is"))
+                        .map(|m| m.as_str())
+                        .unwrap_or("");
+                    let value = if cell_type == "s" {
+                        raw_value
+                            .trim()
+                            .parse::<usize>()
+                            .ok()
+                            .and_then(|shared_index| shared_strings.get(shared_index).cloned())
+                            .unwrap_or_default()
+                    } else if cell_type == "inlineStr" {
+                        xml_text_with_breaks(raw_value).replace('\n', " ")
+                    } else {
+                        html_escape::decode_html_entities(raw_value)
+                            .split_whitespace()
+                            .collect::<Vec<_>>()
+                            .join(" ")
+                    };
+                    if !value.trim().is_empty() {
+                        cells.push(value);
+                    }
+                }
+                if !cells.is_empty() {
+                    rows.push(cells.join("\t"));
+                }
+            }
         }
     }
 
-    let text = chunks.join("\n");
+    let text = rows.join("\n");
     if text.trim().is_empty() {
         Err("No readable text was found in this spreadsheet.".to_string())
     } else {
         Ok(text)
+    }
+}
+
+fn extract_pdf_text(path: &std::path::Path) -> Result<String, String> {
+    let text = pdf_extract::extract_text(path)
+        .map_err(|e| format!("Could not extract readable text from this PDF: {e}"))?;
+    let normalized = normalize_extracted_text(&text);
+    if normalized.trim().is_empty() {
+        Err(
+            "No readable text was found in this PDF. It may be scanned image-only and require OCR."
+                .to_string(),
+        )
+    } else {
+        Ok(normalized)
     }
 }
 
@@ -426,8 +536,8 @@ pub fn extract_source_import_text(path: String) -> Result<String, String> {
         }
         "docx" => extract_docx_text(&path),
         "xlsx" => extract_xlsx_text(&path),
-        "pdf" => Err("PDF source lists need text extraction before import. Export or copy the PDF text, then paste it here.".to_string()),
-        _ => Err("Unsupported source-list file type. Use CSV, TSV, TXT, DOCX, XLSX, or paste URLs directly.".to_string()),
+        "pdf" => extract_pdf_text(&path),
+        _ => Err("Unsupported source-list file type. Use CSV, TSV, TXT, DOCX, XLSX, PDF, or paste URLs directly.".to_string()),
     }
 }
 
@@ -1162,7 +1272,7 @@ mod source_import_extraction_tests {
             &path,
             &[(
                 "word/document.xml",
-                r#"<w:document><w:body><w:p><w:r><w:t>Denver Agendas https://denver.legistar.com/Calendar.aspx</w:t></w:r></w:p></w:body></w:document>"#,
+                r#"<w:document><w:body><w:p><w:r><w:t>Denver Agendas https://denver.legistar.com/Calendar.aspx</w:t></w:r></w:p><w:p><w:r><w:t>Denver Maps https://www.denvergov.org/maps</w:t></w:r></w:p></w:body></w:document>"#,
             )],
         );
 
@@ -1170,6 +1280,8 @@ mod source_import_extraction_tests {
 
         assert!(text.contains("Denver Agendas"));
         assert!(text.contains("https://denver.legistar.com/Calendar.aspx"));
+        assert!(text.contains("Denver Maps"));
+        assert!(text.lines().count() >= 2);
         let _ = std::fs::remove_dir_all(dir);
     }
 
@@ -1182,11 +1294,11 @@ mod source_import_extraction_tests {
             &[
                 (
                     "xl/sharedStrings.xml",
-                    r#"<sst><si><t>Denver Open Data</t></si><si><t>https://www.denvergov.org/opendata</t></si></sst>"#,
+                    r#"<sst><si><t>Denver Open Data</t></si><si><t>https://www.denvergov.org/opendata</t></si><si><t>Denver Maps</t></si><si><t>https://www.denvergov.org/maps</t></si></sst>"#,
                 ),
                 (
                     "xl/worksheets/sheet1.xml",
-                    r#"<worksheet><sheetData><row><c><v>Denver Maps https://www.denvergov.org/maps</v></c></row></sheetData></worksheet>"#,
+                    r#"<worksheet><sheetData><row><c t="s"><v>0</v></c><c t="s"><v>1</v></c></row><row><c t="s"><v>2</v></c><c t="s"><v>3</v></c></row></sheetData></worksheet>"#,
                 ),
             ],
         );
@@ -1195,19 +1307,59 @@ mod source_import_extraction_tests {
 
         assert!(text.contains("Denver Open Data"));
         assert!(text.contains("https://www.denvergov.org/opendata"));
-        assert!(text.contains("Denver Maps https://www.denvergov.org/maps"));
+        assert!(text.contains("Denver Maps"));
+        assert!(text.contains("https://www.denvergov.org/maps"));
+        assert!(text.lines().count() >= 2);
         let _ = std::fs::remove_dir_all(dir);
     }
 
     #[test]
-    fn pdf_source_lists_return_actionable_guidance() {
+    fn invalid_pdf_source_lists_return_actionable_guidance() {
         let dir = temp_dir("pdf");
         let path = dir.join("sources.pdf");
         std::fs::write(&path, "%PDF-1.4").unwrap();
 
         let err = extract_source_import_text(path.to_string_lossy().to_string()).unwrap_err();
 
-        assert!(err.contains("Export or copy the PDF text"));
+        assert!(
+            err.contains("Could not extract readable text") || err.contains("No readable text")
+        );
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn extracts_text_based_pdf_source_list() {
+        let dir = temp_dir("pdf-readable");
+        let path = dir.join("sources.pdf");
+        let stream =
+            "BT\n/F1 12 Tf\n72 720 Td\n(Longmont Council https://www.longmontcolorado.gov/city-council) Tj\nET\n";
+        let objects = [
+            "<< /Type /Catalog /Pages 2 0 R >>".to_string(),
+            "<< /Type /Pages /Kids [3 0 R] /Count 1 >>".to_string(),
+            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>".to_string(),
+            "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>".to_string(),
+            format!("<< /Length {} >>\nstream\n{}endstream", stream.len(), stream),
+        ];
+        let mut pdf = String::from("%PDF-1.4\n");
+        let mut offsets = vec![0usize];
+        for (idx, object) in objects.iter().enumerate() {
+            offsets.push(pdf.len());
+            pdf.push_str(&format!("{} 0 obj\n{}\nendobj\n", idx + 1, object));
+        }
+        let xref_start = pdf.len();
+        pdf.push_str("xref\n0 6\n0000000000 65535 f \n");
+        for offset in offsets.iter().skip(1) {
+            pdf.push_str(&format!("{offset:010} 00000 n \n"));
+        }
+        pdf.push_str(&format!(
+            "trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n{xref_start}\n%%EOF"
+        ));
+        std::fs::write(&path, pdf).unwrap();
+
+        let text = extract_source_import_text(path.to_string_lossy().to_string()).unwrap();
+
+        assert!(text.contains("Longmont Council"));
+        assert!(text.contains("https://www.longmontcolorado.gov/city-council"));
         let _ = std::fs::remove_dir_all(dir);
     }
 }

@@ -36,6 +36,7 @@ export interface BulkImportReview {
 }
 
 const HTTP_URL_RE = /https?:\/\/[^\s<>"')\]]+/i;
+const HTTP_URL_GLOBAL_RE = /https?:\/\/[^\s<>"')\]]+/gi;
 const KNOWN_OFFICIAL_HOSTS = [
   "denvergov.org",
   "denver.legistar.com",
@@ -268,7 +269,23 @@ export function buildBulkImportReview(
   const rejected: RejectedImportLine[] = [];
   const duplicates: RejectedImportLine[] = [];
 
-  text.split(/\r?\n/).forEach((rawLine, index) => {
+  const rows = text.split(/\r?\n/).flatMap((rawLine) => {
+    const matches = [...rawLine.matchAll(HTTP_URL_GLOBAL_RE)];
+    if (matches.length <= 1 || findDelimitedFields(rawLine)) {
+      return [rawLine];
+    }
+    return matches.map((match, idx) => {
+      const url = match[0];
+      const start = match.index ?? rawLine.indexOf(url);
+      const nextStart = idx + 1 < matches.length ? matches[idx + 1].index ?? rawLine.length : rawLine.length;
+      const before = rawLine.slice(Math.max(0, rawLine.lastIndexOf(" ", start - 2)), start).trim();
+      const after = rawLine.slice(start + url.length, nextStart).trim();
+      const label = before && !looksLikeHttpUrl(before) ? before : after;
+      return label ? `${label} ${url}` : url;
+    });
+  });
+
+  rows.forEach((rawLine, index) => {
     const row = index + 1;
     const line = rawLine.trim();
     if (!line) return;

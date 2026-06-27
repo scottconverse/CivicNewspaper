@@ -157,6 +157,21 @@ describe("parseBulkImportLine", () => {
     expect(review.rejected).toHaveLength(1);
   });
 
+  test("recovers multiple labeled URLs from a single extracted document line", () => {
+    const review = buildBulkImportReview(
+      "City of Longmont https://longmontcolorado.gov/ City Council https://longmontcolorado.gov/city-council Local News https://www.longmontleader.com/local-news",
+      "primary_record",
+      []
+    );
+
+    expect(review.accepted.map((item) => item.url)).toEqual([
+      "https://longmontcolorado.gov/",
+      "https://longmontcolorado.gov/city-council",
+      "https://www.longmontleader.com/local-news",
+    ]);
+    expect(review.accepted).toHaveLength(3);
+  });
+
   test("treats known civic portal hosts as official records even when they are not dot-gov", () => {
     const review = buildBulkImportReview([
       "Denver official website, https://www.denvergov.org/",

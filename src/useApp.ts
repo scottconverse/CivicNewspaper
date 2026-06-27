@@ -26,7 +26,6 @@ import {
   registerCorrection,
   backupSave,
   backupRestore,
-  checkOllama,
   pullOllamaModel,
   ollamaHealth,
   getSystemRam,
@@ -176,6 +175,7 @@ export function useApp() {
   // GG-C4: gate the first-run guided OnboardingWizard. null = still loading.
   const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
   const [selectedModel, setSelectedModel] = useState<string>("");
+  const [installedModels, setInstalledModels] = useState<string[]>([]);
   const [wizardModel, setWizardModel] = useState("");
   const [pullingModel, setPullingModel] = useState(false);
   const [pullProgressText, setPullProgressText] = useState<string[]>([]);
@@ -330,6 +330,25 @@ export function useApp() {
     }
   }, [pullProgressText]);
 
+  useEffect(() => {
+    if (!isTauri() || activeTab !== "pairing") return;
+    let stopped = false;
+    const refreshPairings = async () => {
+      try {
+        const clients = await listPairedClients();
+        if (!stopped) setPairedClients(clients);
+      } catch (err) {
+        console.error("Failed to refresh paired clients", err);
+      }
+    };
+    refreshPairings();
+    const interval = window.setInterval(refreshPairings, 2000);
+    return () => {
+      stopped = true;
+      window.clearInterval(interval);
+    };
+  }, [activeTab]);
+
   const loadInitialData = async () => {
     if (!isTauri()) {
       setSources(prev => prev.length ? prev : [
@@ -414,14 +433,17 @@ export function useApp() {
   const pollOllamaStatus = async () => {
     if (!isTauri()) {
       setOllamaOnline(true);
+      setInstalledModels([wizardModel || modelsConfig.high].filter(Boolean));
       return;
     }
 
     try {
-      const status = await checkOllama();
-      setOllamaOnline(status);
+      const health = await ollamaHealth();
+      setOllamaOnline(health.reachable);
+      setInstalledModels(health.models);
     } catch {
       setOllamaOnline(false);
+      setInstalledModels([]);
     }
   };
 
@@ -466,7 +488,13 @@ export function useApp() {
         return;
       }
       const health = await ollamaHealth();
-      if (!health.reachable || !modelInstalled(model, health.models)) {
+      if (!health.reachable) {
+        setErrorMessage("Daily Scan couldn't reach the local AI service. Start Ollama or open AI Model to check setup, then try again.");
+        setOnboardingStep(2);
+        setActiveTab("onboarding");
+        return;
+      }
+      if (!modelInstalled(model, health.models)) {
         setErrorMessage(`Daily Scan requires the ${model} model, which was not found. Redirecting to model download setup...`);
         setOnboardingStep(3);
         setActiveTab("onboarding");
@@ -830,7 +858,13 @@ export function useApp() {
           return;
         }
         const health = await ollamaHealth();
-        if (!health.reachable || !modelInstalled(model, health.models)) {
+        if (!health.reachable) {
+          setErrorMessage("Generating a draft couldn't reach the local AI service. Start Ollama or open AI Model to check setup, then try again.");
+          setOnboardingStep(2);
+          setActiveTab("onboarding");
+          return;
+        }
+        if (!modelInstalled(model, health.models)) {
           setErrorMessage(`Generating a draft requires the ${model} model, which isn't downloaded yet. Redirecting to model download setup...`);
           setOnboardingStep(3);
           setActiveTab("onboarding");
@@ -1314,6 +1348,7 @@ export function useApp() {
     onboardingDone,
     completeOnboarding,
     selectedModel,
+    installedModels,
     wizardModel,
     setWizardModel,
     pullingModel,

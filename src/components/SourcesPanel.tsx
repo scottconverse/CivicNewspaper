@@ -304,9 +304,9 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                   Source list
                 </label>
                 <p className="help-text" style={{ margin: "0 0 0.5rem 0", fontSize: "0.8rem" }}>
-                  Paste a list or load CSV, TSV, TXT, DOCX, or XLSX. You can optionally prefix with a name, e.g.,<br />
+                  Paste a list or load CSV, TSV, TXT, DOCX, XLSX, or text-based PDF files. You can optionally prefix with a name, e.g.,<br />
                   <code>Brighton Council, https://brightonco.gov/agenda</code><br />
-                  PDF source lists should be copied/exported to text first.
+                  Image-only scanned PDFs may need OCR before URLs can be read.
                 </p>
                 <textarea
                   placeholder="https://example.com/feed.xml&#10;Brighton School District, https://sd27j.org/board-agenda&#10;https://reddit.com/r/brightonco"

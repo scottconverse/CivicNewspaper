@@ -15,6 +15,8 @@ function setMessage(text, isError = true) {
 function render(paired) {
   pairPanel.hidden = paired;
   pairedPanel.hidden = !paired;
+  pairPanel.style.display = paired ? 'none' : 'grid';
+  pairedPanel.style.display = paired ? 'grid' : 'none';
   statusText.textContent = paired ? 'Paired and ready' : 'Not paired yet';
 }
 

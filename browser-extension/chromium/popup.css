@@ -38,6 +38,10 @@ section {
   gap: 10px;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 label {
   font-weight: 700;
 }

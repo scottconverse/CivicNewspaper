@@ -6,6 +6,7 @@ interface AiModelPanelProps {
   ollamaOnline: boolean;
   systemRam: number;
   wizardModel: string;
+  installedModels: string[];
   onWizardModelChange: (model: string) => void;
   pullingModel: boolean;
   pullProgressText: string[];
@@ -18,12 +19,14 @@ export const AiModelPanel: React.FC<AiModelPanelProps> = ({
   ollamaOnline,
   systemRam,
   wizardModel,
+  installedModels,
   onWizardModelChange,
   pullingModel,
   pullProgressText,
   onPullModel,
 }) => {
   const recommended = wizardModel || (systemRam >= 16 ? modelsConfig.high : systemRam >= 8 ? modelsConfig.medium : modelsConfig.low);
+  const isInstalled = installedModels.some((model) => model === recommended || `${model}:latest` === recommended || model === `${recommended}:latest`);
   const progressLine = pullProgressText[pullProgressText.length - 1] || (ollamaOnline ? "Local AI service is ready." : "Local AI service is starting.");
   const progressMatch = progressLine.match(/(\d+(?:\.\d+)?)%/);
   const progressPercent = pullingModel ? Number(progressMatch?.[1] ?? 12) : 0;
@@ -32,7 +35,12 @@ export const AiModelPanel: React.FC<AiModelPanelProps> = ({
     { model: modelsConfig.high, label: "16 GB computers", size: modelSizes[modelsConfig.high] || "about 9.3 GB" },
     { model: modelsConfig.medium, label: "8 GB computers", size: modelSizes[modelsConfig.medium] || "about 5.2 GB" },
     { model: modelsConfig.low, label: "lighter laptops", size: modelSizes[modelsConfig.low] || "about 2.5 GB" },
-  ];
+    ...installedModels.map((model) => ({
+      model,
+      label: "installed locally",
+      size: modelSizes[model] || "already downloaded",
+    })),
+  ].filter((option, index, all) => all.findIndex((other) => other.model === option.model) === index);
 
   return (
     <div className="ai-model-panel">
@@ -76,14 +84,14 @@ export const AiModelPanel: React.FC<AiModelPanelProps> = ({
                 <option value={option.model} key={option.model}>{option.model}</option>
               ))}
             </select>
-            <span>{pullingModel ? progressLine : "Ready to download"}</span>
+            <span>{pullingModel ? progressLine : isInstalled ? "Installed and ready" : ollamaOnline ? "Ready to download" : "AI service offline"}</span>
           </div>
           <div className="ai-progress-track">
             <div style={{ width: `${Math.min(100, Math.max(0, progressPercent))}%` }} />
           </div>
           <div className="ai-progress-status">
             {pullingModel && <RefreshCcw className="animate-spin" size={15} />}
-            <span>{pullingModel ? progressLine : `${modelSizes[recommended] || "One-time download"} - local after setup`}</span>
+            <span>{pullingModel ? progressLine : isInstalled ? "Available on this computer" : `${modelSizes[recommended] || "One-time download"} - local after setup`}</span>
           </div>
           <p className="help-text" style={{ margin: "0.5rem 0 0 0" }}>
             You can leave this running, or cancel and resume later. If progress stops for several minutes, check internet access, restart Civic Desk, then retry.
@@ -102,8 +110,8 @@ export const AiModelPanel: React.FC<AiModelPanelProps> = ({
 
         <div className="ai-actions">
           <button className="btn btn-secondary" type="button"><ArrowLeft size={16} />Back</button>
-          <button className="btn btn-primary" type="button" onClick={onPullModel} disabled={pullingModel}>
-            {pullingModel ? "Downloading..." : `Download ${recommended}`}
+          <button className="btn btn-primary" type="button" onClick={onPullModel} disabled={pullingModel || isInstalled || !ollamaOnline}>
+            {pullingModel ? "Downloading..." : isInstalled ? "Installed" : `Download ${recommended}`}
             <ArrowRight size={16} />
           </button>
         </div>

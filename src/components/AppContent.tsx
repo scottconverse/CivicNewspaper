@@ -183,6 +183,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           ollamaOnline={app.ollamaOnline}
           systemRam={app.systemRam}
           wizardModel={app.wizardModel}
+          installedModels={app.installedModels}
           onWizardModelChange={app.setWizardModel}
           pullingModel={app.pullingModel}
           pullProgressText={app.pullProgressText}
