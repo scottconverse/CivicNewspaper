@@ -96,9 +96,9 @@ When you are ready to share your stories with the community:
 4. Review the compile checklist, then click **Compile site**.
 5. CivicNewspaper will take all approved drafts, convert them to clean HTML, apply your templates, generate an RSS feed (`feed.xml`), and write them to the selected folder along with the about / ethics / how-we-report / corrections pages.
 6. The compile receipt shows how many articles and files were written. It also creates `site-package.zip`, `newsletter.md`, `substack.md`, `share-package.md`, Facebook/subreddit/Nextdoor copy, a short-link blurb, and `publish-manifest.json`.
-7. To put the issue online, upload the ZIP or folder to a static host such as **Netlify**, **Cloudflare Pages**, or **GitHub Pages**, or paste the Substack draft into a Substack post.
-8. In **Publisher connector**, choose the provider, save connector details, and use **Test connection** to check the saved settings. API tokens or credentials are stored in the operating system credential store; the app database only stores non-secret connector metadata.
-9. After the host gives you a public URL, paste it into **Public URL** and click **Publish with connector** or **Save public URL**. The app updates the publish manifest, ZIP, newsletter draft, Substack draft, and social copy so the share package points residents at the live issue.
+7. To put the issue online, choose a **Publisher connector**. Netlify, GitHub Pages, Cloudflare Pages, and WordPress can publish directly once the account target and credential are saved. Substack is assisted: use the generated Substack draft, publish it in Substack, then save the public URL.
+8. Save connector details and use **Test connection** to check the saved settings. API tokens or credentials are stored in the operating system credential store; the app database only stores non-secret connector metadata.
+9. Click **Publish with connector** for API-backed providers, or paste a public URL and click **Save public URL** for assisted/manual publishing. The app updates the publish manifest, ZIP, newsletter draft, Substack draft, and social copy so the share package points residents at the live issue.
 10. The **Publish history** table keeps recent issue runs, providers, article counts, timestamps, and output paths so you can see what was exported and where it was sent.
 
 ---

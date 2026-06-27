@@ -1,6 +1,5 @@
 use async_trait::async_trait;
 use base64::Engine;
-use pulldown_cmark::{html, Options, Parser};
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -154,6 +153,7 @@ impl Publisher for HttpPublisher {
             PublisherProvider::GithubPages => {
                 validate_repo(config.repo.as_deref())?;
                 required_field("GitHub branch", config.branch.as_deref())?;
+                validate_github_pages_path(config.path_prefix.as_deref())?;
             }
             PublisherProvider::CloudflarePages => {
                 required_field("Cloudflare account ID", config.account_id.as_deref())?;
@@ -412,22 +412,90 @@ async fn test_github(config: &PublisherConfig) -> Result<String, String> {
     let token = credential(PublisherProvider::GithubPages)?;
     let repo = validate_repo(config.repo.as_deref())?;
     let branch = required_field("GitHub branch", config.branch.as_deref())?;
-    let response = http_client()?
-        .get(format!(
-            "https://api.github.com/repos/{repo}/branches/{branch}"
-        ))
-        .bearer_auth(token)
-        .header(reqwest::header::ACCEPT, "application/vnd.github+json")
-        .header("X-GitHub-Api-Version", "2022-11-28")
-        .send()
-        .await
-        .map_err(|e| format!("GitHub connection failed: {e}"))?;
+    let client = http_client()?;
+    let repo_info = github_get_json(&client, &token, &format!("/repos/{repo}")).await?;
+    if let Some(permissions) = repo_info.get("permissions") {
+        let can_push = permissions
+            .get("push")
+            .and_then(|value| value.as_bool())
+            .unwrap_or(false);
+        let is_admin = permissions
+            .get("admin")
+            .and_then(|value| value.as_bool())
+            .unwrap_or(false);
+        if !can_push && !is_admin {
+            return Err(
+                "GitHub accepted the token, but it does not appear to have repository contents write permission."
+                    .to_string(),
+            );
+        }
+    }
+    let response = github_request(
+        &client,
+        reqwest::Method::GET,
+        &token,
+        &format!("/repos/{repo}/branches/{branch}"),
+    )
+    .send()
+    .await
+    .map_err(|e| format!("GitHub connection failed: {e}"))?;
+    if response.status() == reqwest::StatusCode::NOT_FOUND {
+        return Ok(
+            "GitHub accepted the repository and token. The publish branch will be created on first publish."
+                .to_string(),
+        );
+    }
     if response.status().is_success() {
         Ok("GitHub accepted the repository, branch, and token.".to_string())
     } else {
         Err(format!(
-            "GitHub rejected the connection test with status {}. Confirm the branch exists and the token can write repository contents.",
+            "GitHub rejected the connection test with status {}. Confirm the token can write repository contents.",
             response.status()
+        ))
+    }
+}
+
+fn validate_github_pages_path(value: Option<&str>) -> Result<(), String> {
+    let path = normalize_prefix(value);
+    if path.is_empty() || path == "docs" {
+        Ok(())
+    } else {
+        Err("GitHub Pages can publish from the repository root or /docs. Leave Folder path blank or use docs.".to_string())
+    }
+}
+
+fn github_request(
+    client: &reqwest::Client,
+    method: reqwest::Method,
+    token: &str,
+    path: &str,
+) -> reqwest::RequestBuilder {
+    client
+        .request(method, format!("https://api.github.com{path}"))
+        .bearer_auth(token)
+        .header(reqwest::header::ACCEPT, "application/vnd.github+json")
+        .header("X-GitHub-Api-Version", "2022-11-28")
+}
+
+async fn github_get_json(
+    client: &reqwest::Client,
+    token: &str,
+    path: &str,
+) -> Result<serde_json::Value, String> {
+    let response = github_request(client, reqwest::Method::GET, token, path)
+        .send()
+        .await
+        .map_err(|e| format!("GitHub connection failed: {e}"))?;
+    if response.status().is_success() {
+        response
+            .json::<serde_json::Value>()
+            .await
+            .map_err(|e| format!("Could not read GitHub response: {e}"))
+    } else {
+        let status = response.status();
+        let body = response.text().await.unwrap_or_default();
+        Err(format!(
+            "GitHub request failed with status {status}: {body}"
         ))
     }
 }
@@ -439,20 +507,35 @@ async fn publish_github(
     let token = credential(PublisherProvider::GithubPages)?;
     let repo = validate_repo(config.repo.as_deref())?;
     let branch = required_field("GitHub branch", config.branch.as_deref())?;
+    validate_github_pages_path(config.path_prefix.as_deref())?;
     let prefix = normalize_prefix(config.path_prefix.as_deref());
     let output_dir = validate_publish_artifacts(&request.output_dir)?;
     let files = static_site_files(&output_dir)?;
     let client = http_client()?;
+    ensure_github_branch(&client, &token, &repo, &branch).await?;
+    let stale_files = previous_github_generated_files(&client, &token, &repo, &branch, &prefix)
+        .await
+        .unwrap_or_default();
     let mut uploaded = 0usize;
+    let mut current_remote_paths = std::collections::HashSet::new();
 
     for file in files {
         let relative = file
             .strip_prefix(&output_dir)
             .map_err(|e| format!("Could not resolve generated file path: {e}"))?;
         let remote_path = remote_path(&prefix, relative);
+        current_remote_paths.insert(remote_path.clone());
         put_github_file(&client, &token, &repo, &branch, &remote_path, &file).await?;
         uploaded += 1;
     }
+    let mut deleted = 0usize;
+    for remote_path in stale_files {
+        if !current_remote_paths.contains(&remote_path) && !preserve_github_path(&remote_path) {
+            delete_github_file(&client, &token, &repo, &branch, &remote_path).await?;
+            deleted += 1;
+        }
+    }
+    ensure_github_pages(&client, &token, &repo, &branch, &prefix).await?;
 
     let published_url =
         fallback_url(config, request).or_else(|_| derive_github_pages_url(&repo))?;
@@ -460,8 +543,153 @@ async fn publish_github(
         provider: PublisherProvider::GithubPages.as_str().to_string(),
         published_url,
         deployment_id: Some(format!("{branch}:{uploaded}-files")),
-        message: format!("Uploaded {uploaded} generated files to GitHub Pages."),
+        message: format!(
+            "Uploaded {uploaded} generated files to GitHub Pages and removed {deleted} stale generated file(s)."
+        ),
     })
+}
+
+async fn ensure_github_branch(
+    client: &reqwest::Client,
+    token: &str,
+    repo: &str,
+    branch: &str,
+) -> Result<(), String> {
+    let branch_path = format!("/repos/{repo}/branches/{branch}");
+    let response = github_request(client, reqwest::Method::GET, token, &branch_path)
+        .send()
+        .await
+        .map_err(|e| format!("Could not check GitHub branch: {e}"))?;
+    if response.status().is_success() {
+        return Ok(());
+    }
+    if response.status() != reqwest::StatusCode::NOT_FOUND {
+        let status = response.status();
+        let body = response.text().await.unwrap_or_default();
+        return Err(format!(
+            "GitHub branch check failed with status {status}: {body}"
+        ));
+    }
+
+    let repo_info = github_get_json(client, token, &format!("/repos/{repo}")).await?;
+    let default_branch = repo_info
+        .get("default_branch")
+        .and_then(|value| value.as_str())
+        .ok_or_else(|| "GitHub did not return a default branch.".to_string())?;
+    let default_ref = github_get_json(
+        client,
+        token,
+        &format!("/repos/{repo}/git/ref/heads/{default_branch}"),
+    )
+    .await?;
+    let sha = default_ref
+        .get("object")
+        .and_then(|object| object.get("sha"))
+        .and_then(|value| value.as_str())
+        .ok_or_else(|| "GitHub did not return a default branch commit SHA.".to_string())?;
+    #[derive(Serialize)]
+    struct CreateRef<'a> {
+        r#ref: String,
+        sha: &'a str,
+    }
+    let response = github_request(
+        client,
+        reqwest::Method::POST,
+        token,
+        &format!("/repos/{repo}/git/refs"),
+    )
+    .json(&CreateRef {
+        r#ref: format!("refs/heads/{branch}"),
+        sha,
+    })
+    .send()
+    .await
+    .map_err(|e| format!("Could not create GitHub publish branch: {e}"))?;
+    if response.status().is_success() {
+        Ok(())
+    } else {
+        let status = response.status();
+        let body = response.text().await.unwrap_or_default();
+        Err(format!(
+            "GitHub publish branch creation failed with status {status}: {body}"
+        ))
+    }
+}
+
+async fn previous_github_generated_files(
+    client: &reqwest::Client,
+    token: &str,
+    repo: &str,
+    branch: &str,
+    prefix: &str,
+) -> Result<Vec<String>, String> {
+    let manifest_path = remote_path(prefix, Path::new("publish-manifest.json"));
+    let Some(contents) = get_github_file(client, token, repo, branch, &manifest_path).await? else {
+        return Ok(Vec::new());
+    };
+    let manifest: serde_json::Value = serde_json::from_slice(&contents)
+        .map_err(|e| format!("Could not read previous publish manifest: {e}"))?;
+    let generated = manifest
+        .get("generated_files")
+        .and_then(|value| value.as_array())
+        .ok_or_else(|| "Previous publish manifest does not list generated files.".to_string())?;
+    Ok(generated
+        .iter()
+        .filter_map(|value| value.as_str())
+        .map(|path| remote_path(prefix, Path::new(path)))
+        .collect())
+}
+
+async fn get_github_file(
+    client: &reqwest::Client,
+    token: &str,
+    repo: &str,
+    branch: &str,
+    remote_path: &str,
+) -> Result<Option<Vec<u8>>, String> {
+    let response = github_request(
+        client,
+        reqwest::Method::GET,
+        token,
+        &format!("/repos/{repo}/contents/{remote_path}"),
+    )
+    .query(&[("ref", branch)])
+    .send()
+    .await
+    .map_err(|e| format!("Could not read GitHub file {remote_path}: {e}"))?;
+    if response.status() == reqwest::StatusCode::NOT_FOUND {
+        return Ok(None);
+    }
+    if !response.status().is_success() {
+        let status = response.status();
+        let body = response.text().await.unwrap_or_default();
+        return Err(format!(
+            "GitHub file read failed for {remote_path} with status {status}: {body}"
+        ));
+    }
+    #[derive(Deserialize)]
+    struct ExistingFile {
+        content: String,
+        encoding: String,
+    }
+    let file = response
+        .json::<ExistingFile>()
+        .await
+        .map_err(|e| format!("Could not read GitHub file metadata: {e}"))?;
+    if file.encoding != "base64" {
+        return Err(format!(
+            "GitHub returned unsupported content encoding for {remote_path}."
+        ));
+    }
+    let normalized = file.content.replace(['\n', '\r'], "");
+    base64::engine::general_purpose::STANDARD
+        .decode(normalized)
+        .map(Some)
+        .map_err(|e| format!("Could not decode GitHub file {remote_path}: {e}"))
+}
+
+fn preserve_github_path(remote_path: &str) -> bool {
+    matches!(remote_path.rsplit('/').next(), Some("CNAME" | ".nojekyll"))
 }
 
 fn derive_github_pages_url(repo: &str) -> Result<String, String> {
@@ -485,11 +713,12 @@ async fn put_github_file(
     file: &Path,
 ) -> Result<(), String> {
     let api = format!("https://api.github.com/repos/{repo}/contents/{remote_path}");
-    let existing = client
-        .get(&api)
-        .bearer_auth(token)
-        .header(reqwest::header::ACCEPT, "application/vnd.github+json")
-        .header("X-GitHub-Api-Version", "2022-11-28")
+    let existing = github_request(
+        client,
+        reqwest::Method::GET,
+        token,
+        &format!("/repos/{repo}/contents/{remote_path}"),
+    )
         .query(&[("ref", branch)])
         .send()
         .await
@@ -528,11 +757,7 @@ async fn put_github_file(
         branch,
         sha,
     };
-    let response = client
-        .put(api)
-        .bearer_auth(token)
-        .header(reqwest::header::ACCEPT, "application/vnd.github+json")
-        .header("X-GitHub-Api-Version", "2022-11-28")
+    let response = github_request(client, reqwest::Method::PUT, token, &api.replace("https://api.github.com", ""))
         .json(&payload)
         .send()
         .await
@@ -544,6 +769,131 @@ async fn put_github_file(
         let body = response.text().await.unwrap_or_default();
         Err(format!(
             "GitHub upload failed for {remote_path} with status {status}: {body}"
+        ))
+    }
+}
+
+async fn delete_github_file(
+    client: &reqwest::Client,
+    token: &str,
+    repo: &str,
+    branch: &str,
+    remote_path: &str,
+) -> Result<(), String> {
+    let existing = github_request(
+        client,
+        reqwest::Method::GET,
+        token,
+        &format!("/repos/{repo}/contents/{remote_path}"),
+    )
+    .query(&[("ref", branch)])
+    .send()
+    .await
+    .map_err(|e| format!("Could not check stale GitHub file {remote_path}: {e}"))?;
+    if existing.status() == reqwest::StatusCode::NOT_FOUND {
+        return Ok(());
+    }
+    if !existing.status().is_success() {
+        let status = existing.status();
+        let body = existing.text().await.unwrap_or_default();
+        return Err(format!(
+            "GitHub refused stale file lookup for {remote_path} with status {status}: {body}"
+        ));
+    }
+    #[derive(Deserialize)]
+    struct ExistingFile {
+        sha: String,
+    }
+    let existing_file = existing
+        .json::<ExistingFile>()
+        .await
+        .map_err(|e| format!("Could not read stale GitHub file metadata: {e}"))?;
+    #[derive(Serialize)]
+    struct DeleteFile<'a> {
+        message: &'a str,
+        sha: &'a str,
+        branch: &'a str,
+    }
+    let response = github_request(
+        client,
+        reqwest::Method::DELETE,
+        token,
+        &format!("/repos/{repo}/contents/{remote_path}"),
+    )
+    .json(&DeleteFile {
+        message: "Remove stale Civic Desk generated file",
+        sha: &existing_file.sha,
+        branch,
+    })
+    .send()
+    .await
+    .map_err(|e| format!("Could not delete stale GitHub file {remote_path}: {e}"))?;
+    if response.status().is_success() {
+        Ok(())
+    } else {
+        let status = response.status();
+        let body = response.text().await.unwrap_or_default();
+        Err(format!(
+            "GitHub stale file deletion failed for {remote_path} with status {status}: {body}"
+        ))
+    }
+}
+
+async fn ensure_github_pages(
+    client: &reqwest::Client,
+    token: &str,
+    repo: &str,
+    branch: &str,
+    prefix: &str,
+) -> Result<(), String> {
+    let pages_path = if prefix == "docs" { "/docs" } else { "/" };
+    #[derive(Serialize)]
+    struct PagesSource<'a> {
+        branch: &'a str,
+        path: &'a str,
+    }
+    #[derive(Serialize)]
+    struct PagesPayload<'a> {
+        source: PagesSource<'a>,
+    }
+    let payload = PagesPayload {
+        source: PagesSource {
+            branch,
+            path: pages_path,
+        },
+    };
+    let get = github_request(
+        client,
+        reqwest::Method::GET,
+        token,
+        &format!("/repos/{repo}/pages"),
+    )
+    .send()
+    .await
+    .map_err(|e| format!("Could not check GitHub Pages settings: {e}"))?;
+    let method = if get.status() == reqwest::StatusCode::NOT_FOUND {
+        reqwest::Method::POST
+    } else if get.status().is_success() {
+        reqwest::Method::PUT
+    } else {
+        let status = get.status();
+        let body = get.text().await.unwrap_or_default();
+        return Err(format!(
+            "GitHub Pages settings check failed with status {status}: {body}"
+        ));
+    };
+    let response = github_request(client, method, token, &format!("/repos/{repo}/pages"))
+        .json(&payload)
+        .send()
+        .await
+        .map_err(|e| format!("Could not configure GitHub Pages: {e}"))?;
+    if response.status().is_success() {
+        Ok(())
+    } else {
+        let status = response.status();
+        let body = response.text().await.unwrap_or_default();
+        Err(format!(
+            "GitHub Pages configuration failed with status {status}: {body}"
         ))
     }
 }
@@ -684,34 +1034,86 @@ async fn publish_wordpress(
     let site_url = required_field("WordPress site URL", config.site_url.as_deref())?;
     let username = required_field("WordPress username", config.username.as_deref())?;
     let output_dir = validate_publish_artifacts(&request.output_dir)?;
-    let markdown_path = output_dir.join("substack.md");
-    let markdown = std::fs::read_to_string(&markdown_path)
-        .map_err(|e| format!("Could not read generated article package: {e}"))?;
-    let title = markdown
-        .lines()
-        .find_map(|line| line.strip_prefix("# "))
-        .unwrap_or("Civic Desk issue")
-        .trim()
-        .to_string();
-    let parser = Parser::new_ext(&markdown, Options::all());
-    let mut content = String::new();
-    html::push_html(&mut content, parser);
+    let manifest = read_publish_manifest(&output_dir)?;
+    let index_html = std::fs::read_to_string(output_dir.join("index.html"))
+        .map_err(|e| format!("Could not read generated issue homepage: {e}"))?;
+    let index_content = wordpress_content_fragment(&index_html);
+    let issue_title = format!("Civic Desk issue {}", manifest.issue_id);
+    let issue_page = create_wordpress_page(
+        &site_url,
+        &username,
+        &password,
+        &issue_title,
+        &index_content,
+        None,
+    )
+    .await?;
+
+    let mut article_count = 0usize;
+    for article in &manifest.articles {
+        let path = output_dir.join(&article.relative_path);
+        let article_html = std::fs::read_to_string(&path).map_err(|e| {
+            format!(
+                "Could not read generated article page {}: {e}",
+                article.relative_path
+            )
+        })?;
+        let content = wordpress_content_fragment(&article_html);
+        create_wordpress_page(
+            &site_url,
+            &username,
+            &password,
+            &article.title,
+            &content,
+            issue_page.id,
+        )
+        .await?;
+        article_count += 1;
+    }
+
+    Ok(PublisherPublishResult {
+        provider: PublisherProvider::Wordpress.as_str().to_string(),
+        published_url: validate_public_url(&issue_page.link)?,
+        deployment_id: issue_page.id.map(|id| id.to_string()),
+        message: format!(
+            "Published one WordPress issue page and {article_count} article page(s)."
+        ),
+    })
+}
+
+#[derive(Deserialize)]
+struct WordpressPage {
+    id: Option<u64>,
+    link: String,
+}
+
+async fn create_wordpress_page(
+    site_url: &str,
+    username: &str,
+    password: &str,
+    title: &str,
+    content: &str,
+    parent: Option<u64>,
+) -> Result<WordpressPage, String> {
     #[derive(Serialize)]
-    struct PostPayload {
-        title: String,
-        content: String,
+    struct PagePayload<'a> {
+        title: &'a str,
+        content: &'a str,
         status: &'static str,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        parent: Option<u64>,
     }
     let response = http_client()?
         .post(format!(
-            "{}/wp-json/wp/v2/posts",
+            "{}/wp-json/wp/v2/pages",
             site_url.trim_end_matches('/')
         ))
         .basic_auth(username, Some(password))
-        .json(&PostPayload {
+        .json(&PagePayload {
             title,
             content,
             status: "publish",
+            parent,
         })
         .send()
         .await
@@ -723,23 +1125,24 @@ async fn publish_wordpress(
             "WordPress publish failed with status {status}: {body}"
         ));
     }
-    #[derive(Deserialize)]
-    struct WordpressPost {
-        id: Option<u64>,
-        link: Option<String>,
-    }
-    let post: WordpressPost = serde_json::from_str(&body)
-        .map_err(|e| format!("Could not read WordPress response: {e}"))?;
-    let published_url = post
-        .link
-        .or_else(|| request.published_url.clone())
-        .ok_or_else(|| "WordPress did not return a public post URL.".to_string())?;
-    Ok(PublisherPublishResult {
-        provider: PublisherProvider::Wordpress.as_str().to_string(),
-        published_url: validate_public_url(&published_url)?,
-        deployment_id: post.id.map(|id| id.to_string()),
-        message: "Published the issue as a WordPress post.".to_string(),
-    })
+    serde_json::from_str::<WordpressPage>(&body)
+        .map_err(|e| format!("Could not read WordPress response: {e}"))
+}
+
+fn read_publish_manifest(
+    output_dir: &Path,
+) -> Result<crate::core::compiler::CompileStaticSiteResult, String> {
+    let manifest = std::fs::read_to_string(output_dir.join("publish-manifest.json"))
+        .map_err(|e| format!("Could not read publish manifest: {e}"))?;
+    serde_json::from_str(&manifest).map_err(|e| format!("Could not parse publish manifest: {e}"))
+}
+
+fn wordpress_content_fragment(html: &str) -> String {
+    let body = html
+        .split_once("<body>")
+        .and_then(|(_, rest)| rest.split_once("</body>").map(|(body, _)| body))
+        .unwrap_or(html);
+    body.replace("<script", "&lt;script")
 }
 
 fn publish_assisted(

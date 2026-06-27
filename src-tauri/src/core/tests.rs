@@ -2623,6 +2623,27 @@ I should produce JSON only.
         assert!(crate::core::publisher::publisher_for("not_a_provider").is_err());
     }
 
+    #[test]
+    fn test_github_pages_connector_rejects_unsupported_source_path() {
+        let connector = crate::core::publisher::publisher_for("github_pages").unwrap();
+        let result = connector.validate_config(&crate::core::publisher::PublisherConfig {
+            provider: "github_pages".to_string(),
+            display_name: "Town Pages".to_string(),
+            site_url: Some("https://example.org/civic".to_string()),
+            project_hint: None,
+            site_id: None,
+            account_id: None,
+            repo: Some("scottconverse/civic-paper".to_string()),
+            branch: Some("gh-pages".to_string()),
+            path_prefix: Some("public".to_string()),
+            username: None,
+            has_credential: false,
+        });
+
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("root or /docs"));
+    }
+
     #[tokio::test]
     async fn test_api_publisher_requires_credential() {
         let connector = crate::core::publisher::publisher_for("netlify").unwrap();

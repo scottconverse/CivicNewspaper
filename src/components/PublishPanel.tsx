@@ -54,7 +54,7 @@ const PROVIDERS = [
     id: "wordpress",
     label: "WordPress",
     url: "https://wordpress.com/posts",
-    guidance: "Publishes the generated article package as a WordPress post using the REST API and an application password.",
+    guidance: "Publishes a WordPress issue page and article pages using the REST API and an application password.",
   },
   {
     id: "other",
@@ -63,6 +63,45 @@ const PROVIDERS = [
     guidance: "Use any static host or local web server, then paste the public URL here.",
   },
 ];
+
+const SETUP_GUIDES: Record<string, { credential: string; target: string; permission: string; verify: string }> = {
+  netlify: {
+    credential: "Create a Netlify personal access token in User settings -> Applications.",
+    target: "Copy the site ID from Site configuration -> General -> Site details.",
+    permission: "The token must be able to deploy the selected site.",
+    verify: "Test connection checks the site ID and token before upload.",
+  },
+  github_pages: {
+    credential: "Create a GitHub fine-grained token for the target repository.",
+    target: "Use owner/repo, a Pages branch such as gh-pages, and either root or docs as the folder path.",
+    permission: "The token needs repository Contents read/write. Pages will be configured from the branch on publish.",
+    verify: "Test connection checks repository access; publish creates the branch if needed.",
+  },
+  cloudflare_pages: {
+    credential: "Create a Cloudflare API token for Pages deployments.",
+    target: "Copy the account ID and Pages project name from Cloudflare.",
+    permission: "The token needs Cloudflare Pages edit/deploy access for the account.",
+    verify: "Test connection checks that Wrangler can run; publish uses the official direct-upload path.",
+  },
+  wordpress: {
+    credential: "Create a WordPress application password from the editor user's profile.",
+    target: "Use the public WordPress site URL and the matching username.",
+    permission: "The user must be allowed to publish pages.",
+    verify: "Test connection checks /wp-json/wp/v2/users/me before creating issue pages.",
+  },
+  substack: {
+    credential: "No supported public publishing API is available.",
+    target: "Use the generated Substack draft artifact.",
+    permission: "Publish in Substack, then save the public URL here.",
+    verify: "The connector records the public URL after assisted publishing.",
+  },
+  other: {
+    credential: "Use the host's own publishing flow.",
+    target: "Upload the folder or ZIP, then copy the public URL.",
+    permission: "No app credential is stored for this connector.",
+    verify: "Save public URL updates the manifest and share package.",
+  },
+};
 
 export const PublishPanel: React.FC<PublishPanelProps> = ({
   publishPath,
@@ -102,6 +141,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   const [deploymentId, setDeploymentId] = useState("");
 
   const selectedProvider = PROVIDERS.find(item => item.id === provider) ?? PROVIDERS[0];
+  const setupGuide = SETUP_GUIDES[provider] ?? SETUP_GUIDES.other;
 
   useEffect(() => {
     setProvider(publisherProvider || "netlify");
@@ -356,6 +396,12 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
             <div className="card publish-destination-card">
               <h3 className="card-title">Publisher connector</h3>
               <p className="help-text">{selectedProvider.guidance}</p>
+              <div className="setup-guide" aria-label="Connector setup guide">
+                <p><strong>Account setup:</strong> {setupGuide.credential}</p>
+                <p><strong>Target:</strong> {setupGuide.target}</p>
+                <p><strong>Required access:</strong> {setupGuide.permission}</p>
+                <p><strong>Check:</strong> {setupGuide.verify}</p>
+              </div>
               <label htmlFor="select-publish-provider" style={{ fontWeight: 600, display: "block", marginBottom: "0.35rem" }}>Provider</label>
               <select id="select-publish-provider" value={provider} onChange={event => handleProviderChange(event.target.value)}>
                 {PROVIDERS.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}

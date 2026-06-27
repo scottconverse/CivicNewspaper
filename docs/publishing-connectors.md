@@ -18,7 +18,7 @@ The Civic Desk has two publishing modes:
 
 - Requires: GitHub token with repository contents write access, `owner/repo`, branch, optional folder path.
 - Publishes: generated static files, excluding `site-package.zip`.
-- Method: GitHub REST Contents API writes each generated file to the configured branch/path.
+- Method: GitHub REST Contents API writes each generated file to the configured branch/path. The connector creates the publish branch from the default branch when needed, configures GitHub Pages from root or `/docs`, and removes stale generated files listed in the previous Civic Desk manifest while preserving files such as `CNAME`.
 - Output: configured public URL, or a derived `https://owner.github.io/repo/` URL.
 
 ### Cloudflare Pages
@@ -31,9 +31,9 @@ The Civic Desk has two publishing modes:
 ### WordPress
 
 - Requires: WordPress site URL, username, application password.
-- Publishes: generated `substack.md` package as a WordPress post.
-- Method: WordPress REST API `wp/v2/posts` with application-password authentication.
-- Output: WordPress post ID and public post URL.
+- Publishes: a WordPress issue page and child article pages from the generated site package.
+- Method: WordPress REST API `wp/v2/pages` with application-password authentication.
+- Output: WordPress issue page ID and public page URL.
 
 ## Assisted Connectors
 

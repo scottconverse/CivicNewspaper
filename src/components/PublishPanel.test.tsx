@@ -264,6 +264,8 @@ describe("PublishPanel Component Tests", () => {
     );
 
     expect(screen.getByText(/Test passed:/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Connector setup guide/i)).toHaveTextContent("Netlify personal access token");
+    expect(screen.getByLabelText(/Connector setup guide/i)).toHaveTextContent("site ID");
     fireEvent.change(screen.getByLabelText(/Connector name/i), {
       target: { value: "Updated Netlify" },
     });
@@ -278,6 +280,53 @@ describe("PublishPanel Component Tests", () => {
     }));
     fireEvent.click(screen.getByRole("button", { name: /Test connection/i }));
     expect(handleTest).toHaveBeenCalledWith("netlify");
+  });
+
+  test("shows provider-specific setup guidance when switching providers", () => {
+    render(
+      <PublishPanel
+        publishPath={"C:\\my-site"}
+        publishResult={{
+          issue_id: "issue-20260627-000000",
+          output_dir: "C:/my-site",
+          generated_at: "2026-06-27T00:00:00Z",
+          provider: "local_export",
+          published_url: null,
+          deployment_id: null,
+          article_count: 1,
+          skipped_count: 0,
+          files_written: 12,
+          generated_files: [],
+          index_path: "index.html",
+          rss_path: "feed.xml",
+          newsletter_path: "newsletter.md",
+          substack_path: "substack.md",
+          share_package_path: "share-package.md",
+          facebook_post_path: "facebook-post.txt",
+          subreddit_post_path: "subreddit-post.md",
+          nextdoor_post_path: "nextdoor-post.txt",
+          short_link_blurb_path: "short-link-blurb.txt",
+          manifest_path: "publish-manifest.json",
+          zip_path: "site-package.zip",
+          articles: [],
+        }}
+        {...defaultPublisherProps}
+        onPublishPathChange={vi.fn()}
+        publishStep={3}
+        onPublishStepChange={vi.fn()}
+        loading={false}
+        onPublish={vi.fn()}
+        onOpenLocalPath={vi.fn()}
+        onOpenExternalUrl={vi.fn()}
+        onChoosePublishPath={vi.fn()}
+        onRecordPublishDestination={vi.fn()}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText(/Provider/i), { target: { value: "wordpress" } });
+
+    expect(screen.getByLabelText(/Connector setup guide/i)).toHaveTextContent("WordPress application password");
+    expect(screen.getByLabelText(/Connector setup guide/i)).toHaveTextContent("publish pages");
   });
 
   test("renders publish history", () => {
