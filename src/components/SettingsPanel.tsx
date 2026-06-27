@@ -226,15 +226,23 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onBackupRestore
 }) => {
   const [profileForm, setProfileForm] = useState<CommunityProfile | null>(communityProfile);
+  const [profileSaveStatus, setProfileSaveStatus] = useState<string>("");
 
   React.useEffect(() => {
     setProfileForm(communityProfile);
   }, [communityProfile]);
 
-  const handleProfileSubmit = (e: React.FormEvent) => {
+  const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (profileForm) {
-      onSaveProfile(profileForm);
+      try {
+        setProfileSaveStatus("Saving...");
+        await Promise.resolve(onSaveProfile(profileForm));
+        setProfileSaveStatus("Identity saved.");
+        setTimeout(() => setProfileSaveStatus(""), 4000);
+      } catch (error) {
+        setProfileSaveStatus(`Save failed: ${toUserMessage(error)}`);
+      }
     }
   };
 
@@ -341,9 +349,12 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 </p>
               </div>
 
-              <button className="btn btn-primary" type="submit" id="btn-save-profile">
-                Save identity
-              </button>
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+                <button className="btn btn-primary" type="submit" id="btn-save-profile">
+                  Save identity
+                </button>
+                {profileSaveStatus && <span className="help-text" role="status">{profileSaveStatus}</span>}
+              </div>
             </form>
           ) : (
             <p id="profile-loading-text">Loading profile configurations...</p>

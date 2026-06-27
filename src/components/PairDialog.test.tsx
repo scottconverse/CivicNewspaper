@@ -62,4 +62,22 @@ describe("PairDialog Component Tests", () => {
     expect(screen.getByText(/extension icon popup/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Open extension folder/i })).toBeInTheDocument();
   });
+
+  test("does not show stale label helper while an active code is displayed", () => {
+    render(
+      <PairDialog
+        pairingLabel=""
+        onPairingLabelChange={vi.fn()}
+        generatedPin="1234 5678 9012"
+        pinExpiryMsg="Expires in 5 minutes"
+        onGeneratePin={vi.fn()}
+        pairedClients={[]}
+        onRevokeClient={vi.fn()}
+        onOpenExtensionFolder={vi.fn()}
+      />
+    );
+
+    expect(screen.queryByText(/Enter a device label/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Paste this active code/i)).toBeInTheDocument();
+  });
 });

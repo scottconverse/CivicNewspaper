@@ -245,6 +245,22 @@ describe("Workbench Component Tests", () => {
     expect(screen.getByRole("button", { name: /Plain Language Rewrite/i })).toBeDisabled();
   });
 
+  test("shows a draft picker when Workbench is opened without a selected draft", () => {
+    const onOpenDraftEditor = vi.fn();
+
+    renderEditor({
+      selectedDraft: null,
+      drafts: [mockDraft],
+      onOpenDraftEditor,
+    });
+
+    expect(screen.getByLabelText(/Workbench draft picker/i)).toBeInTheDocument();
+    expect(screen.getByText("Suspicious Spending")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /Suspicious Spending/i }));
+    expect(onOpenDraftEditor).toHaveBeenCalledWith(mockDraft);
+  });
+
   test("Approve is disabled until the editor attests, then publishes a clean draft", () => {
     const onApprovePublish = vi.fn();
     renderEditor({ onApprovePublish, guardrailsReport: null });

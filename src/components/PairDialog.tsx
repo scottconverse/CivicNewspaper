@@ -54,9 +54,14 @@ export const PairDialog: React.FC<PairDialogProps> = ({
               required
               id="input-pairing-label"
             />
-            {!pairingLabel.trim() && (
+            {!generatedPin && !pairingLabel.trim() && (
               <p className="help-text" style={{ margin: "-0.5rem 0 0" }}>
                 Enter a device label before generating a code.
+              </p>
+            )}
+            {generatedPin && (
+              <p className="help-text" style={{ margin: "-0.5rem 0 0" }}>
+                Paste this active code into the extension popup. Generate a replacement code only if this one expires.
               </p>
             )}
 

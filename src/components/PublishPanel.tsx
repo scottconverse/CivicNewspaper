@@ -20,7 +20,7 @@ interface PublishPanelProps {
   onPublishStepChange: (step: number) => void;
   loading: boolean;
   onPublish: () => void;
-  onOpenLocalPath: (path: string) => void | Promise<void>;
+  onOpenLocalPath: (path: string, label?: string) => void | Promise<void>;
   onOpenExternalUrl: (url: string) => void | Promise<void>;
   onChoosePublishPath: () => void;
   onRecordPublishDestination: (provider: string, publishedUrl: string, deploymentId?: string) => void | Promise<void>;
@@ -370,7 +370,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                   : "Choose an output folder, then review the compile checklist before writing files."}
             </p>
             <div className="btn-group">
-              <button className="btn btn-secondary" onClick={() => publishPath && onOpenLocalPath(publishPath)} id="btn-publish-open-folder">Open folder</button>
+              <button className="btn btn-secondary" onClick={() => publishPath && onOpenLocalPath(publishPath, "output folder")} id="btn-publish-open-folder">Open folder</button>
               <button className="btn btn-secondary" onClick={() => onPublishStepChange(1)} id="btn-publish-restart">Reset</button>
             </div>
           </div>
@@ -393,35 +393,35 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                 </div>
               </div>
               <div className="artifact-list">
-                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.zip_path))}>
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.zip_path), "site-package.zip")}>
                   <FileArchive size={16} />
                   ZIP package
                 </button>
-                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.newsletter_path))}>
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.newsletter_path), "newsletter.md")}>
                   <FileDown size={16} />
                   Newsletter
                 </button>
-                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.substack_path))}>
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.substack_path), "substack.md")}>
                   <FileDown size={16} />
                   Substack draft
                 </button>
-                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.share_package_path))}>
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.share_package_path), "share-package.md")}>
                   <UploadCloud size={16} />
                   Share package
                 </button>
-                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.facebook_post_path))}>
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.facebook_post_path), "facebook-post.txt")}>
                   <UploadCloud size={16} />
                   Facebook copy
                 </button>
-                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.subreddit_post_path))}>
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.subreddit_post_path), "subreddit-post.md")}>
                   <UploadCloud size={16} />
                   Subreddit post
                 </button>
-                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.nextdoor_post_path))}>
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.nextdoor_post_path), "nextdoor-post.txt")}>
                   <UploadCloud size={16} />
                   Nextdoor copy
                 </button>
-                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.rss_path))}>
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.rss_path), "feed.xml")}>
                   <Rss size={16} />
                   RSS
                 </button>
@@ -687,7 +687,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                   <ExternalLink size={16} />
                   Open {selectedProvider.label}
                 </button>
-                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.zip_path))}>
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.zip_path), "site-package.zip")}>
                   <FileArchive size={16} />
                   Open ZIP
                 </button>

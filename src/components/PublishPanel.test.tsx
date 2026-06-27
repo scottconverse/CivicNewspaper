@@ -157,7 +157,7 @@ describe("PublishPanel Component Tests", () => {
     expect(screen.getByText("1")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /ZIP package/i }));
-    expect(handleOpen).toHaveBeenCalledWith("C:\\my-site\\site-package.zip");
+    expect(handleOpen).toHaveBeenCalledWith("C:\\my-site\\site-package.zip", "site-package.zip");
   });
 
   test("records a public publish destination after compile", () => {

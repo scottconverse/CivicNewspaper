@@ -1,5 +1,5 @@
 // src/components/LeadQueue.tsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RefreshCw, Play, Trash2, Info, ChevronRight, Search, AlertTriangle, ShieldCheck } from "lucide-react";
 import { Lead, Draft } from "../ipc";
 import { DailyScanResults } from "./DailyScanResults";
@@ -39,7 +39,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
   onOpenCorrectionModal,
   onDeleteDraft
 }) => {
-  const [queueSubTab, setQueueSubTab] = useState<"leads" | "drafts">("leads");
+  const [queueSubTab, setQueueSubTab] = useState<"leads" | "drafts" | "scan">("leads");
   const [filterText, setFilterText] = useState<string>(filter);
   const [sortBy, setSortBy] = useState<"risk" | "confidence" | "date">("date");
 
@@ -79,6 +79,12 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
 
   const highRiskCount = leads.filter((lead) => lead.risk_level === "high").length;
 
+  useEffect(() => {
+    if (!latestScanId && queueSubTab === "scan") {
+      setQueueSubTab("leads");
+    }
+  }, [latestScanId, queueSubTab]);
+
   return (
     <div>
       <div className="page-header">
@@ -107,10 +113,15 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
           <span>New leads</span>
           <strong>{leads.length}</strong>
         </div>
-        <div className="stat-card stat-amber">
+        <button
+          className="stat-card stat-amber stat-card-button"
+          type="button"
+          onClick={() => setQueueSubTab("drafts")}
+          aria-label={`Open ${drafts.length} drafts`}
+        >
           <span>In drafting</span>
           <strong>{drafts.length}</strong>
-        </div>
+        </button>
         <div className="stat-card stat-red">
           <span>High priority</span>
           <strong>{highRiskCount}</strong>
@@ -129,10 +140,6 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
         </div>
       </div>
 
-      {latestScanId && (
-        <DailyScanResults scanId={latestScanId} onRunScan={onDailyScan} />
-      )}
-
       <div className="queue-tabs">
         <button
           className={`queue-tab ${queueSubTab === "leads" ? "active" : ""}`}
@@ -148,9 +155,20 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
         >
           Drafts <span className="badge badge-neutral">{drafts.length}</span>
         </button>
+        {latestScanId && (
+          <button
+            className={`queue-tab ${queueSubTab === "scan" ? "active" : ""}`}
+            onClick={() => setQueueSubTab("scan")}
+            id="queue-tab-scan-results"
+          >
+            Scan results <span className="badge badge-neutral">latest</span>
+          </button>
+        )}
       </div>
 
-      {queueSubTab === "leads" ? (
+      {queueSubTab === "scan" && latestScanId ? (
+        <DailyScanResults scanId={latestScanId} onRunScan={onDailyScan} />
+      ) : queueSubTab === "leads" ? (
         <div>
           {/* Filter and Sort controls */}
           <div className="card queue-filter-card">

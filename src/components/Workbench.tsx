@@ -60,6 +60,7 @@ export function computeLineDiff(
 interface WorkbenchProps {
   selectedLead: Lead | null;
   selectedDraft: Draft | null;
+  drafts?: Draft[];
   evidenceList: EvidenceItem[];
   guardrailsReport: GuardrailsReport | null;
   ollamaOnline: boolean;
@@ -73,6 +74,7 @@ interface WorkbenchProps {
   onCancelDraftWizard: () => void;
   onSaveDraftEditor: () => void;
   onCloseWorkbench: () => void;
+  onOpenDraftEditor?: (draft: Draft) => void;
   onDeleteDraft: (id: number) => void;
   onDecision: (status: string) => void;
   onApprovePublish?: (overrideReason?: string) => void;
@@ -121,6 +123,7 @@ function guardrailInstruction(issue: any): { title: string; action: string } {
 export const Workbench: React.FC<WorkbenchProps> = ({
   selectedLead,
   selectedDraft,
+  drafts = [],
   evidenceList,
   guardrailsReport,
   ollamaOnline,
@@ -134,6 +137,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   onCancelDraftWizard,
   onSaveDraftEditor,
   onCloseWorkbench,
+  onOpenDraftEditor,
   onDeleteDraft,
   onDecision,
   onApprovePublish,
@@ -637,10 +641,40 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   }
 
   return (
-    <div className="card text-center" style={{ padding: "3rem" }}>
-      <Info size={36} style={{ color: "var(--text-muted)", marginBottom: "1rem" }} />
-      <h3>No lead or draft selected</h3>
-      <p className="help-text">Open a lead draft wizard or open a draft from the queue.</p>
+    <div className="card workbench-picker-card" id="workbench-draft-picker">
+      <div className="workbench-picker-heading">
+        <Info size={36} style={{ color: "var(--text-muted)" }} />
+        <div>
+          <h3>No lead or draft selected</h3>
+          <p className="help-text">Open a draft below, or return to the queue to start a new story from a lead.</p>
+        </div>
+      </div>
+
+      {drafts.length > 0 ? (
+        <div className="draft-picker-list" aria-label="Workbench draft picker">
+          {drafts.map((draft) => (
+            <button
+              type="button"
+              key={draft.id ?? draft.title}
+              className="draft-picker-row"
+              onClick={() => onOpenDraftEditor?.(draft)}
+              id={draft.id ? `btn-workbench-picker-open-${draft.id}` : undefined}
+            >
+              <span>
+                <strong>{draft.title || "Untitled draft"}</strong>
+                <small>{draft.format} - {draft.status.replace(/_/g, " ")}</small>
+              </span>
+              <span className={`badge badge-${getStatusColor(draft.status)}`}>Open</span>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <p className="help-text">No drafts exist yet. Start from a lead in the Story Queue.</p>
+      )}
+
+      <button className="btn btn-secondary" type="button" onClick={onCloseWorkbench} id="btn-workbench-empty-back">
+        Back to Story Queue
+      </button>
     </div>
   );
 };

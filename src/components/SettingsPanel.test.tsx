@@ -1,5 +1,6 @@
 // src/components/SettingsPanel.test.tsx
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { invoke } from "@tauri-apps/api/core";
 import { describe, test, expect, vi } from "vitest";
 import { SettingsPanel } from "./SettingsPanel";
 import { CommunityProfile } from "../ipc";
@@ -17,27 +18,38 @@ describe("SettingsPanel Component Tests", () => {
     state: "TC"
   };
 
-  test("backup path input is editable and save profile fires with the right path/data", () => {
+  test("backup path input is editable and save profile fires with the right path/data", async () => {
     const handleBackupPathChange = vi.fn();
     const handleSaveProfile = vi.fn();
+    const backupPath = String.raw`C:\backup.db`;
+    const newBackupPath = String.raw`C:\new-backup.db`;
+    vi.mocked(invoke).mockResolvedValue({
+      accusatory: [],
+      legal: [],
+      blocking: [],
+    });
 
     render(
       <SettingsPanel
         communityProfile={mockProfile}
         onSaveProfile={handleSaveProfile}
-        backupPathInput="C:\backup.db"
+        backupPathInput={backupPath}
         onBackupPathInputChange={handleBackupPathChange}
         onBackupSave={vi.fn()}
         onBackupRestore={vi.fn()}
       />
     );
 
+    await waitFor(() => {
+      expect(screen.queryByText(/Loading guardrail words/i)).not.toBeInTheDocument();
+    });
+
     // 1. Verify backup path input is editable
     const backupInput = screen.getByLabelText(/Backup folder/i) as HTMLInputElement;
-    expect(backupInput.value).toBe("C:\\backup.db");
+    expect(backupInput.value).toBe(backupPath);
     
-    fireEvent.change(backupInput, { target: { value: "C:\\new-backup.db" } });
-    expect(handleBackupPathChange).toHaveBeenCalledWith("C:\\new-backup.db");
+    fireEvent.change(backupInput, { target: { value: newBackupPath } });
+    expect(handleBackupPathChange).toHaveBeenCalledWith(newBackupPath);
 
     // 2. Modify publication name and verify save profile fires with correct profile data
     const titleInput = screen.getByLabelText(/Publication name/i) as HTMLInputElement;
@@ -50,5 +62,6 @@ describe("SettingsPanel Component Tests", () => {
       ...mockProfile,
       site_title: "Updated Observer"
     });
+    expect(await screen.findByRole("status")).toHaveTextContent("Identity saved.");
   });
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowLeft, ArrowRight, Check, Download, HardDrive, RefreshCcw } from "lucide-react";
+import { ArrowRight, Check, Download, HardDrive, RefreshCcw } from "lucide-react";
 import modelsConfig from "../models.json";
 
 interface AiModelPanelProps {
@@ -109,7 +109,6 @@ export const AiModelPanel: React.FC<AiModelPanelProps> = ({
         </div>
 
         <div className="ai-actions">
-          <button className="btn btn-secondary" type="button"><ArrowLeft size={16} />Back</button>
           <button className="btn btn-primary" type="button" onClick={onPullModel} disabled={pullingModel || isInstalled || !ollamaOnline}>
             {pullingModel ? "Downloading..." : isInstalled ? "Installed" : `Download ${recommended}`}
             <ArrowRight size={16} />

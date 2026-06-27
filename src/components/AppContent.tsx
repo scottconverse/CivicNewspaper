@@ -70,6 +70,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           <Workbench
             selectedLead={app.selectedLead}
             selectedDraft={app.selectedDraft}
+            drafts={app.drafts}
             evidenceList={app.evidenceList}
             guardrailsReport={app.guardrailsReport}
             ollamaOnline={app.ollamaOnline}
@@ -86,6 +87,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
               app.setActiveTab("queue");
               app.setSelectedDraft(null);
             }}
+            onOpenDraftEditor={app.handleOpenDraftEditor}
             onDeleteDraft={app.handleDeleteDraft}
             onDecision={app.handleDecision}
             onApprovePublish={app.handleApprovePublish}
@@ -257,10 +259,10 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           }}
           loading={app.loading}
           onPublish={app.handlePublish}
-          onOpenLocalPath={async (path) => {
+          onOpenLocalPath={async (path, label) => {
             try {
               await openLocalPath(path);
-              app.setStatusMessage("Opened folder.");
+              app.setStatusMessage(label ? `Opened ${label}.` : "Opened folder.");
             } catch (e) {
               app.setErrorMessage(`Couldn't open folder: ${toUserMessage(e)}`);
             }
@@ -290,44 +292,38 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
       )}
 
       {app.activeTab === "workbench" && (
-        app.selectedDraft ? (
-          <Workbench
-            selectedLead={app.selectedLead}
-            selectedDraft={app.selectedDraft}
-            evidenceList={app.evidenceList}
-            guardrailsReport={app.guardrailsReport}
-            ollamaOnline={app.ollamaOnline}
-            manualLlmMode={app.manualLlmMode}
-            draftFormat={app.draftFormat}
-            onDraftFormatChange={app.setDraftFormat}
-            customSystemPrompt={app.customSystemPrompt}
-            onCustomSystemPromptChange={app.setCustomSystemPrompt}
-            generatingText={app.generatingText}
-            onGenerateText={app.handleGenerateText}
-            onCancelDraftWizard={() => app.setSelectedLead(null)}
-            onSaveDraftEditor={app.handleSaveDraftEditor}
-            onCloseWorkbench={() => {
-              app.setActiveTab("queue");
-              app.setSelectedDraft(null);
-            }}
-            onDeleteDraft={app.handleDeleteDraft}
-            onDecision={app.handleDecision}
-            onApprovePublish={app.handleApprovePublish}
-            onKillStory={app.handleKillStory}
-            isGeneratingSocial={app.isGeneratingSocial}
-            socialPackResult={app.socialPackResult}
-            onSocialPackResultChange={app.setSocialPackResult}
-            onGenerateSocial={app.handleGenerateSocial}
-            onUpdateDraftTitle={(title) => app.selectedDraft && app.setSelectedDraft({ ...app.selectedDraft, title })}
-            onUpdateDraftContent={(content) => app.selectedDraft && app.setSelectedDraft({ ...app.selectedDraft, content })}
-          />
-        ) : (
-          <div className="empty-state-card">
-            <h1>Workbench</h1>
-            <p>Open a draft from the Story Queue to review evidence, edit the story, and approve it for publishing.</p>
-            <button className="btn btn-primary" onClick={() => app.setActiveTab("queue")}>Go to Story Queue</button>
-          </div>
-        )
+        <Workbench
+          selectedLead={app.selectedLead}
+          selectedDraft={app.selectedDraft}
+          drafts={app.drafts}
+          evidenceList={app.evidenceList}
+          guardrailsReport={app.guardrailsReport}
+          ollamaOnline={app.ollamaOnline}
+          manualLlmMode={app.manualLlmMode}
+          draftFormat={app.draftFormat}
+          onDraftFormatChange={app.setDraftFormat}
+          customSystemPrompt={app.customSystemPrompt}
+          onCustomSystemPromptChange={app.setCustomSystemPrompt}
+          generatingText={app.generatingText}
+          onGenerateText={app.handleGenerateText}
+          onCancelDraftWizard={() => app.setSelectedLead(null)}
+          onSaveDraftEditor={app.handleSaveDraftEditor}
+          onCloseWorkbench={() => {
+            app.setActiveTab("queue");
+            app.setSelectedDraft(null);
+          }}
+          onOpenDraftEditor={app.handleOpenDraftEditor}
+          onDeleteDraft={app.handleDeleteDraft}
+          onDecision={app.handleDecision}
+          onApprovePublish={app.handleApprovePublish}
+          onKillStory={app.handleKillStory}
+          isGeneratingSocial={app.isGeneratingSocial}
+          socialPackResult={app.socialPackResult}
+          onSocialPackResultChange={app.setSocialPackResult}
+          onGenerateSocial={app.handleGenerateSocial}
+          onUpdateDraftTitle={(title) => app.selectedDraft && app.setSelectedDraft({ ...app.selectedDraft, title })}
+          onUpdateDraftContent={(content) => app.selectedDraft && app.setSelectedDraft({ ...app.selectedDraft, content })}
+        />
       )}
 
       {/* Correction Modal */}

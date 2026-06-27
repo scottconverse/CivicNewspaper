@@ -2,7 +2,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, test, expect, vi } from "vitest";
 import { LeadQueue } from "./LeadQueue";
-import { Lead } from "../ipc";
+import { Draft, Lead } from "../ipc";
 
 describe("LeadQueue Component Tests", () => {
   const fixtureLeads: Lead[] = [
@@ -33,6 +33,18 @@ describe("LeadQueue Component Tests", () => {
       confirmation_checklist: "[]",
       created_at: "2026-05-23T00:00:00Z"
     }
+  ];
+
+  const fixtureDrafts: Draft[] = [
+    {
+      id: 201,
+      lead_id: 101,
+      format: "watch",
+      title: "Budget Watch",
+      content: "Draft content",
+      status: "draft_generated",
+      verification_checklist: "[]",
+    },
   ];
 
   test("renders 3 fixture leads with risk/status badges and triggers onSelect", () => {
@@ -67,5 +79,32 @@ describe("LeadQueue Component Tests", () => {
     const firstLeadCard = screen.getByTestId("lead-card-101");
     fireEvent.click(firstLeadCard);
     expect(handleSelect).toHaveBeenCalledWith(101);
+  });
+
+  test("keeps drafts reachable when latest scan results exist", () => {
+    const handleOpenDraft = vi.fn();
+
+    render(
+      <LeadQueue
+        leads={fixtureLeads}
+        drafts={fixtureDrafts}
+        loading={false}
+        latestScanId={9}
+        onSelect={vi.fn()}
+        onSyncList={vi.fn()}
+        onIngest={vi.fn()}
+        onDailyScan={vi.fn()}
+        onOpenDraftEditor={handleOpenDraft}
+        onOpenCorrectionModal={vi.fn()}
+        onDeleteDraft={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: /Scan results/i })).toBeInTheDocument();
+    fireEvent.click(document.getElementById("queue-tab-drafts")!);
+    expect(screen.getByText("Budget Watch")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /^Open$/i }));
+    expect(handleOpenDraft).toHaveBeenCalledWith(fixtureDrafts[0]);
   });
 });

@@ -1077,6 +1077,18 @@ nav {
   line-height: 1;
 }
 
+.stat-card-button {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.stat-card-button:hover,
+.stat-card-button:focus-visible {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(47, 96, 178, 0.12);
+}
+
 .stat-blue { border-top-color: var(--accent-primary); }
 .stat-amber { border-top-color: var(--color-warning); }
 .stat-red { border-top-color: var(--color-error); }
@@ -2243,9 +2255,59 @@ tr:hover td {
 
 .ai-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 12px;
   margin-top: 22px;
+}
+
+.workbench-picker-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 760px;
+}
+
+.workbench-picker-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.workbench-picker-heading h3 {
+  margin-top: 0;
+}
+
+.draft-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.draft-picker-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  padding: 0.85rem 1rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.draft-picker-row:hover,
+.draft-picker-row:focus-visible {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(47, 96, 178, 0.12);
+}
+
+.draft-picker-row small {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--text-secondary);
 }
 
 #draft-wizard-panel {
