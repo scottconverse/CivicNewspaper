@@ -7,8 +7,16 @@ concurrency:
 on:
   push:
     branches: [ main, v0.2.1-hotpatch ]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - "audit-*/**"
   pull_request:
     branches: [ main, v0.2.1-hotpatch ]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - "audit-*/**"
 
 jobs:
   check-changelog:

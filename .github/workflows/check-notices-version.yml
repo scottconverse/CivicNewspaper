@@ -8,8 +8,16 @@ name: Check Notices Version Consistency
 on:
   push:
     branches: [ "main", "v*" ]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - "audit-*/**"
   pull_request:
     branches: [ "main", "v*" ]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - "audit-*/**"
 
 jobs:
   check-version:
