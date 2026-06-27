@@ -4,6 +4,27 @@ All notable changes to CivicNewspaper will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.8] - 2026-06-26
+
+### Added
+- Added staged Daily Scan progress reporting and repaired scan fallback output so local-model runs surface usable lead context instead of opaque completion states.
+- Added browser-extension pairing support, including the local pairing server flow, extension folder opener, paired-client listing, and assistant bridge surfaces.
+- Added native bulk-source intake for DOCX, XLSX, and text-based PDF files, with parser recovery for flattened multi-URL document extraction.
+- Added local model bakeoff tooling and AI setup improvements so installed models can be detected and selected without duplicate options.
+
+### Changed
+- Improved source discovery so search-engine verification failures no longer surface as raw branded errors; fallback candidates now return as reviewable source suggestions.
+- Reworked Daily Scan, Workbench, Sources, AI Model, Browser Pairing, and Publishing flows based on gauntlet walkthrough findings.
+- Updated application metadata to 0.2.8 across package, Rust, and Tauri release files.
+
+### Fixed
+- Fixed misleading local-AI offline handling so an unreachable Ollama service is not reported as a missing model.
+- Fixed AI Model status where an installed model could still appear as "Ready to download."
+- Fixed duplicate React key warnings for installed/default model options.
+- Fixed browser-extension popup state after successful pairing so paired and unpaired panels are not both shown.
+- Fixed Browser Pairing page refresh behavior so paired clients update while the page is open.
+- Fixed source import extraction for realistic spreadsheets, Word documents, and text-based PDFs that previously collapsed to one importable URL.
+
 ## [0.2.7] - 2026-06-25
 
 ### Added
