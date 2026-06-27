@@ -192,6 +192,7 @@ describe("PublishPanel Component Tests", () => {
     );
 
     fireEvent.change(screen.getByLabelText(/Provider/i), { target: { value: "github_pages" } });
+    expect(screen.getByLabelText(/Folder path/i)).toHaveAttribute("placeholder", "leave blank for root, or use docs");
     fireEvent.change(screen.getByLabelText(/^Public URL$/i), {
       target: { value: "https://example.org/civic" },
     });

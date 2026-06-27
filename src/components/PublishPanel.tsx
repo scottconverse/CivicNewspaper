@@ -457,7 +457,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                     type="text"
                     value={pathPrefix}
                     onChange={event => setPathPrefix(event.target.value)}
-                    placeholder="optional, e.g. public"
+                    placeholder="leave blank for root, or use docs"
                   />
                 </>
               )}
