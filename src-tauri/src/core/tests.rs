@@ -2611,6 +2611,24 @@ I should produce JSON only.
             Some("https://example.org/civic")
         );
         assert_eq!(config.project_hint.as_deref(), Some("civic-paper"));
+        assert!(crate::core::publisher::publisher_for("not_a_provider").is_err());
+    }
+
+    #[tokio::test]
+    async fn test_guided_publisher_test_connection_allows_no_credential() {
+        let connector = crate::core::publisher::publisher_for("netlify").unwrap();
+        let result = connector
+            .test_connection(&crate::core::publisher::PublisherConfig {
+                provider: "netlify".to_string(),
+                display_name: "Town Netlify".to_string(),
+                site_url: Some("https://town.example".to_string()),
+                project_hint: None,
+                has_credential: false,
+            })
+            .await;
+
+        assert!(result.ok);
+        assert!(result.message.contains("No API credential is required"));
     }
 
     #[test]

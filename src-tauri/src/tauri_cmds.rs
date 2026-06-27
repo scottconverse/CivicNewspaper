@@ -896,6 +896,7 @@ pub fn record_publish_destination(
     deployment_id: Option<String>,
 ) -> Result<compiler::CompileStaticSiteResult, String> {
     let provider = provider.trim();
+    let _connector = publisher::publisher_for(provider)?;
     let normalized_url = publisher::validate_public_url(&published_url)?;
     let output_path = publisher::validate_publish_artifacts(&output_dir)?;
 
@@ -924,7 +925,9 @@ pub fn save_publisher_config(
     db: tauri::State<'_, DbConn>,
     config: publisher::PublisherConfigInput,
 ) -> Result<publisher::PublisherConfig, String> {
-    let provider = config.provider.trim().to_string();
+    let provider = publisher::PublisherProvider::from_str(config.provider.trim())
+        .ok_or_else(|| "Unsupported publishing provider.".to_string())?;
+    let provider = provider.as_str().to_string();
     if config.clear_credential {
         publisher::delete_provider_credential(&provider)?;
     }

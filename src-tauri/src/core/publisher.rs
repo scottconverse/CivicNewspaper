@@ -40,13 +40,7 @@ impl PublisherProvider {
     }
 
     pub fn requires_credential(&self) -> bool {
-        matches!(
-            self,
-            PublisherProvider::GithubPages
-                | PublisherProvider::Netlify
-                | PublisherProvider::CloudflarePages
-                | PublisherProvider::Wordpress
-        )
+        false
     }
 }
 
@@ -132,22 +126,16 @@ impl Publisher for GuidedPublisher {
         let credential_checked = self.provider.requires_credential();
         match self.validate_config(config) {
             Ok(()) => {
-                if self.provider.requires_credential() && !config.has_credential {
-                    PublisherTestResult {
-                        provider: self.provider.as_str().to_string(),
-                        ok: false,
-                        message:
-                            "Connector is configured, but no credential is stored for API publishing."
-                                .to_string(),
-                        credential_checked,
-                    }
+                let message = if config.has_credential {
+                    "Connector settings are valid, and a credential is stored securely."
                 } else {
-                    PublisherTestResult {
-                        provider: self.provider.as_str().to_string(),
-                        ok: true,
-                        message: "Connector settings are valid for guided publishing.".to_string(),
-                        credential_checked,
-                    }
+                    "Connector settings are valid for guided publishing. No API credential is required for this connector mode."
+                };
+                PublisherTestResult {
+                    provider: self.provider.as_str().to_string(),
+                    ok: true,
+                    message: message.to_string(),
+                    credential_checked,
                 }
             }
             Err(message) => PublisherTestResult {
