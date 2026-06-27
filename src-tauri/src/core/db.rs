@@ -134,6 +134,21 @@ pub struct PublishedPost {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PublishRun {
+    pub id: Option<i32>,
+    pub issue_id: String,
+    pub output_path: String,
+    pub generated_files: String, // JSON array
+    pub provider: String,
+    pub published_url: Option<String>,
+    pub deployment_id: Option<String>,
+    pub article_count: i32,
+    pub skipped_count: i32,
+    pub files_written: i32,
+    pub generated_at: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PairedClient {
     pub id: Option<i32>,
     pub token: String,
@@ -646,6 +661,51 @@ pub fn list_published_posts(conn: &Connection) -> SqlResult<Vec<PublishedPost>> 
         posts.push(p?);
     }
     Ok(posts)
+}
+
+// --- Publish Runs ---
+pub fn insert_publish_run(conn: &Connection, run: &PublishRun) -> SqlResult<i32> {
+    conn.execute(
+        "INSERT INTO publish_runs (issue_id, output_path, generated_files, provider, published_url, deployment_id, article_count, skipped_count, files_written, generated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
+        params![
+            run.issue_id,
+            run.output_path,
+            run.generated_files,
+            run.provider,
+            run.published_url,
+            run.deployment_id,
+            run.article_count,
+            run.skipped_count,
+            run.files_written,
+            run.generated_at
+        ],
+    )?;
+    Ok(conn.last_insert_rowid() as i32)
+}
+
+#[allow(dead_code)]
+pub fn list_publish_runs(conn: &Connection) -> SqlResult<Vec<PublishRun>> {
+    let mut stmt = conn.prepare("SELECT id, issue_id, output_path, generated_files, provider, published_url, deployment_id, article_count, skipped_count, files_written, generated_at FROM publish_runs ORDER BY generated_at DESC")?;
+    let iter = stmt.query_map([], |row| {
+        Ok(PublishRun {
+            id: Some(row.get(0)?),
+            issue_id: row.get(1)?,
+            output_path: row.get(2)?,
+            generated_files: row.get(3)?,
+            provider: row.get(4)?,
+            published_url: row.get(5)?,
+            deployment_id: row.get(6)?,
+            article_count: row.get(7)?,
+            skipped_count: row.get(8)?,
+            files_written: row.get(9)?,
+            generated_at: row.get(10)?,
+        })
+    })?;
+    let mut runs = Vec::new();
+    for run in iter {
+        runs.push(run?);
+    }
+    Ok(runs)
 }
 
 // --- Paired Clients ---

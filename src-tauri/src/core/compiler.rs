@@ -1,5 +1,8 @@
 // core/compiler.rs
-use super::db::{get_evidence_by_lead, insert_published_post, list_drafts, PublishedPost};
+use super::db::{
+    get_evidence_by_lead, insert_publish_run, insert_published_post, list_drafts, PublishRun,
+    PublishedPost,
+};
 use chrono::{Datelike, Utc};
 use pulldown_cmark::{html, CowStr, Event, Options, Parser, Tag};
 use rusqlite::{params, Connection};
@@ -232,8 +235,13 @@ pub fn compile_static_site(
     profile_json: &str,
 ) -> Result<CompileStaticSiteResult, Box<dyn Error>> {
     let output_dir = Path::new(output_dir_str);
-    let generated_at = Utc::now().to_rfc3339();
-    let issue_id = format!("issue-{}", Utc::now().format("%Y%m%d-%H%M%S"));
+    let generated_at_time = Utc::now();
+    let generated_at = generated_at_time.to_rfc3339();
+    let issue_id = format!(
+        "issue-{}-{:09}",
+        generated_at_time.format("%Y%m%d-%H%M%S"),
+        generated_at_time.timestamp_subsec_nanos()
+    );
     let mut files_written = 0usize;
     let mut generated_files: Vec<String> = Vec::new();
     let mut skipped_count = 0usize;
@@ -732,6 +740,23 @@ pub fn compile_static_site(
     write_zip_package(output_dir, &zip_path)?;
     files_written += 1;
     result.files_written = files_written;
+
+    insert_publish_run(
+        conn,
+        &PublishRun {
+            id: None,
+            issue_id: result.issue_id.clone(),
+            output_path: result.output_dir.clone(),
+            generated_files: serde_json::to_string(&result.generated_files)?,
+            provider: result.provider.clone(),
+            published_url: result.published_url.clone(),
+            deployment_id: result.deployment_id.clone(),
+            article_count: result.article_count as i32,
+            skipped_count: result.skipped_count as i32,
+            files_written: result.files_written as i32,
+            generated_at: result.generated_at.clone(),
+        },
+    )?;
 
     Ok(result)
 }

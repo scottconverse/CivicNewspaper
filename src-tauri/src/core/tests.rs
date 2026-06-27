@@ -529,6 +529,7 @@ mod tests {
     fn test_compiler_xss_safe() {
         let conn = init_db("file:test_compiler_xss_safe?mode=memory&cache=shared").unwrap();
         let temp_dir = tempdir().unwrap();
+        assert!(html_escape::encode_text("<script>").contains("&lt;script"));
 
         // Use insert_source so we have a source for the lead
         let _source_id = crate::core::db::insert_source(
@@ -2493,6 +2494,153 @@ I should produce JSON only.
             index.contains("ai-disclosure"),
             "AI disclosure missing from index"
         );
+        let runs = crate::core::db::list_publish_runs(&conn).unwrap();
+        assert_eq!(runs.len(), 1);
+        assert_eq!(runs[0].issue_id, result.issue_id);
+        assert_eq!(runs[0].provider, "local_export");
+        assert_eq!(runs[0].article_count, 1);
+        assert_eq!(runs[0].skipped_count, 0);
+        assert_eq!(runs[0].files_written, result.files_written as i32);
+        assert!(
+            runs[0].generated_files.contains("site-package.zip"),
+            "publish run did not retain generated file list"
+        );
+    }
+
+    #[test]
+    fn test_seeded_publish_fixture_generates_article_evidence_and_correction_package() {
+        let conn = init_db("file:test_seeded_publish_fixture?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        let audit_output = std::env::var("CIVIC_DESK_AUDIT_OUTPUT_DIR").ok();
+        let audit_output_path = audit_output.as_ref().map(std::path::PathBuf::from);
+        if let Some(path) = &audit_output_path {
+            if path.exists() {
+                fs::remove_dir_all(path).unwrap();
+            }
+            fs::create_dir_all(path).unwrap();
+        }
+        let output_path = audit_output_path
+            .as_deref()
+            .unwrap_or_else(|| temp_dir.path());
+
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Longmont Council Agenda Packet".to_string(),
+                url: "https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk/agendas-and-minutes".to_string(),
+                r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: Some(Utc::now().to_rfc3339()),
+                last_failed_at: None,
+                last_scraped: Some(Utc::now().to_rfc3339()),
+            },
+        )
+        .unwrap();
+        let evidence_id = insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://example.org/longmont/library-roof-contract.pdf".to_string()),
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "Agenda item 8B lists a $482,000 library roof replacement contract and identifies the recommended vendor.".to_string(),
+                content_hash: "seeded-library-roof-contract-v1".to_string(),
+                entities: r#"["Longmont City Council","Library Roof Contract"]"#.to_string(),
+            },
+        )
+        .unwrap();
+        let lead_id = insert_lead(
+            &conn,
+            &Lead {
+                id: None,
+                detector_name: "seeded-publish-audit".to_string(),
+                why: "A public contract item has a large spending amount and should be explainable to residents.".to_string(),
+                confidence: "high".to_string(),
+                risk_level: "med".to_string(),
+                confirmation_checklist: r#"["Confirm agenda packet item","Confirm vendor name","Confirm vote outcome"]"#.to_string(),
+                from_scan_lead_id: None,
+                created_at: Utc::now().to_rfc3339(),
+            },
+            &[evidence_id],
+        )
+        .unwrap();
+        let draft_id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: Some(lead_id),
+                format: "watch".to_string(),
+                title: "Council Approves Library Roof Contract".to_string(),
+                content: format!(
+                    "Longmont City Council approved a library roof replacement contract after reviewing the public agenda packet. The contract amount listed in the packet is tied to [the source record](evidence:{evidence_id}).\n\nResidents should watch whether the project timeline changes before winter."
+                ),
+                status: "corrected".to_string(),
+                verification_checklist: r#"["Source link checked","Amount checked","Correction note reviewed"]"#.to_string(),
+                missing_evidence_notes: None,
+                correction_note: Some("Updated the contract amount after checking the packet line item.".to_string()),
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+        attest_draft(&conn, draft_id, "Phase 0 Seed Editor").unwrap();
+
+        let profile_json = r#"{
+            "site_title": "Longmont Civic Desk",
+            "site_subtitle": "Evidence-backed local public records",
+            "about_text": "A local-first public records newsroom for Longmont residents.",
+            "ethics_text": "We link claims to primary records and publish corrections plainly.",
+            "how_we_report_text": "We scan public agendas, packets, and records, then a human editor verifies the draft before publication."
+        }"#;
+        let result =
+            compile_static_site(&conn, output_path.to_str().unwrap(), profile_json).unwrap();
+
+        assert_eq!(result.article_count, 1);
+        assert_eq!(result.skipped_count, 0);
+        assert!(output_path.join("index.html").exists());
+        assert!(output_path.join("feed.xml").exists());
+        assert!(output_path.join("about.html").exists());
+        assert!(output_path.join("ethics.html").exists());
+        assert!(output_path.join("how-we-report.html").exists());
+        assert!(output_path.join("corrections.html").exists());
+        assert!(output_path.join("newsletter.md").exists());
+        assert!(output_path.join("substack.md").exists());
+        assert!(output_path.join("facebook-post.txt").exists());
+        assert!(output_path.join("subreddit-post.md").exists());
+        assert!(output_path.join("nextdoor-post.txt").exists());
+        assert!(output_path.join("short-link-blurb.txt").exists());
+        assert!(output_path.join("publish-manifest.json").exists());
+        assert!(output_path.join("site-package.zip").exists());
+
+        let article_path = output_path.join(format!("watch/{draft_id}.html"));
+        let article = fs::read_to_string(&article_path).unwrap();
+        assert!(article.contains("Council Approves Library Roof Contract"));
+        assert!(article.contains("href=\"#evidence-"));
+        assert!(article.contains("Evidence & Sources Check"));
+        assert!(article.contains("library-roof-contract.pdf"));
+        assert!(article.contains("$482,000 library roof replacement contract"));
+        assert!(article.contains("CORRECTION:"));
+        assert!(article.contains("Updated the contract amount"));
+        assert!(article.contains("ai-disclosure"));
+
+        let home = fs::read_to_string(output_path.join("index.html")).unwrap();
+        assert!(home.contains("Longmont Civic Desk"));
+        assert!(home.contains(&format!("watch/{draft_id}.html")));
+        let feed = fs::read_to_string(output_path.join("feed.xml")).unwrap();
+        assert!(feed.contains("Council Approves Library Roof Contract"));
+        let corrections = fs::read_to_string(output_path.join("corrections.html")).unwrap();
+        assert!(corrections.contains("Updated the contract amount"));
+        let substack = fs::read_to_string(output_path.join("substack.md")).unwrap();
+        assert!(substack.contains("Council Approves Library Roof Contract"));
+
+        let runs = list_publish_runs(&conn).unwrap();
+        assert_eq!(runs.len(), 1);
+        assert_eq!(runs[0].issue_id, result.issue_id);
+        assert_eq!(runs[0].output_path, result.output_dir);
+        assert_eq!(runs[0].article_count, 1);
+        assert!(runs[0].generated_files.contains("publish-manifest.json"));
     }
 
     // GG-B2 + GG-C1 + M1: the compile sink requires attestation AND (clean OR
