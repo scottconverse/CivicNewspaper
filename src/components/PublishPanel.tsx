@@ -1,7 +1,7 @@
 // src/components/PublishPanel.tsx
 import React, { useEffect, useState } from "react";
-import { AlertTriangle, CheckCircle, ExternalLink, FileArchive, FileDown, FolderOpen, Rss, UploadCloud } from "lucide-react";
-import type { PublishResult, PublishRun, PublisherConfig, PublisherConfigInput, PublisherTestResult } from "../ipc";
+import { AlertTriangle, CheckCircle, Copy, ExternalLink, FileArchive, FileDown, FolderOpen, Mail, Rss, Trash2, UploadCloud, UserPlus } from "lucide-react";
+import type { PublishResult, PublishRun, PublisherConfig, PublisherConfigInput, PublisherTestResult, Subscriber } from "../ipc";
 
 interface PublishPanelProps {
   publishPath: string;
@@ -10,6 +10,11 @@ interface PublishPanelProps {
   publisherConfig: PublisherConfig | null;
   publisherProvider: string;
   publisherTestResult: PublisherTestResult | null;
+  subscribers: Subscriber[];
+  subscriberEmail: string;
+  subscriberName: string;
+  onSubscriberEmailChange: (value: string) => void;
+  onSubscriberNameChange: (value: string) => void;
   onPublishPathChange: (val: string) => void;
   publishStep: number;
   onPublishStepChange: (step: number) => void;
@@ -23,6 +28,13 @@ interface PublishPanelProps {
   onLoadPublisherConfig: (provider: string) => void | Promise<void>;
   onSavePublisherConfig: (config: PublisherConfigInput) => void | Promise<void>;
   onTestPublisherConnection: (provider: string) => void | Promise<void>;
+  onAddSubscriber: () => void | Promise<void>;
+  onDeleteSubscriber: (id: number) => void | Promise<void>;
+  onImportSubscribersCsv: () => void | Promise<void>;
+  onExportSubscribersCsv: () => void | Promise<void>;
+  onExportIssueEmail: () => void | Promise<void>;
+  onCopyPublishText: (label: string, text: string) => void | Promise<void>;
+  onCopyPublishArtifact: (label: string, relativePath: string) => void | Promise<void>;
 }
 
 const PROVIDERS = [
@@ -110,6 +122,11 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   publisherConfig,
   publisherProvider,
   publisherTestResult,
+  subscribers,
+  subscriberEmail,
+  subscriberName,
+  onSubscriberEmailChange,
+  onSubscriberNameChange,
   onPublishPathChange,
   publishStep,
   onPublishStepChange,
@@ -122,7 +139,14 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   onPublishWithConnector,
   onLoadPublisherConfig,
   onSavePublisherConfig,
-  onTestPublisherConnection
+  onTestPublisherConnection,
+  onAddSubscriber,
+  onDeleteSubscriber,
+  onImportSubscribersCsv,
+  onExportSubscribersCsv,
+  onExportIssueEmail,
+  onCopyPublishText,
+  onCopyPublishArtifact
 }) => {
   const [error, setError] = useState<string>("");
   const [provider, setProvider] = useState(publisherProvider || "netlify");
@@ -142,6 +166,12 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
 
   const selectedProvider = PROVIDERS.find(item => item.id === provider) ?? PROVIDERS[0];
   const setupGuide = SETUP_GUIDES[provider] ?? SETUP_GUIDES.other;
+  const leadArticle = publishResult?.articles?.[0];
+  const substackHeadline = leadArticle?.title || publishResult?.issue_id || "The Civic Desk update";
+  const substackDeck = publishResult
+    ? `${publishResult.article_count} local civic update${publishResult.article_count === 1 ? "" : "s"} with source links and evidence notes.`
+    : "Local civic updates with source links and evidence notes.";
+  const activeSubscriberCount = subscribers.filter(subscriber => subscriber.status === "active").length;
 
   useEffect(() => {
     setProvider(publisherProvider || "netlify");
@@ -386,6 +416,89 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
               )}
             </div>
           )}
+
+          {publishResult && (
+            <div className="card newsletter-card" aria-label="Newsletter and Substack tools">
+              <h3 className="card-title">Newsletter and Substack</h3>
+              <p className="help-text">Use the generated draft as the source of truth, then save the public URL after posting.</p>
+              <div className="artifact-list">
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenExternalUrl("https://substack.com/home")}>
+                  <ExternalLink size={16} />
+                  Open Substack editor
+                </button>
+                <button className="btn btn-secondary" type="button" onClick={() => onCopyPublishText("Substack headline", substackHeadline)}>
+                  <Copy size={16} />
+                  Copy headline
+                </button>
+                <button className="btn btn-secondary" type="button" onClick={() => onCopyPublishText("Substack deck", substackDeck)}>
+                  <Copy size={16} />
+                  Copy deck
+                </button>
+                <button className="btn btn-secondary" type="button" onClick={() => onCopyPublishArtifact("Substack body", publishResult.substack_path)}>
+                  <Copy size={16} />
+                  Copy post body
+                </button>
+                <button className="btn btn-secondary" type="button" onClick={onExportIssueEmail}>
+                  <Mail size={16} />
+                  Export issue email
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="card subscriber-card" aria-label="Subscriber list">
+            <h3 className="card-title">Subscriber list</h3>
+            <p className="help-text">{activeSubscriberCount} active subscriber{activeSubscriberCount === 1 ? "" : "s"} stored locally.</p>
+            <label htmlFor="input-subscriber-email" style={{ fontWeight: 600, display: "block", marginBottom: "0.35rem" }}>Email</label>
+            <input
+              id="input-subscriber-email"
+              type="email"
+              value={subscriberEmail}
+              onChange={event => onSubscriberEmailChange(event.target.value)}
+              placeholder="reader@example.com"
+            />
+            <label htmlFor="input-subscriber-name" style={{ fontWeight: 600, display: "block", marginTop: "0.7rem", marginBottom: "0.35rem" }}>Name</label>
+            <input
+              id="input-subscriber-name"
+              type="text"
+              value={subscriberName}
+              onChange={event => onSubscriberNameChange(event.target.value)}
+              placeholder="optional"
+            />
+            <div className="btn-group" style={{ marginTop: "0.75rem" }}>
+              <button className="btn btn-secondary" type="button" onClick={onAddSubscriber} disabled={loading}>
+                <UserPlus size={16} />
+                Add
+              </button>
+              <button className="btn btn-secondary" type="button" onClick={onImportSubscribersCsv} disabled={loading}>
+                <FileDown size={16} />
+                Import CSV
+              </button>
+              <button className="btn btn-secondary" type="button" onClick={onExportSubscribersCsv} disabled={loading}>
+                <UploadCloud size={16} />
+                Export CSV
+              </button>
+            </div>
+            {subscribers.length === 0 ? (
+              <p className="help-text">No subscribers yet.</p>
+            ) : (
+              <div className="subscriber-list">
+                {subscribers.slice(0, 5).map(subscriber => (
+                  <div className="subscriber-row" key={subscriber.id || subscriber.email}>
+                    <span>
+                      <strong>{subscriber.email}</strong>
+                      {subscriber.name ? <small>{subscriber.name}</small> : null}
+                    </span>
+                    {subscriber.id && (
+                      <button className="btn btn-secondary btn-sm" type="button" onClick={() => onDeleteSubscriber(subscriber.id!)} aria-label={`Remove ${subscriber.email}`}>
+                        <Trash2 size={14} />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           <div className="publish-next-card">
             <UploadCloud size={20} />

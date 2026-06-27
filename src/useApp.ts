@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { documentDir, join } from "@tauri-apps/api/path";
-import { open } from "@tauri-apps/plugin-dialog";
+import { open, save } from "@tauri-apps/plugin-dialog";
 import {
   getSources,
   addSource,
@@ -29,6 +29,13 @@ import {
   getPublisherConfig,
   testPublisherConnection,
   listPublishHistory,
+  listSubscribers,
+  addSubscriber,
+  deleteSubscriber,
+  importSubscribersCsv,
+  exportSubscribersCsv,
+  readPublishArtifact,
+  exportIssueEmail,
   registerCorrection,
   backupSave,
   backupRestore,
@@ -47,6 +54,7 @@ import {
   PublisherConfig,
   PublisherConfigInput,
   PublisherTestResult,
+  Subscriber,
   DiscoveredSource,
   DiscoveredSourceCategory,
   GuardrailsReport,
@@ -152,6 +160,9 @@ export function useApp() {
   const [publisherConfig, setPublisherConfig] = useState<PublisherConfig | null>(null);
   const [publisherProvider, setPublisherProvider] = useState("netlify");
   const [publisherTestResult, setPublisherTestResult] = useState<PublisherTestResult | null>(null);
+  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [subscriberEmail, setSubscriberEmail] = useState("");
+  const [subscriberName, setSubscriberName] = useState("");
   const [backupPathInput, setBackupPathInput] = useState("");
 
   const [correctionNote, setCorrectionNote] = useState("");
@@ -249,6 +260,7 @@ export function useApp() {
     loadInitialData();
     pollOllamaStatus();
     refreshPublishHistory();
+    refreshSubscribers();
     handleLoadPublisherConfig(publisherProvider);
 
     if (!isTauri()) {
@@ -1068,6 +1080,151 @@ export function useApp() {
     }
   };
 
+  const refreshSubscribers = async () => {
+    if (!isTauri()) {
+      setSubscribers([]);
+      return;
+    }
+    try {
+      setSubscribers(await listSubscribers());
+    } catch (e) {
+      console.error("Failed to load subscribers", e);
+    }
+  };
+
+  const handleAddSubscriber = async () => {
+    if (!subscriberEmail.trim()) {
+      setErrorMessage("Enter a subscriber email address.");
+      return;
+    }
+    try {
+      setLoading(true);
+      setErrorMessage("");
+      await addSubscriber(subscriberEmail, subscriberName);
+      setSubscriberEmail("");
+      setSubscriberName("");
+      await refreshSubscribers();
+      setStatusMessage("Subscriber saved.");
+    } catch (e: any) {
+      setErrorMessage(toUserMessage(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteSubscriber = async (id: number) => {
+    try {
+      setLoading(true);
+      setErrorMessage("");
+      await deleteSubscriber(id);
+      await refreshSubscribers();
+      setStatusMessage("Subscriber removed.");
+    } catch (e: any) {
+      setErrorMessage(toUserMessage(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleImportSubscribersCsv = async () => {
+    if (!isTauri()) {
+      setErrorMessage("Subscriber CSV import requires The Civic Desk desktop app.");
+      return;
+    }
+    try {
+      setLoading(true);
+      setErrorMessage("");
+      const selected = await open({
+        multiple: false,
+        directory: false,
+        title: "Choose subscriber CSV",
+        filters: [{ name: "Subscriber CSV", extensions: ["csv", "txt"] }],
+      });
+      if (typeof selected !== "string") return;
+      const count = await importSubscribersCsv(selected);
+      await refreshSubscribers();
+      setStatusMessage(`Imported ${count} subscriber(s).`);
+    } catch (e: any) {
+      setErrorMessage(toUserMessage(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExportSubscribersCsv = async () => {
+    if (!isTauri()) {
+      setErrorMessage("Subscriber CSV export requires The Civic Desk desktop app.");
+      return;
+    }
+    try {
+      setLoading(true);
+      setErrorMessage("");
+      const selected = await save({
+        title: "Export subscriber CSV",
+        defaultPath: "civic-desk-subscribers.csv",
+        filters: [{ name: "CSV", extensions: ["csv"] }],
+      });
+      if (!selected) return;
+      await exportSubscribersCsv(selected);
+      setStatusMessage("Subscriber CSV exported.");
+    } catch (e: any) {
+      setErrorMessage(toUserMessage(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExportIssueEmail = async () => {
+    const outputDir = publishResult?.output_dir || publishPath;
+    if (!outputDir) {
+      setErrorMessage("Compile the site before exporting an issue email.");
+      return;
+    }
+    if (!isTauri()) {
+      setErrorMessage("Issue email export requires The Civic Desk desktop app.");
+      return;
+    }
+    try {
+      setLoading(true);
+      setErrorMessage("");
+      const selected = await save({
+        title: "Export issue email",
+        defaultPath: "civic-desk-issue-email.md",
+        filters: [{ name: "Markdown", extensions: ["md"] }],
+      });
+      if (!selected) return;
+      await exportIssueEmail(outputDir, selected);
+      setStatusMessage("Issue email markdown exported.");
+    } catch (e: any) {
+      setErrorMessage(toUserMessage(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCopyPublishText = async (label: string, text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setStatusMessage(`${label} copied.`);
+    } catch {
+      setErrorMessage("Couldn't copy to clipboard. Open the artifact file and copy it manually.");
+    }
+  };
+
+  const handleCopyPublishArtifact = async (label: string, relativePath: string) => {
+    const outputDir = publishResult?.output_dir || publishPath;
+    if (!outputDir) {
+      setErrorMessage("Compile the site before copying publish copy.");
+      return;
+    }
+    try {
+      const text = await readPublishArtifact(outputDir, relativePath);
+      await handleCopyPublishText(label, text);
+    } catch (e: any) {
+      setErrorMessage(toUserMessage(e));
+    }
+  };
+
   const handleBulkImportTextChange = (value: string) => {
     setBulkImportText(value);
     setBulkImportReview({ accepted: [], rejected: [], duplicates: [] });
@@ -1425,6 +1582,11 @@ export function useApp() {
     publisherConfig,
     publisherProvider,
     publisherTestResult,
+    subscribers,
+    subscriberEmail,
+    setSubscriberEmail,
+    subscriberName,
+    setSubscriberName,
     setPublishPath: handlePublishPathChange,
     backupPathInput,
     setBackupPathInput,
@@ -1517,6 +1679,14 @@ export function useApp() {
     handleSavePublisherConfig,
     handleTestPublisherConnection,
     refreshPublishHistory,
+    refreshSubscribers,
+    handleAddSubscriber,
+    handleDeleteSubscriber,
+    handleImportSubscribersCsv,
+    handleExportSubscribersCsv,
+    handleExportIssueEmail,
+    handleCopyPublishText,
+    handleCopyPublishArtifact,
     openCorrectionModal,
     handleRegisterCorrection,
     handleDeleteDraft,

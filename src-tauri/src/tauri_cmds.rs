@@ -1,7 +1,7 @@
 // src/tauri_cmds.rs
 use crate::core::backups;
 use crate::core::compiler;
-use crate::core::db::{self, DbConn, Draft, EvidenceItem, Lead, PairedClient, Source};
+use crate::core::db::{self, DbConn, Draft, EvidenceItem, Lead, PairedClient, Source, Subscriber};
 use crate::core::detectors;
 use crate::core::discovery::{self, DiscoveredSourceCategory};
 use crate::core::guardrails::{self, GuardrailsReport};
@@ -1030,6 +1030,163 @@ pub async fn publish_with_connector(
 pub fn list_publish_history(db: tauri::State<'_, DbConn>) -> Result<Vec<db::PublishRun>, String> {
     let conn = db.lock().map_err(|_| "Failed to lock database")?;
     db::list_publish_runs(&conn).map_err(|e| e.to_string())
+}
+
+fn valid_subscriber_email(email: &str) -> bool {
+    let email = email.trim();
+    email.contains('@') && email.contains('.') && !email.chars().any(char::is_whitespace)
+}
+
+fn csv_escape(value: &str) -> String {
+    if value.contains(',') || value.contains('"') || value.contains('\n') {
+        format!("\"{}\"", value.replace('"', "\"\""))
+    } else {
+        value.to_string()
+    }
+}
+
+fn parse_csv_line(line: &str) -> Vec<String> {
+    let mut values = Vec::new();
+    let mut current = String::new();
+    let mut chars = line.chars().peekable();
+    let mut in_quotes = false;
+    while let Some(ch) = chars.next() {
+        match ch {
+            '"' if in_quotes && chars.peek() == Some(&'"') => {
+                current.push('"');
+                chars.next();
+            }
+            '"' => in_quotes = !in_quotes,
+            ',' if !in_quotes => {
+                values.push(current.trim().to_string());
+                current.clear();
+            }
+            _ => current.push(ch),
+        }
+    }
+    values.push(current.trim().to_string());
+    values
+}
+
+#[tauri::command]
+pub fn list_subscribers(db: tauri::State<'_, DbConn>) -> Result<Vec<Subscriber>, String> {
+    let conn = db.lock().map_err(|_| "Failed to lock database")?;
+    db::list_subscribers(&conn).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn add_subscriber(
+    db: tauri::State<'_, DbConn>,
+    email: String,
+    name: Option<String>,
+) -> Result<i32, String> {
+    let email = email.trim().to_ascii_lowercase();
+    if !valid_subscriber_email(&email) {
+        return Err("Enter a valid email address.".to_string());
+    }
+    let clean_name = name
+        .as_deref()
+        .map(str::trim)
+        .filter(|value| !value.is_empty());
+    let conn = db.lock().map_err(|_| "Failed to lock database")?;
+    db::upsert_subscriber(&conn, &email, clean_name).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn delete_subscriber(db: tauri::State<'_, DbConn>, id: i32) -> Result<(), String> {
+    let conn = db.lock().map_err(|_| "Failed to lock database")?;
+    db::delete_subscriber(&conn, id).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn import_subscribers_csv(db: tauri::State<'_, DbConn>, path: String) -> Result<usize, String> {
+    let text = std::fs::read_to_string(path.trim()).map_err(|e| e.to_string())?;
+    let conn = db.lock().map_err(|_| "Failed to lock database")?;
+    let mut imported = 0usize;
+    for (idx, line) in text.lines().enumerate() {
+        let fields = parse_csv_line(line);
+        if fields.is_empty() {
+            continue;
+        }
+        let email = fields[0].trim().to_ascii_lowercase();
+        if idx == 0 && email == "email" {
+            continue;
+        }
+        if !valid_subscriber_email(&email) {
+            continue;
+        }
+        let name = fields
+            .get(1)
+            .map(String::as_str)
+            .map(str::trim)
+            .filter(|value| !value.is_empty());
+        db::upsert_subscriber(&conn, &email, name).map_err(|e| e.to_string())?;
+        imported += 1;
+    }
+    Ok(imported)
+}
+
+#[tauri::command]
+pub fn export_subscribers_csv(db: tauri::State<'_, DbConn>, path: String) -> Result<(), String> {
+    let conn = db.lock().map_err(|_| "Failed to lock database")?;
+    let subscribers = db::list_subscribers(&conn).map_err(|e| e.to_string())?;
+    let mut out = String::from("email,name,status\n");
+    for subscriber in subscribers {
+        out.push_str(&format!(
+            "{},{},{}\n",
+            csv_escape(&subscriber.email),
+            csv_escape(subscriber.name.as_deref().unwrap_or("")),
+            csv_escape(&subscriber.status)
+        ));
+    }
+    std::fs::write(path.trim(), out).map_err(|e| e.to_string())
+}
+
+fn publish_artifact_path(
+    output_dir: &str,
+    relative_path: &str,
+) -> Result<std::path::PathBuf, String> {
+    let root = std::fs::canonicalize(output_dir.trim()).map_err(|e| e.to_string())?;
+    let relative = std::path::Path::new(relative_path.trim());
+    if relative.is_absolute()
+        || relative
+            .components()
+            .any(|c| matches!(c, std::path::Component::ParentDir))
+    {
+        return Err("Invalid publish artifact path.".to_string());
+    }
+    let file = std::fs::canonicalize(root.join(relative)).map_err(|e| e.to_string())?;
+    if !file.starts_with(&root) {
+        return Err("Publish artifact path is outside the output folder.".to_string());
+    }
+    Ok(file)
+}
+
+#[tauri::command]
+pub fn read_publish_artifact(output_dir: String, relative_path: String) -> Result<String, String> {
+    let path = publish_artifact_path(&output_dir, &relative_path)?;
+    std::fs::read_to_string(path).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn export_issue_email(
+    db: tauri::State<'_, DbConn>,
+    output_dir: String,
+    path: String,
+) -> Result<(), String> {
+    let newsletter_path = publish_artifact_path(&output_dir, "newsletter.md")?;
+    let body = std::fs::read_to_string(newsletter_path).map_err(|e| e.to_string())?;
+    let conn = db.lock().map_err(|_| "Failed to lock database")?;
+    let active_count = db::list_subscribers(&conn)
+        .map_err(|e| e.to_string())?
+        .into_iter()
+        .filter(|subscriber| subscriber.status == "active")
+        .count();
+    let subject = format!(
+        "Subject: Your Civic Desk issue is ready\nPreheader: {} subscriber(s) on the local list\n\n{}",
+        active_count, body
+    );
+    std::fs::write(path.trim(), subject).map_err(|e| e.to_string())
 }
 
 #[tauri::command]

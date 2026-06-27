@@ -242,6 +242,11 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           publisherConfig={app.publisherConfig}
           publisherProvider={app.publisherProvider}
           publisherTestResult={app.publisherTestResult}
+          subscribers={app.subscribers}
+          subscriberEmail={app.subscriberEmail}
+          subscriberName={app.subscriberName}
+          onSubscriberEmailChange={app.setSubscriberEmail}
+          onSubscriberNameChange={app.setSubscriberName}
           onPublishPathChange={app.setPublishPath}
           publishStep={app.publishStep}
           onPublishStepChange={(step) => {
@@ -274,6 +279,13 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           onLoadPublisherConfig={app.handleLoadPublisherConfig}
           onSavePublisherConfig={app.handleSavePublisherConfig}
           onTestPublisherConnection={app.handleTestPublisherConnection}
+          onAddSubscriber={app.handleAddSubscriber}
+          onDeleteSubscriber={app.handleDeleteSubscriber}
+          onImportSubscribersCsv={app.handleImportSubscribersCsv}
+          onExportSubscribersCsv={app.handleExportSubscribersCsv}
+          onExportIssueEmail={app.handleExportIssueEmail}
+          onCopyPublishText={app.handleCopyPublishText}
+          onCopyPublishArtifact={app.handleCopyPublishArtifact}
         />
       )}
 

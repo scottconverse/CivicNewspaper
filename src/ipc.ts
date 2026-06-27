@@ -290,6 +290,15 @@ export interface PublisherTestResult {
   credential_checked: boolean;
 }
 
+export interface Subscriber {
+  id?: number;
+  email: string;
+  name?: string | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
 // IPC wrappers
 export async function getSources(): Promise<Source[]> {
   return invokeGuarded<Source[]>("get_sources");
@@ -438,6 +447,34 @@ export async function publishWithConnector(
 
 export async function listPublishHistory(): Promise<PublishRun[]> {
   return invokeGuarded<PublishRun[]>("list_publish_history");
+}
+
+export async function listSubscribers(): Promise<Subscriber[]> {
+  return invokeGuarded<Subscriber[]>("list_subscribers");
+}
+
+export async function addSubscriber(email: string, name?: string): Promise<number> {
+  return invokeGuarded<number>("add_subscriber", { email, name: name?.trim() ? name : null });
+}
+
+export async function deleteSubscriber(id: number): Promise<void> {
+  return invokeGuarded<void>("delete_subscriber", { id });
+}
+
+export async function importSubscribersCsv(path: string): Promise<number> {
+  return invokeGuarded<number>("import_subscribers_csv", { path });
+}
+
+export async function exportSubscribersCsv(path: string): Promise<void> {
+  return invokeGuarded<void>("export_subscribers_csv", { path });
+}
+
+export async function readPublishArtifact(outputDir: string, relativePath: string): Promise<string> {
+  return invokeGuarded<string>("read_publish_artifact", { outputDir, relativePath });
+}
+
+export async function exportIssueEmail(outputDir: string, path: string): Promise<void> {
+  return invokeGuarded<void>("export_issue_email", { outputDir, path });
 }
 
 export async function registerCorrection(draftId: number, correctionNote: string): Promise<void> {

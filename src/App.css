@@ -1588,6 +1588,40 @@ tr:hover td {
   text-transform: uppercase;
 }
 
+.subscriber-list {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.subscriber-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.subscriber-row span {
+  display: grid;
+  min-width: 0;
+}
+
+.subscriber-row strong,
+.subscriber-row small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.subscriber-row small {
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
 .pairing-grid {
   grid-template-columns: minmax(0, 1fr) 320px;
   gap: 22px;

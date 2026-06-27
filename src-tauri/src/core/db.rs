@@ -149,6 +149,16 @@ pub struct PublishRun {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Subscriber {
+    pub id: Option<i32>,
+    pub email: String,
+    pub name: Option<String>,
+    pub status: String,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PairedClient {
     pub id: Option<i32>,
     pub token: String,
@@ -749,6 +759,51 @@ pub fn update_latest_publish_run_destination(
             generated_at: row.get(10)?,
         })
     })
+}
+
+// --- Subscribers ---
+pub fn list_subscribers(conn: &Connection) -> SqlResult<Vec<Subscriber>> {
+    let mut stmt = conn.prepare(
+        "SELECT id, email, name, status, created_at, updated_at FROM subscribers ORDER BY email",
+    )?;
+    let iter = stmt.query_map([], |row| {
+        Ok(Subscriber {
+            id: Some(row.get(0)?),
+            email: row.get(1)?,
+            name: row.get(2)?,
+            status: row.get(3)?,
+            created_at: row.get(4)?,
+            updated_at: row.get(5)?,
+        })
+    })?;
+    let mut subscribers = Vec::new();
+    for subscriber in iter {
+        subscribers.push(subscriber?);
+    }
+    Ok(subscribers)
+}
+
+pub fn upsert_subscriber(conn: &Connection, email: &str, name: Option<&str>) -> SqlResult<i32> {
+    let now = Utc::now().to_rfc3339();
+    conn.execute(
+        "INSERT INTO subscribers (email, name, status, created_at, updated_at)
+         VALUES (?1, ?2, 'active', ?3, ?3)
+         ON CONFLICT(email) DO UPDATE SET
+            name = excluded.name,
+            status = 'active',
+            updated_at = excluded.updated_at",
+        params![email, name, now],
+    )?;
+    conn.query_row(
+        "SELECT id FROM subscribers WHERE email = ?1",
+        params![email],
+        |row| row.get(0),
+    )
+}
+
+pub fn delete_subscriber(conn: &Connection, id: i32) -> SqlResult<()> {
+    conn.execute("DELETE FROM subscribers WHERE id = ?1", params![id])?;
+    Ok(())
 }
 
 // --- Paired Clients ---

@@ -8,10 +8,22 @@ const defaultPublisherProps = {
   publisherConfig: null,
   publisherProvider: "netlify",
   publisherTestResult: null,
+  subscribers: [],
+  subscriberEmail: "",
+  subscriberName: "",
+  onSubscriberEmailChange: vi.fn(),
+  onSubscriberNameChange: vi.fn(),
   onPublishWithConnector: vi.fn(),
   onLoadPublisherConfig: vi.fn(),
   onSavePublisherConfig: vi.fn(),
   onTestPublisherConnection: vi.fn(),
+  onAddSubscriber: vi.fn(),
+  onDeleteSubscriber: vi.fn(),
+  onImportSubscribersCsv: vi.fn(),
+  onExportSubscribersCsv: vi.fn(),
+  onExportIssueEmail: vi.fn(),
+  onCopyPublishText: vi.fn(),
+  onCopyPublishArtifact: vi.fn(),
 };
 
 describe("PublishPanel Component Tests", () => {
@@ -364,5 +376,80 @@ describe("PublishPanel Component Tests", () => {
     expect(screen.getByRole("table", { name: /Publish history/i })).toBeInTheDocument();
     expect(screen.getByText("issue-20260627-000000")).toBeInTheDocument();
     expect(screen.getByText("github pages")).toBeInTheDocument();
+  });
+
+  test("supports Substack copy actions and subscriber controls", () => {
+    const copyText = vi.fn();
+    const copyArtifact = vi.fn();
+    const addSubscriber = vi.fn();
+    const deleteSubscriber = vi.fn();
+
+    render(
+      <PublishPanel
+        publishPath={"C:\\my-site"}
+        publishResult={{
+          issue_id: "issue-20260627-000000",
+          output_dir: "C:/my-site",
+          generated_at: "2026-06-27T00:00:00Z",
+          provider: "local_export",
+          published_url: null,
+          deployment_id: null,
+          article_count: 1,
+          skipped_count: 0,
+          files_written: 12,
+          generated_files: [],
+          index_path: "index.html",
+          rss_path: "feed.xml",
+          newsletter_path: "newsletter.md",
+          substack_path: "substack.md",
+          share_package_path: "share-package.md",
+          facebook_post_path: "facebook-post.txt",
+          subreddit_post_path: "subreddit-post.md",
+          nextdoor_post_path: "nextdoor-post.txt",
+          short_link_blurb_path: "short-link-blurb.txt",
+          manifest_path: "publish-manifest.json",
+          zip_path: "site-package.zip",
+          articles: [{
+            title: "Council weighs budget change",
+            format: "watch",
+            relative_path: "articles/council.html",
+            updated_at: "2026-06-27T00:00:00Z",
+          }],
+        }}
+        {...defaultPublisherProps}
+        subscribers={[{
+          id: 7,
+          email: "reader@example.com",
+          name: "Reader One",
+          status: "active",
+          created_at: "2026-06-27T00:00:00Z",
+          updated_at: "2026-06-27T00:00:00Z",
+        }]}
+        subscriberEmail="new@example.com"
+        subscriberName="New Reader"
+        onAddSubscriber={addSubscriber}
+        onDeleteSubscriber={deleteSubscriber}
+        onCopyPublishText={copyText}
+        onCopyPublishArtifact={copyArtifact}
+        onPublishPathChange={vi.fn()}
+        publishStep={3}
+        onPublishStepChange={vi.fn()}
+        loading={false}
+        onPublish={vi.fn()}
+        onOpenLocalPath={vi.fn()}
+        onOpenExternalUrl={vi.fn()}
+        onChoosePublishPath={vi.fn()}
+        onRecordPublishDestination={vi.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Copy headline/i }));
+    expect(copyText).toHaveBeenCalledWith("Substack headline", "Council weighs budget change");
+    fireEvent.click(screen.getByRole("button", { name: /Copy post body/i }));
+    expect(copyArtifact).toHaveBeenCalledWith("Substack body", "substack.md");
+    fireEvent.click(screen.getByRole("button", { name: /^Add$/i }));
+    expect(addSubscriber).toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: /Remove reader@example.com/i }));
+    expect(deleteSubscriber).toHaveBeenCalledWith(7);
   });
 });
