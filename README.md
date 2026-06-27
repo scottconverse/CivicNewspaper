@@ -49,7 +49,7 @@ No accounts or internet connections are required after this initial setup.
 - A finished product. Installers are currently unsigned.
 - An NLP system. The "detectors" match keywords rather than named entities or numeric contexts.
 - A multi-user newsroom. It is single-editor, single-machine.
-- A polished publishing host. The "wizard" compiles the site to a folder on your computer, allowing you to drag-and-drop it into hosting providers like Netlify or GitHub Pages.
+- A full publishing platform. The wizard now compiles the site locally and can publish instantly with here.now, use GitHub Pages as a durable repository-backed archive, or use technical hosts such as Cloudflare Pages and Netlify.
 
 ## Architecture (one paragraph)
 

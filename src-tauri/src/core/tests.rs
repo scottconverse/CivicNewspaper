@@ -2644,6 +2644,26 @@ I should produce JSON only.
         assert!(result.unwrap_err().contains("root or /docs"));
     }
 
+    #[test]
+    fn test_here_now_connector_accepts_anonymous_preview_config() {
+        let connector = crate::core::publisher::publisher_for("here_now").unwrap();
+        connector
+            .validate_config(&crate::core::publisher::PublisherConfig {
+                provider: "here_now".to_string(),
+                display_name: "Town here.now".to_string(),
+                site_url: None,
+                project_hint: Some("Instant civic publishing".to_string()),
+                site_id: Some("town-civic-paper".to_string()),
+                account_id: None,
+                repo: None,
+                branch: None,
+                path_prefix: None,
+                username: None,
+                has_credential: false,
+            })
+            .unwrap();
+    }
+
     #[tokio::test]
     async fn test_api_publisher_requires_credential() {
         let connector = crate::core::publisher::publisher_for("netlify").unwrap();

@@ -1,16 +1,19 @@
 use async_trait::async_trait;
 use base64::Engine;
 use serde::{Deserialize, Serialize};
+use sha2::Digest;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::Duration;
 
 const KEYRING_SERVICE: &str = "The Civic Desk Publisher";
 const USER_AGENT: &str = "The Civic Desk Publisher";
+const HERENOW_API_BASE: &str = "https://here.now";
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum PublisherProvider {
+    HereNow,
     GithubPages,
     Netlify,
     CloudflarePages,
@@ -22,6 +25,7 @@ pub enum PublisherProvider {
 impl PublisherProvider {
     pub fn as_str(&self) -> &'static str {
         match self {
+            PublisherProvider::HereNow => "here_now",
             PublisherProvider::GithubPages => "github_pages",
             PublisherProvider::Netlify => "netlify",
             PublisherProvider::CloudflarePages => "cloudflare_pages",
@@ -33,6 +37,7 @@ impl PublisherProvider {
 
     pub fn from_str(value: &str) -> Option<Self> {
         match value {
+            "here_now" => Some(PublisherProvider::HereNow),
             "github_pages" => Some(PublisherProvider::GithubPages),
             "netlify" => Some(PublisherProvider::Netlify),
             "cloudflare_pages" => Some(PublisherProvider::CloudflarePages),
@@ -147,6 +152,11 @@ impl Publisher for HttpPublisher {
     fn validate_config(&self, config: &PublisherConfig) -> Result<(), String> {
         validate_common_config(&self.provider, config)?;
         match self.provider {
+            PublisherProvider::HereNow => {
+                if let Some(slug) = config.site_id.as_deref() {
+                    validate_herenow_slug(slug)?;
+                }
+            }
             PublisherProvider::Netlify => {
                 required_field("Netlify site ID", config.site_id.as_deref())?;
             }
@@ -189,6 +199,7 @@ impl Publisher for HttpPublisher {
         }
 
         let result = match self.provider {
+            PublisherProvider::HereNow => test_herenow(config).await,
             PublisherProvider::Netlify => test_netlify(config).await,
             PublisherProvider::GithubPages => test_github(config).await,
             PublisherProvider::CloudflarePages => test_cloudflare(config).await,
@@ -215,6 +226,7 @@ impl Publisher for HttpPublisher {
         self.validate_config(config)?;
         validate_publish_artifacts(&request.output_dir)?;
         match self.provider {
+            PublisherProvider::HereNow => publish_herenow(config, request).await,
             PublisherProvider::Netlify => publish_netlify(config, request).await,
             PublisherProvider::GithubPages => publish_github(config, request).await,
             PublisherProvider::CloudflarePages => publish_cloudflare(config, request).await,
@@ -406,6 +418,283 @@ async fn publish_netlify(
         deployment_id: deploy.id.or_else(|| request.deployment_id.clone()),
         message: "Uploaded the site ZIP to Netlify.".to_string(),
     })
+}
+
+fn validate_herenow_slug(value: &str) -> Result<String, String> {
+    let slug = value.trim();
+    if slug.is_empty() {
+        return Ok(String::new());
+    }
+    let valid = slug
+        .chars()
+        .all(|ch| ch.is_ascii_lowercase() || ch.is_ascii_digit() || ch == '-')
+        && !slug.starts_with('-')
+        && !slug.ends_with('-');
+    if valid {
+        Ok(slug.to_string())
+    } else {
+        Err("here.now slug must use lowercase letters, numbers, and hyphens.".to_string())
+    }
+}
+
+async fn test_herenow(_config: &PublisherConfig) -> Result<String, String> {
+    if let Some(token) = get_provider_credential(PublisherProvider::HereNow.as_str())? {
+        let response = http_client()?
+            .get(format!("{HERENOW_API_BASE}/api/v1/publishes"))
+            .bearer_auth(token)
+            .send()
+            .await
+            .map_err(|e| format!("here.now connection failed: {e}"))?;
+        if response.status().is_success() {
+            Ok("here.now accepted the saved API key. Publishes will create permanent account-owned sites.".to_string())
+        } else {
+            Err(format!(
+                "here.now rejected the connection test with status {}.",
+                response.status()
+            ))
+        }
+    } else {
+        Ok("here.now is ready for temporary preview publishing. Save an API key for permanent sites.".to_string())
+    }
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct HereNowFileSpec {
+    path: String,
+    size: u64,
+    content_type: String,
+    hash: String,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct HereNowPublishRequest {
+    files: Vec<HereNowFileSpec>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    display_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    display_description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    viewer: Option<HereNowViewer>,
+}
+
+#[derive(Serialize)]
+struct HereNowViewer {
+    title: String,
+    description: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct HereNowCreateResponse {
+    slug: String,
+    site_url: String,
+    expires_at: Option<String>,
+    anonymous: Option<bool>,
+    upload: HereNowUpload,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct HereNowUpload {
+    version_id: String,
+    uploads: Vec<HereNowUploadTarget>,
+    finalize_url: String,
+}
+
+#[derive(Deserialize)]
+struct HereNowUploadTarget {
+    path: String,
+    method: String,
+    url: String,
+    headers: std::collections::HashMap<String, String>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct HereNowFinalizeResponse {
+    slug: String,
+    site_url: String,
+    current_version_id: String,
+}
+
+async fn publish_herenow(
+    config: &PublisherConfig,
+    request: &PublisherPublishRequest,
+) -> Result<PublisherPublishResult, String> {
+    let output_dir = validate_publish_artifacts(&request.output_dir)?;
+    let files = static_site_files(&output_dir)?;
+    let mut file_specs = Vec::new();
+    let mut file_bytes = std::collections::HashMap::new();
+    for file in files {
+        let relative = file
+            .strip_prefix(&output_dir)
+            .map_err(|e| format!("Could not resolve generated file path: {e}"))?;
+        let relative_path = relative.to_string_lossy().replace('\\', "/");
+        let bytes = std::fs::read(&file)
+            .map_err(|e| format!("Could not read generated file {}: {e}", file.display()))?;
+        let hash = format!("{:x}", sha2::Sha256::digest(&bytes));
+        file_specs.push(HereNowFileSpec {
+            path: relative_path.clone(),
+            size: bytes.len() as u64,
+            content_type: content_type_for_path(&relative_path).to_string(),
+            hash,
+        });
+        file_bytes.insert(relative_path, bytes);
+    }
+
+    let display_name = Some(config.display_name.clone()).filter(|value| !value.trim().is_empty());
+    let display_description = config
+        .project_hint
+        .clone()
+        .or_else(|| Some("Published by The Civic Desk.".to_string()));
+    let payload = HereNowPublishRequest {
+        files: file_specs,
+        display_name: display_name.clone(),
+        display_description: display_description.clone(),
+        viewer: display_name.map(|title| HereNowViewer {
+            title,
+            description: display_description
+                .clone()
+                .unwrap_or_else(|| "Local civic newspaper issue.".to_string()),
+        }),
+    };
+    let client = http_client()?;
+    let token = get_provider_credential(PublisherProvider::HereNow.as_str())?;
+    let slug = config
+        .site_id
+        .as_deref()
+        .map(str::trim)
+        .filter(|v| !v.is_empty());
+    if let Some(slug) = slug {
+        validate_herenow_slug(slug)?;
+    }
+    let mut create_request = if let Some(slug) = slug {
+        client.put(format!("{HERENOW_API_BASE}/api/v1/publish/{slug}"))
+    } else {
+        client.post(format!("{HERENOW_API_BASE}/api/v1/publish"))
+    }
+    .header("X-HereNow-Client", "civicnewspaper/publisher")
+    .json(&payload);
+    if let Some(token) = token.as_deref() {
+        create_request = create_request.bearer_auth(token);
+    }
+    let create_response = create_request
+        .send()
+        .await
+        .map_err(|e| format!("here.now publish could not start: {e}"))?;
+    let created: HereNowCreateResponse =
+        json_response(create_response, "here.now publish create").await?;
+
+    for upload in &created.upload.uploads {
+        let bytes = file_bytes
+            .get(&upload.path)
+            .ok_or_else(|| format!("here.now requested unknown file upload: {}", upload.path))?;
+        let method = upload.method.parse::<reqwest::Method>().map_err(|e| {
+            format!(
+                "here.now returned unsupported upload method {}: {e}",
+                upload.method
+            )
+        })?;
+        let mut upload_request = client.request(method, &upload.url);
+        for (key, value) in &upload.headers {
+            upload_request = upload_request.header(key, value);
+        }
+        let upload_response = upload_request
+            .body(bytes.clone())
+            .send()
+            .await
+            .map_err(|e| format!("here.now upload failed for {}: {e}", upload.path))?;
+        if !upload_response.status().is_success() {
+            let status = upload_response.status();
+            let body = upload_response.text().await.unwrap_or_default();
+            return Err(format!(
+                "here.now upload failed for {} with status {status}: {body}",
+                upload.path
+            ));
+        }
+    }
+
+    #[derive(Serialize)]
+    #[serde(rename_all = "camelCase")]
+    struct FinalizePayload<'a> {
+        version_id: &'a str,
+    }
+    let mut finalize_request = client
+        .post(&created.upload.finalize_url)
+        .header("X-HereNow-Client", "civicnewspaper/publisher")
+        .json(&FinalizePayload {
+            version_id: &created.upload.version_id,
+        });
+    if let Some(token) = token.as_deref() {
+        finalize_request = finalize_request.bearer_auth(token);
+    }
+    let finalized: HereNowFinalizeResponse = json_response(
+        finalize_request
+            .send()
+            .await
+            .map_err(|e| format!("here.now publish could not finalize: {e}"))?,
+        "here.now publish finalize",
+    )
+    .await?;
+
+    let mut message = if created.anonymous.unwrap_or(false) {
+        "Published a temporary here.now preview. Save an API key for permanent sites.".to_string()
+    } else {
+        "Published a permanent here.now site.".to_string()
+    };
+    if let Some(expires_at) = created.expires_at {
+        message.push_str(&format!(" Expires at {expires_at}."));
+    }
+
+    Ok(PublisherPublishResult {
+        provider: PublisherProvider::HereNow.as_str().to_string(),
+        published_url: validate_public_url(&finalized.site_url)
+            .or_else(|_| validate_public_url(&created.site_url))?,
+        deployment_id: Some(format!(
+            "slug={};version={};created_slug={}",
+            finalized.slug, finalized.current_version_id, created.slug
+        )),
+        message,
+    })
+}
+
+async fn json_response<T: for<'de> Deserialize<'de>>(
+    response: reqwest::Response,
+    label: &str,
+) -> Result<T, String> {
+    let status = response.status();
+    let body = response.text().await.unwrap_or_default();
+    if !status.is_success() {
+        return Err(format!("{label} failed with status {status}: {body}"));
+    }
+    serde_json::from_str(&body).map_err(|e| format!("Could not parse {label} response: {e}"))
+}
+
+fn content_type_for_path(path: &str) -> &'static str {
+    match Path::new(path)
+        .extension()
+        .and_then(|ext| ext.to_str())
+        .unwrap_or("")
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "html" | "htm" => "text/html; charset=utf-8",
+        "css" => "text/css; charset=utf-8",
+        "js" => "application/javascript; charset=utf-8",
+        "json" => "application/json; charset=utf-8",
+        "xml" | "rss" => "application/rss+xml; charset=utf-8",
+        "txt" => "text/plain; charset=utf-8",
+        "md" => "text/markdown; charset=utf-8",
+        "svg" => "image/svg+xml",
+        "png" => "image/png",
+        "jpg" | "jpeg" => "image/jpeg",
+        "gif" => "image/gif",
+        "webp" => "image/webp",
+        "pdf" => "application/pdf",
+        _ => "application/octet-stream",
+    }
 }
 
 async fn test_github(config: &PublisherConfig) -> Result<String, String> {

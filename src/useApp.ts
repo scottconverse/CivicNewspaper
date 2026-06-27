@@ -158,7 +158,7 @@ export function useApp() {
   const [publishResult, setPublishResult] = useState<PublishResult | null>(null);
   const [publishHistory, setPublishHistory] = useState<PublishRun[]>([]);
   const [publisherConfig, setPublisherConfig] = useState<PublisherConfig | null>(null);
-  const [publisherProvider, setPublisherProvider] = useState("netlify");
+  const [publisherProvider, setPublisherProvider] = useState("here_now");
   const [publisherTestResult, setPublisherTestResult] = useState<PublisherTestResult | null>(null);
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [subscriberEmail, setSubscriberEmail] = useState("");

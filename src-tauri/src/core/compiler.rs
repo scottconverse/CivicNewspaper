@@ -716,7 +716,7 @@ pub fn compile_static_site(
             ));
         }
     }
-    share_package.push_str("## Hosting Notes\n\nUpload the whole folder or the ZIP file to a static host such as Netlify, Cloudflare Pages, or GitHub Pages.\n");
+    share_package.push_str("## Hosting Notes\n\nPublish instantly with here.now. Use GitHub Pages if you want a durable public archive in your own repository. Cloudflare Pages and Netlify remain good technical-hosting options.\n");
     let share_package_path = output_dir.join("share-package.md");
     write_site_file(&share_package_path, share_package, &mut files_written)?;
     generated_files.push("share-package.md".to_string());

@@ -6,7 +6,7 @@ import { PublishPanel } from "./PublishPanel";
 const defaultPublisherProps = {
   publishHistory: [],
   publisherConfig: null,
-  publisherProvider: "netlify",
+  publisherProvider: "here_now",
   publisherTestResult: null,
   subscribers: [],
   subscriberEmail: "",
@@ -248,14 +248,7 @@ describe("PublishPanel Component Tests", () => {
           articles: [],
         }}
         {...defaultPublisherProps}
-        publisherConfig={{
-          provider: "netlify",
-          display_name: "Town Netlify",
-          site_url: "https://town.example",
-          project_hint: "town-site",
-          site_id: "site-123",
-          has_credential: true,
-        }}
+        publisherConfig={null}
         publisherTestResult={{
           provider: "netlify",
           ok: true,
@@ -277,22 +270,27 @@ describe("PublishPanel Component Tests", () => {
     );
 
     expect(screen.getByText(/Test passed:/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Connector setup guide/i)).toHaveTextContent("Netlify personal access token");
-    expect(screen.getByLabelText(/Connector setup guide/i)).toHaveTextContent("site ID");
+    expect(screen.getByLabelText(/Connector setup guide/i)).toHaveTextContent("24-hour preview");
+    expect(screen.getByLabelText(/Connector setup guide/i)).toHaveTextContent("existing here.now slug");
+    fireEvent.change(screen.getByLabelText(/here.now slug/i), {
+      target: { value: "town-civic-paper" },
+    });
+    fireEvent.change(screen.getByLabelText(/here.now API key/i), {
+      target: { value: "hnk_test" },
+    });
     fireEvent.change(screen.getByLabelText(/Connector name/i), {
-      target: { value: "Updated Netlify" },
+      target: { value: "Town here.now" },
     });
     fireEvent.click(screen.getByRole("button", { name: /Save connector/i }));
     expect(handleSave).toHaveBeenCalledWith(expect.objectContaining({
-      provider: "netlify",
-      display_name: "Updated Netlify",
-      site_url: "https://town.example",
-      project_hint: "town-site",
-      site_id: "site-123",
+      provider: "here_now",
+      display_name: "Town here.now",
+      site_id: "town-civic-paper",
+      credential: "hnk_test",
       clear_credential: false,
     }));
     fireEvent.click(screen.getByRole("button", { name: /Test connection/i }));
-    expect(handleTest).toHaveBeenCalledWith("netlify");
+    expect(handleTest).toHaveBeenCalledWith("here_now");
   });
 
   test("shows provider-specific setup guidance when switching providers", () => {

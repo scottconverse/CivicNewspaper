@@ -39,22 +39,28 @@ interface PublishPanelProps {
 
 const PROVIDERS = [
   {
-    id: "netlify",
-    label: "Netlify",
-    url: "https://app.netlify.com/",
-    guidance: "Publishes the generated ZIP to a Netlify site using a Netlify personal access token.",
-  },
-  {
-    id: "cloudflare_pages",
-    label: "Cloudflare Pages",
-    url: "https://dash.cloudflare.com/",
-    guidance: "Publishes the generated folder through Cloudflare's official Wrangler Pages deploy path.",
+    id: "here_now",
+    label: "here.now",
+    url: "https://here.now/dashboard",
+    guidance: "Publish instantly with here.now. Use a free API key for permanent civic newspaper sites, or publish a 24-hour preview without an account.",
   },
   {
     id: "github_pages",
     label: "GitHub Pages",
     url: "https://github.com/new",
-    guidance: "Commits the generated site files to a repository branch using the GitHub Contents API.",
+    guidance: "Use GitHub Pages if you want a durable public archive in your own repository.",
+  },
+  {
+    id: "netlify",
+    label: "Netlify",
+    url: "https://app.netlify.com/",
+    guidance: "Technical option: publishes the generated ZIP to an existing Netlify site using a personal access token.",
+  },
+  {
+    id: "cloudflare_pages",
+    label: "Cloudflare Pages",
+    url: "https://dash.cloudflare.com/",
+    guidance: "Technical option: publishes the generated folder through Cloudflare's official Wrangler Pages deploy path.",
   },
   {
     id: "substack",
@@ -77,6 +83,12 @@ const PROVIDERS = [
 ];
 
 const SETUP_GUIDES: Record<string, { credential: string; target: string; permission: string; verify: string }> = {
+  here_now: {
+    credential: "Optional. Publish a 24-hour preview with no account, or save a here.now API key for permanent sites.",
+    target: "Leave the slug blank to create a new site, or enter an existing here.now slug to update that site.",
+    permission: "An API key owns permanent sites. Anonymous previews are temporary and can be claimed in here.now.",
+    verify: "Test connection checks the saved API key when present; otherwise it confirms preview publishing is available.",
+  },
   netlify: {
     credential: "Create a Netlify personal access token in User settings -> Applications.",
     target: "Copy the site ID from Site configuration -> General -> Site details.",
@@ -149,8 +161,8 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   onCopyPublishArtifact
 }) => {
   const [error, setError] = useState<string>("");
-  const [provider, setProvider] = useState(publisherProvider || "netlify");
-  const [displayName, setDisplayName] = useState("Netlify Drop");
+  const [provider, setProvider] = useState(publisherProvider || "here_now");
+  const [displayName, setDisplayName] = useState("The Civic Desk on here.now");
   const [siteUrl, setSiteUrl] = useState("");
   const [projectHint, setProjectHint] = useState("");
   const [siteId, setSiteId] = useState("");
@@ -174,7 +186,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   const activeSubscriberCount = subscribers.filter(subscriber => subscriber.status === "active").length;
 
   useEffect(() => {
-    setProvider(publisherProvider || "netlify");
+    setProvider(publisherProvider || "here_now");
   }, [publisherProvider]);
 
   useEffect(() => {
@@ -261,6 +273,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   };
 
   const providerCredentialLabel = () => {
+    if (provider === "here_now") return "here.now API key";
     if (provider === "wordpress") return "WordPress application password";
     if (provider === "github_pages") return "GitHub fine-grained token";
     if (provider === "cloudflare_pages") return "Cloudflare API token";
@@ -270,7 +283,9 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
 
   const providerCredentialPlaceholder = publisherConfig?.has_credential
     ? "credential saved; enter a new one to replace"
-    : provider === "substack"
+    : provider === "here_now"
+      ? "optional for permanent here.now sites"
+      : provider === "substack"
       ? "Substack has no supported publishing API"
       : "paste the provider credential here";
 
@@ -281,7 +296,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
       <div className="page-header">
         <div className="page-title">
           <h1>Publishing</h1>
-          <p>Compile your approved stories into a ready-to-host website folder.</p>
+          <p>Publish instantly with here.now. Use GitHub Pages if you want a public archive in your own repository.</p>
         </div>
       </div>
 
@@ -349,7 +364,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
             </div>
             <p className="help-text">
               {publishStep === 3
-                ? "Generated locally. Use the ZIP for Netlify or Cloudflare Pages, or commit the folder contents to GitHub Pages."
+                ? "Generated locally. Publish instantly with here.now, or use GitHub Pages for a repository-backed archive."
                 : publishStep === 2
                   ? "Click Compile site to write the static website files to the output folder."
                   : "Choose an output folder, then review the compile checklist before writing files."}
@@ -502,7 +517,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
 
           <div className="publish-next-card">
             <UploadCloud size={20} />
-            <p><strong>Next step:</strong> publish the ZIP or folder to Netlify, Cloudflare Pages, or GitHub Pages. Use the newsletter and share package to tell residents where to read it.</p>
+            <p><strong>Next step:</strong> publish instantly with here.now. Use GitHub Pages for a durable public archive, and use the newsletter and share package to tell residents where to read it.</p>
           </div>
 
           {publishResult && (
@@ -534,6 +549,18 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                 onChange={event => setSiteUrl(event.target.value)}
                 placeholder="https://your-town-news.example.com"
               />
+              {provider === "here_now" && (
+                <>
+                  <label htmlFor="input-publisher-site-id" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>here.now slug</label>
+                  <input
+                    id="input-publisher-site-id"
+                    type="text"
+                    value={siteId}
+                    onChange={event => setSiteId(event.target.value)}
+                    placeholder="blank creates a new site; enter a slug to update"
+                  />
+                </>
+              )}
               {provider === "netlify" && (
                 <>
                   <label htmlFor="input-publisher-site-id" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Netlify site ID</label>
