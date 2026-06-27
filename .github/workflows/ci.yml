@@ -12,7 +12,7 @@ on:
 
 jobs:
   rust:
-    runs-on: [self-hosted, Linux, scott-desktop]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -140,17 +140,13 @@ jobs:
       - name: Cargo test
         working-directory: ./src-tauri
         # TEST-M4: run the FULL test set here too (parity with the hosted-test job
-        # and the self-hosted `rust` job), so the cross-platform matrix actually
+        # and the primary `rust` job), so the cross-platform matrix actually
         # exercises every target — a bare `cargo test` could skip non-default ones.
         run: cargo test --all --locked
 
-  # TEST-M4: an ALWAYS-AVAILABLE full test run on a hosted runner. The primary
-  # `rust`/`frontend` jobs run on a single self-hosted desktop; if that runner is
-  # offline a PR could appear green without the suite ever executing. This job runs
-  # `cargo test --all` + `npm test` on ubuntu-latest (after the same Ollama-binary
-  # fetch CI already does), so a green check ALWAYS means the suite actually ran.
-  # Hosted runners cannot bundle the Tauri app (that stays on the self-hosted
-  # runner / release.yml), but they CAN run the test suites.
+  # TEST-M4: an additional hosted full test run. This duplicates the core Rust and
+  # frontend checks so a green CI result always has a straightforward hosted test
+  # trail even when the matrix or release workflow changes.
   hosted-tests:
     runs-on: ubuntu-latest
     steps:
@@ -193,7 +189,7 @@ jobs:
 
   frontend:
     needs: rust
-    runs-on: [self-hosted, Linux, scott-desktop]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
@@ -224,10 +220,10 @@ jobs:
   # (continue-on-error at both job and step level) — it exists to surface
   # Rust + frontend coverage numbers in the logs so coverage drift is visible
   # without making a flaky coverage tool able to block the branch. Runs after
-  # `rust` so the two heavy cargo builds serialize on the single self-hosted runner.
+  # `rust` so the heavier cargo builds serialize.
   coverage:
     needs: rust
-    runs-on: [self-hosted, Linux, scott-desktop]
+    runs-on: ubuntu-latest
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
