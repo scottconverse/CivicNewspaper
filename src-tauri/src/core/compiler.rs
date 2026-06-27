@@ -5,8 +5,9 @@ use pulldown_cmark::{html, CowStr, Event, Options, Parser, Tag};
 use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
-use std::fs;
-use std::path::Path;
+use std::fs::{self, File};
+use std::io::{Read, Write};
+use std::path::{Path, PathBuf};
 
 const INDEX_TEMPLATE: &str = include_str!("../../../templates/index.html");
 const POST_TEMPLATE: &str = include_str!("../../../templates/post.html");
@@ -28,6 +29,30 @@ pub struct CompilerProfile {
     pub how_we_report_text: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CompiledArticle {
+    pub title: String,
+    pub format: String,
+    pub relative_path: String,
+    pub updated_at: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CompileStaticSiteResult {
+    pub output_dir: String,
+    pub generated_at: String,
+    pub article_count: usize,
+    pub skipped_count: usize,
+    pub files_written: usize,
+    pub index_path: String,
+    pub rss_path: String,
+    pub newsletter_path: String,
+    pub share_package_path: String,
+    pub manifest_path: String,
+    pub zip_path: String,
+    pub articles: Vec<CompiledArticle>,
+}
+
 impl Default for CompilerProfile {
     fn default() -> Self {
         CompilerProfile {
@@ -43,6 +68,65 @@ impl Default for CompilerProfile {
                     .to_string(),
         }
     }
+}
+
+fn write_site_file(
+    path: impl AsRef<Path>,
+    contents: impl AsRef<[u8]>,
+    files_written: &mut usize,
+) -> Result<(), Box<dyn Error>> {
+    fs::write(path, contents)?;
+    *files_written += 1;
+    Ok(())
+}
+
+fn path_for_manifest(path: &Path) -> String {
+    path.to_string_lossy().replace('\\', "/")
+}
+
+fn add_zip_file(
+    zip: &mut zip::ZipWriter<File>,
+    base_dir: &Path,
+    path: &Path,
+    zip_path: &Path,
+) -> Result<(), Box<dyn Error>> {
+    if path == zip_path {
+        return Ok(());
+    }
+    let relative = path.strip_prefix(base_dir)?;
+    let name = path_for_manifest(relative);
+    zip.start_file(name, zip::write::SimpleFileOptions::default())?;
+    let mut file = File::open(path)?;
+    let mut buffer = Vec::new();
+    file.read_to_end(&mut buffer)?;
+    zip.write_all(&buffer)?;
+    Ok(())
+}
+
+fn add_zip_dir(
+    zip: &mut zip::ZipWriter<File>,
+    base_dir: &Path,
+    current_dir: &Path,
+    zip_path: &Path,
+) -> Result<(), Box<dyn Error>> {
+    for entry in fs::read_dir(current_dir)? {
+        let entry = entry?;
+        let path = entry.path();
+        if path.is_dir() {
+            add_zip_dir(zip, base_dir, &path, zip_path)?;
+        } else {
+            add_zip_file(zip, base_dir, &path, zip_path)?;
+        }
+    }
+    Ok(())
+}
+
+fn write_zip_package(output_dir: &Path, zip_path: &Path) -> Result<(), Box<dyn Error>> {
+    let file = File::create(zip_path)?;
+    let mut zip = zip::ZipWriter::new(file);
+    add_zip_dir(&mut zip, output_dir, output_dir, zip_path)?;
+    zip.finish()?;
+    Ok(())
 }
 
 /// SEC (GG-B1): allow-list URL schemes for any href/src that reaches the
@@ -135,8 +219,12 @@ pub fn compile_static_site(
     conn: &Connection,
     output_dir_str: &str,
     profile_json: &str,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<CompileStaticSiteResult, Box<dyn Error>> {
     let output_dir = Path::new(output_dir_str);
+    let generated_at = Utc::now().to_rfc3339();
+    let mut files_written = 0usize;
+    let mut skipped_count = 0usize;
+    let mut compiled_articles: Vec<CompiledArticle> = Vec::new();
 
     // 1. Create standard output directories
     fs::create_dir_all(output_dir)?;
@@ -167,8 +255,12 @@ pub fn compile_static_site(
     let safe_about_text = html_escape::encode_safe(&profile.about_text).to_string();
 
     // 3. Copy Stylesheets
-    fs::write(output_dir.join("styles.css"), STYLES_CSS)?;
-    fs::write(output_dir.join("print.css"), PRINT_CSS)?;
+    write_site_file(
+        output_dir.join("styles.css"),
+        STYLES_CSS,
+        &mut files_written,
+    )?;
+    write_site_file(output_dir.join("print.css"), PRINT_CSS, &mut files_written)?;
 
     // 4. Fetch drafts that are published, corrected, or ready_to_publish
     let drafts = list_drafts(conn)?;
@@ -212,6 +304,7 @@ pub fn compile_static_site(
                 "Skipping draft {} during compile: no human attestation on record.",
                 draft_id
             );
+            skipped_count += 1;
             continue;
         }
         if !overridden {
@@ -227,6 +320,7 @@ pub fn compile_static_site(
                         "Skipping draft {} during compile: {} error-severity guardrail issue(s) and no logged override.",
                         draft_id, errs
                     );
+                    skipped_count += 1;
                     continue;
                 }
                 Err(e) => {
@@ -234,6 +328,7 @@ pub fn compile_static_site(
                         "Skipping draft {} during compile: guardrails check failed ({}); failing closed.",
                         draft_id, e
                     );
+                    skipped_count += 1;
                     continue;
                 }
             }
@@ -326,7 +421,13 @@ pub fn compile_static_site(
 
         let relative_path = format!("{}/{}.html", subfolder, draft_id);
         let dest_path = output_dir.join(&relative_path);
-        fs::write(dest_path, post_html)?;
+        write_site_file(dest_path, post_html, &mut files_written)?;
+        compiled_articles.push(CompiledArticle {
+            title: draft.title.clone(),
+            format: draft.format.clone(),
+            relative_path: relative_path.clone(),
+            updated_at: draft.updated_at.clone(),
+        });
 
         // Update database linking
         let published_post = PublishedPost {
@@ -397,10 +498,14 @@ pub fn compile_static_site(
     index_html = index_html.replace("{{SIDEBAR}}", &sidebar_html);
     index_html = index_html.replace("{{YEAR}}", &current_year);
     index_html = index_html.replace("{{AI_DISCLOSURE}}", AI_DISCLOSURE_HTML);
-    fs::write(output_dir.join("index.html"), index_html)?;
+    write_site_file(
+        output_dir.join("index.html"),
+        index_html,
+        &mut files_written,
+    )?;
 
     // 7. Build About, Ethics, and How We Report pages
-    let compile_info_page =
+    let mut compile_info_page =
         |filename: &str, title: &str, content_md: &str| -> Result<(), Box<dyn Error>> {
             let body_html = render_markdown(content_md);
             let mut page_html = POST_TEMPLATE.to_string();
@@ -418,7 +523,7 @@ pub fn compile_static_site(
             page_html = page_html.replace("{{CORRECTION_BANNER}}", "");
             page_html = page_html.replace("{{YEAR}}", &current_year);
             page_html = page_html.replace("{{AI_DISCLOSURE}}", AI_DISCLOSURE_HTML);
-            fs::write(output_dir.join(filename), page_html)?;
+            write_site_file(output_dir.join(filename), page_html, &mut files_written)?;
             Ok(())
         };
 
@@ -448,14 +553,84 @@ pub fn compile_static_site(
     corrections_html = corrections_html.replace("{{CORRECTION_BANNER}}", "");
     corrections_html = corrections_html.replace("{{YEAR}}", &current_year);
     corrections_html = corrections_html.replace("{{AI_DISCLOSURE}}", AI_DISCLOSURE_HTML);
-    fs::write(output_dir.join("corrections.html"), corrections_html)?;
+    write_site_file(
+        output_dir.join("corrections.html"),
+        corrections_html,
+        &mut files_written,
+    )?;
 
     // 9. Build RSS feed.xml
     let rss_feed = format!(
         "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<rss version=\"2.0\">\n  <channel>\n    <title>{}</title>\n    <link>index.html</link>\n    <description>{}</description>\n    <language>en-us</language>\n    <pubDate>{}</pubDate>\n    <lastBuildDate>{}</lastBuildDate>\n{}\n  </channel>\n</rss>\n",
         safe_site_title, safe_site_subtitle, Utc::now().to_rfc2822(), Utc::now().to_rfc2822(), rss_items
     );
-    fs::write(output_dir.join("feed.xml"), rss_feed)?;
+    write_site_file(output_dir.join("feed.xml"), rss_feed, &mut files_written)?;
 
-    Ok(())
+    let mut newsletter = format!(
+        "# {}\n\n{}\n\nGenerated: {}\n\n",
+        profile.site_title, profile.site_subtitle, generated_at
+    );
+    if compiled_articles.is_empty() {
+        newsletter.push_str("No approved stories were included in this package.\n");
+    } else {
+        newsletter.push_str("## This Issue\n\n");
+        for article in &compiled_articles {
+            newsletter.push_str(&format!(
+                "- [{}]({}) - {} - {}\n",
+                article.title, article.relative_path, article.format, article.updated_at
+            ));
+        }
+    }
+    newsletter.push_str("\n## Links\n\n- Website home: index.html\n- RSS feed: feed.xml\n");
+    let newsletter_path = output_dir.join("newsletter.md");
+    write_site_file(&newsletter_path, newsletter, &mut files_written)?;
+
+    let mut share_package = format!(
+        "# Share Package\n\nGenerated: {}\n\nWebsite home: index.html\nRSS feed: feed.xml\n\n",
+        generated_at
+    );
+    if compiled_articles.is_empty() {
+        share_package.push_str("No stories are ready to share yet. Approve at least one attested story, then compile again.\n");
+    } else {
+        share_package.push_str("## Suggested Community Posts\n\n");
+        for article in &compiled_articles {
+            share_package.push_str(&format!(
+                "### {}\n\nLocal update: {}. Read it in the latest issue: {}\n\n",
+                article.title, article.title, article.relative_path
+            ));
+        }
+    }
+    share_package.push_str("## Hosting Notes\n\nUpload the whole folder or the ZIP file to a static host such as Netlify, Cloudflare Pages, or GitHub Pages.\n");
+    let share_package_path = output_dir.join("share-package.md");
+    write_site_file(&share_package_path, share_package, &mut files_written)?;
+
+    let mut result = CompileStaticSiteResult {
+        output_dir: path_for_manifest(output_dir),
+        generated_at,
+        article_count: compiled_articles.len(),
+        skipped_count,
+        files_written,
+        index_path: path_for_manifest(&PathBuf::from("index.html")),
+        rss_path: path_for_manifest(&PathBuf::from("feed.xml")),
+        newsletter_path: path_for_manifest(&PathBuf::from("newsletter.md")),
+        share_package_path: path_for_manifest(&PathBuf::from("share-package.md")),
+        manifest_path: path_for_manifest(&PathBuf::from("publish-manifest.json")),
+        zip_path: path_for_manifest(&PathBuf::from("site-package.zip")),
+        articles: compiled_articles,
+    };
+
+    result.files_written = files_written + 2;
+    let manifest = serde_json::to_string_pretty(&result)?;
+    write_site_file(
+        output_dir.join("publish-manifest.json"),
+        manifest,
+        &mut files_written,
+    )?;
+
+    let zip_path = output_dir.join("site-package.zip");
+    write_zip_package(output_dir, &zip_path)?;
+    files_written += 1;
+    result.files_written = files_written;
+
+    Ok(result)
 }

@@ -10,6 +10,7 @@ describe("PublishPanel Component Tests", () => {
     render(
       <PublishPanel
         publishPath=""
+        publishResult={null}
         onPublishPathChange={vi.fn()}
         publishStep={1}
         onPublishStepChange={handleStepChange}
@@ -34,7 +35,8 @@ describe("PublishPanel Component Tests", () => {
 
     render(
       <PublishPanel
-        publishPath="C:\my-site"
+        publishPath={"C:\\my-site"}
+        publishResult={null}
         onPublishPathChange={vi.fn()}
         publishStep={2}
         onPublishStepChange={vi.fn()}
@@ -58,7 +60,8 @@ describe("PublishPanel Component Tests", () => {
 
     render(
       <PublishPanel
-        publishPath="C:\\my-site"
+        publishPath={"C:\\my-site"}
+        publishResult={null}
         onPublishPathChange={vi.fn()}
         publishStep={1}
         onPublishStepChange={vi.fn()}
@@ -71,5 +74,44 @@ describe("PublishPanel Component Tests", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /Browse/i }));
     expect(handleChoosePublishPath).toHaveBeenCalledTimes(1);
+  });
+
+  test("shows compile receipt artifacts after publish succeeds", () => {
+    const handleOpen = vi.fn();
+
+    render(
+      <PublishPanel
+        publishPath={"C:\\my-site"}
+        publishResult={{
+          output_dir: "C:/my-site",
+          generated_at: "2026-06-27T00:00:00Z",
+          article_count: 2,
+          skipped_count: 1,
+          files_written: 12,
+          index_path: "index.html",
+          rss_path: "feed.xml",
+          newsletter_path: "newsletter.md",
+          share_package_path: "share-package.md",
+          manifest_path: "publish-manifest.json",
+          zip_path: "site-package.zip",
+          articles: [],
+        }}
+        onPublishPathChange={vi.fn()}
+        publishStep={3}
+        onPublishStepChange={vi.fn()}
+        loading={false}
+        onPublish={vi.fn()}
+        onOpenLocalPath={handleOpen}
+        onChoosePublishPath={vi.fn()}
+      />
+    );
+
+    expect(screen.getByLabelText("Compile receipt")).toBeInTheDocument();
+    expect(screen.getByText("2")).toBeInTheDocument();
+    expect(screen.getByText("12")).toBeInTheDocument();
+    expect(screen.getByText("1")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /ZIP package/i }));
+    expect(handleOpen).toHaveBeenCalledWith("C:\\my-site\\site-package.zip");
   });
 });

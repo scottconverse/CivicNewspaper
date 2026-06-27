@@ -2414,7 +2414,25 @@ I should produce JSON only.
         .unwrap();
         crate::core::db::attest_draft(&conn, draft_id, "Test Editor").unwrap();
 
-        compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+        let result = compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+        assert_eq!(result.article_count, 1);
+        assert_eq!(result.skipped_count, 0);
+        assert!(
+            temp_dir.path().join("newsletter.md").exists(),
+            "newsletter export missing"
+        );
+        assert!(
+            temp_dir.path().join("share-package.md").exists(),
+            "share package export missing"
+        );
+        assert!(
+            temp_dir.path().join("publish-manifest.json").exists(),
+            "publish manifest missing"
+        );
+        assert!(
+            temp_dir.path().join("site-package.zip").exists(),
+            "site package ZIP missing"
+        );
         let post =
             std::fs::read_to_string(temp_dir.path().join(format!("stories/{}.html", draft_id)))
                 .unwrap();

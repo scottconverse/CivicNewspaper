@@ -872,7 +872,7 @@ pub fn publish(
     db: tauri::State<'_, DbConn>,
     app: tauri::AppHandle,
     output_dir: String,
-) -> Result<(), String> {
+) -> Result<compiler::CompileStaticSiteResult, String> {
     let profile_json = {
         let path = get_config_path(&app)?;
         if path.exists() {

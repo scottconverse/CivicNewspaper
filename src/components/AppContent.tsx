@@ -237,6 +237,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
       {app.activeTab === "publish" && (
         <PublishPanel
           publishPath={app.publishPath}
+          publishResult={app.publishResult}
           onPublishPathChange={app.setPublishPath}
           publishStep={app.publishStep}
           onPublishStepChange={(step) => {

@@ -208,6 +208,28 @@ export interface GuardrailsReport {
   issues: GuardrailsIssue[];
 }
 
+export interface CompiledArticle {
+  title: string;
+  format: string;
+  relative_path: string;
+  updated_at: string;
+}
+
+export interface PublishResult {
+  output_dir: string;
+  generated_at: string;
+  article_count: number;
+  skipped_count: number;
+  files_written: number;
+  index_path: string;
+  rss_path: string;
+  newsletter_path: string;
+  share_package_path: string;
+  manifest_path: string;
+  zip_path: string;
+  articles: CompiledArticle[];
+}
+
 // IPC wrappers
 export async function getSources(): Promise<Source[]> {
   return invokeGuarded<Source[]>("get_sources");
@@ -310,8 +332,8 @@ export async function setGuardrailTerms(config: GuardrailConfig): Promise<void> 
   return invokeGuarded<void>("set_guardrail_terms", { config });
 }
 
-export async function publish(outputDir: string): Promise<void> {
-  return invokeGuarded<void>("publish", { outputDir });
+export async function publish(outputDir: string): Promise<PublishResult> {
+  return invokeGuarded<PublishResult>("publish", { outputDir });
 }
 
 export async function registerCorrection(draftId: number, correctionNote: string): Promise<void> {

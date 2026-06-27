@@ -36,6 +36,7 @@ import {
   Draft,
   PairedClient,
   CommunityProfile,
+  PublishResult,
   DiscoveredSource,
   DiscoveredSourceCategory,
   GuardrailsReport,
@@ -136,6 +137,7 @@ export function useApp() {
   const [generatingText, setGeneratingText] = useState(false);
 
   const [publishPath, setPublishPath] = useState("");
+  const [publishResult, setPublishResult] = useState<PublishResult | null>(null);
   const [backupPathInput, setBackupPathInput] = useState("");
 
   const [correctionNote, setCorrectionNote] = useState("");
@@ -1038,8 +1040,9 @@ export function useApp() {
       setLoading(true);
       setErrorMessage("");
       setStatusMessage(`Compiling HTML, CSS, and RSS templates to static site at: ${publishPath}...`);
-      await publish(publishPath);
-      setStatusMessage(`Static site compiled to: ${publishPath}. Open the folder, then drag its contents into Netlify or your GitHub Pages repo.`);
+      const result = await publish(publishPath);
+      setPublishResult(result);
+      setStatusMessage(`Static site compiled: ${result.article_count} article(s), ${result.files_written} file(s), ZIP package ready.`);
       setPublishStep(3);
     } catch (e: any) {
       setErrorMessage(toUserMessage(e));
@@ -1115,12 +1118,18 @@ export function useApp() {
       });
       if (typeof selected === "string") {
         setPublishPath(selected);
+        setPublishResult(null);
         await setSetting("paths.publish", selected);
         setStatusMessage("Publish folder selected.");
       }
     } catch (e: any) {
       setErrorMessage(`Couldn't choose publish folder: ${toUserMessage(e)}`);
     }
+  };
+
+  const handlePublishPathChange = (value: string) => {
+    setPublishPath(value);
+    setPublishResult(null);
   };
 
   const openCorrectionModal = (draftId: number) => {
@@ -1310,7 +1319,8 @@ export function useApp() {
     setCustomSystemPrompt,
     generatingText,
     publishPath,
-    setPublishPath,
+    publishResult,
+    setPublishPath: handlePublishPathChange,
     backupPathInput,
     setBackupPathInput,
     correctionNote,

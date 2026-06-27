@@ -1473,6 +1473,53 @@ tr:hover td {
   font-size: 13.5px;
 }
 
+.publish-result-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.publish-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.publish-metrics div {
+  border: 1px solid #eee8dd;
+  border-radius: 8px;
+  background: #fbfaf7;
+  padding: 10px;
+}
+
+.publish-metrics strong,
+.publish-metrics span {
+  display: block;
+}
+
+.publish-metrics strong {
+  color: #17202a;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.publish-metrics span {
+  color: var(--text-muted);
+  font-size: 11.5px;
+  margin-top: 5px;
+}
+
+.artifact-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.artifact-list .btn {
+  justify-content: flex-start;
+  width: 100%;
+}
+
 .publish-next-card {
   display: flex;
   gap: 10px;

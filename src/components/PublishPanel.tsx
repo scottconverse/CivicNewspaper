@@ -1,9 +1,11 @@
 // src/components/PublishPanel.tsx
 import React, { useState } from "react";
-import { AlertTriangle, CheckCircle, FileDown, FolderOpen, UploadCloud } from "lucide-react";
+import { AlertTriangle, CheckCircle, FileArchive, FileDown, FolderOpen, Rss, UploadCloud } from "lucide-react";
+import type { PublishResult } from "../ipc";
 
 interface PublishPanelProps {
   publishPath: string;
+  publishResult: PublishResult | null;
   onPublishPathChange: (val: string) => void;
   publishStep: number;
   onPublishStepChange: (step: number) => void;
@@ -15,6 +17,7 @@ interface PublishPanelProps {
 
 export const PublishPanel: React.FC<PublishPanelProps> = ({
   publishPath,
+  publishResult,
   onPublishPathChange,
   publishStep,
   onPublishStepChange,
@@ -24,6 +27,11 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   onChoosePublishPath
 }) => {
   const [error, setError] = useState<string>("");
+
+  const artifactPath = (relativePath: string) => {
+    const separator = publishPath.includes("\\") ? "\\" : "/";
+    return `${publishPath.replace(/[\\/]+$/, "")}${separator}${relativePath}`;
+  };
 
   const handleCompileClick = () => {
     if (!publishPath.trim()) {
@@ -117,7 +125,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
             </div>
             <p className="help-text">
               {publishStep === 3
-                ? "Generated locally. Open the folder and drag it into your hosting provider when you are ready."
+                ? "Generated locally. Use the ZIP for Netlify or Cloudflare Pages, or commit the folder contents to GitHub Pages."
                 : publishStep === 2
                   ? "Click Compile site to write the static website files to the output folder."
                   : "Choose an output folder, then review the compile checklist before writing files."}
@@ -128,9 +136,50 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
             </div>
           </div>
 
+          {publishResult && (
+            <div className="card publish-result-card" aria-label="Compile receipt">
+              <h3 className="card-title">Compile receipt</h3>
+              <div className="publish-metrics">
+                <div>
+                  <strong>{publishResult.article_count}</strong>
+                  <span>articles</span>
+                </div>
+                <div>
+                  <strong>{publishResult.files_written}</strong>
+                  <span>files</span>
+                </div>
+                <div>
+                  <strong>{publishResult.skipped_count}</strong>
+                  <span>skipped</span>
+                </div>
+              </div>
+              <div className="artifact-list">
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.zip_path))}>
+                  <FileArchive size={16} />
+                  ZIP package
+                </button>
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.newsletter_path))}>
+                  <FileDown size={16} />
+                  Newsletter
+                </button>
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.share_package_path))}>
+                  <UploadCloud size={16} />
+                  Share package
+                </button>
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.rss_path))}>
+                  <Rss size={16} />
+                  RSS
+                </button>
+              </div>
+              {publishResult.article_count === 0 && (
+                <p className="help-text">No approved stories were included. Approve an attested story in Workbench, then compile again.</p>
+              )}
+            </div>
+          )}
+
           <div className="publish-next-card">
             <UploadCloud size={20} />
-            <p><strong>Next step:</strong> drag this folder into Netlify or a GitHub Pages repo to put it online.</p>
+            <p><strong>Next step:</strong> publish the ZIP or folder to Netlify, Cloudflare Pages, or GitHub Pages. Use the newsletter and share package to tell residents where to read it.</p>
           </div>
         </div>
       </div>
