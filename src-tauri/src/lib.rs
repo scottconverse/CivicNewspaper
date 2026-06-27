@@ -127,6 +127,7 @@ pub fn run() {
             llm_task,
             guardrails_check,
             publish,
+            record_publish_destination,
             register_correction,
             backup_save,
             backup_restore,

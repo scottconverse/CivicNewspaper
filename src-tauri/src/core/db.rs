@@ -708,6 +708,49 @@ pub fn list_publish_runs(conn: &Connection) -> SqlResult<Vec<PublishRun>> {
     Ok(runs)
 }
 
+pub fn update_latest_publish_run_destination(
+    conn: &Connection,
+    output_path: &str,
+    provider: &str,
+    published_url: &str,
+    deployment_id: Option<&str>,
+) -> SqlResult<PublishRun> {
+    conn.execute(
+        "UPDATE publish_runs
+         SET provider = ?1, published_url = ?2, deployment_id = ?3
+         WHERE id = (
+            SELECT id FROM publish_runs
+            WHERE output_path = ?4
+            ORDER BY generated_at DESC, id DESC
+            LIMIT 1
+         )",
+        params![provider, published_url, deployment_id, output_path],
+    )?;
+
+    let mut stmt = conn.prepare(
+        "SELECT id, issue_id, output_path, generated_files, provider, published_url, deployment_id, article_count, skipped_count, files_written, generated_at
+         FROM publish_runs
+         WHERE output_path = ?1
+         ORDER BY generated_at DESC, id DESC
+         LIMIT 1",
+    )?;
+    stmt.query_row(params![output_path], |row| {
+        Ok(PublishRun {
+            id: Some(row.get(0)?),
+            issue_id: row.get(1)?,
+            output_path: row.get(2)?,
+            generated_files: row.get(3)?,
+            provider: row.get(4)?,
+            published_url: row.get(5)?,
+            deployment_id: row.get(6)?,
+            article_count: row.get(7)?,
+            skipped_count: row.get(8)?,
+            files_written: row.get(9)?,
+            generated_at: row.get(10)?,
+        })
+    })
+}
+
 // --- Paired Clients ---
 pub fn get_paired_client_by_token(
     conn: &Connection,

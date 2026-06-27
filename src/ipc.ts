@@ -346,6 +346,20 @@ export async function publish(outputDir: string): Promise<PublishResult> {
   return invokeGuarded<PublishResult>("publish", { outputDir });
 }
 
+export async function recordPublishDestination(
+  outputDir: string,
+  provider: string,
+  publishedUrl: string,
+  deploymentId?: string
+): Promise<PublishResult> {
+  return invokeGuarded<PublishResult>("record_publish_destination", {
+    outputDir,
+    provider,
+    publishedUrl,
+    deploymentId: deploymentId?.trim() ? deploymentId : null,
+  });
+}
+
 export async function registerCorrection(draftId: number, correctionNote: string): Promise<void> {
   return invokeGuarded<void>("register_correction", { draftId, correctionNote });
 }

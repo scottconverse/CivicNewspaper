@@ -94,6 +94,75 @@ fn write_site_file(
     Ok(())
 }
 
+fn absolute_site_url(base_url: &str, relative_path: &str) -> String {
+    let base = base_url.trim_end_matches('/');
+    let rel = relative_path.trim_start_matches('/');
+    if rel.is_empty() {
+        base.to_string()
+    } else {
+        format!("{}/{}", base, rel)
+    }
+}
+
+fn replace_share_placeholders(contents: String, result: &CompileStaticSiteResult) -> String {
+    let Some(public_url) = result.published_url.as_deref() else {
+        return contents;
+    };
+    let public_url = public_url.trim_end_matches('/');
+    let rss_url = absolute_site_url(public_url, "feed.xml");
+    let mut updated = contents
+        .replace("[add public URL]", public_url)
+        .replace("[short link]", public_url)
+        .replace(
+            "Website home: index.html",
+            &format!("Website home: {}", public_url),
+        )
+        .replace("RSS feed: feed.xml", &format!("RSS feed: {}", rss_url));
+
+    for article in &result.articles {
+        updated = updated.replace(
+            &article.relative_path,
+            &absolute_site_url(public_url, &article.relative_path),
+        );
+    }
+    updated
+}
+
+pub fn record_publish_destination_files(
+    output_dir: impl AsRef<Path>,
+    provider: &str,
+    published_url: &str,
+    deployment_id: Option<&str>,
+) -> Result<CompileStaticSiteResult, Box<dyn Error>> {
+    let output_dir = output_dir.as_ref();
+    let manifest_path = output_dir.join("publish-manifest.json");
+    let manifest = fs::read_to_string(&manifest_path)?;
+    let mut result: CompileStaticSiteResult = serde_json::from_str(&manifest)?;
+    result.provider = provider.to_string();
+    result.published_url = Some(published_url.to_string());
+    result.deployment_id = deployment_id.map(|value| value.to_string());
+
+    for relative_path in [
+        &result.newsletter_path,
+        &result.substack_path,
+        &result.share_package_path,
+        &result.facebook_post_path,
+        &result.subreddit_post_path,
+        &result.nextdoor_post_path,
+        &result.short_link_blurb_path,
+    ] {
+        let path = output_dir.join(relative_path);
+        if path.exists() {
+            let contents = fs::read_to_string(&path)?;
+            fs::write(&path, replace_share_placeholders(contents, &result))?;
+        }
+    }
+
+    fs::write(&manifest_path, serde_json::to_string_pretty(&result)?)?;
+    write_zip_package(output_dir, &output_dir.join(&result.zip_path))?;
+    Ok(result)
+}
+
 fn path_for_manifest(path: &Path) -> String {
     path.to_string_lossy().replace('\\', "/")
 }

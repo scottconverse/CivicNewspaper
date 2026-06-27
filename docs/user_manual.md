@@ -96,7 +96,8 @@ When you are ready to share your stories with the community:
 4. Review the compile checklist, then click **Compile site**.
 5. CivicNewspaper will take all approved drafts, convert them to clean HTML, apply your templates, generate an RSS feed (`feed.xml`), and write them to the selected folder along with the about / ethics / how-we-report / corrections pages.
 6. The compile receipt shows how many articles and files were written. It also creates `site-package.zip`, `newsletter.md`, `substack.md`, `share-package.md`, Facebook/subreddit/Nextdoor copy, a short-link blurb, and `publish-manifest.json`.
-7. To put the issue online, upload the ZIP or folder to a static host such as **Netlify**, **Cloudflare Pages**, or **GitHub Pages**. Use the newsletter and share package to tell residents where to read it.
+7. To put the issue online, upload the ZIP or folder to a static host such as **Netlify**, **Cloudflare Pages**, or **GitHub Pages**, or paste the Substack draft into a Substack post.
+8. After the host gives you a public URL, return to the Publishing screen, choose the provider, paste the public URL, and click **Save public URL**. The app updates the publish manifest, ZIP, newsletter draft, Substack draft, and social copy so the share package points residents at the live issue.
 
 ---
 

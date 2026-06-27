@@ -887,6 +887,58 @@ pub fn publish(
 }
 
 #[tauri::command]
+pub fn record_publish_destination(
+    db: tauri::State<'_, DbConn>,
+    output_dir: String,
+    provider: String,
+    published_url: String,
+    deployment_id: Option<String>,
+) -> Result<compiler::CompileStaticSiteResult, String> {
+    let provider = provider.trim();
+    let allowed_providers = [
+        "github_pages",
+        "netlify",
+        "cloudflare_pages",
+        "substack",
+        "wordpress",
+        "other",
+    ];
+    if !allowed_providers.contains(&provider) {
+        return Err("Unsupported publishing provider.".to_string());
+    }
+
+    let parsed = reqwest::Url::parse(published_url.trim())
+        .map_err(|e| format!("Invalid public URL: {}", e))?;
+    if !matches!(parsed.scheme(), "http" | "https") {
+        return Err("Public URL must start with http:// or https://.".to_string());
+    }
+    let normalized_url = parsed.as_str().trim_end_matches('/').to_string();
+    let output_path = std::path::PathBuf::from(output_dir.trim());
+    if !output_path.join("publish-manifest.json").exists() {
+        return Err("Compile the site before recording a public URL.".to_string());
+    }
+
+    let result = compiler::record_publish_destination_files(
+        &output_path,
+        provider,
+        &normalized_url,
+        deployment_id.as_deref(),
+    )
+    .map_err(|e| e.to_string())?;
+
+    let conn = db.lock().map_err(|_| "Failed to lock database")?;
+    db::update_latest_publish_run_destination(
+        &conn,
+        &result.output_dir,
+        provider,
+        &normalized_url,
+        deployment_id.as_deref(),
+    )
+    .map_err(|e| e.to_string())?;
+    Ok(result)
+}
+
+#[tauri::command]
 pub fn register_correction(
     db: tauri::State<'_, DbConn>,
     draft_id: i32,

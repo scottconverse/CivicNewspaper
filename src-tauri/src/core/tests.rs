@@ -2508,6 +2508,86 @@ I should produce JSON only.
     }
 
     #[test]
+    fn test_publish_destination_update_rewrites_share_artifacts_and_db_run() {
+        let conn =
+            init_db("file:test_publish_destination_update?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        let draft_id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "watch".to_string(),
+                title: "Council Sets Hearing".to_string(),
+                content: "The council set a hearing date.".to_string(),
+                status: "published".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+        crate::core::db::attest_draft(&conn, draft_id, "Test Editor").unwrap();
+
+        let result = compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+        assert!(result.published_url.is_none());
+        assert!(
+            std::fs::read_to_string(temp_dir.path().join("facebook-post.txt"))
+                .unwrap()
+                .contains("[add public URL]")
+        );
+
+        let updated = crate::core::compiler::record_publish_destination_files(
+            temp_dir.path(),
+            "github_pages",
+            "https://example.org/civic",
+            Some("pages-42"),
+        )
+        .unwrap();
+        crate::core::db::update_latest_publish_run_destination(
+            &conn,
+            &updated.output_dir,
+            "github_pages",
+            "https://example.org/civic",
+            Some("pages-42"),
+        )
+        .unwrap();
+
+        assert_eq!(updated.provider, "github_pages");
+        assert_eq!(
+            updated.published_url.as_deref(),
+            Some("https://example.org/civic")
+        );
+        assert_eq!(updated.deployment_id.as_deref(), Some("pages-42"));
+
+        let manifest =
+            std::fs::read_to_string(temp_dir.path().join("publish-manifest.json")).unwrap();
+        assert!(manifest.contains("\"provider\": \"github_pages\""));
+        assert!(manifest.contains("\"published_url\": \"https://example.org/civic\""));
+
+        let facebook = std::fs::read_to_string(temp_dir.path().join("facebook-post.txt")).unwrap();
+        assert!(facebook.contains("https://example.org/civic"));
+        assert!(!facebook.contains("[add public URL]"));
+        let share = std::fs::read_to_string(temp_dir.path().join("share-package.md")).unwrap();
+        assert!(share.contains("Website home: https://example.org/civic"));
+        assert!(share.contains("RSS feed: https://example.org/civic/feed.xml"));
+        assert!(share.contains(&format!(
+            "https://example.org/civic/watch/{}.html",
+            draft_id
+        )));
+
+        let runs = crate::core::db::list_publish_runs(&conn).unwrap();
+        assert_eq!(runs[0].provider, "github_pages");
+        assert_eq!(
+            runs[0].published_url.as_deref(),
+            Some("https://example.org/civic")
+        );
+        assert_eq!(runs[0].deployment_id.as_deref(), Some("pages-42"));
+    }
+
+    #[test]
     fn test_seeded_publish_fixture_generates_article_evidence_and_correction_package() {
         let conn = init_db("file:test_seeded_publish_fixture?mode=memory&cache=shared").unwrap();
         let temp_dir = tempdir().unwrap();

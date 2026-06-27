@@ -12,7 +12,7 @@ import { Modal } from "./Modal";
 import { ConfirmModal } from "./ConfirmModal";
 import { BetaNotice } from "./BetaNotice";
 import { SystemStatus } from "./SystemStatus";
-import { getBrowserExtensionPath, openLocalPath, toUserMessage } from "../ipc";
+import { getBrowserExtensionPath, openExternalUrl, openLocalPath, toUserMessage } from "../ipc";
 
 interface AppContentProps {
   app: any;
@@ -256,7 +256,16 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
               app.setErrorMessage(`Couldn't open folder: ${toUserMessage(e)}`);
             }
           }}
+          onOpenExternalUrl={async (url) => {
+            try {
+              await openExternalUrl(url);
+              app.setStatusMessage("Opened publishing destination.");
+            } catch (e) {
+              app.setErrorMessage(`Couldn't open publishing destination: ${toUserMessage(e)}`);
+            }
+          }}
           onChoosePublishPath={app.handleChoosePublishPath}
+          onRecordPublishDestination={app.handleRecordPublishDestination}
         />
       )}
 

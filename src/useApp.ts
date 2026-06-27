@@ -23,6 +23,7 @@ import {
   llmTask,
   guardrailsCheck,
   publish,
+  recordPublishDestination,
   registerCorrection,
   backupSave,
   backupRestore,
@@ -1127,6 +1128,22 @@ export function useApp() {
     }
   };
 
+  const handleRecordPublishDestination = async (provider: string, publishedUrl: string, deploymentId?: string) => {
+    if (!publishPath) return;
+    try {
+      setLoading(true);
+      setErrorMessage("");
+      setStatusMessage("Recording public publishing URL and refreshing share files...");
+      const result = await recordPublishDestination(publishPath, provider, publishedUrl, deploymentId);
+      setPublishResult(result);
+      setStatusMessage("Public URL saved. Manifest, ZIP, newsletter, Substack draft, and social copy now use the live link.");
+    } catch (e: any) {
+      setErrorMessage(toUserMessage(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handlePublishPathChange = (value: string) => {
     setPublishPath(value);
     setPublishResult(null);
@@ -1406,6 +1423,7 @@ export function useApp() {
     handleApprovePublish,
     handleKillStory,
     handlePublish,
+    handleRecordPublishDestination,
     openCorrectionModal,
     handleRegisterCorrection,
     handleDeleteDraft,

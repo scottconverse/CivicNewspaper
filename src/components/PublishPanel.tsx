@@ -1,6 +1,6 @@
 // src/components/PublishPanel.tsx
 import React, { useState } from "react";
-import { AlertTriangle, CheckCircle, FileArchive, FileDown, FolderOpen, Rss, UploadCloud } from "lucide-react";
+import { AlertTriangle, CheckCircle, ExternalLink, FileArchive, FileDown, FolderOpen, Rss, UploadCloud } from "lucide-react";
 import type { PublishResult } from "../ipc";
 
 interface PublishPanelProps {
@@ -12,8 +12,49 @@ interface PublishPanelProps {
   loading: boolean;
   onPublish: () => void;
   onOpenLocalPath: (path: string) => void | Promise<void>;
+  onOpenExternalUrl: (url: string) => void | Promise<void>;
   onChoosePublishPath: () => void;
+  onRecordPublishDestination: (provider: string, publishedUrl: string, deploymentId?: string) => void | Promise<void>;
 }
+
+const PROVIDERS = [
+  {
+    id: "netlify",
+    label: "Netlify Drop",
+    url: "https://app.netlify.com/drop",
+    guidance: "Open Netlify Drop, drag in the ZIP or output folder, then paste the live site URL here.",
+  },
+  {
+    id: "cloudflare_pages",
+    label: "Cloudflare Pages",
+    url: "https://dash.cloudflare.com/",
+    guidance: "Create or open a Pages project, upload the ZIP or folder, then paste the deployed URL here.",
+  },
+  {
+    id: "github_pages",
+    label: "GitHub Pages",
+    url: "https://github.com/new",
+    guidance: "Publish the folder through a repository Pages site, then paste the Pages URL here.",
+  },
+  {
+    id: "substack",
+    label: "Substack",
+    url: "https://substack.com/home",
+    guidance: "Paste the Substack draft into a post, publish it, then paste the public post URL here.",
+  },
+  {
+    id: "wordpress",
+    label: "WordPress",
+    url: "https://wordpress.com/posts",
+    guidance: "Create a post/page from the exported copy, publish it, then paste the public URL here.",
+  },
+  {
+    id: "other",
+    label: "Other host",
+    url: "https://www.google.com/search?q=static+site+hosting",
+    guidance: "Use any static host or local web server, then paste the public URL here.",
+  },
+];
 
 export const PublishPanel: React.FC<PublishPanelProps> = ({
   publishPath,
@@ -24,9 +65,16 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   loading,
   onPublish,
   onOpenLocalPath,
-  onChoosePublishPath
+  onOpenExternalUrl,
+  onChoosePublishPath,
+  onRecordPublishDestination
 }) => {
   const [error, setError] = useState<string>("");
+  const [provider, setProvider] = useState("netlify");
+  const [publishedUrl, setPublishedUrl] = useState("");
+  const [deploymentId, setDeploymentId] = useState("");
+
+  const selectedProvider = PROVIDERS.find(item => item.id === provider) ?? PROVIDERS[0];
 
   const artifactPath = (relativePath: string) => {
     const separator = publishPath.includes("\\") ? "\\" : "/";
@@ -49,6 +97,19 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
     }
     setError("");
     onPublishStepChange(2);
+  };
+
+  const handleRecordDestinationClick = () => {
+    if (!publishResult) {
+      setError("Compile the site before saving a public URL.");
+      return;
+    }
+    if (!publishedUrl.trim()) {
+      setError("Public URL cannot be empty.");
+      return;
+    }
+    setError("");
+    onRecordPublishDestination(provider, publishedUrl, deploymentId);
   };
 
   const primaryLabel = publishStep === 1 ? "Review compile checklist" : "Compile site";
@@ -198,6 +259,53 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
             <UploadCloud size={20} />
             <p><strong>Next step:</strong> publish the ZIP or folder to Netlify, Cloudflare Pages, or GitHub Pages. Use the newsletter and share package to tell residents where to read it.</p>
           </div>
+
+          {publishResult && (
+            <div className="card publish-destination-card">
+              <h3 className="card-title">Publish destination</h3>
+              <p className="help-text">{selectedProvider.guidance}</p>
+              <label htmlFor="select-publish-provider" style={{ fontWeight: 600, display: "block", marginBottom: "0.35rem" }}>Provider</label>
+              <select id="select-publish-provider" value={provider} onChange={event => setProvider(event.target.value)}>
+                {PROVIDERS.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
+              </select>
+              <div className="btn-group" style={{ marginTop: "0.75rem" }}>
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenExternalUrl(selectedProvider.url)}>
+                  <ExternalLink size={16} />
+                  Open {selectedProvider.label}
+                </button>
+                <button className="btn btn-secondary" type="button" onClick={() => onOpenLocalPath(artifactPath(publishResult.zip_path))}>
+                  <FileArchive size={16} />
+                  Open ZIP
+                </button>
+              </div>
+              <label htmlFor="input-published-url" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Public URL</label>
+              <input
+                id="input-published-url"
+                type="url"
+                value={publishedUrl}
+                onChange={event => {
+                  setError("");
+                  setPublishedUrl(event.target.value);
+                }}
+                placeholder="https://your-town-news.example.com"
+              />
+              <label htmlFor="input-deployment-id" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Deployment ID or note</label>
+              <input
+                id="input-deployment-id"
+                type="text"
+                value={deploymentId}
+                onChange={event => setDeploymentId(event.target.value)}
+                placeholder="optional"
+              />
+              <button className="btn btn-primary btn-full" type="button" onClick={handleRecordDestinationClick} disabled={loading} style={{ marginTop: "0.9rem" }}>
+                <CheckCircle size={16} />
+                Save public URL
+              </button>
+              {publishResult.published_url && (
+                <p className="help-text">Saved live URL: <a href={publishResult.published_url}>{publishResult.published_url}</a></p>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
