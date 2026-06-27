@@ -719,10 +719,10 @@ async fn put_github_file(
         token,
         &format!("/repos/{repo}/contents/{remote_path}"),
     )
-        .query(&[("ref", branch)])
-        .send()
-        .await
-        .map_err(|e| format!("Could not check GitHub file {remote_path}: {e}"))?;
+    .query(&[("ref", branch)])
+    .send()
+    .await
+    .map_err(|e| format!("Could not check GitHub file {remote_path}: {e}"))?;
     let existing_status = existing.status();
     let existing_body = existing.text().await.unwrap_or_default();
     let sha = if existing_status.is_success() {
@@ -757,11 +757,16 @@ async fn put_github_file(
         branch,
         sha,
     };
-    let response = github_request(client, reqwest::Method::PUT, token, &api.replace("https://api.github.com", ""))
-        .json(&payload)
-        .send()
-        .await
-        .map_err(|e| format!("Could not upload GitHub file {remote_path}: {e}"))?;
+    let response = github_request(
+        client,
+        reqwest::Method::PUT,
+        token,
+        &api.replace("https://api.github.com", ""),
+    )
+    .json(&payload)
+    .send()
+    .await
+    .map_err(|e| format!("Could not upload GitHub file {remote_path}: {e}"))?;
     if response.status().is_success() {
         Ok(())
     } else {
@@ -1075,9 +1080,7 @@ async fn publish_wordpress(
         provider: PublisherProvider::Wordpress.as_str().to_string(),
         published_url: validate_public_url(&issue_page.link)?,
         deployment_id: issue_page.id.map(|id| id.to_string()),
-        message: format!(
-            "Published one WordPress issue page and {article_count} article page(s)."
-        ),
+        message: format!("Published one WordPress issue page and {article_count} article page(s)."),
     })
 }
 
