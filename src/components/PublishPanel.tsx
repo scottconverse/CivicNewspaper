@@ -28,33 +28,33 @@ interface PublishPanelProps {
 const PROVIDERS = [
   {
     id: "netlify",
-    label: "Netlify Drop",
-    url: "https://app.netlify.com/drop",
-    guidance: "Open Netlify Drop, drag in the ZIP or output folder, then paste the live site URL here.",
+    label: "Netlify",
+    url: "https://app.netlify.com/",
+    guidance: "Publishes the generated ZIP to a Netlify site using a Netlify personal access token.",
   },
   {
     id: "cloudflare_pages",
     label: "Cloudflare Pages",
     url: "https://dash.cloudflare.com/",
-    guidance: "Create or open a Pages project, upload the ZIP or folder, then paste the deployed URL here.",
+    guidance: "Publishes the generated folder through Cloudflare's official Wrangler Pages deploy path.",
   },
   {
     id: "github_pages",
     label: "GitHub Pages",
     url: "https://github.com/new",
-    guidance: "Publish the folder through a repository Pages site, then paste the Pages URL here.",
+    guidance: "Commits the generated site files to a repository branch using the GitHub Contents API.",
   },
   {
     id: "substack",
     label: "Substack",
     url: "https://substack.com/home",
-    guidance: "Paste the Substack draft into a post, publish it, then paste the public post URL here.",
+    guidance: "Substack does not offer a supported public publishing API. Use the generated Substack draft, then save the public URL.",
   },
   {
     id: "wordpress",
     label: "WordPress",
     url: "https://wordpress.com/posts",
-    guidance: "Create a post/page from the exported copy, publish it, then paste the public URL here.",
+    guidance: "Publishes the generated article package as a WordPress post using the REST API and an application password.",
   },
   {
     id: "other",
@@ -90,6 +90,12 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   const [displayName, setDisplayName] = useState("Netlify Drop");
   const [siteUrl, setSiteUrl] = useState("");
   const [projectHint, setProjectHint] = useState("");
+  const [siteId, setSiteId] = useState("");
+  const [accountId, setAccountId] = useState("");
+  const [repo, setRepo] = useState("");
+  const [branch, setBranch] = useState("");
+  const [pathPrefix, setPathPrefix] = useState("");
+  const [username, setUsername] = useState("");
   const [credential, setCredential] = useState("");
   const [clearCredential, setClearCredential] = useState(false);
   const [publishedUrl, setPublishedUrl] = useState("");
@@ -105,9 +111,15 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
     setDisplayName(publisherConfig?.display_name || selectedProvider.label);
     setSiteUrl(publisherConfig?.site_url || "");
     setProjectHint(publisherConfig?.project_hint || "");
+    setSiteId(publisherConfig?.site_id || "");
+    setAccountId(publisherConfig?.account_id || "");
+    setRepo(publisherConfig?.repo || "");
+    setBranch(publisherConfig?.branch || (provider === "github_pages" ? "gh-pages" : provider === "cloudflare_pages" ? "main" : ""));
+    setPathPrefix(publisherConfig?.path_prefix || "");
+    setUsername(publisherConfig?.username || "");
     setCredential("");
     setClearCredential(false);
-  }, [publisherConfig, selectedProvider.label]);
+  }, [publisherConfig, selectedProvider.label, provider]);
 
   const artifactPath = (relativePath: string) => {
     const separator = publishPath.includes("\\") ? "\\" : "/";
@@ -150,10 +162,6 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
       setError("Compile the site before publishing.");
       return;
     }
-    if (!publishedUrl.trim()) {
-      setError("Public URL cannot be empty.");
-      return;
-    }
     setError("");
     onPublishWithConnector(provider, publishedUrl, deploymentId);
   };
@@ -171,10 +179,30 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
       display_name: displayName,
       site_url: siteUrl || null,
       project_hint: projectHint || null,
+      site_id: siteId || null,
+      account_id: accountId || null,
+      repo: repo || null,
+      branch: branch || null,
+      path_prefix: pathPrefix || null,
+      username: username || null,
       credential: credential || null,
       clear_credential: clearCredential,
     });
   };
+
+  const providerCredentialLabel = () => {
+    if (provider === "wordpress") return "WordPress application password";
+    if (provider === "github_pages") return "GitHub fine-grained token";
+    if (provider === "cloudflare_pages") return "Cloudflare API token";
+    if (provider === "netlify") return "Netlify personal access token";
+    return "API token or credential";
+  };
+
+  const providerCredentialPlaceholder = publisherConfig?.has_credential
+    ? "credential saved; enter a new one to replace"
+    : provider === "substack"
+      ? "Substack has no supported publishing API"
+      : "paste the provider credential here";
 
   const primaryLabel = publishStep === 1 ? "Review compile checklist" : "Compile site";
 
@@ -347,21 +375,102 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                 onChange={event => setSiteUrl(event.target.value)}
                 placeholder="https://your-town-news.example.com"
               />
-              <label htmlFor="input-publisher-project" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Project/site note</label>
+              {provider === "netlify" && (
+                <>
+                  <label htmlFor="input-publisher-site-id" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Netlify site ID</label>
+                  <input
+                    id="input-publisher-site-id"
+                    type="text"
+                    value={siteId}
+                    onChange={event => setSiteId(event.target.value)}
+                    placeholder="e.g. 12345678-abcd-..."
+                  />
+                </>
+              )}
+              {provider === "github_pages" && (
+                <>
+                  <label htmlFor="input-publisher-repo" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Repository</label>
+                  <input
+                    id="input-publisher-repo"
+                    type="text"
+                    value={repo}
+                    onChange={event => setRepo(event.target.value)}
+                    placeholder="owner/repo"
+                  />
+                  <label htmlFor="input-publisher-branch" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Branch</label>
+                  <input
+                    id="input-publisher-branch"
+                    type="text"
+                    value={branch}
+                    onChange={event => setBranch(event.target.value)}
+                    placeholder="gh-pages"
+                  />
+                  <label htmlFor="input-publisher-path-prefix" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Folder path</label>
+                  <input
+                    id="input-publisher-path-prefix"
+                    type="text"
+                    value={pathPrefix}
+                    onChange={event => setPathPrefix(event.target.value)}
+                    placeholder="optional, e.g. public"
+                  />
+                </>
+              )}
+              {provider === "cloudflare_pages" && (
+                <>
+                  <label htmlFor="input-publisher-account-id" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Cloudflare account ID</label>
+                  <input
+                    id="input-publisher-account-id"
+                    type="text"
+                    value={accountId}
+                    onChange={event => setAccountId(event.target.value)}
+                    placeholder="account ID"
+                  />
+                  <label htmlFor="input-publisher-project-name" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Pages project name</label>
+                  <input
+                    id="input-publisher-project-name"
+                    type="text"
+                    value={siteId}
+                    onChange={event => setSiteId(event.target.value)}
+                    placeholder="your-pages-project"
+                  />
+                  <label htmlFor="input-publisher-cloudflare-branch" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Production branch</label>
+                  <input
+                    id="input-publisher-cloudflare-branch"
+                    type="text"
+                    value={branch}
+                    onChange={event => setBranch(event.target.value)}
+                    placeholder="main"
+                  />
+                </>
+              )}
+              {provider === "wordpress" && (
+                <>
+                  <label htmlFor="input-publisher-username" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>WordPress username</label>
+                  <input
+                    id="input-publisher-username"
+                    type="text"
+                    value={username}
+                    onChange={event => setUsername(event.target.value)}
+                    placeholder="editor username"
+                  />
+                </>
+              )}
+              <label htmlFor="input-publisher-project" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Notes</label>
               <input
                 id="input-publisher-project"
                 type="text"
                 value={projectHint}
                 onChange={event => setProjectHint(event.target.value)}
-                placeholder="optional project name, repo, or site ID"
+                placeholder="optional internal note"
               />
-              <label htmlFor="input-publisher-credential" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>API token or credential</label>
+              <label htmlFor="input-publisher-credential" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>{providerCredentialLabel()}</label>
               <input
                 id="input-publisher-credential"
                 type="password"
                 value={credential}
                 onChange={event => setCredential(event.target.value)}
-                placeholder={publisherConfig?.has_credential ? "credential saved; enter a new one to replace" : "optional for guided publishing"}
+                placeholder={providerCredentialPlaceholder}
+                disabled={provider === "substack" || provider === "other"}
               />
               <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.7rem" }}>
                 <input
@@ -406,7 +515,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                   setError("");
                   setPublishedUrl(event.target.value);
                 }}
-                placeholder="https://your-town-news.example.com"
+                placeholder="optional for API connectors; required for manual save"
               />
               <label htmlFor="input-deployment-id" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Deployment ID or note</label>
               <input

@@ -259,6 +259,12 @@ export interface PublisherConfig {
   display_name: string;
   site_url?: string | null;
   project_hint?: string | null;
+  site_id?: string | null;
+  account_id?: string | null;
+  repo?: string | null;
+  branch?: string | null;
+  path_prefix?: string | null;
+  username?: string | null;
   has_credential: boolean;
 }
 
@@ -267,6 +273,12 @@ export interface PublisherConfigInput {
   display_name: string;
   site_url?: string | null;
   project_hint?: string | null;
+  site_id?: string | null;
+  account_id?: string | null;
+  repo?: string | null;
+  branch?: string | null;
+  path_prefix?: string | null;
+  username?: string | null;
   credential?: string | null;
   clear_credential: boolean;
 }
@@ -413,13 +425,13 @@ export async function testPublisherConnection(provider: string): Promise<Publish
 export async function publishWithConnector(
   outputDir: string,
   provider: string,
-  publishedUrl: string,
+  publishedUrl?: string,
   deploymentId?: string
 ): Promise<PublishResult> {
   return invokeGuarded<PublishResult>("publish_with_connector", {
     outputDir,
     provider,
-    publishedUrl,
+    publishedUrl: publishedUrl?.trim() ? publishedUrl : null,
     deploymentId: deploymentId?.trim() ? deploymentId : null,
   });
 }

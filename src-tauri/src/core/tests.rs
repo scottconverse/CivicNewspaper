@@ -2600,6 +2600,12 @@ I should produce JSON only.
                 display_name: "  Town Pages  ".to_string(),
                 site_url: Some("https://example.org/civic/".to_string()),
                 project_hint: Some("  civic-paper  ".to_string()),
+                site_id: None,
+                account_id: None,
+                repo: Some(" scottconverse/civic-paper ".to_string()),
+                branch: None,
+                path_prefix: Some(" public ".to_string()),
+                username: None,
                 credential: None,
                 clear_credential: false,
             })
@@ -2611,11 +2617,14 @@ I should produce JSON only.
             Some("https://example.org/civic")
         );
         assert_eq!(config.project_hint.as_deref(), Some("civic-paper"));
+        assert_eq!(config.repo.as_deref(), Some("scottconverse/civic-paper"));
+        assert_eq!(config.branch.as_deref(), Some("gh-pages"));
+        assert_eq!(config.path_prefix.as_deref(), Some("public"));
         assert!(crate::core::publisher::publisher_for("not_a_provider").is_err());
     }
 
     #[tokio::test]
-    async fn test_guided_publisher_test_connection_allows_no_credential() {
+    async fn test_api_publisher_requires_credential() {
         let connector = crate::core::publisher::publisher_for("netlify").unwrap();
         let result = connector
             .test_connection(&crate::core::publisher::PublisherConfig {
@@ -2623,12 +2632,20 @@ I should produce JSON only.
                 display_name: "Town Netlify".to_string(),
                 site_url: Some("https://town.example".to_string()),
                 project_hint: None,
+                site_id: Some("site-123".to_string()),
+                account_id: None,
+                repo: None,
+                branch: None,
+                path_prefix: None,
+                username: None,
                 has_credential: false,
             })
             .await;
 
-        assert!(result.ok);
-        assert!(result.message.contains("No API credential is required"));
+        assert!(!result.ok);
+        assert!(result
+            .message
+            .contains("Save the required provider credential"));
     }
 
     #[test]

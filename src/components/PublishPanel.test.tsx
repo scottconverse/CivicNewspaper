@@ -240,12 +240,13 @@ describe("PublishPanel Component Tests", () => {
           display_name: "Town Netlify",
           site_url: "https://town.example",
           project_hint: "town-site",
+          site_id: "site-123",
           has_credential: true,
         }}
         publisherTestResult={{
           provider: "netlify",
           ok: true,
-          message: "Connector settings are valid for guided publishing.",
+          message: "Netlify accepted the site ID and API token.",
           credential_checked: true,
         }}
         onPublishPathChange={vi.fn()}
@@ -272,6 +273,7 @@ describe("PublishPanel Component Tests", () => {
       display_name: "Updated Netlify",
       site_url: "https://town.example",
       project_hint: "town-site",
+      site_id: "site-123",
       clear_credential: false,
     }));
     fireEvent.click(screen.getByRole("button", { name: /Test connection/i }));

@@ -987,6 +987,12 @@ pub async fn test_publisher_connection(
             display_name: provider.trim().replace('_', " "),
             site_url: None,
             project_hint: None,
+            site_id: None,
+            account_id: None,
+            repo: None,
+            branch: None,
+            path_prefix: None,
+            username: None,
             has_credential: publisher::has_provider_credential(provider.trim()),
         });
     let connector = publisher::publisher_for(&config.provider)?;
@@ -998,9 +1004,11 @@ pub async fn publish_with_connector(
     db: tauri::State<'_, DbConn>,
     output_dir: String,
     provider: String,
-    published_url: String,
+    published_url: Option<String>,
     deployment_id: Option<String>,
 ) -> Result<compiler::CompileStaticSiteResult, String> {
+    let config = get_publisher_config(db.clone(), provider.clone())?
+        .ok_or_else(|| "Save this publisher connector before publishing.".to_string())?;
     let connector = publisher::publisher_for(&provider)?;
     let request = publisher::PublisherPublishRequest {
         output_dir: output_dir.clone(),
@@ -1008,7 +1016,7 @@ pub async fn publish_with_connector(
         published_url,
         deployment_id,
     };
-    let published = connector.publish_folder(&request).await?;
+    let published = connector.publish_folder(&config, &request).await?;
     record_publish_destination(
         db,
         output_dir,
