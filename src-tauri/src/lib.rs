@@ -102,6 +102,11 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             get_sources,
+            get_civic_intelligence,
+            list_dark_signals,
+            get_verification_queue,
+            update_verification_task_status,
+            create_lead_from_dark_signal,
             add_source,
             delete_source,
             generate_pairing_pin,

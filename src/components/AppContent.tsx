@@ -7,6 +7,8 @@ import { SettingsPanel } from "./SettingsPanel";
 import { PublishPanel } from "./PublishPanel";
 import { SourcesPanel } from "./SourcesPanel";
 import { DailyScanPage } from "./DailyScanPage";
+import { DarkSignalDesk } from "./DarkSignalDesk";
+import { VerificationQueue } from "./VerificationQueue";
 import { AiModelPanel } from "./AiModelPanel";
 import { Modal } from "./Modal";
 import { ConfirmModal } from "./ConfirmModal";
@@ -135,6 +137,25 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
         />
       )}
 
+      {app.activeTab === "darkSignals" && (
+        <DarkSignalDesk
+          intelligence={app.civicIntelligence}
+          loading={app.loading}
+          onRefresh={app.refreshCivicIntelligence}
+          onCreateLead={app.handleCreateLeadFromDarkSignal}
+        />
+      )}
+
+      {app.activeTab === "verification" && (
+        <VerificationQueue
+          queue={app.verificationQueue}
+          loading={app.loading}
+          onRefresh={app.refreshVerificationQueue}
+          onStatusChange={app.handleVerificationTaskStatus}
+          onCreateLead={app.handleCreateLeadFromDarkSignal}
+        />
+      )}
+
       {app.activeTab === "sources" && (
         <SourcesPanel
           sources={app.sources}
@@ -232,7 +253,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
         <SystemStatus
           ollamaOnline={app.ollamaOnline}
           dbVersion=""
-          appVersion="0.2.7"
+          appVersion={app.appVersion}
         />
       )}
 

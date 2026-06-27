@@ -7,6 +7,8 @@ import {
   Globe2,
   Link as LinkIcon,
   Newspaper,
+  Radar,
+  ShieldCheck,
   Rss,
   ScanSearch,
   Settings,
@@ -37,6 +39,8 @@ export const Layout: React.FC<LayoutProps> = ({
       items: [
         { id: "queue", label: "Story Queue", icon: Newspaper },
         { id: "dailyScan", label: "Daily Scan", icon: ScanSearch },
+        { id: "darkSignals", label: "Dark Signals", icon: Radar },
+        { id: "verification", label: "Verification", icon: ShieldCheck },
         { id: "workbench", label: "Workbench", icon: FileText },
       ],
     },

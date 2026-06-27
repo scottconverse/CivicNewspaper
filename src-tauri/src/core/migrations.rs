@@ -43,6 +43,18 @@ const MIGRATIONS: &[(&str, &str)] = &[
         "0010_publish_runs",
         include_str!("../../migrations/0010_publish_runs.sql"),
     ),
+    (
+        "0011_subscribers",
+        include_str!("../../migrations/0011_subscribers.sql"),
+    ),
+    (
+        "0012_civic_intelligence",
+        include_str!("../../migrations/0012_civic_intelligence.sql"),
+    ),
+    (
+        "0013_verification_queue",
+        include_str!("../../migrations/0013_verification_queue.sql"),
+    ),
 ];
 
 pub fn run_migrations(conn: &mut Connection) -> Result<(), Box<dyn Error + Send + Sync>> {

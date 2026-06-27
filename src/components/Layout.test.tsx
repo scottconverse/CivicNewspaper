@@ -21,6 +21,8 @@ describe("Layout Component Tests", () => {
     // Verify children and basic layouts render
     expect(screen.getByTestId("children-content")).toBeInTheDocument();
     expect(screen.getByText("Story Queue")).toBeInTheDocument();
+    expect(screen.getByText("Dark Signals")).toBeInTheDocument();
+    expect(screen.getByText("Verification")).toBeInTheDocument();
     expect(screen.getByText("Sources")).toBeInTheDocument();
 
     // Click tabs and verify callback

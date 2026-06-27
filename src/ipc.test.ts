@@ -5,13 +5,14 @@ import { toUserMessage } from "./ipc";
 // translated into plain-language guidance with the machine token stripped, not
 // leaked as "Something went wrong: NO_EVIDENCE: …".
 describe("toUserMessage typed-prefix translation", () => {
-  it("translates NO_EVIDENCE: into neutral 'run Scrape & Detect first' guidance", () => {
+  it("translates NO_EVIDENCE: into neutral source/window guidance", () => {
     const msg = toUserMessage(
-      "NO_EVIDENCE: There is no evidence in the selected window. Run Scrape & Detect first."
+      "NO_EVIDENCE: No recent evidence was found after checking sources."
     );
     expect(msg).not.toContain("NO_EVIDENCE");
     expect(msg).not.toContain("Something went wrong");
-    expect(msg.toLowerCase()).toContain("scrape & detect");
+    expect(msg.toLowerCase()).toContain("checking sources");
+    expect(msg.toLowerCase()).toContain("widen the scan window");
   });
 
   it("translates MODEL_NOT_INSTALLED: into an AI Model remedy", () => {
@@ -32,7 +33,7 @@ describe("toUserMessage typed-prefix translation", () => {
   it("handles a typed prefix carried inside an Error object", () => {
     const msg = toUserMessage(new Error("NO_EVIDENCE: nothing here yet."));
     expect(msg).not.toContain("NO_EVIDENCE");
-    expect(msg.toLowerCase()).toContain("scrape & detect");
+    expect(msg.toLowerCase()).toContain("checking sources");
   });
 
   it("leaves ordinary lowercase messages untouched by the prefix branch", () => {

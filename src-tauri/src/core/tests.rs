@@ -1535,6 +1535,92 @@ I should produce JSON only.
         assert!(events.iter().any(|stage| stage == "complete"));
     }
 
+    #[tokio::test]
+    async fn test_daily_scan_deterministic_pipeline_survives_offline_model() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        crate::core::migrations::run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT OR REPLACE INTO settings (key, value) VALUES ('model.selected', 'offline-model')",
+            [],
+        )
+        .unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Town forum".to_string(),
+                url: "https://forum.example.test/thread".to_string(),
+                r#type: "community_signal".to_string(),
+                tier: "community_signal".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://forum.example.test/thread".to_string()),
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "Residents say an out of state shell company, Acme Development LLC, quietly bought parcel APN 123-456-789 near 1200 Main St.".to_string(),
+                content_hash: "phase9_dark_signal_hash".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
+        let db_conn: DbConn = Arc::new(Mutex::new(conn));
+
+        struct OfflineLlmClient;
+        #[async_trait::async_trait]
+        impl crate::core::llm::LlmClient for OfflineLlmClient {
+            async fn call(&self, _m: &str, _p: &str, _s: &str) -> Result<String, String> {
+                Err("local model offline".to_string())
+            }
+        }
+        let llm_client: Arc<dyn crate::core::llm::LlmClient> = Arc::new(OfflineLlmClient);
+        let progress_events = Arc::new(Mutex::new(Vec::new()));
+        let progress_sink = progress_events.clone();
+
+        let run_id = crate::core::daily_scan::run_daily_scan_with_progress(
+            &db_conn,
+            &llm_client,
+            "aggregator prompt template",
+            "Brighton",
+            "CO",
+            24,
+            move |progress| progress_sink.lock().unwrap().push(progress.stage),
+        )
+        .await
+        .expect("deterministic signal pipeline should complete without a model");
+
+        let conn = db_conn.lock().unwrap();
+        let leads = list_daily_scan_leads(&conn, run_id).unwrap();
+        assert!(
+            leads.iter().any(|lead| lead
+                .why_flagged
+                .as_deref()
+                .unwrap_or_default()
+                .contains("weakly verified signals")),
+            "deterministic dark signal lead should be saved before LLM enrichment"
+        );
+        let task_count: i32 = conn
+            .query_row("SELECT COUNT(*) FROM verification_tasks", [], |row| {
+                row.get(0)
+            })
+            .unwrap();
+        assert!(
+            task_count > 0,
+            "deterministic scan should create verification tasks"
+        );
+        let events = progress_events.lock().unwrap();
+        assert!(events.iter().any(|stage| stage == "deterministic"));
+        assert!(events.iter().any(|stage| stage == "complete"));
+    }
+
     // ===== C-6 / CRIT-1: add_source storage gate (SSRF + tier) =====
     //
     // add_source is the single chokepoint every source-ingestion path funnels
@@ -2187,8 +2273,12 @@ I should produce JSON only.
 
         drop(listener);
 
+        let released = poll_until(std::time::Duration::from_secs(2), || {
+            !crate::core::llm::OllamaSidecar::port_in_use(&addr)
+        })
+        .await;
         assert!(
-            !crate::core::llm::OllamaSidecar::port_in_use(&addr),
+            released,
             "once the listener is dropped, {addr} must no longer be reported in use"
         );
     }
@@ -3089,6 +3179,229 @@ I should produce JSON only.
                 .iter()
                 .any(|i| i.category == "Accusatory Language"),
             "inflected 'embezzled' should still match 'embezzle'"
+        );
+    }
+
+    struct Stage10JsonLlm;
+
+    #[async_trait::async_trait]
+    impl crate::core::llm::LlmClient for Stage10JsonLlm {
+        async fn call(&self, _model: &str, _prompt: &str, _system: &str) -> Result<String, String> {
+            Ok(r#"{"leads":[{"title":"Review Colorado civic records","summary":"Fresh public records were fetched and preserved for editor review.","original_url":"https://www.brightonco.gov/AgendaCenter/City-Council-3","why_flagged":"This validates the fetch-first Daily Scan path against real Colorado municipal sources.","source_name":"Stage 10 live validation","source_type":"agenda","priority":"medium","suggested_next_step":"Open the original record and confirm which item deserves a story assignment."}]}"#.to_string())
+        }
+
+        async fn call_json(
+            &self,
+            model: &str,
+            prompt: &str,
+            system: &str,
+        ) -> Result<String, String> {
+            self.call(model, prompt, system).await
+        }
+    }
+
+    fn seed_stage10_colorado_sources(conn: &Connection) {
+        let sources = [
+            (
+                "Brighton City Council Agenda Center",
+                "https://www.brightonco.gov/AgendaCenter/City-Council-3",
+                "primary_record",
+                "official_record",
+            ),
+            (
+                "Denver Council Legistar",
+                "https://denver.legistar.com/",
+                "primary_record",
+                "official_record",
+            ),
+        ];
+        for (name, url, source_type, tier) in sources {
+            insert_source(
+                conn,
+                &Source {
+                    id: None,
+                    name: name.to_string(),
+                    url: url.to_string(),
+                    r#type: source_type.to_string(),
+                    tier: tier.to_string(),
+                    status: "online".to_string(),
+                    last_success_at: None,
+                    last_failed_at: None,
+                    last_scraped: None,
+                },
+            )
+            .unwrap();
+        }
+    }
+
+    fn write_stage10_artifact(name: &str, value: serde_json::Value) {
+        let dir = std::env::var("CIVICNEWS_STAGE10_ARTIFACT_DIR")
+            .map(std::path::PathBuf::from)
+            .unwrap_or_else(|_| std::env::temp_dir().join("civicnews-stage10-validation"));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join(name);
+        std::fs::write(path, serde_json::to_string_pretty(&value).unwrap()).unwrap();
+    }
+
+    #[tokio::test]
+    #[ignore = "live network validation for the Stage 10 release gate"]
+    async fn stage10_live_colorado_daily_scan_fetches_sources_first() {
+        let temp = tempdir().unwrap();
+        let db_path = temp.path().join("stage10-live-colorado.db");
+        let conn = init_db(db_path.to_str().unwrap()).unwrap();
+        seed_stage10_colorado_sources(&conn);
+        conn.execute(
+            "INSERT OR REPLACE INTO settings (key, value) VALUES ('model.selected', 'qwen2.5:7b')",
+            [],
+        )
+        .unwrap();
+        let db: DbConn = Arc::new(Mutex::new(conn));
+        let llm: Arc<dyn crate::core::llm::LlmClient> = Arc::new(Stage10JsonLlm);
+        let mut stages = Vec::new();
+
+        let run_id = crate::core::daily_scan::run_daily_scan_fetching_sources_with_progress(
+            &db,
+            &llm,
+            "Return valid JSON for civic leads.",
+            "Brighton",
+            "CO",
+            168,
+            |progress| stages.push(progress.stage),
+        )
+        .await
+        .unwrap();
+
+        let conn = db.lock().unwrap();
+        let evidence_count: i64 = conn
+            .query_row("SELECT COUNT(*) FROM evidence_items", [], |row| row.get(0))
+            .unwrap();
+        let observation_count: i64 = conn
+            .query_row("SELECT COUNT(*) FROM civic_observations", [], |row| {
+                row.get(0)
+            })
+            .unwrap();
+        let lead_count: i64 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM daily_scan_leads WHERE scan_id = ?1",
+                [run_id],
+                |row| row.get(0),
+            )
+            .unwrap();
+        let source_scores = crate::core::intelligence::list_source_scores(&conn).unwrap();
+
+        assert!(stages.first().is_some_and(|stage| stage == "fetching"));
+        assert!(
+            evidence_count > 0,
+            "fetch-first scan should store live Colorado evidence"
+        );
+        assert!(
+            observation_count > 0,
+            "deterministic pass should record observations"
+        );
+        assert!(lead_count > 0, "scan should produce reviewable leads");
+        assert!(
+            !source_scores.is_empty(),
+            "source performance scoring should update"
+        );
+
+        write_stage10_artifact(
+            "stage10-live-colorado-fetch-first.json",
+            serde_json::json!({
+                "run_id": run_id,
+                "progress_stages": stages,
+                "evidence_count": evidence_count,
+                "observation_count": observation_count,
+                "lead_count": lead_count,
+                "source_scores": source_scores,
+            }),
+        );
+    }
+
+    #[tokio::test]
+    #[ignore = "live Ollama validation for the Stage 10 release gate"]
+    async fn stage10_live_ollama_daily_scan_completes_with_real_local_model() {
+        let model = std::env::var("CIVICNEWS_STAGE10_REAL_MODEL")
+            .unwrap_or_else(|_| "qwen2.5:7b".to_string());
+        let temp = tempdir().unwrap();
+        let db_path = temp.path().join("stage10-live-ollama.db");
+        let conn = init_db(db_path.to_str().unwrap()).unwrap();
+        seed_stage10_colorado_sources(&conn);
+        conn.execute(
+            "INSERT OR REPLACE INTO settings (key, value) VALUES ('model.selected', ?1)",
+            [&model],
+        )
+        .unwrap();
+        let db: DbConn = Arc::new(Mutex::new(conn));
+        let llm: Arc<dyn crate::core::llm::LlmClient> = Arc::new(crate::core::llm::OllamaClient);
+        let started = std::time::Instant::now();
+        let mut progress_messages = Vec::new();
+
+        let run_id = crate::core::daily_scan::run_daily_scan_fetching_sources_with_progress(
+            &db,
+            &llm,
+            "You are a civic newsroom assistant. Return only valid JSON in the requested schema.",
+            "Brighton",
+            "CO",
+            168,
+            |progress| {
+                progress_messages.push(serde_json::json!({
+                    "stage": progress.stage,
+                    "message": progress.message,
+                    "model": progress.model,
+                    "evidence_count": progress.evidence_count,
+                    "batch_index": progress.batch_index,
+                    "batch_count": progress.batch_count,
+                    "saved_leads": progress.saved_leads,
+                }))
+            },
+        )
+        .await
+        .unwrap();
+
+        let elapsed_secs = started.elapsed().as_secs_f64();
+        let conn = db.lock().unwrap();
+        let evidence_count: i64 = conn
+            .query_row("SELECT COUNT(*) FROM evidence_items", [], |row| row.get(0))
+            .unwrap();
+        let lead_count: i64 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM daily_scan_leads WHERE scan_id = ?1",
+                [run_id],
+                |row| row.get(0),
+            )
+            .unwrap();
+        let run_status: String = conn
+            .query_row(
+                "SELECT run_status FROM daily_scan_runs WHERE id = ?1",
+                [run_id],
+                |row| row.get(0),
+            )
+            .unwrap();
+
+        assert_eq!(run_status, "completed");
+        assert!(evidence_count > 0);
+        assert!(
+            lead_count > 0,
+            "real local model path should produce leads or fallback evidence packets"
+        );
+        assert!(
+            progress_messages
+                .iter()
+                .any(|p| p["stage"].as_str() == Some("complete")),
+            "progress should reach complete"
+        );
+
+        write_stage10_artifact(
+            "stage10-live-ollama-model.json",
+            serde_json::json!({
+                "model": model,
+                "run_id": run_id,
+                "elapsed_secs": elapsed_secs,
+                "evidence_count": evidence_count,
+                "lead_count": lead_count,
+                "run_status": run_status,
+                "progress": progress_messages,
+            }),
         );
     }
 }

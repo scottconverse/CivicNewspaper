@@ -823,6 +823,94 @@ button:disabled {
   animation: spin 1s linear infinite;
 }
 
+.dark-signal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.dark-signal-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.verification-task-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.verification-task-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.verification-actions {
+  justify-content: flex-start;
+}
+
+.signal-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-sidebar);
+}
+
+.signal-detail-grid div,
+.signal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.signal-detail-grid span,
+.compact-row span,
+.compact-row small {
+  color: var(--text-secondary);
+}
+
+.entity-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.intel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.compact-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.compact-row {
+  display: grid;
+  gap: 0.15rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.compact-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+@media (max-width: 560px) {
+  .signal-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Civic Desk redesign */
 body {
   background: var(--bg-app);

@@ -269,11 +269,12 @@ mod tests {
         );
     }
 
-    // M-3 / N-1: the daily-scan model test must verify real model-gating
+    // M-3 / N-1: the daily-scan model test must verify real model/degraded-mode
     // behavior, not merely lack grep-bait comments and assert a constant equals
     // itself. This checks both: the prior bait and the tautology are gone, AND
-    // the genuine behavioral assertions are present (a negative-path test where
-    // an unavailable selected model must block run_daily_scan).
+    // the genuine behavioral assertions are present. Phase 9 intentionally changed
+    // the product contract: an unavailable selected model must warn/degrade and
+    // still run deterministic Daily Scan, not block the editor.
     #[test]
     fn reproduce_m3_test_verifies_model_gating_behavior() {
         let test_content = read_file("src/test_useapp_daily_scan_passes_settings_model.test.tsx");
@@ -296,15 +297,15 @@ mod tests {
             "M-3 violation: test still contains the tautological assertion comparing a local constant to itself"
         );
 
-        // Genuine behavioral coverage must be present: a negative-path test
-        // proving an unavailable selected model blocks the scan.
+        // Genuine behavioral coverage must be present: a degraded-mode test
+        // proving an unavailable selected model still runs Daily Scan.
         assert!(
-            test_content.contains("test_useapp_daily_scan_blocks_when_selected_model_unavailable"),
-            "M-3 violation: missing the negative-path test proving the selected model gates the scan"
+            test_content.contains("test_useapp_daily_scan_degrades_when_selected_model_unavailable"),
+            "M-3 violation: missing the degraded-mode test proving unavailable models do not block Daily Scan"
         );
         assert!(
-            test_content.contains(".not.toHaveBeenCalledWith"),
-            "M-3 violation: missing the assertion that run_daily_scan is NOT invoked when the model is unavailable"
+            test_content.contains("The selected model") && test_content.contains("run_daily_scan"),
+            "M-3 violation: missing assertions that model-missing degraded mode still invokes run_daily_scan"
         );
     }
 

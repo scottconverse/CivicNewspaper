@@ -17,12 +17,16 @@ interface DailyScanPageProps {
 
 function progressStageLabel(stage: string): string {
   switch (stage) {
+    case "fetching":
+      return "Checking sources";
     case "preflight":
       return "Checking setup";
     case "preparing":
       return "Preparing records";
+    case "deterministic":
+      return "Evidence intelligence";
     case "generating":
-      return "Local AI review";
+      return "Targeted AI review";
     case "parsing":
       return "Repairing response";
     case "saving":
@@ -62,7 +66,7 @@ export const DailyScanPage: React.FC<DailyScanPageProps> = ({
         <div className="page-title">
           <p className="eyebrow">Morning editor packet</p>
           <h1>Daily Scan</h1>
-          <p>Run a local AI pass across recent records and surface the leads that deserve an editor's look.</p>
+          <p>Run deterministic record checks first, then use local AI only to summarize and rank what needs an editor's look.</p>
         </div>
         <div className="btn-group">
           <button className="btn btn-secondary" onClick={onRefresh} disabled={loading}>
@@ -94,7 +98,7 @@ export const DailyScanPage: React.FC<DailyScanPageProps> = ({
           <h2>{latestScanId ? `Latest scan #${latestScanId}` : "No scan has been run yet"}</h2>
           <p>
             Civic Desk keeps this pass local, private, and evidence-first. Use it to find the handful of records
-            worth turning into leads, then move the strongest ones into the Story Queue.
+            worth turning into leads. If local AI is unavailable, deterministic checks still build a review packet.
           </p>
         </div>
         <TrendingUp className="scan-watermark" size={88} aria-hidden="true" />
@@ -116,7 +120,7 @@ export const DailyScanPage: React.FC<DailyScanPageProps> = ({
               </p>
               {dailyScanProgress.stage !== "complete" && dailyScanProgress.stage !== "failed" && (
                 <p className="help-text" style={{ margin: "0.35rem 0 0 0" }}>
-                  Local scans move in stages rather than a fake percent. It is normal for the AI review stage to take a while on CPU-only machines.
+                  Local scans move in stages rather than a fake percent. Deterministic checks run first; AI review can be skipped or slow on CPU-only machines.
                 </p>
               )}
             </div>
@@ -133,7 +137,7 @@ export const DailyScanPage: React.FC<DailyScanPageProps> = ({
         <div className="card empty-state">
           <ScanSearch size={36} />
           <h3>Start today's scan</h3>
-          <p className="help-text">The results panel will fill with surfaced civic leads after the first run. If this is a fresh setup, add sources and run Scrape & Detect first so there are records to review.</p>
+          <p className="help-text">The results panel will fill with surfaced civic leads after the first run. If this is a fresh setup, add sources first; Daily Scan will check them before analyzing records.</p>
           <button className="btn btn-primary" onClick={onRunScan} disabled={loading}>
             <Play size={16} />
             Run Daily Scan

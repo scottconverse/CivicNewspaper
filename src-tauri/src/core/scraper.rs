@@ -2,6 +2,7 @@
 use super::db::{
     get_evidence_by_hash, insert_evidence_item, update_source_status, DbConn, EvidenceItem, Source,
 };
+use super::intelligence;
 use chrono::Utc;
 use feed_rs::parser;
 use reqwest::Client;
@@ -216,11 +217,18 @@ pub async fn scrape_all_sources(db: &DbConn) -> Result<(), Box<dyn Error>> {
                 println!("Scraped source successfully: {}", source.name);
                 let conn = db.lock().map_err(|_| "Failed to lock database")?;
                 let _ = update_source_status(&conn, source_id, "online", true);
+                let _ = intelligence::record_source_fetch(
+                    &conn,
+                    &source,
+                    true,
+                    "Source fetched successfully.",
+                );
             }
             Err(e) => {
                 eprintln!("Scrape failed for {}: {}", source.name, e);
                 let conn = db.lock().map_err(|_| "Failed to lock database")?;
                 let _ = update_source_status(&conn, source_id, "offline", false);
+                let _ = intelligence::record_source_fetch(&conn, &source, false, &e.to_string());
             }
         }
     }
@@ -366,9 +374,17 @@ async fn scrape_source(db: &DbConn, source: &Source) -> Result<(), Box<dyn Error
             let hash = compute_hash(&excerpt);
 
             // Check for duplicates
-            let is_new = {
+            let (is_new, previous_hash) = {
                 let conn = db.lock().map_err(|_| "Failed to lock database")?;
-                get_evidence_by_hash(&conn, &hash)?.is_none()
+                (
+                    get_evidence_by_hash(&conn, &hash)?.is_none(),
+                    intelligence::previous_hash_for_source_url(
+                        &conn,
+                        source.id.unwrap(),
+                        url.as_deref(),
+                        &hash,
+                    )?,
+                )
             };
 
             if is_new {
@@ -386,7 +402,14 @@ async fn scrape_source(db: &DbConn, source: &Source) -> Result<(), Box<dyn Error
                     entities: entities_json,
                 };
                 let conn = db.lock().map_err(|_| "Failed to lock database")?;
-                insert_evidence_item(&conn, &item)?;
+                let evidence_id = insert_evidence_item(&conn, &item)?;
+                intelligence::record_evidence_intelligence(
+                    &conn,
+                    source,
+                    &item,
+                    evidence_id,
+                    previous_hash,
+                )?;
             }
         }
     } else {
@@ -408,9 +431,18 @@ async fn scrape_source(db: &DbConn, source: &Source) -> Result<(), Box<dyn Error
             // Split large text blocks into chunks to prevent database bloating
             for chunk in chunk_text(&excerpt, 2000) {
                 let hash = compute_hash(&chunk);
-                let is_new = {
+                let item_url = Some(source.url.clone());
+                let (is_new, previous_hash) = {
                     let conn = db.lock().map_err(|_| "Failed to lock database")?;
-                    get_evidence_by_hash(&conn, &hash)?.is_none()
+                    (
+                        get_evidence_by_hash(&conn, &hash)?.is_none(),
+                        intelligence::previous_hash_for_source_url(
+                            &conn,
+                            source.id.unwrap(),
+                            item_url.as_deref(),
+                            &hash,
+                        )?,
+                    )
                 };
                 if is_new {
                     let entities = extract_entities(&chunk);
@@ -420,14 +452,21 @@ async fn scrape_source(db: &DbConn, source: &Source) -> Result<(), Box<dyn Error
                     let item = EvidenceItem {
                         id: None,
                         source_id: source.id.unwrap(),
-                        url: Some(source.url.clone()),
+                        url: item_url,
                         fetched_at: Utc::now().to_rfc3339(),
                         excerpt: chunk,
                         content_hash: hash,
                         entities: entities_json,
                     };
                     let conn = db.lock().map_err(|_| "Failed to lock database")?;
-                    insert_evidence_item(&conn, &item)?;
+                    let evidence_id = insert_evidence_item(&conn, &item)?;
+                    intelligence::record_evidence_intelligence(
+                        &conn,
+                        source,
+                        &item,
+                        evidence_id,
+                        previous_hash,
+                    )?;
                 }
             }
         }

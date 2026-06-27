@@ -5,9 +5,11 @@ use crate::core::db::{self, DbConn, Draft, EvidenceItem, Lead, PairedClient, Sou
 use crate::core::detectors;
 use crate::core::discovery::{self, DiscoveredSourceCategory};
 use crate::core::guardrails::{self, GuardrailsReport};
+use crate::core::intelligence::{self, CivicIntelligenceSnapshot, DarkSignal};
 use crate::core::llm;
 use crate::core::publisher;
 use crate::core::scraper;
+use crate::core::verification::{self, VerificationQueueSnapshot};
 use serde::{Deserialize, Serialize};
 use std::io::Read;
 use tauri::Emitter;
@@ -218,6 +220,58 @@ pub fn delete_source(db: tauri::State<'_, DbConn>, id: i32) -> Result<(), String
         .lock()
         .map_err(|_| "Failed to lock database".to_string())?;
     db::delete_source(&conn, id).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn get_civic_intelligence(
+    db: tauri::State<'_, DbConn>,
+) -> Result<CivicIntelligenceSnapshot, String> {
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
+    intelligence::intelligence_snapshot(&conn).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn list_dark_signals(db: tauri::State<'_, DbConn>) -> Result<Vec<DarkSignal>, String> {
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
+    intelligence::list_dark_signals(&conn, 100).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn get_verification_queue(
+    db: tauri::State<'_, DbConn>,
+) -> Result<VerificationQueueSnapshot, String> {
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
+    verification::verification_queue_snapshot(&conn).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn update_verification_task_status(
+    db: tauri::State<'_, DbConn>,
+    id: i32,
+    status: String,
+    result_summary: Option<String>,
+) -> Result<(), String> {
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
+    verification::update_task_status(&conn, id, &status, result_summary).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn create_lead_from_dark_signal(
+    db: tauri::State<'_, DbConn>,
+    dark_signal_id: i32,
+) -> Result<i32, String> {
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
+    verification::create_lead_from_dark_signal(&conn, dark_signal_id).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -1494,7 +1548,7 @@ pub async fn run_daily_scan<R: tauri::Runtime>(
         .inner()
         .clone();
     let progress_app = app.clone();
-    crate::core::daily_scan::run_daily_scan_with_progress(
+    crate::core::daily_scan::run_daily_scan_fetching_sources_with_progress(
         &db,
         &llm_client,
         &prompt_template,

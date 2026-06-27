@@ -65,6 +65,9 @@ export function toUserMessage(e: unknown): string {
   if (typedPrefix) {
     const [, token, rest] = typedPrefix;
     const message = rest.trim();
+    if (token === "NO_EVIDENCE") {
+      return "No recent evidence was found after checking sources. Add sources, fix offline sources, or widen the scan window, then try again.";
+    }
     switch (token) {
       case "NO_EVIDENCE":
         return "There's nothing to scan yet — run Scrape & Detect first to collect evidence, then try again.";
@@ -299,9 +302,130 @@ export interface Subscriber {
   updated_at: string;
 }
 
+export interface CivicObservation {
+  id?: number;
+  observation_type: string;
+  source_id?: number | null;
+  evidence_id?: number | null;
+  title: string;
+  summary: string;
+  url?: string | null;
+  observed_at: string;
+  content_hash?: string | null;
+  previous_hash?: string | null;
+  diff_summary?: string | null;
+  metadata_json: string;
+  tier: string;
+}
+
+export interface CivicEntity {
+  id?: number;
+  entity_type: string;
+  name: string;
+  normalized_name: string;
+  first_seen_at: string;
+  last_seen_at: string;
+  mention_count: number;
+}
+
+export interface SourcePerformanceScore {
+  source_id: number;
+  source_name: string;
+  fetch_successes: number;
+  fetch_failures: number;
+  new_items: number;
+  changed_items: number;
+  entity_hits: number;
+  dark_signal_hits: number;
+  reliability_score: number;
+  usefulness_score: number;
+  last_fetch_at?: string | null;
+  updated_at: string;
+}
+
+export interface DarkSignal {
+  id?: number;
+  observation_id?: number | null;
+  source_id?: number | null;
+  title: string;
+  summary: string;
+  origin: string;
+  risk_level: string;
+  rank_score: number;
+  tier: string;
+  evidence_policy: string;
+  why_it_matters: string;
+  verification_path: string;
+  publication_status: string;
+  created_at: string;
+  updated_at: string;
+  entities: CivicEntity[];
+}
+
+export interface CivicIntelligenceSnapshot {
+  observations: CivicObservation[];
+  entities: CivicEntity[];
+  source_scores: SourcePerformanceScore[];
+  dark_signals: DarkSignal[];
+}
+
+export interface VerificationTask {
+  id?: number;
+  dark_signal_id?: number | null;
+  observation_id?: number | null;
+  lead_id?: number | null;
+  draft_id?: number | null;
+  entity_id?: number | null;
+  check_type: string;
+  title: string;
+  description: string;
+  target_label: string;
+  target_url?: string | null;
+  status: "suggested" | "auto_checked" | "needs_human" | "blocked" | "resolved";
+  effort_level: "low" | "medium" | "high";
+  impact_level: "low" | "medium" | "high";
+  rank_score: number;
+  result_summary?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface VerificationQueueSnapshot {
+  tasks: VerificationTask[];
+  generated_count: number;
+}
+
 // IPC wrappers
 export async function getSources(): Promise<Source[]> {
   return invokeGuarded<Source[]>("get_sources");
+}
+
+export async function getCivicIntelligence(): Promise<CivicIntelligenceSnapshot> {
+  return invokeGuarded<CivicIntelligenceSnapshot>("get_civic_intelligence");
+}
+
+export async function listDarkSignals(): Promise<DarkSignal[]> {
+  return invokeGuarded<DarkSignal[]>("list_dark_signals");
+}
+
+export async function getVerificationQueue(): Promise<VerificationQueueSnapshot> {
+  return invokeGuarded<VerificationQueueSnapshot>("get_verification_queue");
+}
+
+export async function updateVerificationTaskStatus(
+  id: number,
+  status: VerificationTask["status"],
+  resultSummary?: string
+): Promise<void> {
+  return invokeGuarded<void>("update_verification_task_status", {
+    id,
+    status,
+    resultSummary: resultSummary?.trim() ? resultSummary : null,
+  });
+}
+
+export async function createLeadFromDarkSignal(darkSignalId: number): Promise<number> {
+  return invokeGuarded<number>("create_lead_from_dark_signal", { darkSignalId });
 }
 
 export async function addSource(name: string, url: string, type: string, tier: string): Promise<number> {

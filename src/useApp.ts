@@ -36,6 +36,10 @@ import {
   exportSubscribersCsv,
   readPublishArtifact,
   exportIssueEmail,
+  getCivicIntelligence,
+  getVerificationQueue,
+  updateVerificationTaskStatus,
+  createLeadFromDarkSignal,
   registerCorrection,
   backupSave,
   backupRestore,
@@ -55,6 +59,9 @@ import {
   PublisherConfigInput,
   PublisherTestResult,
   Subscriber,
+  CivicIntelligenceSnapshot,
+  VerificationQueueSnapshot,
+  VerificationTask,
   DiscoveredSource,
   DiscoveredSourceCategory,
   GuardrailsReport,
@@ -133,6 +140,8 @@ export function useApp() {
   const [drafts, setDrafts] = useState<Draft[]>([]);
   const [pairedClients, setPairedClients] = useState<PairedClient[]>([]);
   const [communityProfile, setCommunityProfile] = useState<CommunityProfile | null>(null);
+  const [civicIntelligence, setCivicIntelligence] = useState<CivicIntelligenceSnapshot | null>(null);
+  const [verificationQueue, setVerificationQueue] = useState<VerificationQueueSnapshot | null>(null);
 
   // Selection & Details
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -395,6 +404,13 @@ export function useApp() {
       setLeads([]);
       setDrafts([]);
       setPairedClients([]);
+      setCivicIntelligence({
+        observations: [],
+        entities: [],
+        source_scores: [],
+        dark_signals: [],
+      });
+      setVerificationQueue({ tasks: [], generated_count: 0 });
       setCommunityProfile({
         site_title: "The Civic Desk",
         site_subtitle: "Local records, readable stories.",
@@ -429,6 +445,17 @@ export function useApp() {
 
       const clients = await listPairedClients();
       setPairedClients(clients);
+
+      try {
+        setCivicIntelligence(await getCivicIntelligence());
+      } catch (err) {
+        console.error("Failed to load civic intelligence snapshot", err);
+      }
+      try {
+        setVerificationQueue(await getVerificationQueue());
+      } catch (err) {
+        console.error("Failed to load verification queue", err);
+      }
 
       try {
         const model = await getSetting("model.selected");
@@ -512,23 +539,13 @@ export function useApp() {
 
       const model = await getSetting("model.selected");
       if (!model) {
-        setErrorMessage("Daily Scan requires a selected AI model, but none was configured.");
-        setOnboardingStep(3);
-        setActiveTab("onboarding");
-        return;
+        setStatusMessage("No AI model is selected. Running deterministic evidence checks only.");
       }
       const health = await ollamaHealth();
       if (!health.reachable) {
-        setErrorMessage("Daily Scan couldn't reach the local AI service. Start Ollama or open AI Model to check setup, then try again.");
-        setOnboardingStep(2);
-        setActiveTab("onboarding");
-        return;
-      }
-      if (!modelInstalled(model, health.models)) {
-        setErrorMessage(`Daily Scan requires the ${model} model, which was not found. Redirecting to model download setup...`);
-        setOnboardingStep(3);
-        setActiveTab("onboarding");
-        return;
+        setStatusMessage("Local AI is offline. Running deterministic evidence checks and fallback review packet.");
+      } else if (model && !modelInstalled(model, health.models)) {
+        setStatusMessage(`The selected model ${model} is not installed. Running deterministic evidence checks and fallback review packet.`);
       }
 
       setStatusMessage("Running the daily scan across your collected evidence...");
@@ -1080,6 +1097,69 @@ export function useApp() {
     }
   };
 
+  const refreshCivicIntelligence = async () => {
+    if (!isTauri()) {
+      setCivicIntelligence({
+        observations: [],
+        entities: [],
+        source_scores: [],
+        dark_signals: [],
+      });
+      return;
+    }
+
+    try {
+      setCivicIntelligence(await getCivicIntelligence());
+    } catch (err) {
+      console.error("Failed to refresh civic intelligence snapshot", err);
+      setErrorMessage(`Couldn't refresh civic intelligence: ${toUserMessage(err)}`);
+    }
+  };
+
+  const refreshVerificationQueue = async () => {
+    if (!isTauri()) {
+      setVerificationQueue({ tasks: [], generated_count: 0 });
+      return;
+    }
+
+    try {
+      const snapshot = await getVerificationQueue();
+      setVerificationQueue(snapshot);
+      if (snapshot.generated_count > 0) {
+        setStatusMessage(`Added ${snapshot.generated_count} verification task(s) from new signals.`);
+      }
+    } catch (err) {
+      console.error("Failed to refresh verification queue", err);
+      setErrorMessage(`Couldn't refresh verification queue: ${toUserMessage(err)}`);
+    }
+  };
+
+  const handleVerificationTaskStatus = async (
+    task: VerificationTask,
+    status: VerificationTask["status"],
+    resultSummary?: string
+  ) => {
+    if (!task.id) return;
+    try {
+      await updateVerificationTaskStatus(task.id, status, resultSummary);
+      await refreshVerificationQueue();
+      setStatusMessage(`Marked verification task ${status.replace(/_/g, " ")}.`);
+    } catch (err) {
+      setErrorMessage(`Couldn't update verification task: ${toUserMessage(err)}`);
+    }
+  };
+
+  const handleCreateLeadFromDarkSignal = async (darkSignalId: number) => {
+    try {
+      const leadId = await createLeadFromDarkSignal(darkSignalId);
+      await loadInitialData();
+      setStatusMessage(`Created story lead #${leadId} from dark signal #${darkSignalId}.`);
+      setActiveTab("queue");
+    } catch (err) {
+      setErrorMessage(`Couldn't create a story lead from this signal: ${toUserMessage(err)}`);
+    }
+  };
+
   const refreshSubscribers = async () => {
     if (!isTauri()) {
       setSubscribers([]);
@@ -1553,6 +1633,8 @@ export function useApp() {
     drafts,
     pairedClients,
     communityProfile,
+    civicIntelligence,
+    verificationQueue,
     selectedLead,
     setSelectedLead,
     selectedDraft,
@@ -1650,6 +1732,10 @@ export function useApp() {
     setErrorMessage,
     pullLogEndRef,
     loadInitialData,
+    refreshCivicIntelligence,
+    refreshVerificationQueue,
+    handleVerificationTaskStatus,
+    handleCreateLeadFromDarkSignal,
     pollOllamaStatus,
     handleIngest,
     handleDailyScan,

@@ -107,10 +107,9 @@ describe("useApp Hook Tests", () => {
     expect(invoke).toHaveBeenCalledWith("run_daily_scan", { city: "Brighton", state: "CO", sinceHours: 24 });
   });
 
-  test("test_useapp_daily_scan_blocks_when_selected_model_unavailable", async () => {
-    // C-1 remediation: prove the selected model genuinely gates the scan.
-    // The user selected gemma2:9b but Ollama only has phi3:mini, so the scan
-    // must NOT run. If the model value were ignored, run_daily_scan would fire.
+  test("test_useapp_daily_scan_degrades_when_selected_model_unavailable", async () => {
+    // Phase 9: Daily Scan must not dead-end when the selected model is missing.
+    // It warns, then still runs the deterministic evidence/verification path.
     const selectedModel = "gemma2:9b";
     vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
       if (cmd === "get_queue") return { leads: [], drafts: [] };
@@ -150,10 +149,7 @@ describe("useApp Hook Tests", () => {
 
     expect(invoke).toHaveBeenCalledWith("get_setting", { key: "model.selected" });
     expect(invoke).toHaveBeenCalledWith("ollama_health");
-    expect(invoke).not.toHaveBeenCalledWith(
-      "run_daily_scan",
-      expect.anything()
-    );
-    expect(hookResult.errorMessage).toContain(selectedModel);
+    expect(invoke).toHaveBeenCalledWith("run_daily_scan", { city: "Brighton", state: "CO", sinceHours: 24 });
+    expect(hookResult.statusMessage).toContain("Daily Scan complete");
   });
 });

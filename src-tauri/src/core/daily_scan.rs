@@ -1,6 +1,7 @@
 // core/daily_scan.rs
 use crate::core::db::{self, DailyScanLead, DailyScanRun, DbConn, EvidenceItem};
 use crate::core::llm::LlmClient;
+use crate::core::{intelligence, verification};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 
@@ -11,7 +12,7 @@ use serde::{Deserialize, Serialize};
 /// strips the prefix and surfaces the plain "run Scrape & Detect first" guidance
 /// instead of a raw "Something went wrong: NO_EVIDENCE: …" leak.
 pub const NO_EVIDENCE_SIGNAL: &str =
-    "NO_EVIDENCE: There is no evidence in the selected window. Run Scrape & Detect first.";
+    "NO_EVIDENCE: No recent evidence was found after checking sources. Add sources, fix offline sources, or widen the scan window.";
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ScanResultItem {
@@ -249,6 +250,115 @@ fn save_fallback_leads(
     saved
 }
 
+fn run_deterministic_intelligence_pass(
+    conn: &rusqlite::Connection,
+    run_id: i32,
+    evidence_items: &[EvidenceItem],
+) -> Result<usize, String> {
+    let mut evidence_ids = Vec::new();
+    for item in evidence_items {
+        let Some(evidence_id) = item.id else {
+            continue;
+        };
+        evidence_ids.push(evidence_id);
+        let already_processed: i32 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM civic_observations WHERE evidence_id = ?1 AND content_hash = ?2",
+                rusqlite::params![evidence_id, item.content_hash],
+                |row| row.get(0),
+            )
+            .unwrap_or(0);
+        if already_processed > 0 {
+            continue;
+        }
+        if let Some(source) = db::get_source(conn, item.source_id).map_err(|e| e.to_string())? {
+            let previous_hash = intelligence::previous_hash_for_source_url(
+                conn,
+                item.source_id,
+                item.url.as_deref(),
+                &item.content_hash,
+            )
+            .map_err(|e| e.to_string())?;
+            intelligence::record_evidence_intelligence(
+                conn,
+                &source,
+                item,
+                evidence_id,
+                previous_hash,
+            )
+            .map_err(|e| e.to_string())?;
+        }
+    }
+
+    verification::generate_verification_tasks(conn).map_err(|e| e.to_string())?;
+    save_dark_signal_leads(conn, run_id, &evidence_ids)
+}
+
+fn save_dark_signal_leads(
+    conn: &rusqlite::Connection,
+    run_id: i32,
+    evidence_ids: &[i32],
+) -> Result<usize, String> {
+    let signals = intelligence::list_dark_signals(conn, 8).map_err(|e| e.to_string())?;
+    let mut saved = 0;
+    for signal in signals
+        .into_iter()
+        .filter(|signal| signal.publication_status != "dismissed")
+        .filter(|signal| {
+            signal
+                .observation_id
+                .and_then(|observation_id| {
+                    conn.query_row(
+                        "SELECT evidence_id FROM civic_observations WHERE id = ?1",
+                        [observation_id],
+                        |row| row.get::<_, Option<i32>>(0),
+                    )
+                    .ok()
+                    .flatten()
+                })
+                .map(|evidence_id| evidence_ids.contains(&evidence_id))
+                .unwrap_or(false)
+        })
+        .take(5)
+    {
+        let original_url: String = conn
+            .query_row(
+                "SELECT COALESCE(co.url, s.url, '')
+                 FROM dark_signals ds
+                 LEFT JOIN civic_observations co ON co.id = ds.observation_id
+                 LEFT JOIN sources s ON s.id = ds.source_id
+                 WHERE ds.id = ?1",
+                [signal.id.unwrap_or_default()],
+                |row| row.get(0),
+            )
+            .unwrap_or_default();
+        let lead = DailyScanLead {
+            id: None,
+            scan_id: run_id,
+            title: signal.title,
+            summary: signal.summary,
+            source_id: signal.source_id,
+            original_url,
+            why_flagged: Some(signal.why_it_matters),
+            source_name: Some(signal.origin),
+            source_type: Some(signal.tier),
+            priority: Some(
+                match signal.risk_level.as_str() {
+                    "high" => "high",
+                    "medium" => "medium",
+                    _ => "low",
+                }
+                .to_string(),
+            ),
+            suggested_next_step: Some(signal.verification_path),
+        };
+        if db::insert_daily_scan_lead(conn, &lead).is_ok() {
+            saved += 1;
+        }
+    }
+    Ok(saved)
+}
+
 #[cfg(test)]
 pub async fn run_daily_scan(
     db: &DbConn,
@@ -339,6 +449,18 @@ where
 
     let model = crate::tauri_cmds::get_selected_model_or_fallback(db).await;
     let scan_items: Vec<EvidenceItem> = evidence_items.into_iter().take(20).collect();
+    let deterministic_saved = {
+        let conn = db.lock().map_err(|_| "Failed to lock db")?;
+        progress(DailyScanProgress {
+            run_id: Some(run_id),
+            evidence_count: scan_items.len(),
+            ..scan_progress(
+                "deterministic",
+                "Extracting entities, detecting changes, and building verification tasks.",
+            )
+        });
+        run_deterministic_intelligence_pass(&conn, run_id, &scan_items)?
+    };
     let batches: Vec<&[EvidenceItem]> = scan_items.chunks(4).collect();
     let batch_count = batches.len();
 
@@ -347,16 +469,17 @@ where
         model: Some(model.clone()),
         evidence_count: scan_items.len(),
         batch_count: Some(batch_count),
+        saved_leads: deterministic_saved,
         ..scan_progress(
             "generating",
             format!(
-                "Starting local scan with {} across {} batch(es).",
-                model, batch_count
+                "Deterministic pass saved {} lead(s). Starting targeted AI review with {} across {} batch(es).",
+                deterministic_saved, model, batch_count
             ),
         )
     });
 
-    let mut saved_total = 0usize;
+    let mut saved_total = deterministic_saved;
     let mut parsed_batches = 0usize;
     let mut batch_errors = Vec::new();
 
@@ -508,4 +631,35 @@ where
             batch_errors.join("; ")
         ))
     }
+}
+
+pub async fn run_daily_scan_fetching_sources_with_progress<F>(
+    db: &DbConn,
+    llm_client: &std::sync::Arc<dyn LlmClient>,
+    prompt_template: &str,
+    city: &str,
+    state: &str,
+    since_hours: u32,
+    mut progress: F,
+) -> Result<i32, String>
+where
+    F: FnMut(DailyScanProgress),
+{
+    progress(scan_progress(
+        "fetching",
+        "Checking watched sources for fresh records before analysis.",
+    ));
+    crate::core::scraper::scrape_all_sources(db)
+        .await
+        .map_err(|e| e.to_string())?;
+    run_daily_scan_with_progress(
+        db,
+        llm_client,
+        prompt_template,
+        city,
+        state,
+        since_hours,
+        progress,
+    )
+    .await
 }
