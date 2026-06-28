@@ -530,27 +530,34 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
   useEffect(() => {
     if (step !== 1) return;
-    const hashParams = window.location.hash.startsWith("#")
-      ? new URLSearchParams(window.location.hash.slice(1))
-      : new URLSearchParams();
-    const params = window.location.search
-      ? new URLSearchParams(window.location.search)
-      : hashParams;
-    const starter = params.get("starter");
-    const profile = starterProfiles.find(item => item.label.toLowerCase() === starter?.toLowerCase());
-    if (!profile) return;
 
-    applyIdentityValues(profile);
-    window.history.replaceState(null, "", window.location.pathname);
+    const handleStarterRoute = () => {
+      const hashParams = window.location.hash.startsWith("#")
+        ? new URLSearchParams(window.location.hash.slice(1))
+        : new URLSearchParams();
+      const params = window.location.search
+        ? new URLSearchParams(window.location.search)
+        : hashParams;
+      const starter = params.get("starter");
+      const profile = starterProfiles.find(item => item.label.toLowerCase() === starter?.toLowerCase());
+      if (!profile) return;
 
-    if (params.get("continueSetup") === "1") {
-      void persistIdentity(profile)
-        .then(() => setStep(2))
-        .catch(e => {
-          console.error(e);
-          setInitError(toUserMessage(e));
-        });
-    }
+      applyIdentityValues(profile);
+      window.history.replaceState(null, "", window.location.pathname);
+
+      if (params.get("continueSetup") === "1") {
+        void persistIdentity(profile)
+          .then(() => setStep(2))
+          .catch(e => {
+            console.error(e);
+            setInitError(toUserMessage(e));
+          });
+      }
+    };
+
+    handleStarterRoute();
+    window.addEventListener("hashchange", handleStarterRoute);
+    return () => window.removeEventListener("hashchange", handleStarterRoute);
   }, [step]);
 
   return (

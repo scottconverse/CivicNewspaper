@@ -199,7 +199,7 @@ describe("OnboardingWizard Component Tests", () => {
     expect(publicationInput).toHaveValue("ABC");
   });
 
-  test("identity starter profile can fill Longmont without keyboard entry", async () => {
+  test("identity starter profile advances Longmont setup without keyboard entry", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
     const user = userEvent.setup();
@@ -207,6 +207,14 @@ describe("OnboardingWizard Component Tests", () => {
     invokeMock.mockImplementation((cmd: string) => {
       if (cmd === "get_system_ram") return Promise.resolve(16);
       if (cmd === "get_setting") return Promise.resolve(null);
+      if (cmd === "set_setting") return Promise.resolve();
+      if (cmd === "get_community_profile") return Promise.resolve({
+        site_title: "My Local Publication",
+        organization_type: "single_person",
+        city: "Brighton",
+        state: "CO",
+      });
+      if (cmd === "save_community_profile") return Promise.resolve();
       return Promise.resolve();
     });
 
@@ -214,10 +222,41 @@ describe("OnboardingWizard Component Tests", () => {
 
     await user.click(screen.getByRole("link", { name: "Longmont" }));
 
-    expect(screen.getByLabelText("Publication Name")).toHaveValue("Longmont Civic Desk");
-    expect(screen.getByLabelText("Editor Name")).toHaveValue("Local editor");
-    expect(screen.getByLabelText("City")).toHaveValue("Longmont");
-    expect(screen.getByLabelText("State")).toHaveValue("CO");
+    await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "identity.newsroom_name",
+      value: "Longmont Civic Desk",
+    });
+  });
+
+  test("native starter hash route advances to setup after load", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      if (cmd === "set_setting") return Promise.resolve();
+      if (cmd === "get_community_profile") return Promise.resolve({
+        site_title: "My Local Publication",
+        organization_type: "single_person",
+        city: "Brighton",
+        state: "CO",
+      });
+      if (cmd === "save_community_profile") return Promise.resolve();
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
+
+    window.location.hash = "starter=longmont&continueSetup=1";
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+
+    await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "identity.newsroom_name",
+      value: "Longmont Civic Desk",
+    });
   });
 
   test("offline AI setup keeps Next disabled while runtime install is running", async () => {
