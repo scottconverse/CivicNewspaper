@@ -1491,7 +1491,23 @@ pub async fn install_ollama_runtime<R: tauri::Runtime>(
     app: tauri::AppHandle<R>,
 ) -> Result<(), String> {
     let sink = std::sync::Arc::new(RuntimeInstallEventSink { app: app.clone() });
-    crate::core::llm::install_windows_ollama_runtime(app, sink).await
+    let (tx, rx) = tokio::sync::oneshot::channel();
+    std::thread::Builder::new()
+        .name("civicdesk-ollama-runtime-install".to_string())
+        .stack_size(64 * 1024 * 1024)
+        .spawn(move || {
+            let result = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .map_err(|e| format!("Could not prepare local AI installer runtime: {e}"))
+                .and_then(|runtime| {
+                    runtime.block_on(crate::core::llm::install_windows_ollama_runtime(app, sink))
+                });
+            let _ = tx.send(result);
+        })
+        .map_err(|e| format!("Could not start local AI installer thread: {e}"))?;
+    rx.await
+        .map_err(|_| "Local AI installer thread stopped before reporting a result.".to_string())?
 }
 
 /// Bridges core pull progress to Tauri's event emitter. Keeps the wire format
