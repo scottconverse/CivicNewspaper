@@ -395,19 +395,60 @@ pub fn list_paired_clients(db: tauri::State<'_, DbConn>) -> Result<Vec<PairedCli
 }
 
 #[tauri::command]
-pub fn get_browser_extension_path() -> Result<String, String> {
-    let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+pub fn get_browser_extension_path(app: tauri::AppHandle) -> Result<String, String> {
+    let resource_path = app
+        .path()
+        .resource_dir()
+        .map(|dir| dir.join("browser-extension").join("chromium"))
+        .map_err(|e| format!("Could not resolve app resource directory: {e}"))?;
+    if resource_path.exists() {
+        return Ok(resource_path.to_string_lossy().to_string());
+    }
+
+    let dev_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .parent()
         .ok_or_else(|| "Could not resolve project root".to_string())?
         .join("browser-extension")
         .join("chromium");
-    if !path.exists() {
-        return Err(format!(
-            "Browser extension folder was not found at {}",
-            path.display()
-        ));
+    if dev_path.exists() {
+        return Ok(dev_path.to_string_lossy().to_string());
     }
-    Ok(path.to_string_lossy().to_string())
+
+    Err(format!(
+        "Browser extension folder was not found. Checked bundled path {} and development path {}",
+        resource_path.display(),
+        dev_path.display()
+    ))
+}
+
+#[cfg(test)]
+mod extension_path_tests {
+    #[test]
+    fn development_browser_extension_folder_exists() {
+        let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .parent()
+            .unwrap()
+            .join("browser-extension")
+            .join("chromium")
+            .join("manifest.json");
+        assert!(
+            path.exists(),
+            "Expected development extension manifest at {}",
+            path.display()
+        );
+    }
+
+    #[test]
+    fn tauri_config_bundles_browser_extension() {
+        let config_path =
+            std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tauri.conf.json");
+        let config = std::fs::read_to_string(&config_path)
+            .unwrap_or_else(|e| panic!("Could not read {}: {e}", config_path.display()));
+        assert!(
+            config.contains("../browser-extension/chromium/*"),
+            "tauri.conf.json must bundle browser extension resources"
+        );
+    }
 }
 
 fn spawn_platform_opener(target: &str) -> Result<(), String> {

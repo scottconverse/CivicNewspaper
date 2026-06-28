@@ -34,7 +34,8 @@
       "icons/icon.ico"
     ],
     "resources": [
-      "prompts/*"
+      "prompts/*",
+      "../browser-extension/chromium/*"
     ],
     "externalBin": [
       "binaries/ollama"
