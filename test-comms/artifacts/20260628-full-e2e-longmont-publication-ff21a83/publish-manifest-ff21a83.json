@@ -1,0 +1,50 @@
+{
+  "issue_id": "issue-20260628-095433-282564100",
+  "output_dir": "<app-data>/com.scottconverse.civicdesk/sites/default",
+  "generated_at": "2026-06-28T09:54:33.282564100+00:00",
+  "provider": "local_export",
+  "published_url": null,
+  "deployment_id": null,
+  "article_count": 1,
+  "skipped_count": 0,
+  "files_written": 18,
+  "generated_files": [
+    "styles.css",
+    "print.css",
+    "watch/1.html",
+    "index.html",
+    "about.html",
+    "ethics.html",
+    "how-we-report.html",
+    "corrections.html",
+    "feed.xml",
+    "newsletter.md",
+    "substack.md",
+    "share-package.md",
+    "facebook-post.txt",
+    "subreddit-post.md",
+    "nextdoor-post.txt",
+    "short-link-blurb.txt",
+    "publish-manifest.json",
+    "site-package.zip"
+  ],
+  "index_path": "index.html",
+  "rss_path": "feed.xml",
+  "newsletter_path": "newsletter.md",
+  "substack_path": "substack.md",
+  "share_package_path": "share-package.md",
+  "facebook_post_path": "facebook-post.txt",
+  "subreddit_post_path": "subreddit-post.md",
+  "nextdoor_post_path": "nextdoor-post.txt",
+  "short_link_blurb_path": "short-link-blurb.txt",
+  "manifest_path": "publish-manifest.json",
+  "zip_path": "site-package.zip",
+  "articles": [
+    {
+      "title": "Draft: Sustainable Business Program Updates: News on the Sustainable Business Program, promoting environmental stewardship and economic vitality in Longmont.",
+      "format": "watch",
+      "relative_path": "watch/1.html",
+      "updated_at": "2026-06-28T09:49:48.278298+00:00"
+    }
+  ]
+}
