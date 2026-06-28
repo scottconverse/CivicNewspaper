@@ -365,20 +365,39 @@ fn known_city_candidates(
             _ => Vec::new(),
         },
         ("longmont", "co") | ("longmont", "colorado") => match category_name {
-            "Municipal Website" => vec![(
-                "Longmont official city website",
-                "https://www.longmontcolorado.gov/",
-                "primary_record",
-            )],
-            "City Council Agenda" => vec![(
-                "Longmont agendas and minutes",
-                "https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk/agendas-and-minutes",
-                "primary_record",
-            )],
+            "Municipal Website" => vec![
+                (
+                    "Longmont official city website",
+                    "https://www.longmontcolorado.gov/",
+                    "primary_record",
+                ),
+                (
+                    "Longmont city news",
+                    "https://www.longmontcolorado.gov/news",
+                    "official_comm",
+                ),
+            ],
+            "City Council Agenda" => vec![
+                (
+                    "Longmont agendas and minutes",
+                    "https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk/agendas-and-minutes",
+                    "primary_record",
+                ),
+                (
+                    "Longmont City Council",
+                    "https://www.longmontcolorado.gov/departments/departments-a-d/city-council",
+                    "primary_record",
+                ),
+            ],
             "Public & Legal Notices" => vec![
                 (
                     "Longmont public notices search",
                     "https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk",
+                    "primary_record",
+                ),
+                (
+                    "Colorado public notices",
+                    "https://www.publicnoticecolorado.com/",
                     "primary_record",
                 ),
                 (
@@ -392,16 +411,35 @@ fn known_city_candidates(
                 "https://www.svvsd.org/",
                 "primary_record",
             )],
-            "Police Department Facebook" => vec![(
-                "Longmont Public Safety",
-                "https://www.longmontcolorado.gov/departments/departments-n-z/public-safety",
-                "official_comm",
-            )],
-            "Local Reddit Community" => vec![(
-                "r/Longmont",
-                "https://www.reddit.com/r/Longmont/",
-                "community_signal",
-            )],
+            "Police Department Facebook" => vec![
+                (
+                    "Longmont Public Safety",
+                    "https://www.longmontcolorado.gov/departments/departments-n-z/public-safety",
+                    "official_comm",
+                ),
+                (
+                    "City of Longmont Facebook",
+                    "https://www.facebook.com/cityoflongmontco/",
+                    "community_signal",
+                ),
+                (
+                    "Longmont Public Safety Facebook",
+                    "https://www.facebook.com/LongmontFirePoliceOEM/",
+                    "community_signal",
+                ),
+            ],
+            "Local Reddit Community" => vec![
+                (
+                    "r/Longmont",
+                    "https://www.reddit.com/r/Longmont/",
+                    "community_signal",
+                ),
+                (
+                    "r/Boulder",
+                    "https://www.reddit.com/r/boulder/",
+                    "community_signal",
+                ),
+            ],
             "Local Newspaper Headlines" => vec![
                 (
                     "Longmont Leader local news",
@@ -419,11 +457,33 @@ fn known_city_candidates(
                 "https://longmontchamber.org/",
                 "community_signal",
             )],
-            "Library Events" => vec![(
-                "Longmont Library",
-                "https://www.longmontcolorado.gov/departments/departments-e-m/library",
-                "community_signal",
-            )],
+            "Library Events" => vec![
+                (
+                    "Longmont Library",
+                    "https://www.longmontcolorado.gov/departments/departments-e-m/library",
+                    "community_signal",
+                ),
+                (
+                    "Visit Longmont events",
+                    "https://www.visitlongmont.org/events/",
+                    "community_signal",
+                ),
+                (
+                    "Downtown Longmont events",
+                    "https://www.downtownlongmont.com/events/calendar",
+                    "community_signal",
+                ),
+                (
+                    "Longmont city events",
+                    "https://longmontcolorado.gov/events/",
+                    "official_comm",
+                ),
+                (
+                    "Longmont city YouTube",
+                    "https://www.youtube.com/cityoflongmont",
+                    "official_comm",
+                ),
+            ],
             _ => Vec::new(),
         },
         ("fort collins", "co") | ("fort collins", "colorado") => match category_name {
@@ -779,6 +839,12 @@ mod tests {
             .any(|candidate| candidate.url == "https://www.reddit.com/r/Longmont/"));
         assert!(all_candidates
             .iter()
+            .any(|candidate| candidate.url == "https://www.youtube.com/cityoflongmont"));
+        assert!(all_candidates
+            .iter()
+            .any(|candidate| candidate.url == "https://www.publicnoticecolorado.com/"));
+        assert!(all_candidates
+            .iter()
             .any(|candidate| candidate.url == "https://www.longmontleader.com/local-news"));
         assert!(all_candidates
             .iter()
@@ -786,5 +852,9 @@ mod tests {
         assert!(all_candidates
             .iter()
             .any(|candidate| candidate.r#type == "community_signal"));
+        assert!(
+            all_candidates.len() >= 15,
+            "Longmont should expose a broad enough candidate set for a real issue"
+        );
     }
 }

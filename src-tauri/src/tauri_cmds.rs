@@ -1031,12 +1031,12 @@ pub async fn generate_draft<R: tauri::Runtime>(
 
     let prompt = if evidence_items.is_empty() {
         format!(
-            "Lead topic: {}\n\nNo source documents are attached to this lead yet. Please draft a '{}' working draft for an editor to review. Clearly label unsupported claims as needing verification and do not invent facts.",
+            "Lead topic: {}\n\nNo source documents are attached to this lead yet. Please draft a '{}' working draft for an editor to review.\n\nWrite a concise but useful local-news item with: a headline, a short nut graf explaining why Longmont residents should care, 3-5 factual paragraphs or brief sections, a clearly labeled 'Needs verification' section, and a 'Next reporting steps' section. Clearly label unsupported claims as needing verification and do not invent facts.",
             lead_why, format
         )
     } else {
         format!(
-            "Lead topic: {}\n\nHere is the attached source material:\n{}\nPlease draft a report in '{}' format. Use 'evidence:ID' citations inside the text (like [Source](evidence:ID)) when claiming a fact from the attached material. Keep it objective, professional, and do not make assumptions beyond the source material.",
+            "Lead topic: {}\n\nHere is the attached source material:\n{}\nPlease draft a report in '{}' format.\n\nWrite for Longmont residents. Include: a headline, a short nut graf, 3-5 factual paragraphs or brief sections, what is known, what remains unclear, and specific next reporting steps. Use 'evidence:ID' citations inside the text (like [Source](evidence:ID)) when claiming a fact from the attached material. Keep it objective, professional, and do not make assumptions beyond the source material. If the evidence is thin, make that visible instead of padding.",
             lead_why, evidence_context, format
         )
     };

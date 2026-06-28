@@ -107,4 +107,30 @@ describe("LeadQueue Component Tests", () => {
     fireEvent.click(screen.getByRole("button", { name: /^Open$/i }));
     expect(handleOpenDraft).toHaveBeenCalledWith(fixtureDrafts[0]);
   });
+
+  test("opens an existing draft from a drafted lead instead of starting a duplicate", () => {
+    const handleSelect = vi.fn();
+    const handleOpenDraft = vi.fn();
+
+    render(
+      <LeadQueue
+        leads={fixtureLeads}
+        drafts={fixtureDrafts}
+        loading={false}
+        onSelect={handleSelect}
+        onSyncList={vi.fn()}
+        onIngest={vi.fn()}
+        onDailyScan={vi.fn()}
+        onOpenDraftEditor={handleOpenDraft}
+        onOpenCorrectionModal={vi.fn()}
+        onDeleteDraft={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("Draft exists")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Open draft/i }));
+
+    expect(handleOpenDraft).toHaveBeenCalledWith(fixtureDrafts[0]);
+    expect(handleSelect).not.toHaveBeenCalled();
+  });
 });

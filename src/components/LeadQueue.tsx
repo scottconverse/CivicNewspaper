@@ -78,6 +78,12 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
   };
 
   const highRiskCount = leads.filter((lead) => lead.risk_level === "high").length;
+  const draftByLeadId = new Map<number, Draft>();
+  for (const draft of drafts) {
+    if (draft.lead_id && !draftByLeadId.has(draft.lead_id)) {
+      draftByLeadId.set(draft.lead_id, draft);
+    }
+  }
 
   useEffect(() => {
     if (!latestScanId && queueSubTab === "scan") {
@@ -224,14 +230,23 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                 </div>
               )
             ) : (
-              sortedLeads.map((lead) => (
-                <div 
-                  key={lead.id} 
-                  className={`card lead-card ${selectedLeadId === lead.id ? "selected-lead" : ""}`}
-                  onClick={() => lead.id && onSelect(lead.id)}
-                  style={{ cursor: "pointer", borderColor: selectedLeadId === lead.id ? "var(--accent-primary)" : undefined }}
-                  data-testid={`lead-card-${lead.id}`}
-                >
+              sortedLeads.map((lead) => {
+                const existingDraft = lead.id ? draftByLeadId.get(lead.id) : undefined;
+                const openLeadOrDraft = () => {
+                  if (existingDraft) {
+                    onOpenDraftEditor(existingDraft);
+                  } else if (lead.id) {
+                    onSelect(lead.id);
+                  }
+                };
+                return (
+                  <div
+                    key={lead.id}
+                    className={`card lead-card ${selectedLeadId === lead.id ? "selected-lead" : ""}`}
+                    onClick={openLeadOrDraft}
+                    style={{ cursor: "pointer", borderColor: selectedLeadId === lead.id ? "var(--accent-primary)" : undefined }}
+                    data-testid={`lead-card-${lead.id}`}
+                  >
                   <div>
                     <div className="lead-header">
                       <span className={`badge ${
@@ -240,6 +255,11 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                       }`}>
                         Risk: {lead.risk_level}
                       </span>
+                      {existingDraft && (
+                        <span className={`badge badge-${getStatusColor(existingDraft.status)}`}>
+                          Draft exists
+                        </span>
+                      )}
                       <span className="help-text">{lead.detector_name}</span>
                     </div>
                     <h4 className="lead-why">{lead.why}</h4>
@@ -254,14 +274,15 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                       className="btn btn-secondary btn-sm"
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (lead.id) onSelect(lead.id);
+                        openLeadOrDraft();
                       }}
                     >
-                      Draft <ChevronRight size={14} />
+                      {existingDraft ? "Open draft" : "Draft"} <ChevronRight size={14} />
                     </button>
                   </div>
                 </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
