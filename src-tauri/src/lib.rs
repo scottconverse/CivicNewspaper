@@ -89,8 +89,9 @@ pub fn run() {
                 }
             });
 
-            // Start local AI. Prefer an app-downloaded runtime when present;
-            // otherwise fall back to the bundled sidecar.
+            // Start local AI only if the app has already downloaded a runtime.
+            // Clean installs intentionally reach onboarding without Ollama so the
+            // user can start the app-managed runtime/model download from UI.
             if crate::core::llm::downloaded_runtime_available(app.handle()) {
                 match crate::core::llm::start_downloaded_ollama(app.handle()) {
                     Ok(Some(child)) => {
@@ -101,8 +102,6 @@ pub fn run() {
                     Ok(None) => {}
                     Err(e) => eprintln!("Failed to start downloaded Ollama runtime: {}", e),
                 }
-            } else if let Err(e) = sidecar.start(app.handle()) {
-                eprintln!("Failed to start Ollama sidecar: {}", e);
             }
 
             // Register LlmClient state for Daily Scan / LLM features

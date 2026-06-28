@@ -615,6 +615,7 @@ impl OllamaSidecar {
     /// could reap a user's deliberate instance running on a non-default port (or
     /// one still mid-startup). The upside of reaping a truly-orphaned child is
     /// small next to the cost of killing a process we did not spawn.
+    #[allow(dead_code)]
     fn start_internal(
         &self,
         probe_addr: &str,
@@ -637,6 +638,7 @@ impl OllamaSidecar {
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub fn start<R: tauri::Runtime>(
         &self,
         app: &AppHandle<R>,
