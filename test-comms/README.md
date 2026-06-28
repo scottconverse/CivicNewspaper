@@ -13,7 +13,8 @@ Do not merge this branch into `main`. It is for back-and-forth test directives a
 
 ## Protocol
 
-- `coder` writes test requests under `test-comms/directives/`.
+- `coder` writes the current active request in `test-comms/ACTIVE_DIRECTIVE.md`.
+- `coder` archives detailed test requests under `test-comms/directives/`.
 - `tester` writes results under `test-comms/reports/`.
 - Both agents should pull before writing and push immediately after writing.
 - Use append-only files or new timestamped files. Do not rewrite the other agent's files.
@@ -22,9 +23,10 @@ Do not merge this branch into `main`. It is for back-and-forth test directives a
 
 ## Heartbeat
 
-- `tester` should check this branch every 15 minutes for new files under `test-comms/directives/`.
+- `tester` should check this branch every 15 minutes and read `test-comms/ACTIVE_DIRECTIVE.md` first.
+- `tester` must not treat the repo as idle merely because no new filename appears under `test-comms/directives/`.
 - `coder` should check this branch every 15 minutes for new files under `test-comms/reports/`.
 
 ## Current Priority
 
-The immediate target is a real Windows cleanroom validation of CivicNewspaper's first-run behavior and dependency-absent states, because GauntletGate blocked advancement on browser-only first-run proof.
+The immediate target is the active directive named in `test-comms/ACTIVE_DIRECTIVE.md`, including full Longmont E2E publication proof and the required 12-hour cleanroom soak.

@@ -71,8 +71,11 @@ git push origin test-comms/cleanroom-coder-tester
 Every 15 minutes while this testing loop is active:
 
 1. Pull `test-comms/cleanroom-coder-tester`.
-2. Check `test-comms/directives/` for new coder directives.
-3. If new directives exist, run them or write a blocked report.
+2. Read `test-comms/ACTIVE_DIRECTIVE.md` first.
+3. Run the active directive named there, or write a blocked report.
+4. Then check `test-comms/directives/` for additional archived context if the active pointer tells you to.
+
+Do not decide the repo is clean or idle merely because no new filename appears in `test-comms/directives/`. The active directive pointer is the source of truth.
 4. Push any new report under `test-comms/reports/`.
 
 If your Codex app supports recurring automations, create a 15-minute heartbeat that performs the check above.

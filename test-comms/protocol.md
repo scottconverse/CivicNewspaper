@@ -10,9 +10,12 @@
 
 Use these folders only:
 
-- `test-comms/directives/` for coder-to-tester instructions.
+- `test-comms/ACTIVE_DIRECTIVE.md` for the current coder-to-tester instruction pointer.
+- `test-comms/directives/` for archived coder-to-tester instructions.
 - `test-comms/reports/` for tester-to-coder results.
 - `test-comms/prompts/` for reusable prompts.
+
+The tester must read `test-comms/ACTIVE_DIRECTIVE.md` first on every watcher tick. The archived directive folder is not the source of truth for whether work is active.
 
 Use filenames like:
 
@@ -46,6 +49,8 @@ git add test-comms
 git commit -m "test-comms: add <short description> [skip ci]"
 git push origin test-comms/cleanroom-coder-tester
 ```
+
+If `test-comms/ACTIVE_DIRECTIVE.md` points at a directive, that directive is active even if its filename is not new to the local machine.
 
 If pull fails because the other agent pushed first, stop and resolve by pulling/rebasing without deleting the other agent's files.
 
