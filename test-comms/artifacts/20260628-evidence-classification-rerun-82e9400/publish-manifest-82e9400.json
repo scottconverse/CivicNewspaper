@@ -1,0 +1,80 @@
+{
+  "issue_id": "82e9400-evidence-classification-rerun",
+  "output_dir": "<app-profile>/sites/default",
+  "generated_at": "2026-06-28T13:13:26.492527+00:00",
+  "provider": "here_now",
+  "published_url": "https://sonic-maple-399q.here.now/",
+  "deployment_id": "slug=sonic-maple-399q;version=01KW75V2ZN297YY76VF8RDC544;created_slug=sonic-maple-399q",
+  "article_count": 6,
+  "skipped_count": 0,
+  "generated_files": [
+    "index.html",
+    "styles.css",
+    "feed.xml",
+    "newsletter.md",
+    "substack.md",
+    "share-package.md",
+    "facebook-post.txt",
+    "subreddit-post.md",
+    "nextdoor-post.txt",
+    "short-link-blurb.txt",
+    "publish-manifest.json",
+    "site-package.zip",
+    "stories/1.html",
+    "stories/2.html",
+    "stories/3.html",
+    "stories/4.html",
+    "stories/5.html",
+    "stories/6.html"
+  ],
+  "articles": [
+    {
+      "draft_id": 1,
+      "lead_id": 6,
+      "title": "Bilingual Storytime for Toddlers: The library offers a Bilingual Storytime session aimed at toddlers, supporting early language development in Spanish-speaking communities.",
+      "relative_path": "stories/1.html",
+      "evidence_count": 3,
+      "status": "ready_to_publish"
+    },
+    {
+      "draft_id": 2,
+      "lead_id": 44,
+      "title": "VOTING SIGNAL: Found vote/decision keywords ([\"adopted\", \"approved\"]) in 'Boulder County Public Notices' record, indicating an official board action has taken place.",
+      "relative_path": "stories/2.html",
+      "evidence_count": 1,
+      "status": "ready_to_publish"
+    },
+    {
+      "draft_id": 3,
+      "lead_id": 22,
+      "title": "Voting Signal: Official Board Action Indicated in Boulder County Public Notices",
+      "relative_path": "stories/3.html",
+      "evidence_count": 1,
+      "status": "ready_to_publish"
+    },
+    {
+      "draft_id": 4,
+      "lead_id": 1,
+      "title": "Building Services Online Permitting Portal Experiences Technical Difficulties",
+      "relative_path": "stories/4.html",
+      "evidence_count": 3,
+      "status": "ready_to_publish"
+    },
+    {
+      "draft_id": 5,
+      "lead_id": 2,
+      "title": "Mural Painting on Parking Deck Next to Hotel Longmont Has Begun",
+      "relative_path": "stories/5.html",
+      "evidence_count": 3,
+      "status": "ready_to_publish"
+    },
+    {
+      "draft_id": 6,
+      "lead_id": 3,
+      "title": "Longmont Library Programs Update",
+      "relative_path": "stories/6.html",
+      "evidence_count": 3,
+      "status": "ready_to_publish"
+    }
+  ]
+}
