@@ -2430,6 +2430,9 @@ tr:hover td {
   margin-right: 0;
   padding: 24px;
   border-radius: 16px;
+  width: min(100%, 720px);
+  max-height: calc(100vh - 72px);
+  overflow-y: auto;
 }
 
 #draft-wizard-panel h2 {
@@ -2439,6 +2442,21 @@ tr:hover td {
   font-size: 27px;
   font-weight: 500;
   line-height: 1.12;
+}
+
+.draft-wizard-actions {
+  position: sticky;
+  bottom: -24px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 1.5rem -24px -24px;
+  padding: 14px 24px;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-card);
+  box-shadow: 0 -10px 18px rgba(30, 41, 59, 0.05);
 }
 
 #workbench-editor-panel {

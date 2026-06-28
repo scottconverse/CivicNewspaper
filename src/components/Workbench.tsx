@@ -295,7 +295,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
             </div>
           </div>
 
-          <div className="flex-between" style={{ marginTop: "1.5rem" }}>
+          <div className="draft-wizard-actions">
             <button className="btn btn-secondary" onClick={onCancelDraftWizard} disabled={generatingText} id="btn-cancel-draft">
               Cancel
             </button>

@@ -837,7 +837,9 @@ pub async fn install_windows_ollama_runtime<R: tauri::Runtime>(
     sink: std::sync::Arc<dyn RuntimeInstallSink>,
 ) -> Result<(), String> {
     if !cfg!(target_os = "windows") {
-        return Err("Automatic local AI runtime install is currently implemented for Windows.".to_string());
+        return Err(
+            "Automatic local AI runtime install is currently implemented for Windows.".to_string(),
+        );
     }
 
     let base_dir = runtime_base_dir(&app)?;

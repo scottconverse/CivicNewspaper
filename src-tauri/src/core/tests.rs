@@ -1304,8 +1304,7 @@ I should produce JSON only.
             "Daily Scan leads should also appear in the draftable Story Queue"
         );
         assert_eq!(
-            story_queue_leads[0].from_scan_lead_id,
-            persisted[0].id,
+            story_queue_leads[0].from_scan_lead_id, persisted[0].id,
             "Story Queue lead should keep a back-reference to the scan result"
         );
         let linked_evidence_count: i32 = conn
@@ -1796,11 +1795,18 @@ I should produce JSON only.
             "primary_record".to_string(),
             "official_record".to_string(),
         );
-        assert!(res.is_ok(), "source with copied trailing punctuation should be accepted");
+        assert!(
+            res.is_ok(),
+            "source with copied trailing punctuation should be accepted"
+        );
 
         let conn = db_conn.lock().unwrap();
         let stored_url: String = conn
-            .query_row("SELECT url FROM sources WHERE name = 'Denver Legistar'", [], |row| row.get(0))
+            .query_row(
+                "SELECT url FROM sources WHERE name = 'Denver Legistar'",
+                [],
+                |row| row.get(0),
+            )
             .unwrap();
         assert_eq!(stored_url, "https://denver.legistar.com/Calendar.aspx");
     }

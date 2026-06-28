@@ -975,6 +975,7 @@ export function useApp() {
       const newId = await saveDraft(draftObj);
       draftObj.id = newId;
 
+      setSelectedLead(null);
       setSelectedDraft(draftObj);
       setActiveTab("workbench");
       setStatusMessage("Draft generated successfully.");

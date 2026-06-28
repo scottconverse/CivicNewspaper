@@ -11,6 +11,7 @@ use crate::core::publisher;
 use crate::core::scraper;
 use crate::core::verification::{self, VerificationQueueSnapshot};
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 use std::io::Read;
 use tauri::Emitter;
 use tauri::Manager;
@@ -989,6 +990,92 @@ pub fn story_decision(
     db::update_draft_status(&conn, id, &decision).map_err(|e| e.to_string())
 }
 
+fn sanitize_unlinked_evidence_citations(text: &str, allowed_ids: &HashSet<i32>) -> String {
+    if !text.contains("evidence:") {
+        return text.to_string();
+    }
+
+    let mut output = String::with_capacity(text.len());
+    let mut rest = text;
+    let mut removed_ids = Vec::new();
+
+    while let Some(pos) = rest.find("evidence:") {
+        output.push_str(&rest[..pos]);
+        let after_prefix = &rest[pos + "evidence:".len()..];
+        let digit_len = after_prefix
+            .chars()
+            .take_while(|ch| ch.is_ascii_digit())
+            .map(char::len_utf8)
+            .sum::<usize>();
+
+        if digit_len == 0 {
+            output.push_str("evidence:");
+            rest = after_prefix;
+            continue;
+        }
+
+        let id_text = &after_prefix[..digit_len];
+        let id = id_text.parse::<i32>().unwrap_or_default();
+        if allowed_ids.contains(&id) {
+            output.push_str("evidence:");
+            output.push_str(id_text);
+        } else {
+            removed_ids.push(id);
+            output.push_str("unlinked-evidence-");
+            output.push_str(id_text);
+        }
+        rest = &after_prefix[digit_len..];
+    }
+
+    output.push_str(rest);
+    removed_ids.sort_unstable();
+    removed_ids.dedup();
+
+    if removed_ids.is_empty() {
+        output
+    } else {
+        format!(
+            "{output}\n\n> Editor note: The AI draft referenced unlinked evidence ID(s) {}. Those citation markers were disabled automatically. Verify the claim against the linked sources before publishing.",
+            removed_ids
+                .iter()
+                .map(i32::to_string)
+                .collect::<Vec<_>>()
+                .join(", ")
+        )
+    }
+}
+
+#[cfg(test)]
+mod draft_citation_tests {
+    use super::sanitize_unlinked_evidence_citations;
+    use std::collections::HashSet;
+
+    #[test]
+    fn disables_citations_that_are_not_linked_to_the_lead() {
+        let allowed = HashSet::from([3, 9]);
+        let draft = "Known from [the agenda](evidence:3). Unsupported [claim](evidence:224).";
+
+        let sanitized = sanitize_unlinked_evidence_citations(draft, &allowed);
+
+        assert!(sanitized.contains("evidence:3"));
+        assert!(sanitized.contains("unlinked-evidence-224"));
+        assert!(sanitized.contains("Editor note"));
+        assert!(sanitized.contains("224"));
+    }
+
+    #[test]
+    fn disables_all_model_citations_when_no_evidence_is_linked() {
+        let allowed = HashSet::new();
+        let draft = "This unlinked draft cites [a source](evidence:12).";
+
+        let sanitized = sanitize_unlinked_evidence_citations(draft, &allowed);
+
+        assert!(!sanitized.contains("](evidence:12)"));
+        assert!(sanitized.contains("unlinked-evidence-12"));
+        assert!(sanitized.contains("Editor note"));
+    }
+}
+
 /// Record that a human reviewed this draft and accepts responsibility.
 #[tauri::command]
 pub fn attest_draft(db: tauri::State<'_, DbConn>, id: i32, editor: String) -> Result<(), String> {
@@ -1031,12 +1118,17 @@ pub async fn generate_draft<R: tauri::Runtime>(
 
     let prompt = if evidence_items.is_empty() {
         format!(
-            "Lead topic: {}\n\nNo source documents are attached to this lead yet. Please draft a '{}' working draft for an editor to review.\n\nWrite a concise but useful local-news item with: a headline, a short nut graf explaining why Longmont residents should care, 3-5 factual paragraphs or brief sections, a clearly labeled 'Needs verification' section, and a 'Next reporting steps' section. Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, or technical details. If a detail is not in the lead topic, say it needs verification instead of filling it in.",
+            "Lead topic: {}\n\nNo source documents are attached to this lead yet. Please draft a '{}' working draft for an editor to review.\n\nWrite a short verification memo, not a finished article. Include: a headline, a one-paragraph summary of the lead, a clearly labeled 'Needs verification' section, and a 'Next reporting steps' section. Do not include evidence citations. Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, impacts, community reaction, or technical details. If a detail is not in the lead topic, say it needs verification instead of filling it in.",
             lead_why, format
+        )
+    } else if evidence_items.len() < 2 {
+        format!(
+            "Lead topic: {}\n\nHere is the only attached source material:\n{}\nPlease draft a report in '{}' format.\n\nBecause there is only one linked source, write this as a brief or watchlist item, not a complete reported story. Use only the attached excerpt. Include: a headline, a 2-4 sentence factual brief, what is known, what remains unclear, and specific next reporting steps. Use only the attached Evidence Citation ID in citations like [Source](evidence:ID). Do not cite any other evidence ID. Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, impacts, community reaction, or technical details. If the excerpt is thin, say so plainly instead of padding.",
+            lead_why, evidence_context, format
         )
     } else {
         format!(
-            "Lead topic: {}\n\nHere is the attached source material:\n{}\nPlease draft a report in '{}' format.\n\nWrite for Longmont residents. Include: a headline, a short nut graf, 3-5 factual paragraphs or brief sections, what is known, what remains unclear, and specific next reporting steps. Use 'evidence:ID' citations inside the text (like [Source](evidence:ID)) for every factual claim drawn from the source material. Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, or technical details. If the evidence is thin, make that visible instead of padding. Any claim without an evidence citation must be framed as a question or verification task, not as fact.",
+            "Lead topic: {}\n\nHere is the attached source material:\n{}\nPlease draft a report in '{}' format.\n\nWrite for Longmont residents. Include: a headline, a short nut graf, 3-5 factual paragraphs or brief sections, what is known, what remains unclear, and specific next reporting steps. Use only the listed Evidence Citation IDs in citations like [Source](evidence:ID). Do not cite any other evidence ID. Use a citation for every factual claim drawn from the source material. Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, impacts, community reaction, or technical details. If the evidence is thin, make that visible instead of padding. Any claim without an evidence citation must be framed as a question or verification task, not as fact.",
             lead_why, evidence_context, format
         )
     };
@@ -1062,7 +1154,12 @@ pub async fn generate_draft<R: tauri::Runtime>(
         .state::<std::sync::Arc<dyn crate::core::llm::LlmClient>>()
         .inner()
         .clone();
-    llm_client.call(&model, &prompt, &sys).await
+    let draft = llm_client.call(&model, &prompt, &sys).await?;
+    let allowed_ids = evidence_items
+        .iter()
+        .filter_map(|item| item.id)
+        .collect::<HashSet<_>>();
+    Ok(sanitize_unlinked_evidence_citations(&draft, &allowed_ids))
 }
 
 #[tauri::command]
@@ -1325,9 +1422,7 @@ mod publish_connector_tests {
     #[test]
     fn unsaved_credential_connectors_still_require_saved_config() {
         assert!(default_publish_config_for_unsaved_connector("netlify", r"C:\site").is_none());
-        assert!(
-            default_publish_config_for_unsaved_connector("github_pages", r"C:\site").is_none()
-        );
+        assert!(default_publish_config_for_unsaved_connector("github_pages", r"C:\site").is_none());
     }
 }
 

@@ -98,6 +98,7 @@ describe("Workbench Component Tests", () => {
     );
 
     expect(screen.getByText(/Unusual expense spike/i)).toBeInTheDocument();
+    expect(document.querySelector(".draft-wizard-actions")).toBeInTheDocument();
     
     const generateBtn = screen.getByRole("button", { name: /Generate Draft/i });
     fireEvent.click(generateBtn);
