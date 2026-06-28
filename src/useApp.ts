@@ -236,6 +236,18 @@ export function useApp() {
 
   const pullLogEndRef = useRef<HTMLDivElement>(null);
 
+  const routeAfterRecoveredSetup = async () => {
+    try {
+      const recovered = await getSetting("setup.recovered_input");
+      if (recovered !== "true") return;
+      await setSetting("setup.recovered_input", "consumed");
+      setActiveTab("sources");
+      setStatusMessage("Setup had to recover from missing input events, so The Civic Desk opened Sources for the next first-run step.");
+    } catch (err) {
+      console.error("Failed to consume recovered setup route flag", err);
+    }
+  };
+
   useEffect(() => {
     if (!isTauri()) {
       setPublishPath("C:\\CivicDesk\\site");
@@ -1073,7 +1085,10 @@ export function useApp() {
   // GG-C4: load first-run completion + selected-model state once on mount.
   useEffect(() => {
     isOnboardingComplete()
-      .then(setOnboardingDone)
+      .then((done) => {
+        setOnboardingDone(done);
+        if (done) void routeAfterRecoveredSetup();
+      })
       // In a browser preview / no-IPC context, don't trap the user on a blank
       // wizard — fall through to the app.
       .catch(() => {
@@ -1106,6 +1121,7 @@ export function useApp() {
       /* non-fatal */
     }
     setOnboardingDone(true);
+    await routeAfterRecoveredSetup();
   };
 
   // UX-m5: "Kill Story" is destructive and was a single unguarded click, unlike

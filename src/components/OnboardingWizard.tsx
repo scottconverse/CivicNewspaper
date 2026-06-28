@@ -578,6 +578,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       void (async () => {
         try {
           await setOnboardingComplete(true);
+          await setSetting("setup.recovered_input", "true");
           onComplete();
         } catch (e) {
           console.error(e);
@@ -648,6 +649,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         setStep(5);
       } else if (step === 5) {
         await setOnboardingComplete(true);
+        if (setupRecoveryActive) {
+          await setSetting("setup.recovered_input", "true");
+        }
         onComplete();
       }
     } catch (e) {
@@ -722,6 +726,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       const profile = starterProfiles[0];
       identityRescueAttemptedRef.current = true;
       setSetupRecoveryActive(true);
+      void setSetting("setup.recovered_input", "true").catch(console.error);
       applyIdentityValues(profile);
       setSetupNotice("The setup screen did not receive input events, so The Civic Desk continued with a starter Longmont profile. You can edit identity later in Settings.");
       void persistIdentity(profile)
