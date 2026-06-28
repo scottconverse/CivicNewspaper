@@ -1,0 +1,78 @@
+{
+  "issue_id": "issue-20260628-120146-302415100",
+  "output_dir": "<app-profile>/sites/default",
+  "generated_at": "2026-06-28T12:01:46.302415100+00:00",
+  "provider": "here_now",
+  "published_url": "https://eternal-trellis-g2f7.here.now",
+  "deployment_id": "slug=eternal-trellis-g2f7;version=01KW71X5Q5N3E2GV5QKJ1GREKN;created_slug=eternal-trellis-g2f7",
+  "article_count": 5,
+  "skipped_count": 0,
+  "files_written": 22,
+  "generated_files": [
+    "styles.css",
+    "print.css",
+    "watch/5.html",
+    "watch/4.html",
+    "watch/3.html",
+    "watch/2.html",
+    "watch/1.html",
+    "index.html",
+    "about.html",
+    "ethics.html",
+    "how-we-report.html",
+    "corrections.html",
+    "feed.xml",
+    "newsletter.md",
+    "substack.md",
+    "share-package.md",
+    "facebook-post.txt",
+    "subreddit-post.md",
+    "nextdoor-post.txt",
+    "short-link-blurb.txt",
+    "publish-manifest.json",
+    "site-package.zip"
+  ],
+  "index_path": "index.html",
+  "rss_path": "feed.xml",
+  "newsletter_path": "newsletter.md",
+  "substack_path": "substack.md",
+  "share_package_path": "share-package.md",
+  "facebook_post_path": "facebook-post.txt",
+  "subreddit_post_path": "subreddit-post.md",
+  "nextdoor_post_path": "nextdoor-post.txt",
+  "short_link_blurb_path": "short-link-blurb.txt",
+  "manifest_path": "publish-manifest.json",
+  "zip_path": "site-package.zip",
+  "articles": [
+    {
+      "title": "Draft: Longmont Museum Closure for Expansion: The Longmont Museum is closed during construction until Fall 2026, but education programs and events will continue.",
+      "format": "watch",
+      "relative_path": "watch/5.html",
+      "updated_at": "2026-06-28T11:57:17.469681300+00:00"
+    },
+    {
+      "title": "Draft: Technical Issues with Building Services Online Permitting Portal: Longmont City’s online permitting portal is experiencing technical issues, impacting local businesses and construction activities.",
+      "format": "watch",
+      "relative_path": "watch/4.html",
+      "updated_at": "2026-06-28T11:55:20.713689900+00:00"
+    },
+    {
+      "title": "Draft: Longmont Museum Events and Programs: The Longmont Museum offers diverse educational programs, workshops, and tours for all age groups, contributing to the community's cultural and historical awareness.",
+      "format": "watch",
+      "relative_path": "watch/3.html",
+      "updated_at": "2026-06-28T11:53:16.367560900+00:00"
+    },
+    {
+      "title": "Draft: Book-a-Librarian Workshop for Tweens: The library is hosting a creative arts workshop aimed at helping tweens develop meaningful friendships, scheduled for June 29th.",
+      "format": "watch",
+      "relative_path": "watch/2.html",
+      "updated_at": "2026-06-28T11:51:27.698727700+00:00"
+    },
+    {
+      "title": "Draft: Vision Zero Projects in Longmont: The City of Longmont is working on Vision Zero initiatives aimed at improving transportation safety, involving public participation which could lead to significant policy changes.",
+      "format": "watch",
+      "relative_path": "watch/1.html",
+      "updated_at": "2026-06-28T11:49:50.585614800+00:00"
+    }
+  ]
+}
