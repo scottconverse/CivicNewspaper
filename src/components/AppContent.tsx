@@ -233,15 +233,19 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           extensionFolderStatus={extensionFolderStatus}
           extensionFolderPath={extensionFolderPath}
           onOpenExtensionFolder={async () => {
+            let extPath = "";
             try {
-              const extPath = await getBrowserExtensionPath();
+              extPath = await getBrowserExtensionPath();
               setExtensionFolderPath(extPath);
               await openLocalPath(extPath);
               const msg = "Extension folder handoff requested. If File Explorer did not come forward, use this path.";
               setExtensionFolderStatus(msg);
               app.setStatusMessage(msg);
             } catch (e) {
-              const message = `Couldn't open the browser extension folder: ${toUserMessage(e)}`;
+              if (extPath) setExtensionFolderPath(extPath);
+              const message = extPath
+                ? `Extension folder path resolved, but Windows did not confirm the Explorer handoff. Use this path manually: ${extPath}`
+                : `Couldn't resolve the browser extension folder: ${toUserMessage(e)}`;
               setExtensionFolderStatus(message);
               app.setErrorMessage(message);
             }

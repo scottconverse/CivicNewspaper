@@ -396,13 +396,24 @@ pub fn list_paired_clients(db: tauri::State<'_, DbConn>) -> Result<Vec<PairedCli
 
 #[tauri::command]
 pub fn get_browser_extension_path(app: tauri::AppHandle) -> Result<String, String> {
-    let resource_path = app
+    let resource_dir = app
         .path()
         .resource_dir()
-        .map(|dir| dir.join("browser-extension").join("chromium"))
         .map_err(|e| format!("Could not resolve app resource directory: {e}"))?;
-    if resource_path.exists() {
-        return Ok(resource_path.to_string_lossy().to_string());
+    let exe_dir = std::env::current_exe()
+        .ok()
+        .and_then(|exe| exe.parent().map(|parent| parent.to_path_buf()));
+
+    let mut candidates = vec![
+        resource_dir.join("browser-extension").join("chromium"),
+        resource_dir
+            .join("_up_")
+            .join("browser-extension")
+            .join("chromium"),
+    ];
+    if let Some(dir) = exe_dir {
+        candidates.push(dir.join("browser-extension").join("chromium"));
+        candidates.push(dir.join("_up_").join("browser-extension").join("chromium"));
     }
 
     let dev_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -410,14 +421,22 @@ pub fn get_browser_extension_path(app: tauri::AppHandle) -> Result<String, Strin
         .ok_or_else(|| "Could not resolve project root".to_string())?
         .join("browser-extension")
         .join("chromium");
-    if dev_path.exists() {
-        return Ok(dev_path.to_string_lossy().to_string());
+    candidates.push(dev_path);
+
+    for path in &candidates {
+        if path.join("manifest.json").exists() {
+            return Ok(path.to_string_lossy().to_string());
+        }
     }
 
+    let checked = candidates
+        .iter()
+        .map(|path| path.display().to_string())
+        .collect::<Vec<_>>()
+        .join("; ");
     Err(format!(
-        "Browser extension folder was not found. Checked bundled path {} and development path {}",
-        resource_path.display(),
-        dev_path.display()
+        "Browser extension folder was not found. Checked: {}",
+        checked
     ))
 }
 
@@ -455,7 +474,6 @@ fn spawn_platform_opener(target: &str) -> Result<(), String> {
     #[cfg(target_os = "windows")]
     let mut command = {
         let mut command = std::process::Command::new("explorer.exe");
-        command.arg("/e,");
         command.arg(target);
         command
     };
