@@ -1,11 +1,17 @@
 // core/llm.rs
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
+use sha2::Digest;
 use std::collections::HashMap;
 use std::error::Error;
+use std::fs;
+use std::io::{Read, Write};
+use std::path::{Path, PathBuf};
+use std::process::{Child, Command, Stdio};
 use std::sync::{LazyLock, Mutex};
 use std::time::Duration;
 use tauri::AppHandle;
+use tauri::Manager;
 use tauri_plugin_shell::process::CommandChild;
 #[cfg(not(test))]
 use tauri_plugin_shell::ShellExt;
@@ -554,8 +560,7 @@ pub async fn run_ollama_pull(
 #[allow(dead_code)]
 pub enum SidecarChild {
     Tauri(CommandChild),
-    #[cfg(test)]
-    Std(std::process::Child),
+    Std(Child),
 }
 
 impl SidecarChild {
@@ -563,7 +568,6 @@ impl SidecarChild {
     pub fn pid(&self) -> u32 {
         match self {
             Self::Tauri(c) => c.pid(),
-            #[cfg(test)]
             Self::Std(c) => c.id(),
         }
     }
@@ -751,7 +755,6 @@ impl OllamaSidecar {
                 SidecarChild::Tauri(c) => {
                     c.kill().map_err(|e| format!("Kill error: {}", e))?;
                 }
-                #[cfg(test)]
                 SidecarChild::Std(mut c) => {
                     c.kill().map_err(|e| format!("Kill error: {}", e))?;
                     c.wait().map_err(|e| format!("Wait error: {}", e))?;
@@ -760,6 +763,251 @@ impl OllamaSidecar {
         }
         Ok(())
     }
+}
+
+pub const OLLAMA_RUNTIME_VERSION: &str = "v0.30.11";
+pub const OLLAMA_WINDOWS_AMD64_URL: &str =
+    "https://github.com/ollama/ollama/releases/download/v0.30.11/ollama-windows-amd64.zip";
+pub const OLLAMA_WINDOWS_AMD64_SHA256: &str =
+    "43d534c10040ea676c99af19836377a315daa8cb3bb6c3d9d609b4c23dd37b88";
+
+#[derive(Debug, Serialize, Clone)]
+pub struct RuntimeInstallProgress {
+    pub stage: String,
+    pub message: String,
+    pub completed: Option<u64>,
+    pub total: Option<u64>,
+}
+
+pub trait RuntimeInstallSink: Send + Sync + 'static {
+    fn progress(&self, payload: RuntimeInstallProgress);
+}
+
+fn runtime_base_dir<R: tauri::Runtime>(app: &AppHandle<R>) -> Result<PathBuf, String> {
+    app.path()
+        .app_data_dir()
+        .map_err(|e| e.to_string())
+        .map(|dir| dir.join("ollama-runtime"))
+}
+
+pub fn downloaded_ollama_exe<R: tauri::Runtime>(app: &AppHandle<R>) -> Result<PathBuf, String> {
+    let version_dir = runtime_base_dir(app)?.join(OLLAMA_RUNTIME_VERSION);
+    let root_exe = version_dir.join("ollama.exe");
+    if root_exe.exists() {
+        return Ok(root_exe);
+    }
+    find_file_named(&version_dir, "ollama.exe")?
+        .ok_or_else(|| "The downloaded local AI runtime is not installed yet.".to_string())
+}
+
+pub fn downloaded_runtime_available<R: tauri::Runtime>(app: &AppHandle<R>) -> bool {
+    downloaded_ollama_exe(app)
+        .map(|path| path.exists())
+        .unwrap_or(false)
+}
+
+pub fn start_downloaded_ollama<R: tauri::Runtime>(
+    app: &AppHandle<R>,
+) -> Result<Option<SidecarChild>, String> {
+    if OllamaSidecar::port_in_use(OllamaSidecar::OLLAMA_LOCAL_ADDR) {
+        return Ok(None);
+    }
+    let exe = downloaded_ollama_exe(app)?;
+    if !exe.exists() {
+        return Err("The downloaded local AI runtime is not installed yet.".to_string());
+    }
+    let mut command = Command::new(&exe);
+    if let Some(parent) = exe.parent() {
+        command.current_dir(parent);
+    }
+    let child = command
+        .arg("serve")
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .map_err(|e| format!("Could not start downloaded local AI runtime: {e}"))?;
+    Ok(Some(SidecarChild::Std(child)))
+}
+
+pub async fn install_windows_ollama_runtime<R: tauri::Runtime>(
+    app: AppHandle<R>,
+    sink: std::sync::Arc<dyn RuntimeInstallSink>,
+) -> Result<(), String> {
+    if !cfg!(target_os = "windows") {
+        return Err("Automatic local AI runtime install is currently implemented for Windows.".to_string());
+    }
+
+    let base_dir = runtime_base_dir(&app)?;
+    let version_dir = base_dir.join(OLLAMA_RUNTIME_VERSION);
+    if downloaded_ollama_exe(&app).is_ok() {
+        sink.progress(RuntimeInstallProgress {
+            stage: "ready".to_string(),
+            message: "Local AI runtime is already installed.".to_string(),
+            completed: None,
+            total: None,
+        });
+        return Ok(());
+    }
+
+    fs::create_dir_all(&base_dir).map_err(|e| e.to_string())?;
+    let zip_path = base_dir.join(format!("ollama-windows-amd64-{OLLAMA_RUNTIME_VERSION}.zip"));
+
+    sink.progress(RuntimeInstallProgress {
+        stage: "download".to_string(),
+        message: "Downloading the local AI runtime from Ollama.".to_string(),
+        completed: Some(0),
+        total: None,
+    });
+
+    let client = Client::builder().build().map_err(|e| e.to_string())?;
+    let mut response = client
+        .get(OLLAMA_WINDOWS_AMD64_URL)
+        .send()
+        .await
+        .map_err(|e| format!("Could not download local AI runtime: {e}"))?;
+    if !response.status().is_success() {
+        return Err(format!(
+            "Could not download local AI runtime: HTTP {}",
+            response.status()
+        ));
+    }
+
+    let total = response.content_length();
+    let mut file = fs::File::create(&zip_path).map_err(|e| e.to_string())?;
+    let mut downloaded = 0u64;
+    while let Some(chunk) = response
+        .chunk()
+        .await
+        .map_err(|e| format!("Runtime download failed: {e}"))?
+    {
+        file.write_all(&chunk).map_err(|e| e.to_string())?;
+        downloaded += chunk.len() as u64;
+        sink.progress(RuntimeInstallProgress {
+            stage: "download".to_string(),
+            message: "Downloading the local AI runtime from Ollama.".to_string(),
+            completed: Some(downloaded),
+            total,
+        });
+    }
+    drop(file);
+
+    sink.progress(RuntimeInstallProgress {
+        stage: "verify".to_string(),
+        message: "Verifying the downloaded runtime.".to_string(),
+        completed: None,
+        total: None,
+    });
+    let mut hasher = sha2::Sha256::new();
+    let mut file = fs::File::open(&zip_path).map_err(|e| e.to_string())?;
+    let mut buf = [0u8; 1024 * 1024];
+    loop {
+        let read = file.read(&mut buf).map_err(|e| e.to_string())?;
+        if read == 0 {
+            break;
+        }
+        hasher.update(&buf[..read]);
+    }
+    let actual = hex::encode(hasher.finalize());
+    if actual != OLLAMA_WINDOWS_AMD64_SHA256 {
+        let _ = fs::remove_file(&zip_path);
+        return Err(format!(
+            "Local AI runtime verification failed. Expected {}, got {}.",
+            OLLAMA_WINDOWS_AMD64_SHA256, actual
+        ));
+    }
+
+    sink.progress(RuntimeInstallProgress {
+        stage: "extract".to_string(),
+        message: "Installing the local AI runtime.".to_string(),
+        completed: None,
+        total: None,
+    });
+    if version_dir.exists() {
+        fs::remove_dir_all(&version_dir).map_err(|e| e.to_string())?;
+    }
+    fs::create_dir_all(&version_dir).map_err(|e| e.to_string())?;
+    extract_zip(&zip_path, &version_dir)?;
+
+    if find_file_named(&version_dir, "ollama.exe")?.is_none() {
+        return Err("The local AI runtime archive did not contain ollama.exe.".to_string());
+    }
+
+    sink.progress(RuntimeInstallProgress {
+        stage: "start".to_string(),
+        message: "Starting the local AI runtime.".to_string(),
+        completed: None,
+        total: None,
+    });
+
+    if let Some(child) = start_downloaded_ollama(&app)? {
+        if let Some(sidecar) = app.try_state::<std::sync::Arc<OllamaSidecar>>() {
+            if let Ok(mut guard) = sidecar.child.lock() {
+                *guard = Some(child);
+            }
+        }
+    }
+
+    for _ in 0..30 {
+        if check_ollama_status().await {
+            sink.progress(RuntimeInstallProgress {
+                stage: "complete".to_string(),
+                message: "Local AI runtime is ready.".to_string(),
+                completed: None,
+                total: None,
+            });
+            return Ok(());
+        }
+        tokio::time::sleep(Duration::from_secs(1)).await;
+    }
+    Err("The local AI runtime was installed but did not become reachable.".to_string())
+}
+
+fn extract_zip(zip_path: &Path, dest_dir: &Path) -> Result<(), String> {
+    let file = fs::File::open(zip_path).map_err(|e| e.to_string())?;
+    let mut archive = zip::ZipArchive::new(file).map_err(|e| e.to_string())?;
+    for i in 0..archive.len() {
+        let mut entry = archive.by_index(i).map_err(|e| e.to_string())?;
+        let Some(name) = entry.enclosed_name().map(|p| p.to_owned()) else {
+            continue;
+        };
+        let out = dest_dir.join(name);
+        if entry.is_dir() {
+            fs::create_dir_all(&out).map_err(|e| e.to_string())?;
+            continue;
+        }
+        if let Some(parent) = out.parent() {
+            fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+        }
+        let mut outfile = fs::File::create(&out).map_err(|e| e.to_string())?;
+        std::io::copy(&mut entry, &mut outfile).map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
+fn find_file_named(dir: &Path, filename: &str) -> Result<Option<PathBuf>, String> {
+    if !dir.exists() {
+        return Ok(None);
+    }
+    for entry in fs::read_dir(dir).map_err(|e| e.to_string())? {
+        let entry = entry.map_err(|e| e.to_string())?;
+        let path = entry.path();
+        if path.is_file()
+            && path
+                .file_name()
+                .and_then(|name| name.to_str())
+                .map(|name| name.eq_ignore_ascii_case(filename))
+                .unwrap_or(false)
+        {
+            return Ok(Some(path));
+        }
+        if path.is_dir() {
+            if let Some(found) = find_file_named(&path, filename)? {
+                return Ok(Some(found));
+            }
+        }
+    }
+    Ok(None)
 }
 
 impl Drop for OllamaSidecar {

@@ -44,6 +44,7 @@ import {
   registerCorrection,
   backupSave,
   backupRestore,
+  installOllamaRuntime,
   pullOllamaModel,
   ollamaHealth,
   getSystemRam,
@@ -317,6 +318,17 @@ export function useApp() {
         setPullProgressText(prev => [...prev, `Error: ${event.payload}`]);
       });
 
+      const runtimeInstallUnlisten = await listen<{ stage: string; message: string; completed?: number | null; total?: number | null }>(
+        "ollama-runtime-install-progress",
+        (event) => {
+          const { message, completed, total } = event.payload;
+          const pct = completed !== undefined && completed !== null && total
+            ? ` (${Math.round((completed / total) * 100)}%)`
+            : "";
+          setPullProgressText(prev => [...prev.slice(-30), `${message}${pct}`]);
+        }
+      );
+
       // ENG-Min-R1: the Rust backend emits `http-server-error` when the local
       // pairing server can't bind (e.g. port 12053 already in use). Without a
       // listener the failure is silent. Surface it through the existing error
@@ -331,6 +343,7 @@ export function useApp() {
         dailyScanProgressUnlisten();
         completeUnlisten();
         errorUnlisten();
+        runtimeInstallUnlisten();
         serverErrorUnlisten();
       };
     };
@@ -1659,6 +1672,26 @@ export function useApp() {
     });
   };
 
+  const handleInstallRuntime = () => {
+    if (!isTauri()) {
+      setStatusMessage("Preview mode cannot install the local AI runtime.");
+      return;
+    }
+
+    setPullingModel(true);
+    setPullProgressText(["Preparing local AI runtime install..."]);
+    installOllamaRuntime()
+      .then(async () => {
+        setPullingModel(false);
+        setPullProgressText(prev => [...prev, "Local AI runtime is ready."]);
+        await pollOllamaStatus();
+      })
+      .catch((e) => {
+        setPullingModel(false);
+        setErrorMessage(toUserMessage(e));
+      });
+  };
+
   const handleCustomLlmTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!customLlmPrompt) return;
@@ -1831,6 +1864,7 @@ export function useApp() {
     handleBackupSave,
     handleBackupRestore,
     handlePullModel,
+    handleInstallRuntime,
     handleCustomLlmTask
   };
 }

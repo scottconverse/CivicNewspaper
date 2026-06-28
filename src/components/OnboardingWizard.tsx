@@ -11,6 +11,7 @@ import {
   getCommunityProfile,
   saveCommunityProfile,
   ollamaHealth,
+  installOllamaRuntime,
   pullOllamaModel,
   cancelOllamaPull,
   exportDiagnostics,
@@ -81,6 +82,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const [healthTimeout, setHealthTimeout] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [exportStatus, setExportStatus] = useState("");
+  const [runtimeInstalling, setRuntimeInstalling] = useState(false);
+  const [runtimeProgress, setRuntimeProgress] = useState("");
+  const [runtimePercent, setRuntimePercent] = useState<number | null>(null);
+  const [runtimeError, setRuntimeError] = useState("");
 
   // Step 3 State
   const [pullProgress, setPullProgress] = useState<string>("");
@@ -204,6 +209,44 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       }
     } catch (e) {
       setExportStatus(`Export failed: ${toUserMessage(e)}`);
+    }
+  };
+
+  const installRuntime = async () => {
+    setRuntimeInstalling(true);
+    setRuntimeError("");
+    setRuntimeProgress("Preparing local AI runtime install...");
+    setRuntimePercent(0);
+    try {
+      const unlisten = await listen<{ stage: string; message: string; completed?: number | null; total?: number | null }>(
+        "ollama-runtime-install-progress",
+        (event) => {
+          setRuntimeProgress(event.payload.message);
+          if (event.payload.completed !== undefined && event.payload.completed !== null && event.payload.total) {
+            setRuntimePercent((event.payload.completed / event.payload.total) * 100);
+          } else if (event.payload.stage === "verify") {
+            setRuntimePercent(100);
+          } else if (event.payload.stage === "extract" || event.payload.stage === "start") {
+            setRuntimePercent(null);
+          }
+        }
+      );
+      try {
+        await installOllamaRuntime();
+      } finally {
+        unlisten();
+      }
+      setRuntimeProgress("Local AI runtime is ready.");
+      setRuntimePercent(100);
+      setHealthTimeout(false);
+      setRetryCount(c => c + 1);
+      const result = await ollamaHealth();
+      setHealth(result);
+    } catch (e) {
+      setRuntimeError(toUserMessage(e));
+      setRuntimeProgress("");
+    } finally {
+      setRuntimeInstalling(false);
     }
   };
 
@@ -453,10 +496,32 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                     <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>
                       The private AI service did not start. First try restarting Civic Desk. If Windows or antivirus asked about this app, allow it, then retry. If it still fails, save a diagnostics file for support.
                     </p>
+                    <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>
+                      If this is a clean machine, Civic Desk can download and install its local AI runtime for you. This is a large one-time download and may take a while.
+                    </p>
+                    {runtimeError && (
+                      <p style={{ fontSize: "0.85rem", color: "var(--color-error)", marginBottom: "0.5rem" }}>{runtimeError}</p>
+                    )}
+                    {runtimeProgress && (
+                      <div style={{ marginBottom: "0.75rem" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", marginBottom: "0.35rem" }}>
+                          <span>{runtimeProgress}</span>
+                          {runtimePercent !== null && <span>{runtimePercent.toFixed(1)}%</span>}
+                        </div>
+                        {runtimePercent !== null && (
+                          <div className="progress-bar-container" style={{ background: "var(--border-color)", height: "8px", borderRadius: "4px" }}>
+                            <div style={{ height: "100%", background: "var(--accent-primary)", width: `${runtimePercent}%`, transition: "width 0.2s" }} />
+                          </div>
+                        )}
+                      </div>
+                    )}
                     {exportStatus && (
                       <p style={{ fontSize: "0.85rem", color: "var(--accent-primary)", marginBottom: "0.5rem" }}>{exportStatus}</p>
                     )}
-                    <div style={{ display: "flex", gap: "1rem" }}>
+                    <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+                      <button className="btn btn-primary btn-sm" onClick={installRuntime} disabled={runtimeInstalling}>
+                        <Download size={14} style={{ marginRight: "0.5rem" }} /> {runtimeInstalling ? "Installing..." : "Install local AI runtime"}
+                      </button>
                       <button className="btn btn-primary btn-sm" onClick={() => { setHealthTimeout(false); setCheckingHealth(true); setRetryCount(c => c + 1); }}>
                         <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} /> Retry
                       </button>
@@ -471,7 +536,20 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   <div style={{ background: "rgba(239, 68, 68, 0.05)", padding: "1rem", borderRadius: "8px" }}>
                     <h4 style={{ color: "var(--color-error)" }}>Starting the local AI service</h4>
                     <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>CivicNews includes a local AI service that runs on your computer. It may take a moment to start up. Once it's running, you'll download a model in the next step.</p>
-                    <div style={{ display: "flex", gap: "1rem" }}>
+                    <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
+                      On a clean machine, use the install button if the service does not become ready.
+                    </p>
+                    {runtimeError && (
+                      <p style={{ fontSize: "0.85rem", color: "var(--color-error)", marginBottom: "0.5rem" }}>{runtimeError}</p>
+                    )}
+                    {runtimeProgress && (
+                      <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>{runtimeProgress}</p>
+                    )}
+                    <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+                      <button className="btn btn-primary" onClick={installRuntime} disabled={runtimeInstalling}>
+                        <Download size={14} style={{ marginRight: "0.5rem" }} />
+                        {runtimeInstalling ? "Installing..." : "Install local AI runtime"}
+                      </button>
                       <button className="btn btn-secondary" onClick={() => setRetryCount(c => c + 1)} disabled={checkingHealth}>
                         <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} />
                         {checkingHealth ? "Checking..." : "Check Initialization Status"}

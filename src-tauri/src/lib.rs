@@ -89,8 +89,19 @@ pub fn run() {
                 }
             });
 
-            // Start Ollama Sidecar
-            if let Err(e) = sidecar.start(app.handle()) {
+            // Start local AI. Prefer an app-downloaded runtime when present;
+            // otherwise fall back to the bundled sidecar.
+            if crate::core::llm::downloaded_runtime_available(app.handle()) {
+                match crate::core::llm::start_downloaded_ollama(app.handle()) {
+                    Ok(Some(child)) => {
+                        if let Ok(mut guard) = sidecar.child.lock() {
+                            *guard = Some(child);
+                        }
+                    }
+                    Ok(None) => {}
+                    Err(e) => eprintln!("Failed to start downloaded Ollama runtime: {}", e),
+                }
+            } else if let Err(e) = sidecar.start(app.handle()) {
                 eprintln!("Failed to start Ollama sidecar: {}", e);
             }
 
@@ -150,6 +161,7 @@ pub fn run() {
             backup_save,
             backup_restore,
             check_ollama,
+            install_ollama_runtime,
             pull_ollama_model,
             cancel_ollama_pull,
             get_system_ram,

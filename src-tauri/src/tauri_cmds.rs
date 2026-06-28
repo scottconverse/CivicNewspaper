@@ -1476,6 +1476,24 @@ pub fn cancel_ollama_pull(model: String) -> Result<(), String> {
     Ok(())
 }
 
+pub struct RuntimeInstallEventSink<R: tauri::Runtime> {
+    app: tauri::AppHandle<R>,
+}
+
+impl<R: tauri::Runtime> crate::core::llm::RuntimeInstallSink for RuntimeInstallEventSink<R> {
+    fn progress(&self, payload: crate::core::llm::RuntimeInstallProgress) {
+        let _ = self.app.emit("ollama-runtime-install-progress", payload);
+    }
+}
+
+#[tauri::command]
+pub async fn install_ollama_runtime<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
+) -> Result<(), String> {
+    let sink = std::sync::Arc::new(RuntimeInstallEventSink { app: app.clone() });
+    crate::core::llm::install_windows_ollama_runtime(app, sink).await
+}
+
 /// Bridges core pull progress to Tauri's event emitter. Keeps the wire format
 /// the frontend expects: `ollama-pull-progress` carries `{model,status,completed,total}`,
 /// `ollama-pull-complete` carries null, `ollama-pull-error` carries a string.

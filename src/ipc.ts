@@ -641,6 +641,17 @@ export async function pullOllamaModel(modelId: string): Promise<void> {
   return invokeGuarded<void>("pull_ollama_model", { modelId });
 }
 
+export interface RuntimeInstallProgress {
+  stage: string;
+  message: string;
+  completed?: number | null;
+  total?: number | null;
+}
+
+export async function installOllamaRuntime(): Promise<void> {
+  return invokeGuarded<void>("install_ollama_runtime");
+}
+
 export async function getSystemRam(): Promise<number> {
   return invokeGuarded<number>("get_system_ram");
 }

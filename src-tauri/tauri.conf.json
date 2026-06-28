@@ -37,9 +37,6 @@
       "prompts/*",
       "../browser-extension/chromium/*"
     ],
-    "externalBin": [
-      "binaries/ollama"
-    ],
     "windows": {
       "nsis": {
         "installMode": "currentUser",

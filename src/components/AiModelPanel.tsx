@@ -10,6 +10,7 @@ interface AiModelPanelProps {
   onWizardModelChange: (model: string) => void;
   pullingModel: boolean;
   pullProgressText: string[];
+  onInstallRuntime: () => void;
   onPullModel: () => void;
   onRetryStatus: () => void;
   onOpenSystem: () => void;
@@ -25,6 +26,7 @@ export const AiModelPanel: React.FC<AiModelPanelProps> = ({
   onWizardModelChange,
   pullingModel,
   pullProgressText,
+  onInstallRuntime,
   onPullModel,
   onRetryStatus,
   onOpenSystem,
@@ -119,6 +121,10 @@ export const AiModelPanel: React.FC<AiModelPanelProps> = ({
           </button>
           {!ollamaOnline && (
             <>
+              <button className="btn btn-primary" type="button" onClick={onInstallRuntime} disabled={pullingModel}>
+                <Download size={16} />
+                Install local AI runtime
+              </button>
               <button className="btn btn-secondary" type="button" onClick={onRetryStatus} disabled={pullingModel}>
                 <RefreshCcw size={16} />
                 Retry AI check

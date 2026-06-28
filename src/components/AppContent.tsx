@@ -215,6 +215,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           onWizardModelChange={app.setWizardModel}
           pullingModel={app.pullingModel}
           pullProgressText={app.pullProgressText}
+          onInstallRuntime={app.handleInstallRuntime}
           onPullModel={app.handlePullModel}
           onRetryStatus={app.pollOllamaStatus}
           onOpenSystem={() => app.setActiveTab("system")}
