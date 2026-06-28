@@ -87,6 +87,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const [runtimePercent, setRuntimePercent] = useState<number | null>(null);
   const [runtimeError, setRuntimeError] = useState("");
   const autoRuntimeInstallAttempted = useRef(false);
+  const pubNameInputRef = useRef<HTMLInputElement | null>(null);
 
   // Step 3 State
   const [pullProgress, setPullProgress] = useState<string>("");
@@ -457,6 +458,12 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     if (step > 1) setStep(prev => prev - 1);
   };
 
+  useEffect(() => {
+    if (step === 1) {
+      window.setTimeout(() => pubNameInputRef.current?.focus(), 0);
+    }
+  }, [step]);
+
   return (
     <div className="wizard-container card" id="onboarding-wizard">
       {initError && (
@@ -489,22 +496,29 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
         {/* STEP 1: IDENTITY */}
         {step === 1 && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <div>
-              <label htmlFor="onboarding-publication-name" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Publication Name</label>
-              <input id="onboarding-publication-name" type="text" placeholder="e.g. The Brighton Gazette" value={pubName} onChange={e => setPubName(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
+          <div className="onboarding-identity-fields">
+            <div className="onboarding-field" onMouseDown={() => pubNameInputRef.current?.focus()}>
+              <label htmlFor="onboarding-publication-name">Publication Name</label>
+              <input
+                id="onboarding-publication-name"
+                ref={pubNameInputRef}
+                autoFocus
+                type="text"
+                placeholder="e.g. The Brighton Gazette"
+                value={pubName}
+                onChange={e => setPubName(e.target.value)}
+              />
             </div>
-            <div>
-              <label htmlFor="onboarding-editor-name" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Editor Name</label>
-              <input id="onboarding-editor-name" type="text" placeholder="e.g. Jane Doe" value={editorName} onChange={e => setEditorName(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
+            <div className="onboarding-field">
+              <label htmlFor="onboarding-editor-name">Editor Name</label>
+              <input id="onboarding-editor-name" type="text" placeholder="e.g. Jane Doe" value={editorName} onChange={e => setEditorName(e.target.value)} />
             </div>
-            <div>
-              <label htmlFor="onboarding-organization-type" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Publisher Type</label>
+            <div className="onboarding-field">
+              <label htmlFor="onboarding-organization-type">Publisher Type</label>
               <select
                 id="onboarding-organization-type"
                 value={organizationType}
                 onChange={e => setOrganizationType(e.target.value)}
-                style={{ width: "100%", padding: "0.5rem" }}
               >
                 <option value="single_person">Single person</option>
                 <option value="for_profit">For-profit publication</option>
@@ -514,14 +528,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 <option value="other">Other</option>
               </select>
             </div>
-            <div style={{ display: "flex", gap: "1rem" }}>
-              <div style={{ flex: 1 }}>
-                <label htmlFor="onboarding-city" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>City</label>
-                <input id="onboarding-city" type="text" placeholder="Brighton" value={city} onChange={e => setCity(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
+            <div className="onboarding-field-row">
+              <div className="onboarding-field">
+                <label htmlFor="onboarding-city">City</label>
+                <input id="onboarding-city" type="text" placeholder="Brighton" value={city} onChange={e => setCity(e.target.value)} />
               </div>
-              <div style={{ flex: 1 }}>
-                <label htmlFor="onboarding-state" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>State</label>
-                <input id="onboarding-state" type="text" placeholder="CO" value={state} onChange={e => setState(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
+              <div className="onboarding-field">
+                <label htmlFor="onboarding-state">State</label>
+                <input id="onboarding-state" type="text" placeholder="CO" value={state} onChange={e => setState(e.target.value)} />
               </div>
             </div>
           </div>

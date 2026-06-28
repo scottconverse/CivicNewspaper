@@ -17,6 +17,9 @@ use tauri_plugin_shell::process::CommandChild;
 use tauri_plugin_shell::ShellExt;
 use tokio::sync::watch;
 
+#[cfg(target_os = "windows")]
+const CREATE_NO_WINDOW: u32 = 0x08000000;
+
 #[derive(Debug, Serialize)]
 struct OllamaGenerateRequest<'a> {
     model: &'a str,
@@ -821,6 +824,11 @@ pub fn start_downloaded_ollama<R: tauri::Runtime>(
     let mut command = Command::new(&exe);
     if let Some(parent) = exe.parent() {
         command.current_dir(parent);
+    }
+    #[cfg(target_os = "windows")]
+    {
+        use std::os::windows::process::CommandExt;
+        command.creation_flags(CREATE_NO_WINDOW);
     }
     let child = command
         .arg("serve")

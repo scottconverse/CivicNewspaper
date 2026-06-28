@@ -157,6 +157,26 @@ describe("OnboardingWizard Component Tests", () => {
     expect(document.querySelector(".onboarding-actions")).toBeInTheDocument();
   });
 
+  test("identity step focuses publication name first", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} />);
+
+    const publicationInput = screen.getByLabelText("Publication Name");
+    await waitFor(() => expect(publicationInput).toHaveFocus());
+    fireEvent.change(publicationInput, { target: { value: "Longmont Ledger" } });
+
+    expect(publicationInput).toHaveValue("Longmont Ledger");
+    expect(screen.getByLabelText("Editor Name")).toHaveValue("");
+  });
+
   test("offline AI setup keeps Next disabled while runtime install is running", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
