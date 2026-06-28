@@ -88,6 +88,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const [runtimeError, setRuntimeError] = useState("");
   const autoRuntimeInstallAttempted = useRef(false);
   const pubNameInputRef = useRef<HTMLInputElement | null>(null);
+  const editorNameInputRef = useRef<HTMLInputElement | null>(null);
+  const organizationTypeSelectRef = useRef<HTMLSelectElement | null>(null);
+  const cityInputRef = useRef<HTMLInputElement | null>(null);
+  const stateInputRef = useRef<HTMLInputElement | null>(null);
 
   // Step 3 State
   const [pullProgress, setPullProgress] = useState<string>("");
@@ -384,12 +388,26 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     try {
       setInitError(null);
       if (step === 1) {
+        const identity = {
+          pubName: pubNameInputRef.current?.value ?? pubName,
+          editorName: editorNameInputRef.current?.value ?? editorName,
+          organizationType: organizationTypeSelectRef.current?.value ?? organizationType,
+          city: cityInputRef.current?.value ?? city,
+          state: stateInputRef.current?.value ?? state,
+        };
+
+        setPubName(identity.pubName);
+        setEditorName(identity.editorName);
+        setOrganizationType(identity.organizationType);
+        setCity(identity.city);
+        setState(identity.state);
+
         // Persist identity settings
-        await setSetting("identity.newsroom_name", pubName);
-        await setSetting("identity.editor_name", editorName);
-        await setSetting("identity.organization_type", organizationType);
-        await setSetting("identity.city", city);
-        await setSetting("identity.state", state);
+        await setSetting("identity.newsroom_name", identity.pubName);
+        await setSetting("identity.editor_name", identity.editorName);
+        await setSetting("identity.organization_type", identity.organizationType);
+        await setSetting("identity.city", identity.city);
+        await setSetting("identity.state", identity.state);
 
         // RE-AUDIT M2: also write the community profile so the masthead and the
         // published site reflect the entered identity — the masthead reads the
@@ -398,10 +416,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           const profile = await getCommunityProfile();
           await saveCommunityProfile({
             ...profile,
-            site_title: pubName.trim() || profile.site_title,
-            organization_type: organizationType,
-            city: city.trim() || profile.city,
-            state: state.trim() || profile.state,
+            site_title: identity.pubName.trim() || profile.site_title,
+            organization_type: identity.organizationType,
+            city: identity.city.trim() || profile.city,
+            state: identity.state.trim() || profile.state,
           });
         } catch {
           /* non-fatal — identity settings above are still saved */
@@ -505,19 +523,30 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 autoFocus
                 type="text"
                 placeholder="e.g. The Brighton Gazette"
-                value={pubName}
+                defaultValue={pubName}
+                onInput={e => setPubName(e.currentTarget.value)}
                 onChange={e => setPubName(e.target.value)}
               />
             </div>
             <div className="onboarding-field">
               <label htmlFor="onboarding-editor-name">Editor Name</label>
-              <input id="onboarding-editor-name" type="text" placeholder="e.g. Jane Doe" value={editorName} onChange={e => setEditorName(e.target.value)} />
+              <input
+                id="onboarding-editor-name"
+                ref={editorNameInputRef}
+                type="text"
+                placeholder="e.g. Jane Doe"
+                defaultValue={editorName}
+                onInput={e => setEditorName(e.currentTarget.value)}
+                onChange={e => setEditorName(e.target.value)}
+              />
             </div>
             <div className="onboarding-field">
               <label htmlFor="onboarding-organization-type">Publisher Type</label>
               <select
                 id="onboarding-organization-type"
-                value={organizationType}
+                ref={organizationTypeSelectRef}
+                defaultValue={organizationType}
+                onInput={e => setOrganizationType(e.currentTarget.value)}
                 onChange={e => setOrganizationType(e.target.value)}
               >
                 <option value="single_person">Single person</option>
@@ -531,11 +560,27 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             <div className="onboarding-field-row">
               <div className="onboarding-field">
                 <label htmlFor="onboarding-city">City</label>
-                <input id="onboarding-city" type="text" placeholder="Brighton" value={city} onChange={e => setCity(e.target.value)} />
+                <input
+                  id="onboarding-city"
+                  ref={cityInputRef}
+                  type="text"
+                  placeholder="Brighton"
+                  defaultValue={city}
+                  onInput={e => setCity(e.currentTarget.value)}
+                  onChange={e => setCity(e.target.value)}
+                />
               </div>
               <div className="onboarding-field">
                 <label htmlFor="onboarding-state">State</label>
-                <input id="onboarding-state" type="text" placeholder="CO" value={state} onChange={e => setState(e.target.value)} />
+                <input
+                  id="onboarding-state"
+                  ref={stateInputRef}
+                  type="text"
+                  placeholder="CO"
+                  defaultValue={state}
+                  onInput={e => setState(e.currentTarget.value)}
+                  onChange={e => setState(e.target.value)}
+                />
               </div>
             </div>
           </div>
