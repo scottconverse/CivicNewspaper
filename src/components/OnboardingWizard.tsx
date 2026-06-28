@@ -212,40 +212,48 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     }
   };
 
-  const installRuntime = async () => {
+  const installRuntime = async (): Promise<boolean> => {
     setRuntimeInstalling(true);
     setRuntimeError("");
     setRuntimeProgress("Preparing local AI runtime install...");
     setRuntimePercent(0);
+    setInitError(null);
+    let unlisten: (() => void) | null = null;
     try {
-      const unlisten = await listen<{ stage: string; message: string; completed?: number | null; total?: number | null }>(
-        "ollama-runtime-install-progress",
-        (event) => {
-          setRuntimeProgress(event.payload.message);
-          if (event.payload.completed !== undefined && event.payload.completed !== null && event.payload.total) {
-            setRuntimePercent((event.payload.completed / event.payload.total) * 100);
-          } else if (event.payload.stage === "verify") {
-            setRuntimePercent(100);
-          } else if (event.payload.stage === "extract" || event.payload.stage === "start") {
-            setRuntimePercent(null);
-          }
-        }
-      );
       try {
-        await installOllamaRuntime();
-      } finally {
-        unlisten();
+        unlisten = await listen<{ stage: string; message: string; completed?: number | null; total?: number | null }>(
+          "ollama-runtime-install-progress",
+          (event) => {
+            setRuntimeProgress(event.payload.message);
+            if (event.payload.completed !== undefined && event.payload.completed !== null && event.payload.total) {
+              setRuntimePercent((event.payload.completed / event.payload.total) * 100);
+            } else if (event.payload.stage === "verify") {
+              setRuntimePercent(100);
+            } else if (event.payload.stage === "extract" || event.payload.stage === "start") {
+              setRuntimePercent(null);
+            }
+          }
+        );
+      } catch (eventError) {
+        console.warn("Runtime progress listener could not start; continuing install.", eventError);
+        setRuntimeProgress("Starting local AI runtime install...");
       }
+      await installOllamaRuntime();
       setRuntimeProgress("Local AI runtime is ready.");
       setRuntimePercent(100);
       setHealthTimeout(false);
       setRetryCount(c => c + 1);
       const result = await ollamaHealth();
       setHealth(result);
+      return result.reachable;
     } catch (e) {
-      setRuntimeError(toUserMessage(e));
+      const message = toUserMessage(e);
+      setRuntimeError(message);
+      setInitError(`Local AI runtime install failed: ${message}`);
       setRuntimeProgress("");
+      return false;
     } finally {
+      unlisten?.();
       setRuntimeInstalling(false);
     }
   };
@@ -360,6 +368,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           // Model is already installed, skip Step 3 and go directly to Step 4
           await setSetting("model.selected", model);
           setStep(4);
+        } else if (!health?.reachable) {
+          const ready = await installRuntime();
+          if (ready) {
+            setStep(3);
+          }
         } else {
           setStep(3);
         }
@@ -519,13 +532,13 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                       <p style={{ fontSize: "0.85rem", color: "var(--accent-primary)", marginBottom: "0.5rem" }}>{exportStatus}</p>
                     )}
                     <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-                      <button className="btn btn-primary btn-sm" onClick={installRuntime} disabled={runtimeInstalling}>
+                      <button type="button" className="btn btn-primary btn-sm" onClick={() => void installRuntime()} disabled={runtimeInstalling}>
                         <Download size={14} style={{ marginRight: "0.5rem" }} /> {runtimeInstalling ? "Installing..." : "Install local AI runtime"}
                       </button>
-                      <button className="btn btn-primary btn-sm" onClick={() => { setHealthTimeout(false); setCheckingHealth(true); setRetryCount(c => c + 1); }}>
+                      <button type="button" className="btn btn-primary btn-sm" onClick={() => { setHealthTimeout(false); setCheckingHealth(true); setRetryCount(c => c + 1); }}>
                         <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} /> Retry
                       </button>
-                      <button className="btn btn-secondary btn-sm" onClick={handleExportDiagnostics}>
+                      <button type="button" className="btn btn-secondary btn-sm" onClick={handleExportDiagnostics}>
                         Save diagnostics file
                       </button>
                     </div>
@@ -546,11 +559,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                       <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>{runtimeProgress}</p>
                     )}
                     <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-                      <button className="btn btn-primary" onClick={installRuntime} disabled={runtimeInstalling}>
+                      <button type="button" className="btn btn-primary" onClick={() => void installRuntime()} disabled={runtimeInstalling}>
                         <Download size={14} style={{ marginRight: "0.5rem" }} />
                         {runtimeInstalling ? "Installing..." : "Install local AI runtime"}
                       </button>
-                      <button className="btn btn-secondary" onClick={() => setRetryCount(c => c + 1)} disabled={checkingHealth}>
+                      <button type="button" className="btn btn-secondary" onClick={() => setRetryCount(c => c + 1)} disabled={checkingHealth}>
                         <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} />
                         {checkingHealth ? "Checking..." : "Check Initialization Status"}
                       </button>
@@ -634,7 +647,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                     </p>
                   </div>
                 )}
-                <button className="btn btn-primary" onClick={startPullModel}>
+                <button type="button" className="btn btn-primary" onClick={startPullModel}>
                   <Download size={16} style={{ marginRight: "0.5rem" }} /> Download {model}
                 </button>
                 <div style={{ marginTop: "1rem", background: "rgba(245, 158, 11, 0.05)", borderLeft: "4px solid var(--color-warning)", padding: "0.75rem", borderRadius: "4px" }}>
@@ -662,7 +675,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   />
                 </div>
                 {pulling && (
-                  <button className="btn btn-secondary btn-sm" onClick={cancelPullModel} style={{ marginTop: "1rem" }}>
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={cancelPullModel} style={{ marginTop: "1rem" }}>
                     Cancel Download
                   </button>
                 )}
@@ -717,13 +730,13 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       </div>
 
       <div className="flex-between" style={{ marginTop: "2rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}>
-        <button className="btn btn-secondary" onClick={handleBack} disabled={step === 1}>
+        <button type="button" className="btn btn-secondary" onClick={handleBack} disabled={step === 1}>
           Back
         </button>
         
         <div style={{ display: "flex", gap: "1rem" }}>
           {(step === 2 || step === 3) && (
-            <button className="btn btn-secondary" onClick={() => {
+            <button type="button" className="btn btn-secondary" onClick={() => {
               if (step === 2) {
                 setSkipConfirm({
                   title: "Skip AI setup?",
@@ -747,7 +760,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             </button>
           )}
           
-          <button className="btn btn-primary" onClick={handleNext} id="btn-wizard-next">
+          <button type="button" className="btn btn-primary" onClick={handleNext} id="btn-wizard-next" disabled={runtimeInstalling || pulling}>
             {step === steps.length ? "Finish Onboarding" : "Next"}
             <ChevronRight size={16} style={{ marginLeft: "0.5rem" }} />
           </button>
