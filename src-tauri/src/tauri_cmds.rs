@@ -1254,7 +1254,9 @@ pub async fn publish_with_connector(
     published_url: Option<String>,
     deployment_id: Option<String>,
 ) -> Result<compiler::CompileStaticSiteResult, String> {
+    let provider = provider.trim().to_string();
     let config = get_publisher_config(db.clone(), provider.clone())?
+        .or_else(|| default_publish_config_for_unsaved_connector(&provider, &output_dir))
         .ok_or_else(|| "Save this publisher connector before publishing.".to_string())?;
     let connector = publisher::publisher_for(&provider)?;
     let request = publisher::PublisherPublishRequest {
@@ -1271,6 +1273,62 @@ pub async fn publish_with_connector(
         published.published_url,
         published.deployment_id,
     )
+}
+
+fn default_publish_config_for_unsaved_connector(
+    provider: &str,
+    output_dir: &str,
+) -> Option<publisher::PublisherConfig> {
+    if provider != publisher::PublisherProvider::HereNow.as_str() {
+        return None;
+    }
+    let display_name = std::path::Path::new(output_dir)
+        .file_name()
+        .and_then(|name| name.to_str())
+        .map(str::trim)
+        .filter(|name| !name.is_empty())
+        .unwrap_or("Civic Newspaper preview")
+        .to_string();
+    Some(publisher::PublisherConfig {
+        provider: provider.to_string(),
+        display_name,
+        site_url: None,
+        project_hint: Some("Temporary civic newspaper preview.".to_string()),
+        site_id: None,
+        account_id: None,
+        repo: None,
+        branch: None,
+        path_prefix: None,
+        username: None,
+        has_credential: publisher::has_provider_credential(provider),
+    })
+}
+
+#[cfg(test)]
+mod publish_connector_tests {
+    use super::*;
+
+    #[test]
+    fn unsaved_here_now_connector_gets_anonymous_preview_config() {
+        let config = default_publish_config_for_unsaved_connector(
+            "here_now",
+            r"C:\Users\tester\Documents\The Longmont Ledger",
+        )
+        .expect("here.now should support anonymous publishing without a saved config");
+
+        assert_eq!(config.provider, "here_now");
+        assert_eq!(config.display_name, "The Longmont Ledger");
+        assert!(config.site_id.is_none());
+        assert!(config.project_hint.unwrap().contains("Temporary"));
+    }
+
+    #[test]
+    fn unsaved_credential_connectors_still_require_saved_config() {
+        assert!(default_publish_config_for_unsaved_connector("netlify", r"C:\site").is_none());
+        assert!(
+            default_publish_config_for_unsaved_connector("github_pages", r"C:\site").is_none()
+        );
+    }
 }
 
 #[tauri::command]
