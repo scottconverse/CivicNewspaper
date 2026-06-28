@@ -375,10 +375,54 @@ fn known_city_candidates(
                 "https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk/agendas-and-minutes",
                 "primary_record",
             )],
+            "Public & Legal Notices" => vec![
+                (
+                    "Longmont public notices search",
+                    "https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk",
+                    "primary_record",
+                ),
+                (
+                    "Boulder County public notices",
+                    "https://bouldercounty.gov/",
+                    "primary_record",
+                ),
+            ],
             "School Board Agenda" => vec![(
                 "St. Vrain Valley Schools",
                 "https://www.svvsd.org/",
                 "primary_record",
+            )],
+            "Police Department Facebook" => vec![(
+                "Longmont Public Safety",
+                "https://www.longmontcolorado.gov/departments/departments-n-z/public-safety",
+                "official_comm",
+            )],
+            "Local Reddit Community" => vec![(
+                "r/Longmont",
+                "https://www.reddit.com/r/Longmont/",
+                "community_signal",
+            )],
+            "Local Newspaper Headlines" => vec![
+                (
+                    "Longmont Leader local news",
+                    "https://www.longmontleader.com/local-news",
+                    "media_lead",
+                ),
+                (
+                    "Times-Call Longmont news",
+                    "https://www.timescall.com/location/colorado/boulder-county/longmont/",
+                    "media_lead",
+                ),
+            ],
+            "Chamber of Commerce" => vec![(
+                "Longmont Area Chamber of Commerce",
+                "https://longmontchamber.org/",
+                "community_signal",
+            )],
+            "Library Events" => vec![(
+                "Longmont Library",
+                "https://www.longmontcolorado.gov/departments/departments-e-m/library",
+                "community_signal",
             )],
             _ => Vec::new(),
         },
@@ -720,5 +764,27 @@ mod tests {
                 "{city} should include {expected_host}"
             );
         }
+    }
+
+    #[test]
+    fn longmont_discovery_includes_local_media_and_dark_signal_seeds() {
+        let categories = fallback_discovery_categories("Longmont", "CO");
+        let all_candidates: Vec<&DiscoveredSource> = categories
+            .iter()
+            .flat_map(|category| category.candidates.iter())
+            .collect();
+
+        assert!(all_candidates
+            .iter()
+            .any(|candidate| candidate.url == "https://www.reddit.com/r/Longmont/"));
+        assert!(all_candidates
+            .iter()
+            .any(|candidate| candidate.url == "https://www.longmontleader.com/local-news"));
+        assert!(all_candidates
+            .iter()
+            .any(|candidate| candidate.url.contains("bouldercounty.gov")));
+        assert!(all_candidates
+            .iter()
+            .any(|candidate| candidate.r#type == "community_signal"));
     }
 }
