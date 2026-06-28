@@ -21,22 +21,22 @@ Do not decide there are "no directives" by scanning for new filenames only. This
 
 Run this directive now:
 
-`test-comms/directives/20260628-rerun-identity-focus-after-4c5b239.md`
+`test-comms/directives/20260628-rerun-publication-name-after-5bdd7a8.md`
 
-Before executing the product test, write and push this visibility confirmation report:
+Visibility confirmation has already been received in:
 
 `test-comms/reports/20260628-directive-visibility-msi-civic.md`
 
-That report must confirm:
+That report confirmed:
 
-- local path is `C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms` or explain why not,
+- local path is `C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms`,
 - branch is `test-comms/cleanroom-coder-tester`,
 - local HEAD and `origin/test-comms/cleanroom-coder-tester` HEAD,
 - this file was read,
-- the active directive path above exists,
-- the product branch and commit below were read.
+- the active directive path existed,
+- the product branch and commit were read.
 
-After pushing that visibility report, proceed with the active directive unless the report documents a blocking mismatch.
+Continue with the new active directive unless a blocking mismatch is documented.
 
 Product branch:
 
@@ -44,11 +44,11 @@ Product branch:
 
 Product commit:
 
-`4c5b239`
+`5bdd7a8`
 
 Artifact folder:
 
-`test-comms/artifacts/20260628-identity-focus-rerun-4c5b239/`
+`test-comms/artifacts/20260628-publication-name-rerun-5bdd7a8/`
 
 ## Current Goal
 
@@ -80,10 +80,10 @@ If the app crashes, helper windows appear, Ollama disappears, model state is los
 
 Write the next report here:
 
-`test-comms/reports/20260628-identity-focus-rerun-report-4c5b239.md`
+`test-comms/reports/20260628-publication-name-rerun-report-5bdd7a8.md`
 
 Put artifacts here:
 
-`test-comms/artifacts/20260628-identity-focus-rerun-4c5b239/`
+`test-comms/artifacts/20260628-publication-name-rerun-5bdd7a8/`
 
 Commit and push with `[skip ci]`.
