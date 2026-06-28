@@ -21,7 +21,7 @@ Do not decide there are "no directives" by scanning for new filenames only. This
 
 Run this directive now:
 
-`test-comms/directives/20260628-rerun-recovered-source-handoff-after-aa0a1e4.md`
+`test-comms/directives/20260628-rerun-auto-longmont-intake-after-4658500.md`
 
 Visibility confirmation has already been received in:
 
@@ -44,11 +44,11 @@ Product branch:
 
 Product commit:
 
-`aa0a1e4`
+`4658500`
 
 Artifact folder:
 
-`test-comms/artifacts/20260628-recovered-source-handoff-rerun-aa0a1e4/`
+`test-comms/artifacts/20260628-auto-longmont-intake-rerun-4658500/`
 
 ## Current Goal
 
@@ -80,10 +80,10 @@ If the app crashes, helper windows appear, Ollama disappears, model state is los
 
 Write the next report here:
 
-`test-comms/reports/20260628-recovered-source-handoff-rerun-report-aa0a1e4.md`
+`test-comms/reports/20260628-auto-longmont-intake-rerun-report-4658500.md`
 
 Put artifacts here:
 
-`test-comms/artifacts/20260628-recovered-source-handoff-rerun-aa0a1e4/`
+`test-comms/artifacts/20260628-auto-longmont-intake-rerun-4658500/`
 
 Commit and push with `[skip ci]`.
