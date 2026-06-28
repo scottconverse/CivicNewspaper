@@ -12,6 +12,8 @@ interface PairDialogProps {
   pairedClients: PairedClient[];
   onRevokeClient: (id: number) => void;
   onOpenExtensionFolder: () => void;
+  extensionFolderStatus?: string;
+  extensionFolderPath?: string;
 }
 
 export const PairDialog: React.FC<PairDialogProps> = ({
@@ -22,7 +24,9 @@ export const PairDialog: React.FC<PairDialogProps> = ({
   onGeneratePin,
   pairedClients,
   onRevokeClient,
-  onOpenExtensionFolder
+  onOpenExtensionFolder,
+  extensionFolderStatus,
+  extensionFolderPath
 }) => {
   return (
     <div id="pairing-panel-container">
@@ -80,6 +84,13 @@ export const PairDialog: React.FC<PairDialogProps> = ({
             <Puzzle size={16} />
             Open extension folder
           </button>
+
+          {(extensionFolderStatus || extensionFolderPath) && (
+            <div className="extension-folder-status" id="extension-folder-status" role="status" aria-live="polite">
+              {extensionFolderStatus && <strong>{extensionFolderStatus}</strong>}
+              {extensionFolderPath && <code>{extensionFolderPath}</code>}
+            </div>
+          )}
 
           <div className="pairing-lockout">
             <Lock size={18} />

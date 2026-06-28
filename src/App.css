@@ -1763,6 +1763,25 @@ tr:hover td {
   line-height: 1.5;
 }
 
+.extension-folder-status {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+  padding: 0.8rem;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: #f7f4ed;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.extension-folder-status code {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  color: var(--text-primary);
+}
+
 .setup-steps {
   display: grid;
   gap: 8px;

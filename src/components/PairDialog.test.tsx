@@ -80,4 +80,26 @@ describe("PairDialog Component Tests", () => {
     expect(screen.queryByText(/Enter a device label/i)).not.toBeInTheDocument();
     expect(screen.getByText(/Paste this active code/i)).toBeInTheDocument();
   });
+
+  test("shows an observable extension folder handoff result and path", () => {
+    render(
+      <PairDialog
+        pairingLabel=""
+        onPairingLabelChange={vi.fn()}
+        generatedPin={null}
+        pinExpiryMsg=""
+        onGeneratePin={vi.fn()}
+        pairedClients={[]}
+        onRevokeClient={vi.fn()}
+        onOpenExtensionFolder={vi.fn()}
+        extensionFolderStatus="Extension folder handoff requested."
+        extensionFolderPath="C:\\Users\\tester\\AppData\\Local\\The Civic Desk\\_up_\\browser-extension\\chromium"
+      />
+    );
+
+    const status = screen.getByRole("status");
+    expect(status).toHaveTextContent(/handoff requested/i);
+    expect(status).toHaveTextContent("browser-extension");
+    expect(status).toHaveTextContent("chromium");
+  });
 });

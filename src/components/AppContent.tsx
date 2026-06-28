@@ -21,6 +21,9 @@ interface AppContentProps {
 }
 
 export const AppContent: React.FC<AppContentProps> = ({ app }) => {
+  const [extensionFolderStatus, setExtensionFolderStatus] = React.useState("");
+  const [extensionFolderPath, setExtensionFolderPath] = React.useState("");
+
   // UX-C2: auto-dismiss success banners so a stale "success" message doesn't
   // linger across unrelated navigation. Errors are left until the user dismisses
   // them (or the next action clears errorMessage) so failures aren't missed.
@@ -227,13 +230,20 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           onGeneratePin={app.handleGeneratePin}
           pairedClients={app.pairedClients}
           onRevokeClient={app.handleRevokeClient}
+          extensionFolderStatus={extensionFolderStatus}
+          extensionFolderPath={extensionFolderPath}
           onOpenExtensionFolder={async () => {
             try {
               const extPath = await getBrowserExtensionPath();
+              setExtensionFolderPath(extPath);
               await openLocalPath(extPath);
-              app.setStatusMessage("Opened the browser extension folder.");
+              const msg = "Extension folder handoff requested. If File Explorer did not come forward, use this path.";
+              setExtensionFolderStatus(msg);
+              app.setStatusMessage(msg);
             } catch (e) {
-              app.setErrorMessage(`Couldn't open the browser extension folder: ${toUserMessage(e)}`);
+              const message = `Couldn't open the browser extension folder: ${toUserMessage(e)}`;
+              setExtensionFolderStatus(message);
+              app.setErrorMessage(message);
             }
           }}
         />
