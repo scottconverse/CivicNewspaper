@@ -236,15 +236,81 @@ export function useApp() {
 
   const pullLogEndRef = useRef<HTMLDivElement>(null);
 
+  const starterLongmontSources = [
+    {
+      name: "Longmont Agenda Management Portal",
+      url: "https://longmontcolorado.gov/city-clerk/agenda-management-portal/",
+      type: "primary_record",
+      tier: "official_record",
+    },
+    {
+      name: "Longmont City Council Meetings",
+      url: "https://longmontcolorado.gov/government/city-council-meetings/",
+      type: "primary_record",
+      tier: "official_record",
+    },
+    {
+      name: "Longmont Public Information",
+      url: "https://longmontcolorado.gov/public-information/",
+      type: "official_comm",
+      tier: "official_record",
+    },
+    {
+      name: "Public Notice Colorado",
+      url: "https://www.publicnoticecolorado.com/",
+      type: "primary_record",
+      tier: "official_record",
+    },
+    {
+      name: "Longmont subreddit",
+      url: "https://www.reddit.com/r/Longmont/",
+      type: "community_signal",
+      tier: "community_signal",
+    },
+    {
+      name: "Longmont Colorado subreddit",
+      url: "https://www.reddit.com/r/LongmontColorado/",
+      type: "community_signal",
+      tier: "community_signal",
+    },
+  ];
+
   const routeAfterRecoveredSetup = async () => {
     try {
       const recovered = await getSetting("setup.recovered_input");
       if (recovered !== "true") return;
-      await setSetting("setup.recovered_input", "consumed");
+      await setSetting("setup.recovered_input", "running_source_intake");
       setActiveTab("sources");
-      setStatusMessage("Setup had to recover from missing input events, so The Civic Desk opened Sources for the next first-run step.");
+      setStatusMessage("Setup had to recover from missing input events, so The Civic Desk is adding starter Longmont sources and running the first scan automatically.");
+      setLoading(true);
+
+      let imported = 0;
+      for (const source of starterLongmontSources) {
+        try {
+          await addSource(source.name, source.url, source.type, source.tier);
+          imported++;
+        } catch (err) {
+          console.warn("Recovered setup source import skipped:", source.url, err);
+        }
+      }
+
+      await loadInitialData();
+      setStatusMessage(`Added ${imported} starter Longmont source(s). Fetching records and community signals...`);
+      await ingest();
+      await loadInitialData();
+      setActiveTab("dailyScan");
+      setStatusMessage("Running the first Longmont Daily Scan automatically...");
+      const scanId = await runDailyScan("Longmont", "CO", 24);
+      setLatestScanId(scanId);
+      await setSetting("scan.latest_id", String(scanId));
+      await setSetting("setup.recovered_input", "consumed");
+      setStatusMessage(`Recovered setup completed source intake and Daily Scan ${scanId}.`);
+      await loadInitialData();
     } catch (err) {
       console.error("Failed to consume recovered setup route flag", err);
+      setErrorMessage(toUserMessage(err));
+    } finally {
+      setLoading(false);
     }
   };
 
