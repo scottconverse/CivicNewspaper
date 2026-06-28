@@ -643,6 +643,17 @@ button:disabled {
   min-width: 0;
 }
 
+.onboarding-notice {
+  background: rgba(48, 92, 184, 0.07);
+  border-left: 4px solid var(--accent-primary);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 0.86rem;
+  line-height: 1.45;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+}
+
 .onboarding-starter-profiles {
   border: 1px solid var(--border-color);
   border-radius: 8px;

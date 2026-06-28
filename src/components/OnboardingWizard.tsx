@@ -114,6 +114,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const [runtimePercent, setRuntimePercent] = useState<number | null>(null);
   const [runtimeError, setRuntimeError] = useState("");
   const autoRuntimeInstallAttempted = useRef(false);
+  const userInteractedOnIdentityRef = useRef(false);
+  const identityRescueAttemptedRef = useRef(false);
   const pubNameInputRef = useRef<HTMLInputElement | null>(null);
   const editorNameInputRef = useRef<HTMLInputElement | null>(null);
   const organizationTypeSelectRef = useRef<HTMLSelectElement | null>(null);
@@ -134,6 +136,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
   // Init error surfacing state (WU-Nit-1)
   const [initError, setInitError] = useState<string | null>(null);
+  const [setupNotice, setSetupNotice] = useState<string | null>(null);
 
   const steps = [
     { title: "Identity", desc: "Define your local news outlet name and mission." },
@@ -470,6 +473,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     try {
       setInitError(null);
       if (step === 1) {
+        setSetupNotice(null);
         await persistIdentity();
         setStep(2);
       } else if (step === 2) {
@@ -560,12 +564,59 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     return () => window.removeEventListener("hashchange", handleStarterRoute);
   }, [step]);
 
+  useEffect(() => {
+    if (step !== 1 || identityRescueAttemptedRef.current) return;
+
+    const markInteraction = () => {
+      userInteractedOnIdentityRef.current = true;
+    };
+
+    window.addEventListener("pointerdown", markInteraction, true);
+    window.addEventListener("click", markInteraction, true);
+    window.addEventListener("keydown", markInteraction, true);
+    window.addEventListener("input", markInteraction, true);
+
+    const rescueTimer = window.setTimeout(() => {
+      if (identityRescueAttemptedRef.current || userInteractedOnIdentityRef.current) return;
+
+      const fieldsAreEmpty = !currentIdentityValues().pubName.trim()
+        && !currentIdentityValues().editorName.trim()
+        && !currentIdentityValues().city.trim()
+        && !currentIdentityValues().state.trim();
+      if (!fieldsAreEmpty) return;
+
+      const profile = starterProfiles[0];
+      identityRescueAttemptedRef.current = true;
+      applyIdentityValues(profile);
+      setSetupNotice("The setup screen did not receive input events, so The Civic Desk continued with a starter Longmont profile. You can edit identity later in Settings.");
+      void persistIdentity(profile)
+        .then(() => setStep(2))
+        .catch(e => {
+          console.error(e);
+          setInitError(toUserMessage(e));
+        });
+    }, 12000);
+
+    return () => {
+      window.clearTimeout(rescueTimer);
+      window.removeEventListener("pointerdown", markInteraction, true);
+      window.removeEventListener("click", markInteraction, true);
+      window.removeEventListener("keydown", markInteraction, true);
+      window.removeEventListener("input", markInteraction, true);
+    };
+  }, [step]);
+
   return (
     <div className="wizard-container card" id="onboarding-wizard">
       {initError && (
         <div style={{ background: "rgba(239, 68, 68, 0.05)", borderLeft: "4px solid var(--color-error)", padding: "0.75rem", borderRadius: "4px", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <AlertCircle size={16} style={{ color: "var(--color-error)" }} />
           <span style={{ fontSize: "0.85rem", color: "var(--color-error)" }}>Initialization Error: {initError}</span>
+        </div>
+      )}
+      {setupNotice && (
+        <div className="onboarding-notice" role="status">
+          {setupNotice}
         </div>
       )}
 

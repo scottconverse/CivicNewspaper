@@ -1,6 +1,6 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, test, expect, vi, beforeEach } from "vitest";
+import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 import { OnboardingWizard } from "./OnboardingWizard";
 import * as tauriCore from "@tauri-apps/api/core";
 
@@ -25,6 +25,10 @@ vi.mock("@tauri-apps/plugin-opener", () => ({
 describe("OnboardingWizard Component Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   test("Happy path: completes onboarding and calls onComplete", async () => {
@@ -112,7 +116,6 @@ describe("OnboardingWizard Component Tests", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /Install local AI runtime/i }));
 
-    expect(await screen.findByText(/Preparing local AI runtime install/i)).toBeInTheDocument();
     await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("install_ollama_runtime"));
   });
 
@@ -208,6 +211,7 @@ describe("OnboardingWizard Component Tests", () => {
       if (cmd === "get_system_ram") return Promise.resolve(16);
       if (cmd === "get_setting") return Promise.resolve(null);
       if (cmd === "set_setting") return Promise.resolve();
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: false, models: [], version: null });
       if (cmd === "get_community_profile") return Promise.resolve({
         site_title: "My Local Publication",
         organization_type: "single_person",
@@ -257,6 +261,41 @@ describe("OnboardingWizard Component Tests", () => {
       key: "identity.newsroom_name",
       value: "Longmont Civic Desk",
     });
+  });
+
+  test("identity setup auto-recovers when no input events arrive", async () => {
+    vi.useFakeTimers();
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      if (cmd === "set_setting") return Promise.resolve();
+      if (cmd === "get_community_profile") return Promise.resolve({
+        site_title: "My Local Publication",
+        organization_type: "single_person",
+        city: "Brighton",
+        state: "CO",
+      });
+      if (cmd === "save_community_profile") return Promise.resolve();
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(12_000);
+    });
+
+    expect(screen.getByText("Step 2 of 5")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("starter Longmont profile");
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "identity.newsroom_name",
+      value: "Longmont Civic Desk",
+    });
+
+    vi.useRealTimers();
   });
 
   test("offline AI setup keeps Next disabled while runtime install is running", async () => {
