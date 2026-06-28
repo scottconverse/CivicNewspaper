@@ -212,7 +212,7 @@ describe("OnboardingWizard Component Tests", () => {
 
     render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} />);
 
-    await user.click(screen.getByRole("button", { name: "Longmont" }));
+    await user.click(screen.getByRole("link", { name: "Longmont" }));
 
     expect(screen.getByLabelText("Publication Name")).toHaveValue("Longmont Civic Desk");
     expect(screen.getByLabelText("Editor Name")).toHaveValue("Local editor");

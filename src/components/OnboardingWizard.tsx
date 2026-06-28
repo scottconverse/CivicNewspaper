@@ -163,6 +163,41 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     if (stateInputRef.current) stateInputRef.current.value = values.state;
   };
 
+  const currentIdentityValues = () => ({
+    pubName: pubNameInputRef.current?.value ?? pubName,
+    editorName: editorNameInputRef.current?.value ?? editorName,
+    organizationType: organizationTypeSelectRef.current?.value ?? organizationType,
+    city: cityInputRef.current?.value ?? city,
+    state: stateInputRef.current?.value ?? state,
+  });
+
+  const persistIdentity = async (identity = currentIdentityValues()) => {
+    setPubName(identity.pubName);
+    setEditorName(identity.editorName);
+    setOrganizationType(identity.organizationType);
+    setCity(identity.city);
+    setState(identity.state);
+
+    await setSetting("identity.newsroom_name", identity.pubName);
+    await setSetting("identity.editor_name", identity.editorName);
+    await setSetting("identity.organization_type", identity.organizationType);
+    await setSetting("identity.city", identity.city);
+    await setSetting("identity.state", identity.state);
+
+    try {
+      const profile = await getCommunityProfile();
+      await saveCommunityProfile({
+        ...profile,
+        site_title: identity.pubName.trim() || profile.site_title,
+        organization_type: identity.organizationType,
+        city: identity.city.trim() || profile.city,
+        state: identity.state.trim() || profile.state,
+      });
+    } catch {
+      /* non-fatal — identity settings above are still saved */
+    }
+  };
+
   // Initialize paths and ram
   useEffect(() => {
     async function init() {
@@ -435,43 +470,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     try {
       setInitError(null);
       if (step === 1) {
-        const identity = {
-          pubName: pubNameInputRef.current?.value ?? pubName,
-          editorName: editorNameInputRef.current?.value ?? editorName,
-          organizationType: organizationTypeSelectRef.current?.value ?? organizationType,
-          city: cityInputRef.current?.value ?? city,
-          state: stateInputRef.current?.value ?? state,
-        };
-
-        setPubName(identity.pubName);
-        setEditorName(identity.editorName);
-        setOrganizationType(identity.organizationType);
-        setCity(identity.city);
-        setState(identity.state);
-
-        // Persist identity settings
-        await setSetting("identity.newsroom_name", identity.pubName);
-        await setSetting("identity.editor_name", identity.editorName);
-        await setSetting("identity.organization_type", identity.organizationType);
-        await setSetting("identity.city", identity.city);
-        await setSetting("identity.state", identity.state);
-
-        // RE-AUDIT M2: also write the community profile so the masthead and the
-        // published site reflect the entered identity — the masthead reads the
-        // community profile (city/state/title), not the identity.* settings.
-        try {
-          const profile = await getCommunityProfile();
-          await saveCommunityProfile({
-            ...profile,
-            site_title: identity.pubName.trim() || profile.site_title,
-            organization_type: identity.organizationType,
-            city: identity.city.trim() || profile.city,
-            state: identity.state.trim() || profile.state,
-          });
-        } catch {
-          /* non-fatal — identity settings above are still saved */
-        }
-
+        await persistIdentity();
         setStep(2);
       } else if (step === 2) {
         if (health && health.reachable && health.models.includes(model)) {
@@ -529,6 +528,31 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     }
   }, [step]);
 
+  useEffect(() => {
+    if (step !== 1) return;
+    const hashParams = window.location.hash.startsWith("#")
+      ? new URLSearchParams(window.location.hash.slice(1))
+      : new URLSearchParams();
+    const params = window.location.search
+      ? new URLSearchParams(window.location.search)
+      : hashParams;
+    const starter = params.get("starter");
+    const profile = starterProfiles.find(item => item.label.toLowerCase() === starter?.toLowerCase());
+    if (!profile) return;
+
+    applyIdentityValues(profile);
+    window.history.replaceState(null, "", window.location.pathname);
+
+    if (params.get("continueSetup") === "1") {
+      void persistIdentity(profile)
+        .then(() => setStep(2))
+        .catch(e => {
+          console.error(e);
+          setInitError(toUserMessage(e));
+        });
+    }
+  }, [step]);
+
   return (
     <div className="wizard-container card" id="onboarding-wizard">
       {initError && (
@@ -566,14 +590,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               <span>Starter profiles</span>
               <div>
                 {starterProfiles.map(profile => (
-                  <button
+                  <a
                     key={profile.label}
-                    type="button"
                     className="btn btn-secondary btn-sm"
+                    href={`#starter=${encodeURIComponent(profile.label.toLowerCase())}&continueSetup=1`}
                     onClick={() => applyIdentityValues(profile)}
                   >
                     {profile.label}
-                  </button>
+                  </a>
                 ))}
               </div>
             </div>
