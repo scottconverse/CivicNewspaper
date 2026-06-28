@@ -291,16 +291,24 @@ describe("OnboardingWizard Component Tests", () => {
     });
   });
 
-  test("model setup auto-starts pull when no input events arrive", async () => {
+  test("model setup auto-starts pull and completes onboarding when no input events arrive", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
+    let pullStarted = false;
 
     invokeMock.mockImplementation((cmd: string) => {
       if (cmd === "get_system_ram") return Promise.resolve(16);
       if (cmd === "get_setting") return Promise.resolve(null);
       if (cmd === "set_setting") return Promise.resolve();
-      if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: [], version: "0.1.0" });
-      if (cmd === "pull_ollama_model") return Promise.resolve();
+      if (cmd === "ollama_health") return Promise.resolve({
+        reachable: true,
+        models: pullStarted ? ["qwen2.5:7b"] : [],
+        version: "0.1.0",
+      });
+      if (cmd === "pull_ollama_model") {
+        pullStarted = true;
+        return Promise.resolve();
+      }
       return Promise.resolve();
     });
 
@@ -310,6 +318,7 @@ describe("OnboardingWizard Component Tests", () => {
 
     await waitFor(() => expect(screen.getByText("Step 3 of 5")).toBeInTheDocument());
     await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("pull_ollama_model", { modelId: "qwen2.5:7b" }));
+    await waitFor(() => expect(handleComplete).toHaveBeenCalled());
   });
 
   test("offline AI setup keeps Next disabled while runtime install is running", async () => {

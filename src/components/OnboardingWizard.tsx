@@ -33,6 +33,8 @@ const SLOW_CPU_CAUTION =
   "Heads up: the AI model runs on your CPU, so generating a draft or daily scan can take a minute or more — this is normal.";
 const IDENTITY_INPUT_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 12000;
 const MODEL_DOWNLOAD_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 6000;
+const MODEL_READY_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 5000;
+const FINAL_SETUP_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 3000;
 
 // Approximate one-time download sizes, sourced from models.json so the wizard
 // can disclose the size up front (UX-C1) instead of springing a multi-GB
@@ -140,6 +142,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   // Init error surfacing state (WU-Nit-1)
   const [initError, setInitError] = useState<string | null>(null);
   const [setupNotice, setSetupNotice] = useState<string | null>(null);
+  const [setupRecoveryActive, setSetupRecoveryActive] = useState(false);
 
   const steps = [
     { title: "Identity", desc: "Define your local news outlet name and mission." },
@@ -392,6 +395,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       }
 
       modelDownloadRescueAttemptedRef.current = true;
+      setSetupRecoveryActive(true);
       setSetupNotice("The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.");
       setAutoStartPull(true);
       setStep(3);
@@ -488,6 +492,82 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     setAutoStartPull(false);
     void startPullModel();
   }, [step, autoStartPull, pulling, pullComplete, model]);
+
+  useEffect(() => {
+    if (step !== 3 || !setupRecoveryActive || pullComplete || pullError) {
+      return;
+    }
+
+    let cancelled = false;
+    const checkModelReady = async () => {
+      try {
+        const latestHealth = await ollamaHealth();
+        if (cancelled) return;
+        setHealth(latestHealth);
+        if (latestHealth.reachable && latestHealth.models.includes(model)) {
+          setPullProgress("Download complete!");
+          setPullPercent(100);
+          setPullComplete(true);
+          setPulling(false);
+          await setSetting("model.selected", model);
+          if (cancelled) return;
+          setSetupNotice("The recommended model is installed. Setup is continuing automatically because the setup screen is not receiving input events.");
+          setStep(4);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    const interval = window.setInterval(() => void checkModelReady(), MODEL_READY_RESCUE_MS);
+    void checkModelReady();
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, [step, setupRecoveryActive, pullComplete, pullError, model]);
+
+  useEffect(() => {
+    if (!setupRecoveryActive || step !== 4) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      void (async () => {
+        try {
+          await setSetting("paths.publish", publishPath);
+          await setSetting("paths.backup", backupPath);
+          setSetupNotice("Default folders were saved automatically because the setup screen is not receiving input events.");
+          setStep(5);
+        } catch (e) {
+          console.error(e);
+          setInitError(toUserMessage(e));
+        }
+      })();
+    }, FINAL_SETUP_RESCUE_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [setupRecoveryActive, step, publishPath, backupPath]);
+
+  useEffect(() => {
+    if (!setupRecoveryActive || step !== 5) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      void (async () => {
+        try {
+          await setOnboardingComplete(true);
+          onComplete();
+        } catch (e) {
+          console.error(e);
+          setInitError(toUserMessage(e));
+        }
+      })();
+    }, FINAL_SETUP_RESCUE_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [setupRecoveryActive, step, onComplete]);
 
   const cancelPullModel = async () => {
     try {
@@ -621,6 +701,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
       const profile = starterProfiles[0];
       identityRescueAttemptedRef.current = true;
+      setSetupRecoveryActive(true);
       applyIdentityValues(profile);
       setSetupNotice("The setup screen did not receive input events, so The Civic Desk continued with a starter Longmont profile. You can edit identity later in Settings.");
       void persistIdentity(profile)
