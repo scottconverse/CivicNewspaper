@@ -40,6 +40,33 @@ function downloadSizeFor(modelTag: string): string {
   return modelSizes[modelTag] || "a few GB";
 }
 
+const starterProfiles = [
+  {
+    label: "Longmont",
+    pubName: "Longmont Civic Desk",
+    editorName: "Local editor",
+    organizationType: "single_person",
+    city: "Longmont",
+    state: "CO",
+  },
+  {
+    label: "Brighton",
+    pubName: "Brighton Civic Desk",
+    editorName: "Local editor",
+    organizationType: "single_person",
+    city: "Brighton",
+    state: "CO",
+  },
+  {
+    label: "Denver",
+    pubName: "Denver Civic Desk",
+    editorName: "Local editor",
+    organizationType: "single_person",
+    city: "Denver",
+    state: "CO",
+  },
+];
+
 interface OnboardingWizardProps {
   ollamaOnline: boolean;
   systemRam: number;
@@ -115,6 +142,26 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     { title: "Defaults", desc: "Configure publication directories and backup database paths." },
     { title: "Done", desc: "Onboarding completed. Ready to inspect local stories." }
   ];
+
+  const applyIdentityValues = (values: {
+    pubName: string;
+    editorName: string;
+    organizationType: string;
+    city: string;
+    state: string;
+  }) => {
+    setPubName(values.pubName);
+    setEditorName(values.editorName);
+    setOrganizationType(values.organizationType);
+    setCity(values.city);
+    setState(values.state);
+
+    if (pubNameInputRef.current) pubNameInputRef.current.value = values.pubName;
+    if (editorNameInputRef.current) editorNameInputRef.current.value = values.editorName;
+    if (organizationTypeSelectRef.current) organizationTypeSelectRef.current.value = values.organizationType;
+    if (cityInputRef.current) cityInputRef.current.value = values.city;
+    if (stateInputRef.current) stateInputRef.current.value = values.state;
+  };
 
   // Initialize paths and ram
   useEffect(() => {
@@ -515,6 +562,21 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         {/* STEP 1: IDENTITY */}
         {step === 1 && (
           <div className="onboarding-identity-fields">
+            <div className="onboarding-starter-profiles" aria-label="Starter profiles">
+              <span>Starter profiles</span>
+              <div>
+                {starterProfiles.map(profile => (
+                  <button
+                    key={profile.label}
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => applyIdentityValues(profile)}
+                  >
+                    {profile.label}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="onboarding-field">
               <label htmlFor="onboarding-publication-name">Publication Name</label>
               <input

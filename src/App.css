@@ -643,6 +643,27 @@ button:disabled {
   min-width: 0;
 }
 
+.onboarding-starter-profiles {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.65rem;
+  background: rgba(48, 92, 184, 0.04);
+}
+
+.onboarding-starter-profiles > span {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 0.45rem;
+}
+
+.onboarding-starter-profiles > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
 .onboarding-field label {
   display: block;
   font-weight: 700;

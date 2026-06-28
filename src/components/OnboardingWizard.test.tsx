@@ -199,6 +199,27 @@ describe("OnboardingWizard Component Tests", () => {
     expect(publicationInput).toHaveValue("ABC");
   });
 
+  test("identity starter profile can fill Longmont without keyboard entry", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+    const user = userEvent.setup();
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} />);
+
+    await user.click(screen.getByRole("button", { name: "Longmont" }));
+
+    expect(screen.getByLabelText("Publication Name")).toHaveValue("Longmont Civic Desk");
+    expect(screen.getByLabelText("Editor Name")).toHaveValue("Local editor");
+    expect(screen.getByLabelText("City")).toHaveValue("Longmont");
+    expect(screen.getByLabelText("State")).toHaveValue("CO");
+  });
+
   test("offline AI setup keeps Next disabled while runtime install is running", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
