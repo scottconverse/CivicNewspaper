@@ -21,7 +21,7 @@ Do not decide there are "no directives" by scanning for new filenames only. This
 
 Run this directive now:
 
-`test-comms/directives/20260628-rerun-publication-name-after-5bdd7a8.md`
+`test-comms/directives/20260628-rerun-webview-safe-identity-after-65d97f4.md`
 
 Visibility confirmation has already been received in:
 
@@ -44,11 +44,11 @@ Product branch:
 
 Product commit:
 
-`5bdd7a8`
+`65d97f4`
 
 Artifact folder:
 
-`test-comms/artifacts/20260628-publication-name-rerun-5bdd7a8/`
+`test-comms/artifacts/20260628-webview-safe-identity-rerun-65d97f4/`
 
 ## Current Goal
 
@@ -80,10 +80,10 @@ If the app crashes, helper windows appear, Ollama disappears, model state is los
 
 Write the next report here:
 
-`test-comms/reports/20260628-publication-name-rerun-report-5bdd7a8.md`
+`test-comms/reports/20260628-webview-safe-identity-rerun-report-65d97f4.md`
 
 Put artifacts here:
 
-`test-comms/artifacts/20260628-publication-name-rerun-5bdd7a8/`
+`test-comms/artifacts/20260628-webview-safe-identity-rerun-65d97f4/`
 
 Commit and push with `[skip ci]`.
