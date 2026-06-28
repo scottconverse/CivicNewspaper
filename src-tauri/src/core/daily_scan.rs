@@ -94,7 +94,8 @@ pub fn parse_and_save_scan_response(
                 .or_else(|| Some("Open the original source and confirm the key dates, names, and decision points before drafting.".to_string())),
         };
         match save_daily_scan_lead_for_queue(conn, &lead) {
-            Ok(_) => saved += 1,
+            Ok(id) if id > 0 => saved += 1,
+            Ok(_) => {}
             Err(e) => eprintln!("Failed to insert daily scan lead: {}", e), // P4-009 log insert error
         }
     }
@@ -243,7 +244,7 @@ fn save_fallback_leads(
             priority: Some("review".to_string()),
             suggested_next_step: Some("Open the source, decide whether it contains a reportable civic action, then save or dismiss it from the queue.".to_string()),
         };
-        if save_daily_scan_lead_for_queue(conn, &lead).is_ok() {
+        if save_daily_scan_lead_for_queue(conn, &lead).unwrap_or(0) > 0 {
             saved += 1;
         }
     }
@@ -352,7 +353,7 @@ fn save_dark_signal_leads(
             ),
             suggested_next_step: Some(signal.verification_path),
         };
-        if save_daily_scan_lead_for_queue(conn, &lead).is_ok() {
+        if save_daily_scan_lead_for_queue(conn, &lead).unwrap_or(0) > 0 {
             saved += 1;
         }
     }
@@ -363,6 +364,9 @@ fn save_daily_scan_lead_for_queue(
     conn: &rusqlite::Connection,
     lead: &DailyScanLead,
 ) -> rusqlite::Result<i32> {
+    if similar_scan_lead_exists(conn, lead)? {
+        return Ok(0);
+    }
     let scan_lead_id = db::insert_daily_scan_lead(conn, lead)?;
     let title = lead.title.trim();
     let summary = lead.summary.trim();
@@ -396,8 +400,66 @@ fn save_daily_scan_lead_for_queue(
         from_scan_lead_id: Some(scan_lead_id),
         created_at: String::new(),
     };
-    db::insert_lead(conn, &story_lead, &[])?;
+    let evidence_ids = evidence_ids_for_scan_lead(conn, lead)?;
+    db::insert_lead(conn, &story_lead, &evidence_ids)?;
     Ok(scan_lead_id)
+}
+
+fn normalized_topic(text: &str) -> String {
+    text.to_lowercase()
+        .chars()
+        .filter(|ch| ch.is_ascii_alphanumeric() || ch.is_whitespace())
+        .collect::<String>()
+        .split_whitespace()
+        .take(8)
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+fn similar_scan_lead_exists(
+    conn: &rusqlite::Connection,
+    lead: &DailyScanLead,
+) -> rusqlite::Result<bool> {
+    let topic = normalized_topic(&lead.title);
+    if topic.is_empty() {
+        return Ok(false);
+    }
+    let mut stmt = conn.prepare("SELECT title FROM daily_scan_leads WHERE scan_id = ?1")?;
+    let titles = stmt.query_map([lead.scan_id], |row| row.get::<_, String>(0))?;
+    for title in titles {
+        if normalized_topic(&title?) == topic {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+fn evidence_ids_for_scan_lead(
+    conn: &rusqlite::Connection,
+    lead: &DailyScanLead,
+) -> rusqlite::Result<Vec<i32>> {
+    let mut ids = Vec::new();
+    if let Some(source_id) = lead.source_id {
+        let mut stmt = conn.prepare(
+            "SELECT id FROM evidence_items WHERE source_id = ?1 ORDER BY fetched_at DESC LIMIT 3",
+        )?;
+        let rows = stmt.query_map([source_id], |row| row.get::<_, i32>(0))?;
+        for row in rows {
+            ids.push(row?);
+        }
+    }
+    if ids.is_empty() && !lead.original_url.trim().is_empty() {
+        let mut stmt = conn.prepare(
+            "SELECT id FROM evidence_items WHERE url = ?1 ORDER BY fetched_at DESC LIMIT 3",
+        )?;
+        let rows = stmt.query_map([lead.original_url.trim()], |row| row.get::<_, i32>(0))?;
+        for row in rows {
+            ids.push(row?);
+        }
+    }
+    ids.sort_unstable();
+    ids.dedup();
+    Ok(ids)
 }
 
 #[cfg(test)]

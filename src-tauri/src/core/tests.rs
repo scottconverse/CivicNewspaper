@@ -1261,7 +1261,7 @@ I should produce JSON only.
                 _prompt: &str,
                 _system: &str,
             ) -> Result<String, String> {
-                Ok(r#"{"leads":[{"title":"Council overspend","summary":"Budget anomaly","original_url":"http://example.test/lead"}]}"#.to_string())
+                Ok(r#"{"leads":[{"title":"Council overspend","summary":"Budget anomaly","original_url":"https://example.gov/feed.xml"}]}"#.to_string())
             }
         }
         let llm_client: Arc<dyn crate::core::llm::LlmClient> = Arc::new(FakeLlmClient);
@@ -1307,6 +1307,17 @@ I should produce JSON only.
             story_queue_leads[0].from_scan_lead_id,
             persisted[0].id,
             "Story Queue lead should keep a back-reference to the scan result"
+        );
+        let linked_evidence_count: i32 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM lead_evidence WHERE lead_id = ?1",
+                [story_queue_leads[0].id.unwrap()],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(
+            linked_evidence_count, 1,
+            "Daily Scan story leads should carry matching evidence into drafting"
         );
 
         let status: String = conn

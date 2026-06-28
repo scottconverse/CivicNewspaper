@@ -83,6 +83,10 @@ function isValidSourceType(value: string): boolean {
   return VALID_SOURCE_TYPES.includes(value as (typeof VALID_SOURCE_TYPES)[number]);
 }
 
+function explicitSourceType(fields: string[] | null): string | null {
+  return fields?.find((field) => isValidSourceType(field)) ?? null;
+}
+
 function deriveNameFromUrl(url: string): string {
   try {
     const parsedUrl = new URL(url);
@@ -96,6 +100,57 @@ export function tierForSourceType(type: string): string {
   if (type === "primary_record" || type === "official_comm") return "official_record";
   if (type === "media_lead") return "news_reporting";
   return "community_signal";
+}
+
+function inferSourceType(name: string, url: string, fallbackType: string): string {
+  let host = "";
+  try {
+    host = new URL(url).hostname.toLowerCase().replace(/^www\./, "");
+  } catch {
+    return isValidSourceType(fallbackType) ? fallbackType : "primary_record";
+  }
+  const label = `${name} ${url}`.toLowerCase();
+  if (
+    host.includes("reddit.com")
+    || host.includes("facebook.com")
+    || host.includes("nextdoor.com")
+    || host.includes("youtube.com")
+    || label.includes("reddit")
+    || label.includes("facebook")
+  ) {
+    return "community_signal";
+  }
+  if (
+    host.includes("longmontleader.com")
+    || host.includes("timescall.com")
+    || host.includes("dailycamera.com")
+    || label.includes("local news")
+    || label.includes("newspaper")
+    || label.includes("media")
+  ) {
+    return "media_lead";
+  }
+  if (
+    host.endsWith(".gov")
+    || host.includes(".gov.")
+    || host.includes("legistar.com")
+    || host.includes("publicnotice")
+    || label.includes("agenda")
+    || label.includes("minutes")
+    || label.includes("public notice")
+    || label.includes("budget")
+  ) {
+    return "primary_record";
+  }
+  if (
+    label.includes("press release")
+    || label.includes("public safety")
+    || label.includes("police")
+    || label.includes("fire")
+  ) {
+    return "official_comm";
+  }
+  return isValidSourceType(fallbackType) ? fallbackType : "primary_record";
 }
 
 export function credibilityForSource(source: ParsedImportLine): { credibility: string; note: string; selected: boolean } {
@@ -249,7 +304,7 @@ export function parseBulkImportLine(
     if (fields) {
       const urlFieldIndex = fields.findIndex(looksLikeHttpUrl);
       url = normalizeImportUrl(fields[urlFieldIndex]);
-      const typeField = fields.find((field) => isValidSourceType(field));
+      const typeField = explicitSourceType(fields);
       if (typeField) type = typeField;
 
       const nameField = fields.find((field, index) => {
@@ -270,6 +325,9 @@ export function parseBulkImportLine(
 
   if (!isValidSourceType(type)) {
     type = defaultType;
+  }
+  if (type === defaultType && defaultType === "primary_record") {
+    type = inferSourceType(name, url, defaultType);
   }
 
   return {

@@ -38,6 +38,14 @@ describe("parseBulkImportLine", () => {
     });
   });
 
+  test("infers local media and community source types when files omit type columns", () => {
+    expect(parseBulkImportLine("Longmont Leader, https://www.longmontleader.com/", "primary_record")?.type).toBe("media_lead");
+    expect(parseBulkImportLine("Times-Call Longmont, https://www.timescall.com/", "primary_record")?.type).toBe("media_lead");
+    expect(parseBulkImportLine("r/Longmont, https://www.reddit.com/r/Longmont/", "primary_record")?.type).toBe("community_signal");
+    expect(parseBulkImportLine("Longmont Facebook, https://www.facebook.com/cityoflongmontco/", "primary_record")?.type).toBe("community_signal");
+    expect(parseBulkImportLine("Colorado public notices, https://www.publicnoticecolorado.com/", "primary_record")?.type).toBe("primary_record");
+  });
+
   test("falls back to default type when the third field is not a recognized type", () => {
     expect(parseBulkImportLine("Name, https://x.com, bogus_type", "community_signal")).toEqual({
       name: "Name",
