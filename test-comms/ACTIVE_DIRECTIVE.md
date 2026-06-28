@@ -21,7 +21,7 @@ Do not decide there are "no directives" by scanning for new filenames only. This
 
 Run this directive now:
 
-`test-comms/directives/20260628-rerun-stuck-input-recovery-after-30035ac.md`
+`test-comms/directives/20260628-rerun-model-pull-recovery-after-e041324.md`
 
 Visibility confirmation has already been received in:
 
@@ -44,11 +44,11 @@ Product branch:
 
 Product commit:
 
-`30035ac`
+`e041324`
 
 Artifact folder:
 
-`test-comms/artifacts/20260628-stuck-input-recovery-rerun-30035ac/`
+`test-comms/artifacts/20260628-model-pull-recovery-rerun-e041324/`
 
 ## Current Goal
 
@@ -80,10 +80,10 @@ If the app crashes, helper windows appear, Ollama disappears, model state is los
 
 Write the next report here:
 
-`test-comms/reports/20260628-stuck-input-recovery-rerun-report-30035ac.md`
+`test-comms/reports/20260628-model-pull-recovery-rerun-report-e041324.md`
 
 Put artifacts here:
 
-`test-comms/artifacts/20260628-stuck-input-recovery-rerun-30035ac/`
+`test-comms/artifacts/20260628-model-pull-recovery-rerun-e041324/`
 
 Commit and push with `[skip ci]`.
