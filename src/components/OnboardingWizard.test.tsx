@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { OnboardingWizard } from "./OnboardingWizard";
 import * as tauriCore from "@tauri-apps/api/core";
@@ -160,6 +161,7 @@ describe("OnboardingWizard Component Tests", () => {
   test("identity step focuses publication name first", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
+    const user = userEvent.setup();
 
     invokeMock.mockImplementation((cmd: string) => {
       if (cmd === "get_system_ram") return Promise.resolve(16);
@@ -171,10 +173,30 @@ describe("OnboardingWizard Component Tests", () => {
 
     const publicationInput = screen.getByLabelText("Publication Name");
     await waitFor(() => expect(publicationInput).toHaveFocus());
-    fireEvent.change(publicationInput, { target: { value: "Longmont Ledger" } });
+    await user.type(publicationInput, "Longmont Ledger");
 
     expect(publicationInput).toHaveValue("Longmont Ledger");
     expect(screen.getByLabelText("Editor Name")).toHaveValue("");
+  });
+
+  test("identity publication name accepts click and keyboard entry", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+    const user = userEvent.setup();
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} />);
+
+    const publicationInput = screen.getByLabelText("Publication Name");
+    await user.click(publicationInput);
+    await user.keyboard("ABC");
+
+    expect(publicationInput).toHaveValue("ABC");
   });
 
   test("offline AI setup keeps Next disabled while runtime install is running", async () => {

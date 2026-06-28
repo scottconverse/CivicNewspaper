@@ -497,7 +497,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         {/* STEP 1: IDENTITY */}
         {step === 1 && (
           <div className="onboarding-identity-fields">
-            <div className="onboarding-field" onMouseDown={() => pubNameInputRef.current?.focus()}>
+            <div className="onboarding-field">
               <label htmlFor="onboarding-publication-name">Publication Name</label>
               <input
                 id="onboarding-publication-name"
