@@ -1,0 +1,78 @@
+{
+  "issue_id": "issue-20260628-105430-972013500",
+  "output_dir": "<app-data>/com.scottconverse.civicdesk/sites/default",
+  "generated_at": "2026-06-28T10:54:30.972013500+00:00",
+  "provider": "here_now",
+  "published_url": "https://emerald-island-gevx.here.now",
+  "deployment_id": "slug=emerald-island-gevx;version=01KW6Y081NPN6129RFVJ4B9S8Z;created_slug=emerald-island-gevx",
+  "article_count": 5,
+  "skipped_count": 0,
+  "files_written": 22,
+  "generated_files": [
+    "styles.css",
+    "print.css",
+    "watch/6.html",
+    "watch/4.html",
+    "watch/3.html",
+    "watch/2.html",
+    "watch/1.html",
+    "index.html",
+    "about.html",
+    "ethics.html",
+    "how-we-report.html",
+    "corrections.html",
+    "feed.xml",
+    "newsletter.md",
+    "substack.md",
+    "share-package.md",
+    "facebook-post.txt",
+    "subreddit-post.md",
+    "nextdoor-post.txt",
+    "short-link-blurb.txt",
+    "publish-manifest.json",
+    "site-package.zip"
+  ],
+  "index_path": "<app-data>/com.scottconverse.civicdesk/sites/default/index.html",
+  "rss_path": "<app-data>/com.scottconverse.civicdesk/sites/default/feed.xml",
+  "newsletter_path": "<app-data>/com.scottconverse.civicdesk/sites/default/newsletter.md",
+  "substack_path": "<app-data>/com.scottconverse.civicdesk/sites/default/substack.md",
+  "share_package_path": "<app-data>/com.scottconverse.civicdesk/sites/default/share-package.md",
+  "facebook_post_path": "<app-data>/com.scottconverse.civicdesk/sites/default/facebook-post.txt",
+  "subreddit_post_path": "<app-data>/com.scottconverse.civicdesk/sites/default/subreddit-post.md",
+  "nextdoor_post_path": "<app-data>/com.scottconverse.civicdesk/sites/default/nextdoor-post.txt",
+  "short_link_blurb_path": "<app-data>/com.scottconverse.civicdesk/sites/default/short-link-blurb.txt",
+  "manifest_path": "<app-data>/com.scottconverse.civicdesk/sites/default/publish-manifest.json",
+  "zip_path": "<app-data>/com.scottconverse.civicdesk/sites/default/site-package.zip",
+  "articles": [
+    {
+      "title": "Draft: Vision Zero Projects in Longmont: The city is working on Vision Zero initiatives aimed at improving transportation safety, which affects every resident’s daily commute.",
+      "format": "watch",
+      "relative_path": "watch/6.html",
+      "updated_at": "2026-06-28T10:52:31.721065300+00:00"
+    },
+    {
+      "title": "Draft: Vision Zero Projects in Longmont: Vision Zero projects aim to improve transportation safety. Residents can get involved in activities that promote these initiatives.",
+      "format": "watch",
+      "relative_path": "watch/4.html",
+      "updated_at": "2026-06-28T10:47:48.104103900+00:00"
+    },
+    {
+      "title": "Draft: Longmont Museum Exhibits and Events: The Longmont Museum provides updates on upcoming exhibits and events, which can be of interest to residents and visitors looking for cultural activities.",
+      "format": "watch",
+      "relative_path": "watch/3.html",
+      "updated_at": "2026-06-28T10:46:24.257564500+00:00"
+    },
+    {
+      "title": "Draft: Vision Zero Projects in Longmont: The city is working on Vision Zero initiatives aimed at improving transportation safety, which affects every resident’s daily commute.",
+      "format": "watch",
+      "relative_path": "watch/2.html",
+      "updated_at": "2026-06-28T10:44:47.307603200+00:00"
+    },
+    {
+      "title": "Draft: Longmont Library Programs and Events: The Longmont Public Library offers a variety of programs for all age groups, making it a valuable resource for local families and students.",
+      "format": "watch",
+      "relative_path": "watch/1.html",
+      "updated_at": "2026-06-28T10:42:46.470732500+00:00"
+    }
+  ]
+}
