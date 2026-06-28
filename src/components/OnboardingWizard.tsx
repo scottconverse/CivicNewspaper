@@ -31,6 +31,8 @@ const LOW_RAM_FLOOR_GB = 8;
 // medium/high tiers too — not just below the low-RAM floor.
 const SLOW_CPU_CAUTION =
   "Heads up: the AI model runs on your CPU, so generating a draft or daily scan can take a minute or more — this is normal.";
+const IDENTITY_INPUT_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 12000;
+const MODEL_DOWNLOAD_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 6000;
 
 // Approximate one-time download sizes, sourced from models.json so the wizard
 // can disclose the size up front (UX-C1) instead of springing a multi-GB
@@ -116,6 +118,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const autoRuntimeInstallAttempted = useRef(false);
   const userInteractedOnIdentityRef = useRef(false);
   const identityRescueAttemptedRef = useRef(false);
+  const modelDownloadRescueAttemptedRef = useRef(false);
   const pubNameInputRef = useRef<HTMLInputElement | null>(null);
   const editorNameInputRef = useRef<HTMLInputElement | null>(null);
   const organizationTypeSelectRef = useRef<HTMLSelectElement | null>(null);
@@ -366,6 +369,37 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     }
   }, [step, checkingHealth, runtimeInstalling, healthTimeout, health?.reachable]);
 
+  useEffect(() => {
+    if (
+      step !== 2 ||
+      modelDownloadRescueAttemptedRef.current ||
+      checkingHealth ||
+      runtimeInstalling ||
+      !health?.reachable ||
+      health.models.length > 0
+    ) {
+      return;
+    }
+
+    const rescueTimer = window.setTimeout(() => {
+      if (
+        modelDownloadRescueAttemptedRef.current ||
+        step !== 2 ||
+        !health?.reachable ||
+        health.models.length > 0
+      ) {
+        return;
+      }
+
+      modelDownloadRescueAttemptedRef.current = true;
+      setSetupNotice("The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.");
+      setAutoStartPull(true);
+      setStep(3);
+    }, MODEL_DOWNLOAD_RESCUE_MS);
+
+    return () => window.clearTimeout(rescueTimer);
+  }, [step, checkingHealth, runtimeInstalling, health?.reachable, health?.models?.length]);
+
   const formatStatus = (status: string): string => {
     const s = status.toLowerCase();
     if (s.includes("pulling manifest") || s.includes("pulling")) return "Initializing download...";
@@ -595,7 +629,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           console.error(e);
           setInitError(toUserMessage(e));
         });
-    }, 12000);
+    }, IDENTITY_INPUT_RESCUE_MS);
 
     return () => {
       window.clearTimeout(rescueTimer);

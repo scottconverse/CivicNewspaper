@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 import { OnboardingWizard } from "./OnboardingWizard";
@@ -264,7 +264,6 @@ describe("OnboardingWizard Component Tests", () => {
   });
 
   test("identity setup auto-recovers when no input events arrive", async () => {
-    vi.useFakeTimers();
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
 
@@ -284,18 +283,33 @@ describe("OnboardingWizard Component Tests", () => {
 
     render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
 
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(12_000);
-    });
-
-    expect(screen.getByText("Step 2 of 5")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
     expect(screen.getByRole("status")).toHaveTextContent("starter Longmont profile");
     expect(invokeMock).toHaveBeenCalledWith("set_setting", {
       key: "identity.newsroom_name",
       value: "Longmont Civic Desk",
     });
+  });
 
-    vi.useRealTimers();
+  test("model setup auto-starts pull when no input events arrive", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      if (cmd === "set_setting") return Promise.resolve();
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: [], version: "0.1.0" });
+      if (cmd === "pull_ollama_model") return Promise.resolve();
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} initialStep={2} />);
+
+    await waitFor(() => expect(screen.getByText(/Download a recommended model/i)).toBeInTheDocument());
+
+    await waitFor(() => expect(screen.getByText("Step 3 of 5")).toBeInTheDocument());
+    await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("pull_ollama_model", { modelId: "qwen2.5:7b" }));
   });
 
   test("offline AI setup keeps Next disabled while runtime install is running", async () => {
