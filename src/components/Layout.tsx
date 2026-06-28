@@ -62,6 +62,44 @@ export const Layout: React.FC<LayoutProps> = ({
     },
   ];
 
+  const routeToTab = React.useCallback((tab: string) => {
+    onTabChange(tab);
+  }, [onTabChange]);
+
+  React.useEffect(() => {
+    const tabIds = navGroups.flatMap((group) => group.items.map((item) => item.id));
+    const tabByShortcut = new Map(tabIds.map((id, index) => [String(index + 1), id]));
+
+    const handlePointerNavigation = (event: Event) => {
+      const target = event.target as HTMLElement | null;
+      const button = target?.closest<HTMLElement>("[data-nav-tab]");
+      const tab = button?.dataset.navTab;
+      if (!tab || !tabIds.includes(tab)) return;
+      event.preventDefault();
+      routeToTab(tab);
+    };
+
+    const handleKeyboardNavigation = (event: KeyboardEvent) => {
+      if (!event.altKey && !event.ctrlKey) return;
+      const tab = tabByShortcut.get(event.key);
+      if (!tab) return;
+      event.preventDefault();
+      routeToTab(tab);
+    };
+
+    document.addEventListener("pointerdown", handlePointerNavigation, true);
+    document.addEventListener("mousedown", handlePointerNavigation, true);
+    document.addEventListener("click", handlePointerNavigation, true);
+    document.addEventListener("keydown", handleKeyboardNavigation, true);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerNavigation, true);
+      document.removeEventListener("mousedown", handlePointerNavigation, true);
+      document.removeEventListener("click", handlePointerNavigation, true);
+      document.removeEventListener("keydown", handleKeyboardNavigation, true);
+    };
+  }, [navGroups, routeToTab]);
+
   return (
     <div className="app-container">
       <aside className="sidebar">
@@ -85,9 +123,14 @@ export const Layout: React.FC<LayoutProps> = ({
                     <li key={item.id}>
                       <button
                         className={`nav-link ${activeTab === item.id ? "active" : ""}`}
-                        onClick={() => onTabChange(item.id)}
+                        type="button"
+                        data-nav-tab={item.id}
+                        onPointerDown={() => routeToTab(item.id)}
+                        onMouseDown={() => routeToTab(item.id)}
+                        onClick={() => routeToTab(item.id)}
                         id={`nav-tab-${item.id}`}
                         aria-current={activeTab === item.id ? "page" : undefined}
+                        title={`${item.label} (Alt+${navGroups.flatMap(group => group.items).findIndex(nav => nav.id === item.id) + 1})`}
                       >
                         <Icon size={18} />
                         {item.label}

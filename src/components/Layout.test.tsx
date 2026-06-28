@@ -38,4 +38,28 @@ describe("Layout Component Tests", () => {
     fireEvent.click(publishBtn);
     expect(handleTabChange).toHaveBeenCalledWith("publish");
   });
+
+  test("native pointer and keyboard fallbacks navigate tabs", () => {
+    const handleTabChange = vi.fn();
+
+    render(
+      <Layout
+        activeTab="queue"
+        onTabChange={handleTabChange}
+        ollamaOnline={true}
+        selectedDraft={null}
+      >
+        <div data-testid="children-content">Test Child</div>
+      </Layout>
+    );
+
+    fireEvent.pointerDown(screen.getByRole("button", { name: "Daily Scan" }));
+    expect(handleTabChange).toHaveBeenCalledWith("dailyScan");
+
+    fireEvent.keyDown(document, { key: "6", altKey: true });
+    expect(handleTabChange).toHaveBeenCalledWith("sources");
+
+    fireEvent.keyDown(document, { key: "8", ctrlKey: true });
+    expect(handleTabChange).toHaveBeenCalledWith("publish");
+  });
 });
