@@ -1,0 +1,44 @@
+[
+    {
+        "Seconds":  30,
+        "Tags":  "{\"models\":[]}",
+        "Processes":  "[{\"ProcessName\":\"civicnews\",\"Id\":7644,\"Responding\":true,\"MainWindowTitle\":\"The Civic Desk\"},{\"ProcessName\":\"ollama\",\"Id\":12080,\"Responding\":true,\"MainWindowTitle\":\"\"}]",
+        "Listeners":  "[{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":12053,\"OwningProcess\":7644},{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":11434,\"OwningProcess\":12080}]",
+        "Screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-main-nav-fallback-rerun-60d9376\\monitor-030s.png"
+    },
+    {
+        "Seconds":  60,
+        "Tags":  "{\"models\":[{\"name\":\"qwen2.5:7b\",\"model\":\"qwen2.5:7b\",\"modified_at\":\"2026-06-28T15:55:36.0624991-06:00\",\"size\":4683087332,\"digest\":\"845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"qwen2\",\"families\":[\"qwen2\"],\"parameter_size\":\"7.6B\",\"quantization_level\":\"Q4_K_M\",\"context_length\":32768,\"embedding_length\":3584},\"capabilities\":[\"completion\",\"tools\"]}]}",
+        "Processes":  "[{\"ProcessName\":\"civicnews\",\"Id\":7644,\"Responding\":true,\"MainWindowTitle\":\"The Civic Desk\"},{\"ProcessName\":\"ollama\",\"Id\":12080,\"Responding\":true,\"MainWindowTitle\":\"\"}]",
+        "Listeners":  "[{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":12053,\"OwningProcess\":7644},{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":11434,\"OwningProcess\":12080}]",
+        "Screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-main-nav-fallback-rerun-60d9376\\monitor-060s.png"
+    },
+    {
+        "Seconds":  90,
+        "Tags":  "{\"models\":[{\"name\":\"qwen2.5:7b\",\"model\":\"qwen2.5:7b\",\"modified_at\":\"2026-06-28T15:55:36.0624991-06:00\",\"size\":4683087332,\"digest\":\"845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"qwen2\",\"families\":[\"qwen2\"],\"parameter_size\":\"7.6B\",\"quantization_level\":\"Q4_K_M\",\"context_length\":32768,\"embedding_length\":3584},\"capabilities\":[\"completion\",\"tools\"]}]}",
+        "Processes":  "[{\"ProcessName\":\"civicnews\",\"Id\":7644,\"Responding\":true,\"MainWindowTitle\":\"The Civic Desk\"},{\"ProcessName\":\"ollama\",\"Id\":12080,\"Responding\":true,\"MainWindowTitle\":\"\"}]",
+        "Listeners":  "[{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":12053,\"OwningProcess\":7644},{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":11434,\"OwningProcess\":12080}]",
+        "Screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-main-nav-fallback-rerun-60d9376\\monitor-090s.png"
+    },
+    {
+        "Seconds":  120,
+        "Tags":  "{\"models\":[{\"name\":\"qwen2.5:7b\",\"model\":\"qwen2.5:7b\",\"modified_at\":\"2026-06-28T15:55:36.0624991-06:00\",\"size\":4683087332,\"digest\":\"845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"qwen2\",\"families\":[\"qwen2\"],\"parameter_size\":\"7.6B\",\"quantization_level\":\"Q4_K_M\",\"context_length\":32768,\"embedding_length\":3584},\"capabilities\":[\"completion\",\"tools\"]}]}",
+        "Processes":  "[{\"ProcessName\":\"civicnews\",\"Id\":7644,\"Responding\":true,\"MainWindowTitle\":\"The Civic Desk\"},{\"ProcessName\":\"ollama\",\"Id\":12080,\"Responding\":true,\"MainWindowTitle\":\"\"}]",
+        "Listeners":  "[{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":12053,\"OwningProcess\":7644},{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":11434,\"OwningProcess\":12080}]",
+        "Screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-main-nav-fallback-rerun-60d9376\\monitor-120s.png"
+    },
+    {
+        "Seconds":  180,
+        "Tags":  "{\"models\":[{\"name\":\"qwen2.5:7b\",\"model\":\"qwen2.5:7b\",\"modified_at\":\"2026-06-28T15:55:36.0624991-06:00\",\"size\":4683087332,\"digest\":\"845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"qwen2\",\"families\":[\"qwen2\"],\"parameter_size\":\"7.6B\",\"quantization_level\":\"Q4_K_M\",\"context_length\":32768,\"embedding_length\":3584},\"capabilities\":[\"completion\",\"tools\"]}]}",
+        "Processes":  "[{\"ProcessName\":\"civicnews\",\"Id\":7644,\"Responding\":true,\"MainWindowTitle\":\"The Civic Desk\"},{\"ProcessName\":\"ollama\",\"Id\":12080,\"Responding\":true,\"MainWindowTitle\":\"\"}]",
+        "Listeners":  "[{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":12053,\"OwningProcess\":7644},{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":11434,\"OwningProcess\":12080}]",
+        "Screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-main-nav-fallback-rerun-60d9376\\monitor-180s.png"
+    },
+    {
+        "Seconds":  240,
+        "Tags":  "{\"models\":[{\"name\":\"qwen2.5:7b\",\"model\":\"qwen2.5:7b\",\"modified_at\":\"2026-06-28T15:55:36.0624991-06:00\",\"size\":4683087332,\"digest\":\"845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"qwen2\",\"families\":[\"qwen2\"],\"parameter_size\":\"7.6B\",\"quantization_level\":\"Q4_K_M\",\"context_length\":32768,\"embedding_length\":3584},\"capabilities\":[\"completion\",\"tools\"]}]}",
+        "Processes":  "[{\"ProcessName\":\"civicnews\",\"Id\":7644,\"Responding\":true,\"MainWindowTitle\":\"The Civic Desk\"},{\"ProcessName\":\"ollama\",\"Id\":12080,\"Responding\":true,\"MainWindowTitle\":\"\"}]",
+        "Listeners":  "[{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":12053,\"OwningProcess\":7644},{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":11434,\"OwningProcess\":12080}]",
+        "Screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-main-nav-fallback-rerun-60d9376\\monitor-240s.png"
+    }
+]
