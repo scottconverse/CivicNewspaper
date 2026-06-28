@@ -391,6 +391,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             setStep(3);
           }
         } else {
+          void startPullModel();
           setStep(3);
         }
       } else if (step === 3) {
@@ -612,6 +613,19 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                         {SLOW_CPU_CAUTION}
                       </p>
                     )}
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={() => {
+                        void startPullModel();
+                        setStep(3);
+                      }}
+                      disabled={pulling}
+                      style={{ marginTop: "1rem" }}
+                    >
+                      <Download size={16} style={{ marginRight: "0.5rem" }} />
+                      {pulling ? "Downloading..." : `Download ${model}`}
+                    </button>
                   </div>
                 )}
 

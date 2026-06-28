@@ -591,7 +591,7 @@ button:disabled {
 /* Onboarding Wizard */
 .onboarding-shell {
   width: min(720px, calc(100vw - 2rem));
-  height: 100vh;
+  height: 100dvh;
   margin: 0 auto;
   padding: 1rem 0;
   box-sizing: border-box;
@@ -609,19 +609,27 @@ button:disabled {
   max-height: calc(100vh - 2rem);
   margin: 0 auto;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .onboarding-step-body {
   margin-top: 2rem;
-  min-height: min(300px, calc(100vh - 360px));
+  min-height: 0;
+  flex: 1 1 auto;
 }
 
 .onboarding-actions {
   position: sticky;
-  bottom: -2rem;
+  bottom: 0;
   z-index: 3;
   background: var(--bg-card);
   box-shadow: 0 -10px 18px rgba(30, 41, 59, 0.05);
+  margin-left: -2rem;
+  margin-right: -2rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-bottom: 0.5rem;
 }
 
 .progress-bar-container {

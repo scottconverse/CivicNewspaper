@@ -35,7 +35,7 @@ describe("OnboardingWizard Component Tests", () => {
     const recommendedModel = 'qwen2.5:7b';
     invokeMock.mockImplementation((cmd: string) => {
       if (cmd === "get_system_ram") return Promise.resolve(16);
-      if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: [], version: "0.1.0" });
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: [recommendedModel], version: "0.1.0" });
       if (cmd === "generate_pairing_pin") return Promise.resolve("ABCD-1234");
       return Promise.resolve();
     });
@@ -50,16 +50,10 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
     // The RAM-based model recommendation renders via a separate async path from
     // the step indicator, so await it rather than asserting synchronously.
-    await waitFor(() => expect(screen.getByText(new RegExp(recommendedModel))).toBeInTheDocument());
+    await waitFor(() => expect(screen.getAllByText(new RegExp(recommendedModel)).length).toBeGreaterThan(0));
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
-    // Step 3
-    await waitFor(() => expect(screen.getByText("Step 3 of 5")).toBeInTheDocument());
-    fireEvent.click(screen.getByRole("button", { name: /next/i }));
-    await waitFor(() => expect(screen.getByText("Skip the model download?")).toBeInTheDocument());
-    fireEvent.click(screen.getByRole("button", { name: /Skip download/i }));
-
-    // Step 4
+    // Step 4 - the model is already installed, so the wizard skips the download step.
     await waitFor(() => expect(screen.getByText("Step 4 of 5")).toBeInTheDocument());
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
@@ -201,7 +195,33 @@ describe("OnboardingWizard Component Tests", () => {
     // Step 2 — service reachable but no models installed shows the ready/download prompt
     const recommendedModel = 'qwen2.5:7b';
     await waitFor(() => expect(screen.getByText(/Download a recommended model/i)).toBeInTheDocument());
-    expect(screen.getByText(new RegExp(recommendedModel))).toBeInTheDocument();
+    expect(screen.getAllByText(new RegExp(recommendedModel)).length).toBeGreaterThan(0);
+    expect(screen.getByRole("button", { name: new RegExp(`Download ${recommendedModel}`, "i") })).toBeInTheDocument();
+  });
+
+  test("Ollama reachable with no models: Next starts the recommended model download", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+    const recommendedModel = 'qwen2.5:7b';
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: [], version: "0.1.0" });
+      if (cmd === "pull_ollama_model") return new Promise(() => {});
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+    await waitFor(() => expect(screen.getByText(/Download a recommended model/i)).toBeInTheDocument());
+
+    fireEvent.click(screen.getByRole("button", { name: /^next/i }));
+
+    await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("pull_ollama_model", { modelId: recommendedModel }));
+    expect(await screen.findByText("Step 3 of 5")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^next/i })).toBeDisabled();
   });
 
   test("Model Pull: streams progress and completes", async () => {
