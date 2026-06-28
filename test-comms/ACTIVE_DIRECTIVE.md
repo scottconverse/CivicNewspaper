@@ -4,6 +4,17 @@ Status: ACTIVE
 
 Tester, always read this file first on every 15-minute watcher tick.
 
+IMPORTANT MACHINE CONTEXT:
+
+- You are the tester on the separate cleanroom machine running as `msi\civic`.
+- Do not use any path under `C:\Users\instynct`; that path belongs to the coder machine and does not exist on the tester machine.
+- The approved tester coordination checkout path is:
+
+`C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms`
+
+- If you were previously watching CivicCast or any other project, stop that watcher context now. Switch to CivicNewspaper only.
+- The single source of truth is GitHub repo `https://github.com/scottconverse/CivicNewspaper`, branch `test-comms/cleanroom-coder-tester`, this file.
+
 Do not decide there are "no directives" by scanning for new filenames only. This file is the canonical pointer. It may point at an archived directive in `test-comms/directives/`, or it may contain urgent instructions directly.
 
 ## Current Directive
@@ -11,6 +22,21 @@ Do not decide there are "no directives" by scanning for new filenames only. This
 Run this directive now:
 
 `test-comms/directives/20260628-rerun-identity-focus-after-4c5b239.md`
+
+Before executing the product test, write and push this visibility confirmation report:
+
+`test-comms/reports/20260628-directive-visibility-msi-civic.md`
+
+That report must confirm:
+
+- local path is `C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms` or explain why not,
+- branch is `test-comms/cleanroom-coder-tester`,
+- local HEAD and `origin/test-comms/cleanroom-coder-tester` HEAD,
+- this file was read,
+- the active directive path above exists,
+- the product branch and commit below were read.
+
+After pushing that visibility report, proceed with the active directive unless the report documents a blocking mismatch.
 
 Product branch:
 

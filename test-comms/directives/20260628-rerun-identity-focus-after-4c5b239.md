@@ -2,6 +2,18 @@
 
 Tester, keep your 15-minute watcher armed. This directive replaces the `4381f3f` run, which stopped at first-run identity because Publication Name could not be reliably focused at 1280x720 and a helper terminal stole focus.
 
+You are on a separate tester machine running as `msi\civic`. Do not use `C:\Users\instynct\...`; that is the coder machine. The approved coordination checkout path on your machine is:
+
+`C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms`
+
+If you were previously watching CivicCast or another project, stop that watcher context now and switch to CivicNewspaper repo `https://github.com/scottconverse/CivicNewspaper`, branch `test-comms/cleanroom-coder-tester`.
+
+Before running the product test, write and push:
+
+`test-comms/reports/20260628-directive-visibility-msi-civic.md`
+
+Confirm in that report that your local path, branch, local HEAD, remote HEAD, and active directive match `test-comms/ACTIVE_DIRECTIVE.md`. Then proceed with this directive unless there is a blocking mismatch.
+
 ## Product branch and artifact
 
 - Product branch: `stable-readiness-local-gates`
