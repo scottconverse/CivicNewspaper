@@ -94,6 +94,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const [pulling, setPulling] = useState(false);
   const [pullComplete, setPullComplete] = useState(false);
   const [pullError, setPullError] = useState<string>("");
+  const [autoStartPull, setAutoStartPull] = useState(false);
 
   // Step 4 State
   const [publishPath, setPublishPath] = useState("");
@@ -287,13 +288,17 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   };
 
   const startPullModel = async () => {
+    const modelToPull = model;
+    if (!modelToPull) {
+      setPullError("No model is selected yet. Go back and choose a model, then try again.");
+      return;
+    }
+
     setPulling(true);
     setPullProgress("Starting pull...");
     setPullPercent(0);
     setPullComplete(false);
     setPullError("");
-
-    const modelToPull = model;
 
     try {
       await listen<{ model: string; status: string; completed?: number; total?: number }>(
@@ -323,6 +328,20 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           }
         }
       );
+      await listen<void>("ollama-pull-complete", () => {
+        setPullProgress("Download complete!");
+        setPullPercent(100);
+        setPullComplete(true);
+        setPulling(false);
+      });
+      await listen<string>("ollama-pull-error", (event) => {
+        setPullError(
+          `Download failed: ${event.payload || "The model service reported an error."} ` +
+            `Check your internet connection, then click "Download ${modelToPull}" to try again.`
+        );
+        setPullProgress("");
+        setPulling(false);
+      });
 
       await pullOllamaModel(modelToPull);
       await setSetting("model.selected", modelToPull);
@@ -337,6 +356,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       setPulling(false);
     }
   };
+
+  useEffect(() => {
+    if (step !== 3 || !autoStartPull || pulling || pullComplete) {
+      return;
+    }
+    setAutoStartPull(false);
+    void startPullModel();
+  }, [step, autoStartPull, pulling, pullComplete, model]);
 
   const cancelPullModel = async () => {
     try {
@@ -391,7 +418,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             setStep(3);
           }
         } else {
-          void startPullModel();
+          setAutoStartPull(true);
           setStep(3);
         }
       } else if (step === 3) {
@@ -617,7 +644,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                       type="button"
                       className="btn btn-primary"
                       onClick={() => {
-                        void startPullModel();
+                        setAutoStartPull(true);
                         setStep(3);
                       }}
                       disabled={pulling}
@@ -760,7 +787,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         )}
       </div>
 
-      <div className="flex-between onboarding-actions" style={{ marginTop: "2rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}>
+      <div className="flex-between onboarding-actions">
         <button type="button" className="btn btn-secondary" onClick={handleBack} disabled={step === 1}>
           Back
         </button>
