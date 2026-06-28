@@ -21,7 +21,7 @@ Do not decide there are "no directives" by scanning for new filenames only. This
 
 Run this directive now:
 
-`test-comms/directives/20260628-rerun-final-setup-recovery-after-7d42e59.md`
+`test-comms/directives/20260628-rerun-pull-complete-race-after-6f73b3f.md`
 
 Visibility confirmation has already been received in:
 
@@ -44,11 +44,11 @@ Product branch:
 
 Product commit:
 
-`7d42e59`
+`6f73b3f`
 
 Artifact folder:
 
-`test-comms/artifacts/20260628-final-setup-recovery-rerun-7d42e59/`
+`test-comms/artifacts/20260628-pull-complete-race-rerun-6f73b3f/`
 
 ## Current Goal
 
@@ -80,10 +80,10 @@ If the app crashes, helper windows appear, Ollama disappears, model state is los
 
 Write the next report here:
 
-`test-comms/reports/20260628-final-setup-recovery-rerun-report-7d42e59.md`
+`test-comms/reports/20260628-pull-complete-race-rerun-report-6f73b3f.md`
 
 Put artifacts here:
 
-`test-comms/artifacts/20260628-final-setup-recovery-rerun-7d42e59/`
+`test-comms/artifacts/20260628-pull-complete-race-rerun-6f73b3f/`
 
 Commit and push with `[skip ci]`.
