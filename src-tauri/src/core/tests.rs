@@ -1745,6 +1745,28 @@ I should produce JSON only.
         assert_eq!(count, 1, "the valid source should be inserted exactly once");
     }
 
+    #[test]
+    fn test_add_source_trims_extracted_trailing_punctuation() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        let db_conn: DbConn = Arc::new(Mutex::new(conn));
+
+        let res = crate::tauri_cmds::add_source_inner(
+            &db_conn,
+            "Denver Legistar".to_string(),
+            "https://denver.legistar.com/Calendar.aspx)".to_string(),
+            "primary_record".to_string(),
+            "official_record".to_string(),
+        );
+        assert!(res.is_ok(), "source with copied trailing punctuation should be accepted");
+
+        let conn = db_conn.lock().unwrap();
+        let stored_url: String = conn
+            .query_row("SELECT url FROM sources WHERE name = 'Denver Legistar'", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(stored_url, "https://denver.legistar.com/Calendar.aspx");
+    }
+
     // ===== TEST-Mn2: detector edge cases =====
 
     #[test]

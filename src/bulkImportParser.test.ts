@@ -88,6 +88,15 @@ describe("parseBulkImportLine", () => {
     });
   });
 
+  test("trims unbalanced trailing punctuation from extracted spreadsheet and document URLs", () => {
+    expect(parseBulkImportLine("Denver Legistar, https://denver.legistar.com/Calendar.aspx)", "primary_record")).toEqual({
+      name: "Denver Legistar",
+      url: "https://denver.legistar.com/Calendar.aspx",
+      type: "primary_record",
+    });
+    expect(parseBulkImportLine("Map notes, https://city.gov/maps/site(plan)", "primary_record")?.url).toBe("https://city.gov/maps/site(plan)");
+  });
+
   test.each([
     ["blank line", "   "],
     ["empty string", ""],

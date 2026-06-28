@@ -1427,13 +1427,18 @@ tr:hover td {
 }
 
 .source-copy {
+  display: block;
   min-width: 0;
+  max-width: 100%;
 }
 
 .source-copy > div {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
 }
 
 .source-copy strong {
@@ -1441,8 +1446,10 @@ tr:hover td {
   font-size: 14px;
 }
 
-.source-copy a {
+.source-copy a,
+.source-url-link {
   display: block;
+  width: 100%;
   max-width: 100%;
   margin-top: 5px;
   overflow: hidden;

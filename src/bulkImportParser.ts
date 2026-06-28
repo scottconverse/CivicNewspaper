@@ -50,8 +50,29 @@ function cleanField(value: string): string {
     .trim();
 }
 
-function cleanUrl(value: string): string {
-  return cleanField(value).replace(/[.,;:!?]+$/g, "");
+export function normalizeImportUrl(value: string): string {
+  let url = cleanField(value).replace(/[.,;:!?]+$/g, "");
+  const unbalancedPairs: Array<[string, string]> = [
+    ["(", ")"],
+    ["[", "]"],
+    ["{", "}"],
+  ];
+
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const [open, close] of unbalancedPairs) {
+      if (!url.endsWith(close)) continue;
+      const opens = [...url].filter((ch) => ch === open).length;
+      const closes = [...url].filter((ch) => ch === close).length;
+      if (closes > opens) {
+        url = url.slice(0, -1).replace(/[.,;:!?]+$/g, "");
+        changed = true;
+      }
+    }
+  }
+
+  return url;
 }
 
 function looksLikeHttpUrl(value: string): boolean {
@@ -175,7 +196,7 @@ function parseLinkedText(line: string): { name: string; url: string } | null {
   if (markdownMatch) {
     return {
       name: cleanField(markdownMatch[1]),
-      url: cleanUrl(markdownMatch[2]),
+      url: normalizeImportUrl(markdownMatch[2]),
     };
   }
 
@@ -183,7 +204,7 @@ function parseLinkedText(line: string): { name: string; url: string } | null {
   if (htmlMatch) {
     return {
       name: cleanField(htmlMatch[2].replace(/<[^>]*>/g, "")),
-      url: cleanUrl(htmlMatch[1]),
+      url: normalizeImportUrl(htmlMatch[1]),
     };
   }
 
@@ -227,7 +248,7 @@ export function parseBulkImportLine(
     const fields = findDelimitedFields(line);
     if (fields) {
       const urlFieldIndex = fields.findIndex(looksLikeHttpUrl);
-      url = cleanUrl(fields[urlFieldIndex]);
+      url = normalizeImportUrl(fields[urlFieldIndex]);
       const typeField = fields.find((field) => isValidSourceType(field));
       if (typeField) type = typeField;
 
@@ -238,7 +259,7 @@ export function parseBulkImportLine(
     } else {
       const urlMatch = line.match(HTTP_URL_RE);
       if (!urlMatch) return null;
-      url = cleanUrl(urlMatch[0]);
+      url = normalizeImportUrl(urlMatch[0]);
       name = nameNearUrl(line, url);
     }
   }

@@ -75,7 +75,7 @@ import {
   extractSourceImportText
 } from "./ipc";
 import modelsConfig from "./models.json";
-import { buildBulkImportReview, BulkImportReview, tierForSourceType } from "./bulkImportParser";
+import { buildBulkImportReview, BulkImportReview, normalizeImportUrl, tierForSourceType } from "./bulkImportParser";
 
 export interface ConfirmDialogState {
   title: string;
@@ -780,7 +780,7 @@ export function useApp() {
         .map((parsed, index) => ({
           id: Date.now() + index,
           name: parsed.name,
-          url: parsed.url,
+          url: normalizeImportUrl(parsed.url),
           type: parsed.type,
           tier: parsed.tier,
           status: "online",
@@ -799,7 +799,7 @@ export function useApp() {
       setStatusMessage("Importing selected reviewed sources...");
       let importedCount = 0;
       for (const parsed of selected) {
-        await addSource(parsed.name, parsed.url, parsed.type, parsed.tier);
+        await addSource(parsed.name, normalizeImportUrl(parsed.url), parsed.type, parsed.tier);
         importedCount++;
       }
       setStatusMessage(`Bulk imported ${importedCount} source(s) successfully.`);
@@ -1399,6 +1399,8 @@ export function useApp() {
       setBulkImportReview(review);
       setStatusMessage(`Loaded ${review.accepted.length} importable source(s) from file for review.`);
     } catch (e) {
+      setBulkImportText("");
+      setBulkImportReview({ accepted: [], rejected: [], duplicates: [] });
       setErrorMessage(toUserMessage(e));
     } finally {
       setBulkImportLoading(false);

@@ -75,6 +75,8 @@ describe("SourcesPanel Component Tests", () => {
     expect(screen.getByText("City Council Feed")).toBeInTheDocument();
     expect(screen.getByText("https://city.gov/rss")).toBeInTheDocument();
     expect(screen.getByText("Online")).toBeInTheDocument();
+    expect(screen.getAllByText("https://city.gov/rss")).toHaveLength(1);
+    expect(screen.getByTitle("https://city.gov/rss")).toHaveClass("source-url-link");
 
     // Click delete and verify callback
     const deleteBtn = screen.getByLabelText("Delete source");

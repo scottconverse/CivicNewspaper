@@ -263,6 +263,40 @@ pub fn add_source(
     add_source_inner(&db, name, url, r#type, tier)
 }
 
+fn normalize_source_url(url: &str) -> String {
+    let mut value = url
+        .trim()
+        .trim_matches(|ch| matches!(ch, '"' | '\'' | '`'))
+        .trim()
+        .trim_end_matches(|ch| matches!(ch, '.' | ',' | ';' | ':' | '!' | '?'))
+        .to_string();
+
+    loop {
+        let Some(last) = value.chars().last() else {
+            break;
+        };
+        let Some((open, close)) = (match last {
+            ')' => Some(('(', ')')),
+            ']' => Some(('[', ']')),
+            '}' => Some(('{', '}')),
+            _ => None,
+        }) else {
+            break;
+        };
+        let opens = value.chars().filter(|ch| *ch == open).count();
+        let closes = value.chars().filter(|ch| *ch == close).count();
+        if closes <= opens {
+            break;
+        }
+        value.pop();
+        value = value
+            .trim_end_matches(|ch| matches!(ch, '.' | ',' | ';' | ':' | '!' | '?'))
+            .to_string();
+    }
+
+    value
+}
+
 /// The storage chokepoint for every source-ingestion path (manual add, discovery
 /// auto-import, bulk import — all funnel through the `add_source` command). This
 /// is the single place the tier allow-list and the SSRF storage gate are enforced
@@ -280,6 +314,7 @@ pub(crate) fn add_source_inner(
     if tier != "official_record" && tier != "news_reporting" && tier != "community_signal" {
         return Err("Invalid tier".to_string());
     }
+    let url = normalize_source_url(&url);
     // SSRF defense-in-depth: reject non-http(s) schemes and blocked-IP literals
     // at the storage boundary so a discovered/auto-imported URL can never point
     // the scraper at loopback/private/link-local hosts. DNS-based hosts are

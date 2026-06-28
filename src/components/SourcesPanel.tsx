@@ -196,7 +196,14 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                               <span className="source-type-chip">{formatSourceKind(src.type)}</span>
                               <span className="source-type-chip">{formatStatus(src.status)}</span>
                             </div>
-                            <a href={src.url} onClick={(event) => handleOpenUrl(src.url, event)}>{src.url}</a>
+                            <a
+                              className="source-url-link"
+                              href={src.url}
+                              title={src.url}
+                              onClick={(event) => handleOpenUrl(src.url, event)}
+                            >
+                              {src.url}
+                            </a>
                           </div>
                         </div>
                       </td>
