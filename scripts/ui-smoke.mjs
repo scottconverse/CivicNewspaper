@@ -78,6 +78,31 @@ async function main() {
       results.push({ name: `nav-${navId}`, ok: true });
     }
     await page.screenshot({ path: path.join(runDir, "main-navigation.png"), fullPage: true });
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(baseUrl);
+    const mobileTargets = [
+      ["sources", "Sources"],
+      ["publish", "Publishing"],
+      ["workbench", /Workbench|No draft selected|Select a story/i],
+      ["system", /System|Status|Diagnostics/i],
+    ];
+    for (const [navId, expected] of mobileTargets) {
+      await page.locator(`#nav-tab-${navId}`).click();
+      const target = expected instanceof RegExp
+        ? page.getByText(expected).first()
+        : page.getByRole("heading", { name: expected });
+      await target.waitFor({ timeout: 5000 });
+      const isVisibleInViewport = await target.evaluate((node) => {
+        const rect = node.getBoundingClientRect();
+        return rect.bottom > 0 && rect.top < window.innerHeight && rect.right > 0 && rect.left < window.innerWidth;
+      });
+      if (!isVisibleInViewport) {
+        throw new Error(`Mobile nav-${navId} content is not visible in the viewport`);
+      }
+      results.push({ name: `mobile-nav-${navId}`, ok: true });
+    }
+    await page.screenshot({ path: path.join(runDir, "mobile-navigation.png"), fullPage: true });
     if (consoleErrors.length) {
       throw new Error(`Browser console errors: ${consoleErrors.join(" | ")}`);
     }

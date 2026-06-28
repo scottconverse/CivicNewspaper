@@ -2491,3 +2491,103 @@ tr:hover td {
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 700px) {
+  .app-container {
+    display: block;
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0;
+    height: auto;
+    padding: 12px 12px 10px;
+    border-right: 0;
+    border-bottom: 1px solid var(--border-color);
+    overflow: visible;
+  }
+
+  .brand {
+    margin-bottom: 10px;
+    padding: 0 4px 10px;
+  }
+
+  .brand-icon-shell {
+    width: 34px;
+    height: 34px;
+  }
+
+  .brand-name {
+    font-size: 16px;
+  }
+
+  .brand-kicker {
+    font-size: 10px;
+  }
+
+  .sidebar nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    min-height: 0;
+    overflow: visible;
+    padding-bottom: 0;
+  }
+
+  .nav-group {
+    display: contents;
+    margin-top: 0;
+  }
+
+  .nav-group-label {
+    display: none;
+  }
+
+  .nav-links {
+    display: contents;
+  }
+
+  .nav-link {
+    width: 100%;
+    min-height: 38px;
+    padding: 9px 10px;
+    justify-content: flex-start;
+    line-height: 1.15;
+    white-space: normal;
+  }
+
+  .sidebar-footer {
+    margin-top: 9px;
+    padding: 8px 10px;
+  }
+
+  .ollama-status-indicator span:last-child {
+    margin-top: 2px;
+  }
+
+  .main-content {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto;
+    min-height: 60vh;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 430px) {
+  .sidebar nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .nav-link {
+    padding: 8px 9px;
+    font-size: 12.5px;
+  }
+}
