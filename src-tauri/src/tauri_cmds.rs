@@ -455,6 +455,7 @@ fn spawn_platform_opener(target: &str) -> Result<(), String> {
     #[cfg(target_os = "windows")]
     let mut command = {
         let mut command = std::process::Command::new("explorer.exe");
+        command.arg("/e,");
         command.arg(target);
         command
     };

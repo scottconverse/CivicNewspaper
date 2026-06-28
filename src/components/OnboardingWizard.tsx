@@ -1,7 +1,7 @@
 // STEPS DEFINED HERE ARE DOCUMENTED IN docs/user_manual.md PART 1. Update both together.
 import React, { useState, useEffect } from "react";
 import { listen } from "@tauri-apps/api/event";
-import { documentDir, appDataDir, join } from "@tauri-apps/api/path";
+import { appDataDir, join } from "@tauri-apps/api/path";
 import { ChevronRight, Download, CheckCircle, RefreshCcw, AlertCircle } from "lucide-react";
 import { save } from "@tauri-apps/plugin-dialog";
 import {
@@ -109,11 +109,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     async function init() {
       try {
         if (isTauri()) {
-          const docDir = await documentDir();
-          const pPath = await join(docDir, "CivicNews", "sites", "default");
+          const appData = await appDataDir();
+          const pPath = await join(appData, "sites", "default");
           setPublishPath(pPath);
 
-          const appData = await appDataDir();
           const bPath = await join(appData, "backups");
           setBackupPath(bPath);
         } else {
