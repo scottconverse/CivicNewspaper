@@ -44,6 +44,14 @@ function downloadSizeFor(modelTag: string): string {
   return modelSizes[modelTag] || "a few GB";
 }
 
+function modelInstalled(selected: string, installed: string[]): boolean {
+  const want = selected.includes(":") ? selected : `${selected}:latest`;
+  return installed.some((m) => {
+    const have = m.includes(":") ? m : `${m}:latest`;
+    return have === want;
+  });
+}
+
 const starterProfiles = [
   {
     label: "Longmont",
@@ -494,25 +502,37 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   }, [step, autoStartPull, pulling, pullComplete, model]);
 
   useEffect(() => {
-    if (step !== 3 || !setupRecoveryActive || pullComplete || pullError) {
+    if (step !== 3 || !setupRecoveryActive || pullError) {
       return;
     }
 
     let cancelled = false;
+    const finishRecoveredSetup = async (latestHealth: OllamaState | null) => {
+      setPullProgress("Download complete!");
+      setPullPercent(100);
+      setPullComplete(true);
+      setPulling(false);
+      await setSetting("model.selected", model);
+      if (cancelled) return;
+      if (latestHealth) {
+        setHealth(latestHealth);
+      }
+      setSetupNotice("The recommended model is installed. Setup is continuing automatically because the setup screen is not receiving input events.");
+      setStep(4);
+    };
+
     const checkModelReady = async () => {
       try {
+        if (pullComplete) {
+          await finishRecoveredSetup(null);
+          return;
+        }
+
         const latestHealth = await ollamaHealth();
         if (cancelled) return;
         setHealth(latestHealth);
-        if (latestHealth.reachable && latestHealth.models.includes(model)) {
-          setPullProgress("Download complete!");
-          setPullPercent(100);
-          setPullComplete(true);
-          setPulling(false);
-          await setSetting("model.selected", model);
-          if (cancelled) return;
-          setSetupNotice("The recommended model is installed. Setup is continuing automatically because the setup screen is not receiving input events.");
-          setStep(4);
+        if (latestHealth.reachable && modelInstalled(model, latestHealth.models)) {
+          await finishRecoveredSetup(latestHealth);
         }
       } catch (e) {
         console.error(e);
@@ -591,7 +611,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         await persistIdentity();
         setStep(2);
       } else if (step === 2) {
-        if (health && health.reachable && health.models.includes(model)) {
+        if (health && health.reachable && modelInstalled(model, health.models)) {
           // Model is already installed, skip Step 3 and go directly to Step 4
           await setSetting("model.selected", model);
           setStep(4);
@@ -605,7 +625,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           setStep(3);
         }
       } else if (step === 3) {
-        const modelReady = pullComplete || Boolean(health?.models?.includes(model));
+        const modelReady = pullComplete || Boolean(health && modelInstalled(model, health.models));
         if (!modelReady) {
           setSkipConfirm({
             title: "Skip the model download?",

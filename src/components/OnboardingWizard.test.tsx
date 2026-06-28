@@ -294,7 +294,15 @@ describe("OnboardingWizard Component Tests", () => {
   test("model setup auto-starts pull and completes onboarding when no input events arrive", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
-    let pullStarted = false;
+    const eventApi = await import("@tauri-apps/api/event");
+    let completeCallback: any = null;
+
+    vi.mocked(eventApi.listen).mockImplementation(((eventName: string, callback: any) => {
+      if (eventName === "ollama-pull-complete") {
+        completeCallback = callback;
+      }
+      return Promise.resolve(() => {});
+    }) as any);
 
     invokeMock.mockImplementation((cmd: string) => {
       if (cmd === "get_system_ram") return Promise.resolve(16);
@@ -302,11 +310,11 @@ describe("OnboardingWizard Component Tests", () => {
       if (cmd === "set_setting") return Promise.resolve();
       if (cmd === "ollama_health") return Promise.resolve({
         reachable: true,
-        models: pullStarted ? ["qwen2.5:7b"] : [],
+        models: [],
         version: "0.1.0",
       });
       if (cmd === "pull_ollama_model") {
-        pullStarted = true;
+        window.setTimeout(() => completeCallback?.({ payload: undefined }), 0);
         return Promise.resolve();
       }
       return Promise.resolve();
