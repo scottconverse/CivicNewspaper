@@ -174,6 +174,12 @@ export interface CommunityProfile {
   about_text: string;
   ethics_text: string;
   how_we_report_text: string;
+  organization_type: string;
+  footer_text: string;
+  logo_url: string;
+  accent_color: string;
+  layout_style: string;
+  first_amendment_advisor_enabled: boolean;
   money_threshold: number;
   watchlist: string[];
   city: string;
@@ -460,6 +466,10 @@ export async function saveCommunityProfile(profile: CommunityProfile): Promise<v
   return invokeGuarded<void>("save_community_profile", { profile });
 }
 
+export async function importLogoAsset(path: string): Promise<string> {
+  return invokeGuarded<string>("import_logo_asset", { path });
+}
+
 export async function ingest(): Promise<number> {
   return invokeGuarded<number>("ingest");
 }
@@ -491,8 +501,8 @@ export async function storyDecision(
   );
 }
 
-// GG-C1: record a human attestation that the editor verified the draft against
-// its cited evidence. Required before a draft can be approved for publishing.
+// GG-C1: record a human attestation that the editor reviewed the draft and
+// accepts responsibility. Required before approval.
 export async function attestDraft(id: number, editor: string): Promise<void> {
   return invokeGuarded<void>("attest_draft", { id, editor });
 }
@@ -510,7 +520,7 @@ export async function guardrailsCheck(draftId: number): Promise<GuardrailsReport
 }
 
 // Editor-editable guardrail word lists (per newsroom). Words warn by default;
-// only words in `blocking` hard-stop publishing.
+// words in `blocking` become high-concern warnings.
 export interface GuardrailConfig {
   accusatory: string[];
   legal: string[];
@@ -673,6 +683,10 @@ export async function listDailyScanLeads(scanId: number): Promise<DailyScanLead[
 
 export async function plainLanguageRewrite(text: string, draftFormat: string): Promise<string> {
   return invokeGuarded<string>("plain_language_rewrite", { text, draftFormat });
+}
+
+export async function pressFreedomLegalReview(draftId: number): Promise<string> {
+  return invokeGuarded<string>("press_freedom_legal_review", { draftId });
 }
 
 // Settings + onboarding + diagnostics: previously called via raw invoke() inside

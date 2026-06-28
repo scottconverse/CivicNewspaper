@@ -12,6 +12,12 @@ describe("SettingsPanel Component Tests", () => {
     about_text: "About us",
     ethics_text: "Ethics",
     how_we_report_text: "Process",
+    organization_type: "single_person",
+    footer_text: "",
+    logo_url: "",
+    accent_color: "#5a1818",
+    layout_style: "classic",
+    first_amendment_advisor_enabled: true,
     money_threshold: 50000,
     watchlist: [],
     city: "Test City",
@@ -63,5 +69,34 @@ describe("SettingsPanel Component Tests", () => {
       site_title: "Updated Observer"
     });
     expect(await screen.findByRole("status")).toHaveTextContent("Identity saved.");
+  });
+
+  test("choose logo fills the profile logo field and shows a preview", async () => {
+    vi.mocked(invoke).mockResolvedValue({
+      accusatory: [],
+      legal: [],
+      blocking: [],
+    });
+    const handleChooseLogo = vi
+      .fn()
+      .mockResolvedValue("data:image/png;base64,iVBORw0KGgo=");
+
+    render(
+      <SettingsPanel
+        communityProfile={mockProfile}
+        onSaveProfile={vi.fn()}
+        onChooseLogo={handleChooseLogo}
+        backupPathInput=""
+        onBackupPathInputChange={vi.fn()}
+        onBackupSave={vi.fn()}
+        onBackupRestore={vi.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Choose image/i }));
+
+    expect(await screen.findByDisplayValue(/data:image\/png;base64/i)).toBeInTheDocument();
+    expect(screen.getByAltText(/Logo preview/i)).toBeInTheDocument();
+    expect(await screen.findByRole("status")).toHaveTextContent("Logo loaded. Save identity to publish it.");
   });
 });

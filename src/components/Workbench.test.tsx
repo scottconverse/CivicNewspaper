@@ -3,11 +3,11 @@ import type { ComponentProps } from "react";
 import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { Workbench } from "./Workbench";
-import { Lead, Draft, GuardrailsReport, plainLanguageRewrite } from "../ipc";
+import { Lead, Draft, GuardrailsReport, plainLanguageRewrite, pressFreedomLegalReview } from "../ipc";
 
 vi.mock("../ipc", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../ipc")>();
-  return { ...actual, plainLanguageRewrite: vi.fn() };
+  return { ...actual, plainLanguageRewrite: vi.fn(), pressFreedomLegalReview: vi.fn() };
 });
 
 describe("Workbench Component Tests", () => {
@@ -63,6 +63,7 @@ describe("Workbench Component Tests", () => {
 
   beforeEach(() => {
     vi.mocked(plainLanguageRewrite).mockReset();
+    vi.mocked(pressFreedomLegalReview).mockReset();
   });
 
   test("renders selectedLead and clicking Generate Draft fires action callback", () => {
@@ -245,6 +246,22 @@ describe("Workbench Component Tests", () => {
     expect(screen.getByRole("button", { name: /Plain Language Rewrite/i })).toBeDisabled();
   });
 
+  test("runs the optional press-freedom legal-risk advisor and renders the memo", async () => {
+    vi.mocked(pressFreedomLegalReview).mockResolvedValue("## Legal-risk flags\nVerify the contract attribution.");
+
+    renderEditor();
+
+    fireEvent.click(screen.getByRole("button", { name: /Run Advisor/i }));
+
+    expect(await screen.findByDisplayValue(/Verify the contract attribution/i)).toBeInTheDocument();
+    expect(pressFreedomLegalReview).toHaveBeenCalledWith(123);
+  });
+
+  test("keeps the advisor disabled until a draft has body text", () => {
+    renderEditor({ selectedDraft: { ...mockDraft, content: "" } });
+    expect(screen.getByRole("button", { name: /Run Advisor/i })).toBeDisabled();
+  });
+
   test("shows a draft picker when Workbench is opened without a selected draft", () => {
     const onOpenDraftEditor = vi.fn();
 
@@ -261,21 +278,18 @@ describe("Workbench Component Tests", () => {
     expect(onOpenDraftEditor).toHaveBeenCalledWith(mockDraft);
   });
 
-  test("Approve is disabled until the editor attests, then publishes a clean draft", () => {
+  test("Approve remains available and records editorial responsibility for a clean draft", () => {
     const onApprovePublish = vi.fn();
     renderEditor({ onApprovePublish, guardrailsReport: null });
 
     const approve = screen.getByRole("button", { name: /Approve for Static Publish/i });
-    expect(approve).toBeDisabled();
-
-    fireEvent.click(screen.getByLabelText(/I have verified this story/i));
     expect(approve).toBeEnabled();
 
     fireEvent.click(approve);
     expect(onApprovePublish).toHaveBeenCalledWith();
   });
 
-  test("a blocking (error) guardrail issue routes Approve through the override modal", async () => {
+  test("a sensitive guardrail issue warns without vetoing approval", async () => {
     const onApprovePublish = vi.fn();
     const report: GuardrailsReport = {
       is_clean: false,
@@ -285,21 +299,24 @@ describe("Workbench Component Tests", () => {
     };
     renderEditor({ onApprovePublish, guardrailsReport: report });
 
-    fireEvent.click(screen.getByLabelText(/I have verified this story/i));
     fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
 
-    // Override modal appears; nothing is published until a reason is supplied.
-    expect(await screen.findByText(/Publish despite blocking issues/i)).toBeInTheDocument();
+    // Review modal appears; editor can continue without a note.
+    expect(await screen.findByText(/Publish with sensitive warnings/i)).toBeInTheDocument();
     expect(onApprovePublish).not.toHaveBeenCalled();
 
     const confirm = screen.getByRole("button", { name: /Publish anyway \(logged\)/i });
-    expect(confirm).toBeDisabled();
-
-    fireEvent.change(screen.getByLabelText(/Reason for overriding/i), {
-      target: { value: "Verified against indictment." },
-    });
     expect(confirm).toBeEnabled();
     fireEvent.click(confirm);
+    expect(onApprovePublish).toHaveBeenCalledWith();
+
+    fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
+    await screen.findByText(/Publish with sensitive warnings/i);
+
+    fireEvent.change(screen.getByLabelText(/Editor note/i), {
+      target: { value: "Verified against indictment." },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /Publish anyway \(logged\)/i }));
 
     expect(onApprovePublish).toHaveBeenCalledWith("Verified against indictment.");
   });

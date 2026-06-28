@@ -1,59 +1,88 @@
-# CivicNews v0.2.6 Manual Smoke Test
+# CivicNewspaper v0.2.8 Manual Smoke Test
 
-Since CivicNews is a local-first desktop application with sensitive GUI workflows, it requires manual verification on a clean system to ensure packaging and onboarding flows work as expected.
+This clean-profile smoke test verifies the desktop-only paths that browser component tests cannot prove: installer startup, bundled AI sidecar behavior, first-run onboarding, source setup, browser pairing, guardrails, publishing, and recovery from missing dependencies.
+
+Save screenshots, logs, and notes beside the release receipt. A stable release should not claim first-run coverage without these artifacts.
 
 ## Prerequisites
-- A clean Windows User Account or a fresh Windows Sandbox / VM.
+
+- A clean Windows user profile, Windows Sandbox, or VM.
 - No existing `%APPDATA%\com.scottconverse.civicdesk\` folder.
-- No local Ollama instance running yet (the bundled sidecar will be used).
+- No user-installed Ollama service running before launch. The bundled sidecar path should be tested first.
+- Network available for model download, live source scan, and anonymous here.now preview publish.
+- Test source files available at `C:\Users\instynct\Desktop\CivicNewspaperTestFiles`.
 
-## Test Steps
+## 1. Installation
 
-### 1. Installation
-1. Build the release binary (or download the artifact if available). If building from source, you must first fetch the Ollama sidecar — the binary is not committed and the build fails without it:
-   ```bash
-   npm install
-   bash scripts/fetch-ollama-binaries.sh   # bash-only (Git Bash/WSL on Windows); downloads + SHA-verifies the sidecar
-   npm run tauri build
-   ```
-2. Install the application on the clean system.
-3. Launch CivicNewspaper.
+1. Build or download the installer artifact.
+2. Install CivicNewspaper.
+3. Launch the app and capture the initial screen.
+4. Confirm the app writes its database/config under the clean profile, not a reused developer profile.
 
-### 2. Onboarding Flow
-1. Verify the initial screen welcomes you and offers to start the setup wizard.
-2. Complete the identity and city setup.
-3. Arrive at the "Local AI / Ollama" step.
-4. Verify the RAM inspection correctly identifies system memory and recommends an appropriate model.
-5. Verify the wizard detects the bundled Ollama sidecar and reports it is initializing.
-6. Pull the recommended model in the background (e.g. `qwen2.5:7b` for >= 8 GB RAM, or `llama3.2:3b` below 8 GB).
-7. Complete the wizard and arrive at the main Newsroom dashboard.
+## 2. First-Run Onboarding
 
-### 3. Pairing Flow (Browser Extension)
-1. In Chrome/Edge/Brave, navigate to `chrome://extensions/`.
+1. Complete identity and city setup.
+2. Confirm the local AI service step reports whether the bundled sidecar is reachable.
+3. If the service is unavailable, verify the UI offers Retry and diagnostics.
+4. Confirm the model step recommends `qwen2.5:7b` for 8 GB RAM or more, or `llama3.2:3b` below 8 GB.
+5. Try pressing Next before download. The app must require explicit skip confirmation.
+6. Download the recommended model or explicitly skip and record the degraded-mode copy.
+7. Finish onboarding and confirm the main workspace loads.
+
+## 3. Source Setup
+
+1. Open Sources.
+2. Run Discover for a Colorado city.
+3. Verify discovered sources show credibility/review labels and preserve official-source tier when imported.
+4. Import the fixture files from `C:\Users\instynct\Desktop\CivicNewspaperTestFiles`:
+   - CSV
+   - TXT
+   - XLSX
+   - DOCX
+   - text-backed PDF
+   - scanned-style PDF
+5. Confirm imported rows are reviewable, duplicates are visible, and image-only scanned PDFs produce OCR/readable-text guidance.
+
+## 4. Daily Scan
+
+1. With zero sources, confirm Daily Scan routes to Sources instead of running an empty scan.
+2. With sources configured, run Daily Scan.
+3. Confirm staged progress shows source fetching, deterministic checks, optional AI review, saving, and completion/failure.
+4. Stop or hide the AI service and confirm deterministic/fallback copy is understandable.
+
+## 5. Browser Pairing
+
+1. Open `chrome://extensions/`.
 2. Enable Developer Mode.
-3. Select "Load Unpacked" and point to the `browser-extension/chromium/` directory.
-4. Open the CivicNews Desktop App and go to the "Browser Pairing" tab.
-5. Note the 22-char base64 pairing token displayed.
-6. Click the CivicNews extension icon in the browser toolbar.
-7. Paste the 22-char token into the pairing input and click "Pair Client".
-8. Verify the pairing succeeds and the extension is ready to scrape.
+3. Load the unpacked extension from `browser-extension/chromium/`.
+4. In CivicNewspaper, generate a pairing code.
+5. Pair the extension.
+6. Confirm the extension popup shows the paired state only, and the app's paired-device list updates.
 
-### 4. End-to-End Scraping & Drafting
-1. Navigate to a known city council meeting minutes page or an RSS feed.
-2. Use the browser extension to extract a document.
-3. Verify the document appears in the CivicNews "Leads" queue.
-4. Request a draft generation from the Lead.
-5. Wait for the local Ollama instance to stream the response.
-6. Verify the drafted article appears, with proper `evidence:` markdown citations.
+## 6. Guardrails, Attestation, and Publishing
 
-### 5. Guardrails & Compilation
-1. Edit the generated draft to include the word "corrupt" without a citation.
-2. Verify the Factual Guardrail Inspector raises a visual warning warning about the accusatory language rule. (Note: the guardrails act as editor helpers in the UI and do not block compilation or status changes).
-3. Approve for publish (status transitions to "Ready to Publish").
-4. Run the "Static Compilation & Publishing Wizard".
-5. Pick an output folder.
-6. Verify `index.html`, the article page, `styles.css`, and `feed.xml` are created correctly.
-7. Verify the article page does not execute any raw HTML (XSS test: insert `<script>alert(1)</script>` into the draft body before compile, verify it is escaped or stripped).
+1. Create or generate a draft with cited evidence.
+2. Add a guardrail-triggering phrase such as "corrupt" without adequate context.
+3. Confirm the guardrail inspector shows the warning and any configured high-concern terms open the editor-note flow.
+4. Confirm approval remains an editor decision and records human review.
+5. Compile the issue.
+6. Verify drafts with review warnings publish with visible editor-review notes instead of being silently skipped.
+7. Open and inspect:
+   - homepage
+   - article page
+   - RSS feed
+   - corrections/about/ethics pages
+   - ZIP
+   - newsletter markdown
+   - Substack markdown
+   - Facebook/subreddit/Nextdoor/short-link share files
+8. Run anonymous here.now publish and verify the live URL loads.
+9. Test a connector configuration before using Publish with connector.
 
----
-*Note: This smoke test stands in for automated clean-VM verification, as AI assistants cannot natively drive the Tauri desktop GUI.*
+## 7. Evidence to Save
+
+- App-data path proof.
+- Screenshots of onboarding, source import review, Daily Scan progress, guardrail/attestation, publish receipt, and here.now live output.
+- Release smoke receipt.
+- Model bakeoff result.
+- Any failure logs and recovery notes.

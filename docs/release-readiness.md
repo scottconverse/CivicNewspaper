@@ -23,7 +23,26 @@ The script writes a receipt under `.agent-runs\release-smoke-*` and runs:
 - source import extraction across CSV, TXT, XLSX, DOCX, and PDF fixtures
 - frontend bulk-import review parsing against the extracted fixture text
 
-Use `-SkipLiveModel` when rechecking everything except the slow local-model gate.
+Use `-SkipLiveModel` only for local diagnostics. A release candidate or stable gate must record every skipped check as a skip and must not treat a partial receipt as complete release evidence.
+
+For stable release evidence, run:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\release-smoke.ps1 `
+  -FixtureDir "C:\Users\instynct\Desktop\CivicNewspaperTestFiles" `
+  -Model "qwen2.5:7b" `
+  -Stable
+```
+
+The stable run fails if the working tree is dirty or if live model, here.now, or import fixture gates are skipped. Use `-AllowDirty` only for a non-release diagnostic run.
+
+## Evidence levels
+
+| Level | Required evidence | Allowed skips |
+|---|---|---|
+| Public beta | Frontend tests, Rust tests, static-site output gate, release notes, known limitations. | Live provider credentials, signing, true clean-machine proof. Skips must be explicit in the receipt. |
+| Release candidate | Beta evidence plus source-import fixtures, live Colorado scan, model bakeoff, dependency audit, anonymous here.now publish. | External providers without credentials. |
+| Stable | RC evidence plus no skipped release-smoke gates, clean first-run artifact, signed Windows installer, macOS notarization, clean-machine installer proof, and credentialed live connector verification for supported providers. | None for the release-critical gates. |
 
 ## Source import fixtures
 

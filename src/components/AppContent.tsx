@@ -100,6 +100,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
             onGenerateSocial={app.handleGenerateSocial}
             onUpdateDraftTitle={(title) => app.selectedDraft && app.setSelectedDraft({ ...app.selectedDraft, title })}
             onUpdateDraftContent={(content) => app.selectedDraft && app.setSelectedDraft({ ...app.selectedDraft, content })}
+            firstAmendmentAdvisorEnabled={app.communityProfile?.first_amendment_advisor_enabled !== false}
           />
         ) : (
           <LeadQueue
@@ -134,6 +135,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           dailyScanProgress={app.dailyScanProgress}
           onRunScan={app.handleDailyScan}
           onRefresh={app.loadInitialData}
+          onGoToSources={() => app.setActiveTab("sources")}
         />
       )}
 
@@ -211,6 +213,8 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           pullingModel={app.pullingModel}
           pullProgressText={app.pullProgressText}
           onPullModel={app.handlePullModel}
+          onRetryStatus={app.pollOllamaStatus}
+          onOpenSystem={() => app.setActiveTab("system")}
         />
       )}
 
@@ -239,6 +243,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
         <SettingsPanel
           communityProfile={app.communityProfile}
           onSaveProfile={app.handleSaveProfile}
+          onChooseLogo={app.handleChooseLogo}
           backupPathInput={app.backupPathInput}
           onBackupPathInputChange={app.setBackupPathInput}
           onBackupSave={app.handleBackupSave}
@@ -262,6 +267,8 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           publishPath={app.publishPath}
           publishResult={app.publishResult}
           publishHistory={app.publishHistory}
+          communityProfile={app.communityProfile}
+          onOpenSettings={() => app.setActiveTab("settings")}
           publisherConfig={app.publisherConfig}
           publisherProvider={app.publisherProvider}
           publisherTestResult={app.publisherTestResult}
@@ -344,6 +351,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           onGenerateSocial={app.handleGenerateSocial}
           onUpdateDraftTitle={(title) => app.selectedDraft && app.setSelectedDraft({ ...app.selectedDraft, title })}
           onUpdateDraftContent={(content) => app.selectedDraft && app.setSelectedDraft({ ...app.selectedDraft, content })}
+          firstAmendmentAdvisorEnabled={app.communityProfile?.first_amendment_advisor_enabled !== false}
         />
       )}
 
@@ -356,13 +364,14 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div>
-                <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Correction Note</label>
+                <label htmlFor="textarea-correction-note" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Correction Note</label>
                 <textarea
                   placeholder="e.g. Corrected date of zoning hearing from June 5 to June 15..."
                   value={app.correctionNote}
                   onChange={(e) => app.setCorrectionNote(e.target.value)}
                   style={{ height: "120px" }}
                   required
+                  id="textarea-correction-note"
                 />
               </div>
               <div className="btn-group text-right" style={{ justifyContent: "flex-end" }}>

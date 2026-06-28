@@ -344,6 +344,68 @@ pub async fn plain_language_rewrite(
     llm_client.call(model, &prompt, &system).await
 }
 
+pub fn build_press_freedom_review_prompt(
+    title: &str,
+    content: &str,
+    draft_format: &str,
+    evidence_context: &str,
+) -> (String, String) {
+    let system = "You are a press-freedom and newsroom legal-risk advisor for a local editor. You are not the publisher, not a lawyer, and not a censor. Give practical risk spotting, verification paths, and wording options. Never say the story must be published, must be killed, or is legally approved. Never hide information from the editor. The human editor always decides what to investigate, edit, hold, or publish.".to_string();
+    let prompt = format!(
+        "Run an advisory press-freedom / legal-risk review on this draft.\n\n\
+Return Markdown with these sections:\n\
+1. Editorial summary\n\
+2. Legal-risk flags to consider\n\
+3. Press-freedom / public-interest factors\n\
+4. Paragraph-level notes\n\
+5. Verification tasks\n\
+6. Safer wording options\n\
+7. Unknowns or ask-a-lawyer questions\n\n\
+Check for issues such as defamation risk, public official/public figure/private person status, opinion vs fact, fair-report privilege, privacy and identifying details, minors, active legal matters, prior-restraint threats, records-access issues, anti-SLAPP/state-law uncertainty, and whether claims are supported by sources. If evidence is missing, say what to verify. Do not make a publish/no-publish recommendation.\n\n\
+Draft format: {draft_format}\n\
+Title: {title}\n\n\
+Draft:\n{content}\n\n\
+Linked evidence:\n{evidence_context}",
+    );
+    (prompt, system)
+}
+
+pub async fn press_freedom_legal_review(
+    llm_client: &std::sync::Arc<dyn LlmClient>,
+    model: &str,
+    title: &str,
+    content: &str,
+    draft_format: &str,
+    evidence_context: &str,
+) -> Result<String, String> {
+    let (prompt, system) =
+        build_press_freedom_review_prompt(title, content, draft_format, evidence_context);
+    llm_client.call(model, &prompt, &system).await
+}
+
+#[cfg(test)]
+mod press_freedom_review_tests {
+    use super::build_press_freedom_review_prompt;
+
+    #[test]
+    fn prompt_is_advisory_and_never_a_publish_veto() {
+        let (prompt, system) = build_press_freedom_review_prompt(
+            "Council approves contract",
+            "The council approved a contract.",
+            "watch",
+            "Evidence ID: 1\nURL: https://example.test\nExcerpt: agenda item",
+        );
+
+        let combined = format!("{system}\n{prompt}").to_lowercase();
+        assert!(combined.contains("advisory"));
+        assert!(combined.contains("never say the story must be published"));
+        assert!(combined.contains("never hide information from the editor"));
+        assert!(combined.contains("do not make a publish/no-publish recommendation"));
+        assert!(combined.contains("verification tasks"));
+        assert!(combined.contains("safer wording options"));
+    }
+}
+
 /// Per-model cancellation senders for in-flight `run_ollama_pull` tasks. Keyed
 /// by model id so cancelling one model's pull never disturbs another's (the
 /// per-model isolation guarantee). At most one pull per model is in flight: a

@@ -56,3 +56,4 @@ search_response.html
 # their dated dirs locally; do not commit them (forensic/ holds kept postmortems).
 audit-*/
 audit-lite-*.md
+gate-*/

@@ -26,9 +26,8 @@ The tradeoff is real: local models in the 3B–9B range are significantly weaker
 ### What hardware do I need?
 
 The Onboarding wizard inspects your system memory and suggests a model. Rough guide:
-- **16 GB RAM or more**: `qwen3:14b` (≈9.3 GB download — recommended for the standard workflow).
-- **8 GB RAM or more**: `qwen3:8b` (≈5.2 GB download).
-- **Below 8 GB RAM**: `qwen3:4b` (≈2.5 GB download) — drafting quality will be noticeably worse.
+- **8 GB RAM or more**: `qwen2.5:7b` (≈4.7 GB download — current scan-tested default).
+- **Below 8 GB RAM**: `llama3.2:3b` (≈2 GB download) — faster on small machines, but less reliable for nuanced ranking.
 
 CivicNewspaper uses Qwen3 because it is a best-in-class local model in 2026 with notably reliable JSON/structured output, which the Daily Scan feature relies on.
 
@@ -56,7 +55,7 @@ Windows SmartScreen and macOS Gatekeeper warn you because the installers are not
 
 You will need:
 - **Application space**: Around 330 MB for the installed application.
-- **AI Model space**: Around 5.2 GB for the `qwen3:8b` offline writing model (the default for 8 GB-class machines). The larger `qwen3:14b` is ≈9.3 GB; the smaller `qwen3:4b` is ≈2.5 GB.
+- **AI Model space**: Around 4.7 GB for the `qwen2.5:7b` offline writing and Daily Scan model. The smaller `llama3.2:3b` fallback is ≈2 GB.
 - **Database space**: The SQLite database starts at less than 1 MB, but will grow depending on how many sources you monitor and how many text excerpts you scrape. Typically, a year of municipal monitoring uses under 100 MB.
 
 Total recommended free space: **6 GB to 10 GB**.
@@ -100,7 +99,7 @@ Four things — the first three keyword-based, the fourth sequence-based:
 3. **Presumption of innocence**: if a paragraph contains arrest-related words (`arrested`, `charged`, `indicted`, `convicted`, `prosecuted`), it must also contain a modifier like `alleged` / `allegedly` / `suspected` / `accused` nearby.
 4. **Verbatim overlap**: warns when a paragraph copies a sequence of 7+ words verbatim from a linked evidence excerpt. Rewrite it in your own words or format it as a blockquote.
 
-It is a lint rule, not an inspector in any AI/NLP sense. By default it only warns; an editor can mark specific words as **blocking** (Settings → Story guardrails), and publishing also requires a recorded human **attestation** — both are enforced before a draft can be approved or compiled.
+It is a lint rule, not an inspector in any AI/NLP sense. By default it only warns; an editor can mark specific words as **high concern** (Settings -> Story guardrails), which asks for extra review. The app does not veto the editor's decision to approve or compile.
 
 ### What does the "OSINT Detector Engine" actually do?
 

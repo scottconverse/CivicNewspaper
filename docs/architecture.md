@@ -59,7 +59,7 @@ graph LR
 5. **Drafts**: Factual markdown articles written on the Workbench tab.
 6. **Compiled Site & RSS**: Finished static HTML documents and an RSS feed exported to the output directory.
 
-> **Note on guardrails:** the journalistic-integrity guardrails (`guardrails.rs`) warn by default, but an editor can mark words as *blocking* (Settings → Story guardrails). A blocking issue, and a missing human attestation, are **enforced** at publish time: `story_decision` rejects publish-advancing transitions, and `compile_static_site` re-checks each draft (requiring attestation, and clean-or-overridden) as defense-in-depth, so it can skip a draft that reached a publishable status by another path.
+> **Note on guardrails:** the journalistic-integrity guardrails (`guardrails.rs`) warn by default. An editor can mark words as high-concern terms (Settings -> Story guardrails), which asks for an editor note before approval. The app records review/override notes and shows compiler warnings, but it does not veto the publisher's final decision.
 
 ---
 

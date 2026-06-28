@@ -11,9 +11,11 @@
     <meta name="description" content="{{POST_DESCRIPTION}}">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="print.css" media="print">
+    {{CUSTOM_STYLE}}
 </head>
-<body>
+<body class="{{LAYOUT_CLASS}}">
     <header>
+        {{LOGO_HTML}}
         <h1 class="site-title"><a href="index.html" style="color: inherit; text-decoration: none;">{{SITE_TITLE}}</a></h1>
         <p class="site-subtitle">{{SITE_SUBTITLE}}</p>
         <div class="nav-links">
@@ -45,9 +47,7 @@
     </main>
 
     <footer>
-        <p>© {{YEAR}} {{SITE_TITLE}}. Built using transparent public records. Under no circumstances does this site run advertisements or trackers.</p>
-        {{AI_DISCLOSURE}}
-        <p>Published via The Civic Desk.</p>
+        {{FOOTER_NOTICE}}
     </footer>
 </body>
 </html>

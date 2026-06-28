@@ -28,6 +28,35 @@ header {
     text-align: center;
 }
 
+.site-logo {
+    display: block;
+    max-height: 90px;
+    max-width: min(260px, 80vw);
+    object-fit: contain;
+    margin: 0 auto 1rem;
+}
+
+.layout-compact header {
+    margin-top: 1rem;
+}
+
+.layout-compact .site-title {
+    font-size: 2.6rem;
+}
+
+.layout-wide main,
+.layout-wide header {
+    max-width: 1180px;
+}
+
+.layout-modern {
+    --font-serif: 'Georgia', serif;
+}
+
+.layout-modern .site-title {
+    text-transform: none;
+}
+
 .site-title {
     font-family: var(--font-serif);
     font-size: 3.5rem;

@@ -15,6 +15,7 @@ import {
   cancelOllamaPull,
   exportDiagnostics,
   setOnboardingComplete,
+  isTauri,
   toUserMessage,
 } from "../ipc";
 import modelsConfig from "../models.json";
@@ -69,6 +70,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   // Step 1 State
   const [pubName, setPubName] = useState("");
   const [editorName, setEditorName] = useState("");
+  const [organizationType, setOrganizationType] = useState("single_person");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
 
@@ -106,18 +108,23 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   useEffect(() => {
     async function init() {
       try {
-        const docDir = await documentDir();
-        const pPath = await join(docDir, "CivicNews", "sites", "default");
-        setPublishPath(pPath);
+        if (isTauri()) {
+          const docDir = await documentDir();
+          const pPath = await join(docDir, "CivicNews", "sites", "default");
+          setPublishPath(pPath);
 
-        const appData = await appDataDir();
-        const bPath = await join(appData, "backups");
-        setBackupPath(bPath);
+          const appData = await appDataDir();
+          const bPath = await join(appData, "backups");
+          setBackupPath(bPath);
+        } else {
+          setPublishPath("C:\\CivicNews\\sites\\default");
+          setBackupPath("C:\\CivicNews\\backups");
+        }
 
         const ram = systemRam || await getSystemRam();
         setSysRam(ram);
 
-        const selected = await getSetting("model.selected");
+        const selected = isTauri() ? await getSetting("model.selected") : null;
         if (selected) {
           setModel(selected);
         } else {
@@ -285,6 +292,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         // Persist identity settings
         await setSetting("identity.newsroom_name", pubName);
         await setSetting("identity.editor_name", editorName);
+        await setSetting("identity.organization_type", organizationType);
         await setSetting("identity.city", city);
         await setSetting("identity.state", state);
 
@@ -296,6 +304,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           await saveCommunityProfile({
             ...profile,
             site_title: pubName.trim() || profile.site_title,
+            organization_type: organizationType,
             city: city.trim() || profile.city,
             state: state.trim() || profile.state,
           });
@@ -313,6 +322,19 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           setStep(3);
         }
       } else if (step === 3) {
+        const modelReady = pullComplete || Boolean(health?.models?.includes(model));
+        if (!modelReady) {
+          setSkipConfirm({
+            title: "Skip the model download?",
+            message: "Daily Scan and AI drafting will run in limited mode until you download a model from AI Model.",
+            confirmLabel: "Skip download",
+            onConfirm: async () => {
+              await setSetting("model.selected", model);
+              setStep(4);
+            },
+          });
+          return;
+        }
         await setSetting("model.selected", model);
         setStep(4);
       } else if (step === 4) {
@@ -369,21 +391,37 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         {step === 1 && (
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             <div>
-              <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Publication Name</label>
-              <input type="text" placeholder="e.g. The Brighton Gazette" value={pubName} onChange={e => setPubName(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
+              <label htmlFor="onboarding-publication-name" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Publication Name</label>
+              <input id="onboarding-publication-name" type="text" placeholder="e.g. The Brighton Gazette" value={pubName} onChange={e => setPubName(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
             </div>
             <div>
-              <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Editor Name</label>
-              <input type="text" placeholder="e.g. Jane Doe" value={editorName} onChange={e => setEditorName(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
+              <label htmlFor="onboarding-editor-name" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Editor Name</label>
+              <input id="onboarding-editor-name" type="text" placeholder="e.g. Jane Doe" value={editorName} onChange={e => setEditorName(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
+            </div>
+            <div>
+              <label htmlFor="onboarding-organization-type" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Publisher Type</label>
+              <select
+                id="onboarding-organization-type"
+                value={organizationType}
+                onChange={e => setOrganizationType(e.target.value)}
+                style={{ width: "100%", padding: "0.5rem" }}
+              >
+                <option value="single_person">Single person</option>
+                <option value="for_profit">For-profit publication</option>
+                <option value="nonprofit">Nonprofit publication</option>
+                <option value="private_org">Private organization</option>
+                <option value="community_group">Community group</option>
+                <option value="other">Other</option>
+              </select>
             </div>
             <div style={{ display: "flex", gap: "1rem" }}>
               <div style={{ flex: 1 }}>
-                <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>City</label>
-                <input type="text" placeholder="Brighton" value={city} onChange={e => setCity(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
+                <label htmlFor="onboarding-city" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>City</label>
+                <input id="onboarding-city" type="text" placeholder="Brighton" value={city} onChange={e => setCity(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
               </div>
               <div style={{ flex: 1 }}>
-                <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>State</label>
-                <input type="text" placeholder="CO" value={state} onChange={e => setState(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
+                <label htmlFor="onboarding-state" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>State</label>
+                <input id="onboarding-state" type="text" placeholder="CO" value={state} onChange={e => setState(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
               </div>
             </div>
           </div>
@@ -565,13 +603,13 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         {step === 4 && (
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             <div>
-              <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Publish Path</label>
-              <input type="text" value={publishPath} onChange={e => setPublishPath(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
+              <label htmlFor="onboarding-publish-path" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Publish Path</label>
+              <input id="onboarding-publish-path" type="text" value={publishPath} onChange={e => setPublishPath(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
               <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>Where your static sites will be compiled.</p>
             </div>
             <div>
-              <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Backup Path</label>
-              <input type="text" value={backupPath} onChange={e => setBackupPath(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
+              <label htmlFor="onboarding-backup-path" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Backup Path</label>
+              <input id="onboarding-backup-path" type="text" value={backupPath} onChange={e => setBackupPath(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
               <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>Where database backups are saved.</p>
             </div>
           </div>

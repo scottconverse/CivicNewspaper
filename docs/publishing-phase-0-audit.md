@@ -25,7 +25,7 @@ The local database currently has:
 - 0 drafts
 - 0 published posts
 
-Because there are no drafts, a real publish from the current local database cannot exercise article pages, article evidence blocks, correction banners on article pages, or per-story share copy. This is a product/audit blocker: publishing needs a seeded publish-preview path or a test fixture that can produce one approved, attested story without relying on a full Daily Scan and draft-generation run.
+Because there are no drafts, a real publish from the current local database cannot exercise article pages, article evidence blocks, correction banners on article pages, or per-story share copy. This is a product/audit blocker: publishing needs a seeded publish-preview path or a test fixture that can produce one approved story without relying on a full Daily Scan and draft-generation run.
 
 Status: addressed for regression testing by `test_seeded_publish_fixture_generates_article_evidence_and_correction_package`, which creates one source, evidence item, lead, attested corrected draft, and local export package through the real compiler.
 
@@ -79,7 +79,7 @@ Status: addressed in Phase 1. The seeded fixture compiles a corrected watch arti
 
 The empty homepage and RSS feed render without broken links, but the operator gets no useful next step beyond "No observation records published yet."
 
-Recommended fix: the Publishing screen should explain when zero articles were included and route the editor back to Workbench to approve an attested story.
+Recommended fix: the Publishing screen should explain when zero articles were included and route the editor back to Workbench to approve a story.
 
 Status: partially addressed by the compile receipt and zero-article message added in Phase 1.
 

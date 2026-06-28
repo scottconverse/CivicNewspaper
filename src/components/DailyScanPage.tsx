@@ -13,6 +13,7 @@ interface DailyScanPageProps {
   dailyScanProgress?: DailyScanProgress | null;
   onRunScan: () => void;
   onRefresh: () => void;
+  onGoToSources: () => void;
 }
 
 function progressStageLabel(stage: string): string {
@@ -52,7 +53,9 @@ export const DailyScanPage: React.FC<DailyScanPageProps> = ({
   dailyScanProgress,
   onRunScan,
   onRefresh,
+  onGoToSources,
 }) => {
+  const hasSources = sourceCount > 0;
   const cards = [
     { label: "Sources Watched", value: sourceCount, tone: "blue" },
     { label: "Open Leads", value: leadCount, tone: "amber" },
@@ -73,9 +76,9 @@ export const DailyScanPage: React.FC<DailyScanPageProps> = ({
             <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
             Refresh
           </button>
-          <button className="btn btn-primary" onClick={onRunScan} disabled={loading} id="btn-daily-scan-route">
+          <button className="btn btn-primary" onClick={hasSources ? onRunScan : onGoToSources} disabled={loading} id="btn-daily-scan-route">
             <Play size={16} />
-            Run Daily Scan
+            {hasSources ? "Run Daily Scan" : "Add Sources First"}
           </button>
         </div>
       </div>
@@ -137,10 +140,14 @@ export const DailyScanPage: React.FC<DailyScanPageProps> = ({
         <div className="card empty-state">
           <ScanSearch size={36} />
           <h3>Start today's scan</h3>
-          <p className="help-text">The results panel will fill with surfaced civic leads after the first run. If this is a fresh setup, add sources first; Daily Scan will check them before analyzing records.</p>
-          <button className="btn btn-primary" onClick={onRunScan} disabled={loading}>
+          <p className="help-text">
+            {hasSources
+              ? "The results panel will fill with surfaced civic leads after the first run. Daily Scan will check watched sources before analyzing records."
+              : "Add at least one city feed, record portal, or imported source before running a Daily Scan."}
+          </p>
+          <button className="btn btn-primary" onClick={hasSources ? onRunScan : onGoToSources} disabled={loading}>
             <Play size={16} />
-            Run Daily Scan
+            {hasSources ? "Run Daily Scan" : "Go to Sources"}
           </button>
         </div>
       )}

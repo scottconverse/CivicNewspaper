@@ -223,10 +223,10 @@ reached or the call failed).
 ### `POST /api/guardrails/check`
 
 Runs the guardrail checks over an existing draft and returns the findings. By
-default matches are warnings, but an editor can mark words as *blocking* (Settings
-→ Story guardrails). A blocking issue — and a missing human attestation — are
-enforced by `story_decision` and by the static-site compiler, so this endpoint's
-report reflects what can block a publish, not advisory-only output.
+default matches are warnings, but an editor can mark words as high-concern terms
+(Settings -> Story guardrails). High-concern issues ask for an editor note and
+are included in compiler review notes, but this endpoint is advisory; the app
+does not veto the publisher's final decision.
 
 **Request body**
 

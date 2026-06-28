@@ -87,6 +87,7 @@ export const Layout: React.FC<LayoutProps> = ({
                         className={`nav-link ${activeTab === item.id ? "active" : ""}`}
                         onClick={() => onTabChange(item.id)}
                         id={`nav-tab-${item.id}`}
+                        aria-current={activeTab === item.id ? "page" : undefined}
                       >
                         <Icon size={18} />
                         {item.label}

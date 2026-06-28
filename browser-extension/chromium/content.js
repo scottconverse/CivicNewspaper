@@ -285,27 +285,27 @@ function insertTextIntoChat(text) {
   return true;
 }
 
-// Request evidence and insert prompt
+// Request source excerpts and insert prompt
 function loadLeadEvidenceAndInsert(lead) {
-  appendLog(`Fetching evidence for lead #${lead.id}...`);
+  appendLog(`Fetching source excerpts for lead #${lead.id}...`);
   chrome.runtime.sendMessage({ type: 'CN_GET_EVIDENCE', leadId: lead.id }, (response) => {
     if (response && response.success) {
       const items = response.data || [];
       let promptText = `I am drafting a story on the following local news lead:\n"${lead.why}"\n\n`;
-      promptText += `Here are the raw public records evidence excerpts:\n`;
+      promptText += `Here are the attached source excerpts:\n`;
       
       items.forEach((item) => {
-        promptText += `\n--- Evidence ID: ${item.id} ---\nExcerpt: ${item.excerpt}\n`;
+        promptText += `\n--- Source ID: ${item.id} ---\nExcerpt: ${item.excerpt}\n`;
       });
       
-      promptText += `\nInstructions:\nPlease draft a balanced, objective, third-person report based strictly on the provided evidence. Cite facts with standard Markdown links referring to their evidence IDs, like [Source](evidence:ID). Do not use sensationalized terms, and maintain a presumption of innocence.`;
+      promptText += `\nInstructions:\nPlease draft a balanced, third-person working draft from the source excerpts. Cite facts with standard Markdown links referring to their source IDs, like [Source](evidence:ID), when the source supports them. Flag uncertainty instead of inventing facts.`;
       
       const success = insertTextIntoChat(promptText);
       if (success) {
-        appendLog('Evidence packet inserted into chat prompt box!');
+        appendLog('Source packet inserted into chat prompt box!');
       }
     } else {
-      appendLog(`Failed to fetch evidence: ${response ? response.error : 'Unknown'}`);
+      appendLog(`Failed to fetch source excerpts: ${response ? response.error : 'Unknown'}`);
     }
     render();
   });

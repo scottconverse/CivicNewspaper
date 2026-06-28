@@ -17,12 +17,7 @@ const POST_TEMPLATE: &str = include_str!("../../../templates/post.html");
 const STYLES_CSS: &str = include_str!("../../../templates/styles.css");
 const PRINT_CSS: &str = include_str!("../../../templates/print.css");
 
-// GG-C1: reader-facing AI-provenance disclosure rendered in every page footer.
-// Truthful for this product — all articles pass through the local-LLM draft flow,
-// and a recorded human attestation is now required before publishing (see
-// `story_decision`'s ATTESTATION_REQUIRED gate).
-const AI_DISCLOSURE_HTML: &str = "<p class=\"ai-disclosure\" style=\"font-size: 0.85rem; opacity: 0.85;\">Articles on this site are drafted with on-device AI assistance from primary public records and reviewed by a human editor before publication.</p>";
-const EVIDENCE_SECTION_TEMPLATE: &str = "<div class=\"citation-list\">\n                <h3 style=\"margin-top: 0; font-family: var(--font-sans); font-size: 0.9rem; text-transform: uppercase; color: var(--accent-color);\">Evidence & Sources Check</h3>\n                <p style=\"margin-bottom: 0.8rem; font-size: 0.85rem; color: var(--muted-color);\">This publication is backed by transparent primary documentation. Click references to view original records:</p>\n                <ol style=\"margin: 0; padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.5;\">\n                    {{EVIDENCE_CITATIONS}}\n                </ol>\n            </div>";
+const EVIDENCE_SECTION_TEMPLATE: &str = "<div class=\"citation-list\">\n                <h3 style=\"margin-top: 0; font-family: var(--font-sans); font-size: 0.9rem; text-transform: uppercase; color: var(--accent-color);\">Sources & Notes</h3>\n                <p style=\"margin-bottom: 0.8rem; font-size: 0.85rem; color: var(--muted-color);\">Source links attached by the editor:</p>\n                <ol style=\"margin: 0; padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.5;\">\n                    {{EVIDENCE_CITATIONS}}\n                </ol>\n            </div>";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CompilerProfile {
@@ -31,6 +26,31 @@ pub struct CompilerProfile {
     pub about_text: String,
     pub ethics_text: String,
     pub how_we_report_text: String,
+    #[serde(default = "default_organization_type")]
+    pub organization_type: String,
+    #[serde(default)]
+    pub footer_text: String,
+    #[serde(default)]
+    pub logo_url: String,
+    #[serde(default = "default_accent_color")]
+    pub accent_color: String,
+    #[serde(default = "default_layout_style")]
+    pub layout_style: String,
+    #[serde(default = "default_first_amendment_advisor_enabled")]
+    pub first_amendment_advisor_enabled: bool,
+}
+
+fn default_organization_type() -> String {
+    "single_person".to_string()
+}
+fn default_accent_color() -> String {
+    "#5a1818".to_string()
+}
+fn default_layout_style() -> String {
+    "classic".to_string()
+}
+fn default_first_amendment_advisor_enabled() -> bool {
+    true
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -70,18 +90,65 @@ pub struct CompileStaticSiteResult {
 impl Default for CompilerProfile {
     fn default() -> Self {
         CompilerProfile {
-            site_title: "The Civic Desk".to_string(),
-            site_subtitle: "Transparent Local Public Records & Evidence".to_string(),
-            about_text: "We report on local government activities using raw public records."
-                .to_string(),
+            site_title: "My Local Publication".to_string(),
+            site_subtitle: "Local news and community information.".to_string(),
+            about_text: "A locally edited publication for this community.".to_string(),
             ethics_text:
-                "Our core ethics: evidence, not rumor. We link every fact to primary documentation."
+                "Editorial standards are set by the publisher. Corrections are published when needed."
                     .to_string(),
             how_we_report_text:
-                "We collect agendas, minutes, and documents directly from municipal feeds. Draft articles are generated with on-device AI assistance and reviewed by a human editor before publication."
+                "Stories, sources, and publication decisions are reviewed by the editor before publication."
                     .to_string(),
+            organization_type: default_organization_type(),
+            footer_text: String::new(),
+            logo_url: String::new(),
+            accent_color: default_accent_color(),
+            layout_style: default_layout_style(),
+            first_amendment_advisor_enabled: default_first_amendment_advisor_enabled(),
         }
     }
+}
+
+fn footer_notice(profile: &CompilerProfile) -> String {
+    let text = profile.footer_text.trim();
+    if text.is_empty() {
+        String::new()
+    } else {
+        format!("<p>{}</p>", html_escape::encode_safe(text))
+    }
+}
+
+fn layout_class(profile: &CompilerProfile) -> &'static str {
+    match profile.layout_style.trim() {
+        "compact" => "layout-compact",
+        "wide" => "layout-wide",
+        "modern" => "layout-modern",
+        _ => "layout-classic",
+    }
+}
+
+fn custom_style(profile: &CompilerProfile) -> String {
+    let color = profile.accent_color.trim();
+    if regex::Regex::new(r"^#[0-9a-fA-F]{6}$")
+        .map(|re| re.is_match(color))
+        .unwrap_or(false)
+    {
+        format!("<style>:root {{ --accent-color: {}; }}</style>", color)
+    } else {
+        String::new()
+    }
+}
+
+fn logo_html(profile: &CompilerProfile) -> String {
+    let url = profile.logo_url.trim();
+    if url.is_empty() || !is_safe_logo_src(url) {
+        return String::new();
+    }
+    format!(
+        "<img class=\"site-logo\" src=\"{}\" alt=\"{} logo\">",
+        html_escape::encode_safe(url),
+        html_escape::encode_safe(profile.site_title.trim())
+    )
 }
 
 fn write_site_file(
@@ -250,6 +317,18 @@ pub(crate) fn is_safe_url_scheme(dest: &str) -> bool {
     }
 }
 
+fn is_safe_logo_src(dest: &str) -> bool {
+    let trimmed = dest.trim_start();
+    if trimmed.len() >= 5 && trimmed[..5].eq_ignore_ascii_case("data:") {
+        let lower = trimmed.to_ascii_lowercase();
+        return lower.starts_with("data:image/png;base64,")
+            || lower.starts_with("data:image/jpeg;base64,")
+            || lower.starts_with("data:image/gif;base64,")
+            || lower.starts_with("data:image/webp;base64,");
+    }
+    is_safe_url_scheme(dest)
+}
+
 /// Replace a link/image destination with an inert `#` when its scheme is not
 /// allow-listed, so dangerous URIs cannot reach the rendered HTML.
 fn sanitize_dest(dest: CowStr<'_>) -> CowStr<'_> {
@@ -313,7 +392,7 @@ pub fn compile_static_site(
     );
     let mut files_written = 0usize;
     let mut generated_files: Vec<String> = Vec::new();
-    let mut skipped_count = 0usize;
+    let skipped_count = 0usize;
     let mut compiled_articles: Vec<CompiledArticle> = Vec::new();
 
     // 1. Create standard output directories
@@ -343,6 +422,11 @@ pub fn compile_static_site(
     let safe_site_title = html_escape::encode_safe(&profile.site_title).to_string();
     let safe_site_subtitle = html_escape::encode_safe(&profile.site_subtitle).to_string();
     let safe_about_text = html_escape::encode_safe(&profile.about_text).to_string();
+    let safe_ethics_text = html_escape::encode_safe(&profile.ethics_text).to_string();
+    let footer_html = footer_notice(&profile);
+    let logo_html = logo_html(&profile);
+    let custom_style = custom_style(&profile);
+    let layout_class = layout_class(&profile);
 
     // 3. Copy Stylesheets
     write_site_file(
@@ -373,13 +457,11 @@ pub fn compile_static_site(
     for draft in &published_drafts {
         let draft_id = draft.id.unwrap_or(0);
 
-        // SEC (GG-B2 / GG-C1 / RE-AUDIT M1+NEW-5): defense-in-depth publish gate at
-        // the sink. A draft only compiles into the public site if (a) a human
-        // attestation is on record AND (b) it is guardrail-clean OR carries a
-        // logged override. This catches EVERY path to a publishable status
-        // (story_decision, register_correction, a direct status write, a future
-        // code path), so the corrections path cannot bypass attestation (M1). Fail
-        // CLOSED on any check error (NEW-5).
+        // Editorial review is advisory at compile time: do not silently filter a
+        // story out of the public package. If a draft reached a publishable
+        // status by any path, compile it and preserve any review concerns as a
+        // visible note for the publisher to resolve or intentionally keep.
+        let mut editorial_notes: Vec<String> = Vec::new();
         let (attested, overridden) = match super::db::get_draft_publish_gate(conn, draft_id) {
             Ok((att, ovr)) => (
                 att.as_deref()
@@ -392,12 +474,10 @@ pub fn compile_static_site(
             Err(_) => (false, false),
         };
         if !attested {
-            eprintln!(
-                "Skipping draft {} during compile: no human attestation on record.",
-                draft_id
+            editorial_notes.push(
+                "No human review attestation was recorded before this package was compiled."
+                    .to_string(),
             );
-            skipped_count += 1;
-            continue;
         }
         if !overridden {
             match super::guardrails::run_guardrails_check(conn, draft_id) {
@@ -408,20 +488,18 @@ pub fn compile_static_site(
                         .iter()
                         .filter(|i| i.severity == "error")
                         .count();
-                    eprintln!(
-                        "Skipping draft {} during compile: {} error-severity guardrail issue(s) and no logged override.",
-                        draft_id, errs
-                    );
-                    skipped_count += 1;
-                    continue;
+                    if errs > 0 {
+                        editorial_notes.push(format!(
+                            "{} editor-configured sensitive issue(s) were still present when this package was compiled.",
+                            errs
+                        ));
+                    }
                 }
                 Err(e) => {
-                    eprintln!(
-                        "Skipping draft {} during compile: guardrails check failed ({}); failing closed.",
-                        draft_id, e
-                    );
-                    skipped_count += 1;
-                    continue;
+                    editorial_notes.push(format!(
+                        "The pre-publication review check could not run: {}.",
+                        e
+                    ));
                 }
             }
         }
@@ -466,8 +544,7 @@ pub fn compile_static_site(
             }
         }
         if evidence_html.is_empty() {
-            evidence_html =
-                "<li>No specific evidence items linked to this report.</li>".to_string();
+            evidence_html = "<li>No source links were attached to this article.</li>".to_string();
         }
 
         // Format Correction Banner
@@ -481,6 +558,19 @@ pub fn compile_static_site(
         } else {
             String::new()
         };
+        let editorial_note_banner = if editorial_notes.is_empty() {
+            String::new()
+        } else {
+            let notes = editorial_notes
+                .iter()
+                .map(|note| format!("<li>{}</li>", html_escape::encode_safe(note)))
+                .collect::<Vec<_>>()
+                .join("");
+            format!(
+                "<div class=\"correction-banner\" style=\"background-color: #fff8e1; border: 1px solid #f6d365; color: #6b4b00; padding: 1rem; margin-bottom: 2rem; border-radius: 4px; font-family: var(--font-sans); font-size: 0.95rem;\"><strong>EDITOR REVIEW NOTE:</strong><ul style=\"margin: 0.5rem 0 0 1rem; padding: 0;\">{}</ul></div>\n",
+                notes
+            )
+        };
 
         let safe_title = html_escape::encode_safe(&draft.title).to_string();
 
@@ -488,6 +578,9 @@ pub fn compile_static_site(
         let mut post_html = POST_TEMPLATE.to_string();
         post_html = post_html.replace("{{SITE_TITLE}}", &safe_site_title);
         post_html = post_html.replace("{{SITE_SUBTITLE}}", &safe_site_subtitle);
+        post_html = post_html.replace("{{LOGO_HTML}}", &logo_html);
+        post_html = post_html.replace("{{CUSTOM_STYLE}}", &custom_style);
+        post_html = post_html.replace("{{LAYOUT_CLASS}}", layout_class);
         post_html = post_html.replace("{{POST_TITLE}}", &safe_title);
         post_html = post_html.replace("{{POST_DESCRIPTION}}", &safe_title);
         post_html = post_html.replace("{{POST_DATE}}", &draft.updated_at);
@@ -497,9 +590,12 @@ pub fn compile_static_site(
             "{{EVIDENCE_SECTION}}",
             &EVIDENCE_SECTION_TEMPLATE.replace("{{EVIDENCE_CITATIONS}}", &evidence_html),
         );
-        post_html = post_html.replace("{{CORRECTION_BANNER}}", &correction_banner);
+        post_html = post_html.replace(
+            "{{CORRECTION_BANNER}}",
+            &(correction_banner + &editorial_note_banner),
+        );
         post_html = post_html.replace("{{YEAR}}", &current_year);
-        post_html = post_html.replace("{{AI_DISCLOSURE}}", AI_DISCLOSURE_HTML);
+        post_html = post_html.replace("{{FOOTER_NOTICE}}", &footer_html);
 
         // Prepend "../" to relative assets and links since post page is in a subfolder
         post_html = post_html.replace("href=\"styles.css\"", "href=\"../styles.css\"");
@@ -583,6 +679,9 @@ pub fn compile_static_site(
     let mut index_html = INDEX_TEMPLATE.to_string();
     index_html = index_html.replace("{{SITE_TITLE}}", &safe_site_title);
     index_html = index_html.replace("{{SITE_SUBTITLE}}", &safe_site_subtitle);
+    index_html = index_html.replace("{{LOGO_HTML}}", &logo_html);
+    index_html = index_html.replace("{{CUSTOM_STYLE}}", &custom_style);
+    index_html = index_html.replace("{{LAYOUT_CLASS}}", layout_class);
     index_html = index_html.replace("{{ARTICLES}}", &article_list_html);
 
     // Sidebar: list of latest 5 posts + profile description
@@ -590,10 +689,15 @@ pub fn compile_static_site(
         "<div class=\"sidebar-section\">\n  <h3 class=\"sidebar-title\">About this Site</h3>\n  <p>{}</p>\n</div>\n",
         safe_about_text
     );
-    sidebar_html.push_str("<div class=\"sidebar-section\">\n  <h3 class=\"sidebar-title\">Ethics Standards</h3>\n  <p>Every claim published here is strictly bound to public evidence records. We run zero ads.</p>\n</div>");
+    if !safe_ethics_text.trim().is_empty() {
+        sidebar_html.push_str(&format!(
+            "<div class=\"sidebar-section\">\n  <h3 class=\"sidebar-title\">Ethics Standards</h3>\n  <p>{}</p>\n</div>",
+            safe_ethics_text
+        ));
+    }
     index_html = index_html.replace("{{SIDEBAR}}", &sidebar_html);
     index_html = index_html.replace("{{YEAR}}", &current_year);
-    index_html = index_html.replace("{{AI_DISCLOSURE}}", AI_DISCLOSURE_HTML);
+    index_html = index_html.replace("{{FOOTER_NOTICE}}", &footer_html);
     write_site_file(
         output_dir.join("index.html"),
         index_html,
@@ -608,6 +712,9 @@ pub fn compile_static_site(
             let mut page_html = POST_TEMPLATE.to_string();
             page_html = page_html.replace("{{SITE_TITLE}}", &safe_site_title);
             page_html = page_html.replace("{{SITE_SUBTITLE}}", &safe_site_subtitle);
+            page_html = page_html.replace("{{LOGO_HTML}}", &logo_html);
+            page_html = page_html.replace("{{CUSTOM_STYLE}}", &custom_style);
+            page_html = page_html.replace("{{LAYOUT_CLASS}}", layout_class);
             page_html = page_html.replace("{{POST_TITLE}}", title);
             page_html = page_html.replace("{{POST_DESCRIPTION}}", title);
             page_html = page_html.replace("{{POST_DATE}}", &Utc::now().to_rfc3339());
@@ -616,7 +723,7 @@ pub fn compile_static_site(
             page_html = page_html.replace("{{EVIDENCE_SECTION}}", "");
             page_html = page_html.replace("{{CORRECTION_BANNER}}", "");
             page_html = page_html.replace("{{YEAR}}", &current_year);
-            page_html = page_html.replace("{{AI_DISCLOSURE}}", AI_DISCLOSURE_HTML);
+            page_html = page_html.replace("{{FOOTER_NOTICE}}", &footer_html);
             write_site_file(output_dir.join(filename), page_html, &mut files_written)?;
             generated_files.push(filename.to_string());
             Ok(())
@@ -638,6 +745,9 @@ pub fn compile_static_site(
     let mut corrections_html = POST_TEMPLATE.to_string();
     corrections_html = corrections_html.replace("{{SITE_TITLE}}", &safe_site_title);
     corrections_html = corrections_html.replace("{{SITE_SUBTITLE}}", &safe_site_subtitle);
+    corrections_html = corrections_html.replace("{{LOGO_HTML}}", &logo_html);
+    corrections_html = corrections_html.replace("{{CUSTOM_STYLE}}", &custom_style);
+    corrections_html = corrections_html.replace("{{LAYOUT_CLASS}}", layout_class);
     corrections_html = corrections_html.replace("{{POST_TITLE}}", "Public Corrections Ledger");
     corrections_html =
         corrections_html.replace("{{POST_DESCRIPTION}}", "Public Corrections Ledger");
@@ -647,7 +757,7 @@ pub fn compile_static_site(
     corrections_html = corrections_html.replace("{{EVIDENCE_SECTION}}", "");
     corrections_html = corrections_html.replace("{{CORRECTION_BANNER}}", "");
     corrections_html = corrections_html.replace("{{YEAR}}", &current_year);
-    corrections_html = corrections_html.replace("{{AI_DISCLOSURE}}", AI_DISCLOSURE_HTML);
+    corrections_html = corrections_html.replace("{{FOOTER_NOTICE}}", &footer_html);
     write_site_file(
         output_dir.join("corrections.html"),
         corrections_html,
@@ -692,12 +802,12 @@ pub fn compile_static_site(
     } else {
         for article in &compiled_articles {
             substack.push_str(&format!(
-                "## {}\n\nRead the full evidence-backed story on the public site: {}\n\n",
+                "## {}\n\nRead the full story on the public site: {}\n\n",
                 article.title, article.relative_path
             ));
         }
     }
-    substack.push_str("---\n\nThis issue was compiled from local public-record reporting. Review links after pasting into Substack.\n");
+    substack.push_str("---\n\nReview links and formatting after pasting into Substack.\n");
     write_site_file(output_dir.join("substack.md"), substack, &mut files_written)?;
     generated_files.push("substack.md".to_string());
 
@@ -706,7 +816,9 @@ pub fn compile_static_site(
         generated_at
     );
     if compiled_articles.is_empty() {
-        share_package.push_str("No stories are ready to share yet. Approve at least one attested story, then compile again.\n");
+        share_package.push_str(
+            "No stories are ready to share yet. Approve at least one story, then compile again.\n",
+        );
     } else {
         share_package.push_str("## Suggested Community Posts\n\n");
         for article in &compiled_articles {
@@ -727,7 +839,7 @@ pub fn compile_static_site(
         .unwrap_or("New local civic issue");
     let article_count = compiled_articles.len();
     let facebook_post = format!(
-        "{} is live. {} evidence-backed local update(s), with source links and an RSS feed for following future issues.\n\nRead it here: [add public URL]\n",
+        "{} is live. {} local update(s), with links and an RSS feed for following future issues.\n\nRead it here: [add public URL]\n",
         profile.site_title, article_count
     );
     write_site_file(
@@ -738,7 +850,7 @@ pub fn compile_static_site(
     generated_files.push("facebook-post.txt".to_string());
 
     let subreddit_post = format!(
-        "# {}\n\n{} local civic update(s) compiled from public records.\n\nTop item: {}\n\nRead the issue: [add public URL]\n\nSources and corrections policy are included on the site.\n",
+        "# {}\n\n{} local update(s).\n\nTop item: {}\n\nRead the issue: [add public URL]\n\nSources and corrections policy are included on the site.\n",
         profile.site_title, article_count, headline
     );
     write_site_file(
@@ -749,7 +861,7 @@ pub fn compile_static_site(
     generated_files.push("subreddit-post.md".to_string());
 
     let nextdoor_post = format!(
-        "A new {} issue is ready with {} local civic update(s) and links back to source records. Top item: {}. Read it here: [add public URL]",
+        "A new {} issue is ready with {} local update(s). Top item: {}. Read it here: [add public URL]",
         profile.site_title, article_count, headline
     );
     write_site_file(
@@ -760,7 +872,7 @@ pub fn compile_static_site(
     generated_files.push("nextdoor-post.txt".to_string());
 
     let short_link_blurb = format!(
-        "{}: {} local civic update(s), with source links. Read: [short link]",
+        "{}: {} local update(s). Read: [short link]",
         profile.site_title, article_count
     );
     write_site_file(

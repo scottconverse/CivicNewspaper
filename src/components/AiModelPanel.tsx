@@ -11,6 +11,8 @@ interface AiModelPanelProps {
   pullingModel: boolean;
   pullProgressText: string[];
   onPullModel: () => void;
+  onRetryStatus: () => void;
+  onOpenSystem: () => void;
 }
 
 const modelSizes: Record<string, string> = (modelsConfig as any).sizes || {};
@@ -24,6 +26,8 @@ export const AiModelPanel: React.FC<AiModelPanelProps> = ({
   pullingModel,
   pullProgressText,
   onPullModel,
+  onRetryStatus,
+  onOpenSystem,
 }) => {
   const recommended = wizardModel || (systemRam >= 16 ? modelsConfig.high : systemRam >= 8 ? modelsConfig.medium : modelsConfig.low);
   const isInstalled = installedModels.some((model) => model === recommended || `${model}:latest` === recommended || model === `${recommended}:latest`);
@@ -113,6 +117,17 @@ export const AiModelPanel: React.FC<AiModelPanelProps> = ({
             {pullingModel ? "Downloading..." : isInstalled ? "Installed" : `Download ${recommended}`}
             <ArrowRight size={16} />
           </button>
+          {!ollamaOnline && (
+            <>
+              <button className="btn btn-secondary" type="button" onClick={onRetryStatus} disabled={pullingModel}>
+                <RefreshCcw size={16} />
+                Retry AI check
+              </button>
+              <button className="btn btn-secondary" type="button" onClick={onOpenSystem}>
+                Open System Status
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

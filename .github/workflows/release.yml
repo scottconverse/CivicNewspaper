@@ -139,7 +139,7 @@ jobs:
           releaseName: "The Civic Desk ${{ github.ref_name }}"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: false
-          prerelease: ${{ contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') || contains(github.ref_name, '-alpha') }}
+          prerelease: true
           # GG-C2: --locked is passed through Tauri to Cargo after `--`, forcing
           # the build to use the committed Cargo.lock so a drifting transitive
           # dependency can't enter a release that CI never saw.

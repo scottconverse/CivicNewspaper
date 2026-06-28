@@ -74,6 +74,7 @@ describe("SourcesPanel Component Tests", () => {
     // Verify list renders the mock source
     expect(screen.getByText("City Council Feed")).toBeInTheDocument();
     expect(screen.getByText("https://city.gov/rss")).toBeInTheDocument();
+    expect(screen.getByText("Online")).toBeInTheDocument();
 
     // Click delete and verify callback
     const deleteBtn = screen.getByLabelText("Delete source");

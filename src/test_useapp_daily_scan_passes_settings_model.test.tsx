@@ -152,4 +152,55 @@ describe("useApp Hook Tests", () => {
     expect(invoke).toHaveBeenCalledWith("run_daily_scan", { city: "Brighton", state: "CO", sinceHours: 24 });
     expect(hookResult.statusMessage).toContain("Daily Scan complete");
   });
+
+  test("imports discovered official sources with official tier", async () => {
+    const calls: Array<{ cmd: string; args: any }> = [];
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
+      calls.push({ cmd, args });
+      if (cmd === "get_queue") return { leads: [], drafts: [] };
+      if (cmd === "get_sources") return [];
+      if (cmd === "get_community_profile") return { city: "Brighton", state: "CO" };
+      if (cmd === "list_paired_clients") return [];
+      if (cmd === "get_system_ram") return 16;
+      if (cmd === "get_setting") return "qwen2.5:7b";
+      if (cmd === "ollama_health") return { reachable: true, models: ["qwen2.5:7b"], version: "0.1.0" };
+      if (cmd === "add_source") return 42;
+      return null;
+    });
+
+    let hookResult: any;
+    const TestComp = () => {
+      hookResult = useApp();
+      return null;
+    };
+
+    await act(async () => {
+      render(<TestComp />);
+    });
+
+    await act(async () => {
+      hookResult.handleToggleDiscoveredSource({
+        name: "Brighton Council Agendas",
+        url: "https://www.brightonco.gov/AgendaCenter",
+        type: "primary_record",
+      });
+    });
+
+    vi.mocked(invoke).mockClear();
+    calls.length = 0;
+
+    await act(async () => {
+      await hookResult.handleImportDiscoveredSources();
+    });
+
+    expect(calls).toContainEqual({
+      cmd: "add_source",
+      args: {
+        name: "Brighton Council Agendas",
+        url: "https://www.brightonco.gov/AgendaCenter",
+        type: "primary_record",
+        tier: "official_record",
+      },
+    });
+  });
 });

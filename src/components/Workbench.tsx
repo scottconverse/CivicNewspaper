@@ -1,7 +1,7 @@
 ﻿// src/components/Workbench.tsx
 import React, { useState, useEffect } from "react";
 import { CheckCircle, AlertTriangle, Info, FileText } from "lucide-react";
-import { Lead, Draft, EvidenceItem, GuardrailsReport, plainLanguageRewrite } from "../ipc";
+import { Lead, Draft, EvidenceItem, GuardrailsReport, plainLanguageRewrite, pressFreedomLegalReview } from "../ipc";
 import { Modal } from "./Modal";
 
 type DiffRow = { text: string; type: "same" | "removed" | "added" };
@@ -85,6 +85,7 @@ interface WorkbenchProps {
   onGenerateSocial: () => void;
   onUpdateDraftTitle: (title: string) => void;
   onUpdateDraftContent: (content: string) => void;
+  firstAmendmentAdvisorEnabled?: boolean;
 }
 
 function guardrailInstruction(issue: any): { title: string; action: string } {
@@ -92,8 +93,8 @@ function guardrailInstruction(issue: any): { title: string; action: string } {
   const message = String(issue.message ?? "");
   if (category.includes("citation")) {
     return {
-      title: "Add a public-record citation",
-      action: "This passage makes a factual claim without a linked record. Highlight the sentence, use Cite from the evidence pane, or rewrite/remove the claim.",
+      title: "Consider adding a source link",
+      action: "This passage looks like a factual claim without a linked source. Add a link if one exists, rewrite the claim, or leave it for the editor to approve.",
     };
   }
   if (category.includes("accusatory")) {
@@ -147,7 +148,8 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   onSocialPackResultChange,
   onGenerateSocial,
   onUpdateDraftTitle,
-  onUpdateDraftContent
+  onUpdateDraftContent,
+  firstAmendmentAdvisorEnabled = true
 }) => {
   const [isRewriting, setIsRewriting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -155,6 +157,8 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   const [attested, setAttested] = useState(false);
   const [showOverrideModal, setShowOverrideModal] = useState(false);
   const [overrideReason, setOverrideReason] = useState("");
+  const [pressFreedomReview, setPressFreedomReview] = useState("");
+  const [isRunningPressFreedomReview, setIsRunningPressFreedomReview] = useState(false);
 
   useEffect(() => {
     setError(null);
@@ -162,14 +166,14 @@ export const Workbench: React.FC<WorkbenchProps> = ({
     setAttested(false);
     setShowOverrideModal(false);
     setOverrideReason("");
+    setPressFreedomReview("");
   }, [selectedDraft?.id]);
 
-  // Error-severity issues = words the newsroom marked "blocking". These are the
-  // only issues that gate publishing; everything else is an advisory warning.
+  // Error-severity issues = words the newsroom marked as especially sensitive.
+  // They ask for an override note, but the editor still decides.
   const errorIssues = guardrailsReport?.issues.filter((i) => i.severity === "error") ?? [];
 
   const handleApproveClick = () => {
-    if (!attested) return;
     if (errorIssues.length > 0) {
       setShowOverrideModal(true);
     } else {
@@ -179,9 +183,27 @@ export const Workbench: React.FC<WorkbenchProps> = ({
 
   const confirmOverride = () => {
     const reason = overrideReason.trim();
-    if (!reason) return;
     setShowOverrideModal(false);
-    onApprovePublish?.(reason);
+    if (reason) {
+      onApprovePublish?.(reason);
+    } else {
+      onApprovePublish?.();
+    }
+  };
+
+  const handlePressFreedomReview = async () => {
+    if (!selectedDraft?.id) return;
+    setIsRunningPressFreedomReview(true);
+    setError(null);
+    try {
+      const review = await pressFreedomLegalReview(selectedDraft.id);
+      setPressFreedomReview(review);
+    } catch (error: any) {
+      console.error("Failed to run press-freedom review:", error);
+      setError(error?.message || String(error));
+    } finally {
+      setIsRunningPressFreedomReview(false);
+    }
   };
 
   const handleInsertCitation = (evidenceId: number) => {
@@ -225,14 +247,14 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   if (selectedLead && !selectedDraft) {
     return (
       <div className="wizard-container card" id="draft-wizard-panel">
-        <h2>Drafting Article from Evidence</h2>
+        <h2>Drafting Article</h2>
         <p className="help-text" style={{ marginBottom: "1.5rem" }}>
           Lead: <strong>{selectedLead.why}</strong>
         </p>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <div>
-            <label style={{ fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>Article Format</label>
+            <label htmlFor="select-draft-format" style={{ fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>Article Format</label>
             <select value={draftFormat} onChange={(e) => onDraftFormatChange(e.target.value)} id="select-draft-format">
               <option value="brief">Brief (Under 200 words summary)</option>
               <option value="watch">Watch Alert (Highlights specific public safety or procurement issues)</option>
@@ -243,7 +265,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
           </div>
 
           <div>
-            <label style={{ fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>Custom Guidelines / Instructions (Optional)</label>
+            <label htmlFor="textarea-custom-instructions" style={{ fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>Custom Guidelines / Instructions (Optional)</label>
             <textarea
               placeholder="e.g. Focus specifically on the budget numbers, keep tone highly objective..."
               value={customSystemPrompt}
@@ -254,14 +276,14 @@ export const Workbench: React.FC<WorkbenchProps> = ({
           </div>
 
           <div className="card" style={{ background: "var(--accent-light)", marginTop: "1rem" }}>
-            <h4>Linked Records ({evidenceList.length})</h4>
+            <h4>Linked Sources ({evidenceList.length})</h4>
             <div style={{ maxHeight: "150px", overflowY: "auto", marginTop: "0.5rem" }}>
               {evidenceList.length === 0 ? (
-                // UX-M3: the wizard previously showed an empty "Linked Records (0)"
+                // UX-M3: the wizard previously showed an empty linked-source
                 // box with no explanation. Mirror the editor's empty state.
                 <p className="help-text" style={{ display: "flex", alignItems: "flex-start", gap: "0.4rem", margin: 0 }}>
                   <AlertTriangle size={14} style={{ flexShrink: 0, marginTop: "0.15rem", color: "var(--color-warning)" }} />
-                  No public records are linked to this lead yet. You can still generate a draft, but it won't be backed by cited evidence.
+                  No source documents are linked to this lead yet. You can still generate a working draft; mark anything that needs verification before publishing.
                 </p>
               ) : (
                 evidenceList.map((item, idx) => (
@@ -299,7 +321,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
         <div className="page-header" style={{ marginBottom: "1rem" }}>
           <div className="page-title">
             <h1>Story Workbench</h1>
-            <p>Modify drafted content, review guardrails violations, and link citations to raw public evidence.</p>
+            <p>Modify drafted content, review guardrail warnings, and link source material when it helps the editor.</p>
           </div>
           <div className="btn-group">
             <button className="btn btn-secondary" onClick={onCloseWorkbench} id="btn-close-workbench">
@@ -333,7 +355,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                 )}
                 <strong style={{ color: guardrailsReport.is_clean ? undefined : "var(--color-error)" }}>
                   {!guardrailsReport.is_clean
-                    ? "Publishing is blocked â€” fix these issues, or approve with a logged override."
+                    ? "Review before publishing - these are warnings, not software vetoes."
                     : guardrailsReport.issues.length > 0
                       ? "Advisory warnings â€” these do not block publishing."
                       : "Pre-publication guardrails passed: no issues detected."}
@@ -362,7 +384,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                           color: isError ? "var(--color-error)" : "var(--color-warning)",
                         }}
                       />
-                      <strong>{isError ? "BLOCKS" : "warns"}</strong> - {instruction.title}
+                      <strong>{isError ? "Review carefully" : "Warns"}</strong> - {instruction.title}
                       <p className="help-text" style={{ margin: "0.25rem 0 0 1.4rem" }}>{instruction.action}</p>
                       <details style={{ margin: "0.35rem 0 0 1.4rem" }}>
                         <summary>Technical details</summary>
@@ -372,6 +394,43 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                   );
                 })}
               </div>
+            )}
+          </div>
+        )}
+
+        {firstAmendmentAdvisorEnabled && (
+          <div className="card" id="first-amendment-advisor-card" style={{ padding: "1rem", marginBottom: "1rem", background: "var(--accent-light)" }}>
+            <div className="flex-between" style={{ alignItems: "flex-start", gap: "1rem" }}>
+              <div>
+                <h3 className="card-title" style={{ marginBottom: "0.35rem" }}>Press-freedom / legal-risk advisor</h3>
+                <p className="help-text" style={{ margin: 0 }}>
+                  Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.
+                </p>
+              </div>
+              <button
+                className="btn btn-secondary btn-sm"
+                id="btn-press-freedom-review"
+                onClick={handlePressFreedomReview}
+                disabled={isRunningPressFreedomReview || !selectedDraft.id || !selectedDraft.content}
+                title={!selectedDraft.content ? "Add draft text before running the advisory review" : "Run an optional press-freedom and legal-risk review"}
+              >
+                {isRunningPressFreedomReview ? "Reviewing..." : "Run Advisor"}
+              </button>
+            </div>
+            <ul className="help-text" style={{ margin: "0.5rem 0 0 1.2rem" }}>
+              <li>Distinguish verified facts, allegations, opinion, and unanswered questions.</li>
+              <li>Use extra care with private individuals, minors, medical details, addresses, and active legal matters.</li>
+              <li>Keep notes on source reliability and why publishing serves the community.</li>
+            </ul>
+            {pressFreedomReview && (
+              <textarea
+                className="editor-textarea"
+                id="textarea-press-freedom-review"
+                aria-label="Press-freedom legal-risk advisor result"
+                value={pressFreedomReview}
+                onChange={(e) => setPressFreedomReview(e.target.value)}
+                style={{ height: "220px", marginTop: "0.75rem", fontSize: "0.85rem", fontFamily: "var(--font-mono)" }}
+              />
             )}
           </div>
         )}
@@ -450,12 +509,11 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                     <button
                       className="btn btn-primary btn-sm"
                       onClick={handleApproveClick}
-                      disabled={!attested}
                       title={
                         !attested
-                          ? "Confirm you verified this story before approving"
+                          ? "Approve and record editorial responsibility"
                           : errorIssues.length > 0
-                            ? "This story has blocking issues â€” you'll be asked to confirm an override"
+                            ? "This story has sensitive warnings - you'll be asked to confirm an override note"
                             : "Approve this story for publishing"
                       }
                       id="btn-status-publish"
@@ -464,8 +522,6 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                     </button>
                   </div>
                 </div>
-                {/* GG-C1: a human must affirm they verified the story before it can
-                    be approved for publishing. Gates the Approve button. */}
                 <label
                   htmlFor="chk-attest"
                   style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", fontSize: "0.85rem", cursor: "pointer", color: "var(--text-secondary)" }}
@@ -478,8 +534,8 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                     style={{ marginTop: "0.15rem" }}
                   />
                   <span>
-                    I have verified this story against its cited evidence and take responsibility for
-                    publishing it. <em>(Required to approve.)</em>
+                    I have reviewed this story and take responsibility for publishing it.
+                    <em> This reminder is for the editor; the app does not make the publication decision.</em>
                   </span>
                 </label>
               </div>
@@ -517,9 +573,9 @@ export const Workbench: React.FC<WorkbenchProps> = ({
 
           {/* Evidence Pane (Right) */}
           <div className="evidence-pane" id="evidence-citation-pane">
-            <h4 style={{ borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>Linked Public Records</h4>
+            <h4 style={{ borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>Linked Sources</h4>
             {evidenceList.length === 0 ? (
-              <p className="help-text">No evidence documents are linked to this story draft.</p>
+              <p className="help-text">No source documents are linked to this story draft.</p>
             ) : (
               evidenceList.map((item) => (
                 <div key={item.id} className="evidence-item" data-testid={`evidence-item-${item.id}`}>
@@ -598,11 +654,11 @@ export const Workbench: React.FC<WorkbenchProps> = ({
         {showOverrideModal && (
           <Modal id="override-modal" labelledBy="override-modal-title" onClose={() => setShowOverrideModal(false)}>
             <h3 id="override-modal-title" style={{ marginTop: 0, color: "var(--color-error)" }}>
-              Publish despite blocking issues?
+              Publish with sensitive warnings?
             </h3>
             <p className="help-text" style={{ marginTop: 0 }}>
-              This story has {errorIssues.length} issue(s) your newsroom marked as blocking. You can
-              publish anyway, but your reason is recorded with the story.
+              This story has {errorIssues.length} high-concern issue(s) from your newsroom's guardrail list.
+              The app will not veto the editor, but your reason is recorded with the story.
             </p>
             <ul style={{ fontSize: "0.85rem", margin: "0 0 1rem 0", paddingLeft: "1.2rem" }}>
               {errorIssues.map((iss: any, idx: number) => (
@@ -612,7 +668,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
               ))}
             </ul>
             <label htmlFor="override-reason" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>
-              Reason for overriding (required)
+              Editor note (optional)
             </label>
             <textarea
               id="override-reason"
@@ -628,7 +684,6 @@ export const Workbench: React.FC<WorkbenchProps> = ({
               <button
                 className="btn btn-danger"
                 onClick={confirmOverride}
-                disabled={!overrideReason.trim()}
                 id="btn-override-confirm"
               >
                 Publish anyway (logged)

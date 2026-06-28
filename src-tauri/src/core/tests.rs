@@ -623,13 +623,13 @@ mod tests {
         let conn = init_db("file:test_compiler_xss_safe_profile?mode=memory&cache=shared").unwrap();
         let temp_dir = tempdir().unwrap();
 
-        let profile_json = r#"{
+        let profile_json = r##"{
             "site_title": "<script>alert('title')</script>",
             "site_subtitle": "<img src=x onerror=alert('sub')>",
             "about_text": "<script>alert('about')</script>",
             "ethics_text": "ok",
             "how_we_report_text": "ok"
-        }"#;
+        }"##;
 
         crate::core::compiler::compile_static_site(
             &conn,
@@ -671,6 +671,51 @@ mod tests {
             !corrections_html.contains("<script"),
             "no live <script> tag may form in corrections.html"
         );
+    }
+
+    #[test]
+    fn test_compiler_renders_safe_logo_and_rejects_unsafe_data_logo() {
+        let conn = init_db("file:test_compiler_logo?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        let profile_json = r##"{
+            "site_title": "Logo Test",
+            "site_subtitle": "Testing",
+            "about_text": "About",
+            "ethics_text": "Ethics",
+            "how_we_report_text": "How",
+            "logo_url": "data:image/png;base64,iVBORw0KGgo="
+        }"##;
+
+        crate::core::compiler::compile_static_site(
+            &conn,
+            temp_dir.path().to_str().unwrap(),
+            profile_json,
+        )
+        .unwrap();
+        let index_html = std::fs::read_to_string(temp_dir.path().join("index.html")).unwrap();
+        assert!(index_html.contains("class=\"site-logo\""));
+        assert!(index_html.contains("data:image"));
+        assert!(index_html.contains("iVBORw0KGgo"));
+
+        let unsafe_dir = tempdir().unwrap();
+        let unsafe_profile = r##"{
+            "site_title": "Logo Test",
+            "site_subtitle": "Testing",
+            "about_text": "About",
+            "ethics_text": "Ethics",
+            "how_we_report_text": "How",
+            "logo_url": "data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg=="
+        }"##;
+
+        crate::core::compiler::compile_static_site(
+            &conn,
+            unsafe_dir.path().to_str().unwrap(),
+            unsafe_profile,
+        )
+        .unwrap();
+        let unsafe_index = std::fs::read_to_string(unsafe_dir.path().join("index.html")).unwrap();
+        assert!(!unsafe_index.contains("class=\"site-logo\""));
+        assert!(!unsafe_index.contains("data:text/html"));
     }
 
     #[test]
@@ -2479,10 +2524,10 @@ I should produce JSON only.
         assert!(safe.contains("href=\"#s\""), "fragment stripped: {safe}");
     }
 
-    // GG-B1 + GG-C1: a javascript: markdown link in a draft body must not reach the
-    // compiled site; every page carries the CSP and the reader AI-disclosure.
+    // GG-B1: a javascript: markdown link in a draft body must not reach the
+    // compiled site; generated pages carry the CSP and no forced AI disclosure.
     #[test]
-    fn test_compiled_site_blocks_markdown_xss_csp_and_discloses_ai() {
+    fn test_compiled_site_blocks_markdown_xss_csp_without_forced_ai_disclosure() {
         let conn = init_db("file:test_compiled_site_xss?mode=memory&cache=shared").unwrap();
         let temp_dir = tempdir().unwrap();
         let draft_id = insert_draft(
@@ -2572,8 +2617,8 @@ I should produce JSON only.
             "CSP script-src 'none' missing"
         );
         assert!(
-            post.contains("ai-disclosure"),
-            "AI disclosure missing from post"
+            !post.contains("ai-disclosure"),
+            "AI disclosure should not be injected unless the publisher writes one"
         );
         let index = std::fs::read_to_string(temp_dir.path().join("index.html")).unwrap();
         assert!(
@@ -2581,8 +2626,8 @@ I should produce JSON only.
             "CSP missing from index"
         );
         assert!(
-            index.contains("ai-disclosure"),
-            "AI disclosure missing from index"
+            !index.contains("ai-disclosure"),
+            "AI disclosure should not be injected unless the publisher writes one"
         );
         let runs = crate::core::db::list_publish_runs(&conn).unwrap();
         assert_eq!(runs.len(), 1);
@@ -2816,7 +2861,7 @@ I should produce JSON only.
             response.status()
         );
         let body = response.text().await.unwrap();
-        assert!(body.contains("Longmont Civic Desk") || body.contains("Civic Desk"));
+        assert!(body.to_ascii_lowercase().contains("<html"));
 
         if let Ok(receipt_path) = std::env::var("CIVIC_DESK_HERENOW_RECEIPT") {
             std::fs::write(
@@ -2913,13 +2958,19 @@ I should produce JSON only.
         .unwrap();
         attest_draft(&conn, draft_id, "Phase 0 Seed Editor").unwrap();
 
-        let profile_json = r#"{
-            "site_title": "Longmont Civic Desk",
-            "site_subtitle": "Evidence-backed local public records",
-            "about_text": "A local-first public records newsroom for Longmont residents.",
-            "ethics_text": "We link claims to primary records and publish corrections plainly.",
-            "how_we_report_text": "We scan public agendas, packets, and records, then a human editor verifies the draft before publication."
-        }"#;
+        let profile_json = r##"{
+            "site_title": "Fixture Test Publication",
+            "site_subtitle": "Static publishing fixture output",
+            "about_text": "A locally edited publication for Longmont residents.",
+            "ethics_text": "We publish corrections plainly and let editors make final publication decisions.",
+            "how_we_report_text": "We review sources, drafts, and community context before publication.",
+            "organization_type": "single_person",
+            "footer_text": "",
+            "logo_url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAABQCAIAAACoK28rAAABKUlEQVR42u3SAQ0AIAwDwclYkIZ/FUACOjbuUwXNxZUaFS4Q0BLQEtAS0AJaAloqA3pmttzZ66uNvgENNNBAAw000EADDTTQQAMNNNBAAw000EADDTTQQAMNNNBAAw000EADDTTQQAMNNNBAAw000EADDTTQQAMNNNBAAw000EADDTTQQAMNNNBAAw000EADDTTQQAMNNNBAAw000EADDTTQQAMNNNBAAw000EADDTTQQAMNNNBAAw000EADDTTQQAMNNNBAAw000EADDTTQQAMNNNBAAw000EADDTTQQAMNNNBAAw000EADDTTQQAMNNNBAAw000EADDTTQQAMNNNBAAw000EADDTTQUuWAFtAS0BLQEtACWurRA4hWrsLyvh6IAAAAAElFTkSuQmCC",
+            "accent_color": "#5a1818",
+            "layout_style": "classic",
+            "first_amendment_advisor_enabled": true
+        }"##;
         let result =
             compile_static_site(&conn, output_path.to_str().unwrap(), profile_json).unwrap();
 
@@ -2944,15 +2995,15 @@ I should produce JSON only.
         let article = fs::read_to_string(&article_path).unwrap();
         assert!(article.contains("Council Approves Library Roof Contract"));
         assert!(article.contains("href=\"#evidence-"));
-        assert!(article.contains("Evidence & Sources Check"));
+        assert!(article.contains("Sources & Notes"));
         assert!(article.contains("library-roof-contract.pdf"));
         assert!(article.contains("$482,000 library roof replacement contract"));
         assert!(article.contains("CORRECTION:"));
         assert!(article.contains("Updated the contract amount"));
-        assert!(article.contains("ai-disclosure"));
+        assert!(!article.contains("ai-disclosure"));
 
         let home = fs::read_to_string(output_path.join("index.html")).unwrap();
-        assert!(home.contains("Longmont Civic Desk"));
+        assert!(home.contains("Fixture Test Publication"));
         assert!(home.contains(&format!("watch/{draft_id}.html")));
         let feed = fs::read_to_string(output_path.join("feed.xml")).unwrap();
         assert!(feed.contains("Council Approves Library Roof Contract"));
@@ -2969,10 +3020,10 @@ I should produce JSON only.
         assert!(runs[0].generated_files.contains("publish-manifest.json"));
     }
 
-    // GG-B2 + GG-C1 + M1: the compile sink requires attestation AND (clean OR
-    // overridden) for EVERY publishable draft, via any path.
+    // The compile sink may warn about missing review/guardrail notes, but it
+    // must not silently veto the editor's publication decision.
     #[test]
-    fn test_compile_enforces_attestation_and_guardrail_gate() {
+    fn test_compile_warns_without_filtering_editor_decision() {
         let conn = init_db("file:test_compile_gate?mode=memory&cache=shared").unwrap();
         let temp_dir = tempdir().unwrap();
 
@@ -2995,9 +3046,14 @@ I should produce JSON only.
         .unwrap();
         let clean_path = temp_dir.path().join(format!("stories/{}.html", clean_id));
 
-        // (a) Un-attested => skipped.
+        // (a) Un-attested => publishes with an editor-review note.
         compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
-        assert!(!clean_path.exists(), "un-attested draft must not publish");
+        assert!(
+            clean_path.exists(),
+            "un-attested draft should still publish"
+        );
+        let clean_html = fs::read_to_string(&clean_path).unwrap();
+        assert!(clean_html.contains("EDITOR REVIEW NOTE"));
 
         // (b) Attested + clean => publishes.
         crate::core::db::attest_draft(&conn, clean_id, "Editor").unwrap();
@@ -3028,14 +3084,16 @@ I should produce JSON only.
         crate::core::db::attest_draft(&conn, dirty_id, "Editor").unwrap();
         let dirty_path = temp_dir.path().join(format!("stories/{}.html", dirty_id));
 
-        // (c) Attested but unclean + no override => skipped.
+        // (c) Attested but unclean + no override => publishes with an editor-review note.
         compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
         assert!(
-            !dirty_path.exists(),
-            "attested-but-unclean draft must not publish without override"
+            dirty_path.exists(),
+            "attested-but-unclean draft should still publish without app veto"
         );
+        let dirty_html = fs::read_to_string(&dirty_path).unwrap();
+        assert!(dirty_html.contains("EDITOR REVIEW NOTE"));
 
-        // (d) With a logged override => publishes.
+        // (d) With a logged override => still publishes.
         crate::core::db::record_guardrail_override(&conn, dirty_id, "Verified against indictment.")
             .unwrap();
         compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
@@ -3102,9 +3160,8 @@ I should produce JSON only.
         );
     }
 
-    // RE-AUDIT M5/M1: directly test the publish-gate function (attestation,
-    // guardrail block, override, empty-override rejection, non-publish bypass,
-    // and that 'corrected' is gated).
+    // The publish check records override notes when present, but does not block
+    // publishing states. The editor remains responsible for the final decision.
     #[test]
     fn test_enforce_publish_gate_directly() {
         use crate::tauri_cmds::enforce_publish_gate;
@@ -3131,20 +3188,16 @@ I should produce JSON only.
         assert!(enforce_publish_gate(&conn, id, "hold", None).is_ok());
         assert!(enforce_publish_gate(&conn, id, "killed", None).is_ok());
 
-        // Publish without attestation => ATTESTATION_REQUIRED; 'corrected' gated too (M1).
-        assert!(enforce_publish_gate(&conn, id, "ready_to_publish", None)
-            .unwrap_err()
-            .starts_with("ATTESTATION_REQUIRED"));
-        assert!(enforce_publish_gate(&conn, id, "corrected", None)
-            .unwrap_err()
-            .starts_with("ATTESTATION_REQUIRED"));
+        // Publish states pass even without attestation; UI/compile surfaces warnings.
+        assert!(enforce_publish_gate(&conn, id, "ready_to_publish", None).is_ok());
+        assert!(enforce_publish_gate(&conn, id, "corrected", None).is_ok());
 
         // Attest => clean draft passes.
         crate::core::db::attest_draft(&conn, id, "Editor").unwrap();
         assert!(enforce_publish_gate(&conn, id, "ready_to_publish", None).is_ok());
 
-        // Unclean (blocking) draft: blocked without override, with whitespace
-        // override, and passes only with a real override (which is recorded).
+        // Unclean sensitive draft: passes without override, and records a real
+        // override if the editor supplies one.
         let mut cfg = crate::core::guardrails::load_guardrail_config(&conn);
         cfg.blocking = vec!["fraud".to_string()];
         crate::core::guardrails::save_guardrail_config(&conn, &cfg).unwrap();
@@ -3166,15 +3219,8 @@ I should produce JSON only.
         )
         .unwrap();
         crate::core::db::attest_draft(&conn, bad, "Editor").unwrap();
-        assert!(enforce_publish_gate(&conn, bad, "published", None)
-            .unwrap_err()
-            .starts_with("GUARDRAILS_BLOCKED"));
-        assert!(
-            enforce_publish_gate(&conn, bad, "published", Some("   "))
-                .unwrap_err()
-                .starts_with("GUARDRAILS_BLOCKED"),
-            "whitespace override must not count"
-        );
+        assert!(enforce_publish_gate(&conn, bad, "published", None).is_ok());
+        assert!(enforce_publish_gate(&conn, bad, "published", Some("   ")).is_ok());
         assert!(enforce_publish_gate(&conn, bad, "published", Some("Verified.")).is_ok());
         let (_a, ov) = crate::core::db::get_draft_publish_gate(&conn, bad).unwrap();
         assert_eq!(ov.unwrap(), "Verified.");

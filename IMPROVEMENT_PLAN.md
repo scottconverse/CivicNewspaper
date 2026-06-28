@@ -59,31 +59,18 @@ not auto-execute. Still a stored XSS on the public site.)
 - Add a CSP meta tag (`default-src 'self'; script-src 'none'`) to `templates/post.html`
   and `index.html` as defense-in-depth (the site has none).
 
-### B2 — Error-severity guardrails never block publishing  · effort: M
-`src-tauri/src/core/compiler.rs:98`, `src-tauri/src/tauri_cmds.rs:390-399`
-Defamation / presumption-of-innocence checks are emitted as `severity: "error"` and
-`is_clean` is computed — but **nothing enforces it**. `story_decision` writes
-`ready_to_publish` unconditionally and `compile_static_site` selects purely by status. One
-click can ship a named-official "embezzled" claim with no "alleged" and no citation. The
-"error" severity is decorative.
-- In `story_decision`, on `ready_to_publish`, run `run_guardrails_check` server-side and
-  reject (or downgrade to `hold`) if `!is_clean`.
-- Re-run guardrails inside `compile_static_site` per draft so the loopback HTTP path and
-  any direct status write can't bypass the UI.
-- Allow a logged editorial override for **warning**-severity items only, never errors.
+### B2 - SUPERSEDED: guardrails are advisory, never a publish veto  ? effort: M
 
-### B3 — No required human-verification or reader-facing AI disclosure  · effort: M
-`prompts/aggregator.md`, `compiler.rs:30-37`, `src/components/Workbench.tsx:194-199`
-Fully LLM-drafted civic articles, the only citation check is a substring match for
-`evidence:` (not relevance), the publish path requires no attestation, and the compiled
-site's ethics/how-we-report pages assert "evidence, not rumor" with **zero disclosure that
-content is machine-generated**. (Backend `generate_draft` does block zero-evidence
-single-lead drafting; the daily-scan/aggregator path and free-text editor remain ungated.)
-- Mandatory human-attestation step before `ready_to_publish` (wire the existing-but-unused
-  `verification_checklist` column as a precondition; persist who/when).
-- Treat citation-coverage failure on factual paragraphs as **error** (blocking) when the
-  draft has linked evidence.
-- Ship a default reader-facing AI-disclosure line in the compiled about/ethics pages.
+This older recommendation is intentionally superseded. Guardrails may warn, rank,
+request editor notes, and preserve review concerns in compiler output, but they
+must never veto the editor's decision to approve or publish.
+
+### B3 - SUPERSEDED: no mandatory publication disclosure gate  ? effort: M
+
+This older recommendation is intentionally superseded. Human review reminders,
+AI disclosures, sourcing notes, ownership language, ad policy, and footer text
+belong to publisher-controlled configuration. The app must not invent those
+claims or require them as a publication precondition.
 
 ---
 

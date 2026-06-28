@@ -125,8 +125,10 @@ CORRECT APPROACH:
   minutes have not yet been published."
 - If the story is important enough to write, it is important enough to
   publish with honest attribution
-- The ONLY stories that should be skipped entirely are those where the
-  sole source is an anonymous community post or unverifiable rumor
+- If the only source is an anonymous community post or unverifiable rumor,
+  do not treat it as verified fact and do not hide it from the editor. Preserve
+  it as an unverified signal with clear attribution, uncertainty, and a
+  verification path.
 
 ================================================================================
 SELF-CHECK BEFORE PUBLICATION

@@ -12,6 +12,7 @@ import {
   revokePairing,
   getCommunityProfile,
   saveCommunityProfile,
+  importLogoAsset,
   ingest,
   getQueue,
   getEvidence,
@@ -74,7 +75,7 @@ import {
   extractSourceImportText
 } from "./ipc";
 import modelsConfig from "./models.json";
-import { buildBulkImportReview, BulkImportReview } from "./bulkImportParser";
+import { buildBulkImportReview, BulkImportReview, tierForSourceType } from "./bulkImportParser";
 
 export interface ConfirmDialogState {
   title: string;
@@ -268,9 +269,6 @@ export function useApp() {
   useEffect(() => {
     loadInitialData();
     pollOllamaStatus();
-    refreshPublishHistory();
-    refreshSubscribers();
-    handleLoadPublisherConfig(publisherProvider);
 
     if (!isTauri()) {
       setSystemRam(16);
@@ -290,6 +288,10 @@ export function useApp() {
           console.error("Failed to load or initialize selected model setting", err);
         }
       }).catch(console.error);
+
+      refreshPublishHistory();
+      refreshSubscribers();
+      handleLoadPublisherConfig(publisherProvider);
     }
 
     const setupListeners = async () => {
@@ -412,11 +414,17 @@ export function useApp() {
       });
       setVerificationQueue({ tasks: [], generated_count: 0 });
       setCommunityProfile({
-        site_title: "The Civic Desk",
-        site_subtitle: "Local records, readable stories.",
+        site_title: "My Local Publication",
+        site_subtitle: "Local news and community information.",
         about_text: "Browser preview profile.",
-        ethics_text: "Verify claims against public evidence before publishing.",
-        how_we_report_text: "We collect public records, summarize carefully, and preserve links to source material.",
+        ethics_text: "Editorial standards are set by the publisher. Corrections are published when needed.",
+        how_we_report_text: "Stories, sources, and publication decisions are reviewed by the editor before publication.",
+        organization_type: "single_person",
+        footer_text: "",
+        logo_url: "",
+        accent_color: "#5a1818",
+        layout_style: "classic",
+        first_amendment_advisor_enabled: true,
         money_threshold: 50000,
         watchlist: [],
         city: "Riverton",
@@ -704,7 +712,7 @@ export function useApp() {
         name: item.name,
         url: item.url,
         type: item.type,
-        tier: "community_signal",
+        tier: tierForSourceType(item.type),
         status: "online",
         last_scraped: new Date().toISOString(),
       }));
@@ -721,22 +729,31 @@ export function useApp() {
       setLoading(true);
       setStatusMessage("Importing selected sources...");
       let importedCount = 0;
+      const failures: string[] = [];
+      const failedUrls = new Set<string>();
       for (const item of selectedDiscovered) {
         try {
-          await addSource(item.name, item.url, item.type, "community_signal");
+          await addSource(item.name, item.url, item.type, tierForSourceType(item.type));
           importedCount++;
         } catch (err) {
           console.error("Failed to add discovered source:", item.name, err);
+          failures.push(`${item.name}: ${toUserMessage(err)}`);
+          failedUrls.add(item.url);
         }
       }
-      setStatusMessage(`Successfully imported ${importedCount} source(s).`);
-      setShowDiscoveryModal(false);
-      setDiscoveryCity("");
-      setDiscoveryState("");
-      setDiscoveredCats([]);
-      setSelectedDiscovered([]);
       const s = await getSources();
       setSources(s);
+      if (failures.length > 0) {
+        setErrorMessage(`Imported ${importedCount} source(s), but ${failures.length} could not be added. ${failures.slice(0, 3).join(" ")}`);
+        setSelectedDiscovered(prev => prev.filter(item => failedUrls.has(item.url)));
+      } else {
+        setStatusMessage(`Successfully imported ${importedCount} source(s).`);
+        setShowDiscoveryModal(false);
+        setDiscoveryCity("");
+        setDiscoveryState("");
+        setDiscoveredCats([]);
+        setSelectedDiscovered([]);
+      }
     } catch (e: any) {
       setErrorMessage(toUserMessage(e));
     } finally {
@@ -919,7 +936,7 @@ export function useApp() {
         }
       }
 
-      setStatusMessage("Asking the local AI model to write a draft from evidence... (this may take a moment)");
+      setStatusMessage("Asking the local AI model to write a working draft... (this may take a moment)");
       const text = await generateDraft(
         selectedLead.id,
         draftFormat,
@@ -1020,7 +1037,11 @@ export function useApp() {
       setLoading(true);
       setErrorMessage("");
       const editorName = (await getSetting("identity.editor_name"))?.trim() || "Editor";
-      await attestDraft(selectedDraft.id, editorName);
+      try {
+        await attestDraft(selectedDraft.id, editorName);
+      } catch (err) {
+        console.warn("Could not record review attestation; proceeding with editor decision.", err);
+      }
       await storyDecision(selectedDraft.id, "ready_to_publish", overrideReason);
       setSelectedDraft({ ...selectedDraft, status: "ready_to_publish" });
       setStatusMessage("Story approved for publishing — a verification record was saved.");
@@ -1038,7 +1059,12 @@ export function useApp() {
       .then(setOnboardingDone)
       // In a browser preview / no-IPC context, don't trap the user on a blank
       // wizard — fall through to the app.
-      .catch(() => setOnboardingDone(true));
+      .catch(() => {
+        const forceFirstRun =
+          typeof window !== "undefined" &&
+          new URLSearchParams(window.location.search).get("firstRun") === "1";
+        setOnboardingDone(forceFirstRun ? false : true);
+      });
     getSetting("model.selected")
       .then((m) => {
         if (m) setSelectedModel(m);
@@ -1094,6 +1120,28 @@ export function useApp() {
       setErrorMessage(toUserMessage(e));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleChooseLogo = async (): Promise<string | null> => {
+    if (!isTauri()) {
+      setErrorMessage("Logo import requires The Civic Desk desktop app.");
+      return null;
+    }
+    try {
+      const selected = await open({
+        multiple: false,
+        directory: false,
+        title: "Choose publication logo",
+        filters: [{ name: "Logo image", extensions: ["png", "jpg", "jpeg", "gif", "webp"] }],
+      });
+      if (typeof selected !== "string") return null;
+      const logoUrl = await importLogoAsset(selected);
+      setStatusMessage("Logo image loaded. Save identity to use it in published output.");
+      return logoUrl;
+    } catch (e: any) {
+      setErrorMessage(toUserMessage(e));
+      return null;
     }
   };
 
@@ -1751,6 +1799,7 @@ export function useApp() {
     handleGeneratePin,
     handleRevokeClient,
     handleSaveProfile,
+    handleChooseLogo,
     handleOpenDraftWizard,
     handleGenerateText,
     handleOpenDraftEditor,

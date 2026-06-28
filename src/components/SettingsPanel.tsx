@@ -9,7 +9,7 @@ import {
 } from "../ipc";
 
 // One editable word list (e.g. accusatory terms). Each word can be removed and
-// can be toggled to "blocks publishing"; by default a match only warns.
+// can be toggled to "high-concern"; by default a match only warns.
 const GuardrailWordList: React.FC<{
   title: string;
   hint: string;
@@ -58,15 +58,15 @@ const GuardrailWordList: React.FC<{
                 cursor: "pointer",
                 color: isBlocking(w) ? "var(--color-error)" : "var(--text-secondary)",
               }}
-              title="Block publishing when this word is used (otherwise it only warns)"
+              title="Ask for an editor note when this word is used (otherwise it only warns)"
             >
               <input
                 type="checkbox"
                 checked={isBlocking(w)}
                 onChange={() => onToggleBlocking(w)}
-                aria-label={`Block publishing on the word "${w}"`}
+                aria-label={`Mark the word "${w}" as high concern`}
               />
-              blocks
+              high concern
             </label>
             <button
               type="button"
@@ -109,7 +109,7 @@ const GuardrailWordList: React.FC<{
 };
 
 // Editor-owned master word lists that drive the pre-publish guardrails. Warn-only
-// by default; the editor opts specific words into hard-blocking.
+// by default; the editor can mark specific words as high-concern warnings.
 const GuardrailEditor: React.FC = () => {
   const [config, setConfig] = useState<GuardrailConfig | null>(null);
   const [loadError, setLoadError] = useState<string>("");
@@ -174,14 +174,14 @@ const GuardrailEditor: React.FC = () => {
       <h3 className="card-title">Story guardrails</h3>
       <p className="help-text">
         Drafts are scanned for these words. By default a match only <strong>warns</strong> the
-        editor. Tick <strong>blocks</strong> on a word to make it stop publishing until it is fixed
-        or explicitly overridden — nothing blocks unless you choose it. Changes apply to stories
-        checked from now on.
+        editor. Tick <strong>high concern</strong> on a word to ask for an editor note before
+        approval. The app ranks and records concerns; it does not decide what the editor may see
+        or publish. Changes apply to stories checked from now on.
       </p>
       <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", marginTop: "1rem" }}>
         <GuardrailWordList
           title="Accusatory terms"
-          hint="Flagged when used in a paragraph with no linked evidence."
+          hint="Flagged when used in a paragraph with no linked source."
           words={config.accusatory}
           isBlocking={isBlocking}
           onToggleBlocking={toggleBlocking}
@@ -211,6 +211,7 @@ const GuardrailEditor: React.FC = () => {
 interface SettingsPanelProps {
   communityProfile: CommunityProfile | null;
   onSaveProfile: (profile: CommunityProfile) => void;
+  onChooseLogo?: () => Promise<string | null>;
   backupPathInput: string;
   onBackupPathInputChange: (val: string) => void;
   onBackupSave: () => void;
@@ -220,6 +221,7 @@ interface SettingsPanelProps {
 export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   communityProfile,
   onSaveProfile,
+  onChooseLogo,
   backupPathInput,
   onBackupPathInputChange,
   onBackupSave,
@@ -227,6 +229,20 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 }) => {
   const [profileForm, setProfileForm] = useState<CommunityProfile | null>(communityProfile);
   const [profileSaveStatus, setProfileSaveStatus] = useState<string>("");
+
+  const applyNeutralStarterCopy = () => {
+    if (!profileForm) return;
+    setProfileForm({
+      ...profileForm,
+      site_title: profileForm.site_title || "My Local Publication",
+      site_subtitle: "Local news and community information.",
+      about_text: "A locally edited publication for this community.",
+      ethics_text: "Editorial standards are set by the publisher. Corrections are published when needed.",
+      how_we_report_text: "Stories, sources, and publication decisions are reviewed by the editor before publication.",
+      footer_text: "",
+    });
+    setProfileSaveStatus("Neutral starter copy loaded. Review it, then save.");
+  };
 
   React.useEffect(() => {
     setProfileForm(communityProfile);
@@ -272,7 +288,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   />
                 </div>
                 <div>
-                  <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Editor</label>
+                  <label htmlFor="input-profile-subtitle" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Publication tagline</label>
                   <input
                     type="text"
                     value={profileForm.site_subtitle}
@@ -282,7 +298,22 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   />
                 </div>
                 <div>
-                  <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>City</label>
+                  <label htmlFor="input-profile-organization-type" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Publisher type</label>
+                  <select
+                    value={profileForm.organization_type || "single_person"}
+                    onChange={(e) => setProfileForm({ ...profileForm, organization_type: e.target.value })}
+                    id="input-profile-organization-type"
+                  >
+                    <option value="single_person">Single person</option>
+                    <option value="for_profit">For-profit publication</option>
+                    <option value="nonprofit">Nonprofit publication</option>
+                    <option value="private_org">Private organization</option>
+                    <option value="community_group">Community group</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="input-profile-city" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>City</label>
                   <input
                     type="text"
                     value={profileForm.city}
@@ -292,7 +323,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   />
                 </div>
                 <div>
-                  <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>State</label>
+                  <label htmlFor="input-profile-state" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>State</label>
                   <input
                     type="text"
                     value={profileForm.state}
@@ -301,10 +332,32 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     id="input-profile-state"
                   />
                 </div>
+                <div>
+                  <label htmlFor="input-profile-layout" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Site layout</label>
+                  <select
+                    value={profileForm.layout_style || "classic"}
+                    onChange={(e) => setProfileForm({ ...profileForm, layout_style: e.target.value })}
+                    id="input-profile-layout"
+                  >
+                    <option value="classic">Classic newspaper</option>
+                    <option value="compact">Compact</option>
+                    <option value="wide">Wide</option>
+                    <option value="modern">Modern</option>
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="input-profile-accent" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Accent color</label>
+                  <input
+                    type="color"
+                    value={profileForm.accent_color || "#5a1818"}
+                    onChange={(e) => setProfileForm({ ...profileForm, accent_color: e.target.value })}
+                    id="input-profile-accent"
+                  />
+                </div>
               </div>
 
               <div>
-                <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>High-cost contract alert threshold</label>
+                <label htmlFor="input-profile-threshold" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>High-cost contract alert threshold</label>
                 <input
                   type="number"
                   value={profileForm.money_threshold}
@@ -314,10 +367,57 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 />
               </div>
 
-              {/* RE-AUDIT (minor): the about / ethics / how-we-report copy that
-                  appears on the published site is now editable here. The fixed
-                  reader-facing AI-assistance disclosure is added automatically to
-                  every page footer and is intentionally not removable. */}
+              {/* The about / ethics / how-we-report copy that appears on the
+                  published site is editable here; Civic Desk does not inject
+                  business-model, ad-policy, sourcing, or AI-disclosure claims. */}
+              <div>
+                <label htmlFor="input-profile-logo" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Logo image URL</label>
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                  <input
+                    type="text"
+                    value={profileForm.logo_url || ""}
+                    onChange={(e) => setProfileForm({ ...profileForm, logo_url: e.target.value })}
+                    id="input-profile-logo"
+                    placeholder="https://example.com/logo.png"
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    id="btn-choose-logo"
+                    onClick={async () => {
+                      if (!onChooseLogo) return;
+                      const logoUrl = await onChooseLogo();
+                      if (logoUrl) {
+                        setProfileForm({ ...profileForm, logo_url: logoUrl });
+                        setProfileSaveStatus("Logo loaded. Save identity to publish it.");
+                      }
+                    }}
+                  >
+                    Choose image
+                  </button>
+                  {profileForm.logo_url && (
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      id="btn-clear-logo"
+                      onClick={() => setProfileForm({ ...profileForm, logo_url: "" })}
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+                {profileForm.logo_url && (
+                  <img
+                    src={profileForm.logo_url}
+                    alt="Logo preview"
+                    style={{ display: "block", maxWidth: "220px", maxHeight: "90px", objectFit: "contain", marginTop: "0.75rem" }}
+                  />
+                )}
+                <p className="help-text" style={{ marginTop: "0.25rem" }}>
+                  Optional. Choose a local image or paste an HTTPS logo URL. Leave blank for a text-only masthead.
+                </p>
+              </div>
+
               <div>
                 <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }} htmlFor="input-profile-about">About this site</label>
                 <textarea
@@ -345,13 +445,49 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   style={{ width: "100%", minHeight: "70px" }}
                 />
                 <p className="help-text" style={{ marginTop: "0.25rem" }}>
-                  Every published page also carries a fixed line disclosing that drafts are AI-assisted and human-reviewed.
+                  This text is published as written. Add AI, ad, ownership, corrections, or sourcing disclosures only if they match your publication.
                 </p>
               </div>
+
+              <div>
+                <label htmlFor="input-profile-footer" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Footer / legal note</label>
+                <textarea
+                  value={profileForm.footer_text || ""}
+                  onChange={(e) => setProfileForm({ ...profileForm, footer_text: e.target.value })}
+                  id="input-profile-footer"
+                  style={{ width: "100%", minHeight: "55px" }}
+                  placeholder="Optional copyright, ownership, sponsorship, ad, or contact note."
+                />
+                <p className="help-text" style={{ marginTop: "0.25rem" }}>
+                  The app will not invent copyright, ownership, ad-policy, or AI-disclosure language.
+                </p>
+              </div>
+
+              <label
+                htmlFor="chk-first-amendment-advisor"
+                style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", color: "var(--text-secondary)" }}
+              >
+                <input
+                  id="chk-first-amendment-advisor"
+                  type="checkbox"
+                  checked={profileForm.first_amendment_advisor_enabled !== false}
+                  onChange={(e) => setProfileForm({ ...profileForm, first_amendment_advisor_enabled: e.target.checked })}
+                  style={{ marginTop: "0.15rem" }}
+                />
+                <span>
+                  Show the First Amendment advisor in the Workbench.
+                  <span className="help-text" style={{ display: "block" }}>
+                    Advisory only. It warns and asks good questions; it does not decide what can be shown to the editor or published.
+                  </span>
+                </span>
+              </label>
 
               <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
                 <button className="btn btn-primary" type="submit" id="btn-save-profile">
                   Save identity
+                </button>
+                <button className="btn btn-secondary" type="button" onClick={applyNeutralStarterCopy} id="btn-neutral-starter-copy">
+                  Use neutral starter copy
                 </button>
                 {profileSaveStatus && <span className="help-text" role="status">{profileSaveStatus}</span>}
               </div>

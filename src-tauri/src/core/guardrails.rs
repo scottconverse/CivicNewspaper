@@ -61,7 +61,7 @@ pub const DEFAULT_LEGAL: &[&str] = &[
 const GUARDRAIL_SETTINGS_KEY: &str = "guardrails.terms";
 
 /// Editor-editable guardrail configuration (per newsroom).
-/// - `accusatory`: words that, used without an evidence link, raise an
+/// - `accusatory`: words that, used without a source link, raise an
 ///   "Accusatory Language" issue.
 /// - `legal`: charge/legal words that, used without "alleged", raise a
 ///   "Legal Naming" (presumption-of-innocence) issue.
@@ -192,15 +192,17 @@ pub fn run_guardrails_check(
             continue;
         }
 
-        // 1. Citation Coverage Check
-        // Every factual claim paragraph must reference at least one `evidence:` citation
+        // 1. Source-link coverage check. This is advisory by default: it helps
+        // editors see unsupported factual claims without deciding what they may
+        // publish.
         let has_citation = paragraph.contains("evidence:") || paragraph.contains("evidence://");
 
         // Let's check if the paragraph length is significant enough to count as a factual claim
         if paragraph.len() > 30 && !has_citation {
             issues.push(GuardrailsIssue {
                 category: "Citation Coverage".to_string(),
-                message: "Paragraph contains factual claims but is missing an evidence citation link (e.g. '(evidence:101)').".to_string(),
+                message: "Paragraph may contain factual claims without a linked source."
+                    .to_string(),
                 severity: "warning".to_string(),
                 paragraph_index: p_idx,
             });
@@ -233,7 +235,7 @@ pub fn run_guardrails_check(
                 issues.push(GuardrailsIssue {
                     category: "Accusatory Language".to_string(),
                     message: format!(
-                        "Accusatory term(s) {:?} used without a supporting evidence citation link. Add evidence link to substantiate.",
+                        "Accusatory term(s) {:?} used without a supporting source link. Add a source, attribute carefully, or approve with editorial judgment.",
                         found_accusatory
                     ),
                     severity: severity.to_string(),

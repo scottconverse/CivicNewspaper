@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: [ "main", "v0.*" ]
+    branches: [ "main", "v0.*", "stable-*", "stable-readiness-*" ]
     paths-ignore:
       - "**/*.md"
       - "docs/**"

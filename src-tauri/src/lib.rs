@@ -119,6 +119,7 @@ pub fn run() {
             list_daily_scan_leads,
             get_community_profile,
             save_community_profile,
+            import_logo_asset,
             ingest,
             get_queue,
             get_evidence,
@@ -162,7 +163,8 @@ pub fn run() {
             list_prompts,
             get_prompt,
             run_daily_scan,
-            plain_language_rewrite
+            plain_language_rewrite,
+            press_freedom_legal_review
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

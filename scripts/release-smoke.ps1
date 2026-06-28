@@ -3,7 +3,9 @@ param(
   [string]$Model = "qwen2.5:7b",
   [switch]$SkipLiveModel,
   [switch]$SkipHereNow,
-  [switch]$SkipImportFixtures
+  [switch]$SkipImportFixtures,
+  [switch]$AllowDirty,
+  [switch]$Stable
 )
 
 $ErrorActionPreference = "Stop"
@@ -21,7 +23,37 @@ $receipt = [ordered]@{
   fixture_dir = $FixtureDir
   model = $Model
   static_site_dir = $StaticSiteDir
+  stable_mode = [bool]$Stable
+  allow_dirty = [bool]$AllowDirty
+  branch = $null
+  commit = $null
+  dirty = $null
+  skipped = @()
   checks = @()
+}
+
+function Write-Receipt {
+  $receiptPath = Join-Path $RunDir "release-smoke-receipt.json"
+  $receipt | ConvertTo-Json -Depth 8 | Set-Content -Encoding UTF8 $receiptPath
+  Write-Host "Release smoke receipt: $receiptPath"
+}
+
+function Add-SkippedCheck {
+  param(
+    [string]$Name,
+    [string]$Reason
+  )
+  $receipt.skipped += [ordered]@{
+    name = $Name
+    reason = $Reason
+  }
+  $receipt.checks += [ordered]@{
+    name = $Name
+    ok = $false
+    skipped = $true
+    seconds = 0
+    reason = $Reason
+  }
 }
 
 function Invoke-Check {
@@ -60,13 +92,30 @@ function Invoke-Check {
 
 Push-Location $RepoRoot
 try {
+  if ($Stable -and ($SkipLiveModel -or $SkipHereNow -or $SkipImportFixtures)) {
+    throw "Stable release smoke cannot skip live model, here.now, or import fixture gates."
+  }
+
   Invoke-Check "git-status" {
+    $branch = (git branch --show-current).Trim()
+    $commit = (git rev-parse HEAD).Trim()
+    $status = git status --porcelain
+    $receipt.branch = $branch
+    $receipt.commit = $commit
+    $receipt.dirty = [bool]$status
     git status --short --branch
-    git rev-parse --short HEAD
+    git rev-parse HEAD
+    if ($status -and -not $AllowDirty) {
+      throw "Working tree is dirty. Commit/stash changes or rerun with -AllowDirty for a non-release diagnostic smoke."
+    }
   }
 
   Invoke-Check "frontend-tests" {
     npm test -- --run
+  }
+
+  Invoke-Check "browser-ui-smoke" {
+    npm run test:ui-smoke
   }
 
   Invoke-Check "rust-tests" {
@@ -89,7 +138,9 @@ try {
     }
   }
 
-  if (-not $SkipHereNow) {
+  if ($SkipHereNow) {
+    Add-SkippedCheck "here-now-anonymous-live-publish" "Skipped by -SkipHereNow."
+  } else {
     Invoke-Check "here-now-anonymous-live-publish" {
       Push-Location (Join-Path $RepoRoot "src-tauri")
       try {
@@ -113,7 +164,9 @@ try {
     }
   }
 
-  if (-not $SkipLiveModel) {
+  if ($SkipLiveModel) {
+    Add-SkippedCheck "live-local-model-scan" "Skipped by -SkipLiveModel."
+  } else {
     Invoke-Check "live-local-model-scan" {
       Push-Location (Join-Path $RepoRoot "src-tauri")
       try {
@@ -126,7 +179,10 @@ try {
     }
   }
 
-  if (-not $SkipImportFixtures) {
+  if ($SkipImportFixtures) {
+    Add-SkippedCheck "source-import-fixture-extraction" "Skipped by -SkipImportFixtures."
+    Add-SkippedCheck "source-import-fixture-review" "Skipped by -SkipImportFixtures."
+  } else {
     Invoke-Check "source-import-fixture-extraction" {
       Push-Location (Join-Path $RepoRoot "src-tauri")
       try {
@@ -149,10 +205,7 @@ try {
       }
     }
   }
-
-  $receiptPath = Join-Path $RunDir "release-smoke-receipt.json"
-  $receipt | ConvertTo-Json -Depth 8 | Set-Content -Encoding UTF8 $receiptPath
-  Write-Host "Release smoke receipt: $receiptPath"
 } finally {
+  Write-Receipt
   Pop-Location
 }

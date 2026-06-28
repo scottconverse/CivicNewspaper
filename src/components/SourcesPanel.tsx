@@ -107,6 +107,13 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
     return "offline";
   };
 
+  const formatStatus = (status: string) => {
+    if (status === "online") return "Online";
+    if (status === "quiet") return "Quiet";
+    if (status === "offline") return "Offline";
+    return status ? status.replace(/_/g, " ") : "Unknown";
+  };
+
   const formatSourceKind = (value: string) => {
     if (value === "primary_record") return "Primary";
     if (value === "official_comm") return "Official";
@@ -187,6 +194,7 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                             <div>
                               <strong>{src.name}</strong>
                               <span className="source-type-chip">{formatSourceKind(src.type)}</span>
+                              <span className="source-type-chip">{formatStatus(src.status)}</span>
                             </div>
                             <a href={src.url} onClick={(event) => handleOpenUrl(src.url, event)}>{src.url}</a>
                           </div>
@@ -408,6 +416,7 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
             
             <form onSubmit={onRunDiscovery} style={{ display: "flex", gap: "1rem", marginBottom: "1.5rem" }} id="form-run-discovery">
               <div style={{ flex: 1 }}>
+                <label htmlFor="input-discovery-city" className="sr-only">City name</label>
                 <input
                   type="text"
                   placeholder="City Name (e.g. Brighton)"
@@ -419,6 +428,7 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                 />
               </div>
               <div style={{ width: "150px" }}>
+                <label htmlFor="input-discovery-state" className="sr-only">State</label>
                 <input
                   type="text"
                   placeholder="State (e.g. CO)"

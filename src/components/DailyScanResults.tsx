@@ -149,7 +149,7 @@ export const DailyScanResults: React.FC<Props> = ({ scanId, onRunScan }) => {
                   <div>
                     <strong>Suggested next step</strong>
                     <p className="help-text" style={{ margin: "0.2rem 0 0 0" }}>
-                      {clean(lead.suggested_next_step) ?? "Open the source, confirm the public-record details, then decide whether this should become a story lead."}
+                      {clean(lead.suggested_next_step) ?? "Open the source, confirm the details, then decide whether this should become a story lead."}
                     </p>
                   </div>
                 </div>

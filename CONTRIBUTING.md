@@ -5,7 +5,7 @@ Thanks for considering a contribution. CivicNewspaper is in public beta; the mos
 ## Ground rules
 
 - The project is single-editor, local-first, no-cloud. Contributions that add cloud dependencies, telemetry, or analytics will be rejected.
-- Every fact in published output must be linkable to a primary record. Contributions that weaken the guardrails (citation, presumption-of-innocence) need a strong justification.
+- Source links and presumption-of-innocence guardrails should help editors make better decisions, but the software must not replace editor judgment or veto publication.
 - Ollama is bundled as a sidecar binary; contributors should not introduce additional vendored binaries without director approval. No bundled model weights.
 
 ## Development setup

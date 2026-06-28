@@ -15,13 +15,25 @@ use std::io::Read;
 use tauri::Emitter;
 use tauri::Manager;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommunityProfile {
     pub site_title: String,
     pub site_subtitle: String,
     pub about_text: String,
     pub ethics_text: String,
     pub how_we_report_text: String,
+    #[serde(default = "default_organization_type")]
+    pub organization_type: String,
+    #[serde(default)]
+    pub footer_text: String,
+    #[serde(default)]
+    pub logo_url: String,
+    #[serde(default = "default_accent_color")]
+    pub accent_color: String,
+    #[serde(default = "default_layout_style")]
+    pub layout_style: String,
+    #[serde(default = "default_first_amendment_advisor_enabled")]
+    pub first_amendment_advisor_enabled: bool,
     pub money_threshold: f64,
     pub watchlist: Vec<String>,
     #[serde(default = "default_city")]
@@ -35,6 +47,82 @@ fn default_city() -> String {
 }
 fn default_state() -> String {
     "CO".to_string()
+}
+fn default_organization_type() -> String {
+    "single_person".to_string()
+}
+fn default_accent_color() -> String {
+    "#5a1818".to_string()
+}
+fn default_layout_style() -> String {
+    "classic".to_string()
+}
+fn default_first_amendment_advisor_enabled() -> bool {
+    true
+}
+
+fn default_community_profile() -> CommunityProfile {
+    CommunityProfile {
+        site_title: "My Local Publication".to_string(),
+        site_subtitle: "Local news and community information.".to_string(),
+        about_text: "A locally edited publication for this community.".to_string(),
+        ethics_text:
+            "Editorial standards are set by the publisher. Corrections are published when needed."
+                .to_string(),
+        how_we_report_text:
+            "Stories, sources, and publication decisions are reviewed by the editor before publication."
+                .to_string(),
+        organization_type: default_organization_type(),
+        footer_text: String::new(),
+        logo_url: String::new(),
+        accent_color: default_accent_color(),
+        layout_style: default_layout_style(),
+        first_amendment_advisor_enabled: default_first_amendment_advisor_enabled(),
+        money_threshold: 250000.0,
+        watchlist: Vec::new(),
+        city: "Brighton".to_string(),
+        state: "CO".to_string(),
+    }
+}
+
+fn normalize_legacy_profile(mut profile: CommunityProfile) -> CommunityProfile {
+    if matches!(
+        profile.site_title.as_str(),
+        "The Civic Desk" | "Longmont Civic Desk" | "Longmont Local News"
+    ) {
+        profile.site_title = "My Local Publication".to_string();
+    }
+    if matches!(
+        profile.site_subtitle.as_str(),
+        "Transparent Local Public Records & Evidence"
+            | "Transparent Local Public Records"
+            | "Evidence-backed local public records"
+    ) {
+        profile.site_subtitle = "Local news and community information.".to_string();
+    }
+    if profile.about_text.contains("public records newsroom")
+        || profile.about_text.contains("raw public records")
+    {
+        profile.about_text = "A locally edited publication for this community.".to_string();
+    }
+    if profile.ethics_text.contains("zero ads")
+        || profile.ethics_text.contains("public evidence records")
+        || profile.ethics_text.contains("not outrage or rumors")
+    {
+        profile.ethics_text =
+            "Editorial standards are set by the publisher. Corrections are published when needed."
+                .to_string();
+    }
+    if profile
+        .how_we_report_text
+        .contains("on-device AI assistance")
+        || profile.how_we_report_text.contains("public agendas")
+    {
+        profile.how_we_report_text =
+            "Stories, sources, and publication decisions are reviewed by the editor before publication."
+                .to_string();
+    }
+    profile
 }
 
 /// Normalize an Ollama model tag for EXACT comparison. Ollama treats an untagged
@@ -620,23 +708,16 @@ pub fn list_daily_scan_leads(
 pub fn get_community_profile(app: tauri::AppHandle) -> Result<CommunityProfile, String> {
     let path = get_config_path(&app)?;
     if !path.exists() {
-        return Ok(CommunityProfile {
-            site_title: "The Civic Desk".to_string(),
-            site_subtitle: "Transparent Local Public Records & Evidence".to_string(),
-            about_text: "We report on local government activities using raw public records."
-                .to_string(),
-            ethics_text: "Our ethics standard: transparent evidence, not outrage or rumors."
-                .to_string(),
-            how_we_report_text:
-                "We monitor municipal feeds and index agendas, minutes, and documents.".to_string(),
-            money_threshold: 250000.0,
-            watchlist: Vec::new(),
-            city: "Brighton".to_string(),
-            state: "CO".to_string(),
-        });
+        return Ok(default_community_profile());
     }
     let content = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
-    serde_json::from_str(&content).map_err(|e| e.to_string())
+    let parsed: CommunityProfile = serde_json::from_str(&content).map_err(|e| e.to_string())?;
+    let normalized = normalize_legacy_profile(parsed.clone());
+    if normalized != parsed {
+        let content = serde_json::to_string_pretty(&normalized).map_err(|e| e.to_string())?;
+        std::fs::write(get_config_path(&app)?, content).map_err(|e| e.to_string())?;
+    }
+    Ok(normalized)
 }
 
 #[tauri::command]
@@ -647,6 +728,46 @@ pub fn save_community_profile(
     let path = get_config_path(&app)?;
     let content = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
     std::fs::write(path, content).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn import_logo_asset(path: String) -> Result<String, String> {
+    use base64::Engine;
+
+    let trimmed = path.trim();
+    if trimmed.is_empty() {
+        return Err("Choose a logo image first.".to_string());
+    }
+    let path = std::path::PathBuf::from(trimmed);
+    if !path.exists() {
+        return Err(format!("The logo file does not exist: {}", path.display()));
+    }
+    if !path.is_file() {
+        return Err("Choose an image file, not a folder.".to_string());
+    }
+    let metadata = std::fs::metadata(&path).map_err(|e| e.to_string())?;
+    if metadata.len() > 2 * 1024 * 1024 {
+        return Err(
+            "Logo image is too large. Use a PNG, JPG, GIF, or WebP under 2 MB.".to_string(),
+        );
+    }
+
+    let ext = path
+        .extension()
+        .and_then(|ext| ext.to_str())
+        .unwrap_or("")
+        .to_ascii_lowercase();
+    let mime = match ext.as_str() {
+        "png" => "image/png",
+        "jpg" | "jpeg" => "image/jpeg",
+        "gif" => "image/gif",
+        "webp" => "image/webp",
+        _ => return Err("Unsupported logo type. Use a PNG, JPG, GIF, or WebP image.".to_string()),
+    };
+
+    let bytes = std::fs::read(&path).map_err(|e| format!("Could not read logo image: {e}"))?;
+    let encoded = base64::engine::general_purpose::STANDARD.encode(bytes);
+    Ok(format!("data:{mime};base64,{encoded}"))
 }
 
 #[tauri::command]
@@ -732,13 +853,9 @@ pub fn delete_draft(db: tauri::State<'_, DbConn>, id: i32) -> Result<(), String>
     db::delete_draft(&conn, id).map_err(|e| e.to_string())
 }
 
-/// GG-B2 / GG-C1 / RE-AUDIT M1+M5: the editorial publish gate, factored out of the
-/// Tauri command so it is directly unit-testable. Returns Ok(()) when `decision`
-/// may proceed. Non-publish transitions (hold, kill, draft_generated, …) always
-/// pass. Publish-advancing transitions (ready_to_publish / published / corrected)
-/// require a recorded human attestation and must be guardrail-clean OR carry a
-/// logged override (which this records). "corrected" is included so the
-/// corrections path cannot bypass the gate (RE-AUDIT M1).
+/// Advisory publish review hook. It records an editor note when one is supplied,
+/// but it must never veto a publish-advancing decision. The editor owns the
+/// publish/hold/kill decision; software only warns and records.
 pub(crate) fn enforce_publish_gate(
     conn: &rusqlite::Connection,
     id: i32,
@@ -750,36 +867,8 @@ pub(crate) fn enforce_publish_gate(
         return Ok(());
     }
 
-    // 1. Require a recorded human attestation (GG-C1).
-    let (attested_at, _existing_override) =
-        db::get_draft_publish_gate(conn, id).map_err(|e| e.to_string())?;
-    if attested_at.as_deref().unwrap_or("").trim().is_empty() {
-        return Err("ATTESTATION_REQUIRED: A person must confirm they verified this draft against its cited evidence before it can be approved for publishing.".to_string());
-    }
-
-    // 2. Block on error-severity guardrail issues unless an explicit, logged
-    //    override reason is supplied (GG-B2).
-    let report =
-        crate::core::guardrails::run_guardrails_check(conn, id).map_err(|e| e.to_string())?;
-    if !report.is_clean {
-        match override_reason.map(str::trim).filter(|s| !s.is_empty()) {
-            Some(reason) => {
-                db::record_guardrail_override(conn, id, reason).map_err(|e| e.to_string())?;
-            }
-            None => {
-                let errs: Vec<String> = report
-                    .issues
-                    .iter()
-                    .filter(|i| i.severity == "error")
-                    .map(|i| i.message.clone())
-                    .collect();
-                return Err(format!(
-                    "GUARDRAILS_BLOCKED: This draft has {} unresolved editorial issue(s) that must be fixed before publishing (or published with an explicit override): {}",
-                    errs.len(),
-                    errs.join(" | ")
-                ));
-            }
-        }
+    if let Some(reason) = override_reason.map(str::trim).filter(|s| !s.is_empty()) {
+        let _ = db::record_guardrail_override(conn, id, reason);
     }
     Ok(())
 }
@@ -798,8 +887,7 @@ pub fn story_decision(
     db::update_draft_status(&conn, id, &decision).map_err(|e| e.to_string())
 }
 
-/// GG-C1: record that a human has verified this draft against its cited evidence.
-/// Required before `story_decision` will advance a draft to a publishable status.
+/// Record that a human reviewed this draft and accepts responsibility.
 #[tauri::command]
 pub fn attest_draft(db: tauri::State<'_, DbConn>, id: i32, editor: String) -> Result<(), String> {
     let conn = db
@@ -830,10 +918,6 @@ pub async fn generate_draft<R: tauri::Runtime>(
         (why, items)
     };
 
-    if evidence_items.is_empty() {
-        return Err("No evidence items linked to this lead.".to_string());
-    }
-
     let mut evidence_context = String::new();
     for item in &evidence_items {
         let item_id = item.id.unwrap_or(0);
@@ -843,12 +927,19 @@ pub async fn generate_draft<R: tauri::Runtime>(
         ));
     }
 
-    let prompt = format!(
-        "Lead topic: {}\n\nHere are the raw public records evidence:\n{}\nPlease draft a report in '{}' format. You MUST use 'evidence:ID' citations inside the text (like [Source](evidence:ID)) when claiming a fact from the records. Keep it objective, professional, and do not make assumptions beyond the text.",
-        lead_why, evidence_context, format
-    );
+    let prompt = if evidence_items.is_empty() {
+        format!(
+            "Lead topic: {}\n\nNo source documents are attached to this lead yet. Please draft a '{}' working draft for an editor to review. Clearly label unsupported claims as needing verification and do not invent facts.",
+            lead_why, format
+        )
+    } else {
+        format!(
+            "Lead topic: {}\n\nHere is the attached source material:\n{}\nPlease draft a report in '{}' format. Use 'evidence:ID' citations inside the text (like [Source](evidence:ID)) when claiming a fact from the attached material. Keep it objective, professional, and do not make assumptions beyond the source material.",
+            lead_why, evidence_context, format
+        )
+    };
 
-    let sys = system_prompt.unwrap_or_else(|| "You are an AI assistant for a local community newspaper reporter. You write factual, objective drafts based strictly on provided records. You always cite evidence IDs.".to_string());
+    let sys = system_prompt.unwrap_or_else(|| "You are an assistant for a local publication editor. You help prepare careful working drafts. Do not decide what is publishable; warn about uncertainty and leave final judgment to the human editor.".to_string());
 
     let model = get_selected_model_or_fallback(&db).await;
 
@@ -909,7 +1000,7 @@ pub fn get_guardrail_terms(
 }
 
 /// GG (editor-editable guardrails): persist the newsroom's guardrail word lists.
-/// `blocking` is the subset of words that hard-block publishing; everything else
+/// `blocking` is the subset of words that become high-concern warnings; everything else
 /// only warns.
 #[tauri::command]
 pub fn set_guardrail_terms(
@@ -933,7 +1024,7 @@ pub fn publish(
         if path.exists() {
             std::fs::read_to_string(path).unwrap_or_default()
         } else {
-            r#"{"site_title": "The Civic Desk", "site_subtitle": "Transparent Local Public Records", "about_text": "", "ethics_text": "", "how_we_report_text": ""}"#.to_string()
+            r#"{"site_title": "My Local Publication", "site_subtitle": "Local news and community information.", "about_text": "", "ethics_text": "", "how_we_report_text": "", "organization_type": "single_person"}"#.to_string()
         }
     };
 
@@ -1577,9 +1668,62 @@ pub async fn plain_language_rewrite<R: tauri::Runtime>(
     crate::core::llm::plain_language_rewrite(&llm_client, &model, &text, &draft_format).await
 }
 
+#[tauri::command]
+pub async fn press_freedom_legal_review<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
+    db: tauri::State<'_, DbConn>,
+    draft_id: i32,
+) -> Result<String, String> {
+    let (draft, evidence_items) = {
+        let conn = db
+            .lock()
+            .map_err(|_| "Failed to lock database".to_string())?;
+        let draft = db::get_draft(&conn, draft_id)
+            .map_err(|e| e.to_string())?
+            .ok_or_else(|| format!("Draft {} was not found.", draft_id))?;
+        let evidence_items = match draft.lead_id {
+            Some(lead_id) => db::get_evidence_by_lead(&conn, lead_id).map_err(|e| e.to_string())?,
+            None => Vec::new(),
+        };
+        (draft, evidence_items)
+    };
+
+    let evidence_context = if evidence_items.is_empty() {
+        "No linked evidence is attached to this draft.".to_string()
+    } else {
+        evidence_items
+            .iter()
+            .map(|item| {
+                format!(
+                    "Evidence ID: {}\nURL: {}\nExcerpt: {}\n",
+                    item.id.unwrap_or(0),
+                    item.url.as_deref().unwrap_or("unknown"),
+                    item.excerpt
+                )
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
+    };
+
+    let model = get_selected_model_or_fallback(&db).await;
+    let llm_client = app
+        .state::<std::sync::Arc<dyn crate::core::llm::LlmClient>>()
+        .inner()
+        .clone();
+    crate::core::llm::press_freedom_legal_review(
+        &llm_client,
+        &model,
+        &draft.title,
+        &draft.content,
+        &draft.format,
+        &evidence_context,
+    )
+    .await
+}
+
 #[cfg(test)]
 mod source_import_extraction_tests {
-    use super::extract_source_import_text;
+    use super::{extract_source_import_text, import_logo_asset};
     use std::io::Write;
     use std::path::{Path, PathBuf};
 
@@ -1619,6 +1763,20 @@ mod source_import_extraction_tests {
         assert!(text.contains("Denver Council"));
         assert!(text.contains("https://www.denvergov.org/"));
         let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn imports_small_logo_as_data_url_and_rejects_svg() {
+        let dir = temp_dir("logo");
+        let png = dir.join("logo.png");
+        std::fs::write(&png, [137u8, 80, 78, 71, 13, 10, 26, 10]).unwrap();
+        let data_url = import_logo_asset(png.to_string_lossy().to_string()).unwrap();
+        assert!(data_url.starts_with("data:image/png;base64,"));
+
+        let svg = dir.join("logo.svg");
+        std::fs::write(&svg, "<svg><script>alert(1)</script></svg>").unwrap();
+        let err = import_logo_asset(svg.to_string_lossy().to_string()).unwrap_err();
+        assert!(err.contains("Unsupported logo type"));
     }
 
     #[test]

@@ -56,6 +56,8 @@ describe("OnboardingWizard Component Tests", () => {
     // Step 3
     await waitFor(() => expect(screen.getByText("Step 3 of 5")).toBeInTheDocument());
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
+    await waitFor(() => expect(screen.getByText("Skip the model download?")).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: /Skip download/i }));
 
     // Step 4
     await waitFor(() => expect(screen.getByText("Step 4 of 5")).toBeInTheDocument());
@@ -257,5 +259,26 @@ describe("OnboardingWizard Component Tests", () => {
 
     // Verify it advanced to Step 3
     await waitFor(() => expect(screen.getByText("Step 3 of 5")).toBeInTheDocument());
+  });
+
+  test("requires explicit confirmation before skipping model download from primary Next", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: [], version: "0.1.0" });
+      if (cmd === "get_setting") return Promise.resolve(null);
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} initialStep={3} />);
+
+    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /^next/i }));
+
+    expect(await screen.findByText("Skip the model download?")).toBeInTheDocument();
+    expect(screen.getByText(/Daily Scan and AI drafting will run in limited mode/i)).toBeInTheDocument();
+    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
   });
 });

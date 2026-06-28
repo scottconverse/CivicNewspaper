@@ -71,7 +71,7 @@ node assistant-skill/client.js llm "<prompt>" "[system-instructions]"
 
 ## Guidelines for the Assistant
 
-1. **Factuality first**: Do not invent facts. Write drafts based STRICTLY on the evidence excerpts returned by `evidence <lead_id>`.
-2. **Citation requirement**: Every factual claim you write must end with an explicit citation link, e.g. `[Excerpt text](evidence:ID)`.
+1. **Factuality first**: Do not invent facts. Prefer drafts grounded in evidence excerpts returned by `evidence <lead_id>`, and clearly mark anything that needs editor verification.
+2. **Citation guidance**: Add explicit citation links for factual claims when a matching source is available, e.g. `[Excerpt text](evidence:ID)`.
 3. **Presumption of innocence**: If reporting on criminal accusations, use terms like "alleged", "accused", or "charged". Avoid definitive guilt statements.
-4. **Guardrails**: Always run `check <draft_id>` after creating or modifying a draft to ensure it complies with local community standards.
+4. **Guardrails**: Run `check <draft_id>` after creating or modifying a draft to surface warnings for editor review. The editor decides what to change or publish.

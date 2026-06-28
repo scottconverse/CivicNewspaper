@@ -1,7 +1,7 @@
 // src/components/PublishPanel.tsx
 import React, { useEffect, useState } from "react";
 import { AlertTriangle, CheckCircle, Copy, ExternalLink, FileArchive, FileDown, FolderOpen, Mail, Rss, Trash2, UploadCloud, UserPlus } from "lucide-react";
-import type { PublishResult, PublishRun, PublisherConfig, PublisherConfigInput, PublisherTestResult, Subscriber } from "../ipc";
+import type { CommunityProfile, PublishResult, PublishRun, PublisherConfig, PublisherConfigInput, PublisherTestResult, Subscriber } from "../ipc";
 
 interface PublishPanelProps {
   publishPath: string;
@@ -35,6 +35,8 @@ interface PublishPanelProps {
   onExportIssueEmail: () => void | Promise<void>;
   onCopyPublishText: (label: string, text: string) => void | Promise<void>;
   onCopyPublishArtifact: (label: string, relativePath: string) => void | Promise<void>;
+  communityProfile?: CommunityProfile | null;
+  onOpenSettings?: () => void;
 }
 
 const PROVIDERS = [
@@ -158,11 +160,13 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   onExportSubscribersCsv,
   onExportIssueEmail,
   onCopyPublishText,
-  onCopyPublishArtifact
+  onCopyPublishArtifact,
+  communityProfile,
+  onOpenSettings
 }) => {
   const [error, setError] = useState<string>("");
   const [provider, setProvider] = useState(publisherProvider || "here_now");
-  const [displayName, setDisplayName] = useState("The Civic Desk on here.now");
+  const [displayName, setDisplayName] = useState("My publication on here.now");
   const [siteUrl, setSiteUrl] = useState("");
   const [projectHint, setProjectHint] = useState("");
   const [siteId, setSiteId] = useState("");
@@ -178,11 +182,12 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
 
   const selectedProvider = PROVIDERS.find(item => item.id === provider) ?? PROVIDERS[0];
   const setupGuide = SETUP_GUIDES[provider] ?? SETUP_GUIDES.other;
+  const connectorTestPassed = publisherTestResult?.provider === provider && publisherTestResult.ok;
   const leadArticle = publishResult?.articles?.[0];
   const substackHeadline = leadArticle?.title || publishResult?.issue_id || "The Civic Desk update";
   const substackDeck = publishResult
-    ? `${publishResult.article_count} local civic update${publishResult.article_count === 1 ? "" : "s"} with source links and evidence notes.`
-    : "Local civic updates with source links and evidence notes.";
+    ? `${publishResult.article_count} local update${publishResult.article_count === 1 ? "" : "s"} ready to share.`
+    : "Local updates ready to share.";
   const activeSubscriberCount = subscribers.filter(subscriber => subscriber.status === "active").length;
 
   useEffect(() => {
@@ -290,6 +295,22 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
       : "paste the provider credential here";
 
   const primaryLabel = publishStep === 1 ? "Review compile checklist" : "Compile site";
+  const publisherTypeLabel: Record<string, string> = {
+    single_person: "Single person",
+    for_profit: "For-profit publication",
+    nonprofit: "Nonprofit publication",
+    private_org: "Private organization",
+    community_group: "Community group",
+    other: "Other",
+  };
+  const identityWarnings = [
+    !communityProfile?.site_title?.trim() || communityProfile.site_title === "My Local Publication"
+      ? "Publication name still uses starter text."
+      : "",
+    !communityProfile?.about_text?.trim() ? "About text is empty." : "",
+    !communityProfile?.ethics_text?.trim() ? "Ethics statement is empty." : "",
+    !communityProfile?.footer_text?.trim() ? "Footer/legal note is blank; that is allowed, but nothing will be invented for you." : "",
+  ].filter(Boolean);
 
   return (
     <div id="publish-panel-container">
@@ -314,6 +335,42 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
 
       <div className="publish-grid">
         <div className="card publish-compile-card">
+          <div className="preflight-card" id="publication-identity-review" style={{ marginBottom: "1rem", paddingBottom: "1rem", borderBottom: "1px solid var(--border-color)" }}>
+            <div className="flex-between" style={{ alignItems: "flex-start", gap: "1rem" }}>
+              <div>
+                <h3 className="card-title" style={{ marginBottom: "0.35rem" }}>Public site identity review</h3>
+                <p className="help-text" style={{ margin: 0 }}>
+                  Review this before compile. The app publishes only the identity and policy copy you choose.
+                </p>
+              </div>
+              {onOpenSettings && (
+                <button className="btn btn-secondary btn-sm" type="button" onClick={onOpenSettings} id="btn-edit-publish-identity">
+                  Edit identity
+                </button>
+              )}
+            </div>
+            <dl className="help-text" style={{ display: "grid", gridTemplateColumns: "max-content 1fr", gap: "0.35rem 0.75rem", margin: "0.75rem 0 0" }}>
+              <dt>Publication</dt>
+              <dd>{communityProfile?.site_title || "Not set"}</dd>
+              <dt>Tagline</dt>
+              <dd>{communityProfile?.site_subtitle || "Not set"}</dd>
+              <dt>Publisher type</dt>
+              <dd>{publisherTypeLabel[communityProfile?.organization_type || ""] || "Not set"}</dd>
+              <dt>Layout</dt>
+              <dd>{communityProfile?.layout_style || "classic"} / {communityProfile?.accent_color || "#5a1818"}</dd>
+              <dt>Logo</dt>
+              <dd>{communityProfile?.logo_url ? "Configured" : "Text masthead"}</dd>
+              <dt>Footer note</dt>
+              <dd>{communityProfile?.footer_text ? "Configured" : "Blank"}</dd>
+              <dt>Advisor</dt>
+              <dd>{communityProfile?.first_amendment_advisor_enabled === false ? "Off" : "On"}</dd>
+            </dl>
+            {identityWarnings.length > 0 && (
+              <ul className="help-text" style={{ margin: "0.75rem 0 0 1.2rem" }}>
+                {identityWarnings.map((warning) => <li key={warning}>{warning}</li>)}
+              </ul>
+            )}
+          </div>
           <h3 className="card-title">Compile your gazette</h3>
           <label htmlFor="input-publish-path" style={{ fontWeight: 600, display: "block", marginBottom: "0.35rem" }}>Output folder</label>
           <div className="path-row">
@@ -427,7 +484,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                 </button>
               </div>
               {publishResult.article_count === 0 && (
-                <p className="help-text">No approved stories were included. Approve an attested story in Workbench, then compile again.</p>
+                <p className="help-text">No approved stories were included. Approve a story in Workbench, then compile again.</p>
               )}
             </div>
           )}
@@ -715,10 +772,15 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                 <CheckCircle size={16} />
                 Save public URL
               </button>
-              <button className="btn btn-secondary btn-full" type="button" onClick={handleConnectorPublishClick} disabled={loading} style={{ marginTop: "0.6rem" }}>
+              <button className="btn btn-secondary btn-full" type="button" onClick={handleConnectorPublishClick} disabled={loading || !connectorTestPassed} style={{ marginTop: "0.6rem" }}>
                 <UploadCloud size={16} />
                 Publish with connector
               </button>
+              {!connectorTestPassed && (
+                <p className="help-text" style={{ marginTop: "0.35rem" }}>
+                  Test the selected connector before publishing. You can still save a public URL manually.
+                </p>
+              )}
               {publishResult.published_url && (
                 <p className="help-text">Saved live URL: <a href={publishResult.published_url}>{publishResult.published_url}</a></p>
               )}

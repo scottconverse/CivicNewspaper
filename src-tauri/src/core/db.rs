@@ -580,7 +580,7 @@ pub fn update_draft_status(conn: &Connection, id: i32, status: &str) -> SqlResul
     Ok(())
 }
 
-/// GG-C1: record that a human verified this draft against its cited evidence.
+/// GG-C1: record that a human reviewed this draft and accepts responsibility.
 /// Stamped before a draft may be approved for publishing (see `story_decision`).
 pub fn attest_draft(conn: &Connection, id: i32, editor: &str) -> SqlResult<()> {
     let now = Utc::now().to_rfc3339();

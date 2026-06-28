@@ -166,12 +166,12 @@ One paragraph summary of the package.
 Readiness levels:
 - READY: No critical flags. Minor flags noted but do not prevent
   publication.
-- CORRECTIONS NEEDED: One or more critical flags must be fixed before
-  publication. List specific corrections required.
-- HOLD: A story contains a factual error serious enough that publishing
-  it would misinform residents (wrong vote count, fabricated data,
-  attributed to wrong person). Identify the specific error and what is
-  needed to fix it.
+- CORRECTIONS NEEDED: One or more critical flags should be reviewed before
+  publication. List specific corrections recommended.
+- HOLD: A story appears to contain a factual error serious enough that publishing
+  it could misinform residents (wrong vote count, fabricated data,
+  attributed to wrong person). Identify the specific concern and what is
+  needed to check it. This is a recommendation to the editor, not a veto.
 
 Note: "HOLD" is reserved for actual errors, not for sourcing preferences.
 A story properly attributed to a news outlet is not a hold — it is properly

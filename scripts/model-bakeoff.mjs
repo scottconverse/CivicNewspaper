@@ -5,7 +5,7 @@ import { performance } from "node:perf_hooks";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const outputDir = path.join(root, ".agent-runs");
-const defaultModels = ["qwen3:4b", "qwen3:14b"];
+const defaultModels = ["qwen2.5:7b", "gemma4:e4b", "phi4-mini:latest", "llama3.2:3b"];
 const timeoutMs = Number(process.env.MODEL_BAKEOFF_TIMEOUT_MS || 180000);
 const ollamaUrl = process.env.OLLAMA_URL || "http://127.0.0.1:11434";
 const models = (process.argv.slice(2).join(",") || process.env.MODEL_BAKEOFF_MODELS || "")

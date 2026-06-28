@@ -7,6 +7,7 @@ echo "=== Verifying Release Packaging ==="
 # Allow environment override for self-test
 ARTIFACT_DIR="${ARTIFACT_DIR:-}"
 OLLAMA_BIN="${OLLAMA_BIN:-}"
+RELEASE_VERIFY_ALLOW_EMPTY="${RELEASE_VERIFY_ALLOW_EMPTY:-}"
 
 # Ensure dist directory exists
 mkdir -p dist
@@ -63,7 +64,12 @@ done
 
 if [ ${#ARTIFACTS[@]} -eq 0 ]; then
   echo "No release artifacts found to verify."
-  exit 0
+  if [ "$RELEASE_VERIFY_ALLOW_EMPTY" = "1" ] || [ "$RELEASE_VERIFY_ALLOW_EMPTY" = "true" ]; then
+    echo "RELEASE_VERIFY_ALLOW_EMPTY is set; treating empty artifact set as a diagnostic pass."
+    exit 0
+  fi
+  echo "FAIL: release verification found no artifacts. Set ARTIFACT_DIR correctly or use RELEASE_VERIFY_ALLOW_EMPTY=1 only for local diagnostics."
+  exit 1
 fi
 
 echo "Found ${#ARTIFACTS[@]} artifacts to verify:"

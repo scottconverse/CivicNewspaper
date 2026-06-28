@@ -174,6 +174,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
           <div className="card queue-filter-card">
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexGrow: 1 }}>
               <Search size={18} style={{ color: "var(--text-secondary)" }} />
+              <label htmlFor="leads-filter-input" className="sr-only">Filter leads</label>
               <input
                 type="text"
                 placeholder="Filter leads..."
@@ -184,11 +185,12 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
               />
             </div>
             <div>
-              <label style={{ marginRight: "0.5rem", fontSize: "0.9rem", fontWeight: 600 }}>Sort by:</label>
+              <label htmlFor="leads-sort-select" style={{ marginRight: "0.5rem", fontSize: "0.9rem", fontWeight: 600 }}>Sort by:</label>
               <select 
                 value={sortBy} 
                 onChange={(e) => setSortBy(e.target.value as any)}
                 style={{ padding: "0.5rem", width: "150px" }}
+                id="leads-sort-select"
               >
                 <option value="date">Date Created</option>
                 <option value="risk">Risk Level</option>
