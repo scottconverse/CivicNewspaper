@@ -121,35 +121,66 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("install_ollama_runtime"));
   });
 
-  test("offline AI setup Next starts runtime install before advancing", async () => {
+  test("offline AI setup auto-starts runtime install after health check settles", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
-    let healthCalls = 0;
+    let resolveInstall: () => void = () => {};
 
     invokeMock.mockImplementation((cmd: string) => {
       if (cmd === "get_system_ram") return Promise.resolve(16);
       if (cmd === "get_setting") return Promise.resolve(null);
-      if (cmd === "install_ollama_runtime") return Promise.resolve();
-      if (cmd === "ollama_health") {
-        healthCalls += 1;
-        return Promise.resolve({
-          reachable: healthCalls > 1,
-          models: [],
-          version: healthCalls > 1 ? "0.1.0" : null,
+      if (cmd === "install_ollama_runtime") {
+        return new Promise<void>((resolve) => {
+          resolveInstall = resolve;
         });
       }
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: false, models: [], version: null });
       return Promise.resolve();
     });
 
     render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
 
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
-    await waitFor(() => expect(screen.getByText("Starting the local AI service")).toBeInTheDocument());
-
-    fireEvent.click(screen.getByRole("button", { name: /^next/i }));
 
     await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("install_ollama_runtime"));
-    await waitFor(() => expect(screen.getByText("Step 3 of 5")).toBeInTheDocument());
+    expect(await screen.findByText(/Preparing local AI runtime install/i)).toBeInTheDocument();
+    resolveInstall();
+  });
+
+  test("first-run onboarding uses a scrollable shell body and sticky actions", () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} />);
+
+    expect(document.querySelector(".onboarding-step-body")).toBeInTheDocument();
+    expect(document.querySelector(".onboarding-actions")).toBeInTheDocument();
+  });
+
+  test("offline AI setup keeps Next disabled while runtime install is running", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      if (cmd === "install_ollama_runtime") return new Promise(() => {});
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: false, models: [], version: null });
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+
+    await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("install_ollama_runtime"));
+    expect(screen.getByRole("button", { name: /^next/i })).toBeDisabled();
   });
 
   test("Ollama reachable with Empty Models: shows ready message", async () => {

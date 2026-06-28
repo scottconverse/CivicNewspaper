@@ -16,7 +16,7 @@ function App() {
   }
   if (!app.onboardingDone) {
     return (
-      <div style={{ maxWidth: 720, margin: "2rem auto", padding: "0 1rem" }}>
+      <div className="onboarding-shell">
         <OnboardingWizard
           ollamaOnline={app.ollamaOnline}
           systemRam={app.systemRam}

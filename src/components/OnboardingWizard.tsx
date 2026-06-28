@@ -1,5 +1,5 @@
 // STEPS DEFINED HERE ARE DOCUMENTED IN docs/user_manual.md PART 1. Update both together.
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { ChevronRight, Download, CheckCircle, RefreshCcw, AlertCircle } from "lucide-react";
@@ -86,6 +86,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const [runtimeProgress, setRuntimeProgress] = useState("");
   const [runtimePercent, setRuntimePercent] = useState<number | null>(null);
   const [runtimeError, setRuntimeError] = useState("");
+  const autoRuntimeInstallAttempted = useRef(false);
 
   // Step 3 State
   const [pullProgress, setPullProgress] = useState<string>("");
@@ -257,6 +258,22 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       setRuntimeInstalling(false);
     }
   };
+
+  useEffect(() => {
+    if (
+      step !== 2 ||
+      checkingHealth ||
+      runtimeInstalling ||
+      autoRuntimeInstallAttempted.current ||
+      health?.reachable
+    ) {
+      return;
+    }
+    if (healthTimeout || health?.reachable === false) {
+      autoRuntimeInstallAttempted.current = true;
+      void installRuntime();
+    }
+  }, [step, checkingHealth, runtimeInstalling, healthTimeout, health?.reachable]);
 
   const formatStatus = (status: string): string => {
     const s = status.toLowerCase();
@@ -436,7 +453,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         />
       </div>
 
-      <div style={{ marginTop: "2rem", minHeight: "300px" }}>
+      <div className="onboarding-step-body">
         <h3>{steps[step - 1].title}</h3>
         <p className="help-text" style={{ marginBottom: "1.5rem" }}>
           {steps[step - 1].desc}
@@ -729,7 +746,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         )}
       </div>
 
-      <div className="flex-between" style={{ marginTop: "2rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}>
+      <div className="flex-between onboarding-actions" style={{ marginTop: "2rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}>
         <button type="button" className="btn btn-secondary" onClick={handleBack} disabled={step === 1}>
           Back
         </button>
