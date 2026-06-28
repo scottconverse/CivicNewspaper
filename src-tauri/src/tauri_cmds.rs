@@ -928,10 +928,17 @@ pub fn get_evidence(
 }
 
 #[tauri::command]
-pub fn save_draft(db: tauri::State<'_, DbConn>, draft: Draft) -> Result<i32, String> {
+pub fn save_draft(db: tauri::State<'_, DbConn>, mut draft: Draft) -> Result<i32, String> {
     let conn = db
         .lock()
         .map_err(|_| "Failed to lock database".to_string())?;
+    let now = chrono::Utc::now().to_rfc3339();
+    if draft.created_at.trim().is_empty() {
+        draft.created_at = now.clone();
+    }
+    if draft.updated_at.trim().is_empty() {
+        draft.updated_at = now;
+    }
     if let Some(id) = draft.id {
         db::update_draft(&conn, &draft).map_err(|e| e.to_string())?;
         Ok(id)

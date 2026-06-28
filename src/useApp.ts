@@ -960,13 +960,16 @@ export function useApp() {
       // stub like "Draft: City approves new zoning…". Use the full lead summary,
       // collapsed to a single line; the editor lets the user rename it.
       const cleanTitle = selectedLead.why.replace(/\s+/g, " ").trim();
+      const now = new Date().toISOString();
       const draftObj: Draft = {
         lead_id: selectedLead.id,
         format: draftFormat,
         title: cleanTitle ? `Draft: ${cleanTitle}` : "Untitled draft",
         content: text,
         status: "draft_generated",
-        verification_checklist: "[]"
+        verification_checklist: "[]",
+        created_at: now,
+        updated_at: now,
       };
 
       const newId = await saveDraft(draftObj);

@@ -119,7 +119,9 @@ pub struct Draft {
     pub verification_checklist: String, // JSON array
     pub missing_evidence_notes: Option<String>,
     pub correction_note: Option<String>,
+    #[serde(default)]
     pub created_at: String,
+    #[serde(default)]
     pub updated_at: String,
 }
 
@@ -154,7 +156,9 @@ pub struct Subscriber {
     pub email: String,
     pub name: Option<String>,
     pub status: String,
+    #[serde(default)]
     pub created_at: String,
+    #[serde(default)]
     pub updated_at: String,
 }
 

@@ -1,5 +1,5 @@
 // core/daily_scan.rs
-use crate::core::db::{self, DailyScanLead, DailyScanRun, DbConn, EvidenceItem};
+use crate::core::db::{self, DailyScanLead, DailyScanRun, DbConn, EvidenceItem, Lead};
 use crate::core::llm::LlmClient;
 use crate::core::{intelligence, verification};
 use chrono::Utc;
@@ -93,7 +93,7 @@ pub fn parse_and_save_scan_response(
             suggested_next_step: normalize_optional(item.suggested_next_step)
                 .or_else(|| Some("Open the original source and confirm the key dates, names, and decision points before drafting.".to_string())),
         };
-        match db::insert_daily_scan_lead(conn, &lead) {
+        match save_daily_scan_lead_for_queue(conn, &lead) {
             Ok(_) => saved += 1,
             Err(e) => eprintln!("Failed to insert daily scan lead: {}", e), // P4-009 log insert error
         }
@@ -243,7 +243,7 @@ fn save_fallback_leads(
             priority: Some("review".to_string()),
             suggested_next_step: Some("Open the source, decide whether it contains a reportable civic action, then save or dismiss it from the queue.".to_string()),
         };
-        if db::insert_daily_scan_lead(conn, &lead).is_ok() {
+        if save_daily_scan_lead_for_queue(conn, &lead).is_ok() {
             saved += 1;
         }
     }
@@ -352,11 +352,52 @@ fn save_dark_signal_leads(
             ),
             suggested_next_step: Some(signal.verification_path),
         };
-        if db::insert_daily_scan_lead(conn, &lead).is_ok() {
+        if save_daily_scan_lead_for_queue(conn, &lead).is_ok() {
             saved += 1;
         }
     }
     Ok(saved)
+}
+
+fn save_daily_scan_lead_for_queue(
+    conn: &rusqlite::Connection,
+    lead: &DailyScanLead,
+) -> rusqlite::Result<i32> {
+    let scan_lead_id = db::insert_daily_scan_lead(conn, lead)?;
+    let title = lead.title.trim();
+    let summary = lead.summary.trim();
+    let why = match (title.is_empty(), summary.is_empty()) {
+        (false, false) => format!("{title}: {summary}"),
+        (false, true) => title.to_string(),
+        (true, false) => summary.to_string(),
+        (true, true) => "Daily Scan found a lead that needs editor review.".to_string(),
+    };
+    let priority = lead.priority.as_deref().unwrap_or("review");
+    let normalized_level = match priority {
+        "high" => "high",
+        "medium" | "med" => "med",
+        _ => "low",
+    };
+    let checklist = serde_json::json!([
+        lead.suggested_next_step
+            .as_deref()
+            .unwrap_or("Open the original source and confirm the key facts before drafting."),
+        "Confirm dates, names, dollar amounts, and decision points before publication.",
+        "Keep unverified or single-source claims labeled for editor review."
+    ])
+    .to_string();
+    let story_lead = Lead {
+        id: None,
+        detector_name: "daily_scan".to_string(),
+        why,
+        confidence: normalized_level.to_string(),
+        risk_level: normalized_level.to_string(),
+        confirmation_checklist: checklist,
+        from_scan_lead_id: Some(scan_lead_id),
+        created_at: String::new(),
+    };
+    db::insert_lead(conn, &story_lead, &[])?;
+    Ok(scan_lead_id)
 }
 
 #[cfg(test)]

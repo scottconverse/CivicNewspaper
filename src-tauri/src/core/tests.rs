@@ -40,6 +40,22 @@ mod tests {
         assert_eq!(version_after, get_expected_version());
     }
 
+    #[test]
+    fn test_draft_ipc_payload_defaults_missing_timestamps() {
+        let draft: Draft = serde_json::from_value(serde_json::json!({
+            "lead_id": 1,
+            "format": "watch",
+            "title": "Generated draft",
+            "content": "Draft body",
+            "status": "draft_generated",
+            "verification_checklist": "[]"
+        }))
+        .expect("Draft IPC payloads without timestamps should deserialize");
+
+        assert!(draft.created_at.is_empty());
+        assert!(draft.updated_at.is_empty());
+    }
+
     // 2. Auth Tests
     #[test]
     fn test_auth_checks() {
@@ -1280,6 +1296,17 @@ I should produce JSON only.
             persisted[0].suggested_next_step.as_deref(),
             Some("Open the original source and confirm the key dates, names, and decision points before drafting."),
             "older/simple model JSON should receive a Terry-facing next step"
+        );
+        let story_queue_leads = list_leads(&conn).unwrap();
+        assert_eq!(
+            story_queue_leads.len(),
+            1,
+            "Daily Scan leads should also appear in the draftable Story Queue"
+        );
+        assert_eq!(
+            story_queue_leads[0].from_scan_lead_id,
+            persisted[0].id,
+            "Story Queue lead should keep a back-reference to the scan result"
         );
 
         let status: String = conn
