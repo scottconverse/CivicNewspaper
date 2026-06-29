@@ -1072,6 +1072,7 @@ export function useApp() {
     setSelectedLead(null);
     setGuardrailsReport(null);
     setSocialPackResult("");
+    setActiveTab("workbench");
     try {
       if (draft.lead_id) {
         const ev = await getEvidence(draft.lead_id);
@@ -1079,7 +1080,6 @@ export function useApp() {
       } else {
         setEvidenceList([]);
       }
-      setActiveTab("workbench");
       if (draft.id) {
         const report = await guardrailsCheck(draft.id);
         setGuardrailsReport(report);

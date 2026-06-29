@@ -312,4 +312,111 @@ describe("useApp Hook Tests", () => {
     expect(hookResult.selectedDraft?.content).toBe("Generated local AI draft body.");
     expect(screen.getByTestId("active-tab")).toHaveTextContent("workbench");
   });
+
+  test("can draft multiple leads sequentially without losing queue/workbench state", async () => {
+    let nextDraftId = 700;
+    const savedDrafts: any[] = [];
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
+      if (cmd === "get_queue") return { leads: [], drafts: savedDrafts };
+      if (cmd === "get_sources") return [];
+      if (cmd === "get_community_profile") return { city: "Longmont", state: "CO" };
+      if (cmd === "list_paired_clients") return [];
+      if (cmd === "get_system_ram") return 16;
+      if (cmd === "get_evidence") return [];
+      if (cmd === "get_setting" && args?.key === "model.selected") return "qwen2.5:7b";
+      if (cmd === "ollama_health") return { reachable: true, models: ["qwen2.5:7b"], version: "0.6.0" };
+      if (cmd === "generate_draft") return `Generated draft for lead ${args.leadId}.`;
+      if (cmd === "save_draft") {
+        const draft = { ...args.draft, id: nextDraftId++ };
+        savedDrafts.push(draft);
+        return draft.id;
+      }
+      return null;
+    });
+
+    let hookResult: any;
+    const TestComp = () => {
+      hookResult = useApp();
+      return <span data-testid="active-tab">{hookResult.activeTab}</span>;
+    };
+
+    await act(async () => {
+      render(<TestComp />);
+    });
+
+    const leads = [1, 2, 3].map((id) => ({
+      id,
+      detector_name: "Public Meeting Scheduled",
+      why: `Longmont test lead ${id}`,
+      confidence: "medium",
+      risk_level: "medium",
+      confirmation_checklist: "[]",
+      created_at: "2026-06-29T00:00:00Z",
+    }));
+
+    for (const lead of leads) {
+      await act(async () => {
+        hookResult.setActiveTab("queue");
+        hookResult.setSelectedDraft(null);
+        hookResult.handleOpenDraftWizard(lead);
+      });
+
+      expect(screen.getByTestId("active-tab")).toHaveTextContent("workbench");
+      expect(hookResult.selectedLead?.id).toBe(lead.id);
+      expect(hookResult.selectedDraft).toBeNull();
+
+      await act(async () => {
+        await hookResult.handleGenerateText();
+      });
+
+      expect(hookResult.selectedLead).toBeNull();
+      expect(hookResult.selectedDraft?.lead_id).toBe(lead.id);
+      expect(hookResult.selectedDraft?.content).toBe(`Generated draft for lead ${lead.id}.`);
+      expect(screen.getByTestId("active-tab")).toHaveTextContent("workbench");
+    }
+
+    expect(savedDrafts.map((draft) => draft.lead_id)).toEqual([1, 2, 3]);
+    expect(new Set(savedDrafts.map((draft) => draft.id)).size).toBe(3);
+  });
+
+  test("opening an existing draft reaches Workbench even if evidence refresh fails", async () => {
+    const existingDraft = {
+      id: 44,
+      lead_id: 12,
+      format: "watch",
+      title: "Draft: Longmont budget item",
+      content: "Existing draft body.",
+      status: "draft_generated",
+      verification_checklist: "[]",
+    };
+
+    vi.mocked(invoke).mockImplementation(async (cmd: string) => {
+      if (cmd === "get_queue") return { leads: [], drafts: [existingDraft] };
+      if (cmd === "get_sources") return [];
+      if (cmd === "get_community_profile") return { city: "Longmont", state: "CO" };
+      if (cmd === "list_paired_clients") return [];
+      if (cmd === "get_system_ram") return 16;
+      if (cmd === "get_evidence") throw new Error("evidence unavailable");
+      return null;
+    });
+
+    let hookResult: any;
+    const TestComp = () => {
+      hookResult = useApp();
+      return <span data-testid="active-tab">{hookResult.activeTab}</span>;
+    };
+
+    await act(async () => {
+      render(<TestComp />);
+    });
+
+    await act(async () => {
+      await hookResult.handleOpenDraftEditor(existingDraft);
+    });
+
+    expect(screen.getByTestId("active-tab")).toHaveTextContent("workbench");
+    expect(hookResult.selectedDraft?.id).toBe(44);
+    expect(hookResult.selectedLead).toBeNull();
+    expect(hookResult.errorMessage).toContain("evidence unavailable");
+  });
 });

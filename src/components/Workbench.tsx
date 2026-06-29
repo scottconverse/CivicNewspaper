@@ -197,6 +197,9 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   const errorIssues = guardrailsReport?.issues.filter((i) => i.severity === "error") ?? [];
 
   const handleApproveClick = () => {
+    if (selectedDraft?.status === "killed") {
+      return;
+    }
     if (errorIssues.length > 0) {
       setShowOverrideModal(true);
     } else {
@@ -547,8 +550,11 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                     <button
                       className="btn btn-primary btn-sm"
                       onClick={handleApproveClick}
+                      disabled={selectedDraft.status === "killed"}
                       title={
-                        !attested
+                        selectedDraft.status === "killed"
+                          ? "Move this story back to Hold before approving it for publishing"
+                          : !attested
                           ? "Approve and record editorial responsibility"
                           : errorIssues.length > 0
                             ? "This story has sensitive warnings - you'll be asked to confirm an override note"
@@ -560,6 +566,14 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                     </button>
                   </div>
                 </div>
+                {selectedDraft.status === "killed" && (
+                  <div
+                    role="status"
+                    style={{ background: "rgba(245, 158, 11, 0.08)", borderLeft: "4px solid var(--color-warning)", borderRadius: "4px", color: "var(--text-primary)", padding: "0.75rem" }}
+                  >
+                    This story is killed and will not be approved for publishing unless you move it back to Hold first.
+                  </div>
+                )}
                 <label
                   htmlFor="chk-attest"
                   style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", fontSize: "0.85rem", cursor: "pointer", color: "var(--text-secondary)" }}

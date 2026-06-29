@@ -161,6 +161,75 @@ fn write_site_file(
     Ok(())
 }
 
+pub(crate) fn repair_common_mojibake(text: &str) -> String {
+    let mut repaired = text.to_string();
+    for (bad, good) in [
+        ("Ã¢â‚¬â„¢", "'"),
+        ("Ã¢â‚¬Ëœ", "'"),
+        ("Ã¢â‚¬Å“", "\""),
+        ("Ã¢â‚¬Â", "\""),
+        ("Ã¢â‚¬â€œ", "-"),
+        ("Ã¢â‚¬â€", "-"),
+        ("Ã¢â‚¬Â¦", "..."),
+        ("â€™", "'"),
+        ("â€˜", "'"),
+        ("â€œ", "\""),
+        ("â€�", "\""),
+        ("â€“", "-"),
+        ("â€”", "-"),
+        ("â€¦", "..."),
+        ("â€", "\""),
+        ("Â ", " "),
+        ("Â", ""),
+    ] {
+        repaired = repaired.replace(bad, good);
+    }
+    repaired
+}
+
+fn clean_generated_site_output(output_dir: &Path) -> Result<(), Box<dyn Error>> {
+    for subdir in [
+        "briefs",
+        "watch",
+        "explainers",
+        "stories",
+        "opinions",
+        "corrections",
+    ] {
+        let path = output_dir.join(subdir);
+        if path.exists() {
+            fs::remove_dir_all(path)?;
+        }
+    }
+
+    for filename in [
+        "index.html",
+        "about.html",
+        "ethics.html",
+        "how-we-report.html",
+        "corrections.html",
+        "feed.xml",
+        "newsletter.md",
+        "substack.md",
+        "share-package.md",
+        "facebook-post.txt",
+        "subreddit-post.md",
+        "nextdoor-post.txt",
+        "short-link-blurb.txt",
+        "publish-manifest.json",
+        "site-package.zip",
+        "styles.css",
+        "print.css",
+    ] {
+        let path = output_dir.join(filename);
+        if path.exists() {
+            fs::remove_file(path)?;
+        }
+    }
+
+    Ok(())
+}
+
 fn absolute_site_url(base_url: &str, relative_path: &str) -> String {
     let base = base_url.trim_end_matches('/');
     let rel = relative_path.trim_start_matches('/');
@@ -340,13 +409,14 @@ fn sanitize_dest(dest: CowStr<'_>) -> CowStr<'_> {
 }
 
 pub fn render_markdown(markdown: &str) -> String {
+    let markdown = repair_common_mojibake(markdown);
     let options = Options::empty();
     // SEC (GG-B1): strip raw HTML events AND neutralize dangerous URI schemes on
     // markdown-syntax links/images. pulldown-cmark otherwise emits link/image
     // destinations verbatim into href/src, so `[x](javascript:...)` /
     // `![x](data:...)` in a draft (LLM-authored or pasted) would become live
     // script vectors on the public static site.
-    let parser = Parser::new_ext(markdown, options).filter_map(|event| match event {
+    let parser = Parser::new_ext(&markdown, options).filter_map(|event| match event {
         Event::Html(_) | Event::InlineHtml(_) => None,
         Event::Start(Tag::Link {
             link_type,
@@ -397,6 +467,7 @@ pub fn compile_static_site(
 
     // 1. Create standard output directories
     fs::create_dir_all(output_dir)?;
+    clean_generated_site_output(output_dir)?;
     let formats = vec![
         "briefs",
         "watch",
@@ -419,10 +490,15 @@ pub fn compile_static_site(
     // as inert text instead of live script. encode_safe escapes &<>"' which is
     // sufficient for both the HTML element contexts and the RSS/XML text nodes
     // below (matching how titles/excerpts are already escaped).
-    let safe_site_title = html_escape::encode_safe(&profile.site_title).to_string();
-    let safe_site_subtitle = html_escape::encode_safe(&profile.site_subtitle).to_string();
-    let safe_about_text = html_escape::encode_safe(&profile.about_text).to_string();
-    let safe_ethics_text = html_escape::encode_safe(&profile.ethics_text).to_string();
+    let site_title = repair_common_mojibake(&profile.site_title);
+    let site_subtitle = repair_common_mojibake(&profile.site_subtitle);
+    let about_text = repair_common_mojibake(&profile.about_text);
+    let ethics_text = repair_common_mojibake(&profile.ethics_text);
+    let how_we_report_text = repair_common_mojibake(&profile.how_we_report_text);
+    let safe_site_title = html_escape::encode_safe(&site_title).to_string();
+    let safe_site_subtitle = html_escape::encode_safe(&site_subtitle).to_string();
+    let safe_about_text = html_escape::encode_safe(&about_text).to_string();
+    let safe_ethics_text = html_escape::encode_safe(&ethics_text).to_string();
     let footer_html = footer_notice(&profile);
     let logo_html = logo_html(&profile);
     let custom_style = custom_style(&profile);
@@ -456,6 +532,8 @@ pub fn compile_static_site(
     // 5. Compile each published article
     for draft in &published_drafts {
         let draft_id = draft.id.unwrap_or(0);
+        let title = repair_common_mojibake(&draft.title);
+        let content = repair_common_mojibake(&draft.content);
 
         // Editorial review is advisory at compile time: do not silently filter a
         // story out of the public package. If a draft reached a publishable
@@ -514,7 +592,7 @@ pub fn compile_static_site(
         };
 
         // Convert Markdown body to HTML
-        let raw_html = render_markdown(&draft.content);
+        let raw_html = render_markdown(&content);
         // Replace custom references `href="evidence:123"` or `href="evidence://123"` with local section anchors `#evidence-123`
         let mut html_content = raw_html.replace("href=\"evidence://", "href=\"#evidence-");
         html_content = html_content.replace("href=\"evidence:", "href=\"#evidence-");
@@ -536,7 +614,8 @@ pub fn compile_static_site(
                     "#".to_string()
                 };
                 let safe_url = html_escape::encode_safe(&source_url);
-                let safe_excerpt = html_escape::encode_safe(&item.excerpt);
+                let excerpt = repair_common_mojibake(&item.excerpt);
+                let safe_excerpt = html_escape::encode_safe(&excerpt);
                 evidence_html.push_str(&format!(
                     "<li id=\"evidence-{}\" style=\"margin-bottom: 0.5rem;\"><strong>[Ref {}]</strong> <a href=\"{}\" target=\"_blank\">Original Document Link</a>: <span style=\"font-style: italic;\">\"{}\"</span></li>\n",
                     item_id, item_id, safe_url, safe_excerpt
@@ -549,7 +628,7 @@ pub fn compile_static_site(
 
         // Format Correction Banner
         let correction_banner = if draft.status == "corrected" {
-            let note = draft.correction_note.clone().unwrap_or_default();
+            let note = repair_common_mojibake(&draft.correction_note.clone().unwrap_or_default());
             let safe_note = html_escape::encode_safe(&note);
             format!(
                 "<div class=\"correction-banner\" style=\"background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 1rem; margin-bottom: 2rem; border-radius: 4px; font-family: var(--font-sans); font-size: 0.95rem;\"><strong>CORRECTION:</strong> {}</div>\n",
@@ -572,7 +651,7 @@ pub fn compile_static_site(
             )
         };
 
-        let safe_title = html_escape::encode_safe(&draft.title).to_string();
+        let safe_title = html_escape::encode_safe(&title).to_string();
 
         // Generate Post Page
         let mut post_html = POST_TEMPLATE.to_string();
@@ -615,7 +694,7 @@ pub fn compile_static_site(
         write_site_file(dest_path, post_html, &mut files_written)?;
         generated_files.push(relative_path.clone());
         compiled_articles.push(CompiledArticle {
-            title: draft.title.clone(),
+            title: title.clone(),
             format: draft.format.clone(),
             relative_path: relative_path.clone(),
             updated_at: draft.updated_at.clone(),
@@ -659,7 +738,8 @@ pub fn compile_static_site(
 
         // Add to Corrections Ledger listing if corrected
         if draft.status == "corrected" {
-            let note_str = draft.correction_note.clone().unwrap_or_default();
+            let note_str =
+                repair_common_mojibake(&draft.correction_note.clone().unwrap_or_default());
             let safe_corr_note = html_escape::encode_safe(&note_str);
             corrections_list_html.push_str(&format!(
                 "<div style=\"border-bottom: 1px dashed #cccccc; padding: 1.5rem 0;\">\n  <h3 style=\"margin-top: 0;\"><a href=\"{}\">{}</a></h3>\n  <p style=\"font-size: 0.9rem; color: #856404; background-color: #fff3cd; padding: 0.75rem; border-radius: 4px;\"><strong>Correction Notice ({}):</strong> {}</p>\n</div>\n\n",
@@ -729,17 +809,9 @@ pub fn compile_static_site(
             Ok(())
         };
 
-    compile_info_page("about.html", "About The Civic Desk", &profile.about_text)?;
-    compile_info_page(
-        "ethics.html",
-        "Reporting Ethics & Standards",
-        &profile.ethics_text,
-    )?;
-    compile_info_page(
-        "how-we-report.html",
-        "How We Report",
-        &profile.how_we_report_text,
-    )?;
+    compile_info_page("about.html", "About The Civic Desk", &about_text)?;
+    compile_info_page("ethics.html", "Reporting Ethics & Standards", &ethics_text)?;
+    compile_info_page("how-we-report.html", "How We Report", &how_we_report_text)?;
 
     // 8. Build corrections.html ledger
     let mut corrections_html = POST_TEMPLATE.to_string();
@@ -775,7 +847,7 @@ pub fn compile_static_site(
 
     let mut newsletter = format!(
         "# {}\n\n{}\n\nGenerated: {}\n\n",
-        profile.site_title, profile.site_subtitle, generated_at
+        site_title, site_subtitle, generated_at
     );
     if compiled_articles.is_empty() {
         newsletter.push_str("No approved stories were included in this package.\n");
@@ -795,7 +867,7 @@ pub fn compile_static_site(
 
     let mut substack = format!(
         "# {}\n\n{}\n\n_Publication package generated by The Civic Desk on {}._\n\n",
-        profile.site_title, profile.site_subtitle, generated_at
+        site_title, site_subtitle, generated_at
     );
     if compiled_articles.is_empty() {
         substack.push_str("No approved stories were included in this package.\n");
@@ -840,7 +912,7 @@ pub fn compile_static_site(
     let article_count = compiled_articles.len();
     let facebook_post = format!(
         "{} is live. {} local update(s), with links and an RSS feed for following future issues.\n\nRead it here: [add public URL]\n",
-        profile.site_title, article_count
+        site_title, article_count
     );
     write_site_file(
         output_dir.join("facebook-post.txt"),
@@ -851,7 +923,7 @@ pub fn compile_static_site(
 
     let subreddit_post = format!(
         "# {}\n\n{} local update(s).\n\nTop item: {}\n\nRead the issue: [add public URL]\n\nSources and corrections policy are included on the site.\n",
-        profile.site_title, article_count, headline
+        site_title, article_count, headline
     );
     write_site_file(
         output_dir.join("subreddit-post.md"),
@@ -862,7 +934,7 @@ pub fn compile_static_site(
 
     let nextdoor_post = format!(
         "A new {} issue is ready with {} local update(s). Top item: {}. Read it here: [add public URL]",
-        profile.site_title, article_count, headline
+        site_title, article_count, headline
     );
     write_site_file(
         output_dir.join("nextdoor-post.txt"),
@@ -873,7 +945,7 @@ pub fn compile_static_site(
 
     let short_link_blurb = format!(
         "{}: {} local update(s). Read: [short link]",
-        profile.site_title, article_count
+        site_title, article_count
     );
     write_site_file(
         output_dir.join("short-link-blurb.txt"),

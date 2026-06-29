@@ -403,6 +403,21 @@ describe("Workbench Component Tests", () => {
     expect(onApprovePublish).toHaveBeenCalledWith();
   });
 
+  test("killed drafts cannot be accidentally approved from the editor", () => {
+    const onApprovePublish = vi.fn();
+    renderEditor({
+      onApprovePublish,
+      selectedDraft: { ...mockDraft, status: "killed" },
+    });
+
+    const approve = screen.getByRole("button", { name: /Approve for Static Publish/i });
+    expect(approve).toBeDisabled();
+    expect(screen.getByText(/move it back to Hold first/i)).toBeInTheDocument();
+
+    fireEvent.click(approve);
+    expect(onApprovePublish).not.toHaveBeenCalled();
+  });
+
   test("a sensitive guardrail issue warns without vetoing approval", async () => {
     const onApprovePublish = vi.fn();
     const report: GuardrailsReport = {

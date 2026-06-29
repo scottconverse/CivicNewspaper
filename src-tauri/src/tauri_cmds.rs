@@ -933,6 +933,14 @@ pub fn save_draft(db: tauri::State<'_, DbConn>, mut draft: Draft) -> Result<i32,
     let conn = db
         .lock()
         .map_err(|_| "Failed to lock database".to_string())?;
+    draft.title = compiler::repair_common_mojibake(&draft.title);
+    draft.content = compiler::repair_common_mojibake(&draft.content);
+    draft.correction_note = draft
+        .correction_note
+        .map(|note| compiler::repair_common_mojibake(&note));
+    draft.missing_evidence_notes = draft
+        .missing_evidence_notes
+        .map(|note| compiler::repair_common_mojibake(&note));
     let now = chrono::Utc::now().to_rfc3339();
     if draft.created_at.trim().is_empty() {
         draft.created_at = now.clone();
@@ -983,9 +991,20 @@ pub fn story_decision(
     decision: String,
     override_reason: Option<String>,
 ) -> Result<(), String> {
+    const PUBLISH_STATES: [&str; 3] = ["ready_to_publish", "published", "corrected"];
     let conn = db
         .lock()
         .map_err(|_| "Failed to lock database".to_string())?;
+    if PUBLISH_STATES.contains(&decision.as_str()) {
+        if let Some(draft) = db::get_draft(&conn, id).map_err(|e| e.to_string())? {
+            if draft.status == "killed" {
+                return Err(
+                    "This story is killed. Move it back to Hold before approving it for publish."
+                        .to_string(),
+                );
+            }
+        }
+    }
     enforce_publish_gate(&conn, id, &decision, override_reason.as_deref())?;
     db::update_draft_status(&conn, id, &decision).map_err(|e| e.to_string())
 }
@@ -1352,9 +1371,18 @@ pub async fn publish_with_connector(
     deployment_id: Option<String>,
 ) -> Result<compiler::CompileStaticSiteResult, String> {
     let provider = provider.trim().to_string();
-    let config = get_publisher_config(db.clone(), provider.clone())?
+    let mut config = get_publisher_config(db.clone(), provider.clone())?
         .or_else(|| default_publish_config_for_unsaved_connector(&provider, &output_dir))
         .ok_or_else(|| "Save this publisher connector before publishing.".to_string())?;
+    if provider == publisher::PublisherProvider::HereNow.as_str()
+        && config.display_name.trim().is_empty()
+    {
+        if let Some(default_config) =
+            default_publish_config_for_unsaved_connector(&provider, &output_dir)
+        {
+            config.display_name = default_config.display_name;
+        }
+    }
     let connector = publisher::publisher_for(&provider)?;
     let request = publisher::PublisherPublishRequest {
         output_dir: output_dir.clone(),

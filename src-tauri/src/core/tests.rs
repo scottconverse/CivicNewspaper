@@ -3166,6 +3166,76 @@ I should produce JSON only.
         assert!(dirty_path.exists(), "overridden draft should publish");
     }
 
+    #[test]
+    fn test_compile_repairs_common_mojibake_in_public_output() {
+        let conn = init_db("file:test_compile_mojibake?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        let id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "watch".to_string(),
+                title: "Cityâ€™s library plan".to_string(),
+                content: "Officials said â€œreview the packetâ€ and residents asked whatâ€™s next."
+                    .to_string(),
+                status: "ready_to_publish".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+
+        let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
+        assert!(html.contains("City&#x27;s library plan"));
+        assert!(!html.contains("â€™"));
+        assert!(!html.contains("â€œ"));
+        assert!(!html.contains("â€"));
+    }
+
+    #[test]
+    fn test_compile_removes_stale_article_files_when_story_is_no_longer_publishable() {
+        let conn =
+            init_db("file:test_compile_cleans_stale_output?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        let id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "watch".to_string(),
+                title: "Do not publish".to_string(),
+                content: "This should disappear when killed.".to_string(),
+                status: "ready_to_publish".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+        let article_path = temp_dir.path().join(format!("watch/{}.html", id));
+
+        let first = compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+        assert_eq!(first.article_count, 1);
+        assert!(article_path.exists());
+
+        update_draft_status(&conn, id, "killed").unwrap();
+        let second = compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+
+        assert_eq!(second.article_count, 0);
+        assert!(
+            !article_path.exists(),
+            "stale HTML for a killed story must not remain in the export folder"
+        );
+    }
+
     // GG-C1: attestation/override gate columns round-trip (proves migration 0008).
     #[test]
     fn test_attest_and_override_gate_columns() {
