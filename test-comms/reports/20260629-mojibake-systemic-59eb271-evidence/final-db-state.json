@@ -1,0 +1,119 @@
+{
+  "db": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+  "sources": 6,
+  "evidence_items": 27,
+  "leads": 18,
+  "daily_scan_leads": 10,
+  "drafts": 7,
+  "publish_runs": 4,
+  "published_posts": 6,
+  "verification_tasks": 3,
+  "drafts_by_status": [
+    [
+      "killed",
+      1
+    ],
+    [
+      "ready_to_publish",
+      6
+    ]
+  ],
+  "draft_rows": [
+    [
+      1,
+      12,
+      "ready_to_publish",
+      "Draft: Youth Center Programs in Longmont: The city is committed to supporting youth development through the Youth Center, which provides resources and activities for families and children."
+    ],
+    [
+      2,
+      10,
+      "ready_to_publish",
+      "Draft: New Public Meeting Portal Launched: Longmont City Council and advisory board agendas are now published on a new public meeting portal, making it easier for residents to access information about upcoming meetings."
+    ],
+    [
+      3,
+      18,
+      "ready_to_publish",
+      "Draft: Longmont Invites Applications for Official City Flag Design: The City of Longmont is seeking public input through an application process aimed at designing a new official city flag, fostering community engagement and pride."
+    ],
+    [
+      4,
+      17,
+      "ready_to_publish",
+      "Draft: Sustainable Business Program: The city offers a Sustainable Business Program to promote environmental stewardship, economic vitality, and social equity among local businesses."
+    ],
+    [
+      5,
+      16,
+      "ready_to_publish",
+      "Draft: Vision Zero Safety Projects: The city is actively working on Vision Zero projects to improve transportation safety, engaging citizens and stakeholders in these initiatives."
+    ],
+    [
+      6,
+      15,
+      "ready_to_publish",
+      "Draft: City Council Meetings and Public Engagement: Residents can have their voices heard at the Public Invited to be Heard segment of City Council meetings, where staff often prepares ordinances based on citizen input. [tester edit]"
+    ],
+    [
+      7,
+      14,
+      "killed",
+      "Draft: Public Participation Rules: The city outlines specific rules for public participation, including sign-up procedures and time limits. This is essential information for residents who wish to voice their opinions during meetings."
+    ]
+  ],
+  "publish_rows": [
+    [
+      1,
+      "issue-20260629-064236-290186100",
+      "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/artifacts/20260629-full-e2e-continuation-637e941/publication-output/site",
+      "[\"styles.css\",\"print.css\",\"watch/2.html\",\"watch/1.html\",\"watch/5.html\",\"watch/4.html\",\"watch/3.html\",\"watch/6.html\",\"index.html\",\"about.html\",\"ethics.html\",\"how-we-report.html\",\"corrections.html\",\"feed.xml\",\"newsletter.md\",\"substack.md\",\"share-package.md\",\"facebook-post.txt\",\"subreddit-post.md\",\"nextdoor-post.txt\",\"short-link-blurb.txt\",\"publish-manifest.json\",\"site-package.zip\"]",
+      "here_now",
+      "https://silent-signal-6cm6.here.now",
+      "slug=silent-signal-6cm6;version=01KW91XWH68N46G5PW9Z44DP1V;created_slug=silent-signal-6cm6",
+      6,
+      0,
+      23,
+      "2026-06-29T06:42:36.290186100+00:00"
+    ],
+    [
+      2,
+      "issue-20260629-064922-482434100",
+      "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/artifacts/20260629-full-e2e-continuation-637e941/publication-output/site",
+      "[\"styles.css\",\"print.css\",\"watch/5.html\",\"watch/2.html\",\"watch/1.html\",\"watch/4.html\",\"watch/3.html\",\"watch/6.html\",\"index.html\",\"about.html\",\"ethics.html\",\"how-we-report.html\",\"corrections.html\",\"feed.xml\",\"newsletter.md\",\"substack.md\",\"share-package.md\",\"facebook-post.txt\",\"subreddit-post.md\",\"nextdoor-post.txt\",\"short-link-blurb.txt\",\"publish-manifest.json\",\"site-package.zip\"]",
+      "here_now",
+      "https://oaken-bloom-z7nj.here.now",
+      "slug=oaken-bloom-z7nj;version=01KW927XZK84SDSG09DGPXNW9Q;created_slug=oaken-bloom-z7nj",
+      6,
+      0,
+      23,
+      "2026-06-29T06:49:22.482434100+00:00"
+    ],
+    [
+      3,
+      "issue-20260629-072117-005781300",
+      "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/artifacts/20260629-output-cleanup-7fe1145/publication-output/site",
+      "[\"styles.css\",\"print.css\",\"watch/5.html\",\"watch/2.html\",\"watch/1.html\",\"watch/4.html\",\"watch/3.html\",\"watch/6.html\",\"index.html\",\"about.html\",\"ethics.html\",\"how-we-report.html\",\"corrections.html\",\"feed.xml\",\"newsletter.md\",\"substack.md\",\"share-package.md\",\"facebook-post.txt\",\"subreddit-post.md\",\"nextdoor-post.txt\",\"short-link-blurb.txt\",\"publish-manifest.json\",\"site-package.zip\"]",
+      "here_now",
+      "https://yearly-plume-8e3t.here.now",
+      "slug=yearly-plume-8e3t;version=01KW942JAXGYKX9XWAGKSNGHNN;created_slug=yearly-plume-8e3t",
+      6,
+      0,
+      23,
+      "2026-06-29T07:21:17.005781300+00:00"
+    ],
+    [
+      4,
+      "issue-20260629-075021-498815100",
+      "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/reports/20260629-mojibake-systemic-59eb271-evidence/publication-output/site",
+      "[\"styles.css\",\"print.css\",\"watch/5.html\",\"watch/2.html\",\"watch/1.html\",\"watch/4.html\",\"watch/3.html\",\"watch/6.html\",\"index.html\",\"about.html\",\"ethics.html\",\"how-we-report.html\",\"corrections.html\",\"feed.xml\",\"newsletter.md\",\"substack.md\",\"share-package.md\",\"facebook-post.txt\",\"subreddit-post.md\",\"nextdoor-post.txt\",\"short-link-blurb.txt\",\"publish-manifest.json\",\"site-package.zip\"]",
+      "here_now",
+      "https://clear-canopy-5yvw.here.now",
+      "slug=clear-canopy-5yvw;version=01KW95QQH008XD0302T7QRP55D;created_slug=clear-canopy-5yvw",
+      6,
+      0,
+      23,
+      "2026-06-29T07:50:21.498815100+00:00"
+    ]
+  ]
+}
