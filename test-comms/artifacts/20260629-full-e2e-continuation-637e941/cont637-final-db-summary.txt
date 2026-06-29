@@ -1,0 +1,83 @@
+﻿--- publish_runs
+[
+  [
+    2,
+    "issue-20260629-064922-482434100",
+    "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/artifacts/20260629-full-e2e-continuation-637e941/publication-output/site",
+    "[\"styles.css\",\"print.css\",\"watch/5.html\",\"watch/2.html\",\"watch/1.html\",\"watch/4.html\",\"watch/3.html\",\"watch/6.html\",\"index.html\",\"about.html\",\"ethics.html\",\"how-we-report.html\",\"corrections.html\",\"feed.xml\",\"newsletter.md\",\"substack.md\",\"share-package.md\",\"facebook-post.txt\",\"subreddit-post.md\",\"nextdoor-post.txt\",\"short-link-blurb.txt\",\"publish-manifest.json\",\"site-package.zip\"]",
+    "here_now",
+    "https://oaken-bloom-z7nj.here.now",
+    "slug=oaken-bloom-z7nj;version=01KW927XZK84SDSG09DGPXNW9Q;created_slug=oaken-bloom-z7nj",
+    6,
+    0,
+    23,
+    "2026-06-29T06:49:22.482434100+00:00"
+  ],
+  [
+    1,
+    "issue-20260629-064236-290186100",
+    "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/artifacts/20260629-full-e2e-continuation-637e941/publication-output/site",
+    "[\"styles.css\",\"print.css\",\"watch/2.html\",\"watch/1.html\",\"watch/5.html\",\"watch/4.html\",\"watch/3.html\",\"watch/6.html\",\"index.html\",\"about.html\",\"ethics.html\",\"how-we-report.html\",\"corrections.html\",\"feed.xml\",\"newsletter.md\",\"substack.md\",\"share-package.md\",\"facebook-post.txt\",\"subreddit-post.md\",\"nextdoor-post.txt\",\"short-link-blurb.txt\",\"publish-manifest.json\",\"site-package.zip\"]",
+    "here_now",
+    "https://silent-signal-6cm6.here.now",
+    "slug=silent-signal-6cm6;version=01KW91XWH68N46G5PW9Z44DP1V;created_slug=silent-signal-6cm6",
+    6,
+    0,
+    23,
+    "2026-06-29T06:42:36.290186100+00:00"
+  ]
+]
+--- published_posts
+[
+  [
+    6,
+    6,
+    "watch/6.html",
+    "watch/6.html",
+    "2026-06-29T06:37:24.636918700+00:00",
+    "[]"
+  ],
+  [
+    5,
+    3,
+    "watch/3.html",
+    "watch/3.html",
+    "2026-06-29T06:39:40.541113+00:00",
+    "[]"
+  ],
+  [
+    4,
+    4,
+    "watch/4.html",
+    "watch/4.html",
+    "2026-06-29T06:40:09.262594600+00:00",
+    "[]"
+  ],
+  [
+    3,
+    5,
+    "watch/5.html",
+    "watch/5.html",
+    "2026-06-29T06:43:42.003704600+00:00",
+    "[]"
+  ],
+  [
+    2,
+    1,
+    "watch/1.html",
+    "watch/1.html",
+    "2026-06-29T06:40:18.984521200+00:00",
+    "[]"
+  ]
+]
+---draft status counts
+[
+  [
+    "killed",
+    1
+  ],
+  [
+    "ready_to_publish",
+    6
+  ]
+]

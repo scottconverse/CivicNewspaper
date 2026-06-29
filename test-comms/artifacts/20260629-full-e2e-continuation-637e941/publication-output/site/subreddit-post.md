@@ -1,9 +1,9 @@
-# My Local Publication
+# Longmont Civic Desk
 
 6 local update(s).
 
-Top item: Draft: New Public Meeting Portal Launched: Longmont City Council and advisory board agendas are now published on a new public meeting portal, making it easier for residents to access information about upcoming meetings.
+Top item: Draft: Vision Zero Safety Projects: The city is actively working on Vision Zero projects to improve transportation safety, engaging citizens and stakeholders in these initiatives.
 
-Read the issue: https://silent-signal-6cm6.here.now
+Read the issue: https://oaken-bloom-z7nj.here.now
 
 Sources and corrections policy are included on the site.
