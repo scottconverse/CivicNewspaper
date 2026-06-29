@@ -13,7 +13,7 @@ interface LeadQueueProps {
   filter?: string;
   sourceCount?: number;
   onGoToSources?: () => void;
-  onSelect: (id: number) => void;
+  onSelect: (id: number, lead?: Lead) => void;
   onSyncList: () => void;
   onIngest: () => void;
   onDailyScan: () => void;
@@ -236,7 +236,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                   if (existingDraft) {
                     onOpenDraftEditor(existingDraft);
                   } else if (lead.id) {
-                    onSelect(lead.id);
+                    onSelect(lead.id, lead);
                   }
                 };
                 return (
@@ -271,7 +271,10 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                   </div>
                   <div className="mt-2 text-right">
                     <button 
+                      type="button"
                       className="btn btn-secondary btn-sm"
+                      data-testid={`btn-draft-lead-${lead.id}`}
+                      aria-label={`${existingDraft ? "Open draft for" : "Draft"} ${lead.why}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         openLeadOrDraft();

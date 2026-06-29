@@ -134,8 +134,8 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
             latestScanId={app.latestScanId}
             sourceCount={app.sources.length}
             onGoToSources={() => app.setActiveTab("sources")}
-            onSelect={(id) => {
-              const lead = app.leads.find((item: any) => item.id === id);
+            onSelect={(id, selectedLead) => {
+              const lead = selectedLead || app.leads.find((item: any) => item.id === id);
               if (lead) app.handleOpenDraftWizard(lead);
             }}
             onSyncList={app.loadInitialData}

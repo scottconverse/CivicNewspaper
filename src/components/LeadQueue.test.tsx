@@ -78,7 +78,30 @@ describe("LeadQueue Component Tests", () => {
     // Click on the first lead card and assert callback fired
     const firstLeadCard = screen.getByTestId("lead-card-101");
     fireEvent.click(firstLeadCard);
-    expect(handleSelect).toHaveBeenCalledWith(101);
+    expect(handleSelect).toHaveBeenCalledWith(101, fixtureLeads[0]);
+  });
+
+  test("visible Draft button passes the rendered lead object to the parent", () => {
+    const handleSelect = vi.fn();
+
+    render(
+      <LeadQueue
+        leads={fixtureLeads}
+        drafts={[]}
+        loading={false}
+        onSelect={handleSelect}
+        onSyncList={vi.fn()}
+        onIngest={vi.fn()}
+        onDailyScan={vi.fn()}
+        onOpenDraftEditor={vi.fn()}
+        onOpenCorrectionModal={vi.fn()}
+        onDeleteDraft={vi.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId("btn-draft-lead-102"));
+
+    expect(handleSelect).toHaveBeenCalledWith(102, fixtureLeads[1]);
   });
 
   test("keeps drafts reachable when latest scan results exist", () => {
