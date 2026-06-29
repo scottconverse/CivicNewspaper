@@ -1,0 +1,152 @@
+[
+  {
+    "text": "Story Queue",
+    "disabled": false,
+    "cls": "nav-link active"
+  },
+  {
+    "text": "Daily Scan",
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "text": "Dark Signals",
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "text": "Verification",
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "text": "Workbench",
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "text": "Sources",
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "text": "AI Model",
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "text": "Publishing",
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "text": "Browser Pairing",
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "text": "Ethics & Backups",
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "text": "System & Status",
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "text": "",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "text": "Dismiss",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "text": "Refresh",
+    "disabled": false,
+    "cls": "btn btn-secondary"
+  },
+  {
+    "text": "Daily Scan",
+    "disabled": false,
+    "cls": "btn btn-secondary"
+  },
+  {
+    "text": "Scrape & Detect",
+    "disabled": false,
+    "cls": "btn btn-primary"
+  },
+  {
+    "text": "IN DRAFTING\n0",
+    "disabled": false,
+    "cls": "stat-card stat-amber stat-card-button"
+  },
+  {
+    "text": "Leads\n10",
+    "disabled": false,
+    "cls": "queue-tab active"
+  },
+  {
+    "text": "Drafts\n0",
+    "disabled": false,
+    "cls": "queue-tab "
+  },
+  {
+    "text": "Scan results\nlatest",
+    "disabled": false,
+    "cls": "queue-tab "
+  },
+  {
+    "text": "Draft",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "text": "Draft",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "text": "Draft",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "text": "Draft",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "text": "Draft",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "text": "Draft",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "text": "Draft",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "text": "Draft",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "text": "Draft",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "text": "Draft",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  }
+]

@@ -1,0 +1,17 @@
+The setup screen did not receive input events, so The Civic Desk continued with a starter Longmont profile. You can edit identity later in Settings.
+AI Setup
+Step 4 of 5
+Defaults
+
+Configure publication directories and backup database paths.
+
+Publish Path
+
+Where your static sites will be compiled.
+
+Backup Path
+
+Where database backups are saved.
+
+Back
+Next

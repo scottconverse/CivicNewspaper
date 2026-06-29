@@ -1,0 +1,20 @@
+The setup screen did not receive input events, so The Civic Desk continued with a starter Longmont profile. You can edit identity later in Settings.
+AI Setup
+Step 5 of 5
+Done
+
+Onboarding completed. Ready to inspect local stories.
+
+You're ready.
+
+All setup steps are complete. Click finish to enter the workspace.
+
+What's next?
+
+Once you finish onboarding, you will enter the workspace. You can:
+
+Configure your first source under the Sources tab.
+Write or import your first draft articles.
+Run a daily scan to aggregate recent signals.
+Back
+Finish Onboarding

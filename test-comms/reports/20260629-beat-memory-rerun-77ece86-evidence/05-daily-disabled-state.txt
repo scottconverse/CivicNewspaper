@@ -1,0 +1,98 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Recovered setup completed source intake and Daily Scan 1. Open a Story Queue lead to draft the first issue.
+Dismiss
+Story Queue
+
+Civic signals your sources surfaced, ready to verify and turn into plain-language stories.
+
+Refresh
+Daily Scan
+Scrape & Detect
+NEW LEADS
+10
+IN DRAFTING
+0
+HIGH PRIORITY
+0
+SOURCES
+6
+Local-first workflow
+Scan sources, draft from linked evidence, run guardrails, then publish a static paper.
+Leads
+10
+Drafts
+0
+Scan results
+latest
+Filter leads
+Sort by:
+Date Created
+Risk Level
+Confidence
+Risk: low
+daily_scan
+Review new source evidence from source #1: --> Agenda Management Portal - City of Longmont Skip to main content News &#038; Alerts Events Careers Contact Services Accessibility Ensuring accessible government services. Activities Providing community activities. Building Guiding construction and developm... Editor context: The model did not return usable JSON, so this evidence was preserved for editor review instead of being discarded. Beat memory: similar topic 'Review new source evidence from source #1' was first seen 2026-06-29T22:21:31.524842800+00:00, last seen 2026-06-29T22:21:31.524842800+00:00, and has appeared 1 previous time(s). Treat this as recurring/background unless the source shows a new vote, deadline, dollar amount, filing, outage, meeting item, or public impact. Suggested next step: Open the source, decide whether it contains a reportable civic action, then save or dismiss it from the queue. Compare against beat memory before drafting; write a story only if there is a new reportable fact.
+Confidence: low
+Draft
+Risk: low
+daily_scan
+Review new source evidence from source #1: --> Agenda Management Portal - City of Longmont Skip to main content News &#038; Alerts Events Careers Contact Services Accessibility Ensuring accessible government services. Activities Providing community activities. Building Guiding construction and developm... Editor context: The model did not return usable JSON, so this evidence was preserved for editor review instead of being discarded. Suggested next step: Open the source, decide whether it contains a reportable civic action, then save or dismiss it from the queue.
+Confidence: low
+Draft
+Risk: low
+Decision / Vote
+VOTING SIGNAL: Found vote/decision keywords (["approved", "approved", "Approved", "passed", "Motion", "motion"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.
+Confidence: medium
+Draft
+Risk: low
+Public Meeting Scheduled
+MEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.
+Confidence: medium
+Draft
+Risk: low
+Decision / Vote
+VOTING SIGNAL: Found vote/decision keywords (["passed"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.
+Confidence: medium
+Draft
+Risk: low
+New Primary Record
+A new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).
+Confidence: high
+Draft
+Risk: low
+New Primary Record
+A new official primary document from 'Longmont City Council Meetings' was fetched today (https://longmontcolorado.gov/government/city-council-meetings/).
+Confidence: high
+Draft
+Risk: low
+New Primary Record
+A new official primary document from 'Public Notice Colorado' was fetched today (https://www.publicnoticecolorado.com/).
+Confidence: high
+Draft
+Risk: low
+Public Meeting Scheduled
+MEETING SCHEDULED: Meeting notification detected in 'Longmont Agenda Management Portal' record. Public attendance or comment may be permitted.
+Confidence: medium
+Draft
+Risk: low
+New Primary Record
+A new official primary document from 'Longmont Agenda Management Portal' was fetched today (https://longmontcolorado.gov/city-clerk/agenda-management-portal/).
+Confidence: high
+Draft
