@@ -55,6 +55,7 @@
 61-compile-checklist.png
 62-after-compile.png
 63-after-zip.png
+64-test-connection.png
 clean-wipe-log.json
 db-state-after-editor-flow.json
 evidence-file-list.txt
