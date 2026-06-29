@@ -21,7 +21,7 @@ Do not decide there are "no directives" by scanning for new filenames only. This
 
 Run this directive now:
 
-`test-comms/directives/20260628-rerun-auto-longmont-intake-after-4658500.md`
+`test-comms/directives/20260628-rerun-recovered-queue-layout-b10d61d.md`
 
 Visibility confirmation has already been received in:
 
@@ -44,11 +44,11 @@ Product branch:
 
 Product commit:
 
-`4658500`
+`b10d61d`
 
 Artifact folder:
 
-`test-comms/artifacts/20260628-auto-longmont-intake-rerun-4658500/`
+`test-comms/artifacts/20260628-recovered-queue-layout-b10d61d/`
 
 ## Current Goal
 
@@ -80,10 +80,10 @@ If the app crashes, helper windows appear, Ollama disappears, model state is los
 
 Write the next report here:
 
-`test-comms/reports/20260628-auto-longmont-intake-rerun-report-4658500.md`
+`test-comms/reports/20260628-recovered-queue-layout-rerun-report-b10d61d.md`
 
 Put artifacts here:
 
-`test-comms/artifacts/20260628-auto-longmont-intake-rerun-4658500/`
+`test-comms/artifacts/20260628-recovered-queue-layout-rerun-b10d61d/`
 
 Commit and push with `[skip ci]`.
