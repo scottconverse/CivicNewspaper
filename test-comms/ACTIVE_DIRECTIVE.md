@@ -19,9 +19,9 @@ C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms
 
 Run this directive now:
 
-test-comms/directives/20260629-rerun-full-e2e-queue-handoff-637e941.md
+test-comms/directives/20260629-continue-full-e2e-after-637e941-partial.md
 
-This supersedes stale directive test-comms/directives/20260629-rerun-full-e2e-workbench-return-8801b10.md because the completed a8c35fb report proved a Story Queue Draft handoff blocker that the 8801b10 artifact likely still contains.
+This continues the verified 637e941 build after `test-comms/reports/20260629-full-e2e-queue-handoff-637e941-report.md`. That report proved the queue handoff fix passed for the visible Draft button and card-body click paths, but the full release E2E stopped after 2 drafts. Continue from that installed state if available; otherwise rerun the same verified 637e941 artifacts.
 
 Product branch:
 
@@ -45,6 +45,6 @@ Expected fallback MSI SHA256:
 
 ## Current Goal
 
-Continue the cleanroom release loop until the installed product, with no manually installed prerequisites, produces a real Longmont publication, exported ZIP/path, here.now URL, screenshots, and a full human-readable report proving the cleanroom E2E workflow.
+Continue the cleanroom release loop until the installed product, with no manually installed prerequisites, produces at least 5 Longmont stories/briefs, exercises writer/editor controls, exports the static output and ZIP, publishes anonymously to here.now, records the URL, screenshots, output paths, and a full human-readable report proving the cleanroom E2E workflow.
 
 Commit reports/artifacts with [skip ci].
