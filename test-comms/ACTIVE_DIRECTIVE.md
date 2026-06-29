@@ -19,15 +19,15 @@ IMPORTANT MACHINE CONTEXT:
 
 Run this directive now:
 
-`test-comms/directives/20260629-output-scaffolding-rerun-c01e32f.md`
+`test-comms/directives/20260629-bracketed-note-rerun-5791fb5.md`
 
-This is a cleanroom Longmont rerun after the prior full E2E test failed because reader-facing public output exposed internal editor scaffolding strings including `EDITOR_NOTE` and `Body:`.
+This is a cleanroom Longmont rerun after the prior c01e32f test failed because reader-facing public output still exposed bracketed internal editor scaffolding: `[EDITOR_NOTE: ...]`. This directive also checks adjacent mojibake cleanup in public evidence excerpts.
 
 Supersedes:
 
-`test-comms/directives/20260629-full-e2e-output-quality-landing-cd038d6.md`
+`test-comms/directives/20260629-output-scaffolding-rerun-c01e32f.md`
 
-Reason: the cd038d6 rerun proved install/setup/publish mechanics and the landing page, but failed output quality. This directive verifies the fixed installer and the public output cleanup.
+Reason: the c01e32f rerun proved install/setup/publish mechanics, but failed output quality. This directive verifies the fixed installer and public cleanup.
 
 Product branch:
 
@@ -35,26 +35,26 @@ Product branch:
 
 Product commit:
 
-`c01e32fdccb50b5a19182b7128f666e8de5cc304`
+`5791fb5146d76fc5e97012488c995d0de1bb99c6`
 
 Artifact folder:
 
-`test-comms/artifacts/20260629-output-scaffolding-rerun-c01e32f/`
+`test-comms/artifacts/20260629-bracketed-note-rerun-5791fb5/`
 
 Expected preferred NSIS SHA256:
 
-`9A2828D9B98EBBDEA2F625F5BD3EEFAB824B79E6A80FF8FD57AF7EF534D415DE`
+`9CF4714A253E32D04E1FB1394B6D583B37CCC77C21FDACEBE212D6F1BBDD117C`
 
 Expected fallback MSI SHA256:
 
-`669B9B40CECDA12657210EE2247C6920B5A1F91FF23BD50CB05B06FC5A49FBEA`
+`D53AF37831195AD2F36B59436ADA30D14D59313AADB819FBE7E5703AAB85ACCF`
 
 Expected report:
 
-`test-comms/reports/20260629-output-scaffolding-rerun-c01e32f-report.md`
+`test-comms/reports/20260629-bracketed-note-rerun-5791fb5-report.md`
 
 ## Current Goal
 
-Run the cleanroom Longmont output-quality rerun. Confirm the app still installs, sets up local AI without tester-installed prerequisites, scans Longmont sources, exercises editorial workflow, exports ZIP, publishes to here.now, and no public artifact leaks internal scaffolding such as `EDITOR_NOTE`, `Body:`, `Headline:`, `Nut graf`, `Reporting Steps`, `[Source needed]`, `[Verification needed]`, or `[End of Report]`.
+Run the cleanroom Longmont output-quality rerun. Confirm the app still installs, sets up local AI without tester-installed prerequisites, scans Longmont sources, exercises editorial workflow, exports ZIP, publishes to here.now, and no public artifact leaks internal scaffolding or mojibake markers.
 
 Commit reports/artifacts with `[skip ci]`.
