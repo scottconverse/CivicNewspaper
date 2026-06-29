@@ -2696,11 +2696,12 @@ tr:hover td {
   max-width: 720px;
   margin-left: 0;
   margin-right: 0;
-  padding: 24px;
+  padding: 20px 20px 0;
   border-radius: 16px;
   width: min(100%, 720px);
-  max-height: calc(100vh - 72px);
+  max-height: calc(100vh - 48px);
   overflow-y: auto;
+  scroll-padding-bottom: 92px;
 }
 
 #draft-wizard-panel h2 {
@@ -2712,19 +2713,32 @@ tr:hover td {
   line-height: 1.12;
 }
 
+#draft-wizard-panel .help-text {
+  margin-bottom: 1rem !important;
+}
+
+#draft-wizard-panel textarea {
+  min-height: 72px;
+  height: 72px !important;
+}
+
 .draft-wizard-actions {
   position: sticky;
-  bottom: -24px;
+  bottom: 0;
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  margin: 1.5rem -24px -24px;
-  padding: 14px 24px;
+  margin: 1rem -20px 0;
+  padding: 12px 20px;
   border-top: 1px solid var(--border-color);
   background: var(--bg-card);
   box-shadow: 0 -10px 18px rgba(30, 41, 59, 0.05);
+}
+
+.draft-wizard-actions .btn {
+  min-height: 42px;
 }
 
 #workbench-editor-panel {
