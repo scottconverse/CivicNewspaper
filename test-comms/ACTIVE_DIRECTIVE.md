@@ -13,15 +13,15 @@ IMPORTANT MACHINE CONTEXT:
 C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms
 
 - If you were previously watching CivicCast or any other project, stop that watcher context now. Switch to CivicNewspaper only.
-- The single source of truth is GitHub repo https://github.com/scottconverse/CivicNewspaper, branch 	est-comms/cleanroom-coder-tester, this file.
+- The single source of truth is GitHub repo https://github.com/scottconverse/CivicNewspaper, branch test-comms/cleanroom-coder-tester, this file.
 
 ## Current Directive
 
 Run this directive now:
 
-$directiveRel
+test-comms/directives/20260628-rerun-full-e2e-current-5c6f141.md
 
-This supersedes stale directive 	est-comms/directives/20260628-rerun-draft-action-above-fold-e2ac517.md.
+This supersedes stale directive test-comms/directives/20260628-rerun-draft-action-above-fold-e2ac517.md and replaces the malformed placeholder directive reported in test-comms/reports/20260628-full-e2e-current-5c6f141-report.md.
 
 Product branch:
 
@@ -29,11 +29,19 @@ stable-readiness-local-gates
 
 Product commit:
 
-$commit
+5c6f141c87175de187f89a887d4f91f08a73da2d
 
 Artifact folder:
 
-$artifactRel/
+test-comms/artifacts/20260628-full-e2e-current-5c6f141/
+
+Expected preferred NSIS SHA256:
+
+CF901350E6CA13A109FF1DFBFB3FF733B149CA53AB2D7D73014C2B5F8CCA86B7
+
+Expected fallback MSI SHA256:
+
+7ADA24DE59243CCF60D39601039AFAB5497D5715B15085EF7C78B04B49311FFA
 
 ## Current Goal
 

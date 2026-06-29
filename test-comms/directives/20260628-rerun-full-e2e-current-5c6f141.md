@@ -2,17 +2,17 @@
 
 Status: ACTIVE
 
-This directive supersedes the previous stale e2ac517 draft-action lane. Continue the same cleanroom release loop, but test the current product branch head below.
+This directive is the corrected concrete-value version of the malformed 5c6f141 directive. It supersedes the stale e2ac517 draft-action lane and the placeholder directive reported by the tester.
 
 ## Coordination Rules
 
 - You are the tester on the separate cleanroom machine msi\civic.
 - Use coordination checkout C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms.
-- Always read 	est-comms/ACTIVE_DIRECTIVE.md first.
+- Always read test-comms/ACTIVE_DIRECTIVE.md first.
 - Do not use paths under C:\Users\instynct; that is the coder machine.
 - Do not manually install Ollama, models, PATH fixes, or prerequisites. If the product cannot do it, report the exact failure.
 - Live anonymous here.now publish is authorized for this test only.
-- Commit reports/artifacts to 	est-comms/cleanroom-coder-tester with [skip ci].
+- Commit reports/artifacts to test-comms/cleanroom-coder-tester with [skip ci].
 
 ## Product Under Test
 
@@ -20,7 +20,7 @@ Repo: https://github.com/scottconverse/CivicNewspaper
 
 Product branch: stable-readiness-local-gates
 
-Required product commit: $commit
+Required product commit: 5c6f141c87175de187f89a887d4f91f08a73da2d
 
 Product subject: Fix reachability traps in core UI
 
@@ -28,19 +28,19 @@ Product subject: Fix reachability traps in core UI
 
 Preferred NSIS installer:
 
-$artifactRel/The Civic Desk_0.2.8_x64-setup.exe
+test-comms/artifacts/20260628-full-e2e-current-5c6f141/The Civic Desk_0.2.8_x64-setup.exe
 
 Expected SHA256:
 
-$nsisHash
+CF901350E6CA13A109FF1DFBFB3FF733B149CA53AB2D7D73014C2B5F8CCA86B7
 
 Fallback MSI:
 
-$artifactRel/The Civic Desk_0.2.8_x64_en-US.msi
+test-comms/artifacts/20260628-full-e2e-current-5c6f141/The Civic Desk_0.2.8_x64_en-US.msi
 
 Expected SHA256:
 
-$msiHash
+7ADA24DE59243CCF60D39601039AFAB5497D5715B15085EF7C78B04B49311FFA
 
 Verify hashes before install. If hashes mismatch, stop and report.
 
@@ -78,8 +78,6 @@ Do not hand-author article content. Do not repair dependencies outside the app. 
 
 ## Specific Regression Checks From Prior Reports
 
-Check and report explicitly:
-
 - Current app does not crash after loading screen.
 - Install local AI runtime does not crash the app.
 - Draft generation saves successfully; no save_draft created_at failure.
@@ -94,11 +92,11 @@ Check and report explicitly:
 
 Write the main human-readable report here:
 
-	est-comms/reports/20260628-full-e2e-current-5c6f141-report.md
+test-comms/reports/20260628-full-e2e-current-5c6f141-rerun-report.md
 
 Put screenshots/logs/output artifacts here:
 
-	est-comms/artifacts/20260628-full-e2e-current-5c6f141/
+test-comms/artifacts/20260628-full-e2e-current-5c6f141/
 
 Required report contents:
 
