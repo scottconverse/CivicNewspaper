@@ -19,15 +19,15 @@ IMPORTANT MACHINE CONTEXT:
 
 Run this directive now:
 
-`test-comms/directives/20260629-story-quality-workflow-rerun-006c800.md`
+`test-comms/directives/20260629-beat-memory-rerun-77ece86.md`
 
-This is a focused Longmont rerun for the latest story-quality and editor-workflow checkpoint. It verifies that held drafts expose Resume Editing and Send Back for More Work, and that Daily Scan/Draft generation label weak or evergreen material instead of inflating it into finished stories.
+This is a focused Longmont rerun for the latest story-quality and editor-workflow checkpoint. It verifies that held drafts expose Resume Editing and Send Back for More Work, and that Daily Scan uses advisory beat memory to label recurring or evergreen material without hiding or blocking it from the editor.
 
 Supersedes:
 
-`test-comms/directives/20260629-bracketed-note-rerun-5791fb5.md`
+`test-comms/directives/20260629-story-quality-workflow-rerun-006c800.md`
 
-Reason: the bracketed-note rerun passed. This directive tests the next checkpoint before beat-memory/suppression-ledger work begins.
+Reason: the beat-memory product change is now implemented and should be tested instead of the earlier pre-beat-memory checkpoint.
 
 Product branch:
 
@@ -35,26 +35,26 @@ Product branch:
 
 Product commit:
 
-`006c8009083ea61ba71a365f055b65619d03aed5`
+`77ece863db668df9889828587416696f3a39b6cc`
 
 Artifact folder:
 
-`test-comms/artifacts/20260629-story-quality-workflow-rerun-006c800/`
+`test-comms/artifacts/20260629-beat-memory-rerun-77ece86/`
 
 Expected preferred NSIS SHA256:
 
-`8F6111B3E9432CA81E256EE89E672685230D1FA6525375754150DD4EB916F451`
+`FBAA8AB176A0AB256A0D710B781472DEC15216F99250C30D787D99D430DC85F0`
 
 Expected fallback MSI SHA256:
 
-`EA6B6599E9AB2D17F51A01515DC33F66062DFCF7F91653D2AB90AA19BF9862A0`
+`EA30BB05B5FFFFDEB7576D42B6C61DB780B2BBE5EF3C6D727AEC94C70125622F`
 
 Expected report:
 
-`test-comms/reports/20260629-story-quality-workflow-rerun-006c800-report.md`
+`test-comms/reports/20260629-beat-memory-rerun-77ece86-report.md`
 
 ## Current Goal
 
-Run the focused Longmont story-quality and draft-workflow rerun. Confirm the app still installs, guides AI setup, scans Longmont sources, labels weak/background/watch material with story-quality context, keeps editor choice intact, exposes held-draft Resume Editing and Send Back for More Work controls, and only publishes/export genuine current stories if the run finds them.
+Run the focused Longmont story-quality, beat-memory, and draft-workflow rerun. Confirm the app still installs, guides AI setup, scans Longmont sources, labels weak/background/watch material with story-quality and beat-memory context, keeps editor choice intact, exposes held-draft Resume Editing and Send Back for More Work controls, and only publishes/exports genuine current stories if the run finds them.
 
 Commit reports/artifacts with `[skip ci]`.
