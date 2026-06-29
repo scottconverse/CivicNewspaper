@@ -19,9 +19,9 @@ C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms
 
 Run this directive now:
 
-test-comms/directives/20260629-rerun-full-e2e-workbench-route-8e4fcca.md
+test-comms/directives/20260629-rerun-full-e2e-generate-activation-f984006.md
 
-This supersedes stale directive test-comms/directives/20260629-rerun-full-e2e-after-draft-reveal-2a96751.md after the tester reported that the second visible lead wizard revealed but draft 2 did not persist.
+This supersedes stale directive test-comms/directives/20260629-rerun-full-e2e-workbench-route-8e4fcca.md after the tester reported that the Workbench draft route revealed but Generate Draft did not persist draft 1.
 
 Product branch:
 
@@ -29,19 +29,19 @@ stable-readiness-local-gates
 
 Product commit:
 
-8e4fcca6f3d762d32c892858fd56605bce971b4b
+f98400668680a5b579ad186a33a0ace8f5df7aed
 
 Artifact folder:
 
-test-comms/artifacts/20260629-rerun-full-e2e-8e4fcca/
+test-comms/artifacts/20260629-rerun-full-e2e-f984006/
 
 Expected preferred NSIS SHA256:
 
-D5D82D9A2BB736D54565ED737DB065B030CB4D83F7E5415451E5EAD0378BE191
+AE99DA832C8126122A68DEC2ECD2498B56253D35B491FB1E5035B1ED11807CB3
 
 Expected fallback MSI SHA256:
 
-9AF8CB74E0D1E80A775D053101824353A9877DA800D29C4B45024F7F5B25659E
+29A5148C1DB048125E26743B3E7588E1928C0FE06BBF25A5CDF544D824EF4183
 
 ## Current Goal
 
