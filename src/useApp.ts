@@ -1109,12 +1109,17 @@ export function useApp() {
     }
   };
 
-  const handleDecision = async (status: string) => {
-    if (!selectedDraft || !selectedDraft.id) return;
+  const handleDecision = async (status: string, draftId = selectedDraft?.id) => {
+    if (!draftId) return;
     try {
       setLoading(true);
-      await storyDecision(selectedDraft.id, status);
-      setSelectedDraft({ ...selectedDraft, status });
+      await storyDecision(draftId, status);
+      setSelectedDraft(current =>
+        current?.id === draftId ? { ...current, status } : current
+      );
+      setDrafts(current =>
+        current.map(draft => (draft.id === draftId ? { ...draft, status } : draft))
+      );
       setStatusMessage(`Story status updated to '${status}'.`);
       await loadInitialData();
     } catch (e: any) {
@@ -1127,7 +1132,7 @@ export function useApp() {
   // GG-B2 / GG-C1: approving for publish records a human attestation, then asks
   // the backend to advance the status. The backend re-checks guardrails and
   // refuses error-severity (editor-marked blocking) issues unless an override
-  // reason is supplied — which the Workbench collects before calling this.
+  // reason is supplied, which the Workbench collects before calling this.
   const handleApprovePublish = async (overrideReason?: string) => {
     if (!selectedDraft || !selectedDraft.id) return;
     try {
@@ -1141,7 +1146,7 @@ export function useApp() {
       }
       await storyDecision(selectedDraft.id, "ready_to_publish", overrideReason);
       setSelectedDraft({ ...selectedDraft, status: "ready_to_publish" });
-      setStatusMessage("Story approved for publishing — a verification record was saved.");
+      setStatusMessage("Story approved for publishing; a verification record was saved.");
       await loadInitialData();
     } catch (e: any) {
       setErrorMessage(toUserMessage(e));
@@ -1196,13 +1201,14 @@ export function useApp() {
   // draft delete which is confirmed. Route it through the same confirm dialog.
   const handleKillStory = () => {
     if (!selectedDraft || !selectedDraft.id) return;
+    const draftId = selectedDraft.id;
     setConfirmDialog({
       title: "Kill this story?",
       message:
         "Killing this story marks it as killed and removes it from the publishing pipeline. You can reopen it later, but any in-progress review state is cleared.",
       confirmLabel: "Kill story",
       danger: true,
-      onConfirm: () => handleDecision("killed"),
+      onConfirm: () => handleDecision("killed", draftId),
     });
   };
 

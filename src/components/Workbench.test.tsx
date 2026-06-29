@@ -423,6 +423,18 @@ describe("Workbench Component Tests", () => {
     expect(onApprovePublish).not.toHaveBeenCalled();
   });
 
+  test("routes Kill Story through the confirmed kill handler", () => {
+    const onKillStory = vi.fn();
+    const onDecision = vi.fn();
+
+    renderEditor({ onKillStory, onDecision });
+
+    fireEvent.click(screen.getByRole("button", { name: /Kill Story/i }));
+
+    expect(onKillStory).toHaveBeenCalledTimes(1);
+    expect(onDecision).not.toHaveBeenCalledWith("killed");
+  });
+
   test("a sensitive guardrail issue warns without vetoing approval", async () => {
     const onApprovePublish = vi.fn();
     const report: GuardrailsReport = {

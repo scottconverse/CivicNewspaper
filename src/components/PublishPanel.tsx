@@ -189,6 +189,11 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
     ? `${publishResult.article_count} local update${publishResult.article_count === 1 ? "" : "s"} ready to share.`
     : "Local updates ready to share.";
   const activeSubscriberCount = subscribers.filter(subscriber => subscriber.status === "active").length;
+  const publicationName = communityProfile?.site_title?.trim() || "";
+  const hasStarterPublicationName =
+    !publicationName || publicationName.toLowerCase() === "my local publication";
+  const publicationNameRequiredMessage =
+    "Choose and save a real publication name before compiling or publishing.";
 
   useEffect(() => {
     setProvider(publisherProvider || "here_now");
@@ -218,6 +223,10 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
       setError("Output path cannot be empty.");
       return;
     }
+    if (hasStarterPublicationName) {
+      setError(publicationNameRequiredMessage);
+      return;
+    }
     setError("");
     onPublish();
   };
@@ -225,6 +234,10 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   const handleNextClick = () => {
     if (!publishPath.trim()) {
       setError("Output path cannot be empty.");
+      return;
+    }
+    if (hasStarterPublicationName) {
+      setError(publicationNameRequiredMessage);
       return;
     }
     setError("");
@@ -240,6 +253,10 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
       setError("Public URL cannot be empty.");
       return;
     }
+    if (hasStarterPublicationName) {
+      setError(publicationNameRequiredMessage);
+      return;
+    }
     setError("");
     onRecordPublishDestination(provider, publishedUrl, deploymentId);
   };
@@ -247,6 +264,10 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   const handleConnectorPublishClick = () => {
     if (!publishResult) {
       setError("Compile the site before publishing.");
+      return;
+    }
+    if (hasStarterPublicationName) {
+      setError(publicationNameRequiredMessage);
       return;
     }
     setError("");
@@ -304,8 +325,8 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
     other: "Other",
   };
   const identityWarnings = [
-    !communityProfile?.site_title?.trim() || communityProfile.site_title === "My Local Publication"
-      ? "Publication name still uses starter text."
+    hasStarterPublicationName
+      ? "Publication name still uses starter text. Public publishing is paused until you choose one."
       : "",
     !communityProfile?.about_text?.trim() ? "About text is empty." : "",
     !communityProfile?.ethics_text?.trim() ? "Ethics statement is empty." : "",
@@ -369,6 +390,11 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
               <ul className="help-text" style={{ margin: "0.75rem 0 0 1.2rem" }}>
                 {identityWarnings.map((warning) => <li key={warning}>{warning}</li>)}
               </ul>
+            )}
+            {hasStarterPublicationName && (
+              <p role="alert" className="error-text" style={{ margin: "0.75rem 0 0" }}>
+                {publicationNameRequiredMessage}
+              </p>
             )}
           </div>
           <h3 className="card-title">Compile your gazette</h3>
