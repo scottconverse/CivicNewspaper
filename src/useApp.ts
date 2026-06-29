@@ -304,8 +304,9 @@ export function useApp() {
       setLatestScanId(scanId);
       await setSetting("scan.latest_id", String(scanId));
       await setSetting("setup.recovered_input", "consumed");
-      setStatusMessage(`Recovered setup completed source intake and Daily Scan ${scanId}.`);
       await loadInitialData();
+      setActiveTab("queue");
+      setStatusMessage(`Recovered setup completed source intake and Daily Scan ${scanId}. Open a Story Queue lead to draft the first issue.`);
     } catch (err) {
       console.error("Failed to consume recovered setup route flag", err);
       setErrorMessage(toUserMessage(err));
