@@ -1,0 +1,10 @@
+browser-capture-result.json
+browser-innerText.txt
+browser-rendered-page.png
+canary-bad.txt
+canary-good.txt
+capture-browser-innertext.cjs
+evidence-file-list.txt
+live-herenow-index.html
+mojibake-audit.json
+run-mojibake-audit.ps1

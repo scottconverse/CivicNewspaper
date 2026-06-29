@@ -1,0 +1,70 @@
+{
+    "generatedUtc":  "2026-06-29T10:32:34.9920771Z",
+    "scanner":  {
+                    "badCanaryCaught":  true,
+                    "badCanaryHitCount":  2,
+                    "goodCanaryAllowed":  true,
+                    "goodCanaryHitCount":  0,
+                    "badCanaryHits":  [
+                                          {
+                                              "scope":  "canary_bad",
+                                              "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-mojibake-evidence-audit-f092852-evidence\\canary-bad.txt",
+                                              "sequence":  "curly_apostrophe_mojibake",
+                                              "index":  16,
+                                              "line":  1,
+                                              "snippet":  "bad canary: cityâ€™s LONGMONT Â· CO"
+                                          },
+                                          {
+                                              "scope":  "canary_bad",
+                                              "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-mojibake-evidence-audit-f092852-evidence\\canary-bad.txt",
+                                              "sequence":  "middle_dot_mojibake",
+                                              "index":  30,
+                                              "line":  1,
+                                              "snippet":  "bad canary: cityâ€™s LONGMONT Â· CO"
+                                          }
+                                      ],
+                    "goodCanaryHits":  [
+
+                                       ]
+                },
+    "live":  {
+                 "url":  "https://merry-frost-9arx.here.now",
+                 "reachable":  true,
+                 "statusCode":  200,
+                 "error":  null,
+                 "htmlPath":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-mojibake-evidence-audit-f092852-evidence\\live-herenow-index.html"
+             },
+    "inputs":  {
+                   "localOutput":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-full-cleanwipe-longmont-5a24a5a-evidence\\publication-output\\site",
+                   "downloadedHtml":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-herenow-retest-f092852-evidence\\herenow-index.html",
+                   "f092Evidence":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-herenow-retest-f092852-evidence",
+                   "browserInnerText":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-mojibake-evidence-audit-f092852-evidence\\browser-innerText.txt"
+               },
+    "counts":  {
+                   "localOutputFiles":  21,
+                   "f092EvidenceTextFiles":  5,
+                   "localOutputHits":  0,
+                   "downloadedHtmlHits":  0,
+                   "liveHtmlHits":  0,
+                   "browserInnerTextHits":  0,
+                   "f092EvidenceHits":  0,
+                   "totalRealInputHits":  0
+               },
+    "hitsByScope":  {
+                        "local_output":  [
+
+                                         ],
+                        "downloaded_herenow_html":  [
+
+                                                    ],
+                        "live_herenow_html":  [
+
+                                              ],
+                        "browser_innerText":  [
+
+                                              ],
+                        "f092852_existing_evidence":  [
+
+                                                      ]
+                    }
+}
