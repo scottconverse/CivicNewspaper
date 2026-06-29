@@ -1,0 +1,143 @@
+{
+  "sources": [
+    {
+      "id": 1,
+      "name": "Longmont Agenda Management Portal",
+      "url": "https://longmontcolorado.gov/city-clerk/agenda-management-portal/",
+      "type": "primary_record",
+      "status": "online",
+      "tier": "official_record"
+    },
+    {
+      "id": 2,
+      "name": "Longmont City Council Meetings",
+      "url": "https://longmontcolorado.gov/government/city-council-meetings/",
+      "type": "primary_record",
+      "status": "online",
+      "tier": "official_record"
+    },
+    {
+      "id": 3,
+      "name": "Longmont Public Information",
+      "url": "https://longmontcolorado.gov/public-information/",
+      "type": "official_comm",
+      "status": "online",
+      "tier": "official_record"
+    },
+    {
+      "id": 4,
+      "name": "Public Notice Colorado",
+      "url": "https://www.publicnoticecolorado.com/",
+      "type": "primary_record",
+      "status": "online",
+      "tier": "official_record"
+    },
+    {
+      "id": 5,
+      "name": "Longmont subreddit",
+      "url": "https://www.reddit.com/r/Longmont/",
+      "type": "community_signal",
+      "status": "online",
+      "tier": "community_signal"
+    },
+    {
+      "id": 6,
+      "name": "Longmont Colorado subreddit",
+      "url": "https://www.reddit.com/r/LongmontColorado/",
+      "type": "community_signal",
+      "status": "online",
+      "tier": "community_signal"
+    }
+  ],
+  "leadCount": 16,
+  "dailyScanLeadCount": 8,
+  "draftStatusCounts": [
+    [
+      "hold",
+      1
+    ],
+    [
+      "ready_to_publish",
+      5
+    ]
+  ],
+  "drafts": [
+    {
+      "id": 1,
+      "lead_id": 16,
+      "format": "watch",
+      "status": "ready_to_publish",
+      "title": "Longmont Seeks Designs for Official City Flag"
+    },
+    {
+      "id": 2,
+      "lead_id": 14,
+      "format": "watch",
+      "status": "ready_to_publish",
+      "title": "City Council Meeting Schedule Provides Insight into Ordinance Approval"
+    },
+    {
+      "id": 3,
+      "lead_id": 13,
+      "format": "watch",
+      "status": "ready_to_publish",
+      "title": "Technical Issues Plague Building Services Online Portal"
+    },
+    {
+      "id": 4,
+      "lead_id": 12,
+      "format": "watch",
+      "status": "ready_to_publish",
+      "title": "Youth Center Programs in Longmont: The Potential Impact on Community Development and Social Well-being"
+    },
+    {
+      "id": 5,
+      "lead_id": 5,
+      "format": "watch",
+      "status": "ready_to_publish",
+      "title": "New Official Document from Public Notice Colorado"
+    },
+    {
+      "id": 6,
+      "lead_id": 7,
+      "format": "watch",
+      "status": "hold",
+      "title": "Upcoming City Council Meeting: Public Participation Information Available"
+    }
+  ],
+  "publishRuns": [
+    {
+      "id": 1,
+      "issue_id": "issue-20260629-153618-972843200",
+      "output_path": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/reports/20260629-full-e2e-output-quality-landing-cd038d6-evidence/publication-output/site",
+      "provider": "here_now",
+      "published_url": "https://hallowed-sparrow-5hkc.here.now",
+      "article_count": 5,
+      "files_written": 22,
+      "generated_at": "2026-06-29T15:36:18.972843200+00:00"
+    },
+    {
+      "id": 2,
+      "issue_id": "issue-20260629-153654-107822000",
+      "output_path": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/reports/20260629-full-e2e-output-quality-landing-cd038d6-evidence/publication-output/site",
+      "provider": "here_now",
+      "published_url": "https://calm-monsoon-4sv7.here.now",
+      "article_count": 5,
+      "files_written": 22,
+      "generated_at": "2026-06-29T15:36:54.107822+00:00"
+    }
+  ],
+  "settings": {
+    "identity.newsroom_name": "My Local Publication",
+    "identity.editor_name": "Publisher",
+    "identity.organization_type": "single_person",
+    "identity.city": "Longmont",
+    "identity.state": "CO",
+    "model.selected": "qwen2.5:7b",
+    "paths.publish": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default",
+    "paths.backup": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\backups",
+    "onboarding_complete": "1",
+    "setup.recovered_input": "consumed",
+    "scan.latest_id": "2"
+  }
+}

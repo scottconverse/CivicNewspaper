@@ -1,0 +1,9 @@
+{
+  "timestamp_utc": "2026-06-29T15:43:20.637Z",
+  "nsis_path": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/artifacts/20260629-full-e2e-output-quality-landing-cd038d6/The Civic Desk_0.2.9_x64-setup.exe",
+  "nsis_sha256": "520F226F62FCD94B8BF8D3345EB492A990931938FC49D8AA2222EC22DEA07695",
+  "nsis_expected": "520F226F62FCD94B8BF8D3345EB492A990931938FC49D8AA2222EC22DEA07695",
+  "msi_path": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/artifacts/20260629-full-e2e-output-quality-landing-cd038d6/The Civic Desk_0.2.9_x64_en-US.msi",
+  "msi_sha256": "C72791A1BC269670EB0D376ED0BA452B2DA375D21588994355535E94294CB2AF",
+  "msi_expected": "C72791A1BC269670EB0D376ED0BA452B2DA375D21588994355535E94294CB2AF"
+}

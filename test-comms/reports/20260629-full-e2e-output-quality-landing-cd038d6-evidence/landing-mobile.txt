@@ -1,0 +1,133 @@
+The Civic Desk
+
+PUBLIC BETA FOR LOCAL CIVIC PUBLISHERS
+
+Build a real local paper from sources, leads, drafts, and editor judgment.
+
+The Civic Desk helps one person or a small newsroom monitor public sources, surface civic leads, draft from evidence, review risks, and publish a static issue. The app assists. The editor decides.
+
+View releases
+Read the manual
+Default publish: here.now
+Archive: GitHub Pages
+AI: local-first with Ollama
+Start with a morning editor packet.
+Watch sources, find leads, review evidence, and decide what deserves reporting.
+WHAT IT IS FOR
+Local news lost the labor. The work still has to happen.
+
+Small towns still have council packets, zoning changes, police controversies, land deals, public notices, school-board decisions, and community rumors that deserve attention. The Civic Desk is built to reduce the routine digging so a human editor can spend time on judgment, verification, interviews, and publication.
+
+Find signals
+
+Scan official sources, public local media, documents, feeds, and public community spaces. Search is a fallback, not the only discovery strategy.
+
+Keep the trail
+
+Leads stay tied to source records, evidence, entities, verification tasks, and editorial status. The system should explain why something matters.
+
+Warn without vetoing
+
+Guardrails and press-freedom review can flag sourcing, defamation, privacy, and quality risks. They do not replace the editor.
+
+THE NEWSROOM LOOP
+
+From source intake to a published issue.
+
+The app is not a magic article machine. It is a local newsroom desk that helps a person move through the whole cycle.
+
+01
+Collect sources
+
+Add official city pages, public notices, local media, public social/community sources, spreadsheets, documents, PDFs, and source lists.
+
+02
+Scan and triage
+
+Fetch sources, detect changes and civic observations, extract entities, dedupe overlapping leads, and rank items for human review.
+
+03
+Draft and edit
+
+Use local AI when available, then rewrite. Workbench supports review, approval, hold, send-back, advisory guardrails, and source checks.
+
+04
+Publish and share
+
+Compile a static issue, export a ZIP, publish with here.now by default, keep a GitHub Pages archive if desired, and generate share copy.
+
+RECOMMENDED DEFAULT
+
+here.now
+
+Publish instantly from the app. Anonymous previews are useful for testing; account/API-key publishing is the path for permanent here.now sites.
+
+DURABLE ARCHIVE
+
+GitHub Pages
+
+Use a public repository-backed archive when a publisher wants long-term public history and versioned static files.
+
+TECHNICAL HOSTING
+
+Cloudflare Pages / Netlify
+
+Provider-token workflows for people who already operate on those platforms.
+
+DISTRIBUTION
+
+Substack and social copy
+
+The paper should have a canonical website first. Newsletter, Substack, Facebook, Reddit, Nextdoor, and short blurbs help residents find it.
+
+PUBLISHING MODEL
+
+Publish instantly with here.now. Keep an archive when you need one.
+
+The Civic Desk compiles a flat HTML paper and a ZIP package. That means the output can be reviewed, archived, moved, hosted, or republished without locking the publisher into one platform.
+
+Beta honesty:
+Installers are unsigned. Release assets may lag the latest source tag. Output quality still depends on editor review, source quality, and local AI behavior.
+
+HUMAN JUDGMENT STAYS CENTRAL
+
+The system should never quietly decide what the public is allowed to see.
+
+The Civic Desk can warn about weak sourcing, evergreen filler, reporter-note scaffolding, legal risk, and missing verification. It can rank and explain. It should not hide a lead from the editor or silently block publication unless the editor configured that rule.
+
+Advisory guardrails, not machine censorship.
+Evidence and source links remain visible to the editor.
+Drafts are starting points, not finished journalism.
+First-run setup asks what kind of publication the user runs before publishing.
+
+GET THE PUBLIC BETA
+
+Download from GitHub Releases.
+
+Use the newest release that actually includes an installer for your platform. Because the beta is unsigned, verify checksums before installing.
+
+Windows
+
+Use the `.exe` or `.msi` asset when present. SmartScreen warnings are expected for an unsigned beta.
+
+Download Windows
+macOS
+
+Use a `.dmg` asset only when that release includes one. macOS signing/notarization is not stable-grade yet.
+
+View macOS assets
+Linux
+
+Use the `.deb` package when present. Linux packaging is currently Debian/Ubuntu oriented.
+
+View Linux assets
+Install guide and checksums
+Release readiness
+Discussions
+The Civic Desk
+
+Open-source local newsroom software. Repository name: CivicNewspaper. Installed app name: The Civic Desk.
+
+Manual
+Architecture
+GitHub

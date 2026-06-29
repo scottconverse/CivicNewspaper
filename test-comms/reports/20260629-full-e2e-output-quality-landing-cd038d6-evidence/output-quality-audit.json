@@ -1,0 +1,70 @@
+{
+  "hereNowUrl": "https://calm-monsoon-4sv7.here.now",
+  "localTextFileCount": 21,
+  "hits": [
+    {
+      "file": "watch/2.html",
+      "line": 46,
+      "pattern": "/EDITOR_NOTE/g",
+      "text": "<p>EDITOR_NOTE: This looks like background material, not a publishable news story yet. A current development or new information about upcoming meetings or specific ordinance proposals would make it more relevant and timely for publication.<"
+    },
+    {
+      "file": "watch/3.html",
+      "line": 42,
+      "pattern": "/Body:/g",
+      "text": "                <p>Body:"
+    },
+    {
+      "file": "watch/3.html",
+      "line": 43,
+      "pattern": "/EDITOR_NOTE/g",
+      "text": "EDITOR_NOTE: Not enough verified source material for a publishable story yet.</p>"
+    },
+    {
+      "file": "watch/4.html",
+      "line": 42,
+      "pattern": "/EDITOR_NOTE/g",
+      "text": "                <p>EDITOR_NOTE: Not enough verified source material for a publishable story yet.</p>"
+    },
+    {
+      "file": "watch/5.html",
+      "line": 42,
+      "pattern": "/Body:/g",
+      "text": "                <p>Body:"
+    },
+    {
+      "file": "watch/5.html",
+      "line": 44,
+      "pattern": "/EDITOR_NOTE/g",
+      "text": "<p>EDITOR_NOTE: This looks like background material, not a publishable news story yet. Additional information would be needed, such as the subject matter of the document, its significance, or any immediate actions or impacts it might have o"
+    }
+  ],
+  "articleTexts": [
+    {
+      "file": "watch/1.html",
+      "title": "Longmont Seeks Designs for Official City Flag - Longmont E2E Quality Retest",
+      "sample": "Longmont Seeks Designs for Official City Flag - Longmont E2E Quality Retest Longmont E2E Quality Retest Cleanroom public beta issue for Longmont civic coverage. Home About Ethics Policy How We Report Corrections Ledger RSS Feed Longmont Seeks Designs for Official City Flag Published: 2026-06-29T15:33:30.835202900+00:00 Format: watch The city of Longmont is inviting residents to submit designs for its official flag as part of an inclusive community engagement process Source . Longmont has established a formal application process for interested individuals and organizations, ensuring that the design reflects the diverse culture and values of the city Source . The deadline for submissions is October 15, 2026. Interested parties can find detailed guidelines and submission forms on the City of Longmont’s official website. The flag will serve as a symbol of unity and pride among Longmont residents, enhancing community cohesion and visibility Source . Community members are encouraged to participate by visiting the city's website or contacting the Public Information Office for more information. The selection process will involve input from a committee composed of local artists, historians,"
+    },
+    {
+      "file": "watch/2.html",
+      "title": "City Council Meeting Schedule Provides Insight into Ordinance Approval - Longmont E2E Quality Retest",
+      "sample": "City Council Meeting Schedule Provides Insight into Ordinance Approval - Longmont E2E Quality Retest Longmont E2E Quality Retest Cleanroom public beta issue for Longmont civic coverage. Home About Ethics Policy How We Report Corrections Ledger RSS Feed City Council Meeting Schedule Provides Insight into Ordinance Approval Published: 2026-06-29T15:33:55.052874400+00:00 Format: watch The Longmont City Council schedules regular and special meetings throughout the month to address various issues affecting the community Source . These meetings play a crucial role in the approval process of ordinances and resolutions, which are key tools for changing local laws. During these sessions, residents can provide input through the Public Invited to be Heard segment, where their voices can influence decision-making. According to the source, Council members often direct staff to prepare an ordinance based on community feedback received during these meetings Source . This process ensures that local laws reflect the concerns and needs of the community. For individuals interested in proposing changes through ordinances or resolutions, it is advisable to first consult with a staff member who speciali"
+    },
+    {
+      "file": "watch/3.html",
+      "title": "Technical Issues Plague Building Services Online Portal - Longmont E2E Quality Retest",
+      "sample": "Technical Issues Plague Building Services Online Portal - Longmont E2E Quality Retest Longmont E2E Quality Retest Cleanroom public beta issue for Longmont civic coverage. Home About Ethics Policy How We Report Corrections Ledger RSS Feed Technical Issues Plague Building Services Online Portal Published: 2026-06-29T15:34:14.247474400+00:00 Format: watch Body: EDITOR_NOTE: Not enough verified source material for a publishable story yet. Are there specific technical issues being reported (e.g., login errors, slow response times)? How many users are affected by these issues? When did the issues start, and is there any indication of when they might be resolved? Are there alternative methods or plans in place to allow construction projects to proceed? Have local officials or Building Services issued any statements regarding the situation? These questions will help gather more information necessary for a detailed report. Sources & Notes Source links attached by the editor: No source links were attached to this article. Temporary cleanroom test output."
+    },
+    {
+      "file": "watch/4.html",
+      "title": "Youth Center Programs in Longmont: The Potential Impact on Community Development and Social Well-being - Longmont E2E Quality Retest",
+      "sample": "Youth Center Programs in Longmont: The Potential Impact on Community Development and Social Well-being - Longmont E2E Quality Retest Longmont E2E Quality Retest Cleanroom public beta issue for Longmont civic coverage. Home About Ethics Policy How We Report Corrections Ledger RSS Feed Youth Center Programs in Longmont: The Potential Impact on Community Development and Social Well-being Published: 2026-06-29T15:34:33.367725+00:00 Format: watch EDITOR_NOTE: Not enough verified source material for a publishable story yet. What specific programs does the Youth Center offer? Who are the target beneficiaries of these programs (families, children, youth)? How do these programs aim to help families, children, and youth grow and succeed? Are there any measurable goals or outcomes associated with these programs? Can you provide details on how these programs could influence community development and social well-being? What is the timeline for implementing or expanding these programs? Who are the key stakeholders involved in these initiatives (e.g., program coordinators, funding sources)? Is there any data or research that supports the potential benefits of such programs? Sources & Notes Source"
+    },
+    {
+      "file": "watch/5.html",
+      "title": "New Official Document from Public Notice Colorado - Longmont E2E Quality Retest",
+      "sample": "New Official Document from Public Notice Colorado - Longmont E2E Quality Retest Longmont E2E Quality Retest Cleanroom public beta issue for Longmont civic coverage. Home About Ethics Policy How We Report Corrections Ledger RSS Feed New Official Document from Public Notice Colorado Published: 2026-06-29T15:34:52.533484900+00:00 Format: watch Body: A new official primary document has been fetched from Public Notice Colorado (Source: [Evidence Citation ID: 21]). This indicates ongoing administrative or legal activities in the state, though specific details are not provided within the given excerpt. Further investigation may be necessary to determine the nature and implications of this notice. EDITOR_NOTE: This looks like background material, not a publishable news story yet. Additional information would be needed, such as the subject matter of the document, its significance, or any immediate actions or impacts it might have on local communities or policies. Sources & Notes Source links attached by the editor: [Ref 21] Original Document Link : \"Public Notice Colorado | Colorado Press Association Back Smart Search Sign In About Smart Search About Public Notices Publications --&gt; Help "
+    }
+  ],
+  "containsExpectedPublicationName": true
+}

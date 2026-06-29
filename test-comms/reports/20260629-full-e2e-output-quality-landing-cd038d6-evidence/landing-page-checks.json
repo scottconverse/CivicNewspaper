@@ -1,0 +1,8 @@
+{
+  "url": "https://scottconverse.github.io/CivicNewspaper/",
+  "statusCode": 200,
+  "containsHereNow": true,
+  "containsPublishStatically": false,
+  "mentionsVercel": false,
+  "conditionalPlatformCopy": true
+}

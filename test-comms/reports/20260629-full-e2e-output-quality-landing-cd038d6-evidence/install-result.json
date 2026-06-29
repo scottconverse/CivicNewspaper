@@ -1,0 +1,9 @@
+{
+  "timestamp_utc": "2026-06-29T15:43:20.652Z",
+  "installer": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/artifacts/20260629-full-e2e-output-quality-landing-cd038d6/The Civic Desk_0.2.9_x64-setup.exe",
+  "method": "NSIS",
+  "exit_code": 0,
+  "exe": "C:/Users/civic/AppData/Local/The Civic Desk/civicnews.exe",
+  "exe_exists": true,
+  "note": "Reconstructed after the completed install from current filesystem state; original install run exited 0."
+}

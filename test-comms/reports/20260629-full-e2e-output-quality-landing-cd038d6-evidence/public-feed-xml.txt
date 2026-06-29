@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Longmont E2E Quality Retest</title>
+    <link>index.html</link>
+    <description>Cleanroom public beta issue for Longmont civic coverage.</description>
+    <language>en-us</language>
+    <pubDate>Mon, 29 Jun 2026 15:36:54 +0000</pubDate>
+    <lastBuildDate>Mon, 29 Jun 2026 15:36:54 +0000</lastBuildDate>
+    <item>
+      <title>New Official Document from Public Notice Colorado</title>
+      <link>watch/5.html</link>
+      <guid>watch/5</guid>
+      <pubDate>2026-06-29T15:34:52.533484900+00:00</pubDate>
+      <description>New Official Document from Public Notice Colorado</description>
+    </item>
+    <item>
+      <title>Youth Center Programs in Longmont: The Potential Impact on Community Development and Social Well-being</title>
+      <link>watch/4.html</link>
+      <guid>watch/4</guid>
+      <pubDate>2026-06-29T15:34:33.367725+00:00</pubDate>
+      <description>Youth Center Programs in Longmont: The Potential Impact on Community Development and Social Well-being</description>
+    </item>
+    <item>
+      <title>Technical Issues Plague Building Services Online Portal</title>
+      <link>watch/3.html</link>
+      <guid>watch/3</guid>
+      <pubDate>2026-06-29T15:34:14.247474400+00:00</pubDate>
+      <description>Technical Issues Plague Building Services Online Portal</description>
+    </item>
+    <item>
+      <title>City Council Meeting Schedule Provides Insight into Ordinance Approval</title>
+      <link>watch/2.html</link>
+      <guid>watch/2</guid>
+      <pubDate>2026-06-29T15:33:55.052874400+00:00</pubDate>
+      <description>City Council Meeting Schedule Provides Insight into Ordinance Approval</description>
+    </item>
+    <item>
+      <title>Longmont Seeks Designs for Official City Flag</title>
+      <link>watch/1.html</link>
+      <guid>watch/1</guid>
+      <pubDate>2026-06-29T15:33:30.835202900+00:00</pubDate>
+      <description>Longmont Seeks Designs for Official City Flag</description>
+    </item>
+
+  </channel>
+</rss>

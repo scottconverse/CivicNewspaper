@@ -1,0 +1,252 @@
+<!DOCTYPE html><html lang="en" class="js"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>document.documentElement.classList.add('js');</script>
+    <title>The Civic Desk | Local newsroom software for small-town reporting</title>
+    <meta name="description" content="The Civic Desk is local-first desktop newsroom software for finding civic leads, drafting and editing stories, and publishing a local paper with here.now, GitHub Pages, or static export.">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@0.456.0"></script>
+</head>
+<body>
+    <nav aria-label="Site navigation">
+        <div class="nav-container">
+            <a class="logo" href="#top" aria-label="The Civic Desk home">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="newspaper" class="lucide lucide-newspaper"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path><path d="M18 14h-8"></path><path d="M15 18h-5"></path><path d="M10 6h8v4h-8V6Z"></path></svg>
+                <span>The Civic Desk</span>
+            </a>
+            <input type="checkbox" id="nav-toggle" class="nav-toggle">
+            <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation menu">
+                <span></span>
+            </label>
+            <div class="nav-links">
+                <a href="#why">Why</a>
+                <a href="#workflow">Workflow</a>
+                <a href="#publishing">Publishing</a>
+                <a href="#downloads">Downloads</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/user_manual.md" target="_blank">Manual</a>
+                <a class="nav-btn-primary" href="https://github.com/scottconverse/CivicNewspaper" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <header id="top" class="hero">
+        <div class="hero-inner">
+            <div class="hero-copy fade-up visible">
+                <p class="eyebrow">Public beta for local civic publishers</p>
+                <h1>Build a real local paper from sources, leads, drafts, and editor judgment.</h1>
+                <p class="hero-lead">The Civic Desk helps one person or a small newsroom monitor public sources, surface civic leads, draft from evidence, review risks, and publish a static issue. The app assists. The editor decides.</p>
+                <div class="hero-actions">
+                    <a class="button primary" href="https://github.com/scottconverse/CivicNewspaper/releases" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="download" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
+                        View releases
+                    </a>
+                    <a class="button secondary" href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/user_manual.md" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="book-open" class="lucide lucide-book-open"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg>
+                        Read the manual
+                    </a>
+                </div>
+                <div class="hero-proof">
+                    <span><strong>Default publish:</strong> here.now</span>
+                    <span><strong>Archive:</strong> GitHub Pages</span>
+                    <span><strong>AI:</strong> local-first with Ollama</span>
+                </div>
+            </div>
+            <div class="hero-panel fade-up visible">
+                <img src="assets/civic-desk-daily-scan.png" alt="The Civic Desk Daily Scan screen showing watched sources, open leads, AI status, and scan results.">
+                <div class="panel-caption">
+                    <strong>Start with a morning editor packet.</strong>
+                    <span>Watch sources, find leads, review evidence, and decide what deserves reporting.</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="why" class="section intro-section">
+            <div class="section-container split">
+                <div class="section-kicker">What it is for</div>
+                <div>
+                    <h2>Local news lost the labor. The work still has to happen.</h2>
+                    <p class="section-lead">Small towns still have council packets, zoning changes, police controversies, land deals, public notices, school-board decisions, and community rumors that deserve attention. The Civic Desk is built to reduce the routine digging so a human editor can spend time on judgment, verification, interviews, and publication.</p>
+                </div>
+            </div>
+            <div class="evidence-grid section-container">
+                <article>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="search-check" class="lucide lucide-search-check"><path d="m8 11 2 2 4-4"></path><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                    <h3>Find signals</h3>
+                    <p>Scan official sources, public local media, documents, feeds, and public community spaces. Search is a fallback, not the only discovery strategy.</p>
+                </article>
+                <article>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="notebook-tabs" class="lucide lucide-notebook-tabs"><path d="M2 6h4"></path><path d="M2 10h4"></path><path d="M2 14h4"></path><path d="M2 18h4"></path><rect width="16" height="20" x="4" y="2" rx="2"></rect><path d="M15 2v20"></path><path d="M15 7h5"></path><path d="M15 12h5"></path><path d="M15 17h5"></path></svg>
+                    <h3>Keep the trail</h3>
+                    <p>Leads stay tied to source records, evidence, entities, verification tasks, and editorial status. The system should explain why something matters.</p>
+                </article>
+                <article>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="scale" class="lucide lucide-scale"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="M7 21h10"></path><path d="M12 3v18"></path><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"></path></svg>
+                    <h3>Warn without vetoing</h3>
+                    <p>Guardrails and press-freedom review can flag sourcing, defamation, privacy, and quality risks. They do not replace the editor.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="workflow" class="section band">
+            <div class="section-container">
+                <div class="section-header left">
+                    <p class="eyebrow">The newsroom loop</p>
+                    <h2>From source intake to a published issue.</h2>
+                    <p>The app is not a magic article machine. It is a local newsroom desk that helps a person move through the whole cycle.</p>
+                </div>
+                <div class="workflow-grid">
+                    <article class="workflow-card">
+                        <span>01</span>
+                        <h3>Collect sources</h3>
+                        <p>Add official city pages, public notices, local media, public social/community sources, spreadsheets, documents, PDFs, and source lists.</p>
+                    </article>
+                    <article class="workflow-card">
+                        <span>02</span>
+                        <h3>Scan and triage</h3>
+                        <p>Fetch sources, detect changes and civic observations, extract entities, dedupe overlapping leads, and rank items for human review.</p>
+                    </article>
+                    <article class="workflow-card">
+                        <span>03</span>
+                        <h3>Draft and edit</h3>
+                        <p>Use local AI when available, then rewrite. Workbench supports review, approval, hold, send-back, advisory guardrails, and source checks.</p>
+                    </article>
+                    <article class="workflow-card">
+                        <span>04</span>
+                        <h3>Publish and share</h3>
+                        <p>Compile a static issue, export a ZIP, publish with here.now by default, keep a GitHub Pages archive if desired, and generate share copy.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="publishing" class="section publishing-section">
+            <div class="section-container split reversed">
+                <div class="publish-stack">
+                    <article class="stack-card featured">
+                        <div>
+                            <p class="stack-label">Recommended default</p>
+                            <h3>here.now</h3>
+                        </div>
+                        <p>Publish instantly from the app. Anonymous previews are useful for testing; account/API-key publishing is the path for permanent here.now sites.</p>
+                    </article>
+                    <article class="stack-card">
+                        <div>
+                            <p class="stack-label">Durable archive</p>
+                            <h3>GitHub Pages</h3>
+                        </div>
+                        <p>Use a public repository-backed archive when a publisher wants long-term public history and versioned static files.</p>
+                    </article>
+                    <article class="stack-card">
+                        <div>
+                            <p class="stack-label">Technical hosting</p>
+                            <h3>Cloudflare Pages / Netlify</h3>
+                        </div>
+                        <p>Provider-token workflows for people who already operate on those platforms.</p>
+                    </article>
+                    <article class="stack-card">
+                        <div>
+                            <p class="stack-label">Distribution</p>
+                            <h3>Substack and social copy</h3>
+                        </div>
+                        <p>The paper should have a canonical website first. Newsletter, Substack, Facebook, Reddit, Nextdoor, and short blurbs help residents find it.</p>
+                    </article>
+                </div>
+                <div>
+                    <p class="eyebrow">Publishing model</p>
+                    <h2>Publish instantly with here.now. Keep an archive when you need one.</h2>
+                    <p class="section-lead">The Civic Desk compiles a flat HTML paper and a ZIP package. That means the output can be reviewed, archived, moved, hosted, or republished without locking the publisher into one platform.</p>
+                    <div class="honesty-box">
+                        <strong>Beta honesty:</strong>
+                        <span>Installers are unsigned. Release assets may lag the latest source tag. Output quality still depends on editor review, source quality, and local AI behavior.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="quality" class="section band">
+            <div class="section-container split">
+                <div>
+                    <p class="eyebrow">Human judgment stays central</p>
+                    <h2>The system should never quietly decide what the public is allowed to see.</h2>
+                    <p class="section-lead">The Civic Desk can warn about weak sourcing, evergreen filler, reporter-note scaffolding, legal risk, and missing verification. It can rank and explain. It should not hide a lead from the editor or silently block publication unless the editor configured that rule.</p>
+                    <ul class="check-list">
+                        <li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="check" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"></path></svg> Advisory guardrails, not machine censorship.</li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="check" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"></path></svg> Evidence and source links remain visible to the editor.</li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="check" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"></path></svg> Drafts are starting points, not finished journalism.</li>
+                    </ul>
+                </div>
+                <figure class="screenshot-card">
+                    <img src="assets/onboarding-empty-state.png" alt="The Civic Desk first-run workspace prompting the publisher to configure a publication identity.">
+                    <figcaption>First-run setup asks what kind of publication the user runs before publishing.</figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <section id="downloads" class="section">
+            <div class="section-container">
+                <div class="section-header">
+                    <p class="eyebrow">Get the public beta</p>
+                    <h2>Download from GitHub Releases.</h2>
+                    <p>Use the newest release that actually includes an installer for your platform. Because the beta is unsigned, verify checksums before installing.</p>
+                </div>
+                <div class="download-container">
+                    <div class="download-card highlighted" id="download-win">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="monitor-down" class="lucide lucide-monitor-down"><path d="M12 13V7"></path><path d="m15 10-3 3-3-3"></path><rect width="20" height="14" x="2" y="3" rx="2"></rect><path d="M12 17v4"></path><path d="M8 21h8"></path></svg>
+                        <h3>Windows</h3>
+                        <p>Use the `.exe` or `.msi` asset when present. SmartScreen warnings are expected for an unsigned beta.</p>
+                        <a href="https://github.com/scottconverse/CivicNewspaper/releases/download/v0.2.7/The.Civic.Desk_0.2.7_x64-setup.exe" class="download-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="download" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
+                            Download Windows
+                        </a>
+                    </div>
+                    <div class="download-card" id="download-mac">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="laptop" class="lucide lucide-laptop"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"></path></svg>
+                        <h3>macOS</h3>
+                        <p>Use a `.dmg` asset only when that release includes one. macOS signing/notarization is not stable-grade yet.</p>
+                        <a href="https://github.com/scottconverse/CivicNewspaper/releases/latest" class="download-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="download" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
+                            View macOS assets
+                        </a>
+                    </div>
+                    <div class="download-card" id="download-linux">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="terminal" class="lucide lucide-terminal"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" x2="20" y1="19" y2="19"></line></svg>
+                        <h3>Linux</h3>
+                        <p>Use the `.deb` package when present. Linux packaging is currently Debian/Ubuntu oriented.</p>
+                        <a href="https://github.com/scottconverse/CivicNewspaper/releases/download/v0.2.7/The.Civic.Desk_0.2.7_amd64.deb" class="download-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="download" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
+                            View Linux assets
+                        </a>
+                    </div>
+                </div>
+                <div class="download-links">
+                    <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/install.md" target="_blank">Install guide and checksums</a>
+                    <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/release-readiness.md" target="_blank">Release readiness</a>
+                    <a href="https://github.com/scottconverse/CivicNewspaper/discussions" target="_blank">Discussions</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div>
+                <a class="logo" href="#top">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="newspaper" class="lucide lucide-newspaper"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path><path d="M18 14h-8"></path><path d="M15 18h-5"></path><path d="M10 6h8v4h-8V6Z"></path></svg>
+                    <span>The Civic Desk</span>
+                </a>
+                <p>Open-source local newsroom software. Repository name: CivicNewspaper. Installed app name: The Civic Desk.</p>
+            </div>
+            <div class="footer-links">
+                <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/user_manual.md" target="_blank">Manual</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/architecture.md" target="_blank">Architecture</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+
+
+</body></html>

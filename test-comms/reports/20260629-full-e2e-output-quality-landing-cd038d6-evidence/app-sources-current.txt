@@ -1,0 +1,82 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Sources
+
+The municipal feeds and record portals The Civic Desk watches for you.
+
+Discover for my city
+Bulk import
+SOURCE	TIER	LAST CHECK	
+
+Longmont Agenda Management Portal
+Primary
+Online
+https://longmontcolorado.gov/city-clerk/agenda-management-portal/
+	Primary	6/29/2026	
+
+
+Longmont City Council Meetings
+Primary
+Online
+https://longmontcolorado.gov/government/city-council-meetings/
+	Primary	6/29/2026	
+
+
+Longmont Public Information
+Official
+Online
+https://longmontcolorado.gov/public-information/
+	Primary	6/29/2026	
+
+
+Public Notice Colorado
+Primary
+Online
+https://www.publicnoticecolorado.com/
+	Primary	6/29/2026	
+
+
+Longmont subreddit
+Watch
+Online
+https://www.reddit.com/r/Longmont/
+	Watch	6/29/2026	
+
+
+Longmont Colorado subreddit
+Watch
+Online
+https://www.reddit.com/r/LongmontColorado/
+	Watch	6/29/2026	
+Add a source
+
+Paste a city webpage or RSS feed. The Civic Desk figures out the rest.
+
+Name
+URL
+Type
+Auto-detect
+RSS
+HTML
+Media
+Tier
+Primary
+Secondary
+Watch
+Add Source
