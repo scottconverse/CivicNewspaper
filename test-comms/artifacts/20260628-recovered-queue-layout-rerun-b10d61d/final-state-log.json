@@ -1,0 +1,30 @@
+{
+    "time_utc":  "2026-06-29T00:31:25.6994317Z",
+    "processes":  [
+                      {
+                          "Id":  17308,
+                          "ProcessName":  "civicnews",
+                          "MainWindowTitle":  "The Civic Desk",
+                          "Responding":  true
+                      },
+                      {
+                          "Id":  2540,
+                          "ProcessName":  "ollama",
+                          "MainWindowTitle":  "",
+                          "Responding":  true
+                      }
+                  ],
+    "listeners":  [
+                      {
+                          "LocalAddress":  "127.0.0.1",
+                          "LocalPort":  12053,
+                          "OwningProcess":  17308
+                      },
+                      {
+                          "LocalAddress":  "127.0.0.1",
+                          "LocalPort":  11434,
+                          "OwningProcess":  2540
+                      }
+                  ],
+    "tags":  "{\"models\":[{\"name\":\"qwen2.5:7b\",\"model\":\"qwen2.5:7b\",\"modified_at\":\"2026-06-28T18:18:26.8170053-06:00\",\"size\":4683087332,\"digest\":\"845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"qwen2\",\"families\":[\"qwen2\"],\"parameter_size\":\"7.6B\",\"quantization_level\":\"Q4_K_M\",\"context_length\":32768,\"embedding_length\":3584},\"capabilities\":[\"completion\",\"tools\"]}]}"
+}
