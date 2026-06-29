@@ -1,0 +1,74 @@
+[
+    {
+        "seconds":  0,
+        "time":  "2026-06-28T19:43:12.0456322-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "models":  "The term \u0027C:\\Users\\civic\\AppData\\Local\\Programs\\Ollama\\ollama.exe\u0027 is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.",
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-draft-action-above-fold-rerun-e2ac517\\monitor-000.png"
+    },
+    {
+        "seconds":  30,
+        "time":  "2026-06-28T19:43:42.2706606-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "models":  "The term \u0027C:\\Users\\civic\\AppData\\Local\\Programs\\Ollama\\ollama.exe\u0027 is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.",
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-draft-action-above-fold-rerun-e2ac517\\monitor-030.png"
+    },
+    {
+        "seconds":  60,
+        "time":  "2026-06-28T19:44:12.4141805-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "models":  "The term \u0027C:\\Users\\civic\\AppData\\Local\\Programs\\Ollama\\ollama.exe\u0027 is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.",
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-draft-action-above-fold-rerun-e2ac517\\monitor-060.png"
+    },
+    {
+        "seconds":  90,
+        "time":  "2026-06-28T19:44:42.0103275-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "models":  "The term \u0027C:\\Users\\civic\\AppData\\Local\\Programs\\Ollama\\ollama.exe\u0027 is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.",
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-draft-action-above-fold-rerun-e2ac517\\monitor-090.png"
+    },
+    {
+        "seconds":  120,
+        "time":  "2026-06-28T19:45:12.1693185-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "models":  "The term \u0027C:\\Users\\civic\\AppData\\Local\\Programs\\Ollama\\ollama.exe\u0027 is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.",
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-draft-action-above-fold-rerun-e2ac517\\monitor-120.png"
+    },
+    {
+        "seconds":  180,
+        "time":  "2026-06-28T19:46:12.1257501-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "models":  "The term \u0027C:\\Users\\civic\\AppData\\Local\\Programs\\Ollama\\ollama.exe\u0027 is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.",
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-draft-action-above-fold-rerun-e2ac517\\monitor-180.png"
+    },
+    {
+        "seconds":  240,
+        "time":  "2026-06-28T19:47:12.2012445-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "models":  "The term \u0027C:\\Users\\civic\\AppData\\Local\\Programs\\Ollama\\ollama.exe\u0027 is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.",
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-draft-action-above-fold-rerun-e2ac517\\monitor-240.png"
+    },
+    {
+        "seconds":  300,
+        "time":  "2026-06-28T19:48:12.2158474-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "models":  "The term \u0027C:\\Users\\civic\\AppData\\Local\\Programs\\Ollama\\ollama.exe\u0027 is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.",
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-draft-action-above-fold-rerun-e2ac517\\monitor-300.png"
+    }
+]

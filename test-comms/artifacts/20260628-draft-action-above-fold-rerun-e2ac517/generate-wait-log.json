@@ -1,0 +1,34 @@
+[
+    {
+        "elapsed":  40,
+        "drafts":  {
+
+                   },
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-draft-action-above-fold-rerun-e2ac517\\generate-wait-040.png",
+        "responding":  true
+    },
+    {
+        "elapsed":  80,
+        "drafts":  {
+
+                   },
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-draft-action-above-fold-rerun-e2ac517\\generate-wait-080.png",
+        "responding":  true
+    },
+    {
+        "elapsed":  120,
+        "drafts":  {
+
+                   },
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-draft-action-above-fold-rerun-e2ac517\\generate-wait-120.png",
+        "responding":  true
+    },
+    {
+        "elapsed":  180,
+        "drafts":  {
+
+                   },
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-draft-action-above-fold-rerun-e2ac517\\generate-wait-180.png",
+        "responding":  true
+    }
+]
