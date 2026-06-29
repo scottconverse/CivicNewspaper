@@ -19,15 +19,15 @@ C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms
 
 Run this directive now:
 
-test-comms/directives/20260629-mojibake-evidence-audit-f092852.md
+test-comms/directives/20260629-full-cleanwipe-longmont-duplicate-rerun-0941256.md
 
-This is a focused evidence-quality audit after the f092852 here.now retest reported PASS, but its JSON evidence contained mojibake-looking text such as `cityâ€™s` and `LONGMONT Â· CO`. The downloaded HTML and screenshots appear clean, so this directive checks whether the remaining issue is tester evidence serialization or real product/public output.
+This is a full clean-wipe Longmont rerun after Scott reviewed the here.now output and found that the five-story paper contained two versions of the same Building Services permitting-portal story. Product commit `09412560a326379fcf75f327439df8d1d2bb47b4` clusters paraphrased Daily Scan leads before they become separate draftable story candidates.
 
 Supersedes:
 
-test-comms/directives/20260629-herenow-retest-f092852.md
+test-comms/directives/20260629-mojibake-evidence-audit-f092852.md
 
-Reason: the here.now connector retest passed the actual publish path and produced URL `https://merry-frost-9arx.here.now`, but the evidence scanner/reporting path gave a false sense of certainty. This audit does not require a new installer or a new publish unless the URL has expired.
+Reason: publishing and mojibake checks passed, but the newsroom-quality output still failed because duplicated story topics reached the public issue.
 
 Product branch:
 
@@ -35,22 +35,22 @@ stable-readiness-local-gates
 
 Product commit:
 
-f092852e9df3808f16cf56b829993f028e31d255
+09412560a326379fcf75f327439df8d1d2bb47b4
 
 Artifact folder:
 
-test-comms/artifacts/20260629-herenow-retest-f092852/
+test-comms/artifacts/20260629-duplicate-lead-rerun-0941256/
 
 Expected preferred NSIS SHA256:
 
-140F2893FFD77751E7C69E8542CEF2BA9AB664E8FE12E430AB1E435AFFBD108D
+DC395291F909097A46C273FDC698A0F1822C314F6F019F9092888A6AD7F6B325
 
 Expected fallback MSI SHA256:
 
-8EA8D5F210A435AB8DBD06478AA3C5816C0CF0953281FAC44B3100287547E333
+B866845F47C32E643A143CD3E5F70FF9F4BCA33912DB036917572D56252ED407
 
 ## Current Goal
 
-Run the corrected mojibake evidence audit against the f092852 output, downloaded here.now HTML, browser-rendered text, and JSON evidence. Determine whether there is any real public-output mojibake left, and whether evidence serialization is corrupting otherwise clean text.
+Run the full clean-wipe Longmont end-to-end workflow again. The publication must contain 5-10 reader-facing stories or briefs with no duplicate story topics, export a ZIP, publish to here.now, and produce a human-readable report with the here.now URL and output path.
 
 Commit reports/artifacts with [skip ci].
