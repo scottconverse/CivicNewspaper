@@ -83,7 +83,7 @@ describe("AppContent Component Tests", () => {
       });
 
       expect(scrollIntoView).toHaveBeenCalledWith({ block: "start", behavior: "auto" });
-      expect(focus).toHaveBeenCalledWith({ preventScroll: true });
+      expect(focus).not.toHaveBeenCalled();
     } finally {
       HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
       HTMLElement.prototype.focus = originalFocus;

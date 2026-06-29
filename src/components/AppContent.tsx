@@ -38,7 +38,6 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
     const timer = window.setTimeout(() => {
       const panel = document.getElementById("draft-wizard-panel");
       panel?.scrollIntoView({ block: "start", behavior: "auto" });
-      panel?.focus({ preventScroll: true });
     }, 0);
     return () => window.clearTimeout(timer);
   }, [app.selectedLead?.id]);

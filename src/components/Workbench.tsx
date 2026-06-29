@@ -172,7 +172,10 @@ export const Workbench: React.FC<WorkbenchProps> = ({
 
   useEffect(() => {
     if (!selectedLead?.id || selectedDraft || generatingText) return;
-    const timer = window.setTimeout(() => generateDraftButtonRef.current?.focus(), 0);
+    const timer = window.setTimeout(() => {
+      generateDraftButtonRef.current?.scrollIntoView?.({ block: "center", behavior: "auto" });
+      generateDraftButtonRef.current?.focus({ preventScroll: true });
+    }, 50);
     return () => window.clearTimeout(timer);
   }, [generatingText, selectedDraft, selectedLead?.id]);
 
@@ -180,7 +183,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
     if (event.key !== "Enter" || event.defaultPrevented || generatingText) return;
     const target = event.target as HTMLElement | null;
     const tagName = target?.tagName.toLowerCase();
-    if (tagName === "textarea" || tagName === "input" || tagName === "select" || target?.isContentEditable) {
+    if (tagName === "button" || tagName === "textarea" || tagName === "input" || tagName === "select" || target?.isContentEditable) {
       return;
     }
     event.preventDefault();
@@ -273,13 +276,19 @@ export const Workbench: React.FC<WorkbenchProps> = ({
         </p>
 
         <div className="draft-wizard-top-actions">
-          <button ref={generateDraftButtonRef} className="btn btn-primary" onClick={onGenerateText} disabled={generatingText || (!ollamaOnline && !manualLlmMode)} id="btn-generate-draft-top">
+          <button ref={generateDraftButtonRef} type="button" className="btn btn-primary" onClick={onGenerateText} disabled={generatingText || (!ollamaOnline && !manualLlmMode)} id="btn-generate-draft-top">
             {generatingText ? "Generating Draft..." : "Generate Draft"}
           </button>
-          <button className="btn btn-secondary" onClick={onCancelDraftWizard} disabled={generatingText} id="btn-cancel-draft-top">
+          <button type="button" className="btn btn-secondary" onClick={onCancelDraftWizard} disabled={generatingText} id="btn-cancel-draft-top">
             Cancel
           </button>
         </div>
+
+        {generatingText && (
+          <div className="draft-wizard-progress" role="status" aria-live="polite">
+            Asking the local AI model to write a working draft. Keep this window open.
+          </div>
+        )}
 
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <div>
@@ -329,6 +338,15 @@ export const Workbench: React.FC<WorkbenchProps> = ({
               <AlertTriangle size={14} /> The local AI service is offline. Open the "AI Model" tab to set it up, or use "Manual Mode" in settings.
             </div>
           )}
+
+          <div className="draft-wizard-bottom-actions">
+            <button type="button" className="btn btn-primary" onClick={onGenerateText} disabled={generatingText || (!ollamaOnline && !manualLlmMode)} id="btn-generate-draft-bottom">
+              {generatingText ? "Generating Draft..." : "Generate Draft"}
+            </button>
+            <button type="button" className="btn btn-secondary" onClick={onCancelDraftWizard} disabled={generatingText} id="btn-cancel-draft-bottom">
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     );

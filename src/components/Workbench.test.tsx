@@ -100,9 +100,13 @@ describe("Workbench Component Tests", () => {
     expect(screen.getByText(/Unusual expense spike/i)).toBeInTheDocument();
     expect(document.querySelector(".draft-wizard-top-actions")).toBeInTheDocument();
     
-    const generateBtn = screen.getByRole("button", { name: /Generate Draft/i });
+    const generateBtn = document.getElementById("btn-generate-draft-top")!;
     fireEvent.click(generateBtn);
     expect(handleGenerateText).toHaveBeenCalled();
+
+    const bottomGenerateBtn = document.getElementById("btn-generate-draft-bottom")!;
+    fireEvent.click(bottomGenerateBtn);
+    expect(handleGenerateText).toHaveBeenCalledTimes(2);
   });
 
   test("focuses Generate Draft and lets Enter start drafting from the wizard", async () => {
@@ -136,7 +140,7 @@ describe("Workbench Component Tests", () => {
       />
     );
 
-    const generateBtn = screen.getByRole("button", { name: /Generate Draft/i });
+    const generateBtn = document.getElementById("btn-generate-draft-top")!;
     await waitFor(() => expect(generateBtn).toHaveFocus());
 
     fireEvent.keyDown(document.getElementById("draft-wizard-panel")!, { key: "Enter" });
@@ -144,6 +148,43 @@ describe("Workbench Component Tests", () => {
 
     fireEvent.keyDown(screen.getByLabelText(/Article Format/i), { key: "Enter" });
     expect(handleGenerateText).toHaveBeenCalledTimes(1);
+
+    fireEvent.keyDown(generateBtn, { key: "Enter" });
+    expect(handleGenerateText).toHaveBeenCalledTimes(1);
+  });
+
+  test("shows local progress while a draft is generating", () => {
+    render(
+      <Workbench
+        selectedLead={mockLead}
+        selectedDraft={null}
+        evidenceList={[]}
+        guardrailsReport={null}
+        ollamaOnline={true}
+        manualLlmMode={false}
+        draftFormat="watch"
+        onDraftFormatChange={vi.fn()}
+        customSystemPrompt=""
+        onCustomSystemPromptChange={vi.fn()}
+        generatingText={true}
+        onGenerateText={vi.fn()}
+        onCancelDraftWizard={vi.fn()}
+        onSaveDraftEditor={vi.fn()}
+        onCloseWorkbench={vi.fn()}
+        onDeleteDraft={vi.fn()}
+        onDecision={vi.fn()}
+        isGeneratingSocial={false}
+        socialPackResult=""
+        onSocialPackResultChange={vi.fn()}
+        onGenerateSocial={vi.fn()}
+        onUpdateDraftTitle={vi.fn()}
+        onUpdateDraftContent={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole("status")).toHaveTextContent(/local AI model/i);
+    expect(document.getElementById("btn-generate-draft-top")).toBeDisabled();
+    expect(document.getElementById("btn-generate-draft-bottom")).toBeDisabled();
   });
 
   test("renders selectedDraft and contains flagged-claim CSS class when guardrailsReport has issues", () => {
