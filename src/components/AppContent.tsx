@@ -105,7 +105,10 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
             onCustomSystemPromptChange={app.setCustomSystemPrompt}
             generatingText={app.generatingText}
             onGenerateText={app.handleGenerateText}
-            onCancelDraftWizard={() => app.setSelectedLead(null)}
+            onCancelDraftWizard={() => {
+              app.setSelectedLead(null);
+              app.setActiveTab("queue");
+            }}
             onSaveDraftEditor={app.handleSaveDraftEditor}
             onCloseWorkbench={() => {
               app.setActiveTab("queue");
@@ -368,7 +371,10 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           onCustomSystemPromptChange={app.setCustomSystemPrompt}
           generatingText={app.generatingText}
           onGenerateText={app.handleGenerateText}
-          onCancelDraftWizard={() => app.setSelectedLead(null)}
+          onCancelDraftWizard={() => {
+            app.setSelectedLead(null);
+            app.setActiveTab("queue");
+          }}
           onSaveDraftEditor={app.handleSaveDraftEditor}
           onCloseWorkbench={() => {
             app.setActiveTab("queue");

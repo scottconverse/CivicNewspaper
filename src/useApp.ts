@@ -986,6 +986,7 @@ export function useApp() {
     setSelectedDraft(null);
     setEvidenceList([]);
     setGuardrailsReport(null);
+    setActiveTab("workbench");
     if (lead.id) {
       if (isTauri()) {
         getEvidence(lead.id).then(setEvidenceList).catch(console.error);

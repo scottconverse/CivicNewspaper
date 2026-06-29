@@ -203,4 +203,42 @@ describe("useApp Hook Tests", () => {
       },
     });
   });
+
+  test("opening a lead moves drafting into the Workbench route", async () => {
+    vi.mocked(invoke).mockImplementation(async (cmd: string) => {
+      if (cmd === "get_queue") return { leads: [], drafts: [] };
+      if (cmd === "get_sources") return [];
+      if (cmd === "get_community_profile") return { city: "Longmont", state: "CO" };
+      if (cmd === "list_paired_clients") return [];
+      if (cmd === "get_system_ram") return 16;
+      if (cmd === "get_evidence") return [];
+      return null;
+    });
+
+    let hookResult: any;
+    const TestComp = () => {
+      hookResult = useApp();
+      return <span data-testid="active-tab">{hookResult.activeTab}</span>;
+    };
+
+    await act(async () => {
+      render(<TestComp />);
+    });
+
+    await act(async () => {
+      hookResult.handleOpenDraftWizard({
+        id: 12,
+        detector_name: "Public Meeting Scheduled",
+        why: "A Longmont meeting notice appeared.",
+        confidence: "medium",
+        risk_level: "low",
+        confirmation_checklist: "[]",
+        created_at: "2026-06-29T00:00:00Z",
+      });
+    });
+
+    expect(screen.getByTestId("active-tab")).toHaveTextContent("workbench");
+    expect(hookResult.selectedLead?.id).toBe(12);
+    expect(invoke).toHaveBeenCalledWith("get_evidence", { leadId: 12 });
+  });
 });
