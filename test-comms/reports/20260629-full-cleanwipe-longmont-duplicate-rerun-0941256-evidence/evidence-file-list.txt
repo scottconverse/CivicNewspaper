@@ -54,6 +54,7 @@ draft-dialog-Draft-City-Council-Second-Reading-Process-.png
 draft-dialog-extra-Youth-Center-Programs-in-Longmont.png
 duplicate-topic-audit.json
 evidence-file-list.json
+evidence-file-list.txt
 extra-draft-results.json
 final-db-state.json
 herenow-browser-check.json
