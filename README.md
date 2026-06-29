@@ -2,7 +2,7 @@
 
 > **Project name:** CivicNewspaper. **Installed app name:** The Civic Desk.
 >
-> **Current release:** v0.2.9 public beta. Installers are unsigned. This is not a stable production release.
+> **Current source/tag:** v0.2.9 public beta. Published GitHub Release installers may lag the source tag. Installers are unsigned. This is not a stable production release.
 
 The Civic Desk is a local-first desktop newsroom tool for small local publishers, civic reporters, and community editors. It helps one person or a small team monitor public local sources, discover story leads, draft articles with a local AI model, review risks and evidence, and publish a static local-news issue.
 
@@ -33,11 +33,11 @@ The app is built for the reality that many towns no longer have enough reporters
 
 ## Download
 
-Download installers from the [latest GitHub Release](https://github.com/scottconverse/CivicNewspaper/releases/latest).
+Download installers from the [GitHub Releases page](https://github.com/scottconverse/CivicNewspaper/releases). Use the newest release that actually includes an installer for your platform.
 
-- **Windows:** use the `.exe` or `.msi` installer. Because the installer is unsigned, choose **More info** then **Run anyway** when SmartScreen appears.
-- **macOS:** use the macOS release artifact when available. Because it is unsigned, right-click the app and choose **Open**, or use **System Settings > Privacy & Security > Open Anyway**.
-- **Linux:** use the `.deb` package for Debian/Ubuntu-style systems.
+- **Windows:** use the `.exe` or `.msi` installer when present. Because the installer is unsigned, choose **More info** then **Run anyway** when SmartScreen appears.
+- **macOS:** use the `.dmg` release artifact when present. Because signing/notarization is incomplete, right-click the app and choose **Open**, or use **System Settings > Privacy & Security > Open Anyway**.
+- **Linux:** use the `.deb` package when present. Linux packaging is currently Debian/Ubuntu oriented.
 
 See [docs/install.md](docs/install.md) for checksum verification and OS-specific details.
 
@@ -119,7 +119,7 @@ The sidecar binary is not committed to the repo. The fetch script downloads the 
 
 ## Release Status
 
-v0.2.9 is public beta software. Cleanroom testing has proven a full Longmont issue can be generated, exported, zipped, and anonymously published to here.now. Stable release still requires signed installers, cross-platform clean-machine proof, and credentialed live verification for external publishing providers.
+v0.2.9 is public beta source. Cleanroom testing has proven a full Longmont issue can be generated, exported, zipped, and anonymously published to here.now on Windows, but output quality still needs newsroom-grade story selection/editing improvements. Stable release still requires signed installers, cross-platform clean-machine proof, matching published release artifacts, and credentialed live verification for external publishing providers.
 
 ## License
 

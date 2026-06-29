@@ -6,15 +6,15 @@ The public beta installers are unsigned. Windows SmartScreen and macOS Gatekeepe
 
 ## Download
 
-Get the latest release from:
+Open the releases page:
 
-<https://github.com/scottconverse/CivicNewspaper/releases/latest>
+<https://github.com/scottconverse/CivicNewspaper/releases>
 
-Release assets may include Windows, macOS, and Linux builds depending on the release.
+Use the newest release that actually includes an installer for your platform. The latest source tag and the latest published installer release may not always be the same during public beta.
 
 ## Windows
 
-1. Download the `.msi` or `.exe` installer from the latest release.
+1. Download the `.msi` or `.exe` installer from the release assets if present.
 2. Optional but recommended: verify the SHA256 checksum before opening the installer.
 3. Double-click the installer.
 4. If Windows SmartScreen says "Windows protected your PC," click **More info**.
@@ -25,7 +25,7 @@ Release assets may include Windows, macOS, and Linux builds depending on the rel
 
 ## macOS
 
-1. Download the `.dmg` file from the latest release.
+1. Download the `.dmg` file from the release assets if present.
 2. Optional but recommended: verify the SHA256 checksum before opening the image.
 3. Open the `.dmg` and drag the app to Applications.
 4. Because the app is unsigned during public beta, open it with right-click or Control-click, then choose **Open**.
@@ -48,7 +48,7 @@ The Linux package format is currently Debian/Ubuntu oriented. AppImage and Flatp
 
 A SHA256 checksum proves that the file you downloaded matches the file listed in the release manifest. It is not the same as code signing and does not prove who built the file.
 
-1. Open the latest release page.
+1. Open the release page for the installer you downloaded.
 2. Find the `SHA256SUMS` file or the checksum listed for your installer.
 3. Compute the local hash.
 4. Compare the two strings exactly.

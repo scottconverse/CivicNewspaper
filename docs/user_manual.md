@@ -1,293 +1,455 @@
 # The Civic Desk User Manual
 
-This manual is written for people running a small local publication. You do not need to be a developer to use the app.
+The Civic Desk is a desktop newsroom for people trying to cover local civic life with limited time. It helps you collect sources, find leads, draft stories, verify claims, and publish a small local paper.
 
-The Civic Desk helps you find leads, draft stories, review risk, and publish a local issue. It does not decide what is true, legal, fair, or newsworthy. The editor does.
+This manual is written for a new user, not a programmer. If you are a reporter, editor, town resident, nonprofit worker, blogger, or one-person local publisher, start at the beginning and follow the first-issue walkthrough. If you already know the app, use the later chapters as a reference.
 
-## 1. Install The App
+The most important rule is simple: The Civic Desk assists you. It does not decide for you. It can warn, rank, summarize, suggest, and organize. You decide what is newsworthy, fair, legal, verified, and ready to publish.
 
-Download the latest release from:
+## Before You Start
 
-<https://github.com/scottconverse/CivicNewspaper/releases/latest>
+The Civic Desk is public-beta software. It is useful, but it is not a signed stable release yet.
 
-The installers are unsigned during public beta. That means Windows or macOS may warn you before opening the app. This is expected for an unsigned open-source beta. See [install.md](install.md) for detailed steps and checksum verification.
+What that means in practice:
 
-## 2. First-Run Setup
+- Windows or macOS may warn you because the installer is unsigned.
+- The latest source code/tag may be newer than the latest published installer release.
+- Platform downloads depend on what assets are attached to the GitHub Release you choose.
+- Cleanroom testing has focused most heavily on Windows.
+- You should verify important output before publishing.
 
-When you open the app for the first time, the setup wizard asks for:
+The app is local-first, not internet-free. Your database, drafts, settings, and output files are local by default. The app uses the internet when you fetch sources, run discovery/search, download a local AI model, or publish to an external provider.
 
-- Publication name
-- Editor name
-- Organization type: single person, private organization, nonprofit, for-profit, or other
-- City and state
-- Local AI setup
-- Default backup and publish folders
+## 1. Installing The App
 
-The app checks your computer and recommends a local AI model. On ordinary 8 GB+ machines, the current default is `qwen2.5:7b`. On smaller machines, the app may suggest a lighter model such as `llama3.2:3b`.
+Open the GitHub Releases page:
 
-Model download can take a while. The setup screen should show progress so it does not look stuck. If you skip model setup, deterministic source fetching and review paths still work, but drafting and AI-assisted scan summaries are limited.
+<https://github.com/scottconverse/CivicNewspaper/releases>
 
-## 3. Add Sources
+Choose the newest release that has the installer for your computer.
 
-Open **Sources** to tell the app what to watch.
+On Windows, use the `.exe` or `.msi` installer if present. Because the app is unsigned, SmartScreen may show a warning. Click **More info**, confirm the filename came from the project release page, and choose **Run anyway** if you are comfortable continuing.
 
-Source types include:
+On macOS, use the `.dmg` if present. Because notarization/signing is not complete, you may need to right-click the app and choose **Open**, or use **System Settings > Privacy & Security > Open Anyway**.
 
-- **Primary record:** official agendas, minutes, ordinances, budget records, court or public-notice records.
-- **Official communication:** city press releases, public information pages, agency notices.
-- **News reporting:** local news sites or independent reporting.
-- **Community signal:** public social/community sources such as public Reddit pages, public meeting-video pages, or public forums.
+On Linux, use the `.deb` package if present. Linux packaging is currently Debian/Ubuntu oriented.
 
-You can add sources manually, run city discovery, or bulk import files. Bulk import supports:
+Before running an installer, you can compare its SHA256 hash with the release checksum. Checksums confirm that your download matches the release artifact. They are not a replacement for code signing. See [install.md](install.md) for exact commands.
+
+## 2. First Launch And Setup
+
+When you open The Civic Desk for the first time, it asks you to describe the publication you want to run.
+
+You will choose or enter:
+
+- Publication name.
+- Editor name.
+- Organization type, such as single person, nonprofit, for-profit, private organization, or other.
+- City and state.
+- Local AI setup.
+- Output and backup folders.
+
+Use real names if you intend to publish publicly. The app should not invent your copyright line, business model, ad policy, AI disclosure, or editorial policy. Those are your decisions.
+
+### Local AI Setup
+
+The app checks your machine and recommends a local model. On many 8 GB+ machines, `qwen2.5:7b` is the conservative default. On smaller machines, the app may recommend something lighter, such as `llama3.2:3b`.
+
+Model downloads can be large and slow. This is normal. The setup screen should tell you what is being downloaded and show progress. If you skip local AI setup, you can still use many parts of the app: source review, manual drafting, editing, backup, export, and publishing. AI-assisted summarization, drafting, ranking, and advisor features will be limited until the model is available.
+
+If the app says local AI is unavailable, do not assume your work is lost. It usually means the Ollama runtime or selected model is not running or not installed. Use the AI Model screen to retry, download, or change the model.
+
+## 3. Your First Issue: A Practical Walkthrough
+
+This chapter walks through a small-town first issue. Do this before trying advanced workflows.
+
+### Step 1: Add A Few Reliable Sources
+
+Open **Sources**.
+
+Start with official sources you already know:
+
+- City council agenda page.
+- City news or public information page.
+- Planning or zoning page.
+- School board agenda page.
+- County public notices.
+
+Add each source manually if you know the URL. If you do not, use **Discover for my city**. Discovery should return candidates for review. Do not blindly trust every candidate. Open questionable sources and decide whether they belong.
+
+Source labels matter:
+
+- **Primary record** means official records such as agendas, minutes, ordinances, public notices, court records, or budgets.
+- **Official communication** means public information pages, press releases, and agency notices.
+- **News reporting** means independent reporting from a news outlet.
+- **Community signal** means public community/social sources, such as public Reddit pages, public forums, public meeting-video pages, or other public pages that may surface early signals.
+
+Community signals are useful, but they are not automatically publishable evidence. Treat them as leads to verify.
+
+### Step 2: Run Daily Scan
+
+Open **Daily Scan** and click **Run Daily Scan**.
+
+The scan should:
+
+1. Fetch configured sources.
+2. Store evidence.
+3. Detect changes and civic observations.
+4. Extract entities such as agencies, vendors, people, addresses, companies, parcels, and departments.
+5. Create leads and dark signals.
+6. Use local AI, if available, to summarize and rank what needs your attention.
+
+If there are no sources yet, the app should send you back to Sources instead of running an empty scan.
+
+### Step 3: Read The Story Queue Like An Assignment Editor
+
+Open **Story Queue**.
+
+The Story Queue is not a finished newspaper. It is an assignment list. A lead can be:
+
+- A real story.
+- A brief.
+- A routine notice.
+- A duplicate.
+- A background item.
+- A bad lead that should be ignored.
+
+Open the linked source before drafting. Ask:
+
+- Is something new?
+- Does it affect residents?
+- Is there a decision, deadline, cost, conflict, risk, or opportunity?
+- Is there enough evidence to write now?
+- Is this only a generic city web page?
+- Would a resident reasonably care today?
+
+If the answer is no, leave it alone, hold it, or turn it into a verification task. Do not publish filler just because the app surfaced it.
+
+### Step 4: Use Dark Signals Carefully
+
+Open **Dark Signals**.
+
+Dark signals are early warnings. They may come from public social/community pages, comments, public video pages, local forums, or unusual changes in official records.
+
+The point is not to publish rumors. The point is to notice what may need reporting.
+
+For every dark signal, ask:
+
+- Where did this come from?
+- Is it public and legally accessible?
+- What official record could confirm or disprove it?
+- Who would know the answer?
+- What harm could come from publishing too soon?
+
+Turn promising dark signals into verification tasks. Keep low-confidence material out of published evidence until it is verified.
+
+### Step 5: Create Verification Tasks
+
+Open **Verification**.
+
+Use this area to turn leads into reporting work. A verification task might say:
+
+- Check the city agenda packet for the contract amount.
+- Call the city clerk to confirm the hearing date.
+- Find the parcel record for the address.
+- Compare the current agenda with last month's agenda.
+- Look for a second source confirming the claim.
+
+Task states help you manage work:
+
+- **Suggested:** the app or editor thinks this should be checked.
+- **Auto-checked:** the app performed a simple check.
+- **Needs human:** a person must call, email, attend, inspect, or decide.
+- **Blocked:** you cannot proceed yet.
+- **Resolved:** the task is done.
+
+For a one-person publication, this queue is your notebook.
+
+### Step 6: Draft A Story
+
+When a lead is worth writing, click **Draft** or **Open draft**.
+
+The Workbench opens with linked sources. Choose the format:
+
+- **Brief:** short item, usually under 200 words.
+- **Watch alert:** something residents should watch, such as a deadline, public hearing, or service disruption.
+- **Explainer:** background on how a policy or process works.
+- **Investigation:** deeper story following money, influence, records, or repeated signals.
+- **Editorial/opinion:** opinion writing, if that fits your publication.
+
+If local AI is available, click **Generate Draft**. Treat the draft as a starting point. AI drafts often sound like notes. They may include placeholders such as `[Source needed]` or `[Verification needed]`. Those are not acceptable in a finished story unless you intentionally publish them as editor's notes.
+
+Before publishing, rewrite the story in your own editorial voice.
+
+### Step 7: Edit Like A Publisher
+
+A publishable local story should usually answer:
+
+- What happened?
+- When did it happen or when will it happen?
+- Who is affected?
+- Why does it matter locally?
+- What evidence supports it?
+- What is still unknown?
+- What should residents do next, if anything?
+
+Do not let the app turn evergreen background pages into fake news. For example, a page explaining that city council meetings have videos is not necessarily a current story unless something changed: a new archive launched, access was expanded, video was removed, captions were added, viewership data surfaced, or residents raised an issue about access.
+
+If the draft is really a reporting note, keep it in draft, send it back for more work, or turn it into a verification task.
+
+### Step 8: Run Advisor And Guardrails
+
+The Workbench includes advisory checks. They can flag:
+
+- Missing source support.
+- Loaded or accusatory wording.
+- Defamation or privacy risk.
+- Public/private figure questions.
+- Presumption-of-innocence issues.
+- Claims that need verification.
+- Excessive copying from source material.
+
+These tools do not block you. They are there to slow you down at the right moments.
+
+If the advisor raises a concern, decide what to do:
+
+- Rewrite.
+- Add attribution.
+- Add evidence.
+- Hold the story.
+- Mark a verification task.
+- Publish anyway with an editor note if you judge that appropriate.
+
+### Step 9: Approve For Publishing
+
+Only approve a story when a human editor has reviewed it.
+
+Approving means: this is ready to be part of the public issue. It does not mean the app certified it. It means you did.
+
+The app records that a human review happened. It should never silently approve a story for you.
+
+### Step 10: Compile, Export, Publish
+
+Open **Publishing**.
+
+The normal sequence is:
+
+1. **Compile:** build the static issue locally.
+2. **Preview:** open the output and check it.
+3. **Export:** create the ZIP and share package.
+4. **Publish:** send the site to a provider.
+5. **Share:** use the generated newsletter and community posts.
+
+The recommended default publisher is **here.now**. Anonymous here.now publishing can create a temporary preview without an account. Account/API-key publishing can support permanent sites. GitHub Pages is the durable public archive option. Cloudflare Pages and Netlify are for more technical users. WordPress is for users with an existing WordPress site. Substack is assisted: the app prepares the text, you paste it into Substack, publish there, and record the URL.
+
+Always inspect the output before sharing the link.
+
+## 4. Everyday Workflow After Setup
+
+Once your sources are configured, the day-to-day workflow is simple:
+
+1. Run Daily Scan.
+2. Review new leads.
+3. Open the source for anything interesting.
+4. Create verification tasks.
+5. Draft only the leads that are actually newsworthy.
+6. Edit drafts into real stories or briefs.
+7. Run advisor/guardrails when useful.
+8. Approve publishable items.
+9. Compile and preview the issue.
+10. Publish and share.
+
+You do not need to publish every lead. A good day may produce zero stories and several watch items. That is better than padding the paper with weak rewrites.
+
+## 5. Understanding Lead Quality
+
+The app currently finds more possible leads than polished stories. That is by design, but it means you must use judgment.
+
+A strong lead usually has one or more of these:
+
+- A new decision.
+- A deadline.
+- A public hearing.
+- A contract, budget item, or vendor.
+- A policy change.
+- A changed document.
+- A repeated pattern across sources.
+- A credible dark signal with a verification path.
+- A local consequence residents can understand.
+
+A weak lead often looks like:
+
+- A general department page.
+- A page that has existed for years.
+- A broad city services page.
+- A source that was merely fetched for the first time.
+- A generic summary of how government works.
+- A duplicate of another lead.
+- A story with no current hook.
+
+Weak leads are not useless. They can help build background knowledge. But they should not automatically become published stories.
+
+## 6. Source Discovery And Bulk Import
+
+You can import source lists from:
 
 - CSV
 - TXT
 - XLSX
 - DOCX
-- Text-backed PDF
+- text-readable PDF
 
-Image-only scanned PDFs are detected and should return guidance rather than silently pretending nothing was found. OCR support is a future improvement.
+The app should split URLs into separate reviewable candidates. If a spreadsheet or document contains many URLs and the app finds only one, that is a bug.
 
-Every imported or discovered source should be reviewed before relying on it.
+Scanned image-only PDFs require OCR before URLs can be extracted. If OCR is unavailable, the app should say so plainly rather than pretending the file had no useful sources.
 
-## 4. Daily Scan
+When importing a file, review:
 
-Open **Daily Scan** and run a scan after sources are configured.
+- Source name.
+- URL.
+- Type.
+- Tier.
+- Duplicate status.
+- Whether it is reachable.
+- Whether it belongs to your jurisdiction.
 
-Daily Scan does several things:
+Do not import every URL just because it appeared in a file.
 
-1. Checks watched sources.
-2. Stores new evidence.
-3. Runs deterministic detectors and change checks.
-4. Extracts civic entities such as people, agencies, companies, addresses, parcels, vendors, and organizations.
-5. Creates observations and source performance scores.
-6. Produces leads, dark signals, and verification tasks.
-7. Uses the local model for targeted summarization/ranking when available.
+## 7. Browser Extension
 
-If the local AI model is unavailable, the app should explain that clearly and continue the deterministic parts where possible.
+The browser extension lets you send public pages into The Civic Desk while you read.
 
-## 5. Review The Story Queue
+Use it when you find a useful page outside the app:
 
-The **Story Queue** is where leads become stories.
+1. Open **Browser Pairing** in The Civic Desk.
+2. Generate a pairing code.
+3. Open the extension.
+4. Enter the code.
+5. Confirm the app shows the paired device.
+6. Send a public page to the app.
 
-From each lead, you can:
+The pairing is local to your computer. It is not an internet service.
 
-- Open linked evidence.
-- Generate a draft.
-- Move into the Workbench.
-- Leave the lead for later.
+## 8. Publishing Output And Site Customization
 
-The app may surface low-confidence or unverified leads. That is intentional. It should rank and explain them, not hide them.
+The app can generate:
 
-## 6. Dark Signals
+- Homepage.
+- Article pages.
+- RSS feed.
+- About page.
+- Ethics/reporting page.
+- Corrections page.
+- Print stylesheet.
+- ZIP package.
+- Newsletter markdown.
+- Substack-ready markdown.
+- Facebook post.
+- Subreddit post.
+- Nextdoor post.
+- Short-link blurb.
 
-The **Dark Signals** tab is for early, messy civic signals that may matter but are not ready to publish.
+You can configure:
 
-Examples:
+- Publication name.
+- Subtitle.
+- Editor/publisher identity.
+- Organization type.
+- About text.
+- Ethics text.
+- How-we-report text.
+- Footer text.
+- Accent color.
+- Layout style.
+- Logo image.
 
-- Public discussion about a possible land deal.
-- A recurring complaint pattern.
-- A new entity appearing across documents.
-- A public social/community post that points toward a verifiable issue.
+The app should not invent these for you. If the output says "we run no ads" or "all stories are public-record backed," that should be because you wrote it, not because the software assumed it.
 
-Dark signals are for editor review. They are not automatically publishable evidence. The app should show:
+## 9. Backups And Restore
 
-- Why it might matter
-- Origin
-- Risk level
-- Related entities
-- Verification path
-- Publication status
+Use backups before major imports, big scans, or release work.
 
-The system should never hide a signal from the editor solely because it is messy. It should rank it and explain why.
+Create a backup from the app's backup/system area. Store it somewhere you control, such as an external drive or private cloud folder.
 
-## 7. Verification Queue
+Restore replaces the current local database with the backup. Treat restore as a serious action. If you are unsure, make a fresh backup first.
 
-The **Verification Queue** turns leads and dark signals into reporting tasks.
+The current app is single-machine software. Do not open the same live SQLite database from two computers at once.
 
-Tasks can be:
+## 10. Troubleshooting
 
-- Suggested
-- Auto-checked
-- Needs human
-- Blocked
-- Resolved
+### Daily Scan Produces Weak Leads
 
-Use this queue to decide what can be checked quickly and what requires calls, records requests, meeting review, or human reporting.
+This can happen when sources are broad pages rather than update feeds or agenda packets. Add more precise sources: agenda RSS, meeting packets, public notices, department news pages, board calendars, and document portals.
 
-## 8. Workbench
+If a lead is not newsworthy, do not draft it. Hold it, ignore it, or create a verification task.
 
-The **Workbench** is the editor.
+### Draft Looks Like Reporter Notes
 
-You can:
+That means the AI produced a working draft, not a finished story. Edit it. Remove "Headline:", "Nut graf:", "Reporting steps:", "[Source needed]", and similar internal scaffolding unless you intentionally want those in public copy.
 
-- Generate a draft from a lead.
-- Write or edit manually.
-- Choose article format: brief, watch, explainer, investigation, opinion, or custom.
-- Link source evidence.
-- Run a plain-language rewrite.
-- Run the optional press-freedom/legal-risk advisor.
-- Put a story on hold.
-- Send it back for more work.
-- Kill it.
-- Approve it for publishing.
+### Local AI Is Slow
 
-Approval requires a human attestation. The app records that a person reviewed and accepted responsibility for publishing.
+Large local models can be slow, especially on CPU. Try a shorter format, a smaller model, or manual drafting. The app should not freeze without progress.
 
-## 9. Guardrails And Advisor
+### Model Missing Or AI Offline
 
-The app has two kinds of review help:
+Open **AI Model**. Confirm the runtime is running and the selected model is installed. If not, download the recommended model or switch to one that exists locally.
 
-### Story Guardrails
+### Publishing Fails
 
-Guardrails warn about issues such as:
+First compile and preview locally. If local output works but provider publishing fails, check:
 
-- Unsupported factual claims
-- Accusatory wording
-- Legal/charge language without careful attribution
-- Long verbatim overlap with source text
+- Provider credentials.
+- Target slug/repo/project.
+- Network connection.
+- Whether the provider requires an account.
+- Whether the publish URL is temporary.
 
-Words and high-concern terms are configurable in **Ethics & Backups**.
+You can still export the ZIP and publish manually.
 
-Guardrails do not veto publication. High-concern terms may ask for an editor note, but the editor decides.
+### Sources Import Poorly
 
-### Press-Freedom / Legal-Risk Advisor
+If XLSX, DOCX, or PDF imports flatten many URLs into one candidate, report it as a bug with the file type and an example. The expected behavior is separate reviewable URL candidates.
 
-The advisor is optional and invoked from the Workbench. It can ask the local AI model for:
+## 11. Advanced Reference
 
-- Risk notes
-- Verification paths
-- Public/private figure considerations
-- Defamation/privacy/prior-restraint style issue spotting
-- Wording options
-- Questions to resolve before publication
+### Main Navigation
 
-It is not a lawyer and not a publish/kill decision. It is a newsroom risk memo.
+- **Story Queue:** review leads and drafts.
+- **Daily Scan:** run source checks and AI-assisted summaries.
+- **Dark Signals:** review weak or public social/community signals.
+- **Verification:** manage reporting tasks.
+- **Workbench:** write, edit, advise, approve, hold, kill, or return stories.
+- **Sources:** add, discover, import, and review sources.
+- **AI Model:** install/check local model support.
+- **Publishing:** compile, export, publish, and share.
+- **Browser Pairing:** connect the local browser extension.
+- **Ethics & Backups:** configure policy language and backup/restore.
+- **System & Status:** diagnostics and app state.
 
-## 10. Publishing
+### Publishing Providers
 
-Publishing starts from approved drafts.
+- **here.now:** recommended default. Temporary anonymous previews are useful for testing. API-key/account publishing can support permanent sites.
+- **GitHub Pages:** best for durable public archives in a repository.
+- **Cloudflare Pages:** technical hosting option.
+- **Netlify:** technical hosting option.
+- **WordPress:** publishes issue/article pages through the WordPress REST API.
+- **Substack:** assisted copy/paste workflow.
+- **Other/manual:** records a public URL after you publish elsewhere.
 
-Open **Publishing** and follow the flow:
-
-1. **Compile** the static issue into a folder.
-2. **Preview** and inspect the output.
-3. **Export** the ZIP and share files.
-4. **Publish** through a connector or record a manual URL.
-5. **Share** using generated newsletter/social/community copy.
-
-The generated package includes:
-
-- `index.html`
-- Article pages
-- `feed.xml`
-- About, ethics, how-we-report, and corrections pages
-- `site-package.zip`
-- `publish-manifest.json`
-- `newsletter.md`
-- `substack.md`
-- `share-package.md`
-- Facebook, subreddit, Nextdoor, and short-link copy
-
-Supported publishing paths:
-
-- **here.now:** recommended default. Anonymous preview publishing works without an account and expires after about 24 hours. Account/API-key publishing can be permanent.
-- **GitHub Pages:** durable public archive in a repository.
-- **Cloudflare Pages:** technical-user connector.
-- **Netlify:** technical-user connector.
-- **WordPress:** creates an issue page and article pages through the WordPress REST API.
-- **Substack:** assisted. The app prepares copy; you paste into Substack and record the public URL.
-- **Other/manual:** record an existing public URL and update share artifacts.
-
-Connector secrets are stored in the operating system credential store. The SQLite database stores non-secret connector metadata.
-
-## 11. Browser Extension Pairing
-
-The browser extension lets you send public pages into the app while you read.
-
-Pairing works only on your computer:
-
-1. Open **Browser Pairing**.
-2. Generate a pairing token.
-3. Paste it into the browser extension.
-4. Confirm the paired device appears in the app.
-
-The loopback server is bound to `127.0.0.1:12053` and uses bearer-token authentication after pairing.
-
-## 12. Backups And Diagnostics
-
-Open **Ethics & Backups** to configure:
-
-- Publication identity
-- Organization type
-- Editorial/ethics text
-- Logo image
-- Story guardrail terms
-- Backup path
-- Diagnostic export
-
-Diagnostics are manual. Review any diagnostic package before sharing it.
-
-## 13. Current Public-Beta Limits
+### Current Public-Beta Limits
 
 - Installers are unsigned.
-- Cleanroom testing has focused on Windows.
-- macOS notarization/signing is not complete.
-- OCR for scanned PDFs is not implemented.
-- External publishing providers require real credentials for stable-grade live proof.
-- Local AI quality depends on the model and hardware.
-- Daily Scan and discovery are useful but still require editor review.
-
-## 14. Technical Appendix
-
-### Data Location
-
-Windows:
-
-```text
-%APPDATA%\com.scottconverse.civicdesk\civicdesk.db
-```
-
-macOS:
-
-```text
-~/Library/Application Support/com.scottconverse.civicdesk/civicdesk.db
-```
-
-Linux:
-
-```text
-~/.local/share/com.scottconverse.civicdesk/civicdesk.db
-```
-
-Older builds used `org.civicnews.app/civicnews.db`; current builds migrate that data into the new app location on first launch.
-
-### Current Tables
-
-As of v0.2.9, migrations run through `0013_verification_queue`. The live schema includes:
-
-- `sources`
-- `evidence_items`
-- `leads`
-- `lead_evidence`
-- `drafts`
-- `published_posts`
-- `paired_clients`
-- `settings`
-- `daily_scan_runs`
-- `daily_scan_leads`
-- `publish_runs`
-- `subscribers`
-- `civic_observations`
-- `civic_entities`
-- `civic_observation_entities`
-- `source_performance_scores`
-- `dark_signals`
-- `verification_tasks`
-
-Schema version is tracked with SQLite `PRAGMA user_version`, not a migrations table.
+- Latest source/tag and latest published installer release may not always be the same.
+- Cleanroom proof has focused most heavily on Windows.
+- macOS signing/notarization is not complete.
+- OCR for scanned PDFs is not complete.
+- Fully polished newsroom-quality story selection still needs improvement.
+- External provider verification depends on user-owned credentials.
 
 ### Developer Commands
+
+These are for contributors, not normal newsroom use.
 
 ```bash
 npm install
@@ -297,3 +459,7 @@ npm run tauri build
 npm test -- --run
 cd src-tauri && cargo test --lib
 ```
+
+### Data Model Summary
+
+The local database stores sources, evidence, leads, lead/evidence links, drafts, publish runs, subscribers, observations, entities, source performance scores, dark signals, and verification tasks. Schema version is tracked with SQLite `PRAGMA user_version`.
