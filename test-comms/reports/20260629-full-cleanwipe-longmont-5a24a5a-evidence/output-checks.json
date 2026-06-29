@@ -1,0 +1,222 @@
+{
+  "local_scan": {
+    "root": "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-full-cleanwipe-longmont-5a24a5a-evidence\\publication-output\\site",
+    "exists": true,
+    "result": "PASS: no known mojibake sequences found",
+    "hits": []
+  },
+  "zip_scan": {
+    "root": "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-full-cleanwipe-longmont-5a24a5a-evidence\\zip-extracted",
+    "exists": true,
+    "result": "PASS: no known mojibake sequences found",
+    "hits": []
+  },
+  "titles_local": [
+    {
+      "file": "about.html",
+      "title": "About The Civic Desk - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "corrections.html",
+      "title": "Public Corrections Ledger - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "ethics.html",
+      "title": "Reporting Ethics & Standards - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "how-we-report.html",
+      "title": "How We Report - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "index.html",
+      "title": "Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\1.html",
+      "title": "Building Services Online Permitting Portal Experiencing Technical Issues: The Building Services online permitting portal is currently down, causing inconvenience to residents and businesses in Longmont. This issue impacts daily operations and could delay construction projects. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\2.html",
+      "title": "Building Services Portal Experiencing Technical Issues: Residents and businesses are facing difficulties with the Building Services online permitting portal, which is currently down. This technical problem could disrupt essential services and impact construction projects across the city. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\3.html",
+      "title": "Longmont Invites Applications for Official City Flag: The city of Longmont is seeking community input through an open application process to design its new official city flag, encouraging civic engagement and public participation in the creation of a symbol representing the city\u2019s identity. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\4.html",
+      "title": "Vision Zero Projects and Community Involvement: The city is updating its Vision Zero initiatives aimed at improving transportation safety, encouraging community members to get involved in making Longmont safer for everyone. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\5.html",
+      "title": "Study Sessions with In-Depth Discussion Topics: The City Council holds study sessions that allow in-depth discussion of specific topics, which can lead to significant policy changes. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    }
+  ],
+  "titles_zip": [
+    {
+      "file": "about.html",
+      "title": "About The Civic Desk - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "corrections.html",
+      "title": "Public Corrections Ledger - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "ethics.html",
+      "title": "Reporting Ethics & Standards - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "how-we-report.html",
+      "title": "How We Report - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "index.html",
+      "title": "Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\1.html",
+      "title": "Building Services Online Permitting Portal Experiencing Technical Issues: The Building Services online permitting portal is currently down, causing inconvenience to residents and businesses in Longmont. This issue impacts daily operations and could delay construction projects. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\2.html",
+      "title": "Building Services Portal Experiencing Technical Issues: Residents and businesses are facing difficulties with the Building Services online permitting portal, which is currently down. This technical problem could disrupt essential services and impact construction projects across the city. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\3.html",
+      "title": "Longmont Invites Applications for Official City Flag: The city of Longmont is seeking community input through an open application process to design its new official city flag, encouraging civic engagement and public participation in the creation of a symbol representing the city\u2019s identity. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\4.html",
+      "title": "Vision Zero Projects and Community Involvement: The city is updating its Vision Zero initiatives aimed at improving transportation safety, encouraging community members to get involved in making Longmont safer for everyone. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\5.html",
+      "title": "Study Sessions with In-Depth Discussion Topics: The City Council holds study sessions that allow in-depth discussion of specific topics, which can lead to significant policy changes. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    }
+  ],
+  "draft_prefix_failures": [],
+  "my_local_publication_hits": [],
+  "longmont_cleanroom_hits": [
+    {
+      "file": "about.html",
+      "title": "About The Civic Desk - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "corrections.html",
+      "title": "Public Corrections Ledger - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "ethics.html",
+      "title": "Reporting Ethics & Standards - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "how-we-report.html",
+      "title": "How We Report - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "index.html",
+      "title": "Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\1.html",
+      "title": "Building Services Online Permitting Portal Experiencing Technical Issues: The Building Services online permitting portal is currently down, causing inconvenience to residents and businesses in Longmont. This issue impacts daily operations and could delay construction projects. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\2.html",
+      "title": "Building Services Portal Experiencing Technical Issues: Residents and businesses are facing difficulties with the Building Services online permitting portal, which is currently down. This technical problem could disrupt essential services and impact construction projects across the city. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\3.html",
+      "title": "Longmont Invites Applications for Official City Flag: The city of Longmont is seeking community input through an open application process to design its new official city flag, encouraging civic engagement and public participation in the creation of a symbol representing the city\u2019s identity. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\4.html",
+      "title": "Vision Zero Projects and Community Involvement: The city is updating its Vision Zero initiatives aimed at improving transportation safety, encouraging community members to get involved in making Longmont safer for everyone. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\5.html",
+      "title": "Study Sessions with In-Depth Discussion Topics: The City Council holds study sessions that allow in-depth discussion of specific topics, which can lead to significant policy changes. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "about.html",
+      "title": "About The Civic Desk - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "corrections.html",
+      "title": "Public Corrections Ledger - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "ethics.html",
+      "title": "Reporting Ethics & Standards - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "how-we-report.html",
+      "title": "How We Report - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "index.html",
+      "title": "Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\1.html",
+      "title": "Building Services Online Permitting Portal Experiencing Technical Issues: The Building Services online permitting portal is currently down, causing inconvenience to residents and businesses in Longmont. This issue impacts daily operations and could delay construction projects. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\2.html",
+      "title": "Building Services Portal Experiencing Technical Issues: Residents and businesses are facing difficulties with the Building Services online permitting portal, which is currently down. This technical problem could disrupt essential services and impact construction projects across the city. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\3.html",
+      "title": "Longmont Invites Applications for Official City Flag: The city of Longmont is seeking community input through an open application process to design its new official city flag, encouraging civic engagement and public participation in the creation of a symbol representing the city\u2019s identity. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\4.html",
+      "title": "Vision Zero Projects and Community Involvement: The city is updating its Vision Zero initiatives aimed at improving transportation safety, encouraging community members to get involved in making Longmont safer for everyone. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    },
+    {
+      "file": "watch\\5.html",
+      "title": "Study Sessions with In-Depth Discussion Topics: The City Council holds study sessions that allow in-depth discussion of specific topics, which can lead to significant policy changes. - Longmont Cleanroom Test",
+      "h1": "Longmont Cleanroom Test"
+    }
+  ]
+}

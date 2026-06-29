@@ -1,168 +1,244 @@
-# Tester Report - Full Clean-Wipe Longmont 5a24a5a
+# Full Clean-Wipe Longmont Publication E2E Report - 5a24a5a
 
-Date: 2026-06-29 UTC
-Tester machine: msi\civic cleanroom Windows laptop
-Repo: https://github.com/scottconverse/CivicNewspaper.git
-Coordination branch: test-comms/cleanroom-coder-tester
-Product branch: stable-readiness-local-gates
-Product commit: 5a24a5a597b78907ca5d64019432c1468b3ff30a
-Directive: test-comms/directives/20260629-full-cleanwipe-longmont-5a24a5a.md
+Status: FAIL - here.now publish still sends empty display name
 
-Status: FAIL
+Directive: `test-comms/directives/20260629-full-cleanwipe-longmont-5a24a5a.md`
 
-The run failed before compile/export/publish. The app installed and began a real clean first-run setup, installed the app-owned local AI runtime/model, discovered/imported Longmont sources, ran scan workflows, and started draft/editor workflow. During Workbench edit/advisor handling the app WebView/process exited. On relaunch, the app returned to AI model setup and the final database was reset to zero sources, zero leads, zero drafts, and zero publish runs. That means the full E2E state did not survive the app exit and the required publication/identity/kill/output gates could not be completed.
+Product branch: `stable-readiness-local-gates`
 
-## Environment
+Product commit: `5a24a5a597b78907ca5d64019432c1468b3ff30a`
 
-- Windows version: Microsoft Windows 11 Home
-- CPU/GPU: same tester laptop used for prior cleanroom runs
-- User: msi\civic
-- App install path: `C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe`
-- App-owned runtime path observed during run: `C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\...`
-- Manual dependency installation: none
+Evidence folder: `test-comms/reports/20260629-full-cleanwipe-longmont-5a24a5a-evidence/`
 
-## Steps Run
+## Summary
 
-1. Pulled `test-comms/cleanroom-coder-tester`.
-2. Read `test-comms/ACTIVE_DIRECTIVE.md`, README, protocol, tester prompt, and `test-comms/directives/20260629-full-cleanwipe-longmont-5a24a5a.md`.
-3. Verified NSIS and MSI hashes.
-4. Performed stronger clean wipe including:
-   - stopped `civicnews.exe`
-   - stopped app-owned `ollama.exe`
-   - ran The Civic Desk uninstaller
-   - removed Roaming and Local `com.scottconverse.civicdesk`
-   - removed `C:\Users\civic\.ollama`
-   - searched Local/Roaming for product-state folders
-5. Installed preferred NSIS artifact.
-6. Launched real desktop app with WebView2 debugging for observation.
-7. Allowed app-owned setup to install local AI runtime and download `qwen2.5:7b`.
-8. Ran Longmont source discovery and imported official/public/community sources.
-9. Ran expanded Daily Scan with 19 sources.
-10. Began draft generation and Workbench editor/advisor workflow.
-11. App exited during Workbench edit/advisor handling.
-12. Relaunched once; initial relaunch attempt failed to find the executable, then product search found it and second relaunch succeeded.
-13. Relaunch returned to AI setup/model download state instead of the in-progress newsroom.
-14. Final DB check showed no sources/leads/drafts/publish runs persisted.
+The 5a24a5a NSIS installer hash matched, the expanded clean wipe removed the prior stale output-path state, the app installed, app-owned AI setup completed, and the product generated a five-story Longmont local output package from a clean run.
 
-## Results
+Several targeted fixes passed:
 
-- Hash verification: PASS.
-- Clean wipe: PASS; no target paths remained after wipe.
-- NSIS install: PASS; exit code 0.
-- Real desktop launch: PASS.
-- App-owned AI setup: PARTIAL PASS; the app installed runtime/model without tester help, but setup repeatedly displayed input-event fallback messages.
-- Source discovery/import: PASS before reset; 21 candidates found, 13 selected/imported, 19 sources shown.
-- Daily Scan: PASS before reset; expanded scan reached 30 leads.
-- Draft generation/workbench: FAIL; app exited during Workbench edit/advisor handling.
-- State persistence after exit: FAIL; final DB reset to 0 sources, 0 leads, 0 drafts, 0 publish runs.
-- Publication identity gate: NOT COMPLETED because app reset before compile/publish.
-- Kill/cut persistence: NOT COMPLETED because app reset before kill proof.
-- Clean output path gate: NOT COMPLETED because app reset before Publishing output-path capture.
-- Compile/export/ZIP: NOT COMPLETED.
-- here.now publish: NOT COMPLETED.
-- Mojibake/Draft-prefix/public identity output checks: NOT COMPLETED because no output was produced.
+- Default output path after clean wipe was clean: `C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\sites\default`, not an old `test-comms/reports/...` folder.
+- The UI blocked starter identity and warned that public publishing was paused until a real publication name was chosen.
+- I entered and saved `Longmont Cleanroom Test` through the visible app UI.
+- Local output and ZIP output use `Longmont Cleanroom Test`.
+- Local output and ZIP output do not use `My Local Publication`.
+- Kill/cut persisted: final database has 5 `ready_to_publish` drafts and 1 `killed` draft.
+- Exact mojibake scanner passed on local output and ZIP extraction.
+- Public article titles do not begin with `Draft:`.
 
-## Evidence
+The run still fails because anonymous here.now publish failed from the product with:
 
-Evidence folder:
+`here.now publish create failed with status 400 Bad Request: {"error":"Invalid request","code":"invalid_request","message":"Fix the request body or parameters and retry.","details":"Display name must not be empty after normalization.","docs_url":"https://here.now/docs"}`
 
-`test-comms/reports/20260629-full-cleanwipe-longmont-5a24a5a-evidence/`
+That happened even while the Publishing screen visibly showed `Publication: Longmont Cleanroom Test`. So the publication identity is fixed for local compile/export but is not being passed correctly to the here.now connector request.
 
-Key files:
+## Installer And Clean Wipe
 
-- `installer-hashes.json`
+Preferred NSIS installer:
+
+`test-comms/artifacts/20260629-full-cleanwipe-longmont-5a24a5a/The Civic Desk_0.2.8_x64-setup.exe`
+
+Hash checks:
+
+- NSIS expected: `A19456F776E319E0850463A3494A47B2CBA5668C556724BB1A96C4963E412082`
+- NSIS observed: `A19456F776E319E0850463A3494A47B2CBA5668C556724BB1A96C4963E412082`
+- MSI expected: `A519ADE9DD15EE20887BB189F6CECD78E6B7BE1CB584B54FB4ACD8159DABF61A`
+- MSI observed: `A519ADE9DD15EE20887BB189F6CECD78E6B7BE1CB584B54FB4ACD8159DABF61A`
+
+Clean wipe details:
+
+- Stopped `civicnews.exe`.
+- Stopped app-owned `ollama.exe`.
+- Found and stopped lingering app-owned `llama-server.exe`.
+- Ran The Civic Desk uninstaller silently; exit code 0.
+- Removed Roaming product state after stopping `llama-server.exe`.
+- Removed Local product state.
+- Removed `.ollama`.
+- Removed expanded product/WebView-style state names under Local/Roaming when found.
+
+Evidence:
+
 - `clean-wipe-log.json`
+- `installer-hashes.json`
 - `install-result.json`
 - `launch-result.json`
-- `relaunch-after-workbench-exit.json`
-- `relaunch-second-attempt.json`
+
+## App-Owned Setup
+
+The app launched as a normal user and completed app-owned local AI setup:
+
+- Local AI ready.
+- Model: `qwen2.5:7b`.
+- No manual Ollama/model/dependency installation was performed.
+
+The setup recovery banner still appeared:
+
+`The setup screen did not receive input events, so The Civic Desk continued with a starter Longmont profile. You can edit identity later in Settings.`
+
+However, I then used the product's visible identity UI before compile/publish.
+
+## Publication Identity
+
+Default Publishing screen before identity edit:
+
+- Publication: `My Local Publication`
+- Warning: `Publication name still uses starter text. Public publishing is paused until you choose one.`
+- Default output path: `C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\sites\default`
+
+Identity entered through visible app UI:
+
+- Publication name: `Longmont Cleanroom Test`
+- Tagline: `Temporary cleanroom test publication for Longmont civic coverage.`
+- Footer/legal note: `Temporary cleanroom test output.`
+
+After save, Publishing showed:
+
+- Publication: `Longmont Cleanroom Test`
+- Footer note: configured
+- The starter identity warning was gone.
+
+Evidence:
+
+- `03-publishing-default-path.png`
+- `04-edit-identity-screen.png`
+- `05-identity-saved.png`
+- `06-publishing-after-identity.png`
+
+## Sources / Leads / Drafts
+
+Final read-only database counts:
+
+- Sources: 6
+- Evidence items: 27
+- Leads: 30
+- Daily scan leads: 22
+- Drafts: 6
+- Draft statuses: 5 `ready_to_publish`, 1 `killed`
+- Publish runs: 1 local export
+- Published posts: 5
+
+Sources included:
+
+- Longmont Agenda Management Portal - official record
+- Longmont City Council Meetings - official record
+- Longmont Public Information - official record
+- Public Notice Colorado - official record
+- Longmont subreddit - community signal
+- Longmont Colorado subreddit - community signal
+
+Evidence:
+
+- `07-daily-scan-before.png`
+- `08-after-scan-wait.png`
+- `09-story-queue-after-scan.png`
+- `50-story-queue-after-drafts.png`
+- `db-state-after-editor-flow.json`
 - `final-db-state.json`
-- `final-process-state.json`
 
-Key screenshots:
+## Writer / Editor / Advisor / Kill Flow
 
-- `01-first-launch-desktop.png`
-- `02-first-run-webview.png`
-- `03-ai-setup-progress-1.png`
-- `04-model-download-progress-1.png`
-- `07-current-after-next-timeout.png`
-- `11-discovery-results.png`
-- `13-sources-after-import.png`
-- `17-story-queue-30-leads.png`
-- `20-after-draft-loop-timeout.png`
-- `25-after-relaunch-state.png`
+The run used the visible installed app UI to:
 
-Important observed messages:
+- Draft six stories from Story Queue leads.
+- Edit and save the first draft body.
+- Run the advisor path on the first story.
+- Put the first story on hold.
+- Approve five stories for static publishing.
+- Kill one extra non-publish draft and confirm the kill modal.
 
-- `The setup screen did not receive input events, so The Civic Desk continued with a starter Longmont profile.`
-- `The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.`
-- After relaunch: `AI Setup Step 3 of 5 Download AI Model ... Initializing download... 2.9%`
+Final database proves kill/cut persisted:
 
-Final DB excerpt:
+- 5 `ready_to_publish`
+- 1 `killed`
 
-```json
-{
-  "sources": 0,
-  "evidence_items": 0,
-  "leads": 0,
-  "daily_scan_leads": 0,
-  "drafts": 0,
-  "publish_runs": 0,
-  "published_posts": 0,
-  "verification_tasks": 0
-}
-```
+Evidence screenshots include:
+
+- `101-workbench-approve.png` through Workbench screenshots
+- `20-save-draft.png`
+- `21-advisor.png`
+- `22-hold.png`
+- approved screenshots
+- `30-kill-modal.png`
+- `31-after-kill.png`
+- `50-story-queue-after-drafts.png`
+
+## Compile / Export
+
+Output folder set through the app UI:
+
+`C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\reports\20260629-full-cleanwipe-longmont-5a24a5a-evidence\publication-output\site`
+
+Compile/export result:
+
+- Article count: 5
+- Files written: 22
+- Skipped: 0
+- ZIP exists: yes
+- ZIP SHA256: `5916D55D4D49F5730D2C3B89D0D709515DA455ACD26AA67A7215BAD7DAB21E9E`
+
+Evidence:
+
+- `60-publishing-output-path-set.png`
+- `61-compile-checklist.png`
+- `62-after-compile.png`
+- `63-after-zip.png`
+- `output-file-summary.json`
+- `publication-output/site/`
+- `publication-output/site/site-package.zip`
+
+## Output Checks
+
+Exact mojibake scanner:
+
+- Local output: PASS
+- ZIP extraction: PASS
+
+Draft prefix check:
+
+- Local output: PASS
+- ZIP extraction: PASS
+
+Publication identity check:
+
+- Local output: PASS. `Longmont Cleanroom Test` appears in site and article titles.
+- ZIP extraction: PASS. `Longmont Cleanroom Test` appears in site and article titles.
+- `My Local Publication`: not found in local or ZIP public titles.
+
+Evidence:
+
+- `output-checks.json`
+- `zip-extracted/`
+
+## here.now Publish
+
+here.now publish was attempted through the visible Publishing connector UI after `Test connection` passed.
+
+Result: FAIL.
+
+Visible product error:
+
+`Something went wrong: here.now publish create failed with status 400 Bad Request: {"error":"Invalid request","code":"invalid_request","message":"Fix the request body or parameters and retry.","details":"Display name must not be empty after normalization.","docs_url":"https://here.now/docs"}`
+
+No here.now URL was produced for this run.
+
+Evidence:
+
+- `64-test-connection.png`
+- `65-after-publish.png`
 
 ## Findings
 
-Severity counts:
+### Major - here.now request still has empty display name
 
-- Blocker: 1
-- Critical: 0
-- Major: 2
-- Minor: 1
-- Nit: 0
+The product correctly showed `Longmont Cleanroom Test` in Publishing and compiled that identity into local output, but the here.now connector request still failed because the display name was empty after normalization.
 
-### Blocker: App exited during Workbench edit/advisor flow and reset E2E state
+Impact: this fails the directive because here.now publish must work and public output must use the tester-entered publication name.
 
-Observed: While exercising Workbench edit/save/advisor/approval, the WebView target closed and no `civicnews.exe`/CDP target was reachable. After relaunch, the app returned to AI setup/model download state. Final DB contained zero sources, leads, drafts, or publish runs.
+### Minor - setup recovery banner still appears
 
-Expected: Workbench actions should not exit the app, and if the app exits, previously generated sources/leads/drafts should persist.
+The app still reports that the setup screen did not receive input events and continues with a starter Longmont profile. The later identity gate allowed correction before compile, but this remains a confusing first-run setup path.
 
-Impact: Full clean-wipe E2E cannot be certified. Publication identity, kill persistence, output path, compile/export, and here.now publish gates were unreachable.
+## Final Assessment
 
-Repro evidence: `20-after-draft-loop-timeout.png`, `relaunch-after-workbench-exit.json`, `relaunch-second-attempt.json`, `25-after-relaunch-state.png`, `final-db-state.json`.
+Not ready for release certification.
 
-### Major: Setup still reports missing input events and auto-continues
-
-Observed: On first launch, setup displayed that it did not receive input events and continued with a starter Longmont profile. It later reported it still was not receiving input events and auto-started the recommended model download.
-
-Expected: First-run setup should accept normal user input or clearly pause for user action. It should not require fallback auto-progression in a normal desktop run.
-
-Impact: User-chosen identity setup is at risk and the run could not prove a natural first-run identity flow.
-
-Repro evidence: `02-first-run-webview.png`, `03-ai-setup-progress-1.png`.
-
-### Major: State reset after relaunch prevents required clean output-path and identity gates
-
-Observed: The app had reached 19 imported sources and 30 leads, but after relaunch the DB had no content and the app returned to AI setup. The default output path could not be captured before reset.
-
-Expected: App state should persist across relaunch once setup/scan/draft work has been performed.
-
-Impact: The specific 5a24a5a gates for identity, kill persistence, and output path could not be completed.
-
-Repro evidence: `13-sources-after-import.png`, `17-story-queue-30-leads.png`, `25-after-relaunch-state.png`, `final-db-state.json`.
-
-### Minor: First relaunch attempt could not find the installed executable
-
-Observed: The first relaunch command immediately after the app exit reported `The system cannot find the file specified` for `C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe`. A product-state search shortly afterward found the executable and the second relaunch succeeded.
-
-Expected: Installed executable path should be stable immediately after an app exit.
-
-Impact: This added uncertainty during failure recovery, though the executable did become available again.
-
-Repro evidence: `relaunch-after-workbench-exit.json`, `relaunch-second-attempt.json`.
-
-## Request For Coder
-
-Fix the Workbench/advisor crash or exit and the post-exit state reset first. Then reissue the 5a24a5a-style directive so tester can complete the identity gate, kill persistence gate, clean output-path gate, compile/export, here.now publish, and public output scans.
+The clean-wipe state, identity gate, output path cleanup, kill/cut persistence, local compile/export, mojibake checks, and `Draft:` title checks all improved and passed locally. The remaining blocker is the here.now connector: it does not pass the saved/visible publication display name into the publish request.
