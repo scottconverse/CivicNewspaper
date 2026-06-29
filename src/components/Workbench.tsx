@@ -246,7 +246,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   // If drafting from a Lead
   if (selectedLead && !selectedDraft) {
     return (
-      <div className="wizard-container card" id="draft-wizard-panel">
+      <div className="wizard-container card" id="draft-wizard-panel" tabIndex={-1}>
         <h2>Drafting Article</h2>
         <p className="help-text" style={{ marginBottom: "1.5rem" }}>
           Lead: <strong>{selectedLead.why}</strong>
@@ -317,7 +317,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   // If editing an existing Draft
   if (selectedDraft) {
     return (
-      <div id="workbench-editor-panel">
+      <div id="workbench-editor-panel" tabIndex={-1}>
         <div className="page-header" style={{ marginBottom: "1rem" }}>
           <div className="page-title">
             <h1>Story Workbench</h1>

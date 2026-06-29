@@ -33,6 +33,25 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
     return () => clearTimeout(t);
   }, [app.statusMessage]);
 
+  React.useEffect(() => {
+    if (!app.selectedLead?.id) return;
+    const timer = window.setTimeout(() => {
+      const panel = document.getElementById("draft-wizard-panel");
+      panel?.scrollIntoView({ block: "start", behavior: "auto" });
+      panel?.focus({ preventScroll: true });
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [app.selectedLead?.id]);
+
+  React.useEffect(() => {
+    if (!app.selectedDraft?.id || app.activeTab !== "workbench") return;
+    const timer = window.setTimeout(() => {
+      const panel = document.getElementById("workbench-editor-panel");
+      panel?.scrollIntoView({ block: "start", behavior: "auto" });
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [app.activeTab, app.selectedDraft?.id]);
+
   return (
     <>
       {/* First-run beta notice (#12): unsigned-beta / SmartScreen disclosure */}
