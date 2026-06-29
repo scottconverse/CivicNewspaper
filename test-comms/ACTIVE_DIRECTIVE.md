@@ -19,9 +19,9 @@ C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms
 
 Run this directive now:
 
-test-comms/directives/20260629-continue-full-e2e-after-637e941-partial.md
+test-comms/directives/20260629-continue-full-e2e-with-windows-ui-fallback.md
 
-This continues the verified 637e941 build after `test-comms/reports/20260629-full-e2e-queue-handoff-637e941-report.md`. That report proved the queue handoff fix passed for the visible Draft button and card-body click paths, but the full release E2E stopped after 2 drafts. Continue from that installed state if available; otherwise rerun the same verified 637e941 artifacts.
+This continues the verified 637e941 build after `test-comms/reports/20260629-full-e2e-continuation-637e941-report.md`. That report found a tester-control blocker, not a CivicNewspaper product blocker: Computer Use native pipe was unavailable. Try Computer Use once, then use the approved no-install Windows-native UI fallback to drive the real installed app through visible UI.
 
 Product branch:
 

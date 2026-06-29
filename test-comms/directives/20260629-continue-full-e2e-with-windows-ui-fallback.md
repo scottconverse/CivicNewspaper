@@ -1,0 +1,143 @@
+# Directive - Continue Full E2E With Windows UI Fallback
+
+Status: ACTIVE
+
+This directive responds to `test-comms/reports/20260629-full-e2e-continuation-637e941-report.md`.
+
+The prior run did not find a CivicNewspaper product blocker. It found a tester-control blocker: Codex Computer Use could not connect to its native Windows pipe. Continue the same 637e941 product test using a no-install Windows-native UI-control fallback.
+
+## Coordination Rules
+
+- You are the tester on the separate cleanroom machine `msi\civic`.
+- Use coordination checkout `C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms`.
+- Always read `test-comms/ACTIVE_DIRECTIVE.md` first.
+- Do not use paths under `C:\Users\instynct`; that is the coder machine and does not exist on the tester machine.
+- Do not manually install Ollama, models, PATH fixes, browser helpers, packages, or prerequisites.
+- Live anonymous here.now publish is authorized for this test only.
+- Commit reports/artifacts to `test-comms/cleanroom-coder-tester` with `[skip ci]`.
+- Keep the 15-minute watcher armed.
+
+## Product Under Test
+
+Repo: https://github.com/scottconverse/CivicNewspaper
+
+Product branch: `stable-readiness-local-gates`
+
+Required product commit: `637e941ac77361033fc22b48fac33ae1aa50a6b3`
+
+Use the already installed 637e941 build if present. If it is missing or corrupt, reinstall from the same already verified artifacts:
+
+- NSIS: `test-comms/artifacts/20260629-rerun-full-e2e-637e941/The Civic Desk_0.2.8_x64-setup.exe`
+- NSIS SHA256: `50F64FFCE76106BC1745766CA3AF0A50A46C5464F22BDB65220C8EDED348F67F`
+- MSI fallback: `test-comms/artifacts/20260629-rerun-full-e2e-637e941/The Civic Desk_0.2.8_x64_en-US.msi`
+- MSI SHA256: `04DCB36733FD969C4E17C763220BD9E135256524101883432FCD09E50EC1C7F1`
+
+## Approved Control Methods
+
+Try these in order:
+
+1. Try Codex Computer Use once. If it works, use it normally.
+2. If Computer Use still fails with the native pipe error, use a Windows-native fallback harness without installing anything:
+   - launch/focus the installed app process,
+   - use built-in PowerShell/.NET `System.Windows.Forms.SendKeys`, Win32 focus/window APIs, UI Automation accessibility APIs, and screenshots,
+   - drive the real visible installed app through keyboard, mouse/input events, accessibility element invocation, and visible UI state,
+   - save screenshots before and after each major action.
+
+This fallback is authorized because it still operates the real installed product through its UI. It is not authorized to fabricate app state, bypass product logic, directly write the app database, or hand-author article content.
+
+Read-only database inspection is allowed only to verify counts, statuses, output paths, and publish history after UI actions.
+
+## Required Resume State
+
+First verify whether the previous state is still present:
+
+- app installed at `C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe`,
+- local database exists at the app data path,
+- Longmont profile active,
+- 18 leads,
+- 2 persisted drafts,
+- local AI ready with `qwen2.5:7b`.
+
+If that state exists, continue from it. Do not wipe/reinstall just to repeat already proven setup work.
+
+If the state is missing or corrupted, clean-wipe only CivicNewspaper/app-owned state and reinstall from the verified 637e941 artifact.
+
+## Required Continuation Flow
+
+Do not stop until one of these is true:
+
+- the product completes a real Longmont issue and publishes it, or
+- the product hits a concrete blocker that prevents completion and you have captured repro evidence.
+
+Run the remaining release gate:
+
+1. Open The Civic Desk and record the visible starting state.
+2. Verify already-drafted lead behavior through the UI: an already-drafted lead must open the existing draft and must not create a duplicate.
+3. Verify direct `Back to Queue` at 1280x720.
+4. Draft additional different leads until at least 5 drafts exist. Use both visible `Draft` buttons and card-body clicks across the run.
+5. For at least 5 drafts, exercise visible writer/editor controls where available:
+   - edit title,
+   - edit body,
+   - save,
+   - run press-freedom/legal-risk advisor,
+   - approve for publishing,
+   - hold,
+   - send back or equivalent revision status if available,
+   - cut/kill at least one nonessential test story if available, but do not reduce the final publishable count below 5.
+6. Confirm warning/advisory text is readable and has no garbled encoding.
+7. Compile/publish preview output from the Publishing screen.
+8. Export static output and ZIP from the product.
+9. Publish anonymously to here.now from the product.
+10. Verify the here.now URL returns HTTP 200 and visibly shows the Longmont publication.
+11. Record local output folder, ZIP path, here.now URL, HTTP status, screenshots, and database/output counts.
+
+## Acceptance Bar
+
+Pass requires:
+
+- 10+ reviewable leads if available from the app,
+- at least 5 reader-facing Longmont stories/briefs generated by app/local AI,
+- no duplicate drafts for already-drafted leads,
+- writer/editor controls exercised,
+- at least 5 stories approved or otherwise included in the output,
+- local output folder recorded,
+- ZIP artifact recorded,
+- here.now URL recorded,
+- HTTP verification recorded,
+- a human-readable quality assessment saying whether Scott can use this for a real Longmont publication next week.
+
+If the app cannot meet the 5-story or publishing target, mark it failed and say exactly where the workflow breaks.
+
+If neither Computer Use nor Windows-native UI fallback can operate the installed app, mark the result blocked as tester-environment failure and include exact tool/API errors plus screenshots or logs proving the app itself was not tested.
+
+## Report Paths
+
+Write the main human-readable report here:
+
+`test-comms/reports/20260629-full-e2e-windows-ui-fallback-637e941-report.md`
+
+Put screenshots/logs/output artifacts here:
+
+`test-comms/artifacts/20260629-full-e2e-windows-ui-fallback-637e941/`
+
+If the product creates a publication ZIP/output folder, copy or record it under:
+
+`test-comms/artifacts/20260629-full-e2e-windows-ui-fallback-637e941/publication-output/`
+
+## Required Report Contents
+
+- Plain-English pass/fail summary for a human owner.
+- Which control method worked: Computer Use or Windows-native fallback.
+- Whether the run resumed or had to wipe/reinstall.
+- Exact install artifact and observed hashes if reinstall happened.
+- Hardware profile and model selected by the app.
+- Local AI/runtime status and whether the app handled setup without tester-installed dependencies.
+- Sources present/imported, grouped by official/local media/social/community when visible.
+- Lead count and final story/brief count.
+- What writer/editor controls were exercised.
+- Already-drafted lead behavior.
+- Local output folder and ZIP path.
+- here.now URL and HTTP verification result.
+- Screenshots/artifacts list.
+- All blockers/major/minor findings with exact repro steps.
+- Whether this is ready for Scott to use for a real Longmont publication next week.
