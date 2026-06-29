@@ -7,7 +7,7 @@ Tester, always read this file first on every 15-minute watcher tick.
 IMPORTANT MACHINE CONTEXT:
 
 - You are the tester on the separate cleanroom machine running as msi\civic.
-- Do not use any path under C:\Users\instynct; that path belongs to the coder machine and does not exist on the tester machine.
+- Do not use any path under C:\Users\instynct; that path belongs to the coder machine and is invalid on the tester machine.
 - The approved tester coordination checkout path is:
 
 C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms
@@ -19,9 +19,9 @@ C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms
 
 Run this directive now:
 
-test-comms/directives/20260629-rerun-mojibake-systemic-59eb271.md
+test-comms/directives/20260629-full-cleanwipe-longmont-c3db2ac.md
 
-This verifies the product fixes in commit `59eb271d323b0e051a01659494958594b6384cf1` after the output cleanup rerun found that the product still needed systemic mojibake repair and that the tester scan needed exact decoded-sequence checks instead of broad Unicode marker checks.
+This starts the full clean-wipe end-to-end Longmont publication test after the focused 59eb271 mojibake/output verification passed. It uses commit `c3db2aca6166787e6fb74daf8e1f91c8d8e3dbbb`, which also strips legacy `Draft:` working-title prefixes from public publication output.
 
 Product branch:
 
@@ -29,22 +29,22 @@ stable-readiness-local-gates
 
 Product commit:
 
-59eb271d323b0e051a01659494958594b6384cf1
+c3db2aca6166787e6fb74daf8e1f91c8d8e3dbbb
 
 Artifact folder:
 
-test-comms/artifacts/20260629-rerun-mojibake-systemic-59eb271/
+test-comms/artifacts/20260629-full-cleanwipe-longmont-c3db2ac/
 
 Expected preferred NSIS SHA256:
 
-0864D76EB0A382A641B03C1A3A65D6B4D6220307DC73FE764C95031E96F02B93
+CDA5B555107980A9BC3C9D07D59EFA0A429F5F26A9AB197BB5FB6CC25A7BC0E5
 
 Expected fallback MSI SHA256:
 
-1DC37C593240EECC186486A6F2B750FD10CD69DFAE652043B7A4748DC88AF272
+4C4543DCE006112775AC6A3DCBCF915454BE896D20E3266737583461FC2E5C6C
 
 ## Current Goal
 
-Verify the fixed build against the published-output blockers: no known mojibake sequences in generated/public output using the exact UTF-8 scanner in the directive, no stale killed-story pages in the export, killed stories cannot be approved directly by accident, and anonymous here.now publishing uses a nonempty display name without manual repair. Then record the here.now URL, screenshots, output paths, ZIP, and a human-readable report.
+Run the full clean-wipe end-to-end Longmont publication test: wipe CivicNewspaper/Ollama/model state, install the artifact, use only product-owned setup flows, discover/import Longmont official and public social/community sources when supported, generate leads and stories, exercise writer/editor/advisor paths, export a ZIP/package, publish anonymously to here.now, and produce a human-readable report with screenshots, output paths, ZIP hash, and the here.now URL.
 
 Commit reports/artifacts with [skip ci].
