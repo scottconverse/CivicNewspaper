@@ -1,0 +1,21 @@
+{
+  "base": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+  "dbs": [
+    "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db"
+  ],
+  "selected_db": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+  "counts": {
+    "sources": 6,
+    "evidence_items": 27,
+    "leads": 18,
+    "daily_scan_leads": 10,
+    "drafts": 5,
+    "publish_runs": 1,
+    "published_posts": 5,
+    "verification_tasks": 3
+  },
+  "drafts_by_status": {
+    "ready_to_publish": 5
+  },
+  "latest_publish_error": "no such column: output_dir"
+}

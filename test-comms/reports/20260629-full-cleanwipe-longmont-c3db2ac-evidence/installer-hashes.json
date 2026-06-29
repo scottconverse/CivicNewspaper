@@ -1,0 +1,9 @@
+{
+    "nsis_path":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260629-full-cleanwipe-longmont-c3db2ac\\The Civic Desk_0.2.8_x64-setup.exe",
+    "nsis_expected":  "CDA5B555107980A9BC3C9D07D59EFA0A429F5F26A9AB197BB5FB6CC25A7BC0E5",
+    "nsis_observed":  "CDA5B555107980A9BC3C9D07D59EFA0A429F5F26A9AB197BB5FB6CC25A7BC0E5",
+    "msi_path":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260629-full-cleanwipe-longmont-c3db2ac\\The Civic Desk_0.2.8_x64_en-US.msi",
+    "msi_expected":  "4C4543DCE006112775AC6A3DCBCF915454BE896D20E3266737583461FC2E5C6C",
+    "msi_observed":  "4C4543DCE006112775AC6A3DCBCF915454BE896D20E3266737583461FC2E5C6C",
+    "time_utc":  "2026-06-29T08:19:17.0583992Z"
+}

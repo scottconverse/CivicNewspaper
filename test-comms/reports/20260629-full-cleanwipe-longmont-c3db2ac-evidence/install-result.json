@@ -1,0 +1,9 @@
+{
+    "installer":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260629-full-cleanwipe-longmont-c3db2ac\\The Civic Desk_0.2.8_x64-setup.exe",
+    "mode":  "NSIS",
+    "start_utc":  "2026-06-29T08:20:28.9664025Z",
+    "end_utc":  "2026-06-29T08:20:36.9726403Z",
+    "exit_code":  0,
+    "installed_exe":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+    "installed_exists":  true
+}

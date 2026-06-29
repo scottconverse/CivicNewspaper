@@ -1,0 +1,78 @@
+{
+  "issue_id": "issue-20260629-085718-336537800",
+  "output_dir": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/reports/20260629-full-cleanwipe-longmont-c3db2ac-evidence/publication-output/site",
+  "generated_at": "2026-06-29T08:57:18.336537800+00:00",
+  "provider": "here_now",
+  "published_url": "https://zen-vow-kmmb.here.now",
+  "deployment_id": "slug=zen-vow-kmmb;version=01KW99KMD6Q9D2RF84P51RVQWF;created_slug=zen-vow-kmmb",
+  "article_count": 5,
+  "skipped_count": 0,
+  "files_written": 22,
+  "generated_files": [
+    "styles.css",
+    "print.css",
+    "watch/1.html",
+    "watch/5.html",
+    "watch/4.html",
+    "watch/3.html",
+    "watch/2.html",
+    "index.html",
+    "about.html",
+    "ethics.html",
+    "how-we-report.html",
+    "corrections.html",
+    "feed.xml",
+    "newsletter.md",
+    "substack.md",
+    "share-package.md",
+    "facebook-post.txt",
+    "subreddit-post.md",
+    "nextdoor-post.txt",
+    "short-link-blurb.txt",
+    "publish-manifest.json",
+    "site-package.zip"
+  ],
+  "index_path": "index.html",
+  "rss_path": "feed.xml",
+  "newsletter_path": "newsletter.md",
+  "substack_path": "substack.md",
+  "share_package_path": "share-package.md",
+  "facebook_post_path": "facebook-post.txt",
+  "subreddit_post_path": "subreddit-post.md",
+  "nextdoor_post_path": "nextdoor-post.txt",
+  "short_link_blurb_path": "short-link-blurb.txt",
+  "manifest_path": "publish-manifest.json",
+  "zip_path": "site-package.zip",
+  "articles": [
+    {
+      "title": "Technical Issues with Building Services Online Permitting Portal: The Building Services online permitting portal is experiencing technical difficulties, potentially impacting local businesses and property owners seeking permits.",
+      "format": "watch",
+      "relative_path": "watch/1.html",
+      "updated_at": "2026-06-29T08:53:07.230745300+00:00"
+    },
+    {
+      "title": "Public Participation in City Council Meetings: Residents can participate by signing up to speak during meetings. The process is outlined for different types of agenda items, allowing citizens a voice in city decision-making.",
+      "format": "watch",
+      "relative_path": "watch/5.html",
+      "updated_at": "2026-06-29T08:48:34.841071600+00:00"
+    },
+    {
+      "title": "City Council Meetings: Public Input Leads to Legislative Actions: Residents can influence legislative actions through direct engagement during City Council meetings, particularly at the Public Invited to be Heard segment. This highlights the importance of community voice in shaping local laws.",
+      "format": "watch",
+      "relative_path": "watch/4.html",
+      "updated_at": "2026-06-29T08:46:15.316743600+00:00"
+    },
+    {
+      "title": "Vision Zero: Community Involved in Transportation Safety Initiatives: The city encourages community involvement in Vision Zero projects to improve transportation safety. This collaboration between government and residents is vital for effective policy-making.",
+      "format": "watch",
+      "relative_path": "watch/3.html",
+      "updated_at": "2026-06-29T08:43:13.754797300+00:00"
+    },
+    {
+      "title": "Longmont Invites Applications for New Official City Flag: The City of Longmont is seeking community input through an open application process to design its new official city flag, fostering civic engagement and pride.",
+      "format": "watch",
+      "relative_path": "watch/2.html",
+      "updated_at": "2026-06-29T08:42:48.584819700+00:00"
+    }
+  ]
+}

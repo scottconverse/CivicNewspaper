@@ -1,0 +1,30 @@
+{
+    "time_utc":  "2026-06-29T08:20:14.8756455Z",
+    "remaining_paths":  [
+
+                        ],
+    "log":  [
+                "2026-06-29T08:20:09.0661157Z Starting clean wipe boundary.",
+                "2026-06-29T08:20:09.1008489Z Stopping process civicnews pid=3260",
+                "2026-06-29T08:20:09.1447347Z Stopping process ollama pid=7268",
+                "2026-06-29T08:20:09.1596461Z No Ollama service found.",
+                "2026-06-29T08:20:09.1728285Z Running uninstaller C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\uninstall.exe /S",
+                "2026-06-29T08:20:12.5077132Z Uninstaller exit code for C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\uninstall.exe: 0",
+                "2026-06-29T08:20:14.5228241Z Absent path C:\\Users\\civic\\AppData\\Local\\The Civic Desk",
+                "2026-06-29T08:20:14.5228241Z Absent path C:\\Users\\civic\\AppData\\Roaming\\The Civic Desk",
+                "2026-06-29T08:20:14.5228241Z Absent path C:\\Users\\civic\\AppData\\Local\\civicnews",
+                "2026-06-29T08:20:14.5228241Z Absent path C:\\Users\\civic\\AppData\\Roaming\\civicnews",
+                "2026-06-29T08:20:14.5228241Z Absent path C:\\Users\\civic\\AppData\\Local\\CivicNewspaper",
+                "2026-06-29T08:20:14.5228241Z Absent path C:\\Users\\civic\\AppData\\Roaming\\CivicNewspaper",
+                "2026-06-29T08:20:14.5228241Z Absent path C:\\Users\\civic\\AppData\\Local\\Programs\\The Civic Desk",
+                "2026-06-29T08:20:14.5228241Z Absent path C:\\Users\\civic\\AppData\\Local\\Programs\\Ollama",
+                "2026-06-29T08:20:14.5228241Z Absent path C:\\Users\\civic\\AppData\\Local\\Ollama",
+                "2026-06-29T08:20:14.5228241Z Absent path C:\\Users\\civic\\AppData\\Roaming\\Ollama",
+                "2026-06-29T08:20:14.5228241Z Removing path C:\\Users\\civic\\.ollama",
+                "2026-06-29T08:20:14.8618351Z Removed path C:\\Users\\civic\\.ollama",
+                "2026-06-29T08:20:14.8618351Z Absent path C:\\Users\\civic\\CivicNewspaper",
+                "2026-06-29T08:20:14.8618351Z Absent path C:\\Users\\civic\\Documents\\CivicNewspaper",
+                "2026-06-29T08:20:14.8618351Z Absent path C:\\Users\\civic\\Documents\\The Civic Desk",
+                "2026-06-29T08:20:14.8756455Z No CivicNewspaper/Ollama-related user PATH entries found."
+            ]
+}

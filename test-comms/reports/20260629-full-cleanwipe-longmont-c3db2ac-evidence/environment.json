@@ -1,0 +1,37 @@
+{
+    "time_utc":  "2026-06-29T09:02:08.9267820Z",
+    "windows":  {
+                    "Caption":  "Microsoft Windows 11 Home",
+                    "Version":  "10.0.26200",
+                    "BuildNumber":  "26200"
+                },
+    "cpu":  {
+                "Name":  "13th Gen Intel(R) Core(TM) i7-13620H",
+                "NumberOfCores":  10,
+                "NumberOfLogicalProcessors":  16
+            },
+    "ram_gb":  15.7,
+    "gpu":  [
+                {
+                    "Name":  "Intel(R) UHD Graphics",
+                    "AdapterRAM":  2147479552,
+                    "DriverVersion":  "32.0.101.5972"
+                },
+                {
+                    "Name":  "NVIDIA GeForce RTX 4050 Laptop GPU",
+                    "AdapterRAM":  4293918720,
+                    "DriverVersion":  "32.0.15.8129"
+                }
+            ],
+    "disk_free_gb":  346.1,
+    "node":  {
+
+             },
+    "npm":  null,
+    "rust":  null,
+    "ollama_process":  {
+                           "ProcessName":  "ollama",
+                           "Id":  19384,
+                           "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\ollama-runtime\\v0.30.11\\ollama.exe"
+                       }
+}

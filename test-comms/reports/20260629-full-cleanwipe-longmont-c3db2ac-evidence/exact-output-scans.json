@@ -1,0 +1,26 @@
+{
+  "local": {
+    "root": "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-full-cleanwipe-longmont-c3db2ac-evidence\\publication-output\\site",
+    "file_count": 20,
+    "mojibake_hits": [],
+    "draft_prefix_hits": [],
+    "pass_mojibake": true,
+    "pass_draft_prefix": true
+  },
+  "zip_extracted": {
+    "root": "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-full-cleanwipe-longmont-c3db2ac-evidence\\zip-extracted",
+    "file_count": 20,
+    "mojibake_hits": [],
+    "draft_prefix_hits": [],
+    "pass_mojibake": true,
+    "pass_draft_prefix": true
+  },
+  "here_now_downloaded": {
+    "root": "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-full-cleanwipe-longmont-c3db2ac-evidence\\here-now-downloaded",
+    "file_count": 6,
+    "mojibake_hits": [],
+    "draft_prefix_hits": [],
+    "pass_mojibake": true,
+    "pass_draft_prefix": true
+  }
+}
