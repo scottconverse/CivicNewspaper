@@ -1,0 +1,32 @@
+# Share Package
+
+Generated: 2026-06-29T15:36:54.107822+00:00
+
+Website home: https://calm-monsoon-4sv7.here.now
+RSS feed: https://calm-monsoon-4sv7.here.now/feed.xml
+
+## Suggested Community Posts
+
+### New Official Document from Public Notice Colorado
+
+Local update: New Official Document from Public Notice Colorado. Read it in the latest issue: https://calm-monsoon-4sv7.here.now/watch/5.html
+
+### Youth Center Programs in Longmont: The Potential Impact on Community Development and Social Well-being
+
+Local update: Youth Center Programs in Longmont: The Potential Impact on Community Development and Social Well-being. Read it in the latest issue: https://calm-monsoon-4sv7.here.now/watch/4.html
+
+### Technical Issues Plague Building Services Online Portal
+
+Local update: Technical Issues Plague Building Services Online Portal. Read it in the latest issue: https://calm-monsoon-4sv7.here.now/watch/3.html
+
+### City Council Meeting Schedule Provides Insight into Ordinance Approval
+
+Local update: City Council Meeting Schedule Provides Insight into Ordinance Approval. Read it in the latest issue: https://calm-monsoon-4sv7.here.now/watch/2.html
+
+### Longmont Seeks Designs for Official City Flag
+
+Local update: Longmont Seeks Designs for Official City Flag. Read it in the latest issue: https://calm-monsoon-4sv7.here.now/watch/1.html
+
+## Hosting Notes
+
+Publish instantly with here.now. Use GitHub Pages if you want a durable public archive in your own repository. Cloudflare Pages and Netlify remain good technical-hosting options.
