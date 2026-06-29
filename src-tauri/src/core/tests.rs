@@ -3364,6 +3364,70 @@ I should produce JSON only.
     }
 
     #[test]
+    fn test_compile_removes_editor_note_and_body_scaffolding_from_public_pages() {
+        let conn =
+            init_db("file:test_compile_editor_note_cleanup?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        let id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "watch".to_string(),
+                title: "Technical Issues Plague Building Services Online Portal".to_string(),
+                content: "Body:\nEDITOR_NOTE: Not enough verified source material for a publishable story yet.\n\n- Are there specific technical issues being reported?\n- How many users are affected?\n\nThese questions will help gather more information necessary for a detailed report.".to_string(),
+                status: "ready_to_publish".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+
+        let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
+        assert!(!html.contains("EDITOR_NOTE"));
+        assert!(!html.contains("Body:"));
+        assert!(!html.contains("These questions will help"));
+        assert!(html.contains("This item needs more reporting before it is ready for publication."));
+    }
+
+    #[test]
+    fn test_compile_keeps_story_copy_while_removing_trailing_editor_note() {
+        let conn =
+            init_db("file:test_compile_trailing_editor_note?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        let id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "watch".to_string(),
+                title: "Council schedule affects ordinance review".to_string(),
+                content: "The council posted its meeting schedule for upcoming ordinance reviews.\n\nResidents can use the schedule to track public hearings and comment windows.\n\nEDITOR_NOTE: This looks like background material, not a publishable news story yet.".to_string(),
+                status: "ready_to_publish".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+
+        let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
+        assert!(html.contains("The council posted its meeting schedule"));
+        assert!(html.contains("Residents can use the schedule"));
+        assert!(!html.contains("EDITOR_NOTE"));
+        assert!(!html.contains("not a publishable news story yet"));
+    }
+
+    #[test]
     fn test_compile_removes_stale_article_files_when_story_is_no_longer_publishable() {
         let conn =
             init_db("file:test_compile_cleans_stale_output?mode=memory&cache=shared").unwrap();

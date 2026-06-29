@@ -318,6 +318,7 @@ fn add_newsroom_quality_warnings(issues: &mut Vec<GuardrailsIssue>, title: &str,
         "[verification needed]",
         "[end of report]",
         "editor_note:",
+        "body:",
     ];
     let found_markers: Vec<&str> = reporter_markers
         .iter()

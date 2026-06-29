@@ -315,9 +315,22 @@ fn title_needs_content_headline(title: &str) -> bool {
         || trimmed.ends_with('.')
 }
 
+fn is_public_story_line(line: &str) -> bool {
+    let trimmed = line.trim();
+    if trimmed.is_empty() {
+        return false;
+    }
+    let lower = trimmed.to_lowercase();
+    !trimmed.starts_with('-')
+        && !trimmed.ends_with('?')
+        && !lower.starts_with("these questions")
+        && !lower.starts_with("this item needs more reporting")
+}
+
 fn public_title_and_content(draft_title: &str, draft_content: &str) -> (String, String) {
     let fallback_title = normalize_public_title(draft_title);
     let repaired_content = repair_common_mojibake(draft_content);
+    let had_editor_note = repaired_content.to_lowercase().contains("editor_note:");
     let mut derived_title: Option<(usize, String)> = None;
     let lines: Vec<&str> = repaired_content.lines().collect();
 
@@ -336,6 +349,7 @@ fn public_title_and_content(draft_title: &str, draft_content: &str) -> (String, 
     };
 
     let mut skipping_reporting_steps = false;
+    let mut skipping_editor_note = false;
     let content = lines
         .iter()
         .enumerate()
@@ -351,6 +365,32 @@ fn public_title_and_content(draft_title: &str, draft_content: &str) -> (String, 
             let trimmed = line.trim();
             let plain = strip_markdown_strong(trimmed);
             let lower = plain.to_lowercase();
+            if lower == "body:" {
+                return None;
+            }
+            if lower.starts_with("body:") {
+                return Some(clean_label_value(
+                    plain
+                        .split_once(':')
+                        .map(|(_, rest)| rest)
+                        .unwrap_or_default(),
+                ));
+            }
+            if lower.starts_with("editor_note:") {
+                skipping_editor_note = true;
+                return None;
+            }
+            if skipping_editor_note {
+                if trimmed.is_empty()
+                    || trimmed.starts_with('-')
+                    || trimmed.ends_with('?')
+                    || lower.starts_with("these questions")
+                    || lower.starts_with("additional information would be needed")
+                {
+                    return None;
+                }
+                skipping_editor_note = false;
+            }
             if lower == "[end of report]" || lower == "end of report" {
                 return None;
             }
@@ -383,6 +423,16 @@ fn public_title_and_content(draft_title: &str, draft_content: &str) -> (String, 
         .join("\n")
         .trim()
         .to_string();
+
+    let public_story_lines = content
+        .lines()
+        .filter(|line| is_public_story_line(line))
+        .count();
+    let content = if had_editor_note && public_story_lines == 0 {
+        "This item needs more reporting before it is ready for publication. The editor should add verified source material before treating it as a complete story.".to_string()
+    } else {
+        content
+    };
 
     (title, content)
 }
