@@ -435,6 +435,31 @@ describe("Workbench Component Tests", () => {
     expect(onDecision).not.toHaveBeenCalledWith("killed");
   });
 
+  test("held drafts expose resume and send-back workflow actions", () => {
+    const onDecision = vi.fn();
+
+    renderEditor({
+      onDecision,
+      selectedDraft: { ...mockDraft, status: "hold" },
+    });
+
+    expect(screen.getByText(/This draft is on hold/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /Resume Editing/i }));
+    expect(onDecision).toHaveBeenCalledWith("draft_generated");
+
+    fireEvent.click(screen.getByRole("button", { name: /Send Back for More Work/i }));
+    expect(onDecision).toHaveBeenCalledWith("needs_verification");
+  });
+
+  test("needs-verification drafts explain that more work is required", () => {
+    renderEditor({
+      selectedDraft: { ...mockDraft, status: "needs_verification" },
+    });
+
+    expect(screen.getByText(/needs more work before publication/i)).toBeInTheDocument();
+  });
+
   test("a sensitive guardrail issue warns without vetoing approval", async () => {
     const onApprovePublish = vi.fn();
     const report: GuardrailsReport = {

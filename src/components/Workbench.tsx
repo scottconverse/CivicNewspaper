@@ -541,8 +541,18 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                     </strong>
                   </div>
                   <div className="btn-group">
+                    {selectedDraft.status === "hold" && (
+                      <>
+                        <button className="btn btn-secondary btn-sm" onClick={() => onDecision("draft_generated")} id="btn-status-resume-draft">
+                          Resume Editing
+                        </button>
+                        <button className="btn btn-secondary btn-sm" onClick={() => onDecision("needs_verification")} id="btn-status-send-back">
+                          Send Back for More Work
+                        </button>
+                      </>
+                    )}
                     <button className="btn btn-secondary btn-sm" onClick={() => onDecision("hold")} id="btn-status-hold">
-                      Hold
+                      {selectedDraft.status === "killed" ? "Move to Hold" : "Hold"}
                     </button>
                     <button className="btn btn-danger btn-sm" onClick={() => (onKillStory ? onKillStory() : onDecision("killed"))} id="btn-status-kill">
                       Kill Story
@@ -566,6 +576,22 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                     </button>
                   </div>
                 </div>
+                {selectedDraft.status === "hold" && (
+                  <div
+                    role="status"
+                    style={{ background: "rgba(245, 158, 11, 0.08)", borderLeft: "4px solid var(--color-warning)", borderRadius: "4px", color: "var(--text-primary)", padding: "0.75rem" }}
+                  >
+                    This draft is on hold. Resume editing when you are ready, or send it back for more reporting and verification.
+                  </div>
+                )}
+                {selectedDraft.status === "needs_verification" && (
+                  <div
+                    role="status"
+                    style={{ background: "rgba(59, 130, 246, 0.08)", borderLeft: "4px solid var(--color-info)", borderRadius: "4px", color: "var(--text-primary)", padding: "0.75rem" }}
+                  >
+                    This draft needs more work before publication. Keep editing, add evidence, or move it to Hold if it should wait.
+                  </div>
+                )}
                 {selectedDraft.status === "killed" && (
                   <div
                     role="status"

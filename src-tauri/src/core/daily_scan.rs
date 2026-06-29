@@ -29,6 +29,20 @@ pub struct ScanResultItem {
     pub priority: Option<String>,
     #[serde(default)]
     pub suggested_next_step: Option<String>,
+    #[serde(default)]
+    pub story_type: Option<String>,
+    #[serde(default)]
+    pub what_changed: Option<String>,
+    #[serde(default)]
+    pub immediacy: Option<u8>,
+    #[serde(default)]
+    pub impact: Option<u8>,
+    #[serde(default)]
+    pub conflict: Option<u8>,
+    #[serde(default)]
+    pub novelty: Option<u8>,
+    #[serde(default)]
+    pub what_would_make_it_publishable: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -61,6 +75,19 @@ pub fn parse_and_save_scan_response(
     let result: ScanResult = serde_json::from_str(cleaned).map_err(|e| e.to_string())?;
     let mut saved = 0;
     for item in result.leads {
+        let quality_note = newsworthiness_note(&item);
+        let next_step_note = publishability_next_step(&item);
+        let why_flagged = append_editor_note(
+            normalize_optional(item.why_flagged.clone()).unwrap_or_else(|| {
+                "The local scan found language that may deserve an editor's review.".to_string()
+            }),
+            quality_note,
+        );
+        let suggested_next_step = append_editor_note(
+            normalize_optional(item.suggested_next_step.clone())
+                .unwrap_or_else(|| "Open the original source and confirm the key dates, names, and decision points before drafting.".to_string()),
+            next_step_note,
+        );
         // ENG-Min4: the model-asserted `original_url` is untrusted. Validate it
         // against the same scheme/host allowlist used for real sources before
         // persisting; a hallucinated/poisoned URL must not enter the evidence
@@ -84,14 +111,12 @@ pub fn parse_and_save_scan_response(
             summary: item.summary,
             source_id: None, // Assume None, aggregated logic (D5)
             original_url,
-            why_flagged: normalize_optional(item.why_flagged)
-                .or_else(|| Some("The local scan found language that may deserve an editor's review.".to_string())),
+            why_flagged: Some(why_flagged),
             source_name: normalize_optional(item.source_name)
                 .or_else(|| Some("Watched sources".to_string())),
             source_type: normalize_optional(item.source_type),
             priority: normalize_priority(item.priority),
-            suggested_next_step: normalize_optional(item.suggested_next_step)
-                .or_else(|| Some("Open the original source and confirm the key dates, names, and decision points before drafting.".to_string())),
+            suggested_next_step: Some(suggested_next_step),
         };
         match save_daily_scan_lead_for_queue(conn, &lead) {
             Ok(id) if id > 0 => saved += 1,
@@ -100,6 +125,64 @@ pub fn parse_and_save_scan_response(
         }
     }
     Ok(saved)
+}
+
+fn append_editor_note(base: String, note: Option<String>) -> String {
+    match note {
+        Some(note) if !note.trim().is_empty() => {
+            format!("{}. {}", base.trim_end_matches('.'), note)
+        }
+        _ => base,
+    }
+}
+
+fn clamped_score(score: Option<u8>) -> Option<u8> {
+    score.map(|score| score.clamp(1, 5))
+}
+
+fn newsworthiness_note(item: &ScanResultItem) -> Option<String> {
+    let scores = [
+        clamped_score(item.immediacy),
+        clamped_score(item.impact),
+        clamped_score(item.conflict),
+        clamped_score(item.novelty),
+    ];
+    let total = scores.iter().flatten().copied().sum::<u8>();
+    let score_note = if scores.iter().all(Option::is_some) {
+        Some(format!(
+            "Newsworthiness: {}/20 (immediacy {}, impact {}, conflict {}, novelty {}).",
+            total,
+            scores[0].unwrap(),
+            scores[1].unwrap(),
+            scores[2].unwrap(),
+            scores[3].unwrap()
+        ))
+    } else {
+        None
+    };
+    let story_type = normalize_optional(item.story_type.clone())
+        .map(|value| format!("Suggested treatment: {}.", value));
+    let what_changed = normalize_optional(item.what_changed.clone())
+        .map(|value| format!("Why now: {}.", value.trim_end_matches('.')));
+
+    let parts = [story_type, score_note, what_changed]
+        .into_iter()
+        .flatten()
+        .collect::<Vec<_>>();
+    if parts.is_empty() {
+        None
+    } else {
+        Some(parts.join(" "))
+    }
+}
+
+fn publishability_next_step(item: &ScanResultItem) -> Option<String> {
+    normalize_optional(item.what_would_make_it_publishable.clone()).map(|value| {
+        format!(
+            "What would make this publishable: {}.",
+            value.trim_end_matches('.')
+        )
+    })
 }
 
 /// Strip a surrounding markdown code fence (```json ... ``` or ``` ... ```) from
@@ -193,9 +276,10 @@ fn build_batch_prompt(
          Batch: {batch_number}\n\n\
          Evidence Context:\n{context}\n\
          Return ONLY valid JSON. No markdown. No prose. No code fence.\n\
-         Schema: {{\"leads\":[{{\"title\":\"short civic lead title\",\"summary\":\"1-2 evidence-grounded sentences\",\"original_url\":\"source URL from evidence or empty string\",\"why_flagged\":\"plain-language reason this deserves review\",\"source_name\":\"name or short description of source\",\"source_type\":\"agenda, public notice, budget, official update, community signal, or unknown\",\"priority\":\"high, medium, or low\",\"suggested_next_step\":\"specific editor action before drafting\"}}]}}\n\
+         Schema: {{\"leads\":[{{\"title\":\"short civic lead title\",\"summary\":\"1-2 evidence-grounded sentences\",\"original_url\":\"source URL from evidence or empty string\",\"why_flagged\":\"plain-language reason this deserves review\",\"source_name\":\"name or short description of source\",\"source_type\":\"agenda, public notice, budget, official update, community signal, or unknown\",\"priority\":\"high, medium, or low\",\"suggested_next_step\":\"specific editor action before drafting\",\"story_type\":\"story, brief, watch, background, or verification\",\"what_changed\":\"specific current fact that makes this timely, or 'no current change found'\",\"immediacy\":1,\"impact\":1,\"conflict\":1,\"novelty\":1,\"what_would_make_it_publishable\":\"specific missing fact, document, interview, vote, deadline, public effect, or cross-check\"}}]}}\n\
+         Score immediacy, impact, conflict, and novelty from 1 to 5. A recurring meeting page, archive page, general service page, or newly fetched but unchanged source should score low on immediacy and novelty and should usually be story_type background or watch, not story.\n\
          Include at most 3 leads. Use an empty leads array if nothing deserves an editor's look.\n\
-         Explain why each lead matters to a local civic reporter. Avoid vague reasons like 'interesting item'.",
+         Explain why each lead matters to a local civic reporter. Avoid vague reasons like 'interesting item'. Do not hide weak leads; label them honestly so the editor can decide.",
         city = city,
         state = state,
         batch_number = batch_index + 1,
@@ -206,7 +290,7 @@ fn build_batch_prompt(
 fn repair_prompt(raw: &str) -> String {
     format!(
         "Repair the following model output into ONLY valid JSON matching this schema: \
-         {{\"leads\":[{{\"title\":\"...\",\"summary\":\"...\",\"original_url\":\"...\",\"why_flagged\":\"...\",\"source_name\":\"...\",\"source_type\":\"...\",\"priority\":\"high|medium|low\",\"suggested_next_step\":\"...\"}}]}}. \
+         {{\"leads\":[{{\"title\":\"...\",\"summary\":\"...\",\"original_url\":\"...\",\"why_flagged\":\"...\",\"source_name\":\"...\",\"source_type\":\"...\",\"priority\":\"high|medium|low\",\"suggested_next_step\":\"...\",\"story_type\":\"story|brief|watch|background|verification\",\"what_changed\":\"...\",\"immediacy\":1,\"impact\":1,\"conflict\":1,\"novelty\":1,\"what_would_make_it_publishable\":\"...\"}}]}}. \
          Do not add markdown or explanation.\n\nOutput to repair:\n{}",
         raw
     )
@@ -370,12 +454,28 @@ fn save_daily_scan_lead_for_queue(
     let scan_lead_id = db::insert_daily_scan_lead(conn, lead)?;
     let title = lead.title.trim();
     let summary = lead.summary.trim();
-    let why = match (title.is_empty(), summary.is_empty()) {
+    let mut why = match (title.is_empty(), summary.is_empty()) {
         (false, false) => format!("{title}: {summary}"),
         (false, true) => title.to_string(),
         (true, false) => summary.to_string(),
         (true, true) => "Daily Scan found a lead that needs editor review.".to_string(),
     };
+    if let Some(context) = lead
+        .why_flagged
+        .as_deref()
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+    {
+        why.push_str(&format!(" Editor context: {context}"));
+    }
+    if let Some(next_step) = lead
+        .suggested_next_step
+        .as_deref()
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+    {
+        why.push_str(&format!(" Suggested next step: {next_step}"));
+    }
     let priority = lead.priority.as_deref().unwrap_or("review");
     let normalized_level = match priority {
         "high" => "high",

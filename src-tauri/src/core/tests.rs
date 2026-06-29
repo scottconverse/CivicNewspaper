@@ -1003,6 +1003,57 @@ mod tests {
     }
 
     #[test]
+    fn test_daily_scan_preserves_newsworthiness_context_for_editor() {
+        let response = r#"
+        {
+          "leads": [
+            {
+              "title": "City Council meeting archive page",
+              "summary": "The city maintains an archive where residents can watch past council meetings.",
+              "original_url": "https://example.gov/council/videos",
+              "why_flagged": "This page may help residents review public meetings.",
+              "source_name": "Council Video Archive",
+              "source_type": "official update",
+              "priority": "low",
+              "suggested_next_step": "Check whether a new meeting, vote, or transcript was posted.",
+              "story_type": "background",
+              "what_changed": "no current change found",
+              "immediacy": 1,
+              "impact": 2,
+              "conflict": 1,
+              "novelty": 1,
+              "what_would_make_it_publishable": "A newly posted meeting video, vote, transcript, deadline, or public response tied to a specific issue"
+            }
+          ]
+        }
+        "#;
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT INTO daily_scan_runs (started_at, run_status) VALUES ('', 'running')",
+            [],
+        )
+        .unwrap();
+
+        crate::core::daily_scan::parse_and_save_scan_response(&conn, 1, response).unwrap();
+
+        let lead = list_daily_scan_leads(&conn, 1).unwrap().pop().unwrap();
+        let why = lead.why_flagged.unwrap_or_default();
+        assert!(why.contains("Suggested treatment: background."));
+        assert!(why.contains("Newsworthiness: 5/20"));
+        assert!(why.contains("Why now: no current change found."));
+
+        let next = lead.suggested_next_step.unwrap_or_default();
+        assert!(next.contains("What would make this publishable: A newly posted meeting video"));
+
+        let queue_lead = list_leads(&conn).unwrap().pop().unwrap();
+        assert!(
+            queue_lead.why.contains("Newsworthiness: 5/20"),
+            "Story Queue should retain quality context for drafting"
+        );
+    }
+
+    #[test]
     fn test_daily_scan_dedupes_paraphrased_building_services_portal_leads() {
         let response = r#"
         {
@@ -3462,8 +3513,7 @@ I should produce JSON only.
 
     #[test]
     fn test_compile_repairs_mojibake_in_evidence_excerpts() {
-        let conn =
-            init_db("file:test_compile_mojibake_evidence?mode=memory&cache=shared").unwrap();
+        let conn = init_db("file:test_compile_mojibake_evidence?mode=memory&cache=shared").unwrap();
         let temp_dir = tempdir().unwrap();
         let source_id = insert_source(
             &conn,
