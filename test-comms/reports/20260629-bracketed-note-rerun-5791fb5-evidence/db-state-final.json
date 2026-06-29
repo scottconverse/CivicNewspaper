@@ -1,0 +1,752 @@
+﻿{
+  "sources": {
+    "columns": [
+      "id",
+      "name",
+      "url",
+      "type",
+      "status",
+      "last_success_at",
+      "last_failed_at",
+      "last_scraped",
+      "tier"
+    ],
+    "rows": [
+      {
+        "id": 1,
+        "name": "Longmont Agenda Management Portal",
+        "url": "https://longmontcolorado.gov/city-clerk/agenda-management-portal/",
+        "type": "primary_record",
+        "status": "online",
+        "last_success_at": "2026-06-29T17:20:48.199856500+00:00",
+        "last_failed_at": null,
+        "last_scraped": "2026-06-29T17:20:48.199856500+00:00",
+        "tier": "official_record"
+      },
+      {
+        "id": 2,
+        "name": "Longmont City Council Meetings",
+        "url": "https://longmontcolorado.gov/government/city-council-meetings/",
+        "type": "primary_record",
+        "status": "online",
+        "last_success_at": "2026-06-29T17:20:51.251324800+00:00",
+        "last_failed_at": null,
+        "last_scraped": "2026-06-29T17:20:51.251324800+00:00",
+        "tier": "official_record"
+      },
+      {
+        "id": 3,
+        "name": "Longmont Public Information",
+        "url": "https://longmontcolorado.gov/public-information/",
+        "type": "official_comm",
+        "status": "online",
+        "last_success_at": "2026-06-29T17:20:54.299632600+00:00",
+        "last_failed_at": null,
+        "last_scraped": "2026-06-29T17:20:54.299632600+00:00",
+        "tier": "official_record"
+      },
+      {
+        "id": 4,
+        "name": "Public Notice Colorado",
+        "url": "https://www.publicnoticecolorado.com/",
+        "type": "primary_record",
+        "status": "online",
+        "last_success_at": "2026-06-29T17:20:57.773779100+00:00",
+        "last_failed_at": null,
+        "last_scraped": "2026-06-29T17:20:57.773779100+00:00",
+        "tier": "official_record"
+      },
+      {
+        "id": 5,
+        "name": "Longmont subreddit",
+        "url": "https://www.reddit.com/r/Longmont/",
+        "type": "community_signal",
+        "status": "online",
+        "last_success_at": "2026-06-29T17:21:00.809424600+00:00",
+        "last_failed_at": null,
+        "last_scraped": "2026-06-29T17:21:00.809424600+00:00",
+        "tier": "community_signal"
+      },
+      {
+        "id": 6,
+        "name": "Longmont Colorado subreddit",
+        "url": "https://www.reddit.com/r/LongmontColorado/",
+        "type": "community_signal",
+        "status": "online",
+        "last_success_at": "2026-06-29T17:21:03.863085600+00:00",
+        "last_failed_at": null,
+        "last_scraped": "2026-06-29T17:21:03.863085600+00:00",
+        "tier": "community_signal"
+      }
+    ]
+  },
+  "daily_scan_leads": {
+    "columns": [
+      "id",
+      "scan_id",
+      "title",
+      "summary",
+      "source_id",
+      "original_url",
+      "why_flagged",
+      "source_name",
+      "source_type",
+      "priority",
+      "suggested_next_step"
+    ],
+    "rows": [
+      {
+        "id": 1,
+        "scan_id": 1,
+        "title": "City Council and Advisory Board Meeting Agendas Available Online",
+        "summary": "The City of Longmont has launched a new Public Meeting Portal where residents can access agendas and meeting packets for the City Council and advisory boards, enhancing transparency in government operations.",
+        "source_id": null,
+        "original_url": "https://longmontcolorado.gov/city-clerk/agenda-management-portal/",
+        "why_flagged": "This portal improves public access to city council meetings and their topics, which is essential for informed civic engagement.",
+        "source_name": "City Clerk's Office",
+        "source_type": "official update",
+        "priority": "high",
+        "suggested_next_step": "Reporters should check the portal for upcoming meetings related to local issues of interest."
+      },
+      {
+        "id": 2,
+        "scan_id": 2,
+        "title": "New Public Meeting Portal for Longmont",
+        "summary": "The City of Longmont has launched a new public meeting portal where all agendas and meeting packets from the City Council and advisory boards are published, making it easier for residents to find information about upcoming meetings.",
+        "source_id": null,
+        "original_url": "https://longmontcolorado.gov/city-clerk/agenda-management-portal/",
+        "why_flagged": "This tool enhances civic engagement by providing transparency in city governance.",
+        "source_name": "City of Longmont",
+        "source_type": "official update",
+        "priority": "high",
+        "suggested_next_step": "Review the portal for completeness and usability, then report on its impact."
+      },
+      {
+        "id": 3,
+        "scan_id": 1,
+        "title": "Upcoming City Council Meeting with Open Forum",
+        "summary": "The upcoming City Council meeting on July 7th includes an open forum where residents can provide input on critical issues affecting the city.",
+        "source_id": null,
+        "original_url": "https://longmontcolorado.gov/government/city-council-meetings/",
+        "why_flagged": "This provides a platform for community engagement and allows citizens to influence local policy decisions directly.",
+        "source_name": "City of Longmont",
+        "source_type": "official update",
+        "priority": "high",
+        "suggested_next_step": "Contact city council members or the mayor's office to confirm details and prepare questions."
+      },
+      {
+        "id": 4,
+        "scan_id": 2,
+        "title": "City Council Meeting Agendas and Video Archives",
+        "summary": "The City of Longmont provides detailed agendas for upcoming and past city council meetings, allowing the public to follow local governance decisions. Videos are also available with clickable timestamps for specific agenda items.",
+        "source_id": null,
+        "original_url": "https://longmontcolorado.gov/government/city-council-meetings/",
+        "why_flagged": "This resource is crucial for civic engagement and transparency, enabling residents to stay informed about city policies and participate in local governance.",
+        "source_name": "City of Longmont Government Website",
+        "source_type": "official update",
+        "priority": "high",
+        "suggested_next_step": "Review the agendas and videos from recent meetings for any upcoming important discussions or decisions."
+      },
+      {
+        "id": 5,
+        "scan_id": 1,
+        "title": "Public Records Requests",
+        "summary": "Residents can access a wide range of public records, including agendas and minutes from city council meetings.",
+        "source_id": null,
+        "original_url": "",
+        "why_flagged": "Transparency in governance is crucial for the community\u2019s trust in local government operations.",
+        "source_name": "City of Longmont Government Website",
+        "source_type": "public notice",
+        "priority": "medium",
+        "suggested_next_step": "Verify and update the process for accessing public records to ensure it is user-friendly."
+      },
+      {
+        "id": 6,
+        "scan_id": 2,
+        "title": "Vision Zero Projects",
+        "summary": "The City of Longmont is actively working on Vision Zero projects, aimed at improving transportation safety and involving the community in these efforts.",
+        "source_id": null,
+        "original_url": "https://longmontcolorado.gov/public-information/",
+        "why_flagged": "Vision Zero initiatives are critical for public safety and could impact residents' daily lives significantly.",
+        "source_name": "City of Longmont Public Information",
+        "source_type": "official update",
+        "priority": "high",
+        "suggested_next_step": "Review the current status and planned activities of Vision Zero projects."
+      },
+      {
+        "id": 7,
+        "scan_id": 1,
+        "title": "City of Longmont Seeking Applications for 2027 Human Service Agency Funding",
+        "summary": "The City of Longmont is currently accepting applications for the 2027 Human Service Agency funding. This opportunity highlights community support initiatives and potential areas where local organizations can receive financial assistance.",
+        "source_id": null,
+        "original_url": "https://longmontcolorado.gov/public-information/",
+        "why_flagged": "This information could affect local non-profits, service providers, and residents seeking additional resources for their communities.",
+        "source_name": "City of Longmont Public Information Department",
+        "source_type": "official update",
+        "priority": "high",
+        "suggested_next_step": "Contact the City Council or relevant department to get more details on eligibility criteria and application process."
+      },
+      {
+        "id": 8,
+        "scan_id": 2,
+        "title": "City of Longmont Seeks Applications for Human Service Funding",
+        "summary": "The City of Longmont is accepting applications for the 2027 Human Service Agency Funding, highlighting the city's commitment to supporting local community organizations.",
+        "source_id": null,
+        "original_url": "https://longmontcolorado.gov/public-information/City-of-Longmont-Seeks-Applications-for-2027-Human-Service-Agency-Funding",
+        "why_flagged": "This announcement is important for non-profits and agencies seeking funding, as well as community members interested in supporting local initiatives.",
+        "source_name": "City of Longmont Public Information Department",
+        "source_type": "official update",
+        "priority": "high",
+        "suggested_next_step": "Contact the City Manager's office to confirm the deadline for applications and gather more details on the funding process."
+      },
+      {
+        "id": 9,
+        "scan_id": 2,
+        "title": "Ascent at Hover Crossing Wins Housing Award",
+        "summary": "The Ascent at Hover Crossing development has won a housing award, recognizing its contribution to Longmont\u2019s residential landscape and community.",
+        "source_id": null,
+        "original_url": "https://longmontcolorado.gov/public-information/Ascent-at-Hover-Crossing-Wins-Housing-Award",
+        "why_flagged": "This achievement highlights the city's progress in developing sustainable and recognized housing solutions, relevant for local residents interested in real estate and city planning.",
+        "source_name": "City of Longmont Public Information Department",
+        "source_type": "official update",
+        "priority": "medium",
+        "suggested_next_step": "Reach out to the Planning and Zoning department for more details on the project's impact and any future plans."
+      },
+      {
+        "id": 10,
+        "scan_id": 2,
+        "title": "Temporary Closure of Hover Street/CO 119 Intersection",
+        "summary": "A temporary overnight closure is scheduled for June 28, providing crucial information for drivers and residents about upcoming roadwork in Longmont.",
+        "source_id": null,
+        "original_url": "https://longmontcolorado.gov/public-information/Temporary-Closure-of-Hover-Street-CO-119-Intersection-Scheduled-for-June-28",
+        "why_flagged": "Traffic disruptions are essential information for city residents, especially those with daily commutes or plans involving the affected area.",
+        "source_name": "City of Longmont Public Information Department",
+        "source_type": "public notice",
+        "priority": "high",
+        "suggested_next_step": "Contact Public Safety to ensure all necessary safety measures are in place during the closure."
+      }
+    ]
+  },
+  "leads": {
+    "columns": [
+      "id",
+      "detector_name",
+      "why",
+      "confidence",
+      "risk_level",
+      "confirmation_checklist",
+      "created_at",
+      "from_scan_lead_id"
+    ],
+    "rows": [
+      {
+        "id": 1,
+        "detector_name": "New Primary Record",
+        "why": "A new official primary document from 'Longmont Agenda Management Portal' was fetched today (https://longmontcolorado.gov/city-clerk/agenda-management-portal/).",
+        "confidence": "high",
+        "risk_level": "low",
+        "confirmation_checklist": "[\"Read the source document thoroughly for hidden agendas\",\"Verify matching records from previous weeks\",\"Cross-reference this record with local news announcements\"]",
+        "created_at": "2026-06-29T17:20:38.978727300+00:00",
+        "from_scan_lead_id": null
+      },
+      {
+        "id": 2,
+        "detector_name": "Public Meeting Scheduled",
+        "why": "MEETING SCHEDULED: Meeting notification detected in 'Longmont Agenda Management Portal' record. Public attendance or comment may be permitted.",
+        "confidence": "medium",
+        "risk_level": "low",
+        "confirmation_checklist": "[\"Verify the date, time, and physical/virtual address of the meeting\",\"Download the meeting agenda when it becomes available\",\"Identify the public comment signup rules (e.g. register 24 hours in advance)\"]",
+        "created_at": "2026-06-29T17:20:38.980406600+00:00",
+        "from_scan_lead_id": null
+      },
+      {
+        "id": 3,
+        "detector_name": "New Primary Record",
+        "why": "A new official primary document from 'Public Notice Colorado' was fetched today (https://www.publicnoticecolorado.com/).",
+        "confidence": "high",
+        "risk_level": "low",
+        "confirmation_checklist": "[\"Read the source document thoroughly for hidden agendas\",\"Verify matching records from previous weeks\",\"Cross-reference this record with local news announcements\"]",
+        "created_at": "2026-06-29T17:20:38.981690300+00:00",
+        "from_scan_lead_id": null
+      },
+      {
+        "id": 4,
+        "detector_name": "New Primary Record",
+        "why": "A new official primary document from 'Longmont City Council Meetings' was fetched today (https://longmontcolorado.gov/government/city-council-meetings/).",
+        "confidence": "high",
+        "risk_level": "low",
+        "confirmation_checklist": "[\"Read the source document thoroughly for hidden agendas\",\"Verify matching records from previous weeks\",\"Cross-reference this record with local news announcements\"]",
+        "created_at": "2026-06-29T17:20:38.983011300+00:00",
+        "from_scan_lead_id": null
+      },
+      {
+        "id": 5,
+        "detector_name": "New Primary Record",
+        "why": "A new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).",
+        "confidence": "high",
+        "risk_level": "low",
+        "confirmation_checklist": "[\"Read the source document thoroughly for hidden agendas\",\"Verify matching records from previous weeks\",\"Cross-reference this record with local news announcements\"]",
+        "created_at": "2026-06-29T17:20:38.984073700+00:00",
+        "from_scan_lead_id": null
+      },
+      {
+        "id": 6,
+        "detector_name": "Decision / Vote",
+        "why": "VOTING SIGNAL: Found vote/decision keywords ([\"passed\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.",
+        "confidence": "medium",
+        "risk_level": "low",
+        "confirmation_checklist": "[\"Record the exact vote tally (e.g. 5-2, unanimous)\",\"Identify which board members voted 'No' or abstained, and find out why\",\"Determine what immediate local impact this decision has on the community\"]",
+        "created_at": "2026-06-29T17:20:38.985731200+00:00",
+        "from_scan_lead_id": null
+      },
+      {
+        "id": 7,
+        "detector_name": "Public Meeting Scheduled",
+        "why": "MEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.",
+        "confidence": "medium",
+        "risk_level": "low",
+        "confirmation_checklist": "[\"Verify the date, time, and physical/virtual address of the meeting\",\"Download the meeting agenda when it becomes available\",\"Identify the public comment signup rules (e.g. register 24 hours in advance)\"]",
+        "created_at": "2026-06-29T17:20:38.987115800+00:00",
+        "from_scan_lead_id": null
+      },
+      {
+        "id": 8,
+        "detector_name": "Decision / Vote",
+        "why": "VOTING SIGNAL: Found vote/decision keywords ([\"approved\", \"approved\", \"Approved\", \"passed\", \"Motion\", \"motion\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.",
+        "confidence": "medium",
+        "risk_level": "low",
+        "confirmation_checklist": "[\"Record the exact vote tally (e.g. 5-2, unanimous)\",\"Identify which board members voted 'No' or abstained, and find out why\",\"Determine what immediate local impact this decision has on the community\"]",
+        "created_at": "2026-06-29T17:20:38.989200600+00:00",
+        "from_scan_lead_id": null
+      },
+      {
+        "id": 9,
+        "detector_name": "daily_scan",
+        "why": "City Council and Advisory Board Meeting Agendas Available Online: The City of Longmont has launched a new Public Meeting Portal where residents can access agendas and meeting packets for the City Council and advisory boards, enhancing transparency in government operations.",
+        "confidence": "high",
+        "risk_level": "high",
+        "confirmation_checklist": "[\"Reporters should check the portal for upcoming meetings related to local issues of interest.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+        "created_at": "2026-06-29T17:21:20.630058600+00:00",
+        "from_scan_lead_id": 1
+      },
+      {
+        "id": 10,
+        "detector_name": "daily_scan",
+        "why": "New Public Meeting Portal for Longmont: The City of Longmont has launched a new public meeting portal where all agendas and meeting packets from the City Council and advisory boards are published, making it easier for residents to find information about upcoming meetings.",
+        "confidence": "high",
+        "risk_level": "high",
+        "confirmation_checklist": "[\"Review the portal for completeness and usability, then report on its impact.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+        "created_at": "2026-06-29T17:21:34.575938400+00:00",
+        "from_scan_lead_id": 2
+      },
+      {
+        "id": 11,
+        "detector_name": "daily_scan",
+        "why": "Upcoming City Council Meeting with Open Forum: The upcoming City Council meeting on July 7th includes an open forum where residents can provide input on critical issues affecting the city.",
+        "confidence": "high",
+        "risk_level": "high",
+        "confirmation_checklist": "[\"Contact city council members or the mayor's office to confirm details and prepare questions.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+        "created_at": "2026-06-29T17:21:49.691669300+00:00",
+        "from_scan_lead_id": 3
+      },
+      {
+        "id": 12,
+        "detector_name": "daily_scan",
+        "why": "City Council Meeting Agendas and Video Archives: The City of Longmont provides detailed agendas for upcoming and past city council meetings, allowing the public to follow local governance decisions. Videos are also available with clickable timestamps for specific agenda items.",
+        "confidence": "high",
+        "risk_level": "high",
+        "confirmation_checklist": "[\"Review the agendas and videos from recent meetings for any upcoming important discussions or decisions.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+        "created_at": "2026-06-29T17:22:09.364332+00:00",
+        "from_scan_lead_id": 4
+      },
+      {
+        "id": 13,
+        "detector_name": "daily_scan",
+        "why": "Public Records Requests: Residents can access a wide range of public records, including agendas and minutes from city council meetings.",
+        "confidence": "med",
+        "risk_level": "med",
+        "confirmation_checklist": "[\"Verify and update the process for accessing public records to ensure it is user-friendly.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+        "created_at": "2026-06-29T17:22:55.084299+00:00",
+        "from_scan_lead_id": 5
+      },
+      {
+        "id": 14,
+        "detector_name": "daily_scan",
+        "why": "Vision Zero Projects: The City of Longmont is actively working on Vision Zero projects, aimed at improving transportation safety and involving the community in these efforts.",
+        "confidence": "high",
+        "risk_level": "high",
+        "confirmation_checklist": "[\"Review the current status and planned activities of Vision Zero projects.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+        "created_at": "2026-06-29T17:23:10.329624400+00:00",
+        "from_scan_lead_id": 6
+      },
+      {
+        "id": 15,
+        "detector_name": "daily_scan",
+        "why": "City of Longmont Seeking Applications for 2027 Human Service Agency Funding: The City of Longmont is currently accepting applications for the 2027 Human Service Agency funding. This opportunity highlights community support initiatives and potential areas where local organizations can receive financial assistance.",
+        "confidence": "high",
+        "risk_level": "high",
+        "confirmation_checklist": "[\"Contact the City Council or relevant department to get more details on eligibility criteria and application process.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+        "created_at": "2026-06-29T17:23:24.776749400+00:00",
+        "from_scan_lead_id": 7
+      },
+      {
+        "id": 16,
+        "detector_name": "daily_scan",
+        "why": "City of Longmont Seeks Applications for Human Service Funding: The City of Longmont is accepting applications for the 2027 Human Service Agency Funding, highlighting the city's commitment to supporting local community organizations.",
+        "confidence": "high",
+        "risk_level": "high",
+        "confirmation_checklist": "[\"Contact the City Manager's office to confirm the deadline for applications and gather more details on the funding process.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+        "created_at": "2026-06-29T17:23:46.460619200+00:00",
+        "from_scan_lead_id": 8
+      },
+      {
+        "id": 17,
+        "detector_name": "daily_scan",
+        "why": "Ascent at Hover Crossing Wins Housing Award: The Ascent at Hover Crossing development has won a housing award, recognizing its contribution to Longmont\u2019s residential landscape and community.",
+        "confidence": "med",
+        "risk_level": "med",
+        "confirmation_checklist": "[\"Reach out to the Planning and Zoning department for more details on the project's impact and any future plans.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+        "created_at": "2026-06-29T17:23:46.462314700+00:00",
+        "from_scan_lead_id": 9
+      },
+      {
+        "id": 18,
+        "detector_name": "daily_scan",
+        "why": "Temporary Closure of Hover Street/CO 119 Intersection: A temporary overnight closure is scheduled for June 28, providing crucial information for drivers and residents about upcoming roadwork in Longmont.",
+        "confidence": "high",
+        "risk_level": "high",
+        "confirmation_checklist": "[\"Contact Public Safety to ensure all necessary safety measures are in place during the closure.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+        "created_at": "2026-06-29T17:23:46.464155500+00:00",
+        "from_scan_lead_id": 10
+      }
+    ]
+  },
+  "drafts": {
+    "columns": [
+      "id",
+      "lead_id",
+      "format",
+      "title",
+      "content",
+      "status",
+      "verification_checklist",
+      "missing_evidence_notes",
+      "correction_note",
+      "created_at",
+      "updated_at",
+      "attested_by",
+      "attested_at",
+      "guardrail_override_reason"
+    ],
+    "rows": [
+      {
+        "id": 1,
+        "lead_id": 18,
+        "format": "watch",
+        "title": "Temporary Closure of Hover Street/CO 119 Intersection Scheduled",
+        "content": "EDITOR_NOTE: Not enough verified source material for a publishable story yet.\n\n- What is the exact date and time range for the closure?\n- Which specific roadwork project will this closure support?\n- Who is responsible for the roadwork (e.g., city, state department of transportation)?\n- Are there alternative routes suggested for drivers to use during the closure?\n- How long will the temporary closure last?",
+        "status": "ready_to_publish",
+        "verification_checklist": "[]",
+        "missing_evidence_notes": null,
+        "correction_note": null,
+        "created_at": "2026-06-29T17:24:07.821591100+00:00",
+        "updated_at": "2026-06-29T17:24:28.324505400+00:00",
+        "attested_by": "Publisher",
+        "attested_at": "2026-06-29T17:24:28.319507200+00:00",
+        "guardrail_override_reason": null
+      },
+      {
+        "id": 2,
+        "lead_id": 17,
+        "format": "watch",
+        "title": "Ascent at Hover Crossing Wins Housing Award",
+        "content": "EDITOR_NOTE: Not enough verified source material for a publishable story yet.\n\n- What is the name of the housing award and when was it presented?\n- Can you provide more context on what criteria the development met to win this award?\n- Who are the key stakeholders or individuals involved in the Ascent at Hover Crossing project?\n- Is there any specific information about the development, such as its size, number of units, or design features?\n- Are there details on how the development contributes to Longmont's residential landscape and community?",
+        "status": "ready_to_publish",
+        "verification_checklist": "[]",
+        "missing_evidence_notes": null,
+        "correction_note": null,
+        "created_at": "2026-06-29T17:24:48.843030200+00:00",
+        "updated_at": "2026-06-29T17:24:51.143785400+00:00",
+        "attested_by": "Publisher",
+        "attested_at": "2026-06-29T17:24:51.142604500+00:00",
+        "guardrail_override_reason": null
+      },
+      {
+        "id": 3,
+        "lead_id": 16,
+        "format": "watch",
+        "title": "City of Longmont Seeks Applications for Human Service Funding",
+        "content": "EDITOR_NOTE: Not enough verified source material for a publishable story yet.\n\n- What is the deadline for application submissions?\n- Who is eligible to apply for this funding?\n- What are the key criteria for selecting applicants?\n- Is there a specific focus or theme for this year's funding round?\n- How much funding is available, and in what categories will it be distributed?\n- Are there any past recipients or notable projects that can provide context?",
+        "status": "ready_to_publish",
+        "verification_checklist": "[]",
+        "missing_evidence_notes": null,
+        "correction_note": null,
+        "created_at": "2026-06-29T17:25:02.772267100+00:00",
+        "updated_at": "2026-06-29T17:25:02.903840900+00:00",
+        "attested_by": "Publisher",
+        "attested_at": "2026-06-29T17:25:02.901738600+00:00",
+        "guardrail_override_reason": null
+      },
+      {
+        "id": 4,
+        "lead_id": 15,
+        "format": "watch",
+        "title": "City of Longmont Seeking Applications for 2027 Human Service Agency Funding",
+        "content": "The City of Longmont is currently accepting applications for the 2027 Human Service Agency funding initiative, aimed at supporting various community support programs and organizations in need.\n\n**Application Process:** [Source](evidence:18) states that interested local organizations can apply for financial assistance through this program. The application process will likely involve submitting a detailed proposal outlining the organization's mission, proposed projects, and how the funds would be utilized to benefit the community.\n\n**Eligibility Criteria:** Eligible applicants should align with the city's priorities in human services, which may include but are not limited to education, health, social services, and community development. [Source](evidence:28) suggests that interested parties should review the Community Engagement Guide for comprehensive details on eligibility criteria.\n\n**Application Deadline:** The deadline for submitting applications has not been specified in the provided information, but it is recommended to apply as soon as possible given the competitive nature of these grants. Successful applicants will be selected based on a rigorous evaluation process to ensure the most impactful projects receive funding.\n\n**Community Impact:** This initiative reflects the city's commitment to supporting local organizations that contribute positively to community well-being and development. [Source](evidence:27) emphasizes the importance of community involvement in shaping these initiatives, providing resources such as the Community Engagement Guide and Training sessions to facilitate effective participation.\n\nEDITOR_NOTE: While this information is current and relevant, it does not indicate a specific newsworthy event or urgent development. A more compelling news story would involve identifying key organizations that have already submitted proposals, details of recent funding rounds, or changes in eligibility criteria for the next round.",
+        "status": "ready_to_publish",
+        "verification_checklist": "[]",
+        "missing_evidence_notes": null,
+        "correction_note": null,
+        "created_at": "2026-06-29T17:25:24.436022800+00:00",
+        "updated_at": "2026-06-29T17:25:25.078876100+00:00",
+        "attested_by": "Publisher",
+        "attested_at": "2026-06-29T17:25:25.077819200+00:00",
+        "guardrail_override_reason": null
+      },
+      {
+        "id": 5,
+        "lead_id": 14,
+        "format": "watch",
+        "title": "Longmont's Vision Zero Projects Gain Community Engagement",
+        "content": "The City of Longmont is actively working on Vision Zero projects to improve transportation safety. These initiatives involve the community in various ways to ensure effective implementation [Source](evidence:18).\n\nLongmont's Department of Transportation has launched a series of programs designed to reduce traffic fatalities and injuries by addressing safety issues at key intersections and roads [Source](evidence:27). The city is also utilizing community engagement processes outlined in the Community Engagement Guide, which provides detailed information on how residents can participate in these efforts [Source](evidence:18).\n\nResidents interested in getting involved can access training through the Community Engagement Training sessions. These workshops aim to equip participants with the skills necessary to contribute meaningfully to local initiatives and advocate for safer transportation options [Source](evidence:18). By participating, community members can help shape policies that address specific safety concerns, such as pedestrian crossings and road conditions [Source](evidence:27).\n\nThe City of Longmont's Public Information Department plays a crucial role in disseminating information about these initiatives. Residents can stay informed by visiting the city's website or signing up for email newsletters to receive updates on Vision Zero projects and related community engagement opportunities [Source](evidence:28). While the exact scope and timeline of each project are not detailed, the focus remains on fostering a collaborative environment where residents and city officials work together towards safer transportation solutions.",
+        "status": "ready_to_publish",
+        "verification_checklist": "[]",
+        "missing_evidence_notes": null,
+        "correction_note": null,
+        "created_at": "2026-06-29T17:25:45.233179400+00:00",
+        "updated_at": "2026-06-29T17:25:47.295837200+00:00",
+        "attested_by": "Publisher",
+        "attested_at": "2026-06-29T17:25:47.291772500+00:00",
+        "guardrail_override_reason": null
+      },
+      {
+        "id": 6,
+        "lead_id": 13,
+        "format": "watch",
+        "title": "Residents Can Access City Council Meeting Records",
+        "content": "Body:\nEDITOR_NOTE: Not enough verified source material for a publishable story yet.\n\n- What specific records are available to residents?\n- Are there any restrictions on what can be requested?\n- How do residents submit public record requests, and is there a fee?\n- Are there guidelines or policies in place regarding the handling of such requests?\n- Can digital requests be made? If so, how does that process work?\n- What are the timeframes for responding to public records requests?\n- Are there any examples of recent requests and their outcomes?",
+        "status": "hold",
+        "verification_checklist": "[]",
+        "missing_evidence_notes": null,
+        "correction_note": null,
+        "created_at": "2026-06-29T17:25:58.532435800+00:00",
+        "updated_at": "2026-06-29T17:26:03.230085300+00:00",
+        "attested_by": null,
+        "attested_at": null,
+        "guardrail_override_reason": null
+      }
+    ]
+  },
+  "publish_runs": {
+    "columns": [
+      "id",
+      "issue_id",
+      "output_path",
+      "generated_files",
+      "provider",
+      "published_url",
+      "deployment_id",
+      "article_count",
+      "skipped_count",
+      "files_written",
+      "generated_at"
+    ],
+    "rows": [
+      {
+        "id": 1,
+        "issue_id": "issue-20260629-172642-050878100",
+        "output_path": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/reports/20260629-bracketed-note-rerun-5791fb5-evidence/publication-output/site",
+        "generated_files": "[\"styles.css\",\"print.css\",\"watch/5.html\",\"watch/4.html\",\"watch/3.html\",\"watch/2.html\",\"watch/1.html\",\"index.html\",\"about.html\",\"ethics.html\",\"how-we-report.html\",\"corrections.html\",\"feed.xml\",\"newsletter.md\",\"substack.md\",\"share-package.md\",\"facebook-post.txt\",\"subreddit-post.md\",\"nextdoor-post.txt\",\"short-link-blurb.txt\",\"publish-manifest.json\",\"site-package.zip\"]",
+        "provider": "here_now",
+        "published_url": "https://yearly-kernel-h752.here.now",
+        "deployment_id": "slug=yearly-kernel-h752;version=01KWA6PZ2GXXNQP8BG5ABNZQTM;created_slug=yearly-kernel-h752",
+        "article_count": 5,
+        "skipped_count": 0,
+        "files_written": 22,
+        "generated_at": "2026-06-29T17:26:42.050878100+00:00"
+      }
+    ]
+  },
+  "published_posts": {
+    "columns": [
+      "id",
+      "draft_id",
+      "file_path",
+      "url",
+      "published_at",
+      "correction_history"
+    ],
+    "rows": [
+      {
+        "id": 1,
+        "draft_id": 5,
+        "file_path": "watch/5.html",
+        "url": "watch/5.html",
+        "published_at": "2026-06-29T17:25:47.295837200+00:00",
+        "correction_history": "[]"
+      },
+      {
+        "id": 2,
+        "draft_id": 4,
+        "file_path": "watch/4.html",
+        "url": "watch/4.html",
+        "published_at": "2026-06-29T17:25:25.078876100+00:00",
+        "correction_history": "[]"
+      },
+      {
+        "id": 3,
+        "draft_id": 3,
+        "file_path": "watch/3.html",
+        "url": "watch/3.html",
+        "published_at": "2026-06-29T17:25:02.903840900+00:00",
+        "correction_history": "[]"
+      },
+      {
+        "id": 4,
+        "draft_id": 2,
+        "file_path": "watch/2.html",
+        "url": "watch/2.html",
+        "published_at": "2026-06-29T17:24:51.143785400+00:00",
+        "correction_history": "[]"
+      },
+      {
+        "id": 5,
+        "draft_id": 1,
+        "file_path": "watch/1.html",
+        "url": "watch/1.html",
+        "published_at": "2026-06-29T17:24:28.324505400+00:00",
+        "correction_history": "[]"
+      }
+    ]
+  },
+  "settings": {
+    "columns": [
+      "key",
+      "value"
+    ],
+    "rows": [
+      {
+        "key": "identity.newsroom_name",
+        "value": "My Local Publication"
+      },
+      {
+        "key": "identity.editor_name",
+        "value": "Publisher"
+      },
+      {
+        "key": "identity.organization_type",
+        "value": "single_person"
+      },
+      {
+        "key": "identity.city",
+        "value": "Longmont"
+      },
+      {
+        "key": "identity.state",
+        "value": "CO"
+      },
+      {
+        "key": "model.selected",
+        "value": "qwen2.5:7b"
+      },
+      {
+        "key": "paths.publish",
+        "value": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default"
+      },
+      {
+        "key": "paths.backup",
+        "value": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\backups"
+      },
+      {
+        "key": "onboarding_complete",
+        "value": "1"
+      },
+      {
+        "key": "setup.recovered_input",
+        "value": "consumed"
+      },
+      {
+        "key": "scan.latest_id",
+        "value": "2"
+      }
+    ]
+  },
+  "table_counts": [
+    {
+      "name": "civic_entities",
+      "count": 33
+    },
+    {
+      "name": "civic_observation_entities",
+      "count": 162
+    },
+    {
+      "name": "civic_observations",
+      "count": 127
+    },
+    {
+      "name": "daily_scan_leads",
+      "count": 10
+    },
+    {
+      "name": "daily_scan_runs",
+      "count": 2
+    },
+    {
+      "name": "dark_signals",
+      "count": 1
+    },
+    {
+      "name": "drafts",
+      "count": 6
+    },
+    {
+      "name": "evidence_items",
+      "count": 28
+    },
+    {
+      "name": "lead_evidence",
+      "count": 26
+    },
+    {
+      "name": "leads",
+      "count": 18
+    },
+    {
+      "name": "paired_clients",
+      "count": 0
+    },
+    {
+      "name": "publish_runs",
+      "count": 1
+    },
+    {
+      "name": "published_posts",
+      "count": 5
+    },
+    {
+      "name": "settings",
+      "count": 11
+    },
+    {
+      "name": "source_performance_scores",
+      "count": 6
+    },
+    {
+      "name": "sources",
+      "count": 6
+    },
+    {
+      "name": "sqlite_sequence",
+      "count": 12
+    },
+    {
+      "name": "subscribers",
+      "count": 0
+    },
+    {
+      "name": "verification_tasks",
+      "count": 3
+    }
+  ]
+}

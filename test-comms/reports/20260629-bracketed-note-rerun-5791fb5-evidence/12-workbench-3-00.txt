@@ -1,0 +1,52 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Draft generated successfully.
+Dismiss
+Story Workbench
+
+Modify drafted content, review guardrail warnings, and link source material when it helps the editor.
+
+Back to Queue
+Save Draft
+Delete
+Press-freedom / legal-risk advisor
+
+Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.
+
+Run Advisor
+Distinguish verified facts, allegations, opinion, and unanswered questions.
+Use extra care with private individuals, minors, medical details, addresses, and active legal matters.
+Keep notes on source reliability and why publishing serves the community.
+Story Title
+Article Body (Markdown)
+Plain Language Rewrite
+Highlight text and click "Cite" in evidence pane to link.
+Current Status: draft generated
+Hold
+Kill Story
+Approve for Static Publish
+I have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision.
+Social Media Promo Pack
+Generate Posts
+
+Generate optimized posts for Twitter/X, Facebook, and Reddit based on the current draft.
+
+Linked Sources
+
+No source documents are linked to this story draft.

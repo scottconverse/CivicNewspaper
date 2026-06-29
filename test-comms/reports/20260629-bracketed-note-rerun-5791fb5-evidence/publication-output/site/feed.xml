@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Longmont Bracketed Note Cleanup Retest</title>
+    <link>index.html</link>
+    <description>Cleanroom public-output verification for Longmont civic coverage.</description>
+    <language>en-us</language>
+    <pubDate>Mon, 29 Jun 2026 17:26:42 +0000</pubDate>
+    <lastBuildDate>Mon, 29 Jun 2026 17:26:42 +0000</lastBuildDate>
+    <item>
+      <title>Longmont&#x27;s Vision Zero Projects Gain Community Engagement</title>
+      <link>watch/5.html</link>
+      <guid>watch/5</guid>
+      <pubDate>2026-06-29T17:25:47.295837200+00:00</pubDate>
+      <description>Longmont&#x27;s Vision Zero Projects Gain Community Engagement</description>
+    </item>
+    <item>
+      <title>City of Longmont Seeking Applications for 2027 Human Service Agency Funding</title>
+      <link>watch/4.html</link>
+      <guid>watch/4</guid>
+      <pubDate>2026-06-29T17:25:25.078876100+00:00</pubDate>
+      <description>City of Longmont Seeking Applications for 2027 Human Service Agency Funding</description>
+    </item>
+    <item>
+      <title>City of Longmont Seeks Applications for Human Service Funding</title>
+      <link>watch/3.html</link>
+      <guid>watch/3</guid>
+      <pubDate>2026-06-29T17:25:02.903840900+00:00</pubDate>
+      <description>City of Longmont Seeks Applications for Human Service Funding</description>
+    </item>
+    <item>
+      <title>Ascent at Hover Crossing Wins Housing Award</title>
+      <link>watch/2.html</link>
+      <guid>watch/2</guid>
+      <pubDate>2026-06-29T17:24:51.143785400+00:00</pubDate>
+      <description>Ascent at Hover Crossing Wins Housing Award</description>
+    </item>
+    <item>
+      <title>Temporary Closure of Hover Street&#x2F;CO 119 Intersection Scheduled</title>
+      <link>watch/1.html</link>
+      <guid>watch/1</guid>
+      <pubDate>2026-06-29T17:24:28.324505400+00:00</pubDate>
+      <description>Temporary Closure of Hover Street&#x2F;CO 119 Intersection Scheduled</description>
+    </item>
+
+  </channel>
+</rss>

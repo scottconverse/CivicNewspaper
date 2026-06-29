@@ -1,0 +1,8 @@
+﻿{
+    "timestamp_utc":  "2026-06-29T17:19:08.5134353Z",
+    "installer":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260629-bracketed-note-rerun-5791fb5\\The Civic Desk_0.2.9_x64-setup.exe",
+    "method":  "NSIS",
+    "exit_code":  0,
+    "exe":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+    "exe_exists":  true
+}

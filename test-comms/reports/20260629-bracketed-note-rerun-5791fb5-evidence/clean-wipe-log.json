@@ -1,0 +1,35 @@
+﻿{
+    "timestamp_utc":  "2026-06-29T17:18:57.3930030Z",
+    "actions":  [
+                    {
+                        "action":  "stop-process",
+                        "path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+                        "ok":  true,
+                        "note":  "pid=8420"
+                    },
+                    {
+                        "action":  "stop-process",
+                        "path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\ollama-runtime\\v0.30.11\\ollama.exe",
+                        "ok":  true,
+                        "note":  "pid=10468"
+                    },
+                    {
+                        "action":  "remove",
+                        "path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk",
+                        "ok":  true,
+                        "note":  ""
+                    },
+                    {
+                        "action":  "remove",
+                        "path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+                        "ok":  true,
+                        "note":  ""
+                    },
+                    {
+                        "action":  "remove-skip",
+                        "path":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-bracketed-note-rerun-5791fb5-evidence\\publication-output",
+                        "ok":  true,
+                        "note":  "not present"
+                    }
+                ]
+}

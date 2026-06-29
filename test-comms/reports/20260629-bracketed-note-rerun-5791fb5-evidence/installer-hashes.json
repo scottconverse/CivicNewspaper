@@ -1,0 +1,9 @@
+﻿{
+    "timestamp_utc":  "2026-06-29T17:18:59.5296814Z",
+    "nsis_path":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260629-bracketed-note-rerun-5791fb5\\The Civic Desk_0.2.9_x64-setup.exe",
+    "nsis_sha256":  "9CF4714A253E32D04E1FB1394B6D583B37CCC77C21FDACEBE212D6F1BBDD117C",
+    "nsis_expected":  "9CF4714A253E32D04E1FB1394B6D583B37CCC77C21FDACEBE212D6F1BBDD117C",
+    "msi_path":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260629-bracketed-note-rerun-5791fb5\\The Civic Desk_0.2.9_x64_en-US.msi",
+    "msi_sha256":  "D53AF37831195AD2F36B59436ADA30D14D59313AADB819FBE7E5703AAB85ACCF",
+    "msi_expected":  "D53AF37831195AD2F36B59436ADA30D14D59313AADB819FBE7E5703AAB85ACCF"
+}

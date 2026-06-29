@@ -1,0 +1,78 @@
+{
+  "issue_id": "issue-20260629-172642-050878100",
+  "output_dir": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/reports/20260629-bracketed-note-rerun-5791fb5-evidence/publication-output/site",
+  "generated_at": "2026-06-29T17:26:42.050878100+00:00",
+  "provider": "here_now",
+  "published_url": "https://yearly-kernel-h752.here.now",
+  "deployment_id": "slug=yearly-kernel-h752;version=01KWA6PZ2GXXNQP8BG5ABNZQTM;created_slug=yearly-kernel-h752",
+  "article_count": 5,
+  "skipped_count": 0,
+  "files_written": 22,
+  "generated_files": [
+    "styles.css",
+    "print.css",
+    "watch/5.html",
+    "watch/4.html",
+    "watch/3.html",
+    "watch/2.html",
+    "watch/1.html",
+    "index.html",
+    "about.html",
+    "ethics.html",
+    "how-we-report.html",
+    "corrections.html",
+    "feed.xml",
+    "newsletter.md",
+    "substack.md",
+    "share-package.md",
+    "facebook-post.txt",
+    "subreddit-post.md",
+    "nextdoor-post.txt",
+    "short-link-blurb.txt",
+    "publish-manifest.json",
+    "site-package.zip"
+  ],
+  "index_path": "index.html",
+  "rss_path": "feed.xml",
+  "newsletter_path": "newsletter.md",
+  "substack_path": "substack.md",
+  "share_package_path": "share-package.md",
+  "facebook_post_path": "facebook-post.txt",
+  "subreddit_post_path": "subreddit-post.md",
+  "nextdoor_post_path": "nextdoor-post.txt",
+  "short_link_blurb_path": "short-link-blurb.txt",
+  "manifest_path": "publish-manifest.json",
+  "zip_path": "site-package.zip",
+  "articles": [
+    {
+      "title": "Longmont's Vision Zero Projects Gain Community Engagement",
+      "format": "watch",
+      "relative_path": "watch/5.html",
+      "updated_at": "2026-06-29T17:25:47.295837200+00:00"
+    },
+    {
+      "title": "City of Longmont Seeking Applications for 2027 Human Service Agency Funding",
+      "format": "watch",
+      "relative_path": "watch/4.html",
+      "updated_at": "2026-06-29T17:25:25.078876100+00:00"
+    },
+    {
+      "title": "City of Longmont Seeks Applications for Human Service Funding",
+      "format": "watch",
+      "relative_path": "watch/3.html",
+      "updated_at": "2026-06-29T17:25:02.903840900+00:00"
+    },
+    {
+      "title": "Ascent at Hover Crossing Wins Housing Award",
+      "format": "watch",
+      "relative_path": "watch/2.html",
+      "updated_at": "2026-06-29T17:24:51.143785400+00:00"
+    },
+    {
+      "title": "Temporary Closure of Hover Street/CO 119 Intersection Scheduled",
+      "format": "watch",
+      "relative_path": "watch/1.html",
+      "updated_at": "2026-06-29T17:24:28.324505400+00:00"
+    }
+  ]
+}

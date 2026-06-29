@@ -1,0 +1,139 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Story Queue
+
+Civic signals your sources surfaced, ready to verify and turn into plain-language stories.
+
+Refresh
+Daily Scan
+Scrape & Detect
+NEW LEADS
+18
+IN DRAFTING
+3
+HIGH PRIORITY
+8
+SOURCES
+6
+Local-first workflow
+Scan sources, draft from linked evidence, run guardrails, then publish a static paper.
+Leads
+18
+Drafts
+3
+Scan results
+latest
+Filter leads
+Sort by:
+Date Created
+Risk Level
+Confidence
+Risk: high
+Draft exists
+daily_scan
+Temporary Closure of Hover Street/CO 119 Intersection: A temporary overnight closure is scheduled for June 28, providing crucial information for drivers and residents about upcoming roadwork in Longmont.
+Confidence: high
+Open draft
+Risk: med
+Draft exists
+daily_scan
+Ascent at Hover Crossing Wins Housing Award: The Ascent at Hover Crossing development has won a housing award, recognizing its contribution to Longmont’s residential landscape and community.
+Confidence: med
+Open draft
+Risk: high
+Draft exists
+daily_scan
+City of Longmont Seeks Applications for Human Service Funding: The City of Longmont is accepting applications for the 2027 Human Service Agency Funding, highlighting the city's commitment to supporting local community organizations.
+Confidence: high
+Open draft
+Risk: high
+daily_scan
+City of Longmont Seeking Applications for 2027 Human Service Agency Funding: The City of Longmont is currently accepting applications for the 2027 Human Service Agency funding. This opportunity highlights community support initiatives and potential areas where local organizations can receive financial assistance.
+Confidence: high
+Draft
+Risk: high
+daily_scan
+Vision Zero Projects: The City of Longmont is actively working on Vision Zero projects, aimed at improving transportation safety and involving the community in these efforts.
+Confidence: high
+Draft
+Risk: med
+daily_scan
+Public Records Requests: Residents can access a wide range of public records, including agendas and minutes from city council meetings.
+Confidence: med
+Draft
+Risk: high
+daily_scan
+City Council Meeting Agendas and Video Archives: The City of Longmont provides detailed agendas for upcoming and past city council meetings, allowing the public to follow local governance decisions. Videos are also available with clickable timestamps for specific agenda items.
+Confidence: high
+Draft
+Risk: high
+daily_scan
+Upcoming City Council Meeting with Open Forum: The upcoming City Council meeting on July 7th includes an open forum where residents can provide input on critical issues affecting the city.
+Confidence: high
+Draft
+Risk: high
+daily_scan
+New Public Meeting Portal for Longmont: The City of Longmont has launched a new public meeting portal where all agendas and meeting packets from the City Council and advisory boards are published, making it easier for residents to find information about upcoming meetings.
+Confidence: high
+Draft
+Risk: high
+daily_scan
+City Council and Advisory Board Meeting Agendas Available Online: The City of Longmont has launched a new Public Meeting Portal where residents can access agendas and meeting packets for the City Council and advisory boards, enhancing transparency in government operations.
+Confidence: high
+Draft
+Risk: low
+Decision / Vote
+VOTING SIGNAL: Found vote/decision keywords (["approved", "approved", "Approved", "passed", "Motion", "motion"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.
+Confidence: medium
+Draft
+Risk: low
+Public Meeting Scheduled
+MEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.
+Confidence: medium
+Draft
+Risk: low
+Decision / Vote
+VOTING SIGNAL: Found vote/decision keywords (["passed"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.
+Confidence: medium
+Draft
+Risk: low
+New Primary Record
+A new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).
+Confidence: high
+Draft
+Risk: low
+New Primary Record
+A new official primary document from 'Longmont City Council Meetings' was fetched today (https://longmontcolorado.gov/government/city-council-meetings/).
+Confidence: high
+Draft
+Risk: low
+New Primary Record
+A new official primary document from 'Public Notice Colorado' was fetched today (https://www.publicnoticecolorado.com/).
+Confidence: high
+Draft
+Risk: low
+Public Meeting Scheduled
+MEETING SCHEDULED: Meeting notification detected in 'Longmont Agenda Management Portal' record. Public attendance or comment may be permitted.
+Confidence: medium
+Draft
+Risk: low
+New Primary Record
+A new official primary document from 'Longmont Agenda Management Portal' was fetched today (https://longmontcolorado.gov/city-clerk/agenda-management-portal/).
+Confidence: high
+Draft

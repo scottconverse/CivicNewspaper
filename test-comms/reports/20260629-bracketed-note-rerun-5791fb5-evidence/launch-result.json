@@ -1,0 +1,16 @@
+﻿{
+    "timestamp_utc":  "2026-06-29T17:19:31.6698100Z",
+    "exe":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+    "start_process_id":  3156,
+    "process_running":  true,
+    "cdp_available":  true,
+    "cdp_error":  null,
+    "cdp":  {
+                "Browser":  "Edg/149.0.4022.98",
+                "Protocol-Version":  "1.3",
+                "User-Agent":  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0",
+                "V8-Version":  "14.9.20.12",
+                "WebKit-Version":  "537.36 (@d8414318246f5132427f455636044b6f79c4e03f)",
+                "webSocketDebuggerUrl":  "ws://127.0.0.1:9222/devtools/browser/cb891e41-29eb-4dc8-9a5c-4e6f52a9a889"
+            }
+}

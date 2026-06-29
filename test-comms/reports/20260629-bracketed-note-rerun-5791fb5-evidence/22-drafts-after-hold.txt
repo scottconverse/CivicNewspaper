@@ -1,0 +1,65 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Story Queue
+
+Civic signals your sources surfaced, ready to verify and turn into plain-language stories.
+
+Refresh
+Daily Scan
+Scrape & Detect
+NEW LEADS
+18
+IN DRAFTING
+6
+HIGH PRIORITY
+8
+SOURCES
+6
+Local-first workflow
+Scan sources, draft from linked evidence, run guardrails, then publish a static paper.
+Leads
+18
+Drafts
+6
+Scan results
+latest
+TITLE	FORMAT	STATUS	ACTIONS
+Residents Can Access City Council Meeting Records	Watch	hold	
+Open
+Correction
+
+Longmont's Vision Zero Projects Gain Community Engagement	Watch	ready to publish	
+Open
+Correction
+
+City of Longmont Seeking Applications for 2027 Human Service Agency Funding	Watch	ready to publish	
+Open
+Correction
+
+City of Longmont Seeks Applications for Human Service Funding	Watch	ready to publish	
+Open
+Correction
+
+Ascent at Hover Crossing Wins Housing Award	Watch	ready to publish	
+Open
+Correction
+
+Temporary Closure of Hover Street/CO 119 Intersection Scheduled	Watch	ready to publish	
+Open
+Correction
