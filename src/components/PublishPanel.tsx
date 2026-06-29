@@ -591,6 +591,45 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
               <select id="select-publish-provider" value={provider} onChange={event => handleProviderChange(event.target.value)}>
                 {PROVIDERS.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
               </select>
+              <div className="publish-primary-action-panel">
+                <label htmlFor="input-published-url" style={{ fontWeight: 600, display: "block", marginBottom: "0.35rem" }}>Public URL</label>
+                <input
+                  id="input-published-url"
+                  type="url"
+                  value={publishedUrl}
+                  onChange={event => {
+                    setError("");
+                    setPublishedUrl(event.target.value);
+                  }}
+                  placeholder="optional for API connectors; required for manual save"
+                />
+                <label htmlFor="input-deployment-id" style={{ fontWeight: 600, display: "block", marginTop: "0.75rem", marginBottom: "0.35rem" }}>Deployment ID or note</label>
+                <input
+                  id="input-deployment-id"
+                  type="text"
+                  value={deploymentId}
+                  onChange={event => setDeploymentId(event.target.value)}
+                  placeholder="optional"
+                />
+                <div className="btn-group publish-action-row" style={{ marginTop: "0.75rem" }}>
+                  <button className="btn btn-primary" type="button" onClick={handleRecordDestinationClick} disabled={loading}>
+                    <CheckCircle size={16} />
+                    Save public URL
+                  </button>
+                  <button className="btn btn-secondary" type="button" onClick={handleConnectorPublishClick} disabled={loading || !connectorTestPassed}>
+                    <UploadCloud size={16} />
+                    Publish with connector
+                  </button>
+                </div>
+                {!connectorTestPassed && (
+                  <p className="help-text" style={{ marginTop: "0.35rem" }}>
+                    Test the selected connector before publishing. You can still save a public URL manually.
+                  </p>
+                )}
+                {publishResult.published_url && (
+                  <p className="help-text">Saved live URL: <a href={publishResult.published_url}>{publishResult.published_url}</a></p>
+                )}
+              </div>
               <label htmlFor="input-publisher-name" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Connector name</label>
               <input
                 id="input-publisher-name"
@@ -749,41 +788,6 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                   Open ZIP
                 </button>
               </div>
-              <label htmlFor="input-published-url" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Public URL</label>
-              <input
-                id="input-published-url"
-                type="url"
-                value={publishedUrl}
-                onChange={event => {
-                  setError("");
-                  setPublishedUrl(event.target.value);
-                }}
-                placeholder="optional for API connectors; required for manual save"
-              />
-              <label htmlFor="input-deployment-id" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>Deployment ID or note</label>
-              <input
-                id="input-deployment-id"
-                type="text"
-                value={deploymentId}
-                onChange={event => setDeploymentId(event.target.value)}
-                placeholder="optional"
-              />
-              <button className="btn btn-primary btn-full" type="button" onClick={handleRecordDestinationClick} disabled={loading} style={{ marginTop: "0.9rem" }}>
-                <CheckCircle size={16} />
-                Save public URL
-              </button>
-              <button className="btn btn-secondary btn-full" type="button" onClick={handleConnectorPublishClick} disabled={loading || !connectorTestPassed} style={{ marginTop: "0.6rem" }}>
-                <UploadCloud size={16} />
-                Publish with connector
-              </button>
-              {!connectorTestPassed && (
-                <p className="help-text" style={{ marginTop: "0.35rem" }}>
-                  Test the selected connector before publishing. You can still save a public URL manually.
-                </p>
-              )}
-              {publishResult.published_url && (
-                <p className="help-text">Saved live URL: <a href={publishResult.published_url}>{publishResult.published_url}</a></p>
-              )}
             </div>
           )}
 

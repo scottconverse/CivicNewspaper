@@ -304,6 +304,29 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                 </p>
               </div>
 
+              <div className="modal-action-strip">
+                <div>
+                  <strong>{bulkImportReview.accepted.length > 0 ? "Ready to import" : "Review first"}</strong>
+                  <p className="help-text" style={{ margin: "0.15rem 0 0 0" }}>
+                    {bulkImportReview.accepted.length > 0
+                      ? `${selectedBulkCount} checked source${selectedBulkCount === 1 ? "" : "s"} will be imported.`
+                      : "Load or paste sources, then review the list before importing."}
+                  </p>
+                </div>
+                <div className="btn-group">
+                  <button className="btn btn-secondary" type="button" onClick={onChooseBulkImportFile} disabled={bulkImportLoading}>
+                    <FileUp size={16} />
+                    Load file
+                  </button>
+                  <button className="btn btn-secondary" type="button" onClick={onBuildBulkImportReview} disabled={bulkImportLoading || !bulkImportText.trim()}>
+                    Review list
+                  </button>
+                  <button className="btn btn-primary" type="submit" disabled={bulkImportLoading || bulkImportReview.accepted.length === 0 || selectedBulkCount === 0} id="btn-submit-bulk-import">
+                    {bulkImportLoading ? "Importing..." : "Import Checked Sources"}
+                  </button>
+                </div>
+              </div>
+
               <div>
                 <label htmlFor="select-bulk-import-type" style={{ fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>Default Classification Type</label>
                 <select id="select-bulk-import-type" value={bulkImportType} onChange={(e) => onBulkImportTypeChange(e.target.value)}>
@@ -332,16 +355,6 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                   disabled={bulkImportLoading}
                   id="textarea-bulk-import"
                 />
-              </div>
-
-              <div className="btn-group">
-                <button className="btn btn-secondary" type="button" onClick={onChooseBulkImportFile} disabled={bulkImportLoading}>
-                  <FileUp size={16} />
-                  Load file
-                </button>
-                <button className="btn btn-secondary" type="button" onClick={onBuildBulkImportReview} disabled={bulkImportLoading || !bulkImportText.trim()}>
-                  Review list
-                </button>
               </div>
 
               {(bulkImportReview.accepted.length > 0 || bulkImportReview.rejected.length > 0 || bulkImportReview.duplicates.length > 0) && (
@@ -395,15 +408,6 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                   )}
                 </div>
               )}
-
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem", marginTop: "1rem" }}>
-                <button className="btn btn-secondary" type="button" onClick={() => onShowBulkImportModalChange(false)} disabled={bulkImportLoading}>
-                  Cancel
-                </button>
-                <button className="btn btn-primary" type="submit" disabled={bulkImportLoading || (bulkImportReview.accepted.length > 0 && selectedBulkCount === 0)} id="btn-submit-bulk-import">
-                  {bulkImportLoading ? "Importing..." : bulkImportReview.accepted.length > 0 ? "Import Checked Sources" : "Review List"}
-                </button>
-              </div>
             </form>
         </Modal>
       )}
@@ -450,6 +454,20 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                 {discoveryLoading ? "Searching..." : "Auto-Find Feeds"}
               </button>
             </form>
+
+            {!discoveryLoading && discoveredCats.length > 0 && (
+              <div className="modal-action-strip">
+                <span>Selected: <strong>{selectedDiscovered.length}</strong> sources</span>
+                <div className="btn-group">
+                  <button className="btn btn-secondary" onClick={onClearDiscovered}>
+                    Clear
+                  </button>
+                  <button className="btn btn-primary" onClick={onImportDiscoveredSources} disabled={selectedDiscovered.length === 0} id="btn-import-discovered">
+                    Import Checked Sources
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div style={{ flex: 1, overflowY: "auto", paddingRight: "0.5rem" }}>
               {discoveryLoading && (
@@ -517,20 +535,6 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                 </div>
               )}
             </div>
-
-            {!discoveryLoading && discoveredCats.length > 0 && (
-              <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "1rem", marginTop: "1rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span>Selected: <strong>{selectedDiscovered.length}</strong> sources</span>
-                <div className="btn-group">
-                  <button className="btn btn-secondary" onClick={onClearDiscovered}>
-                    Clear
-                  </button>
-                  <button className="btn btn-primary" onClick={onImportDiscoveredSources} disabled={selectedDiscovered.length === 0} id="btn-import-discovered">
-                    Import Checked Sources
-                  </button>
-                </div>
-              </div>
-            )}
         </Modal>
       )}
     </div>

@@ -808,6 +808,44 @@ button:disabled {
   max-width: 900px;
 }
 
+.modal-action-strip {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+}
+
+.publish-primary-action-panel {
+  margin-top: 0.9rem;
+  padding: 0.85rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+}
+
+.publish-action-row {
+  flex-wrap: wrap;
+}
+
+.card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.card-title-row .card-title {
+  margin-bottom: 0;
+}
+
 /* Plain-language rewrite diff modal */
 .diff-container {
   display: grid;
@@ -2219,6 +2257,25 @@ tr:hover td {
   #onboarding-wizard .flex-between > div[style*="display: flex"] {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .modal-action-strip,
+  .card-title-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .modal-action-strip .btn-group,
+  .publish-action-row {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .modal-action-strip .btn,
+  .publish-action-row .btn,
+  .card-title-row .btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 

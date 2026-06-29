@@ -273,7 +273,17 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
       <div className="settings-stack">
         <div className="card" id="card-ethics-profile">
-          <h3 className="card-title">Publication identity</h3>
+          <div className="card-title-row">
+            <h3 className="card-title">Publication identity</h3>
+            <button
+              className="btn btn-primary btn-sm"
+              type="submit"
+              form="form-save-profile"
+              disabled={!profileForm}
+            >
+              Save now
+            </button>
+          </div>
           {profileForm ? (
             <form onSubmit={handleProfileSubmit} id="form-save-profile">
               <div className="settings-form-grid">

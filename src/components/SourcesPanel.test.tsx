@@ -84,14 +84,16 @@ describe("SourcesPanel Component Tests", () => {
     expect(handleDeleteSource).toHaveBeenCalledWith(1);
   });
 
-  test("opens bulk import URLs modal and submits pasted URLs", () => {
+  test("opens bulk import URLs modal and reviews pasted URLs first", () => {
     const handleBulkImport = vi.fn((e: React.FormEvent) => e.preventDefault());
+    const handleBuildReview = vi.fn();
     const handleBulkImportTextChange = vi.fn();
 
     renderPanel({
       showBulkImportModal: true,
       bulkImportText: "https://city.gov/rss",
       onBulkImportTextChange: handleBulkImportTextChange,
+      onBuildBulkImportReview: handleBuildReview,
       onBulkImport: handleBulkImport,
     });
 
@@ -101,8 +103,10 @@ describe("SourcesPanel Component Tests", () => {
     });
     expect(handleBulkImportTextChange).toHaveBeenCalledWith("https://county.gov/notices");
 
-    fireEvent.click(screen.getByRole("button", { name: "Review List" }));
-    expect(handleBulkImport).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole("button", { name: "Review list" }));
+    expect(handleBuildReview).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("button", { name: "Import Checked Sources" })).toBeDisabled();
+    expect(handleBulkImport).not.toHaveBeenCalled();
   });
 
   test("renders bulk import review and toggles reviewed rows", () => {

@@ -33,6 +33,7 @@ export const Layout: React.FC<LayoutProps> = ({
   modelLabel,
   children
 }) => {
+  const mainRef = React.useRef<HTMLElement | null>(null);
   const navGroups = [
     {
       label: "Newsroom",
@@ -65,6 +66,36 @@ export const Layout: React.FC<LayoutProps> = ({
   const routeToTab = React.useCallback((tab: string) => {
     onTabChange(tab);
   }, [onTabChange]);
+
+  React.useEffect(() => {
+    const canUseWindowScrollTo =
+      typeof window.scrollTo === "function" &&
+      !navigator.userAgent.toLowerCase().includes("jsdom");
+    try {
+      if (canUseWindowScrollTo) {
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      } else {
+        document.documentElement.scrollTop = 0;
+        document.documentElement.scrollLeft = 0;
+        document.body.scrollTop = 0;
+        document.body.scrollLeft = 0;
+      }
+    } catch {
+      document.documentElement.scrollTop = 0;
+      document.documentElement.scrollLeft = 0;
+      document.body.scrollTop = 0;
+      document.body.scrollLeft = 0;
+    }
+    const main = mainRef.current;
+    if (main) {
+      if (typeof main.scrollTo === "function") {
+        main.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      } else {
+        main.scrollTop = 0;
+        main.scrollLeft = 0;
+      }
+    }
+  }, [activeTab]);
 
   React.useEffect(() => {
     const tabIds = navGroups.flatMap((group) => group.items.map((item) => item.id));
@@ -154,7 +185,7 @@ export const Layout: React.FC<LayoutProps> = ({
         </div>
       </aside>
 
-      <main className="main-content">
+      <main className="main-content" ref={mainRef}>
         {children}
       </main>
     </div>
