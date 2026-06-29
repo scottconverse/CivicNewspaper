@@ -306,6 +306,45 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_guardrails_warn_on_reporter_notes_and_evergreen_nonstory() {
+        let conn =
+            init_db("file:test_guardrails_newsroom_quality?mode=memory&cache=shared").unwrap();
+        let draft_id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "watch".to_string(),
+                title: "City Council Meetings with Video Archive: City Council meetings are held regularly, and videos of the meetings are now available online.".to_string(),
+                content: "Headline: City Council meetings now live streamed and archived online\n\nNut graf: City Council meetings are held regularly, and videos of the meetings are now available online.\n\nReporting Steps:\nCall the clerk.\n\n[Source needed]\n\n[End of Report]".to_string(),
+                status: "draft_generated".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        let report = run_guardrails_check(&conn, draft_id).unwrap();
+
+        assert!(report.is_clean, "quality warnings must not veto the editor");
+        assert!(report
+            .issues
+            .iter()
+            .any(|i| i.category == "Newsroom Quality" && i.severity == "warning"));
+        assert!(report
+            .issues
+            .iter()
+            .any(|i| i.category == "Reporter Notes" && i.severity == "warning"));
+        assert!(report
+            .issues
+            .iter()
+            .any(|i| i.category == "Newsworthiness" && i.severity == "warning"));
+    }
+
     // 5. Backups Tests
     #[test]
     fn test_backups() {
@@ -3285,6 +3324,43 @@ I should produce JSON only.
             assert!(text.contains("Council reviews capital plan"));
             assert!(!text.contains("Draft: Council reviews capital plan"));
         }
+    }
+
+    #[test]
+    fn test_compile_uses_generated_headline_and_strips_reporter_scaffolding() {
+        let conn = init_db("file:test_compile_headline_cleanup?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        let id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "watch".to_string(),
+                title: "City Council Meetings with Video Archive: City Council meetings are held regularly, and videos of the meetings are now available online.".to_string(),
+                content: "Headline: Council meeting archive gives residents a way to review votes\n\nNut graf: Longmont residents can use the city archive to review recent council meetings.\n\nThe archive can help residents follow council decisions.\n\nReporting Steps:\nCall the clerk.\n\n[End of Report]".to_string(),
+                status: "ready_to_publish".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        let result = compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+
+        assert_eq!(
+            result.articles[0].title,
+            "Council meeting archive gives residents a way to review votes"
+        );
+        let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
+        assert!(html.contains("Council meeting archive gives residents a way to review votes"));
+        assert!(!html.contains("City Council Meetings with Video Archive:"));
+        assert!(!html.contains("Headline:"));
+        assert!(!html.contains("Nut graf:"));
+        assert!(!html.contains("Reporting Steps"));
+        assert!(!html.contains("End of Report"));
     }
 
     #[test]

@@ -145,9 +145,11 @@ pub fn run_guardrails_check(
         None => return Err(format!("Draft ID {} not found", draft_id).into()),
     };
 
-    let _title = draft.title;
+    let title = draft.title;
     let content = draft.content;
     let lead_id = draft.lead_id;
+
+    add_newsroom_quality_warnings(&mut issues, &title, &content);
 
     // Fetch linked evidence items to check for verbatim overlap
     let evidence_items = if let Some(lid) = lead_id {
@@ -290,6 +292,69 @@ pub fn run_guardrails_check(
     let is_clean = !issues.iter().any(|i| i.severity == "error");
 
     Ok(GuardrailsReport { is_clean, issues })
+}
+
+fn add_newsroom_quality_warnings(issues: &mut Vec<GuardrailsIssue>, title: &str, content: &str) {
+    let title_trimmed = title.trim();
+    let title_lower = title_trimmed.to_lowercase();
+    let content_lower = content.to_lowercase();
+
+    if title_trimmed.len() > 100 || title_trimmed.ends_with('.') || title_lower.contains(": ") {
+        issues.push(GuardrailsIssue {
+            category: "Newsroom Quality".to_string(),
+            message: "The public title reads like a lead summary instead of a headline. Rewrite it as a short reader-facing headline before publishing.".to_string(),
+            severity: "warning".to_string(),
+            paragraph_index: 0,
+        });
+    }
+
+    let reporter_markers = [
+        "headline:",
+        "nut graf:",
+        "lede:",
+        "reporting steps:",
+        "next reporting steps:",
+        "[source needed]",
+        "[verification needed]",
+        "[end of report]",
+        "editor_note:",
+    ];
+    let found_markers: Vec<&str> = reporter_markers
+        .iter()
+        .copied()
+        .filter(|marker| content_lower.contains(marker))
+        .collect();
+    if !found_markers.is_empty() {
+        issues.push(GuardrailsIssue {
+            category: "Reporter Notes".to_string(),
+            message: format!(
+                "Draft still contains internal reporter-note marker(s): {}. Remove or rewrite them as reader-facing copy before publishing.",
+                found_markers.join(", ")
+            ),
+            severity: "warning".to_string(),
+            paragraph_index: 0,
+        });
+    }
+
+    let evergreen_markers = [
+        "city council meetings are held regularly",
+        "videos of the meetings are now available online",
+        "provides transparency and allows residents",
+        "official primary document",
+        "newly fetched",
+        "source was fetched",
+    ];
+    if evergreen_markers
+        .iter()
+        .any(|marker| title_lower.contains(marker) || content_lower.contains(marker))
+    {
+        issues.push(GuardrailsIssue {
+            category: "Newsworthiness".to_string(),
+            message: "This reads like evergreen background or a source-intake note. Confirm what changed, why it matters now, and whether there is a real current story before publishing.".to_string(),
+            severity: "warning".to_string(),
+            paragraph_index: 0,
+        });
+    }
 }
 
 // Find verbatim sequences of length N matching between a paragraph and an evidence text

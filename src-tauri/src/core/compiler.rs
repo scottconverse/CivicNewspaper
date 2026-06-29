@@ -273,6 +273,120 @@ fn normalize_public_title(title: &str) -> String {
         .to_string()
 }
 
+fn strip_markdown_strong(text: &str) -> String {
+    text.trim().trim_matches('*').trim().to_string()
+}
+
+fn clean_label_value(value: &str) -> String {
+    value
+        .trim()
+        .trim_start_matches('*')
+        .trim_end_matches('*')
+        .trim()
+        .to_string()
+}
+
+fn headline_from_line(line: &str) -> Option<String> {
+    let trimmed = line.trim();
+    if trimmed.starts_with("# ") || trimmed.starts_with("## ") {
+        return Some(trimmed.trim_start_matches('#').trim().to_string());
+    }
+
+    let plain = strip_markdown_strong(trimmed);
+    let lower = plain.to_lowercase();
+    for prefix in ["headline:", "title:"] {
+        if lower.starts_with(prefix) {
+            let value = clean_label_value(&plain[prefix.len()..]);
+            if !value.is_empty() {
+                return Some(value);
+            }
+        }
+    }
+
+    None
+}
+
+fn title_needs_content_headline(title: &str) -> bool {
+    let trimmed = title.trim();
+    trimmed.is_empty()
+        || trimmed.len() > 100
+        || trimmed.starts_with("Draft:")
+        || trimmed.contains(": ")
+        || trimmed.ends_with('.')
+}
+
+fn public_title_and_content(draft_title: &str, draft_content: &str) -> (String, String) {
+    let fallback_title = normalize_public_title(draft_title);
+    let repaired_content = repair_common_mojibake(draft_content);
+    let mut derived_title: Option<(usize, String)> = None;
+    let lines: Vec<&str> = repaired_content.lines().collect();
+
+    for (idx, line) in lines.iter().take(8).enumerate() {
+        if let Some(headline) = headline_from_line(line) {
+            if !headline.is_empty() {
+                derived_title = Some((idx, headline));
+                break;
+            }
+        }
+    }
+
+    let title = match &derived_title {
+        Some((_idx, headline)) if title_needs_content_headline(&fallback_title) => headline.clone(),
+        _ => fallback_title,
+    };
+
+    let mut skipping_reporting_steps = false;
+    let content = lines
+        .iter()
+        .enumerate()
+        .filter_map(|(idx, line)| {
+            if derived_title
+                .as_ref()
+                .map(|(title_idx, _)| idx == *title_idx)
+                .unwrap_or(false)
+            {
+                return None;
+            }
+
+            let trimmed = line.trim();
+            let plain = strip_markdown_strong(trimmed);
+            let lower = plain.to_lowercase();
+            if lower == "[end of report]" || lower == "end of report" {
+                return None;
+            }
+            if lower.starts_with("nut graf:") || lower.starts_with("lede:") {
+                return Some(
+                    plain
+                        .split_once(':')
+                        .map(|(_, rest)| clean_label_value(rest))
+                        .unwrap_or_default(),
+                );
+            }
+            if lower.starts_with("reporting steps:") || lower.starts_with("next reporting steps:") {
+                skipping_reporting_steps = true;
+                return None;
+            }
+            if skipping_reporting_steps {
+                if trimmed.starts_with('#')
+                    || lower.starts_with("what is known")
+                    || lower.starts_with("what remains")
+                {
+                    skipping_reporting_steps = false;
+                } else {
+                    return None;
+                }
+            }
+
+            Some((*line).to_string())
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+        .trim()
+        .to_string();
+
+    (title, content)
+}
+
 fn clean_generated_site_output(output_dir: &Path) -> Result<(), Box<dyn Error>> {
     for subdir in [
         "briefs",
@@ -618,8 +732,7 @@ pub fn compile_static_site(
     // 5. Compile each published article
     for draft in &published_drafts {
         let draft_id = draft.id.unwrap_or(0);
-        let title = normalize_public_title(&draft.title);
-        let content = repair_common_mojibake(&draft.content);
+        let (title, content) = public_title_and_content(&draft.title, &draft.content);
 
         // Editorial review is advisory at compile time: do not silently filter a
         // story out of the public package. If a draft reached a publishable

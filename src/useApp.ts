@@ -78,6 +78,46 @@ import {
 import modelsConfig from "./models.json";
 import { buildBulkImportReview, BulkImportReview, normalizeImportUrl, tierForSourceType } from "./bulkImportParser";
 
+function normalizeGeneratedDraft(raw: string, fallbackTitle: string): { title: string; content: string } {
+  const repaired = raw.replace(/\r\n/g, "\n").trim();
+  const lines = repaired.split("\n");
+  let title = fallbackTitle.replace(/\s+/g, " ").trim();
+  let titleLineIndex = -1;
+
+  const headlinePatterns = [
+    /^\s*#{1,2}\s+(.+?)\s*$/,
+    /^\s*(?:\*\*)?\s*headline\s*:\s*(.+?)(?:\*\*)?\s*$/i,
+    /^\s*(?:\*\*)?\s*title\s*:\s*(.+?)(?:\*\*)?\s*$/i,
+  ];
+
+  for (let i = 0; i < Math.min(lines.length, 8); i += 1) {
+    for (const pattern of headlinePatterns) {
+      const match = lines[i].match(pattern);
+      if (match?.[1]?.trim()) {
+        title = match[1].replace(/\*\*/g, "").trim();
+        titleLineIndex = i;
+        break;
+      }
+    }
+    if (titleLineIndex >= 0) break;
+  }
+
+  const content = lines
+    .filter((_line, idx) => idx !== titleLineIndex)
+    .map((line) => {
+      const labelMatch = line.match(/^\s*(?:\*\*)?\s*(nut graf|lede)\s*:\s*(?:\*\*)?\s*(.*)$/i);
+      return labelMatch ? labelMatch[2].trim() : line;
+    })
+    .filter((line) => !/^\s*\[?\s*end of report\s*\]?\s*$/i.test(line))
+    .join("\n")
+    .trim();
+
+  return {
+    title: title || "Untitled draft",
+    content: content || repaired,
+  };
+}
+
 export interface ConfirmDialogState {
   title: string;
   message: string;
@@ -1036,16 +1076,14 @@ export function useApp() {
         customSystemPrompt ? customSystemPrompt : undefined
       );
 
-      // UX-m2: persist a clean working title instead of an ellipsis-truncated
-      // stub. Use the full lead summary, collapsed to a single line; the editor
-      // lets the user rename it before publication.
-      const cleanTitle = selectedLead.why.replace(/\s+/g, " ").trim();
+      const leadTitle = selectedLead.why.replace(/\s+/g, " ").trim();
+      const normalizedDraft = normalizeGeneratedDraft(text, leadTitle);
       const now = new Date().toISOString();
       const draftObj: Draft = {
         lead_id: selectedLead.id,
         format: draftFormat,
-        title: cleanTitle || "Untitled draft",
-        content: text,
+        title: normalizedDraft.title,
+        content: normalizedDraft.content,
         status: "draft_generated",
         verification_checklist: "[]",
         created_at: now,

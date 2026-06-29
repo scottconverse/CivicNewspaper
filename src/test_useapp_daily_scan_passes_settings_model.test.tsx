@@ -253,7 +253,9 @@ describe("useApp Hook Tests", () => {
       if (cmd === "get_evidence") return [];
       if (cmd === "get_setting" && args?.key === "model.selected") return "qwen2.5:7b";
       if (cmd === "ollama_health") return { reachable: true, models: ["qwen2.5:7b"], version: "0.6.0" };
-      if (cmd === "generate_draft") return "Generated local AI draft body.";
+      if (cmd === "generate_draft") {
+        return "Headline: Council weighs land purchase\n\nNut graf: The council is reviewing a land purchase tied to a public agenda item.\n\nThe decision could affect nearby residents.";
+      }
       if (cmd === "save_draft") {
         const draft = { ...args.draft, id: 501 };
         savedDrafts.push(draft);
@@ -302,16 +304,16 @@ describe("useApp Hook Tests", () => {
       expect.objectContaining({
         draft: expect.objectContaining({
           lead_id: 77,
-          content: "Generated local AI draft body.",
+          content: "The council is reviewing a land purchase tied to a public agenda item.\n\nThe decision could affect nearby residents.",
           status: "draft_generated",
         }),
       })
     );
     expect(hookResult.selectedLead).toBeNull();
     expect(hookResult.selectedDraft?.id).toBe(501);
-    expect(hookResult.selectedDraft?.title).toBe("A Longmont board packet mentions a land purchase.");
+    expect(hookResult.selectedDraft?.title).toBe("Council weighs land purchase");
     expect(hookResult.selectedDraft?.title).not.toMatch(/^Draft:/);
-    expect(hookResult.selectedDraft?.content).toBe("Generated local AI draft body.");
+    expect(hookResult.selectedDraft?.content).not.toMatch(/Headline:|Nut graf:/i);
     expect(screen.getByTestId("active-tab")).toHaveTextContent("workbench");
   });
 
