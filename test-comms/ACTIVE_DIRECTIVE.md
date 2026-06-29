@@ -19,9 +19,9 @@ C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms
 
 Run this directive now:
 
-test-comms/directives/20260629-continue-full-e2e-with-windows-ui-fallback.md
+test-comms/directives/20260629-rerun-output-cleanup-7fe1145.md
 
-This continues the verified 637e941 build after `test-comms/reports/20260629-full-e2e-continuation-637e941-report.md`. That report found a tester-control blocker, not a CivicNewspaper product blocker: Computer Use native pipe was unavailable. Try Computer Use once, then use the approved no-install Windows-native UI fallback to drive the real installed app through visible UI.
+This verifies the product fixes in commit `7fe11452ea7ccbb9425df291a030da58ff8e48bf` after the 637e941 cleanroom run proved the functional E2E path but found mojibake in published output. This is a focused blocker-verification rerun before the next full clean-wipe E2E pass.
 
 Product branch:
 
@@ -29,22 +29,22 @@ stable-readiness-local-gates
 
 Product commit:
 
-637e941ac77361033fc22b48fac33ae1aa50a6b3
+7fe11452ea7ccbb9425df291a030da58ff8e48bf
 
 Artifact folder:
 
-test-comms/artifacts/20260629-rerun-full-e2e-637e941/
+test-comms/artifacts/20260629-rerun-full-e2e-7fe1145/
 
 Expected preferred NSIS SHA256:
 
-50F64FFCE76106BC1745766CA3AF0A50A46C5464F22BDB65220C8EDED348F67F
+9F495209FFA6254B095EA946F5C2553067D5362834FC7BF62D662522B9F36C4A
 
 Expected fallback MSI SHA256:
 
-04DCB36733FD969C4E17C763220BD9E135256524101883432FCD09E50EC1C7F1
+18B9C45C7896A42C554177A063D08B4462A44C2563FF11437E19F5DA8ACFB154
 
 ## Current Goal
 
-Continue the cleanroom release loop until the installed product, with no manually installed prerequisites, produces at least 5 Longmont stories/briefs, exercises writer/editor controls, exports the static output and ZIP, publishes anonymously to here.now, records the URL, screenshots, output paths, and a full human-readable report proving the cleanroom E2E workflow.
+Verify the fixed build against the published-output blockers: no mojibake in generated/public output, no stale killed-story pages in the export, killed stories cannot be approved directly by accident, and anonymous here.now publishing uses a nonempty display name without manual repair. Then record the here.now URL, screenshots, output paths, ZIP, and a human-readable report.
 
 Commit reports/artifacts with [skip ci].
