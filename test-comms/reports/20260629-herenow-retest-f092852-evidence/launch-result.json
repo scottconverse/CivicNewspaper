@@ -1,0 +1,22 @@
+﻿{
+    "timestamp_utc":  "2026-06-29T10:09:55.7207923Z",
+    "civicnews_process":  {
+                              "Id":  2736,
+                              "Path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe"
+                          },
+    "targets":  {
+                    "value":  [
+                                  {
+                                      "description":  "",
+                                      "devtoolsFrontendUrl":  "https://aka.ms/docs-landing-page/serve_rev/@d8414318246f5132427f455636044b6f79c4e03f/inspector.html?ws=127.0.0.1:9222/devtools/page/A2DE5E4EC72C0FEBA64A60FF468F5643",
+                                      "faviconUrl":  "http://tauri.localhost/favicon.svg",
+                                      "id":  "A2DE5E4EC72C0FEBA64A60FF468F5643",
+                                      "title":  "CivicNews Dashboard",
+                                      "type":  "page",
+                                      "url":  "http://tauri.localhost/",
+                                      "webSocketDebuggerUrl":  "ws://127.0.0.1:9222/devtools/page/A2DE5E4EC72C0FEBA64A60FF468F5643"
+                                  }
+                              ],
+                    "Count":  1
+                }
+}
