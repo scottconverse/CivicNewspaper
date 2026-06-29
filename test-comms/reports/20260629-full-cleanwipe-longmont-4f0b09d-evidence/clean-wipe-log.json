@@ -1,0 +1,52 @@
+{
+    "utc_start":  "2026-06-29T08:31:04.8887161Z",
+    "actions":  [
+                    "Stopping process civicnews pid=12572 path=C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+                    "Stopping process ollama pid=3548 path=C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\ollama-runtime\\v0.30.11\\ollama.exe",
+                    "Running uninstaller C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\Uninstall.exe /S",
+                    "Uninstaller exit 0 for C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\Uninstall.exe",
+                    "Target C:\\Users\\civic\\AppData\\Local\\The Civic Desk exists_before=False",
+                    "Target C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk exists_before=True",
+                    "Removed C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+                    "Target C:\\Users\\civic\\.ollama exists_before=True",
+                    "Removed C:\\Users\\civic\\.ollama",
+                    "Target C:\\Users\\civic\\AppData\\Local\\Ollama exists_before=False",
+                    "Target C:\\Users\\civic\\AppData\\Roaming\\Ollama exists_before=False",
+                    "Target C:\\Users\\civic\\AppData\\Local\\Programs\\Ollama exists_before=False",
+                    "Target C:\\Program Files\\Ollama exists_before=False"
+                ],
+    "errors":  [
+
+               ],
+    "after":  [
+                  {
+                      "path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk",
+                      "exists":  false
+                  },
+                  {
+                      "path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+                      "exists":  false
+                  },
+                  {
+                      "path":  "C:\\Users\\civic\\.ollama",
+                      "exists":  false
+                  },
+                  {
+                      "path":  "C:\\Users\\civic\\AppData\\Local\\Ollama",
+                      "exists":  false
+                  },
+                  {
+                      "path":  "C:\\Users\\civic\\AppData\\Roaming\\Ollama",
+                      "exists":  false
+                  },
+                  {
+                      "path":  "C:\\Users\\civic\\AppData\\Local\\Programs\\Ollama",
+                      "exists":  false
+                  },
+                  {
+                      "path":  "C:\\Program Files\\Ollama",
+                      "exists":  false
+                  }
+              ],
+    "utc_end":  "2026-06-29T08:31:11.8891019Z"
+}

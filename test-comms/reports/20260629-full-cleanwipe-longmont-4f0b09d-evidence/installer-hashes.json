@@ -1,0 +1,9 @@
+{
+    "nsis_path":  "test-comms/artifacts/20260629-full-cleanwipe-longmont-4f0b09d/The Civic Desk_0.2.8_x64-setup.exe",
+    "nsis_expected":  "7B1A15005679678E1E3E99861D83F4B2BC0741266758C0EEA1898AB56D745CA0",
+    "nsis_observed":  "7B1A15005679678E1E3E99861D83F4B2BC0741266758C0EEA1898AB56D745CA0",
+    "msi_path":  "test-comms/artifacts/20260629-full-cleanwipe-longmont-4f0b09d/The Civic Desk_0.2.8_x64_en-US.msi",
+    "msi_expected":  "5EA52BA952052E600C3736171365C328289A10E87A720180EDD7930D8217F871",
+    "msi_observed":  "5EA52BA952052E600C3736171365C328289A10E87A720180EDD7930D8217F871",
+    "utc":  "2026-06-29T08:31:04.8610504Z"
+}

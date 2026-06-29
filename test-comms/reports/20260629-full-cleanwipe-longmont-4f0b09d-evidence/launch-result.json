@@ -1,0 +1,28 @@
+{
+    "utc":  "2026-06-29T08:31:59.0210244Z",
+    "pid":  12532,
+    "exe":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+    "version":  {
+                    "Browser":  "Edg/149.0.4022.98",
+                    "Protocol-Version":  "1.3",
+                    "User-Agent":  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0",
+                    "V8-Version":  "14.9.20.12",
+                    "WebKit-Version":  "537.36 (@d8414318246f5132427f455636044b6f79c4e03f)",
+                    "webSocketDebuggerUrl":  "ws://127.0.0.1:9222/devtools/browser/a5aaaea5-6800-4065-9ed8-294ae635c282"
+                },
+    "targets":  {
+                    "value":  [
+                                  {
+                                      "description":  "",
+                                      "devtoolsFrontendUrl":  "https://aka.ms/docs-landing-page/serve_rev/@d8414318246f5132427f455636044b6f79c4e03f/inspector.html?ws=127.0.0.1:9222/devtools/page/887CD815AF93DE38D17DE59A32D31451",
+                                      "faviconUrl":  "http://tauri.localhost/favicon.svg",
+                                      "id":  "887CD815AF93DE38D17DE59A32D31451",
+                                      "title":  "CivicNews Dashboard",
+                                      "type":  "page",
+                                      "url":  "http://tauri.localhost/",
+                                      "webSocketDebuggerUrl":  "ws://127.0.0.1:9222/devtools/page/887CD815AF93DE38D17DE59A32D31451"
+                                  }
+                              ],
+                    "Count":  1
+                }
+}

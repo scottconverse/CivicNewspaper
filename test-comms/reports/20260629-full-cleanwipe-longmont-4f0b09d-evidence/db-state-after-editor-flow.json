@@ -1,0 +1,43 @@
+{
+  "db_exists": true,
+  "path": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+  "sources": 6,
+  "evidence_items": 27,
+  "leads": 18,
+  "drafts": 5,
+  "publish_runs": 0,
+  "published_posts": 0,
+  "draft_statuses": [
+    [
+      "ready_to_publish",
+      5
+    ]
+  ],
+  "draft_titles": [
+    [
+      1,
+      "ready_to_publish",
+      "Technical Issues with Building Services Online Permitting Portal: The Building Services online permitting portal is experiencing technical difficulties, potentially impacting local businesses and property owners seeking permits."
+    ],
+    [
+      2,
+      "ready_to_publish",
+      "Longmont Invites Applications for New Official City Flag: The City of Longmont is seeking community input through an open application process to design its new official city flag, fostering civic engagement and pride."
+    ],
+    [
+      3,
+      "ready_to_publish",
+      "Vision Zero: Community Involved in Transportation Safety Initiatives: The city encourages community involvement in Vision Zero projects to improve transportation safety. This collaboration between government and residents is vital for effective policy-making."
+    ],
+    [
+      4,
+      "ready_to_publish",
+      "City Council Meetings: Public Input Leads to Legislative Actions: Residents can influence legislative actions through direct engagement during City Council meetings, particularly at the Public Invited to be Heard segment. This highlights the importance of community voice in shaping local laws."
+    ],
+    [
+      5,
+      "ready_to_publish",
+      "Public Participation in City Council Meetings: Residents can participate by signing up to speak during meetings. The process is outlined for different types of agenda items, allowing citizens a voice in city decision-making."
+    ]
+  ]
+}
