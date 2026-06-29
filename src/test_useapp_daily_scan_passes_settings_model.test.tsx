@@ -309,6 +309,8 @@ describe("useApp Hook Tests", () => {
     );
     expect(hookResult.selectedLead).toBeNull();
     expect(hookResult.selectedDraft?.id).toBe(501);
+    expect(hookResult.selectedDraft?.title).toBe("A Longmont board packet mentions a land purchase.");
+    expect(hookResult.selectedDraft?.title).not.toMatch(/^Draft:/);
     expect(hookResult.selectedDraft?.content).toBe("Generated local AI draft body.");
     expect(screen.getByTestId("active-tab")).toHaveTextContent("workbench");
   });
@@ -371,6 +373,8 @@ describe("useApp Hook Tests", () => {
 
       expect(hookResult.selectedLead).toBeNull();
       expect(hookResult.selectedDraft?.lead_id).toBe(lead.id);
+      expect(hookResult.selectedDraft?.title).toBe(`Longmont test lead ${lead.id}`);
+      expect(hookResult.selectedDraft?.title).not.toMatch(/^Draft:/);
       expect(hookResult.selectedDraft?.content).toBe(`Generated draft for lead ${lead.id}.`);
       expect(screen.getByTestId("active-tab")).toHaveTextContent("workbench");
     }

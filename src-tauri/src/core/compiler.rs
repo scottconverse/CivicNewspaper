@@ -161,32 +161,107 @@ fn write_site_file(
     Ok(())
 }
 
-pub(crate) fn repair_common_mojibake(text: &str) -> String {
-    let mut repaired = text.to_string();
-    for (bad, good) in [
-        ("Ã¢â‚¬â„¢", "'"),
-        ("Ã¢â‚¬Ëœ", "'"),
-        ("Ã¢â‚¬Å“", "\""),
-        ("Ã¢â‚¬Â", "\""),
-        ("Ã¢â‚¬â€œ", "-"),
-        ("Ã¢â‚¬â€", "-"),
-        ("Ã¢â‚¬Â¦", "..."),
-        ("â€™", "'"),
-        ("â€˜", "'"),
-        ("â€œ", "\""),
-        ("â€�", "\""),
-        ("â€“", "-"),
-        ("â€”", "-"),
-        ("â€¦", "..."),
-        ("â€", "\""),
-        ("Â ", " "),
-        ("Â", ""),
-    ] {
-        repaired = repaired.replace(bad, good);
+fn windows_1252_byte(ch: char) -> Option<u8> {
+    match ch as u32 {
+        0x0000..=0x007f | 0x00a0..=0x00ff => Some(ch as u8),
+        0x20ac => Some(0x80),
+        0x201a => Some(0x82),
+        0x0192 => Some(0x83),
+        0x201e => Some(0x84),
+        0x2026 => Some(0x85),
+        0x2020 => Some(0x86),
+        0x2021 => Some(0x87),
+        0x02c6 => Some(0x88),
+        0x2030 => Some(0x89),
+        0x0160 => Some(0x8a),
+        0x2039 => Some(0x8b),
+        0x0152 => Some(0x8c),
+        0x017d => Some(0x8e),
+        0x2018 => Some(0x91),
+        0x2019 => Some(0x92),
+        0x201c => Some(0x93),
+        0x201d => Some(0x94),
+        0x2022 => Some(0x95),
+        0x2013 => Some(0x96),
+        0x2014 => Some(0x97),
+        0x02dc => Some(0x98),
+        0x2122 => Some(0x99),
+        0x0161 => Some(0x9a),
+        0x203a => Some(0x9b),
+        0x0153 => Some(0x9c),
+        0x017e => Some(0x9e),
+        0x0178 => Some(0x9f),
+        _ => None,
     }
+}
+
+fn mojibake_score(text: &str) -> usize {
+    text.chars()
+        .filter(|ch| matches!(*ch as u32, 0x00c2 | 0x00c3 | 0x00e2))
+        .count()
+}
+
+fn is_mojibake_starter(ch: char) -> bool {
+    matches!(ch as u32, 0x00c2 | 0x00c3 | 0x00e2)
+}
+
+fn windows_1252_bytes(segment: &str) -> Option<Vec<u8>> {
+    segment.chars().map(windows_1252_byte).collect()
+}
+
+fn repair_mojibake_once(text: &str) -> String {
+    let chars = text.char_indices().collect::<Vec<_>>();
+    let mut repaired = String::with_capacity(text.len());
+    let mut i = 0usize;
+
+    while i < chars.len() {
+        let (start_byte, ch) = chars[i];
+        if !is_mojibake_starter(ch) {
+            repaired.push(ch);
+            i += 1;
+            continue;
+        }
+
+        let original_score = mojibake_score(&text[start_byte..]);
+        let mut best: Option<(usize, String)> = None;
+        let max_end = (i + 256).min(chars.len());
+        for end in (i + 2)..=max_end {
+            let end_byte = chars.get(end).map(|(idx, _)| *idx).unwrap_or(text.len());
+            let segment = &text[start_byte..end_byte];
+            let Some(bytes) = windows_1252_bytes(segment) else {
+                break;
+            };
+            let Ok(decoded) = String::from_utf8(bytes) else {
+                continue;
+            };
+            if mojibake_score(&decoded) < original_score {
+                best = Some((end, decoded));
+            }
+        }
+
+        if let Some((end, decoded)) = best {
+            repaired.push_str(&decoded);
+            i = end;
+        } else {
+            repaired.push(ch);
+            i += 1;
+        }
+    }
+
     repaired
 }
 
+pub(crate) fn repair_common_mojibake(text: &str) -> String {
+    let mut repaired = text.to_string();
+    for _ in 0..3 {
+        let next = repair_mojibake_once(&repaired);
+        if next == repaired {
+            break;
+        }
+        repaired = next;
+    }
+    repaired
+}
 fn clean_generated_site_output(output_dir: &Path) -> Result<(), Box<dyn Error>> {
     for subdir in [
         "briefs",

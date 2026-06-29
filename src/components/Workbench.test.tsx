@@ -66,6 +66,11 @@ describe("Workbench Component Tests", () => {
     vi.mocked(pressFreedomLegalReview).mockReset();
   });
 
+  const bodyContainsMojibakeMarkers = () =>
+    Array.from(document.body.textContent ?? "").some((ch) =>
+      [0x00c2, 0x00c3, 0x00e2].includes(ch.codePointAt(0) ?? 0)
+    );
+
   test("renders selectedLead and clicking Generate Draft fires action callback", () => {
     const handleGenerateText = vi.fn();
 
@@ -264,7 +269,7 @@ describe("Workbench Component Tests", () => {
     renderEditor({ guardrailsReport: mockReport });
 
     expect(screen.getByText("Advisory warnings - these do not block publishing.")).toBeInTheDocument();
-    expect(screen.queryByText(/Ã|â/)).not.toBeInTheDocument();
+    expect(bodyContainsMojibakeMarkers()).toBe(false);
   });
 
   test("rewrite opens a diff modal instead of overwriting the draft in place", async () => {

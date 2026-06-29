@@ -1037,14 +1037,14 @@ export function useApp() {
       );
 
       // UX-m2: persist a clean working title instead of an ellipsis-truncated
-      // stub like "Draft: City approves new zoning…". Use the full lead summary,
-      // collapsed to a single line; the editor lets the user rename it.
+      // stub. Use the full lead summary, collapsed to a single line; the editor
+      // lets the user rename it before publication.
       const cleanTitle = selectedLead.why.replace(/\s+/g, " ").trim();
       const now = new Date().toISOString();
       const draftObj: Draft = {
         lead_id: selectedLead.id,
         format: draftFormat,
-        title: cleanTitle ? `Draft: ${cleanTitle}` : "Untitled draft",
+        title: cleanTitle || "Untitled draft",
         content: text,
         status: "draft_generated",
         verification_checklist: "[]",

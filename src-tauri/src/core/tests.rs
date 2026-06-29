@@ -3176,8 +3176,8 @@ I should produce JSON only.
                 id: None,
                 lead_id: None,
                 format: "watch".to_string(),
-                title: "Cityâ€™s library plan".to_string(),
-                content: "Officials said â€œreview the packetâ€ and residents asked whatâ€™s next."
+                title: "City\u{00e2}\u{20ac}\u{2122}s library plan".to_string(),
+                content: "Copyright \u{00c2}\u{00a9} 2026. Join WhatsApp \u{00e2}\u{2020}\u{2019}. The Youth Center\u{00e2}\u{20ac}\u{2122}s offerings need verification."
                     .to_string(),
                 status: "ready_to_publish".to_string(),
                 verification_checklist: "[]".to_string(),
@@ -3192,12 +3192,14 @@ I should produce JSON only.
         compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
 
         let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
-        assert!(html.contains("City&#x27;s library plan"));
-        assert!(!html.contains("â€™"));
-        assert!(!html.contains("â€œ"));
-        assert!(!html.contains("â€"));
+        assert!(html.contains("City\u{2019}s library plan"));
+        assert!(html.contains("\u{00a9} 2026"));
+        assert!(html.contains("WhatsApp \u{2192}"));
+        assert!(html.contains("Center\u{2019}s offerings"));
+        assert!(!html
+            .chars()
+            .any(|ch| matches!(ch as u32, 0x00c2 | 0x00c3 | 0x00e2)));
     }
-
     #[test]
     fn test_compile_removes_stale_article_files_when_story_is_no_longer_publishable() {
         let conn =
