@@ -1,0 +1,19 @@
+﻿{
+    "timestamp_utc":  "2026-06-29T14:36:19.7357373Z",
+    "pid":  19484,
+    "targets":  {
+                    "value":  [
+                                  {
+                                      "description":  "",
+                                      "devtoolsFrontendUrl":  "https://aka.ms/docs-landing-page/serve_rev/@d8414318246f5132427f455636044b6f79c4e03f/inspector.html?ws=127.0.0.1:9222/devtools/page/E179FA995B34D7273EE50535AF2205CF",
+                                      "faviconUrl":  "http://tauri.localhost/favicon.svg",
+                                      "id":  "E179FA995B34D7273EE50535AF2205CF",
+                                      "title":  "CivicNews Dashboard",
+                                      "type":  "page",
+                                      "url":  "http://tauri.localhost/",
+                                      "webSocketDebuggerUrl":  "ws://127.0.0.1:9222/devtools/page/E179FA995B34D7273EE50535AF2205CF"
+                                  }
+                              ],
+                    "Count":  1
+                }
+}

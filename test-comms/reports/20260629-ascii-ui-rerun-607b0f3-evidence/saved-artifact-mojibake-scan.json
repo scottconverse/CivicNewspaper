@@ -1,0 +1,37 @@
+﻿{
+    "timestamp_utc":  "2026-06-29T14:37:49.1922221Z",
+    "scanned_file_count":  8,
+    "bad_needles_codepoints":  [
+                                   [
+                                       "U+00C3",
+                                       "U+201A"
+                                   ],
+                                   [
+                                       "U+00C3",
+                                       "U+0192"
+                                   ],
+                                   [
+                                       "U+00EF",
+                                       "U+00BF",
+                                       "U+00BD"
+                                   ],
+                                   [
+                                       "U+00C3",
+                                       "U+00A2"
+                                   ]
+                               ],
+    "hit_count":  0,
+    "hits":  [
+
+             ],
+    "files":  [
+                  "01-first-visible-workspace.txt",
+                  "02-story-queue-sidebar.txt",
+                  "03-daily-scan-labels.txt",
+                  "04-after-refresh-loading-state.txt",
+                  "install-result.json",
+                  "installer-hashes.json",
+                  "launch-result.json",
+                  "visible-ui-scan.json"
+              ]
+}

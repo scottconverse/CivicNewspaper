@@ -1,0 +1,114 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+MORNING EDITOR PACKET
+
+Daily Scan
+
+Run deterministic record checks first, then use local AI only to summarize and rank what needs an editor's look.
+
+Refresh
+Run Daily Scan
+SOURCES WATCHED
+6
+OPEN LEADS
+15
+DRAFTS IN DESK
+5
+AI STATUS
+Ready
+
+AI BRIEF
+
+Latest scan #2
+
+Civic Desk keeps this pass local, private, and evidence-first. Use it to find the handful of records worth turning into leads. If local AI is unavailable, deterministic checks still build a review packet.
+
+Scan Results for Scan #2
+
+CITY CLERK'S OFFICE / PUBLIC NOTICE
+
+City Clerk’s Agenda Management Portal Issues
+High priority
+
+The Building Services online permitting portal of the City of Longmont is currently experiencing technical issues, affecting residents and businesses seeking permits.
+
+Why this was flagged
+
+Technical problems with essential city services impact public convenience and can lead to administrative delays for permit seekers.
+
+Suggested next step
+
+Report the issue to the relevant department and follow up on potential solutions.
+
+Open source and review
+Aggregated across sources
+
+CITY WEBSITE / OFFICIAL UPDATE
+
+Youth Center Programs in Longmont
+Medium priority
+
+The City of Longmont is focusing on youth development through programs at the Youth Center to support children, families, and communities.
+
+Why this was flagged
+
+These programs can impact local youth well-being and community development efforts.
+
+Suggested next step
+
+Research the specific initiatives and their potential impacts on the youth population.
+
+No original source URL
+Aggregated across sources
+
+CITY OF LONGMONT / PUBLIC NOTICE
+
+City Council Second Reading Process
+High priority
+
+The City Council's process for approving ordinances, including the steps of first and second readings, public hearings, and voting requirements, is outlined. This transparency helps ensure the public understands how local laws are enacted.
+
+Why this was flagged
+
+This information provides insight into the legislative process for city ordinances, which affects residents' daily lives and is crucial for understanding local governance.
+
+Suggested next step
+
+Review the detailed steps to ensure clarity and accuracy before publication.
+
+Open source and review
+Aggregated across sources
+
+CITY OF LONGMONT PUBLIC INFORMATION DEPARTMENT / COMMUNITY SIGNAL
+
+Longmont Invites Applications for New Official City Flag
+High priority
+
+The city of Longmont is seeking public input to design its new official flag, engaging community members in the process of creating a symbol that represents their diverse and welcoming community.
+
+Why this was flagged
+
+This project involves the community in a meaningful way by allowing residents to contribute to the city's visual identity, which can foster pride and civic engagement.
+
+Suggested next step
+
+Contact the public information office for more details on how residents can submit designs.
+
+Open source and review
+Aggregated across sources
