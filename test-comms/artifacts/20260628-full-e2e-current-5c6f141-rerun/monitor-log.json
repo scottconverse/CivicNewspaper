@@ -1,0 +1,83 @@
+[
+    {
+        "seconds":  0,
+        "time":  "2026-06-28T20:22:23.9777056-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  false,
+        "ollama_command":  null,
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-full-e2e-current-5c6f141-rerun\\monitor-000.png"
+    },
+    {
+        "seconds":  30,
+        "time":  "2026-06-28T20:22:53.7373369-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "ollama_command":  null,
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-full-e2e-current-5c6f141-rerun\\monitor-030.png"
+    },
+    {
+        "seconds":  60,
+        "time":  "2026-06-28T20:23:23.9388596-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "ollama_command":  null,
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-full-e2e-current-5c6f141-rerun\\monitor-060.png"
+    },
+    {
+        "seconds":  90,
+        "time":  "2026-06-28T20:23:54.1177075-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "ollama_command":  null,
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-full-e2e-current-5c6f141-rerun\\monitor-090.png"
+    },
+    {
+        "seconds":  120,
+        "time":  "2026-06-28T20:24:23.8230030-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "ollama_command":  null,
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-full-e2e-current-5c6f141-rerun\\monitor-120.png"
+    },
+    {
+        "seconds":  180,
+        "time":  "2026-06-28T20:25:23.8961032-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "ollama_command":  null,
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-full-e2e-current-5c6f141-rerun\\monitor-180.png"
+    },
+    {
+        "seconds":  240,
+        "time":  "2026-06-28T20:26:23.9556444-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "ollama_command":  null,
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-full-e2e-current-5c6f141-rerun\\monitor-240.png"
+    },
+    {
+        "seconds":  300,
+        "time":  "2026-06-28T20:27:23.8987499-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "ollama_command":  null,
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-full-e2e-current-5c6f141-rerun\\monitor-300.png"
+    },
+    {
+        "seconds":  420,
+        "time":  "2026-06-28T20:29:23.7691297-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "ollama_command":  null,
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260628-full-e2e-current-5c6f141-rerun\\monitor-420.png"
+    }
+]
