@@ -252,6 +252,15 @@ export const Workbench: React.FC<WorkbenchProps> = ({
           Lead: <strong>{selectedLead.why}</strong>
         </p>
 
+        <div className="draft-wizard-top-actions">
+          <button className="btn btn-primary" onClick={onGenerateText} disabled={generatingText || (!ollamaOnline && !manualLlmMode)} id="btn-generate-draft-top">
+            {generatingText ? "Generating Draft..." : "Generate Draft"}
+          </button>
+          <button className="btn btn-secondary" onClick={onCancelDraftWizard} disabled={generatingText} id="btn-cancel-draft-top">
+            Cancel
+          </button>
+        </div>
+
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <div>
             <label htmlFor="select-draft-format" style={{ fontWeight: 600, display: "block", marginBottom: "0.5rem" }}>Article Format</label>
@@ -295,15 +304,6 @@ export const Workbench: React.FC<WorkbenchProps> = ({
             </div>
           </div>
 
-          <div className="draft-wizard-actions">
-            <button className="btn btn-secondary" onClick={onCancelDraftWizard} disabled={generatingText} id="btn-cancel-draft">
-              Cancel
-            </button>
-            <button className="btn btn-primary" onClick={onGenerateText} disabled={generatingText || (!ollamaOnline && !manualLlmMode)} id="btn-generate-draft">
-              {generatingText ? "Generating Draft..." : "Generate Draft"}
-            </button>
-          </div>
-          
           {!ollamaOnline && !manualLlmMode && (
             <div className="error-text" id="ollama-offline-warning" style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
               <AlertTriangle size={14} /> The local AI service is offline. Open the "AI Model" tab to set it up, or use "Manual Mode" in settings.
