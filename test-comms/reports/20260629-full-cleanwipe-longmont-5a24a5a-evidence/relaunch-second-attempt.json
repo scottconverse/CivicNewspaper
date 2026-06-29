@@ -1,0 +1,23 @@
+{
+    "exe":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+    "exists":  true,
+    "start_error":  null,
+    "pid":  14868,
+    "cdp_error":  null,
+    "targets":  {
+                    "value":  [
+                                  {
+                                      "description":  "",
+                                      "devtoolsFrontendUrl":  "https://aka.ms/docs-landing-page/serve_rev/@d8414318246f5132427f455636044b6f79c4e03f/inspector.html?ws=127.0.0.1:9222/devtools/page/F211D3504ECD846C5405E8AA9D5D1241",
+                                      "faviconUrl":  "http://tauri.localhost/favicon.svg",
+                                      "id":  "F211D3504ECD846C5405E8AA9D5D1241",
+                                      "title":  "CivicNews Dashboard",
+                                      "type":  "page",
+                                      "url":  "http://tauri.localhost/",
+                                      "webSocketDebuggerUrl":  "ws://127.0.0.1:9222/devtools/page/F211D3504ECD846C5405E8AA9D5D1241"
+                                  }
+                              ],
+                    "Count":  1
+                },
+    "time_utc":  "2026-06-29T09:37:42.2690211Z"
+}

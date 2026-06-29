@@ -1,0 +1,8 @@
+{
+    "utc_start":  "2026-06-29T09:37:04.2990680Z",
+    "installer":  "test-comms/artifacts/20260629-full-cleanwipe-longmont-5a24a5a/The Civic Desk_0.2.8_x64-setup.exe",
+    "exit_code":  0,
+    "utc_end":  "2026-06-29T09:37:08.1602511Z",
+    "install_path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+    "install_exists":  true
+}

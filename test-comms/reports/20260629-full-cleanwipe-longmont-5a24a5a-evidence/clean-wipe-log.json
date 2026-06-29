@@ -1,0 +1,91 @@
+{
+    "utc_start":  "2026-06-29T09:36:04.2761160Z",
+    "actions":  [
+                    "Stopping process civicnews pid=16872 path=C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+                    "Stopping process ollama pid=5300 path=C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\ollama-runtime\\v0.30.11\\ollama.exe",
+                    "Running uninstaller C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\Uninstall.exe /S",
+                    "Uninstaller exit 0",
+                    "Removed C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk",
+                    "Removed C:\\Users\\civic\\.ollama"
+                ],
+    "errors":  [
+                   "Remove failed C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk: Access to the path \u0027cublas64_13.dll\u0027 is denied."
+               ],
+    "inspected":  [
+                      {
+                          "path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+                          "exists_before":  true
+                      },
+                      {
+                          "path":  "C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk",
+                          "exists_before":  true
+                      },
+                      {
+                          "path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk",
+                          "exists_before":  false
+                      },
+                      {
+                          "path":  "C:\\Users\\civic\\AppData\\Local\\CivicNewspaper",
+                          "exists_before":  false
+                      },
+                      {
+                          "path":  "C:\\Users\\civic\\AppData\\Roaming\\The Civic Desk",
+                          "exists_before":  false
+                      },
+                      {
+                          "path":  "C:\\Users\\civic\\.ollama",
+                          "exists_before":  true
+                      },
+                      {
+                          "path":  "C:\\Users\\civic\\AppData\\Local\\Ollama",
+                          "exists_before":  false
+                      },
+                      {
+                          "path":  "C:\\Users\\civic\\AppData\\Roaming\\Ollama",
+                          "exists_before":  false
+                      },
+                      {
+                          "path":  "C:\\Users\\civic\\AppData\\Local\\Programs\\Ollama",
+                          "exists_before":  false
+                      }
+                  ],
+    "after":  [
+                  {
+                      "path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+                      "exists_after":  true
+                  },
+                  {
+                      "path":  "C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk",
+                      "exists_after":  false
+                  },
+                  {
+                      "path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk",
+                      "exists_after":  false
+                  },
+                  {
+                      "path":  "C:\\Users\\civic\\AppData\\Local\\CivicNewspaper",
+                      "exists_after":  false
+                  },
+                  {
+                      "path":  "C:\\Users\\civic\\AppData\\Roaming\\The Civic Desk",
+                      "exists_after":  false
+                  },
+                  {
+                      "path":  "C:\\Users\\civic\\.ollama",
+                      "exists_after":  false
+                  },
+                  {
+                      "path":  "C:\\Users\\civic\\AppData\\Local\\Ollama",
+                      "exists_after":  false
+                  },
+                  {
+                      "path":  "C:\\Users\\civic\\AppData\\Roaming\\Ollama",
+                      "exists_after":  false
+                  },
+                  {
+                      "path":  "C:\\Users\\civic\\AppData\\Local\\Programs\\Ollama",
+                      "exists_after":  false
+                  }
+              ],
+    "utc_end":  "2026-06-29T09:36:11.3759388Z"
+}

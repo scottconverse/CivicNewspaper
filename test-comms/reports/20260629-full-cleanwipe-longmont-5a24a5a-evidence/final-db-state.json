@@ -1,0 +1,22 @@
+{
+  "base": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+  "exists": true,
+  "dbs": [
+    {
+      "path": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+      "size": 4096,
+      "counts": {
+        "sources": 0,
+        "evidence_items": 0,
+        "leads": 0,
+        "daily_scan_leads": 0,
+        "drafts": 0,
+        "publish_runs": 0,
+        "published_posts": 0,
+        "verification_tasks": 0,
+        "settings": 7
+      },
+      "drafts_by_status": {}
+    }
+  ]
+}
