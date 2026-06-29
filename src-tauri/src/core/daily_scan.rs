@@ -416,6 +416,70 @@ fn normalized_topic(text: &str) -> String {
         .join(" ")
 }
 
+fn topic_tokens(text: &str) -> std::collections::BTreeSet<String> {
+    const STOPWORDS: &[&str] = &[
+        "a", "an", "and", "are", "as", "at", "be", "by", "can", "for", "from", "in", "into", "is",
+        "it", "its", "of", "on", "or", "that", "the", "their", "this", "to", "with",
+    ];
+
+    text.to_lowercase()
+        .chars()
+        .map(|ch| {
+            if ch.is_ascii_alphanumeric() || ch.is_whitespace() {
+                ch
+            } else {
+                ' '
+            }
+        })
+        .collect::<String>()
+        .split_whitespace()
+        .filter(|token| token.len() > 2)
+        .filter(|token| !STOPWORDS.contains(token))
+        .map(|token| {
+            token
+                .trim_end_matches('s')
+                .trim_end_matches("ing")
+                .to_string()
+        })
+        .filter(|token| token.len() > 2)
+        .collect()
+}
+
+fn scan_lead_topic_text(title: &str, summary: &str, original_url: &str) -> String {
+    format!("{title} {summary} {original_url}")
+}
+
+fn scan_leads_are_similar(
+    existing_title: &str,
+    existing_summary: &str,
+    existing_url: &str,
+    lead: &DailyScanLead,
+) -> bool {
+    let existing_url = existing_url.trim();
+    let lead_url = lead.original_url.trim();
+    if !existing_url.is_empty() && existing_url.eq_ignore_ascii_case(lead_url) {
+        return true;
+    }
+
+    let existing_tokens = topic_tokens(&scan_lead_topic_text(
+        existing_title,
+        existing_summary,
+        existing_url,
+    ));
+    let lead_tokens = topic_tokens(&scan_lead_topic_text(
+        &lead.title,
+        &lead.summary,
+        &lead.original_url,
+    ));
+    if existing_tokens.len() < 4 || lead_tokens.len() < 4 {
+        return normalized_topic(existing_title) == normalized_topic(&lead.title);
+    }
+
+    let common = existing_tokens.intersection(&lead_tokens).count();
+    let smaller = existing_tokens.len().min(lead_tokens.len());
+    common >= 5 && (common as f32 / smaller as f32) >= 0.58
+}
+
 fn similar_scan_lead_exists(
     conn: &rusqlite::Connection,
     lead: &DailyScanLead,
@@ -424,10 +488,18 @@ fn similar_scan_lead_exists(
     if topic.is_empty() {
         return Ok(false);
     }
-    let mut stmt = conn.prepare("SELECT title FROM daily_scan_leads WHERE scan_id = ?1")?;
-    let titles = stmt.query_map([lead.scan_id], |row| row.get::<_, String>(0))?;
-    for title in titles {
-        if normalized_topic(&title?) == topic {
+    let mut stmt = conn
+        .prepare("SELECT title, summary, original_url FROM daily_scan_leads WHERE scan_id = ?1")?;
+    let rows = stmt.query_map([lead.scan_id], |row| {
+        Ok((
+            row.get::<_, String>(0)?,
+            row.get::<_, String>(1)?,
+            row.get::<_, String>(2)?,
+        ))
+    })?;
+    for row in rows {
+        let (title, summary, original_url) = row?;
+        if scan_leads_are_similar(&title, &summary, &original_url, lead) {
             return Ok(true);
         }
     }

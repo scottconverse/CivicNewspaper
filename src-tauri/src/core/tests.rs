@@ -963,6 +963,46 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_daily_scan_dedupes_paraphrased_building_services_portal_leads() {
+        let response = r#"
+        {
+          "leads": [
+            {
+              "title": "Building Services Portal Experiencing Technical Issues",
+              "summary": "Residents and businesses are facing difficulties with the Building Services online permitting portal, which is currently down. This technical problem could disrupt essential services and impact construction projects across the city.",
+              "original_url": "https://longmontcolorado.gov/building-services/"
+            },
+            {
+              "title": "Building Services Online Permitting Portal Experiencing Technical Issues",
+              "summary": "The Building Services online permitting portal is currently down, causing inconvenience to residents and businesses in Longmont. This issue impacts daily operations and could delay construction projects.",
+              "original_url": "https://longmontcolorado.gov/building-services/status"
+            }
+          ]
+        }
+        "#;
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT INTO daily_scan_runs (started_at, run_status) VALUES ('', 'running')",
+            [],
+        )
+        .unwrap();
+
+        let saved =
+            crate::core::daily_scan::parse_and_save_scan_response(&conn, 1, response).unwrap();
+        assert_eq!(
+            saved, 1,
+            "paraphrased leads about the same permitting-portal outage should cluster to one editor candidate"
+        );
+        let leads = list_daily_scan_leads(&conn, 1).unwrap();
+        assert_eq!(leads.len(), 1);
+        assert!(
+            leads[0].title.contains("Building Services"),
+            "the retained lead should still represent the issue"
+        );
+    }
+
     // ENG-Min4: parse_and_save_scan_response must validate the untrusted,
     // model-asserted `original_url` against the same SSRF/scheme allow-list used
     // for real sources (scraper::validate_source_url) and DROP a blocked target
@@ -972,7 +1012,7 @@ mod tests {
     // deleting the validation gate would leave it green. Here we feed BOTH a benign
     // URL and blocked ones (cloud-metadata IP + file:// scheme), then read the
     // persisted rows back and assert the benign URL is preserved while every
-    // blocked URL is stored blank — removing the gate would persist the raw
+    // blocked URL is stored blank; removing the gate would persist the raw
     // attacker URL and fail this test.
     #[test]
     fn test_daily_scan_drops_blocked_model_urls_keeps_benign() {
@@ -3206,8 +3246,8 @@ I should produce JSON only.
 
     #[test]
     fn test_compile_strips_legacy_draft_prefix_from_public_titles() {
-        let conn = init_db("file:test_compile_strips_draft_prefix?mode=memory&cache=shared")
-            .unwrap();
+        let conn =
+            init_db("file:test_compile_strips_draft_prefix?mode=memory&cache=shared").unwrap();
         let temp_dir = tempdir().unwrap();
         let id = insert_draft(
             &conn,

@@ -599,8 +599,8 @@ async fn publish_herenow(
         file_bytes.insert(relative_path, bytes);
     }
 
-    let display_name = Some(herenow_display_name(config, &output_dir))
-        .filter(|value| !value.trim().is_empty());
+    let display_name =
+        Some(herenow_display_name(config, &output_dir)).filter(|value| !value.trim().is_empty());
     let display_description = config
         .project_hint
         .clone()
