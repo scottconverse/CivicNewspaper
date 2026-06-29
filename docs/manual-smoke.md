@@ -1,88 +1,129 @@
-# CivicNewspaper v0.2.8 Manual Smoke Test
+# CivicNewspaper v0.2.9 Manual Smoke Test
 
-This clean-profile smoke test verifies the desktop-only paths that browser component tests cannot prove: installer startup, bundled AI sidecar behavior, first-run onboarding, source setup, browser pairing, guardrails, publishing, and recovery from missing dependencies.
+This smoke test verifies the release paths that unit tests and browser component tests cannot prove by themselves.
 
-Save screenshots, logs, and notes beside the release receipt. A stable release should not claim first-run coverage without these artifacts.
+Save screenshots, logs, output ZIPs, here.now URLs, model notes, and failure notes beside the release receipt.
 
-## Prerequisites
+## Required Environment
 
-- A clean Windows user profile, Windows Sandbox, or VM.
-- No existing `%APPDATA%\com.scottconverse.civicdesk\` folder.
-- No user-installed Ollama service running before launch. The bundled sidecar path should be tested first.
-- Network available for model download, live source scan, and anonymous here.now preview publish.
-- Test source files available at `C:\Users\instynct\Desktop\CivicNewspaperTestFiles`.
+- Clean Windows user profile, Windows Sandbox, VM, or second test machine.
+- No existing The Civic Desk app data.
+- No preinstalled Ollama, local models, or CivicNewspaper test files unless the specific test says otherwise.
+- Network available for source discovery, source fetches, model download, and here.now publishing.
+- Public web access for official and public social/community sources.
 
-## 1. Installation
+The tester must behave like a normal user. If the app needs a runtime, model, path, parser, extension, or setup step, the app or installer must guide it. The tester should not manually repair the product.
 
-1. Build or download the installer artifact.
-2. Install CivicNewspaper.
-3. Launch the app and capture the initial screen.
-4. Confirm the app writes its database/config under the clean profile, not a reused developer profile.
+## 1. Install And First Launch
 
-## 2. First-Run Onboarding
+1. Install the release artifact.
+2. Confirm the app launches from the normal desktop or Start menu path.
+3. Confirm app data is created under the clean profile.
+4. Complete first-run identity setup.
+5. Confirm organization type is selectable and saved.
+6. Confirm publisher identity, footer language, and editorial policy text can be configured.
 
-1. Complete identity and city setup.
-2. Confirm the local AI service step reports whether the bundled sidecar is reachable.
-3. If the service is unavailable, verify the UI offers Retry and diagnostics.
-4. Confirm the model step recommends `qwen2.5:7b` for 8 GB RAM or more, or `llama3.2:3b` below 8 GB.
-5. Try pressing Next before download. The app must require explicit skip confirmation.
-6. Download the recommended model or explicitly skip and record the degraded-mode copy.
-7. Finish onboarding and confirm the main workspace loads.
+## 2. Local AI Setup
 
-## 3. Source Setup
+1. Start with no Ollama or model installed.
+2. Confirm the app detects machine hardware and recommends an appropriate model.
+3. Confirm the app explains model size, expected time, and degraded-mode options.
+4. Download or install the required AI runtime/model through the app flow.
+5. Confirm progress is visible.
+6. Run a real local-model draft or advisor request and save the output.
+7. Disable or stop the model service and confirm the app reports the real problem without misleading "model not found" copy.
 
-1. Open Sources.
-2. Run Discover for a Colorado city.
-3. Verify discovered sources show credibility/review labels and preserve official-source tier when imported.
-4. Import the fixture files from `C:\Users\instynct\Desktop\CivicNewspaperTestFiles`:
+## 3. Source Intake
+
+1. Add at least one official Longmont source manually.
+2. Run source discovery for Longmont, Colorado.
+3. Confirm official, local media, public social/community, and search-fallback candidates are labeled clearly.
+4. Import realistic fixture files:
    - CSV
    - TXT
    - XLSX
    - DOCX
-   - text-backed PDF
+   - text-readable PDF
    - scanned-style PDF
-5. Confirm imported rows are reviewable, duplicates are visible, and image-only scanned PDFs produce OCR/readable-text guidance.
+5. Confirm URLs are extracted as separate candidates, not flattened into one long string.
+6. Confirm duplicates are shown or handled clearly.
+7. Confirm image-only scanned PDFs explain the OCR limitation if OCR is unavailable.
 
-## 4. Daily Scan
+## 4. Daily Scan And Civic Intelligence
 
-1. With zero sources, confirm Daily Scan routes to Sources instead of running an empty scan.
-2. With sources configured, run Daily Scan.
-3. Confirm staged progress shows source fetching, deterministic checks, optional AI review, saving, and completion/failure.
-4. Stop or hide the AI service and confirm deterministic/fallback copy is understandable.
+1. With zero sources, confirm the scan routes the user to Sources instead of running empty.
+2. With real sources configured, run Daily Scan.
+3. Confirm staged progress shows source fetch, deterministic checks, entity extraction, optional AI review, saving, and completion.
+4. Confirm observations, entities, source performance, leads, and dark signals are created where appropriate.
+5. Confirm fetch failures do not break the whole scan.
 
-## 5. Browser Pairing
+## 5. Dark Signals And Verification
 
-1. Open `chrome://extensions/`.
-2. Enable Developer Mode.
-3. Load the unpacked extension from `browser-extension/chromium/`.
-4. In CivicNewspaper, generate a pairing code.
-5. Pair the extension.
-6. Confirm the extension popup shows the paired state only, and the app's paired-device list updates.
+1. Confirm public social/community inputs can produce reviewable dark signals.
+2. Confirm signals are ranked and explained, but never hidden from the editor.
+3. Confirm low-confidence material is kept out of published evidence by default.
+4. Convert at least one signal or lead into a verification task.
+5. Move verification tasks through suggested, auto-checked, needs-human, blocked, and resolved states where available.
 
-## 6. Guardrails, Attestation, and Publishing
+## 6. Writer And Editor Workflow
 
-1. Create or generate a draft with cited evidence.
-2. Add a guardrail-triggering phrase such as "corrupt" without adequate context.
-3. Confirm the guardrail inspector shows the warning and any configured high-concern terms open the editor-note flow.
-4. Confirm approval remains an editor decision and records human review.
-5. Compile the issue.
-6. Verify drafts with review warnings publish with visible editor-review notes instead of being silently skipped.
-7. Open and inspect:
+1. Generate or create 10 to 25 leads from Longmont sources.
+2. Draft 5 to 10 reader-facing stories or briefs.
+3. Open each draft in the Workbench.
+4. Edit text manually.
+5. Send at least one draft back for more work.
+6. Put at least one draft on hold.
+7. Approve at least five publishable items.
+8. Run the optional press-freedom/legal-risk advisor on at least one story.
+9. Confirm guardrails warn but do not veto the editor.
+
+## 7. Publishing
+
+1. Compile the issue.
+2. Confirm the receipt lists article count, generated files, skipped items, and output path.
+3. Inspect:
    - homepage
-   - article page
+   - article pages
    - RSS feed
-   - corrections/about/ethics pages
-   - ZIP
+   - corrections page
+   - about page
+   - ethics/reporting pages
+   - ZIP export
    - newsletter markdown
-   - Substack markdown
-   - Facebook/subreddit/Nextdoor/short-link share files
-8. Run anonymous here.now publish and verify the live URL loads.
-9. Test a connector configuration before using Publish with connector.
+   - Substack-ready markdown
+   - Facebook, subreddit, Nextdoor, and short-link blurbs
+4. Publish anonymously to here.now.
+5. Save the here.now URL.
+6. Confirm the public site loads and article links work.
+7. Confirm the local ZIP matches the published issue.
+8. Confirm no duplicate stories are published as separate articles unless the editor intentionally approved both.
 
-## 7. Evidence to Save
+## 8. Browser Extension
 
-- App-data path proof.
-- Screenshots of onboarding, source import review, Daily Scan progress, guardrail/attestation, publish receipt, and here.now live output.
-- Release smoke receipt.
-- Model bakeoff result.
-- Any failure logs and recovery notes.
+1. Install or load the extension through the app-guided flow.
+2. Generate a pairing code.
+3. Pair the extension.
+4. Confirm the app's Paired Devices list updates.
+5. Send a public page from the browser to the app.
+6. Confirm the evidence appears in the newsroom workflow.
+
+## 9. Backup, Restore, And Recovery
+
+1. Create a backup from the UI.
+2. Restore from the backup in a clean profile.
+3. Interrupt a scan and confirm recovery behavior.
+4. Interrupt an import and confirm partial-work handling.
+5. Interrupt or fail a publish attempt and confirm recovery copy is clear.
+
+## 10. Output Quality Gate
+
+The smoke test does not pass unless it produces:
+
+- A real Longmont publication.
+- 10 to 25 leads.
+- 5 to 10 reader-facing stories or briefs.
+- A reviewable ZIP/output folder.
+- A live here.now URL.
+- A human-readable report explaining what passed, what failed, and what was fixed.
+
+One lead or one story is a failure for this gate.

@@ -1,95 +1,94 @@
-# Installation Guide & Binary Verification
+# Installation Guide And Checksum Verification
 
-This guide explains how to install CivicNewspaper on Windows, macOS, and Linux, and how to verify the integrity of the downloaded files.
+This guide explains how to install The Civic Desk from the CivicNewspaper releases page and how to verify a downloaded installer.
 
----
+The public beta installers are unsigned. Windows SmartScreen and macOS Gatekeeper may warn you before the app opens. That warning is expected for an unsigned beta and does not by itself mean the file is malicious. It also does not prove the file is safe. Use the checksum steps below to confirm the download matches the release artifact.
 
-## 🛡️ Unsigned public beta, and what checksums do (and don't) prove
+## Download
 
-CivicNewspaper is a public beta, and its installers are **not code-signed**. As an open-source, community-led project, it does not currently participate in the paid Microsoft and Apple developer-signing programs. Because the installers are unsigned, Windows SmartScreen and macOS Gatekeeper will warn you on first launch — this is expected, and the steps to proceed are in the OS sections below.
+Get the latest release from:
 
-Every release on GitHub includes the installer files and a `SHA256SUMS` manifest listing the SHA256 checksum of each binary. Verifying that checksum confirms your download **matches the file published on the release page** — i.e. that it was not corrupted or altered in transit. Be clear about the limit of this guarantee: a checksum file fetched from the *same* release page as the binary is **not** a substitute for code signing. It does not prove who built the binary or that the publisher's account or build pipeline was not compromised. If you need the highest-transparency path, **build from source and inspect the release inputs yourself** (see the README's "Building from source" section). This matches the "No code signing" note in [SECURITY.md](../SECURITY.md).
+<https://github.com/scottconverse/CivicNewspaper/releases/latest>
 
----
+Release assets may include Windows, macOS, and Linux builds depending on the release.
 
-## 💻 Operating System Installation Paths
+## Windows
 
-### 1. Windows Installation
-Because the Windows installer is unsigned, Windows SmartScreen will flag the application on first launch.
+1. Download the `.msi` or `.exe` installer from the latest release.
+2. Optional but recommended: verify the SHA256 checksum before opening the installer.
+3. Double-click the installer.
+4. If Windows SmartScreen says "Windows protected your PC," click **More info**.
+5. Confirm the publisher and filename match the release you downloaded.
+6. Click **Run anyway**.
+7. Follow the installer prompts.
+8. Launch **The Civic Desk** from the Start menu.
 
-1. Download the latest `.msi` or `.exe` installer from the [latest GitHub Releases](https://github.com/scottconverse/CivicNewspaper/releases/latest).
-2. Double-click the downloaded file to run it.
-3. A blue warning box will appear: **"Windows protected your PC"** (SmartScreen).
-4. Click the small **"More info"** link under the main warning text.
+## macOS
 
-This screenshot placeholder describes the Windows SmartScreen warning window, where users click "More info" to reveal the "Run anyway" button.
+1. Download the `.dmg` file from the latest release.
+2. Optional but recommended: verify the SHA256 checksum before opening the image.
+3. Open the `.dmg` and drag the app to Applications.
+4. Because the app is unsigned during public beta, open it with right-click or Control-click, then choose **Open**.
+5. If macOS blocks it, go to **System Settings > Privacy & Security** and choose **Open Anyway** for The Civic Desk.
 
-> ⚠️ Real installer screenshots are pending and will be added in v0.3 once captured on clean VMs.
-> The AI-generated mockups shipped in v0.2.0 were withdrawn because they did not match
-> the actual dialogs and could mislead users.
+## Linux
 
-5. A button labeled **"Run anyway"** will appear in the bottom right. Click it to launch the installer.
-6. Follow the standard installation prompts to complete the process.
+1. Download the `.deb` package if one is available for the release.
+2. Optional but recommended: verify the SHA256 checksum.
+3. Install with:
 
-### 2. macOS Installation
-macOS Gatekeeper blocks unsigned apps by default, preventing execution if the developer cannot be verified.
+```bash
+sudo dpkg -i the-civic-desk_*.deb
+sudo apt-get install -f
+```
 
-1. Download the `.dmg` file from the [latest GitHub Releases](https://github.com/scottconverse/CivicNewspaper/releases/latest).
-2. Double-click the `.dmg` file and drag **CivicNewspaper.app** into your **Applications** folder.
-3. **Important**: Do not double-click to launch it immediately. Doing so will trigger a Gatekeeper warning prompt (which can be bypassed by opening via right-click or System Settings).
-4. Instead, navigate to your **Applications** folder in Finder, right-click (or Control-click) the **CivicNewspaper** icon, and select **Open**.
-5. A dialog box will appear stating macOS cannot verify the developer. Click the **"Open"** button to confirm.
+The Linux package format is currently Debian/Ubuntu oriented. AppImage and Flatpak are not stable-release promises yet.
 
-This screenshot placeholder describes the macOS Gatekeeper warning popup, which prompts the user to open or cancel the unsigned application.
+## Verify The SHA256 Checksum
 
-> ⚠️ Real installer screenshots are pending and will be added in v0.3 once captured on clean VMs.
-> The AI-generated mockups shipped in v0.2.0 were withdrawn because they did not match
-> the actual dialogs and could mislead users.
+A SHA256 checksum proves that the file you downloaded matches the file listed in the release manifest. It is not the same as code signing and does not prove who built the file.
 
-6. *Alternative workaround:* On macOS 14+ (Sonoma) and later, if the app fails to open or is blocked, go to **System Settings > Privacy & Security**, scroll down to the **Security** section, locate the notification that CivicNewspaper was blocked, and click the **"Open Anyway"** button.
+1. Open the latest release page.
+2. Find the `SHA256SUMS` file or the checksum listed for your installer.
+3. Compute the local hash.
+4. Compare the two strings exactly.
 
-### 3. Linux Installation
-We provide Debian/Ubuntu package archives (`.deb`). Linux builds are deb-only — there is no AppImage build.
+### Windows PowerShell
 
-* **Debian/Ubuntu (`.deb`)**:
-  1. Download the `.deb` package.
-  2. Open a terminal and run:
-     ```bash
-     sudo dpkg -i civicnewspaper_*.deb
-     sudo apt-get install -f # Install any missing dependencies
-     ```
+```powershell
+Get-FileHash -Algorithm SHA256 "C:\Users\YourName\Downloads\The Civic Desk_0.2.9_x64_en-US.msi"
+```
 
----
+### macOS
 
-## 🔍 How to Verify the SHA256 Checksum
+```bash
+shasum -a 256 "$HOME/Downloads/The Civic Desk_0.2.9_x64.dmg"
+```
 
-To confirm your download matches the file published on the release page (i.e. it was not corrupted or altered in transit), compare its SHA256 hash against the published manifest.
+### Linux
 
-### Step 1: Get the Release Hash
-1. Open the [latest GitHub Releases page](https://github.com/scottconverse/CivicNewspaper/releases/latest).
-2. Locate and copy the SHA256 hash listed next to your file, or open the uploaded `SHA256SUMS` file in your browser to view the hashes.
+```bash
+sha256sum "$HOME/Downloads/the-civic-desk_0.2.9_amd64.deb"
+```
 
-### Step 2: Compute the Hash on Your Computer
+If the hash does not match, delete the installer and report it on the project issue tracker. Do not run a mismatched installer.
 
-Open a terminal or command prompt and run the command matching your operating system:
+## First Launch
 
-*(Note: use the **exact filename you downloaded** — match it against the asset names on the GitHub Releases page and in the `SHA256SUMS` manifest. As of v0.2.7 the installers are branded **The Civic Desk** (e.g. `The Civic Desk_<version>_x64-setup.exe`); pre-rename builds used `CivicNewspaper_...`. Replace `<version>` with the release tag's version, and quote the path because the product name contains spaces.)*
+On first launch, the setup flow asks for:
 
-* **Windows (PowerShell)**:
-  ```powershell
-  Get-FileHash -Algorithm SHA256 "C:\Users\YourUsername\Downloads\The Civic Desk_<version>_x64_en-US.msi"
-  ```
-* **macOS (Terminal)**:
-  ```bash
-  shasum -a 256 "$HOME/Downloads/The Civic Desk_<version>_x64.dmg"
-  ```
-* **Linux (Terminal)**:
-  ```bash
-  sha256sum "$HOME/Downloads/The Civic Desk_<version>_amd64.deb"
-  ```
+- Publication name.
+- Editor name.
+- Organization type.
+- City and state.
+- Local AI/model setup.
+- Backup and publishing folders.
 
-### Step 3: Compare the Hashes
-Compare the hex string output by your terminal to the hash listed on the GitHub Release page. If they match exactly (case-insensitive), your download is identical to the file published on the release page and was not altered in transit. (As noted above, this confirms transit integrity, not publisher authenticity — it is not the same assurance code signing provides.)
+The app may recommend and download a local model through Ollama. Model downloads can be large and slow. The app should show progress and allow an explicit skip/degraded path.
 
-> [!WARNING]
-> If the computed hash does not match the hash published on the official GitHub Release page, do not run the installer. Delete the file immediately and report the discrepancy on our issue tracker.
+## Current Public-Beta Limits
+
+- Installers are unsigned.
+- Some external publishing providers require user-owned credentials.
+- Scanned image-only PDFs require OCR support before URLs can be extracted.
+- Clean-machine installer coverage is improving but not yet stable-release grade.

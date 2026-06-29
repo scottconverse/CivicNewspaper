@@ -3,24 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Progressive enhancement: mark that JS is running. The scroll-reveal
-         animation hides `.fade-up` sections until JS reveals them, but that
-         hidden state is scoped to `.js` in the CSS. Without this class (JS
-         disabled, or this script never runs) every section stays visible
-         instead of rendering a blank page. -->
     <script>document.documentElement.classList.add('js');</script>
-    <title>CivicNews | Reclaiming Factual Local News</title>
+    <title>The Civic Desk | Local-first civic newsroom software</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/lucide@0.456.0"></script>
 </head>
 <body>
-
-    <!-- Navigation -->
     <nav aria-label="Site navigation">
         <div class="nav-container">
             <div class="logo">
-                <i data-lucide="landmark"></i> CivicNews
+                <i data-lucide="newspaper"></i> The Civic Desk
             </div>
             <input type="checkbox" id="nav-toggle" class="nav-toggle">
             <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation menu">
@@ -28,53 +21,39 @@
             </label>
             <div class="nav-links">
                 <a href="#features">Features</a>
-                <a href="#how-it-works">How It Works</a>
-                <a href="#architecture">Architecture</a>
+                <a href="#workflow">Workflow</a>
+                <a href="#publishing">Publishing</a>
                 <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/user_manual.md" class="nav-btn-secondary" target="_blank">User Manual</a>
                 <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank" class="nav-btn-primary">GitHub</a>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <header class="hero">
         <div class="hero-content fade-up">
-            <div class="pill">Local-First. Zero Cloud.</div>
-            <h1 class="hero-title">The newsroom for the <span class="gradient-text">community observer</span></h1>
+            <div class="pill">Public beta. Local-first. Human edited.</div>
+            <h1 class="hero-title">A desktop newsroom for <span class="gradient-text">local civic reporting</span></h1>
             <p class="hero-subtitle">
-                A desktop civic intelligence tool empowering single-editor newsrooms to monitor municipal feeds, extract OSINT signals, draft objective reports using local AI, and publish flat HTML sites—all running 100% locally.
+                The Civic Desk helps small local publishers find sources, spot leads, draft and verify stories, and publish a reader-facing civic paper. It keeps the newsroom workspace local by default, while still supporting web sources and optional publishing providers.
             </p>
-            
             <div class="download-container">
-                <div class="download-card" id="download-win">
+                <div class="download-card">
                     <a href="https://github.com/scottconverse/CivicNewspaper/releases/latest" class="btn download-btn">
-                        <i data-lucide="monitor"></i> Download for Windows
+                        <i data-lucide="download"></i> Download public beta
                     </a>
                     <div class="install-callout">
-                        <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/install.md" class="callout-link" aria-label="First time installing on Windows?">
-                            <i data-lucide="help-circle"></i> First time installing?
+                        <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/install.md" class="callout-link">
+                            <i data-lucide="help-circle"></i> Install guide and checksums
                         </a>
                     </div>
                 </div>
-                
-                <div class="download-card" id="download-mac">
-                    <a href="https://github.com/scottconverse/CivicNewspaper/releases/latest" class="btn download-btn">
-                        <i data-lucide="apple"></i> Download for macOS
+                <div class="download-card">
+                    <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/user_manual.md" class="btn download-btn">
+                        <i data-lucide="book-open"></i> Read the manual
                     </a>
                     <div class="install-callout">
-                        <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/install.md" class="callout-link" aria-label="First time installing on macOS?">
-                            <i data-lucide="help-circle"></i> First time installing?
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="download-card" id="download-linux">
-                    <a href="https://github.com/scottconverse/CivicNewspaper/releases/latest" class="btn download-btn">
-                        <i data-lucide="terminal"></i> Download for Linux
-                    </a>
-                    <div class="install-callout">
-                        <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/install.md" class="callout-link" aria-label="First time installing on Linux?">
-                            <i data-lucide="help-circle"></i> First time installing?
+                        <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/release-readiness.md" class="callout-link">
+                            <i data-lucide="clipboard-check"></i> Current release status
                         </a>
                     </div>
                 </div>
@@ -82,153 +61,158 @@
         </div>
     </header>
 
-    <!-- Features Section -->
     <section id="features" class="section">
         <div class="section-container">
             <div class="section-header fade-up">
-                <h2>Why CivicNews?</h2>
-                <p>Designed to be factual, verifiable, and completely private.</p>
+                <h2>Built For Small Local Newsrooms</h2>
+                <p>Enough structure to help a part-time editor move faster, without taking judgment away from the editor.</p>
             </div>
             <div class="features-grid">
-                
-                <div class="feature-card fade-up" style="transition-delay: 0.1s;">
-                    <div class="feature-icon"><i data-lucide="refresh-cw"></i></div>
+                <div class="feature-card fade-up">
+                    <div class="feature-icon"><i data-lucide="rss"></i></div>
+                    <h3>Source Intake</h3>
+                    <p>Add sources manually, discover candidates, or import CSV, TXT, XLSX, DOCX, and text-readable PDF source lists. Imported and discovered sources go through review instead of being silently trusted.</p>
+                </div>
+                <div class="feature-card fade-up">
+                    <div class="feature-icon"><i data-lucide="radar"></i></div>
                     <h3>Daily Scan</h3>
-                    <p>Aggregates municipality signals automatically. Keeps you updated on the latest local government feeds without manual tracking.</p>
+                    <p>Fetches configured sources, records evidence, detects civic observations, and creates leads. Local AI can help summarize and rank, but deterministic source work happens first.</p>
                 </div>
-
-                <div class="feature-card fade-up" style="transition-delay: 0.2s;">
-                    <div class="feature-icon"><i data-lucide="file-text"></i></div>
-                    <h3>Plain Language Summary & Rewrite</h3>
-                    <p>Converts dense, bureaucratic agendas and reports into clean, readable text. Full offline LLM support keeps your workspace private.</p>
+                <div class="feature-card fade-up">
+                    <div class="feature-icon"><i data-lucide="signal"></i></div>
+                    <h3>Dark Signal Desk</h3>
+                    <p>Surfaces public social, community, and weak-signal leads for human review. The app can rank and warn, but it must never hide information or veto an editor.</p>
                 </div>
-
-                <div class="feature-card fade-up" style="transition-delay: 0.3s;">
-                    <div class="feature-icon"><i data-lucide="shield-check"></i></div>
-                    <h3>Source Tier Enforcement</h3>
-                    <p>Classify and segment feeds by reliability and official standing. Focus first on high-priority regulatory or legislative sources.</p>
+                <div class="feature-card fade-up">
+                    <div class="feature-icon"><i data-lucide="scale"></i></div>
+                    <h3>Advisor, Not Gatekeeper</h3>
+                    <p>Optional press-freedom and legal-risk checks can flag attribution, sourcing, privacy, and defamation concerns. They are advisory only; publication remains a human editorial decision.</p>
                 </div>
-
-                <div class="feature-card fade-up" style="transition-delay: 0.4s;">
-                    <div class="feature-icon"><i data-lucide="cpu"></i></div>
-                    <h3>Bundled Ollama Sidecar</h3>
-                    <p>Features zero separate setup. Run your intelligence model directly on your CPU out-of-the-box, no external server needed. GPU acceleration is not yet bundled on Linux.</p>
-                </div>
-
             </div>
         </div>
     </section>
 
-    <!-- How It Works Section -->
-    <section id="how-it-works" class="section alternate-bg">
+    <section id="workflow" class="section alternate-bg">
         <div class="section-container">
             <div class="section-header fade-up">
-                <h2>How It Works</h2>
-                <p>A simple, repeatable cycle for objective reporting.</p>
+                <h2>How The Workflow Fits Together</h2>
+                <p>Find, verify, write, approve, publish, and share.</p>
             </div>
-            
             <div class="timeline">
                 <div class="timeline-step fade-up">
                     <div class="step-number">1</div>
                     <div class="step-content">
-                        <h3>Scrape Sources</h3>
-                        <p>Link your local city hall, school board, or police department feeds. CivicNews pulls down their public documents securely.</p>
+                        <h3>Add and Review Sources</h3>
+                        <p>Start with official local sources, add local media and public community sources, then use search fallback to avoid missing useful leads.</p>
                     </div>
                 </div>
-                
                 <div class="timeline-step fade-up">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3>Extract Signals</h3>
-                        <p>The detector engine scans the raw text and automatically creates "Leads" when it spots high-dollar contracts, personnel changes, or scheduled public hearings.</p>
+                        <h3>Scan and Build Leads</h3>
+                        <p>The app records evidence, extracts entities, detects changes, and creates source-backed leads and dark-signal items for review.</p>
                     </div>
                 </div>
-
                 <div class="timeline-step fade-up">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3>Draft & Verify</h3>
-                        <p>Your local Ollama assistant drafts an objective report. You then link every factual claim to the exact sentence in the raw municipal document to pass the Guardrails inspector.</p>
+                        <h3>Write and Edit</h3>
+                        <p>Use the Workbench to draft, revise, hold, approve, or send stories back for more reporting. Guardrails warn; editors decide.</p>
                     </div>
                 </div>
-
                 <div class="timeline-step fade-up">
                     <div class="step-number">4</div>
                     <div class="step-content">
-                        <h3>Publish Statically</h3>
-                        <p>Use the built-in wizard to compile a beautiful flat HTML site, generate copy-ready social blurbs, and publish instantly with here.now. Use GitHub Pages for a durable public archive in your own repository; Cloudflare Pages and Netlify remain technical hosting options. Substack remains copy-ready assisted publishing: paste the generated draft, publish it, then record the public URL.</p>
+                        <h3>Publish and Distribute</h3>
+                        <p>Compile a static issue, export a ZIP, publish with a provider, and generate share copy for newsletters and community platforms.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Architecture Section -->
-    <section id="architecture" class="section">
+    <section id="publishing" class="section">
         <div class="section-container">
             <div class="section-header fade-up">
-                <h2>Technical Architecture</h2>
-                <p>A secure, hybrid layout bridging desktop apps and browser extensions.</p>
+                <h2>Publishing Stack</h2>
+                <p>The output is a website package first. Distribution comes after the canonical paper exists.</p>
             </div>
-            
+            <div class="features-grid">
+                <div class="feature-card fade-up">
+                    <div class="feature-icon"><i data-lucide="rocket"></i></div>
+                    <h3>here.now</h3>
+                    <p>Recommended default for simple temporary publication and cleanroom testing.</p>
+                </div>
+                <div class="feature-card fade-up">
+                    <div class="feature-icon"><i data-lucide="archive"></i></div>
+                    <h3>GitHub Pages</h3>
+                    <p>Recommended durable archive path for users who want a public repository-backed record.</p>
+                </div>
+                <div class="feature-card fade-up">
+                    <div class="feature-icon"><i data-lucide="server"></i></div>
+                    <h3>Cloudflare and Netlify</h3>
+                    <p>More technical hosting options for users with provider accounts and tokens.</p>
+                </div>
+                <div class="feature-card fade-up">
+                    <div class="feature-icon"><i data-lucide="mail"></i></div>
+                    <h3>Substack and Newsletter</h3>
+                    <p>Generate copy-ready posts and newsletter markdown. Substack is an assisted workflow, not the only publishing route.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="architecture" class="section alternate-bg">
+        <div class="section-container">
+            <div class="section-header fade-up">
+                <h2>Architecture In Plain English</h2>
+                <p>Your drafts and database are local unless you choose to fetch sources, connect a provider, export files, or publish.</p>
+            </div>
             <div class="arch-card fade-up">
                 <div class="arch-grid">
                     <div class="arch-text">
-                        <h3>Sandboxed Local APIs</h3>
-                        <p>CivicNews runs entirely on the user's machine. It establishes an Axum loopback server strictly bound to <code>127.0.0.1:12053</code>.</p>
+                        <h3>Desktop app, local database, optional local AI</h3>
+                        <p>The app is a Tauri desktop app with a React interface, Rust backend, SQLite database, and Ollama local AI integration. The browser extension pairs through a loopback server on <code>127.0.0.1</code>.</p>
                         <ul class="arch-list">
-                            <li><i data-lucide="check-circle-2"></i> <strong>Tauri v2 Desktop Wrapper:</strong> React + TypeScript Glassmorphic UI connected via secure IPC.</li>
-                            <li><i data-lucide="check-circle-2"></i> <strong>SQLite WAL Database:</strong> Supports concurrent reads/writes for robust local data handling.</li>
-                            <li><i data-lucide="check-circle-2"></i> <strong>DNS Rebinding Guards:</strong> Strict host header validation prevents external network access.</li>
-                            <li><i data-lucide="check-circle-2"></i> <strong>Browser Pairing:</strong> Connect your Chrome extensions using a secure pairing token to capture articles as you browse.</li>
+                            <li><i data-lucide="check-circle-2"></i> Local drafts and SQLite database.</li>
+                            <li><i data-lucide="check-circle-2"></i> Optional local model setup through Ollama.</li>
+                            <li><i data-lucide="check-circle-2"></i> Public web access for source fetches and publishing providers.</li>
+                            <li><i data-lucide="check-circle-2"></i> Static HTML output for long-term portability.</li>
                         </ul>
                         <div style="margin-top: 1.5rem;">
-                            <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/architecture.md" target="_blank" class="btn btn-secondary">Read Full Architecture Specs</a>
+                            <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/architecture.md" target="_blank" class="btn btn-secondary">Read the architecture</a>
                         </div>
                     </div>
                     <div class="arch-visual">
                         <div class="mermaid-container">
-                            <svg class="arch-svg" viewBox="0 0 560 460" role="img" aria-labelledby="arch-svg-title arch-svg-desc" xmlns="http://www.w3.org/2000/svg">
-                                <title id="arch-svg-title">CivicNews architecture diagram</title>
-                                <desc id="arch-svg-desc">The browser extension or UI connects via a pairing token and API to the Tauri HTTP loopback server (Axum), which talks to the Tauri Rust core. The Rust core connects bidirectionally to a SQLite WAL database and the Ollama sidecar, and one-way to the flat HTML compiler.</desc>
+                            <svg class="arch-svg" viewBox="0 0 560 360" role="img" aria-labelledby="arch-svg-title arch-svg-desc" xmlns="http://www.w3.org/2000/svg">
+                                <title id="arch-svg-title">The Civic Desk architecture diagram</title>
+                                <desc id="arch-svg-desc">Editor uses the desktop UI. The UI talks to the Rust core. The Rust core stores data locally, calls Ollama when available, fetches public sources, and publishes static output when requested.</desc>
                                 <defs>
                                     <marker id="arch-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
                                         <path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"></path>
                                     </marker>
                                 </defs>
-
                                 <g stroke="#94a3b8" stroke-width="2" fill="none">
-                                    <line x1="280" y1="80" x2="280" y2="122" marker-start="url(#arch-arrow)" marker-end="url(#arch-arrow)"></line>
-                                    <line x1="280" y1="180" x2="280" y2="222" marker-start="url(#arch-arrow)" marker-end="url(#arch-arrow)"></line>
-                                    <line x1="220" y1="280" x2="100" y2="356" marker-start="url(#arch-arrow)" marker-end="url(#arch-arrow)"></line>
-                                    <line x1="280" y1="280" x2="280" y2="356" marker-start="url(#arch-arrow)" marker-end="url(#arch-arrow)"></line>
-                                    <line x1="340" y1="280" x2="460" y2="356" marker-end="url(#arch-arrow)"></line>
+                                    <line x1="280" y1="74" x2="280" y2="118" marker-end="url(#arch-arrow)"></line>
+                                    <line x1="280" y1="174" x2="280" y2="218" marker-end="url(#arch-arrow)"></line>
+                                    <line x1="220" y1="276" x2="95" y2="318" marker-end="url(#arch-arrow)"></line>
+                                    <line x1="280" y1="276" x2="280" y2="318" marker-end="url(#arch-arrow)"></line>
+                                    <line x1="340" y1="276" x2="465" y2="318" marker-end="url(#arch-arrow)"></line>
                                 </g>
-
-                                <text x="292" y="105" fill="#94a3b8" font-size="11" font-family="Inter, sans-serif">Pairing token / API</text>
-
                                 <g font-family="Outfit, sans-serif" font-weight="700" font-size="14" text-anchor="middle">
-                                    <rect x="160" y="24" width="240" height="56" rx="10" fill="#1e40af" stroke="#3b82f6" stroke-width="1.5"></rect>
-                                    <text x="280" y="57" fill="#f8fafc">Browser Extension / UI</text>
-
-                                    <rect x="160" y="124" width="240" height="56" rx="10" fill="#4c1d95" stroke="#8b5cf6" stroke-width="1.5"></rect>
-                                    <text x="280" y="148" fill="#f8fafc">Tauri HTTP Loopback</text>
-                                    <text x="280" y="167" fill="#f8fafc">Server (Axum)</text>
-
-                                    <rect x="160" y="224" width="240" height="56" rx="10" fill="#065f46" stroke="#10b981" stroke-width="1.5"></rect>
-                                    <text x="280" y="257" fill="#f8fafc">Tauri Rust Core</text>
-
-                                    <rect x="16" y="356" width="168" height="76" rx="10" fill="#374151" stroke="#6b7280" stroke-width="1.5"></rect>
-                                    <text x="100" y="388" fill="#f8fafc">SQLite DB</text>
-                                    <text x="100" y="407" fill="#f8fafc">(WAL Mode)</text>
-
-                                    <rect x="196" y="356" width="168" height="76" rx="10" fill="#374151" stroke="#6b7280" stroke-width="1.5"></rect>
-                                    <text x="280" y="388" fill="#f8fafc">Ollama Sidecar</text>
-                                    <text x="280" y="407" fill="#cbd5e1" font-size="10" font-weight="400">PE / ELF / Mach-O</text>
-
-                                    <rect x="376" y="356" width="168" height="76" rx="10" fill="#374151" stroke="#6b7280" stroke-width="1.5"></rect>
-                                    <text x="460" y="388" fill="#f8fafc">Flat HTML</text>
-                                    <text x="460" y="407" fill="#f8fafc">Compiler</text>
+                                    <rect x="160" y="24" width="240" height="50" rx="10" fill="#1e40af" stroke="#3b82f6"></rect>
+                                    <text x="280" y="55" fill="#f8fafc">React Desktop UI</text>
+                                    <rect x="160" y="124" width="240" height="50" rx="10" fill="#4c1d95" stroke="#8b5cf6"></rect>
+                                    <text x="280" y="155" fill="#f8fafc">Tauri Command Bridge</text>
+                                    <rect x="160" y="224" width="240" height="50" rx="10" fill="#065f46" stroke="#10b981"></rect>
+                                    <text x="280" y="255" fill="#f8fafc">Rust Core</text>
+                                    <rect x="20" y="318" width="150" height="34" rx="8" fill="#374151" stroke="#6b7280"></rect>
+                                    <text x="95" y="340" fill="#f8fafc">SQLite</text>
+                                    <rect x="205" y="318" width="150" height="34" rx="8" fill="#374151" stroke="#6b7280"></rect>
+                                    <text x="280" y="340" fill="#f8fafc">Ollama</text>
+                                    <rect x="390" y="318" width="150" height="34" rx="8" fill="#374151" stroke="#6b7280"></rect>
+                                    <text x="465" y="340" fill="#f8fafc">Publishers</text>
                                 </g>
                             </svg>
                         </div>
@@ -238,19 +222,18 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer>
         <div class="footer-container">
             <div class="footer-brand">
                 <div class="logo">
-                    <i data-lucide="landmark"></i> CivicNews
+                    <i data-lucide="newspaper"></i> The Civic Desk
                 </div>
-                <p>Open-source civic intelligence.</p>
+                <p>Open-source local newsroom software. Public beta, not a signed stable release.</p>
             </div>
             <div class="footer-links">
                 <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/user_manual.md" target="_blank">User Manual</a>
-                <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/architecture.md" target="_blank">Architecture Specs</a>
-                <a href="https://github.com/scottconverse/CivicNewspaper/discussions" target="_blank">Community Discussions</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/architecture.md" target="_blank">Architecture</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper/discussions" target="_blank">Discussions</a>
                 <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank">GitHub</a>
             </div>
         </div>

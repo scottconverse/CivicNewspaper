@@ -1,265 +1,299 @@
-# CivicNewspaper User Manual
+# The Civic Desk User Manual
 
-Welcome to the **CivicNewspaper User Manual**. This document is split into three parts:
-- **Part 1 — For Newsroom Operators (Non-Technical)**: Installation, onboarding, daily operations, drafting, and publishing.
-- **Part 2 — For Technical Operators**: Architecture details, security model, regex detectors, linting guardrails, and system management.
-- **Part 3 — For Developers**: Setup for local development, code layout, writing tests, and contributing.
+This manual is written for people running a small local publication. You do not need to be a developer to use the app.
 
----
+The Civic Desk helps you find leads, draft stories, review risk, and publish a local issue. It does not decide what is true, legal, fair, or newsworthy. The editor does.
 
-# Part 1 — For Newsroom Operators
+## 1. Install The App
 
-This section is written in plain English for journalists, editors, and community publishers. You do not need any coding experience to follow these steps.
+Download the latest release from:
 
-## 1. Installation
-CivicNewspaper runs entirely on your local computer to keep your notes, articles, and data completely private. To install the app:
+<https://github.com/scottconverse/CivicNewspaper/releases/latest>
 
-* **Windows**:
-  1. Download the latest `.exe` or `.msi` installer from the [GitHub Release Page](https://github.com/scottconverse/CivicNewspaper/releases/latest).
-  2. Double-click the installer.
-  3. Because the installer is not digitally signed, Windows SmartScreen will show a blue warning popup: *"Windows protected your PC"*.
-  4. Click **"More info"** on the warning popup, then click the **"Run anyway"** button that appears.
+The installers are unsigned during public beta. That means Windows or macOS may warn you before opening the app. This is expected for an unsigned open-source beta. See [install.md](install.md) for detailed steps and checksum verification.
 
-* **macOS**:
-  1. Download the latest `.dmg` file from the [GitHub Release Page](https://github.com/scottconverse/CivicNewspaper/releases/latest).
-  2. Double-click the `.dmg` and drag **The Civic Desk** into your **Applications** folder.
-  3. Right-click (or Control-click) the **CivicNewspaper** icon in your Applications folder and select **Open**.
-  4. A Gatekeeper warning will appear saying macOS cannot verify the developer. Click **Open** anyway.
-  5. If the app is blocked, open your Mac's **System Settings > Privacy & Security**, scroll down to the Security section, and click **"Open Anyway"** for CivicNewspaper.
+## 2. First-Run Setup
 
-* **Linux**:
-  1. Download the `.deb` package (Ubuntu/Debian). Linux builds are deb-only.
-  2. Install it using your system package manager:
-     ```bash
-     sudo dpkg -i ./*.deb
-     ```
-  3. **Note:** On Linux, the bundled Ollama engine runs on the CPU only. GPU acceleration is not bundled on Linux yet (tracked as a known limitation); inference still works, just slower.
+When you open the app for the first time, the setup wizard asks for:
 
-## 2. First-Time Setup
-On your very first launch, the **Onboarding Wizard** will walk you through five essential setup steps:
+- Publication name
+- Editor name
+- Organization type: single person, private organization, nonprofit, for-profit, or other
+- City and state
+- Local AI setup
+- Default backup and publish folders
 
-1. **Identity**:
-   * Enter your community profile details including **Publication Name** (e.g. *Oak Valley Council Watch*), **Editor Name**, **City**, and **State**.
-2. **AI Service Setup**:
-   * The application checks the connection status of the bundled offline Ollama sidecar AI engine. If you installed CivicNewspaper from a release installer, Ollama is already bundled inside it — you do not need to install Ollama separately. (Developers building from source fetch the sidecar with a build script; see Part 3.)
-3. **Download AI Model**:
-   * Pull the recommended offline AI model based on your system RAM (`qwen2.5:7b`, ≈4.7 GB download, for RAM >= 8GB; or `llama3.2:3b`, ≈2 GB, as the low-RAM fallback). CivicNewspaper uses a scan-tested model because the Daily Scan feature relies on reliable JSON output.
-4. **Defaults**:
-   * Configure your publication paths: **Publish Path** (where static HTML sites are compiled) and **Backup Path** (where database backups are stored).
-5. **Done**:
-   * Finish the setup to initialize your database and enter the main workspace.
+The app checks your computer and recommends a local AI model. On ordinary 8 GB+ machines, the current default is `qwen2.5:7b`. On smaller machines, the app may suggest a lighter model such as `llama3.2:3b`.
 
-## 3. Adding Your First Source
-To watch your local government, you must tell the app which web pages or feeds to monitor.
-1. Click the **Sources** tab in the sidebar.
-2. Click **Add Source** (or use the **Auto-Discovery Wizard** to scan a site for hidden RSS feeds).
-3. Enter the details:
-   * **Source Name**: e.g., *City Council Agendas*
-   * **Source URL**: The webpage or RSS feed link (e.g., `https://cityhall.gov/minutes.xml`).
-   * **Source Type**:
-     * *Primary Record*: Official government minutes, resolutions, and budgets.
-     * *Official Communication*: Press releases, public notice portals.
-     * *Media Lead*: Other news sites or blogs (scrapes headlines only to respect copyright).
-   * Each source is also assigned a reliability **tier** (`official_record`, `news_reporting`, or `community_signal`), derived from the source type, which the app uses to prioritise review.
-4. Click **Save**.
+Model download can take a while. The setup screen should show progress so it does not look stuck. If you skip model setup, deterministic source fetching and review paths still work, but drafting and AI-assisted scan summaries are limited.
 
-## 4. The Daily Scan
-The **Daily Scan** is your command center for catching important events.
-* Every day, CivicNewspaper aggregates all new scraped text, minutes, and documents collected over the previous 24 hours.
-* Click the **Daily Scan** button at the top of the queue.
-* The local AI reads the combined raw text and compiles a high-level summary of important civic signals (meetings, contracts, hires).
-* The scan produces **Daily Scan Leads**. You can review these leads in your inbox and click **Promote to Story** to send a lead directly to your editing workbench.
+## 3. Add Sources
 
-## 5. Generating Your First Draft
-Once a lead is promoted, open the **Workbench** tab:
-1. **Choose a Story Format**: Select whether you want to write a short *Brief*, a deeper *Watch*, or an in-depth *Investigation*.
-2. **Click Generate Draft**: The local AI can draft from attached source material, or create a working draft when a lead needs more reporting.
-3. **Citations / Source Links**: When a claim comes from attached source material, links like `[Record](evidence:12)` point readers to the source excerpt. Editors decide when source links are needed.
-4. **Guardrails & Editor Review**: In the Workbench sidebar, The Civic Desk scans your text against an **editor-managed word list** (Settings -> *Story guardrails*). By default a match only **warns** you. An editor can mark specific words as **high-concern**, which asks for an editor note before approval. The app warns and records; the publisher keeps final judgment. The checks flag if:
-   * A paragraph looks like a factual claim but has no source link (*Citation Coverage*).
-   * You used accusatory words (like *stole*, *corrupt*, *fraud*) without a supporting citation (*Accusatory Language*).
-   * You mentioned an arrest or charge without a presumption-of-innocence modifier (like *alleged* or *allegedly*) (*Legal Naming*).
-   * A paragraph copies a long verbatim run of words directly from a linked source (*Verbatim Overlap* — see Part 2 §4).
+Open **Sources** to tell the app what to watch.
 
-## 6. Plain-Language Rewrite
-Government documents and legal letters are often filled with dense jargon. You can translate this into readable community news using the **Plain-Language Rewrite** feature:
-1. Select the draft or highlight the section of text you want to simplify in the editor.
-2. Click the **Plain-Language Rewrite** button.
-3. The app will prompt the local AI with a format-aware system instruction designed to strip out jargon and legalese while retaining all numbers and key facts.
-4. The rewrite is shown for your review before anything changes. You explicitly **Accept** (apply it) or **Reject** (discard it) — the original draft is never overwritten without your confirmation.
+Source types include:
 
-## 7. Publishing Your News
-When you are ready to share your stories with the community:
-1. In the workbench, click **Approve for Static Publish** on your drafts.
-2. Go to the **Publish** panel in the sidebar.
-3. Select an **Output Directory** on your computer (e.g., a folder on your Desktop named `CivicNewsSite`).
-4. Review the compile checklist, then click **Compile site**.
-5. CivicNewspaper will take all approved drafts, convert them to clean HTML, apply your templates, generate an RSS feed (`feed.xml`), and write them to the selected folder along with the about / ethics / how-we-report / corrections pages.
-6. The compile receipt shows how many articles and files were written. It also creates `site-package.zip`, `newsletter.md`, `substack.md`, `share-package.md`, Facebook/subreddit/Nextdoor copy, a short-link blurb, and `publish-manifest.json`.
-7. To put the issue online, choose a **Publisher connector**. The recommended default is **here.now**: publish a temporary preview with no account, or save a free here.now API key for permanent sites. Use **GitHub Pages** if you want a durable public archive in your own repository. Cloudflare Pages and Netlify remain technical hosting options. Substack is assisted distribution: use the generated Substack draft, publish it in Substack, then save the public URL.
-8. Save connector details and use **Test connection** to check the saved settings. API tokens or credentials are stored in the operating system credential store; the app database only stores non-secret connector metadata.
-9. Click **Publish with connector** for API-backed providers, or paste a public URL and click **Save public URL** for assisted/manual publishing. The app updates the publish manifest, ZIP, newsletter draft, Substack draft, and social copy so the share package points residents at the live issue.
-10. The **Publish history** table keeps recent issue runs, providers, article counts, timestamps, and output paths so you can see what was exported and where it was sent.
+- **Primary record:** official agendas, minutes, ordinances, budget records, court or public-notice records.
+- **Official communication:** city press releases, public information pages, agency notices.
+- **News reporting:** local news sites or independent reporting.
+- **Community signal:** public social/community sources such as public Reddit pages, public meeting-video pages, or public forums.
 
----
+You can add sources manually, run city discovery, or bulk import files. Bulk import supports:
 
-# Part 2 — For Technical Operators
+- CSV
+- TXT
+- XLSX
+- DOCX
+- Text-backed PDF
 
-This section covers the technical architecture, security design, and system behaviors for system administrators or technically inclined operators.
+Image-only scanned PDFs are detected and should return guidance rather than silently pretending nothing was found. OCR support is a future improvement.
 
-## 1. System Architecture
-CivicNewspaper is structured as a local-first desktop application with five core modules:
+Every imported or discovered source should be reviewed before relying on it.
 
-```mermaid
-graph TD
-    Tauri[Tauri Desktop Shell] <-->|IPC Commands| ReactUI[React 19 Frontend]
-    Tauri <-->|Rust Core FFI| RustCore[Rust Backend Core]
-    RustCore -->|SQLite WAL Mode| SQLite[(SQLite Database)]
-    RustCore <-->|Local HTTP| Ollama[Ollama LLM Client]
-    RustCore -->|pulldown-cmark| Compiler[Static Site Compiler]
-    Compiler -->|Output HTML/CSS/RSS| CompiledSite[Static Website Directory]
+## 4. Daily Scan
+
+Open **Daily Scan** and run a scan after sources are configured.
+
+Daily Scan does several things:
+
+1. Checks watched sources.
+2. Stores new evidence.
+3. Runs deterministic detectors and change checks.
+4. Extracts civic entities such as people, agencies, companies, addresses, parcels, vendors, and organizations.
+5. Creates observations and source performance scores.
+6. Produces leads, dark signals, and verification tasks.
+7. Uses the local model for targeted summarization/ranking when available.
+
+If the local AI model is unavailable, the app should explain that clearly and continue the deterministic parts where possible.
+
+## 5. Review The Story Queue
+
+The **Story Queue** is where leads become stories.
+
+From each lead, you can:
+
+- Open linked evidence.
+- Generate a draft.
+- Move into the Workbench.
+- Leave the lead for later.
+
+The app may surface low-confidence or unverified leads. That is intentional. It should rank and explain them, not hide them.
+
+## 6. Dark Signals
+
+The **Dark Signals** tab is for early, messy civic signals that may matter but are not ready to publish.
+
+Examples:
+
+- Public discussion about a possible land deal.
+- A recurring complaint pattern.
+- A new entity appearing across documents.
+- A public social/community post that points toward a verifiable issue.
+
+Dark signals are for editor review. They are not automatically publishable evidence. The app should show:
+
+- Why it might matter
+- Origin
+- Risk level
+- Related entities
+- Verification path
+- Publication status
+
+The system should never hide a signal from the editor solely because it is messy. It should rank it and explain why.
+
+## 7. Verification Queue
+
+The **Verification Queue** turns leads and dark signals into reporting tasks.
+
+Tasks can be:
+
+- Suggested
+- Auto-checked
+- Needs human
+- Blocked
+- Resolved
+
+Use this queue to decide what can be checked quickly and what requires calls, records requests, meeting review, or human reporting.
+
+## 8. Workbench
+
+The **Workbench** is the editor.
+
+You can:
+
+- Generate a draft from a lead.
+- Write or edit manually.
+- Choose article format: brief, watch, explainer, investigation, opinion, or custom.
+- Link source evidence.
+- Run a plain-language rewrite.
+- Run the optional press-freedom/legal-risk advisor.
+- Put a story on hold.
+- Send it back for more work.
+- Kill it.
+- Approve it for publishing.
+
+Approval requires a human attestation. The app records that a person reviewed and accepted responsibility for publishing.
+
+## 9. Guardrails And Advisor
+
+The app has two kinds of review help:
+
+### Story Guardrails
+
+Guardrails warn about issues such as:
+
+- Unsupported factual claims
+- Accusatory wording
+- Legal/charge language without careful attribution
+- Long verbatim overlap with source text
+
+Words and high-concern terms are configurable in **Ethics & Backups**.
+
+Guardrails do not veto publication. High-concern terms may ask for an editor note, but the editor decides.
+
+### Press-Freedom / Legal-Risk Advisor
+
+The advisor is optional and invoked from the Workbench. It can ask the local AI model for:
+
+- Risk notes
+- Verification paths
+- Public/private figure considerations
+- Defamation/privacy/prior-restraint style issue spotting
+- Wording options
+- Questions to resolve before publication
+
+It is not a lawyer and not a publish/kill decision. It is a newsroom risk memo.
+
+## 10. Publishing
+
+Publishing starts from approved drafts.
+
+Open **Publishing** and follow the flow:
+
+1. **Compile** the static issue into a folder.
+2. **Preview** and inspect the output.
+3. **Export** the ZIP and share files.
+4. **Publish** through a connector or record a manual URL.
+5. **Share** using generated newsletter/social/community copy.
+
+The generated package includes:
+
+- `index.html`
+- Article pages
+- `feed.xml`
+- About, ethics, how-we-report, and corrections pages
+- `site-package.zip`
+- `publish-manifest.json`
+- `newsletter.md`
+- `substack.md`
+- `share-package.md`
+- Facebook, subreddit, Nextdoor, and short-link copy
+
+Supported publishing paths:
+
+- **here.now:** recommended default. Anonymous preview publishing works without an account and expires after about 24 hours. Account/API-key publishing can be permanent.
+- **GitHub Pages:** durable public archive in a repository.
+- **Cloudflare Pages:** technical-user connector.
+- **Netlify:** technical-user connector.
+- **WordPress:** creates an issue page and article pages through the WordPress REST API.
+- **Substack:** assisted. The app prepares copy; you paste into Substack and record the public URL.
+- **Other/manual:** record an existing public URL and update share artifacts.
+
+Connector secrets are stored in the operating system credential store. The SQLite database stores non-secret connector metadata.
+
+## 11. Browser Extension Pairing
+
+The browser extension lets you send public pages into the app while you read.
+
+Pairing works only on your computer:
+
+1. Open **Browser Pairing**.
+2. Generate a pairing token.
+3. Paste it into the browser extension.
+4. Confirm the paired device appears in the app.
+
+The loopback server is bound to `127.0.0.1:12053` and uses bearer-token authentication after pairing.
+
+## 12. Backups And Diagnostics
+
+Open **Ethics & Backups** to configure:
+
+- Publication identity
+- Organization type
+- Editorial/ethics text
+- Logo image
+- Story guardrail terms
+- Backup path
+- Diagnostic export
+
+Diagnostics are manual. Review any diagnostic package before sharing it.
+
+## 13. Current Public-Beta Limits
+
+- Installers are unsigned.
+- Cleanroom testing has focused on Windows.
+- macOS notarization/signing is not complete.
+- OCR for scanned PDFs is not implemented.
+- External publishing providers require real credentials for stable-grade live proof.
+- Local AI quality depends on the model and hardware.
+- Daily Scan and discovery are useful but still require editor review.
+
+## 14. Technical Appendix
+
+### Data Location
+
+Windows:
+
+```text
+%APPDATA%\com.scottconverse.civicdesk\civicdesk.db
 ```
 
-* **Tauri Desktop Shell**: Native desktop host wrapper compiled with Rust. Manages window lifecycles, native file dialogs, and subprocess security.
-* **React 19 Frontend**: Responsive user interface built with TypeScript and modular React components.
-* **Rust Backend Core**: The engine of the application. Handles SQLite database operations, HTTP requests to the Ollama API, feed parsing, and site building.
-* **Ollama (Sidecar/Service)**: Bundled service running locally on port `11434` providing offline LLM completion APIs. CivicNewspaper spawns the sidecar itself; if a developer is already running `ollama serve` on that port, the app coexists with it instead of starting a duplicate.
-* **SQLite Database**: Single-file relational storage with Write-Ahead Logging (WAL) enabled for performance and crash resilience.
+macOS:
 
-## 2. Security Model
-CivicNewspaper operates under a strict zero-trust local-only security boundary:
+```text
+~/Library/Application Support/com.scottconverse.civicdesk/civicdesk.db
+```
 
-* **Loopback Axum Server**: To allow integration with browser extensions (for clipping records) and IDE/CLI plugins, the Rust core exposes an HTTP server. This server is strictly bound to the loopback interface (`127.0.0.1:12053`). It rejects any incoming requests originating from external network interfaces.
-* **Host & Origin Headers Verification**: The Axum server validates incoming HTTP headers. Requests whose `Host` header is not exactly `127.0.0.1:12053`, or whose `Origin` (when present) is not a `chrome-extension://` origin, are rejected — this prevents DNS-rebinding attacks. (See `src-tauri/src/core/auth.rs`.)
-* **Pairing token protocol**: When pairing a new browser extension or CLI tool:
-  1. The user clicks "Pair Device" in the Tauri UI. The app generates a **one-time pairing token** — 16 random bytes from the OS cryptographic RNG (`OsRng`), encoded as a 22-character URL-safe base64 string — and stores **only its SHA-256 hash** in SQLite with a 5-minute expiry (TTL). The plaintext token is shown to you once.
-  2. You paste that 22-character token into the external client, which submits it to the `/api/pair` endpoint on the loopback server.
-  3. The server hashes the submitted token, matches it against the stored hash, and (if valid and unexpired) issues a long-lived bearer **API token** for that client.
+Linux:
 
-  > There is **no separate "6-digit PIN."** The single shared secret is the 22-character base64 pairing token. (Older drafts of this manual described a 6-digit PIN; that mechanism does not exist in the code.)
-* **Token Storage and TTL**: The pairing token's SHA-256 hash is what lives in SQLite (the `paired_clients.pairing_pin` column stores the hash, despite the legacy column name). After pairing, every request to the loopback server must carry the long-lived token in the `Authorization: Bearer <TOKEN>` header.
-* **Scope-locks**: File system access (e.g., database backups, static site compilation outputs) is restricted using scope verification. Paths must resolve within user-approved target directories.
-* **Content Security Policy (CSP)**: The Tauri webview enforces a rigid CSP that blocks external script execution, preventing Cross-Site Scripting (XSS) even if malicious HTML is scraped from a municipal site.
+```text
+~/.local/share/com.scottconverse.civicdesk/civicdesk.db
+```
 
-## 3. Automated Detectors
-The application runs incoming scraped text through a synchronous loop of **eight detectors** defined in [detectors.rs](../src-tauri/src/core/detectors.rs). The detector names below are the exact `detector_name` strings the engine writes to the `leads` table:
+Older builds used `org.civicnews.app/civicnews.db`; current builds migrate that data into the new app location on first launch.
 
-1. **Source Went Quiet** *(source-level)*: Fires when a source has not *successfully* fetched for **7 or more days** relative to its last scrape attempt. The threshold is a fixed 7 days (it is not user-configurable). Signals a possible URL change or a stopped feed.
-2. **New Primary Record**: Fires when a new document is fetched from a source whose type is `primary_record` or `official_comm`, prompting you to read the new official record.
-3. **Money Threshold**: Matches dollar amounts written as `$`-prefixed digit groups — the regex is `\$([0-9,]+)(?:\.[0-9]+)?`, e.g. `$100,000` or `$250,000.50`. A lead fires only when the matched amount is **at or above** your configured money threshold (default `$250,000`). **Note:** spelled-out amounts like "1.2 million dollars" and abbreviated forms like "$250K" are **not** matched — the detector reads literal `$NNN,NNN` numbers only.
-4. **Decision / Vote**: Matches official-action keywords: `unanimously`, `voted`, `approved`, `resolved`, `passed`, `carried`, `denied`, `motion`, `adopted`, `rejected`.
-5. **Personnel Change**: Matches staff-transition keywords: `appoint`, `resign`, `retire`, `terminate`, `hire`, `employ`, `vacancy`, `successor`, `resignation`, `appointment`, `fired`, `promoted`.
-6. **Public Meeting Scheduled**: Matches meeting-notice phrases: `public hearing`, `special meeting`, `session will be held`, `meeting scheduled`, `council chamber`, `town hall`, `public meeting`. **Note:** it does not match clock times (e.g. `7:30 PM`) or the phrase "will convene."
-7. **Deadline**: Matches deadline / procurement language: `deadline`, `submit by`, `due date`, `public comment period`, `rfp`, `bid due`, `applications close`. (RFP/bid terms live inside this single detector; there is no separate "Bids & RFPs" detector.)
-8. **Watchlist Hit**: Matches any keyword from your user-defined watchlist (developer names, companies, parcel numbers, etc.) as a whole-word, case-insensitive match.
+### Current Tables
 
-> There is **no** "Ordinances & Resolutions" detector. Any document mentioning a vote on an ordinance would surface through the **Decision / Vote** detector.
+As of v0.2.9, migrations run through `0013_verification_queue`. The live schema includes:
 
-## 4. Linting Guardrails
-To support journalistic review, the Workbench runs four checks in [guardrails.rs](../src-tauri/src/core/guardrails.rs). The accusatory/legal word lists are **editable per newsroom** in Settings -> *Story guardrails* (seeded with the defaults below); matching uses whole-word/inflection matching, so "charged" no longer fires inside "surcharged". By default a match is a **warning** and blocks nothing. An editor can mark specific words as **high-concern**: the Workbench asks for an editor note and the compiler includes editor-review notes, but the app does not veto publication.
+- `sources`
+- `evidence_items`
+- `leads`
+- `lead_evidence`
+- `drafts`
+- `published_posts`
+- `paired_clients`
+- `settings`
+- `daily_scan_runs`
+- `daily_scan_leads`
+- `publish_runs`
+- `subscribers`
+- `civic_observations`
+- `civic_entities`
+- `civic_observation_entities`
+- `source_performance_scores`
+- `dark_signals`
+- `verification_tasks`
 
-* **Citation Coverage** *(warning)*: Each substantive paragraph (longer than ~30 characters) that contains no `evidence:` / `evidence://` link is flagged as a possible factual claim missing a source link.
-* **Accusatory Language** *(warning by default; high-concern if a matched word is marked sensitive)*: If a paragraph contains a high-risk term from the (editable) default list — `corrupt`, `stole`, `illegal`, `fraud`, `embezzle`, `bribe`, `scam`, `theft`, `criminal`, `guilty`, `conspiracy`, `extortion`, `misconduct`, `kickback`, `laundering`, `arrested`, `charged`, `indicted`, `convicted`, `prosecuted` — **and** has no citation, it is flagged.
-* **Legal Naming / Presumption of Innocence** *(warning by default; high-concern if a matched word is marked sensitive)*: If a paragraph uses charge/legal terms (default list: `arrested`, `charged`, `indicted`, `accused`, `suspect`, `theft`, `embezzle`, `fraud`, `misconduct`) but contains neither `alleged` nor `allegedly`, it is flagged so you can add the modifier.
-* **Verbatim Overlap** *(warning)*: For drafts tied to a lead, every paragraph is compared against the linked evidence excerpts; any run of **7+ consecutive words** copied verbatim from a source is flagged with the evidence ID and source URL, prompting you to rewrite it in your own words or set it as a blockquote.
+Schema version is tracked with SQLite `PRAGMA user_version`, not a migrations table.
 
-A report is "clean" only when no **error**-severity issue is present. With the default (warn-only) word list every issue is a warning, so reports are clean by default; once an editor marks a matched word as high-concern, that issue becomes an error-level warning that asks for an editor note. Publication disclosures are controlled by the publisher in the publication identity fields.
+### Developer Commands
 
-## 5. Database Migrations
-Database schema updates are handled automatically by a migration runner on application launch:
-* Migrations are stored as plain SQL files in `src-tauri/migrations/` (`0001`, `0003`–`0010`; there is no `0002`). `0008_draft_publish_gate` adds the `attested_by` / `attested_at` / `guardrail_override_reason` columns to `drafts` (the publish gate), `0009_daily_scan_lead_context` adds Daily Scan context fields, and `0010_publish_runs` records issue-level publish/export history.
-* On startup, the runner compares the database's `PRAGMA user_version` against the available migrations and applies any unapplied ones.
-* Migrations run inside a transaction; on failure the transaction rolls back and the app halts with an error rather than running on a half-migrated schema. (See Part 3 §3 for the live table list.)
-
-## 6. Diagnostic Export
-If an operator experiences issues, they can export a diagnostic package via the Settings panel. The export is **manual** — you choose where the file is saved, and you decide whether to share it.
-
-The report (the `Diagnostics` struct in [diagnostics.rs](../src-tauri/src/core/diagnostics.rs)) contains exactly the following, and nothing else:
-* App version, OS name, OS version, and Tauri version.
-* Ollama reachability and the list of installed model names.
-* The database schema version (`PRAGMA user_version`).
-* Four **row counts only** — number of evidence items, leads, drafts, and published posts. (Counts, never the contents.)
-* The last 100 lines of the application log (`panic_log_tail`).
-
-> **What it does *not* contain.** The export never collects your community-profile fields, story-draft text, feed URLs, or pairing/API tokens — so there is no "redaction" step, because none of that data is gathered in the first place. (An earlier version of this manual claimed the exporter "automatically redacts" drafts, profile names, feed URLs, and tokens; that described a feature that does not exist.) The one field that is free text is the 100-line log tail — review it before sharing in case an error message happens to quote content.
-
----
-
-# Part 3 — For Developers
-
-This section provides details on how to build, test, and contribute to the CivicNewspaper codebase.
-
-## 1. Developer Environment & Prerequisites
-To build and run CivicNewspaper from source, ensure you have:
-* **Node.js 18+** & `npm`
-* **Rust compiler (Stable)** via `rustup`
-* **Ollama**: No separate Ollama install is needed for normal use. For developers building from source, the build bundles Ollama as a sidecar; that binary is not committed to the repo — a fetch script downloads and SHA-verifies it (see step 2 below), and the build fails without it. (You may also run your own Ollama instance to test against custom or external configurations.)
-* **A bash shell**: The fetch script (`scripts/fetch-ollama-binaries.sh`) is bash-only and calls `python`/`python3`. On Windows, run it from Git Bash or WSL — it will not run in PowerShell or `cmd`.
-* **Platform Dependencies**:
-  * *Windows*: C++ Build Tools (via Visual Studio Installer).
-  * *macOS*: Xcode Command Line Tools.
-  * *Linux*: `libwebkit2gtk-4.1-dev`, `build-essential`, `libxdo-dev`, `libssl-dev`, `libayatana-appindicator3-dev`, `librsvg2-dev`.
-
-## 2. Quickstart Development Commands
-1. Clone the repository and install frontend dependencies:
-   ```bash
-   git clone https://github.com/scottconverse/CivicNewspaper.git
-   cd CivicNewspaper
-   npm install
-   ```
-2. **Required before any dev or build run** — fetch and SHA-verify the Ollama sidecar binary. This downloads the pinned Ollama release into `src-tauri/binaries/` and aborts on a checksum mismatch. The binary is not committed, so the next step fails without this one (`external-bin not found: binaries/ollama-...`). Bash-only — use Git Bash or WSL on Windows:
-   ```bash
-   bash scripts/fetch-ollama-binaries.sh
-   ```
-3. Start the development server (runs Vite with hot-reloading for the frontend, and compiles/runs Tauri in debug mode):
-   ```bash
-   npm run tauri dev
-   ```
-4. To package the application for production (creates installer files for your current OS in `src-tauri/target/release/bundle/`):
-   ```bash
-   npm run tauri build
-   ```
-
-## 3. Database Management & Inspecting State
-The SQLite database file (`civicdesk.db`) is located in the standard application data directory:
-* **Windows**: `%APPDATA%\com.scottconverse.civicdesk\civicdesk.db`
-* **macOS**: `~/Library/Application Support/com.scottconverse.civicdesk/civicdesk.db`
-* **Linux**: `~/.local/share/com.scottconverse.civicdesk/civicdesk.db`
-
-> **Upgrading from before v0.2.7?** Earlier builds stored data at `org.civicnews.app/civicnews.db`. The app migrates that database into the new location and `civicdesk.db` automatically on first launch; the old folder is left in place.
-
-You can open this database using any SQLite client (e.g., `sqlite3`, DB Browser for SQLite, or a VS Code extension). The live schema (across migrations `0001`–`0010`) contains these tables (and, as of `0008`, the `drafts` table also has `attested_by`, `attested_at`, and `guardrail_override_reason` columns):
-
-* `sources` — monitored feeds (includes a `tier` column added in `0004`/`0007`).
-* `evidence_items` — raw scraped text chunks. *(This is the table that holds scraped content — there is no `scraped_items` table.)*
-* `leads` — detector hits (includes a `from_scan_lead_id` column added in `0005`).
-* `lead_evidence` — many-to-many map of leads to evidence.
-* `drafts` — article documents and their status.
-* `published_posts` — compiled-publication records.
-* `publish_runs` — issue-level static-site export/publish package history (added in `0010`; records issue ID, output path, generated files, provider metadata, counts, and timestamp).
-* `paired_clients` — authorized external integrations.
-* `settings` — key/value app settings (added in `0003`; e.g. `model.selected`).
-* `daily_scan_runs` — Daily Scan run records (added in `0005`).
-* `daily_scan_leads` — Daily Scan findings (added in `0005`, rebuilt in `0006`).
-
-> There is **no `migrations` table.** Schema version is tracked via SQLite's built-in `PRAGMA user_version`, not a tracking table.
-
-## 4. LLM Mocking & Testing
-For testing and development without calling a real Ollama instance:
-* The application utilizes the `LlmClient` trait to decouple the core logic from direct network calls to Ollama.
-* You can write mock implementations of the `LlmClient` trait for unit testing without spinning up any Ollama service.
-* Core business logic (e.g. `run_daily_scan`, `plain_language_rewrite`) takes an injected `Arc<dyn LlmClient>` so tests can pass a fake client directly, without constructing Tauri application state. See the tests in [tests.rs](../src-tauri/src/core/tests.rs).
-* To run the Rust tests:
-   ```bash
-   cd src-tauri
-   cargo test
-   ```
-* To run the frontend Vitest unit/component tests:
-   ```bash
-   npm run test
-   ```
-
-## 5. Contributing and Code Layout
-* Frontend UI state is managed in [src/useApp.ts](../src/useApp.ts) which interacts with the Rust backend via Tauri IPC (`invoke`).
-* When implementing a new LLM-backed feature, use the `LlmClient` trait defined in [llm.rs](../src-tauri/src/core/llm.rs). This ensures your code is testable using mock clients.
-* If you modify the database schema, add a new versioned `.sql` file to [src-tauri/migrations/](../src-tauri/migrations/) following the numbered-prefix convention. The detector definitions in [detectors.rs](../src-tauri/src/core/detectors.rs) and the guardrail checks in [guardrails.rs](../src-tauri/src/core/guardrails.rs) are the single source of truth for Part 2 §3 and §4 — keep those sections in sync if you change the engine.
+```bash
+npm install
+bash scripts/fetch-ollama-binaries.sh
+npm run tauri dev
+npm run tauri build
+npm test -- --run
+cd src-tauri && cargo test --lib
+```

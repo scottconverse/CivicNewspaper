@@ -1,96 +1,144 @@
-# CivicNews GitHub Discussions
-## *Seed Topics & Templates for Community Launch*
+# GitHub Discussion Seed Posts
 
-This document provides ready-made discussion templates to kickstart the GitHub Discussions tab in the CivicNews repository. Copy and paste these to introduce the project, answer frequently asked questions, and align contributors on editorial and architectural principles.
+These are copy-ready starter posts for the CivicNewspaper GitHub Discussions area. The repository is CivicNewspaper; the installed app is The Civic Desk.
 
----
+## 1. Welcome To The Civic Desk Public Beta
 
-## 📌 Category: General
-### 🏷️ Topic 1: Welcome to CivicNews! 🏛️
-* **Title**: Welcome to CivicNews: Reclaiming Factual Local News
-* **Body**:
-  Welcome to the CivicNews community! 
+**Category:** General
 
-  CivicNews was born out of a simple realization: **local community news is disappearing, and the tools built for modern newsrooms are too complex, expensive, and cloud-dependent for a single community observer.**
+**Title:** Welcome to The Civic Desk public beta
 
-  Our goal is to give a single editor (often a citizen observer with limited technical skills but a passion for local transparency) a complete, local-first desktop workspace that does all of the following:
-  * Automatically scans city council minutes, agendas, and boards for critical OSINT signals (meetings, large expenditures, watchlists).
-  * Uses private, local AI models (running fully on your own computer) to draft neutral summaries, translate dense municipal jargon into plain-language community news, and (optionally) generate copy-ready social blurbs you can paste into your own channels.
-  * Runs pre-publication guardrails: matches warn by default, high-concern terms ask for an editor note, and the publisher keeps final judgment.
-  * Compiles articles into a static, fast, flat HTML folder using a guided drag-and-drop wizard that can be hosted online for free.
+**Body:**
 
-  #### 🤝 How to Get Involved:
-  1. **Test the builds**: Grab the latest installer for Mac or Windows and report any bugs or edge cases.
-  2. **Improve detectors**: If your local city hall uses unique wording for meeting notices or resolutions, help us refine the regex filters in `detectors.rs`.
-  3. **Share your workflow**: Tell us how you are hosting your compiled flat HTML pages (e.g., GitHub Pages, Netlify) and what local feeds you are monitoring.
+Welcome to the CivicNewspaper community.
 
-  *Let's rebuild trust in community news through raw evidence.*
+The Civic Desk is a local-first desktop newsroom for people trying to cover local government with limited time and limited staff. It helps a small publisher add sources, scan for leads, review evidence, draft stories, verify claims, and publish a static local paper.
 
----
+This is a public beta, not a signed stable release. We want bug reports, usability reports, clean-machine install results, real source intake examples, and honest feedback from people who might actually use this to cover a town, city, county, school board, water district, or local agency.
 
-## 💡 Category: Q&A / FAQ
-### 🏷️ Topic 2: Frequently Asked Questions about Local LLMs (Ollama)
-* **Title**: FAQ: Why Local AI (Ollama) and What Hardware is Required?
-* **Body**:
-  CivicNews relies on **Ollama** to run language models locally on your computer rather than sending public records data to external servers. Here are answers to the most common questions:
+Helpful reports include:
 
-  #### 1. Why local AI instead of ChatGPT or Claude APIs?
-  * **Privacy**: Your database, leads, and drafts never leave your device.
-  * **Cost**: Running local models is **free of software cost** — no API keys, paywalls, or monthly subscriptions. (You do supply your own hardware and electricity; inference runs on your machine.)
-  * **Offline Support**: You can draft and review reports even without an active internet connection.
+- Your operating system and app version.
+- What city or jurisdiction you tested.
+- What source type you used.
+- What worked.
+- What broke.
+- Whether the output was useful to a real editor.
 
-  #### 2. What are the system requirements?
-  CivicNews automatically checks your system memory (RAM) during onboarding:
-  * **8 GB RAM or more (Recommended)**: The app pulls `qwen2.5:7b` (≈4.7 GB download), the current scan-tested default for reliable Daily Scan JSON.
-  * **Below 8 GB RAM**: The app will guide you to the lightweight `llama3.2:3b` (≈2 GB download) or suggest running in manual drafting mode.
+The guiding rule is simple: the software can assist, warn, rank, and organize. The human editor decides.
 
-  #### 3. How do I change my AI model after onboarding?
-  Open the **Settings** tab in the CivicNews dashboard. You can enter any model name that you have pulled inside Ollama (e.g., `mistral`, `llama3.2`) and click Save.
+## 2. Local AI And Hardware
 
----
+**Category:** Q&A
 
-## 🛠️ Category: Ideas & Development
-### 🏷️ Topic 3: Deep Dive: How the OSINT Detector Logic Works
-* **Title**: Technical Guide: Refine and Customize the OSINT Detectors
-* **Body**:
-  CivicNews parses scrapings through automated detectors inside `core/detectors.rs`. Here is how they operate:
+**Title:** Local AI setup, model choice, and hardware notes
 
-  #### 🛡️ The 8 Core Detectors
-  1. **Source Went Quiet**: Warns you if a monitored feed hasn't successfully updated in 7+ days (helps detect URL changes or posting recess).
-  2. **New Primary Record**: Automatically flags any new agenda, resolution, or minutes file uploaded by a primary feed.
-  3. **Money Threshold**: Scans for transaction values (e.g., `$350,000` or `$1,200,000.50`). If they exceed your configured threshold, a lead is generated.
-  4. **Decision / Vote**: Detects parliamentary terms like *unanimously*, *resolved*, *passed*, *adopted*, *motion*, *rejected*.
-  5. **Personnel Change**: Scans for staff keywords: *appoint*, *resign*, *hire*, *terminate*, *successor*, *vacancy*.
-  6. **Public Meeting**: Finds date and room announcements: *public hearing*, *council chamber*, *meeting scheduled*, *town hall*.
-  7. **Deadline**: Scans for bid proposals and comment timelines: *rfp*, *bid due*, *submit by*, *due date*.
-  8. **Watchlist Hit**: Matches your custom watchlist terms (names, vendors, departments) case-insensitively using word boundaries.
+**Body:**
 
-  #### ✏️ How to Contribute:
-  If you notice that your city council's meeting minutes don't trigger the **Decision / Vote** detector, let us know here! We can add their specific terminology to the regular expression:
-  ```rust
-  let re_vote = Regex::new(r"(?i)\b(unanimously|voted|approved|resolved|passed|adopted|motion)\b").unwrap();
-  ```
+The Civic Desk uses Ollama for local AI features when available. Local AI can help with Daily Scan summaries, draft assistance, and optional press-freedom/legal-risk review.
 
----
+The app should continue to function in degraded mode if Ollama is missing, slow, offline, or no model is installed. Deterministic source fetching, import review, Workbench editing, backup, export, and publishing should still be usable.
 
-## ✍️ Category: Editorial Guidelines
-### 🏷️ Topic 4: Editorial Standards: Evidence vs. Outrage
-* **Title**: Factual Guidelines: Writing for the Flat HTML Compiler
-* **Body**:
-  CivicNews runs pre-publication guardrails to help editors notice risky wording. By default they warn; an editor can mark specific words as high-concern terms (Settings -> Story guardrails), which asks for an editor note without letting the app veto publication. As an editor, here is a style template you may choose to use:
+Useful things to share here:
 
-  #### 🚫 Avoid "Outrage" Wording
-  Do not use adjectives that assign motive or pass judgment.
-  * **Bad**: *"The council corruptly voted to double the budget for their crony contractor."*
-  * **Good**: *"The council approved a budget amendment increasing the road maintenance contract value by $150,000 (evidence:12)."*
+- Machine RAM, CPU, and GPU if known.
+- Which model the app recommended.
+- Whether model download progress was clear.
+- Whether Daily Scan and drafting felt fast enough.
+- What happened when the model was missing or unavailable.
 
-  #### 🔗 Mandatory Citation Anchors
-  Every paragraph containing factual claims must have a citation link using Markdown:
-  `The town planning commission approved the development permit [Brighton Minutes, p. 4](evidence:104).`
-  * When compiled, this links directly to the raw evidence block displayed at the bottom of the page, ensuring readers can verify the claims.
+Please do not paste private sources, credentials, or unpublished sensitive drafts into a public discussion.
 
-  #### ⚖️ Presumption of Innocence
-  When writing about police records or audits, always include qualifier terms.
-  * **Incorrect**: *"A town administrator embezzled funds from the sewer department."*
-  * **Correct**: *"A town administrator was arrested for the alleged embezzlement of sewer department funds (evidence:54)."*
-  * *Note: When arrest keywords are used without a presumption-of-innocence modifier like "alleged", the Workbench raises a **Legal Naming** guardrail. By default it warns; if an editor marks those charge words as high-concern terms, the Workbench asks for an editor note and the static-site compiler includes a review note.*
+## 3. Source Discovery And Bulk Import
+
+**Category:** Ideas
+
+**Title:** Source discovery and bulk import examples
+
+**Body:**
+
+Source intake is one of the most important parts of the product. The app supports manual sources, discovery, and imports from CSV, TXT, XLSX, DOCX, and text-readable PDF files.
+
+The sources we especially want to test:
+
+- City council agendas and minutes.
+- Planning and zoning pages.
+- School board agendas.
+- County records and public notices.
+- Police, fire, and emergency service feeds.
+- Local news sites and calendars.
+- Public social/community pages that do not require login.
+- YouTube meeting videos and transcript sources.
+
+Good bug reports include the file type, a short description of the layout, how many URLs you expected, how many the app found, and whether duplicates or split-cell URLs were handled correctly.
+
+## 4. Dark Signals And Verification
+
+**Category:** Editorial Workflow
+
+**Title:** Dark Signal Desk: how should weak leads be ranked and verified?
+
+**Body:**
+
+The Dark Signal Desk is for early, weak, unusual, or socially surfaced signals. These may come from public forums, public social posts, local video transcripts, comments, or community discussion.
+
+The app should rank and explain signals, but it must never hide information from the editor. A low-confidence signal should remain visible and clearly labeled so a human can decide whether it deserves more reporting.
+
+Useful discussion points:
+
+- What sources produce early local signals in your community?
+- What labels make uncertainty clear without burying the lead?
+- What verification steps should the app suggest first?
+- How should the app distinguish publishable evidence from editor-only leads?
+
+Low-confidence material should not become published evidence automatically. It should become a verification task.
+
+## 5. Publishing Options
+
+**Category:** Q&A
+
+**Title:** Publishing stack: here.now, GitHub Pages, Cloudflare, Netlify, WordPress, Substack
+
+**Body:**
+
+The Civic Desk produces static website output first. That output can be zipped, reviewed, archived, and published.
+
+Recommended publishing paths:
+
+- here.now for simple temporary publishing and fast testing.
+- GitHub Pages for a durable public archive.
+- Cloudflare Pages and Netlify for more technical users.
+- WordPress for users with an existing site.
+- Substack and newsletters as distribution channels, not the only canonical archive.
+
+If you test a provider, please share:
+
+- Provider name.
+- Whether setup was clear.
+- Whether dry-run/test connection worked.
+- Whether the published URL loaded.
+- What failed and how recovery behaved.
+
+Do not post provider tokens, access keys, or private repo credentials.
+
+## 6. Guardrails And Press-Freedom Advisor
+
+**Category:** Editorial Workflow
+
+**Title:** Guardrails and advisor output should help, not override editors
+
+**Body:**
+
+The Civic Desk includes advisory guardrails and an optional press-freedom/legal-risk advisor. These tools can flag sourcing gaps, attribution issues, privacy concerns, defamation risk, public/private figure questions, and verification tasks.
+
+They are not legal advice. They are not censorship. They must not veto the editor.
+
+Please share examples where:
+
+- The warning was useful.
+- The warning was confusing.
+- The language sounded too legalistic.
+- The tool missed an obvious risk.
+- The tool overreacted to ordinary reporting language.
+
+The goal is to help under-resourced local publishers slow down at the right moments without taking editorial judgment away from them.

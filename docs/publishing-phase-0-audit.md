@@ -109,7 +109,7 @@ The empty homepage renders without obvious catastrophic layout failure in deskto
 
 Recommended fix: rerun this audit after the seeded publish fixture exists.
 
-Status: rerun against the seeded article output. Desktop, mobile, and print screenshots were generated. The article page displayed the correction banner, headline, body, evidence/source block, and AI disclosure. The mobile nav wraps on narrow width but remains usable and non-overlapping.
+Status: rerun against the seeded article output. Desktop, mobile, and print screenshots were generated. The article page displayed the correction banner, headline, body, evidence/source block, and publisher-configured footer/disclosure text. The mobile nav wraps on narrow width but remains usable and non-overlapping.
 
 ## Seeded Article Audit Results
 
