@@ -1,0 +1,78 @@
+{
+  "issue_id": "issue-20260629-094544-012943500",
+  "output_dir": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/reports/20260629-full-cleanwipe-longmont-5a24a5a-evidence/publication-output/site",
+  "generated_at": "2026-06-29T09:45:44.012943500+00:00",
+  "provider": "local_export",
+  "published_url": null,
+  "deployment_id": null,
+  "article_count": 5,
+  "skipped_count": 0,
+  "files_written": 22,
+  "generated_files": [
+    "styles.css",
+    "print.css",
+    "watch/5.html",
+    "watch/4.html",
+    "watch/3.html",
+    "watch/2.html",
+    "watch/1.html",
+    "index.html",
+    "about.html",
+    "ethics.html",
+    "how-we-report.html",
+    "corrections.html",
+    "feed.xml",
+    "newsletter.md",
+    "substack.md",
+    "share-package.md",
+    "facebook-post.txt",
+    "subreddit-post.md",
+    "nextdoor-post.txt",
+    "short-link-blurb.txt",
+    "publish-manifest.json",
+    "site-package.zip"
+  ],
+  "index_path": "index.html",
+  "rss_path": "feed.xml",
+  "newsletter_path": "newsletter.md",
+  "substack_path": "substack.md",
+  "share_package_path": "share-package.md",
+  "facebook_post_path": "facebook-post.txt",
+  "subreddit_post_path": "subreddit-post.md",
+  "nextdoor_post_path": "nextdoor-post.txt",
+  "short_link_blurb_path": "short-link-blurb.txt",
+  "manifest_path": "publish-manifest.json",
+  "zip_path": "site-package.zip",
+  "articles": [
+    {
+      "title": "Study Sessions with In-Depth Discussion Topics: The City Council holds study sessions that allow in-depth discussion of specific topics, which can lead to significant policy changes.",
+      "format": "watch",
+      "relative_path": "watch/5.html",
+      "updated_at": "2026-06-29T09:44:38.292776900+00:00"
+    },
+    {
+      "title": "Vision Zero Projects and Community Involvement: The city is updating its Vision Zero initiatives aimed at improving transportation safety, encouraging community members to get involved in making Longmont safer for everyone.",
+      "format": "watch",
+      "relative_path": "watch/4.html",
+      "updated_at": "2026-06-29T09:44:21.668899400+00:00"
+    },
+    {
+      "title": "Longmont Invites Applications for Official City Flag: The city of Longmont is seeking community input through an open application process to design its new official city flag, encouraging civic engagement and public participation in the creation of a symbol representing the city’s identity.",
+      "format": "watch",
+      "relative_path": "watch/3.html",
+      "updated_at": "2026-06-29T09:43:56.007806600+00:00"
+    },
+    {
+      "title": "Building Services Portal Experiencing Technical Issues: Residents and businesses are facing difficulties with the Building Services online permitting portal, which is currently down. This technical problem could disrupt essential services and impact construction projects across the city.",
+      "format": "watch",
+      "relative_path": "watch/2.html",
+      "updated_at": "2026-06-29T09:43:30.340107+00:00"
+    },
+    {
+      "title": "Building Services Online Permitting Portal Experiencing Technical Issues: The Building Services online permitting portal is currently down, causing inconvenience to residents and businesses in Longmont. This issue impacts daily operations and could delay construction projects.",
+      "format": "watch",
+      "relative_path": "watch/1.html",
+      "updated_at": "2026-06-29T09:42:43.586517+00:00"
+    }
+  ]
+}
