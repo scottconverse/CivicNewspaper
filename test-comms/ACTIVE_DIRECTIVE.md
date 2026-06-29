@@ -19,15 +19,15 @@ C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms
 
 Run this directive now:
 
-test-comms/directives/20260629-herenow-retest-f092852.md
+test-comms/directives/20260629-mojibake-evidence-audit-f092852.md
 
-This is a focused here.now connector retest after the 5a24a5a clean-wipe run proved the rest of the Longmont workflow. It uses commit `f092852e9df3808f16cf56b829993f028e31d255`, which makes here.now use the compiled publication title instead of a generic or empty connector display name.
+This is a focused evidence-quality audit after the f092852 here.now retest reported PASS, but its JSON evidence contained mojibake-looking text such as `cityâ€™s` and `LONGMONT Â· CO`. The downloaded HTML and screenshots appear clean, so this directive checks whether the remaining issue is tester evidence serialization or real product/public output.
 
 Supersedes:
 
-test-comms/directives/20260629-full-cleanwipe-longmont-5a24a5a.md
+test-comms/directives/20260629-herenow-retest-f092852.md
 
-Reason: the 5a24a5a run passed clean-wipe state, AI setup, source discovery, drafting, editor workflow, kill persistence, compile/export, ZIP, identity, mojibake, and draft-prefix checks, but here.now rejected the publish because the request display name was empty after normalization.
+Reason: the here.now connector retest passed the actual publish path and produced URL `https://merry-frost-9arx.here.now`, but the evidence scanner/reporting path gave a false sense of certainty. This audit does not require a new installer or a new publish unless the URL has expired.
 
 Product branch:
 
@@ -51,6 +51,6 @@ Expected fallback MSI SHA256:
 
 ## Current Goal
 
-Run the focused here.now retest: install the artifact, reuse the already-proven 5a24a5a Longmont output package, publish anonymously to here.now from the visible app UI, verify the URL, and produce a human-readable report with screenshots, output path, and here.now URL.
+Run the corrected mojibake evidence audit against the f092852 output, downloaded here.now HTML, browser-rendered text, and JSON evidence. Determine whether there is any real public-output mojibake left, and whether evidence serialization is corrupting otherwise clean text.
 
 Commit reports/artifacts with [skip ci].
