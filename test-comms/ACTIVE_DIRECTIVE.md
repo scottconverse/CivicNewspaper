@@ -19,15 +19,15 @@ C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms
 
 Run this directive now:
 
-test-comms/directives/20260629-full-cleanwipe-longmont-duplicate-rerun-0941256.md
+test-comms/directives/20260629-ascii-ui-rerun-607b0f3.md
 
-This is a full clean-wipe Longmont rerun after Scott reviewed the here.now output and found that the five-story paper contained two versions of the same Building Services permitting-portal story. Product commit `09412560a326379fcf75f327439df8d1d2bb47b4` clusters paraphrased Daily Scan leads before they become separate draftable story candidates.
+This is a targeted installer rerun after the duplicate-topic cleanroom pass exposed app-side mojibake in evidence text: `LONGMONT Â· CO`. Product commit `607b0f3bb79b97a4f7cbb0a2286a8722b9a78b34` replaces vulnerable UI separators and ellipses with ASCII-safe text.
 
 Supersedes:
 
-test-comms/directives/20260629-mojibake-evidence-audit-f092852.md
+test-comms/directives/20260629-full-cleanwipe-longmont-duplicate-rerun-0941256.md
 
-Reason: publishing and mojibake checks passed, but the newsroom-quality output still failed because duplicated story topics reached the public issue.
+Reason: the duplicate-topic rerun passed the public publication checks, but its evidence showed app-side mojibake in the sidebar. This directive verifies the targeted UI fix.
 
 Product branch:
 
@@ -35,22 +35,22 @@ stable-readiness-local-gates
 
 Product commit:
 
-09412560a326379fcf75f327439df8d1d2bb47b4
+607b0f3bb79b97a4f7cbb0a2286a8722b9a78b34
 
 Artifact folder:
 
-test-comms/artifacts/20260629-duplicate-lead-rerun-0941256/
+test-comms/artifacts/20260629-ascii-ui-rerun-607b0f3/
 
 Expected preferred NSIS SHA256:
 
-DC395291F909097A46C273FDC698A0F1822C314F6F019F9092888A6AD7F6B325
+B9AF797EE8CEDF81BDE8761BE3FAAE34DA1CE00D122F3227AA0258272611BD1B
 
 Expected fallback MSI SHA256:
 
-B866845F47C32E643A143CD3E5F70FF9F4BCA33912DB036917572D56252ED407
+C79A80C855CE2131BF599DD80A9A5BD65CB2BDC9C1BCBE2A33190E0410DDE83E
 
 ## Current Goal
 
-Run the full clean-wipe Longmont end-to-end workflow again. The publication must contain 5-10 reader-facing stories or briefs with no duplicate story topics, export a ZIP, publish to here.now, and produce a human-readable report with the here.now URL and output path.
+Run the targeted ASCII UI rerun. Confirm the installed app no longer renders `LONGMONT Â· CO` or other mojibake in the sidebar, Story Queue, Daily Scan labels, or nearby setup/loading/saving UI.
 
 Commit reports/artifacts with [skip ci].
