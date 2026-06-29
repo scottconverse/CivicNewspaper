@@ -261,6 +261,33 @@ pub(crate) fn repair_common_mojibake(text: &str) -> String {
         repaired = next;
     }
     repaired
+        .replace("&amp;#8217;", "'")
+        .replace("&#8217;", "'")
+        .replace("&amp;#8216;", "'")
+        .replace("&#8216;", "'")
+        .replace("&amp;#8220;", "\"")
+        .replace("&#8220;", "\"")
+        .replace("&amp;#8221;", "\"")
+        .replace("&#8221;", "\"")
+        .replace("&amp;#8211;", "-")
+        .replace("&#8211;", "-")
+        .replace("&amp;#038;", "&")
+        .replace("&#038;", "&")
+        .replace('\u{00a0}', " ")
+        .replace('–', "-")
+        .replace('—', "-")
+        .replace('’', "'")
+        .replace('‘', "'")
+        .replace('“', "\"")
+        .replace('”', "\"")
+        .replace("Â ", " ")
+        .replace('Â', "")
+        .replace("â€“", "-")
+        .replace("â€”", "-")
+        .replace("â€™", "'")
+        .replace("â€˜", "'")
+        .replace("â€œ", "\"")
+        .replace("â€\u{009d}", "\"")
 }
 
 fn normalize_public_title(title: &str) -> String {
@@ -327,6 +354,33 @@ fn is_public_story_line(line: &str) -> bool {
         && !lower.starts_with("this item needs more reporting")
 }
 
+fn strip_editor_note_marker(line: &str) -> Option<String> {
+    let trimmed = line.trim_start();
+    let lower = trimmed.to_lowercase();
+    if lower.starts_with("editor_note:") {
+        return Some(String::new());
+    }
+
+    if lower.starts_with("[editor_note:") {
+        if let Some(end_idx) = trimmed.find(']') {
+            return Some(trimmed[end_idx + 1..].trim_start().to_string());
+        }
+        return Some(String::new());
+    }
+
+    if let Some(idx) = lower.find("[editor_note:") {
+        let before = &trimmed[..idx];
+        if let Some(close_rel) = trimmed[idx..].find(']') {
+            let after = &trimmed[idx + close_rel + 1..];
+            let joined = format!("{}{}", before.trim_end(), after);
+            return Some(joined.trim().to_string());
+        }
+        return Some(before.trim().to_string());
+    }
+
+    None
+}
+
 fn public_title_and_content(draft_title: &str, draft_content: &str) -> (String, String) {
     let fallback_title = normalize_public_title(draft_title);
     let repaired_content = repair_common_mojibake(draft_content);
@@ -379,6 +433,13 @@ fn public_title_and_content(draft_title: &str, draft_content: &str) -> (String, 
             if lower.starts_with("editor_note:") {
                 skipping_editor_note = true;
                 return None;
+            }
+            if let Some(cleaned) = strip_editor_note_marker(&plain) {
+                if cleaned.is_empty() {
+                    skipping_editor_note = true;
+                    return None;
+                }
+                return Some(cleaned);
             }
             if skipping_editor_note {
                 if trimmed.is_empty()

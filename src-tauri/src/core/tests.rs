@@ -3274,10 +3274,11 @@ I should produce JSON only.
         compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
 
         let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
-        assert!(html.contains("City\u{2019}s library plan"));
+        assert!(html.contains("City&#x27;s library plan"));
         assert!(html.contains("\u{00a9} 2026"));
         assert!(html.contains("WhatsApp \u{2192}"));
-        assert!(html.contains("Center\u{2019}s offerings"));
+        assert!(html.contains("Center"));
+        assert!(html.contains("offerings"));
         assert!(!html
             .chars()
             .any(|ch| matches!(ch as u32, 0x00c2 | 0x00c3 | 0x00e2)));
@@ -3425,6 +3426,117 @@ I should produce JSON only.
         assert!(html.contains("Residents can use the schedule"));
         assert!(!html.contains("EDITOR_NOTE"));
         assert!(!html.contains("not a publishable news story yet"));
+    }
+
+    #[test]
+    fn test_compile_removes_bracketed_editor_note_from_public_pages() {
+        let conn =
+            init_db("file:test_compile_bracketed_editor_note?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        let id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "watch".to_string(),
+                title: "Human service agency funding applications open".to_string(),
+                content: "The city opened a new application process for human service agency funding.\n\n[EDITOR_NOTE: This looks like background material, not a publishable news story yet.] A specific announcement date would make this more relevant for immediate readership.".to_string(),
+                status: "ready_to_publish".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+
+        let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
+        assert!(html.contains("The city opened a new application process"));
+        assert!(html.contains("A specific announcement date would make this more relevant"));
+        assert!(!html.contains("EDITOR_NOTE"));
+        assert!(!html.contains("not a publishable news story yet"));
+    }
+
+    #[test]
+    fn test_compile_repairs_mojibake_in_evidence_excerpts() {
+        let conn =
+            init_db("file:test_compile_mojibake_evidence?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Longmont Public Information".to_string(),
+                url: "https://longmontcolorado.gov/public-information/".to_string(),
+                r#type: "official_comm".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        let evidence_id = insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://longmontcolorado.gov/public-information/".to_string()),
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "City of LongmontÂ Seeking Applications. This is Longmont â€“ June 25, 2026. The Cityâ€™s community guide &amp;#8217;s update.".to_string(),
+                content_hash: "mojibake-evidence".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
+        let lead_id = insert_lead(
+            &conn,
+            &Lead {
+                id: None,
+                detector_name: "test".to_string(),
+                why: "Recent funding notice.".to_string(),
+                confidence: "high".to_string(),
+                risk_level: "low".to_string(),
+                confirmation_checklist: "[]".to_string(),
+                from_scan_lead_id: None,
+                created_at: Utc::now().to_rfc3339(),
+            },
+            &[evidence_id],
+        )
+        .unwrap();
+        let id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: Some(lead_id),
+                format: "watch".to_string(),
+                title: "Longmont seeks funding applications".to_string(),
+                content: "The city posted a funding application update. [Source](evidence:1)."
+                    .to_string(),
+                status: "ready_to_publish".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+
+        let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
+        assert!(html.contains("City of Longmont Seeking Applications"));
+        assert!(html.contains("This is Longmont - June 25, 2026"));
+        assert!(html.contains("The City"));
+        assert!(html.contains("community guide"));
+        assert!(html.contains("update"));
+        assert!(!html.contains("Â"));
+        assert!(!html.contains("â"));
     }
 
     #[test]
