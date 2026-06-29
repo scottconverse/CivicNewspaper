@@ -105,6 +105,47 @@ describe("Workbench Component Tests", () => {
     expect(handleGenerateText).toHaveBeenCalled();
   });
 
+  test("focuses Generate Draft and lets Enter start drafting from the wizard", async () => {
+    const handleGenerateText = vi.fn();
+
+    render(
+      <Workbench
+        selectedLead={mockLead}
+        selectedDraft={null}
+        evidenceList={[]}
+        guardrailsReport={null}
+        ollamaOnline={true}
+        manualLlmMode={false}
+        draftFormat="watch"
+        onDraftFormatChange={vi.fn()}
+        customSystemPrompt=""
+        onCustomSystemPromptChange={vi.fn()}
+        generatingText={false}
+        onGenerateText={handleGenerateText}
+        onCancelDraftWizard={vi.fn()}
+        onSaveDraftEditor={vi.fn()}
+        onCloseWorkbench={vi.fn()}
+        onDeleteDraft={vi.fn()}
+        onDecision={vi.fn()}
+        isGeneratingSocial={false}
+        socialPackResult=""
+        onSocialPackResultChange={vi.fn()}
+        onGenerateSocial={vi.fn()}
+        onUpdateDraftTitle={vi.fn()}
+        onUpdateDraftContent={vi.fn()}
+      />
+    );
+
+    const generateBtn = screen.getByRole("button", { name: /Generate Draft/i });
+    await waitFor(() => expect(generateBtn).toHaveFocus());
+
+    fireEvent.keyDown(document.getElementById("draft-wizard-panel")!, { key: "Enter" });
+    expect(handleGenerateText).toHaveBeenCalledTimes(1);
+
+    fireEvent.keyDown(screen.getByLabelText(/Article Format/i), { key: "Enter" });
+    expect(handleGenerateText).toHaveBeenCalledTimes(1);
+  });
+
   test("renders selectedDraft and contains flagged-claim CSS class when guardrailsReport has issues", () => {
     const mockReport: GuardrailsReport = {
       is_clean: false,

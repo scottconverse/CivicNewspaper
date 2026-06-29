@@ -151,6 +151,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   onUpdateDraftContent,
   firstAmendmentAdvisorEnabled = true
 }) => {
+  const generateDraftButtonRef = React.useRef<HTMLButtonElement | null>(null);
   const [isRewriting, setIsRewriting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [rewritePreview, setRewritePreview] = useState<string | null>(null);
@@ -168,6 +169,25 @@ export const Workbench: React.FC<WorkbenchProps> = ({
     setOverrideReason("");
     setPressFreedomReview("");
   }, [selectedDraft?.id]);
+
+  useEffect(() => {
+    if (!selectedLead?.id || selectedDraft || generatingText) return;
+    const timer = window.setTimeout(() => generateDraftButtonRef.current?.focus(), 0);
+    return () => window.clearTimeout(timer);
+  }, [generatingText, selectedDraft, selectedLead?.id]);
+
+  const handleDraftWizardKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Enter" || event.defaultPrevented || generatingText) return;
+    const target = event.target as HTMLElement | null;
+    const tagName = target?.tagName.toLowerCase();
+    if (tagName === "textarea" || tagName === "input" || tagName === "select" || target?.isContentEditable) {
+      return;
+    }
+    event.preventDefault();
+    if (ollamaOnline || manualLlmMode) {
+      onGenerateText();
+    }
+  };
 
   // Error-severity issues = words the newsroom marked as especially sensitive.
   // They ask for an override note, but the editor still decides.
@@ -246,14 +266,14 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   // If drafting from a Lead
   if (selectedLead && !selectedDraft) {
     return (
-      <div className="wizard-container card" id="draft-wizard-panel" tabIndex={-1}>
+      <div className="wizard-container card" id="draft-wizard-panel" tabIndex={-1} onKeyDown={handleDraftWizardKeyDown}>
         <h2>Drafting Article</h2>
         <p className="help-text" style={{ marginBottom: "1.5rem" }}>
           Lead: <strong>{selectedLead.why}</strong>
         </p>
 
         <div className="draft-wizard-top-actions">
-          <button className="btn btn-primary" onClick={onGenerateText} disabled={generatingText || (!ollamaOnline && !manualLlmMode)} id="btn-generate-draft-top">
+          <button ref={generateDraftButtonRef} className="btn btn-primary" onClick={onGenerateText} disabled={generatingText || (!ollamaOnline && !manualLlmMode)} id="btn-generate-draft-top">
             {generatingText ? "Generating Draft..." : "Generate Draft"}
           </button>
           <button className="btn btn-secondary" onClick={onCancelDraftWizard} disabled={generatingText} id="btn-cancel-draft-top">
