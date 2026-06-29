@@ -1,0 +1,36 @@
+/* templates/print.css */
+@media print {
+    body {
+        background: #ffffff;
+        color: #000000;
+        font-size: 12pt;
+    }
+    
+    header {
+        border-bottom: 2px solid #000000;
+        margin: 0 0 20pt 0;
+        padding-bottom: 10pt;
+    }
+
+    .nav-links, .sidebar-section, footer, .citation-list a[href]::after {
+        display: none !important;
+    }
+    
+    .editorial-grid {
+        display: block;
+    }
+    
+    main {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    h1, h2, h3 {
+        page-break-after: avoid;
+    }
+
+    article {
+        page-break-inside: avoid;
+    }
+}

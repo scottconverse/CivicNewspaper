@@ -1,0 +1,12 @@
+[
+    {
+        "ProcessName":  "civicnews",
+        "Id":  14492,
+        "Path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe"
+    },
+    {
+        "ProcessName":  "ollama",
+        "Id":  7268,
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\ollama-runtime\\v0.30.11\\ollama.exe"
+    }
+]

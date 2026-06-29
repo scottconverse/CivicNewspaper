@@ -1,0 +1,25 @@
+{
+    "ManifestArticlePaths":  [
+                                 "watch/5.html",
+                                 "watch/2.html",
+                                 "watch/1.html",
+                                 "watch/4.html",
+                                 "watch/3.html",
+                                 "watch/6.html"
+                             ],
+    "ActualArticleFiles":  [
+                               "watch/1.html",
+                               "watch/2.html",
+                               "watch/3.html",
+                               "watch/4.html",
+                               "watch/5.html",
+                               "watch/6.html"
+                           ],
+    "ExtraActualFiles":  [
+
+                         ],
+    "MissingActualFiles":  [
+
+                           ],
+    "StaleWatch7Exists":  false
+}

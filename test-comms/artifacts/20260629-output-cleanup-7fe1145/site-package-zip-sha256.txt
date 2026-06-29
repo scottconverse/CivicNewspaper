@@ -1,0 +1,1 @@
+SHA256  815A813227B5CE45921E462ABBF143A871ACEB5476FB5CAEA8C3A43272E1F9D9  C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\artifacts\20260629-output-cleanup-7fe1145\publication-output\site\site-package.zip
