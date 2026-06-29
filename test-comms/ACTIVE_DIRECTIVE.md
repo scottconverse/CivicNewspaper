@@ -19,15 +19,15 @@ C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms
 
 Run this directive now:
 
-test-comms/directives/20260629-ascii-ui-rerun-607b0f3.md
+test-comms/directives/20260629-full-e2e-output-quality-landing-cd038d6.md
 
-This is a targeted installer rerun after the duplicate-topic cleanroom pass exposed app-side mojibake in evidence text: `LONGMONT Â· CO`. Product commit `607b0f3bb79b97a4f7cbb0a2286a8722b9a78b34` replaces vulnerable UI separators and ellipses with ASCII-safe text.
+This is a full cleanroom end-to-end rerun after the public landing page was redesigned and output-quality fixes were added. The prior ASCII/mojibake rerun passed, but it did not retest the full newsroom value loop on the latest product commit.
 
 Supersedes:
 
-test-comms/directives/20260629-full-cleanwipe-longmont-duplicate-rerun-0941256.md
+test-comms/directives/20260629-ascii-ui-rerun-607b0f3.md
 
-Reason: the duplicate-topic rerun passed the public publication checks, but its evidence showed app-side mojibake in the sidebar. This directive verifies the targeted UI fix.
+Reason: the ASCII UI rerun passed. This directive verifies the latest installer, redesigned public landing page, app-guided AI setup, Longmont source discovery, full editorial workflow, output quality, ZIP export, and here.now publication.
 
 Product branch:
 
@@ -35,22 +35,22 @@ stable-readiness-local-gates
 
 Product commit:
 
-607b0f3bb79b97a4f7cbb0a2286a8722b9a78b34
+cd038d696fe9708aaa54c23dd766eff36112f93b
 
 Artifact folder:
 
-test-comms/artifacts/20260629-ascii-ui-rerun-607b0f3/
+test-comms/artifacts/20260629-full-e2e-output-quality-landing-cd038d6/
 
 Expected preferred NSIS SHA256:
 
-B9AF797EE8CEDF81BDE8761BE3FAAE34DA1CE00D122F3227AA0258272611BD1B
+520F226F62FCD94B8BF8D3345EB492A990931938FC49D8AA2222EC22DEA07695
 
 Expected fallback MSI SHA256:
 
-C79A80C855CE2131BF599DD80A9A5BD65CB2BDC9C1BCBE2A33190E0410DDE83E
+C72791A1BC269670EB0D376ED0BA452B2DA375D21588994355535E94294CB2AF
 
 ## Current Goal
 
-Run the targeted ASCII UI rerun. Confirm the installed app no longer renders `LONGMONT Â· CO` or other mojibake in the sidebar, Story Queue, Daily Scan labels, or nearby setup/loading/saving UI.
+Run the full cleanroom end-to-end rerun. Confirm the public landing page is updated, the installed app can run the full Longmont newsroom workflow from clean state, the generated output is reader-facing and not reporter notes, the issue exports as ZIP, and the issue publishes to here.now.
 
 Commit reports/artifacts with [skip ci].
