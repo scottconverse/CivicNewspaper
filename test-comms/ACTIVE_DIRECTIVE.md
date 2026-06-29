@@ -19,15 +19,15 @@ C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms
 
 Run this directive now:
 
-test-comms/directives/20260629-full-cleanwipe-longmont-5a24a5a.md
+test-comms/directives/20260629-herenow-retest-f092852.md
 
-This starts the full clean-wipe end-to-end Longmont publication test after the 4f0b09d run proved functional E2E generation/publish but failed clean-wipe certification. It uses commit `5a24a5a597b78907ca5d64019432c1468b3ff30a`, which gates public publishing on a real user-chosen publication name and hardens Kill Story against stale selected-draft state.
+This is a focused here.now connector retest after the 5a24a5a clean-wipe run proved the rest of the Longmont workflow. It uses commit `f092852e9df3808f16cf56b829993f028e31d255`, which makes here.now use the compiled publication title instead of a generic or empty connector display name.
 
 Supersedes:
 
-test-comms/directives/20260629-full-cleanwipe-longmont-4f0b09d.md
+test-comms/directives/20260629-full-cleanwipe-longmont-5a24a5a.md
 
-Reason: the 4f0b09d run found stale output-path contamination, starter identity reaching public output, and Kill Story not persisting a killed/cut item.
+Reason: the 5a24a5a run passed clean-wipe state, AI setup, source discovery, drafting, editor workflow, kill persistence, compile/export, ZIP, identity, mojibake, and draft-prefix checks, but here.now rejected the publish because the request display name was empty after normalization.
 
 Product branch:
 
@@ -35,22 +35,22 @@ stable-readiness-local-gates
 
 Product commit:
 
-5a24a5a597b78907ca5d64019432c1468b3ff30a
+f092852e9df3808f16cf56b829993f028e31d255
 
 Artifact folder:
 
-test-comms/artifacts/20260629-full-cleanwipe-longmont-5a24a5a/
+test-comms/artifacts/20260629-herenow-retest-f092852/
 
 Expected preferred NSIS SHA256:
 
-A19456F776E319E0850463A3494A47B2CBA5668C556724BB1A96C4963E412082
+140F2893FFD77751E7C69E8542CEF2BA9AB664E8FE12E430AB1E435AFFBD108D
 
 Expected fallback MSI SHA256:
 
-A519ADE9DD15EE20887BB189F6CECD78E6B7BE1CB584B54FB4ACD8159DABF61A
+8EA8D5F210A435AB8DBD06478AA3C5816C0CF0953281FAC44B3100287547E333
 
 ## Current Goal
 
-Run the full clean-wipe end-to-end Longmont publication test: wipe CivicNewspaper/Ollama/model state, install the artifact, use only product-owned setup flows, discover/import Longmont official and public social/community sources when supported, generate leads and stories, exercise writer/editor/advisor paths, export a ZIP/package, publish anonymously to here.now, and produce a human-readable report with screenshots, output paths, ZIP hash, and the here.now URL.
+Run the focused here.now retest: install the artifact, reuse the already-proven 5a24a5a Longmont output package, publish anonymously to here.now from the visible app UI, verify the URL, and produce a human-readable report with screenshots, output path, and here.now URL.
 
 Commit reports/artifacts with [skip ci].
