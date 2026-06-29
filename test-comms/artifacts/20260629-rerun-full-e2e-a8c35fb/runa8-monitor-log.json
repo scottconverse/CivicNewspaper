@@ -1,0 +1,56 @@
+[
+    {
+        "seconds":  0,
+        "timestamp":  "2026-06-28T23:15:16.1178151-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  false,
+        "ollama_command":  null,
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260629-rerun-full-e2e-a8c35fb\\runa8-monitor-000.png"
+    },
+    {
+        "seconds":  30,
+        "timestamp":  "2026-06-28T23:15:46.3648197-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "ollama_command":  null,
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260629-rerun-full-e2e-a8c35fb\\runa8-monitor-030.png"
+    },
+    {
+        "seconds":  60,
+        "timestamp":  "2026-06-28T23:16:16.3746798-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "ollama_command":  null,
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260629-rerun-full-e2e-a8c35fb\\runa8-monitor-060.png"
+    },
+    {
+        "seconds":  120,
+        "timestamp":  "2026-06-28T23:17:16.3075751-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "ollama_command":  null,
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260629-rerun-full-e2e-a8c35fb\\runa8-monitor-120.png"
+    },
+    {
+        "seconds":  240,
+        "timestamp":  "2026-06-28T23:19:16.2423840-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "ollama_command":  null,
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260629-rerun-full-e2e-a8c35fb\\runa8-monitor-240.png"
+    },
+    {
+        "seconds":  420,
+        "timestamp":  "2026-06-28T23:22:16.3211833-06:00",
+        "civicnews_running":  true,
+        "civicnews_responding":  true,
+        "ollama_running":  true,
+        "ollama_command":  null,
+        "screenshot":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260629-rerun-full-e2e-a8c35fb\\runa8-monitor-420.png"
+    }
+]
