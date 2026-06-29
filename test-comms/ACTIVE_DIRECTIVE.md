@@ -1,4 +1,4 @@
-﻿# ACTIVE DIRECTIVE - Tester Read This First
+# ACTIVE DIRECTIVE - Tester Read This First
 
 Status: ACTIVE
 
@@ -6,51 +6,55 @@ Tester, always read this file first on every 15-minute watcher tick.
 
 IMPORTANT MACHINE CONTEXT:
 
-- You are the tester on the separate cleanroom machine running as msi\civic.
-- Do not use any path under C:\Users\instynct; that path belongs to the coder machine and is invalid on the tester machine.
+- You are the tester on the separate cleanroom machine running as `msi\civic`.
+- Do not use any path under `C:\Users\instynct`; that path belongs to the coder machine and is invalid on the tester machine.
 - The approved tester coordination checkout path is:
 
-C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms
+`C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms`
 
 - If you were previously watching CivicCast or any other project, stop that watcher context now. Switch to CivicNewspaper only.
-- The single source of truth is GitHub repo https://github.com/scottconverse/CivicNewspaper, branch test-comms/cleanroom-coder-tester, this file.
+- The single source of truth is GitHub repo `https://github.com/scottconverse/CivicNewspaper`, branch `test-comms/cleanroom-coder-tester`, this file.
 
 ## Current Directive
 
 Run this directive now:
 
-test-comms/directives/20260629-full-e2e-output-quality-landing-cd038d6.md
+`test-comms/directives/20260629-output-scaffolding-rerun-c01e32f.md`
 
-This is a full cleanroom end-to-end rerun after the public landing page was redesigned and output-quality fixes were added. The prior ASCII/mojibake rerun passed, but it did not retest the full newsroom value loop on the latest product commit.
+This is a cleanroom Longmont rerun after the prior full E2E test failed because reader-facing public output exposed internal editor scaffolding strings including `EDITOR_NOTE` and `Body:`.
 
 Supersedes:
 
-test-comms/directives/20260629-ascii-ui-rerun-607b0f3.md
+`test-comms/directives/20260629-full-e2e-output-quality-landing-cd038d6.md`
 
-Reason: the ASCII UI rerun passed. This directive verifies the latest installer, redesigned public landing page, app-guided AI setup, Longmont source discovery, full editorial workflow, output quality, ZIP export, and here.now publication.
+Reason: the cd038d6 rerun proved install/setup/publish mechanics and the landing page, but failed output quality. This directive verifies the fixed installer and the public output cleanup.
 
 Product branch:
 
-stable-readiness-local-gates
+`stable-readiness-local-gates`
 
 Product commit:
 
-cd038d696fe9708aaa54c23dd766eff36112f93b
+`c01e32fdccb50b5a19182b7128f666e8de5cc304`
 
 Artifact folder:
 
-test-comms/artifacts/20260629-full-e2e-output-quality-landing-cd038d6/
+`test-comms/artifacts/20260629-output-scaffolding-rerun-c01e32f/`
 
 Expected preferred NSIS SHA256:
 
-520F226F62FCD94B8BF8D3345EB492A990931938FC49D8AA2222EC22DEA07695
+`9A2828D9B98EBBDEA2F625F5BD3EEFAB824B79E6A80FF8FD57AF7EF534D415DE`
 
 Expected fallback MSI SHA256:
 
-C72791A1BC269670EB0D376ED0BA452B2DA375D21588994355535E94294CB2AF
+`669B9B40CECDA12657210EE2247C6920B5A1F91FF23BD50CB05B06FC5A49FBEA`
+
+Expected report:
+
+`test-comms/reports/20260629-output-scaffolding-rerun-c01e32f-report.md`
 
 ## Current Goal
 
-Run the full cleanroom end-to-end rerun. Confirm the public landing page is updated, the installed app can run the full Longmont newsroom workflow from clean state, the generated output is reader-facing and not reporter notes, the issue exports as ZIP, and the issue publishes to here.now.
+Run the cleanroom Longmont output-quality rerun. Confirm the app still installs, sets up local AI without tester-installed prerequisites, scans Longmont sources, exercises editorial workflow, exports ZIP, publishes to here.now, and no public artifact leaks internal scaffolding such as `EDITOR_NOTE`, `Body:`, `Headline:`, `Nut graf`, `Reporting Steps`, `[Source needed]`, `[Verification needed]`, or `[End of Report]`.
 
-Commit reports/artifacts with [skip ci].
+Commit reports/artifacts with `[skip ci]`.
