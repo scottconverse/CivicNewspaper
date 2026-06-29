@@ -1,0 +1,78 @@
+{
+  "issue_id": "issue-20260629-135829-049469100",
+  "output_dir": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/reports/20260629-full-cleanwipe-longmont-duplicate-rerun-0941256-evidence/publication-output/site",
+  "generated_at": "2026-06-29T13:58:29.049469100+00:00",
+  "provider": "here_now",
+  "published_url": "https://dusky-bloom-9nx3.here.now",
+  "deployment_id": "slug=dusky-bloom-9nx3;version=01KW9TV2Z6VST3Z63YHWZRA1MD;created_slug=dusky-bloom-9nx3",
+  "article_count": 5,
+  "skipped_count": 0,
+  "files_written": 22,
+  "generated_files": [
+    "styles.css",
+    "print.css",
+    "watch/5.html",
+    "watch/4.html",
+    "watch/3.html",
+    "watch/2.html",
+    "watch/1.html",
+    "index.html",
+    "about.html",
+    "ethics.html",
+    "how-we-report.html",
+    "corrections.html",
+    "feed.xml",
+    "newsletter.md",
+    "substack.md",
+    "share-package.md",
+    "facebook-post.txt",
+    "subreddit-post.md",
+    "nextdoor-post.txt",
+    "short-link-blurb.txt",
+    "publish-manifest.json",
+    "site-package.zip"
+  ],
+  "index_path": "index.html",
+  "rss_path": "feed.xml",
+  "newsletter_path": "newsletter.md",
+  "substack_path": "substack.md",
+  "share_package_path": "share-package.md",
+  "facebook_post_path": "facebook-post.txt",
+  "subreddit_post_path": "subreddit-post.md",
+  "nextdoor_post_path": "nextdoor-post.txt",
+  "short_link_blurb_path": "short-link-blurb.txt",
+  "manifest_path": "publish-manifest.json",
+  "zip_path": "site-package.zip",
+  "articles": [
+    {
+      "title": "Youth Center Programs in Longmont: The City of Longmont is focusing on youth development through programs at the Youth Center to support children, families, and communities.",
+      "format": "watch",
+      "relative_path": "watch/5.html",
+      "updated_at": "2026-06-29T13:55:04.295246600+00:00"
+    },
+    {
+      "title": "A new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).",
+      "format": "watch",
+      "relative_path": "watch/4.html",
+      "updated_at": "2026-06-29T13:53:23.845171400+00:00"
+    },
+    {
+      "title": "City Council Meetings with Video Archive: City Council meetings are held regularly, and videos of the meetings are now available online. This provides transparency and allows residents to review past discussions.",
+      "format": "watch",
+      "relative_path": "watch/3.html",
+      "updated_at": "2026-06-29T13:52:56.099882200+00:00"
+    },
+    {
+      "title": "City Council Second Reading Process: The City Council's process for approving ordinances, including the steps of first and second readings, public hearings, and voting requirements, is outlined. This transparency helps ensure the public understands how local laws are enacted.",
+      "format": "watch",
+      "relative_path": "watch/2.html",
+      "updated_at": "2026-06-29T13:52:23.223889500+00:00"
+    },
+    {
+      "title": "Longmont Invites Applications for New Official City Flag: The city of Longmont is seeking public input to design its new official flag, engaging community members in the process of creating a symbol that represents their diverse and welcoming community.",
+      "format": "watch",
+      "relative_path": "watch/1.html",
+      "updated_at": "2026-06-29T13:51:35.212956300+00:00"
+    }
+  ]
+}

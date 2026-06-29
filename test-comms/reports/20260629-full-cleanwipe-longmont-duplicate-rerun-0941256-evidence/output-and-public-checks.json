@@ -1,0 +1,43 @@
+{
+  "timestamp_utc": "2026-06-29T14:02:34.267Z",
+  "outputDir": "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-full-cleanwipe-longmont-duplicate-rerun-0941256-evidence\\publication-output\\site",
+  "zipPath": "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-full-cleanwipe-longmont-duplicate-rerun-0941256-evidence\\publication-output\\site\\site-package.zip",
+  "zipExists": true,
+  "localFileCount": 21,
+  "localMojibakePass": true,
+  "localMojibakeHits": [],
+  "hereNowUrl": "https://dusky-bloom-9nx3.here.now",
+  "hereNowStatus": 200,
+  "hereNowOk": true,
+  "hereNowMojibakePass": true,
+  "hereNowMojibakeHits": [],
+  "publicDraftPrefixPass": true,
+  "publicDraftPrefixHits": [],
+  "publicTitles": [
+    "Youth Center Programs in Longmont: The City of Longmont is focusing on youth development through programs at the Youth Center to support children, families, and communities.",
+    "A new official primary document from &#x27;Longmont Public Information&#x27; was fetched today (https:&#x2F;&#x2F;longmontcolorado.gov&#x2F;public-information&#x2F;).",
+    "City Council Meetings with Video Archive: City Council meetings are held regularly, and videos of the meetings are now available online. This provides transparency and allows residents to review past discussions.",
+    "City Council Second Reading Process: The City Council&#x27;s process for approving ordinances, including the steps of first and second readings, public hearings, and voting requirements, is outlined. This transparency helps ensure the public understands how local laws are enacted.",
+    "Longmont Invites Applications for New Official City Flag: The city of Longmont is seeking public input to design its new official flag, engaging community members in the process of creating a symbol that represents their diverse and welcoming community."
+  ],
+  "duplicateTopicAudit": {
+    "timestamp_utc": "2026-06-29T14:02:34.266Z",
+    "article_count": 5,
+    "article_titles": [
+      "Youth Center Programs in Longmont: The City of Longmont is focusing on youth development through programs at the Youth Center to support children, families, and communities.",
+      "A new official primary document from &#x27;Longmont Public Information&#x27; was fetched today (https:&#x2F;&#x2F;longmontcolorado.gov&#x2F;public-information&#x2F;).",
+      "City Council Meetings with Video Archive: City Council meetings are held regularly, and videos of the meetings are now available online. This provides transparency and allows residents to review past discussions.",
+      "City Council Second Reading Process: The City Council&#x27;s process for approving ordinances, including the steps of first and second readings, public hearings, and voting requirements, is outlined. This transparency helps ensure the public understands how local laws are enacted.",
+      "Longmont Invites Applications for New Official City Flag: The city of Longmont is seeking public input to design its new official flag, engaging community members in the process of creating a symbol that represents their diverse and welcoming community."
+    ],
+    "candidate_duplicate_pairs": [],
+    "method": "normalized token overlap using Jaccard >= 0.50 plus explicit same-topic guards for Building Services/permitting portal, flag, and near-identical council titles",
+    "pass": true,
+    "building_services_permitting_titles": [],
+    "building_services_duplicate_recurred": false
+  },
+  "containsPublicationTitle": true,
+  "myLocalPublicationInTitleHeader": false,
+  "renderedTitle": "Longmont Duplicate Lead Retest",
+  "renderedTextSample": "LONGMONT DUPLICATE LEAD RETEST\n\nCLEANROOM VERIFICATION ISSUE FOR LONGMONT CIVIC COVERAGE.\n\nHOME ABOUT ETHICS POLICY HOW WE REPORT CORRECTIONS LEDGER RSS FEED\nYouth Center Programs in Longmont: The City of Longmont is focusing on youth development through programs at the Youth Center to support children, families, and communities.\n2026-06-29T13:55:04.295246600+00:00 FORMAT: WATCH\nA new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).\n2026-06-29T13:53:23.845171400+00:00 FORMAT: WATCH\nCity Council Meetings with Video Archive: City Council meetings are held regularly, and videos of the meetings are now available online. This provides transparency and allows residents to review past discussions.\n2026-06-29T13:52:56.099882200+00:00 FORMAT: WATCH\nCity Council Second Reading Process: The City Council's process for approving ordinances, including the steps of first and second readings, public hearings, and voting requirements, is outlined. This transparency helps ensure the public understands how local laws are enacted.\n2026-06-29T13:52:23.223889500+00:00 FORMAT: WATCH\nLongmont Invites Applications for New Official City Flag: The city of Longmont is seeking public input to design its new official flag, engaging community members in the process of creating a symbol that represents their diverse and welcoming community.\n2026-06-29T13:51:35.212956300+00:00 FORMAT: WATCH\nABOUT THIS SITE\n\nA locally edited publication for this community.\n\nETHICS STANDARDS\n\nEditorial standards are set by the publisher. Corrections are published when needed.\n\nTemporary cleanroom test output."
+}

@@ -1,0 +1,29 @@
+{
+    "zipPath":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-full-cleanwipe-longmont-duplicate-rerun-0941256-evidence\\publication-output\\site\\site-package.zip",
+    "exists":  true,
+    "sha256":  "1A2D6495D39B16C59F9167684644694B6D068C53CC446193CC3C99CA879A7395",
+    "extractOk":  true,
+    "entries":  [
+                    "about.html",
+                    "corrections.html",
+                    "ethics.html",
+                    "facebook-post.txt",
+                    "feed.xml",
+                    "how-we-report.html",
+                    "index.html",
+                    "newsletter.md",
+                    "nextdoor-post.txt",
+                    "print.css",
+                    "publish-manifest.json",
+                    "share-package.md",
+                    "short-link-blurb.txt",
+                    "styles.css",
+                    "subreddit-post.md",
+                    "substack.md",
+                    "watch/1.html",
+                    "watch/2.html",
+                    "watch/3.html",
+                    "watch/4.html",
+                    "watch/5.html"
+                ]
+}

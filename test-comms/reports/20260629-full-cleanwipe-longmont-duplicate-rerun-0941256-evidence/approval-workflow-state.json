@@ -1,0 +1,291 @@
+{
+  "actions": [
+    {
+      "label": "current-open-draft",
+      "action": "approve"
+    },
+    {
+      "label": "City Council Second Reading Process:",
+      "action": "clicked",
+      "buttonIndex": 21,
+      "buttonText": "Draft"
+    },
+    {
+      "label": "City Council Second Reading Process:",
+      "action": "approve"
+    },
+    {
+      "label": "Youth Center Programs in Longmont:",
+      "action": "clicked",
+      "buttonIndex": 22,
+      "buttonText": "Draft"
+    },
+    {
+      "label": "Youth Center Programs in Longmont:",
+      "action": "approve"
+    },
+    {
+      "label": "City Council Meetings with Video Archive:",
+      "action": "clicked",
+      "buttonIndex": 23,
+      "buttonText": "Open draft"
+    },
+    {
+      "label": "City Council Meetings with Video Archive:",
+      "action": "approve"
+    },
+    {
+      "label": "City Clerk’s Agenda Management Portal Issues: The Building Services online permitting portal of the City of Longmont",
+      "action": "clicked",
+      "buttonIndex": 24,
+      "buttonText": "Draft"
+    },
+    {
+      "label": "City Clerk’s Agenda Management Portal Issues: The Building Services online permitting portal of the City of Longmont",
+      "action": "approve"
+    }
+  ],
+  "final": {
+    "text": "The Civic Desk\nLONGMONT · CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nStory Queue\n\nCivic signals your sources surfaced, ready to verify and turn into plain-language stories.\n\nRefresh\nDaily Scan\nScrape & Detect\nNEW LEADS\n15\nIN DRAFTING\n5\nHIGH PRIORITY\n6\nSOURCES\n6\nLocal-first workflow\nScan sources, draft from linked evidence, run guardrails, then publish a static paper.\nLeads\n15\nDrafts\n5\nScan results\nlatest\nTITLE\tFORMAT\tSTATUS\tACTIONS\nYouth Center Programs in Longmont: The City of Longmont is focusing on youth development through programs at the Youth Center to support children, families, and communities.\tWatch\tready to publish\t\nOpen\nCorrection\n\nA new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).\tWatch\tready to publish\t\nOpen\nCorrection\n\nCity Council Meetings with Video Archive: City Council meetings are held regularly, and videos of the meetings are now available online. This provides transparency and allows residents to review past discussions.\tWatch\tready to publish\t\nOpen\nCorrection\n\nCity Council Second Reading Process: The City Council's process for approving ordinances, including the steps of first and second readings, public hearings, and voting requirements, is outlined. This transparency helps ensure the public understands how local laws are enacted.\tWatch\tready to publish\t\nOpen\nCorrection\n\nLongmont Invites Applications for New Official City Flag: The city of Longmont is seeking public input to design its new official flag, engaging community members in the process of creating a symbol that represents their diverse and welcoming community.\tWatch\tready to publish\t\nOpen\nCorrection",
+    "buttons": [
+      {
+        "i": 0,
+        "text": "Story Queue",
+        "aria": null,
+        "id": "nav-tab-queue",
+        "disabled": false
+      },
+      {
+        "i": 1,
+        "text": "Daily Scan",
+        "aria": null,
+        "id": "nav-tab-dailyScan",
+        "disabled": false
+      },
+      {
+        "i": 2,
+        "text": "Dark Signals",
+        "aria": null,
+        "id": "nav-tab-darkSignals",
+        "disabled": false
+      },
+      {
+        "i": 3,
+        "text": "Verification",
+        "aria": null,
+        "id": "nav-tab-verification",
+        "disabled": false
+      },
+      {
+        "i": 4,
+        "text": "Workbench",
+        "aria": null,
+        "id": "nav-tab-workbench",
+        "disabled": false
+      },
+      {
+        "i": 5,
+        "text": "Sources",
+        "aria": null,
+        "id": "nav-tab-sources",
+        "disabled": false
+      },
+      {
+        "i": 6,
+        "text": "AI Model",
+        "aria": null,
+        "id": "nav-tab-onboarding",
+        "disabled": false
+      },
+      {
+        "i": 7,
+        "text": "Publishing",
+        "aria": null,
+        "id": "nav-tab-publish",
+        "disabled": false
+      },
+      {
+        "i": 8,
+        "text": "Browser Pairing",
+        "aria": null,
+        "id": "nav-tab-pairing",
+        "disabled": false
+      },
+      {
+        "i": 9,
+        "text": "Ethics & Backups",
+        "aria": null,
+        "id": "nav-tab-settings",
+        "disabled": false
+      },
+      {
+        "i": 10,
+        "text": "System & Status",
+        "aria": null,
+        "id": "nav-tab-system",
+        "disabled": false
+      },
+      {
+        "i": 11,
+        "text": "",
+        "aria": "Dismiss beta notice",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 12,
+        "text": "Refresh",
+        "aria": null,
+        "id": "btn-sync-list",
+        "disabled": false
+      },
+      {
+        "i": 13,
+        "text": "Daily Scan",
+        "aria": null,
+        "id": "btn-daily-scan",
+        "disabled": false
+      },
+      {
+        "i": 14,
+        "text": "Scrape & Detect",
+        "aria": null,
+        "id": "btn-scrape-detect",
+        "disabled": false
+      },
+      {
+        "i": 15,
+        "text": "IN DRAFTING\n5",
+        "aria": "Open 5 drafts",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 16,
+        "text": "Leads\n15",
+        "aria": null,
+        "id": "queue-tab-leads",
+        "disabled": false
+      },
+      {
+        "i": 17,
+        "text": "Drafts\n5",
+        "aria": null,
+        "id": "queue-tab-drafts",
+        "disabled": false
+      },
+      {
+        "i": 18,
+        "text": "Scan results\nlatest",
+        "aria": null,
+        "id": "queue-tab-scan-results",
+        "disabled": false
+      },
+      {
+        "i": 19,
+        "text": "Open",
+        "aria": null,
+        "id": "btn-open-workbench-5",
+        "disabled": false
+      },
+      {
+        "i": 20,
+        "text": "Correction",
+        "aria": null,
+        "id": "btn-correction-5",
+        "disabled": false
+      },
+      {
+        "i": 21,
+        "text": "",
+        "aria": "Delete draft",
+        "id": "btn-delete-draft-5",
+        "disabled": false
+      },
+      {
+        "i": 22,
+        "text": "Open",
+        "aria": null,
+        "id": "btn-open-workbench-4",
+        "disabled": false
+      },
+      {
+        "i": 23,
+        "text": "Correction",
+        "aria": null,
+        "id": "btn-correction-4",
+        "disabled": false
+      },
+      {
+        "i": 24,
+        "text": "",
+        "aria": "Delete draft",
+        "id": "btn-delete-draft-4",
+        "disabled": false
+      },
+      {
+        "i": 25,
+        "text": "Open",
+        "aria": null,
+        "id": "btn-open-workbench-3",
+        "disabled": false
+      },
+      {
+        "i": 26,
+        "text": "Correction",
+        "aria": null,
+        "id": "btn-correction-3",
+        "disabled": false
+      },
+      {
+        "i": 27,
+        "text": "",
+        "aria": "Delete draft",
+        "id": "btn-delete-draft-3",
+        "disabled": false
+      },
+      {
+        "i": 28,
+        "text": "Open",
+        "aria": null,
+        "id": "btn-open-workbench-2",
+        "disabled": false
+      },
+      {
+        "i": 29,
+        "text": "Correction",
+        "aria": null,
+        "id": "btn-correction-2",
+        "disabled": false
+      },
+      {
+        "i": 30,
+        "text": "",
+        "aria": "Delete draft",
+        "id": "btn-delete-draft-2",
+        "disabled": false
+      },
+      {
+        "i": 31,
+        "text": "Open",
+        "aria": null,
+        "id": "btn-open-workbench-1",
+        "disabled": false
+      },
+      {
+        "i": 32,
+        "text": "Correction",
+        "aria": null,
+        "id": "btn-correction-1",
+        "disabled": false
+      },
+      {
+        "i": 33,
+        "text": "",
+        "aria": "Delete draft",
+        "id": "btn-delete-draft-1",
+        "disabled": false
+      }
+    ]
+  }
+}

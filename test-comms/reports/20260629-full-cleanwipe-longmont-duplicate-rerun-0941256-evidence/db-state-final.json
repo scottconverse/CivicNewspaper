@@ -1,0 +1,116 @@
+{
+  "sources": [
+    {
+      "id": 1,
+      "name": "Longmont Agenda Management Portal",
+      "url": "https://longmontcolorado.gov/city-clerk/agenda-management-portal/",
+      "type": "primary_record",
+      "status": "online",
+      "tier": "official_record"
+    },
+    {
+      "id": 2,
+      "name": "Longmont City Council Meetings",
+      "url": "https://longmontcolorado.gov/government/city-council-meetings/",
+      "type": "primary_record",
+      "status": "online",
+      "tier": "official_record"
+    },
+    {
+      "id": 3,
+      "name": "Longmont Public Information",
+      "url": "https://longmontcolorado.gov/public-information/",
+      "type": "official_comm",
+      "status": "online",
+      "tier": "official_record"
+    },
+    {
+      "id": 4,
+      "name": "Public Notice Colorado",
+      "url": "https://www.publicnoticecolorado.com/",
+      "type": "primary_record",
+      "status": "online",
+      "tier": "official_record"
+    },
+    {
+      "id": 5,
+      "name": "Longmont subreddit",
+      "url": "https://www.reddit.com/r/Longmont/",
+      "type": "community_signal",
+      "status": "online",
+      "tier": "community_signal"
+    },
+    {
+      "id": 6,
+      "name": "Longmont Colorado subreddit",
+      "url": "https://www.reddit.com/r/LongmontColorado/",
+      "type": "community_signal",
+      "status": "online",
+      "tier": "community_signal"
+    }
+  ],
+  "drafts": [
+    {
+      "id": 1,
+      "lead_id": 15,
+      "format": "watch",
+      "status": "ready_to_publish",
+      "title": "Longmont Invites Applications for New Official City Flag: The city of Longmont is seeking public input to design its new official flag, engaging community members in the process of creating a symbol that represents their diverse and welcoming community."
+    },
+    {
+      "id": 2,
+      "lead_id": 13,
+      "format": "watch",
+      "status": "ready_to_publish",
+      "title": "City Council Second Reading Process: The City Council's process for approving ordinances, including the steps of first and second readings, public hearings, and voting requirements, is outlined. This transparency helps ensure the public understands how local laws are enacted."
+    },
+    {
+      "id": 3,
+      "lead_id": 11,
+      "format": "watch",
+      "status": "ready_to_publish",
+      "title": "City Council Meetings with Video Archive: City Council meetings are held regularly, and videos of the meetings are now available online. This provides transparency and allows residents to review past discussions."
+    },
+    {
+      "id": 4,
+      "lead_id": 4,
+      "format": "watch",
+      "status": "ready_to_publish",
+      "title": "A new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/)."
+    },
+    {
+      "id": 5,
+      "lead_id": 12,
+      "format": "watch",
+      "status": "ready_to_publish",
+      "title": "Youth Center Programs in Longmont: The City of Longmont is focusing on youth development through programs at the Youth Center to support children, families, and communities."
+    }
+  ],
+  "leadCount": 15,
+  "dailyScanLeadCount": 7,
+  "publishRuns": [
+    {
+      "id": 1,
+      "issue_id": "issue-20260629-135829-049469100",
+      "output_path": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/reports/20260629-full-cleanwipe-longmont-duplicate-rerun-0941256-evidence/publication-output/site",
+      "provider": "here_now",
+      "published_url": "https://dusky-bloom-9nx3.here.now",
+      "article_count": 5,
+      "files_written": 22,
+      "generated_at": "2026-06-29T13:58:29.049469100+00:00"
+    }
+  ],
+  "settings": {
+    "identity.newsroom_name": "My Local Publication",
+    "identity.editor_name": "Publisher",
+    "identity.organization_type": "single_person",
+    "identity.city": "Longmont",
+    "identity.state": "CO",
+    "model.selected": "qwen2.5:7b",
+    "paths.publish": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default",
+    "paths.backup": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\backups",
+    "onboarding_complete": "1",
+    "setup.recovered_input": "consumed",
+    "scan.latest_id": "2"
+  }
+}

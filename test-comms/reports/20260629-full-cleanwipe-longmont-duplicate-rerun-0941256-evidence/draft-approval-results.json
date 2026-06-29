@@ -1,0 +1,58 @@
+[
+  {
+    "prefix": "Draft City Council Second Reading Process:",
+    "opened": true,
+    "generated": true,
+    "approved": true,
+    "error": null,
+    "approval": {
+      "label": "Draft City Council Second Reading Process:",
+      "runAdvisor": false,
+      "advisor": null,
+      "approved": true,
+      "error": null
+    }
+  },
+  {
+    "prefix": "Draft Youth Center Programs in Longmont:",
+    "opened": false,
+    "generated": false,
+    "approved": false,
+    "error": "draft button not found"
+  },
+  {
+    "prefix": "Draft City Council Meetings with Video Archive:",
+    "opened": true,
+    "generated": true,
+    "approved": true,
+    "error": null,
+    "approval": {
+      "label": "Draft City Council Meetings with Video Archive:",
+      "runAdvisor": false,
+      "advisor": null,
+      "approved": true,
+      "error": null
+    }
+  },
+  {
+    "prefix": "Draft A new official primary document from 'Public Notice Colorado'",
+    "opened": false,
+    "generated": false,
+    "approved": false,
+    "error": "draft button not found"
+  },
+  {
+    "prefix": "Draft A new official primary document from 'Longmont Public Information'",
+    "opened": true,
+    "generated": true,
+    "approved": true,
+    "error": null,
+    "approval": {
+      "label": "Draft A new official primary document from 'Longmont Public Information'",
+      "runAdvisor": false,
+      "advisor": null,
+      "approved": true,
+      "error": null
+    }
+  }
+]

@@ -1,0 +1,94 @@
+﻿{
+    "timestamp_utc":  "2026-06-29T14:03:00.0019465Z",
+    "zip_path":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-full-cleanwipe-longmont-duplicate-rerun-0941256-evidence\\publication-output\\site\\site-package.zip",
+    "zip_exists":  true,
+    "extract_path":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-full-cleanwipe-longmont-duplicate-rerun-0941256-evidence\\zip-extract-check",
+    "extracted_file_count":  21,
+    "index_exists":  true,
+    "files":  [
+                  {
+                      "path":  "\\about.html",
+                      "length":  2389
+                  },
+                  {
+                      "path":  "\\corrections.html",
+                      "length":  2401
+                  },
+                  {
+                      "path":  "\\ethics.html",
+                      "length":  2449
+                  },
+                  {
+                      "path":  "\\facebook-post.txt",
+                      "length":  164
+                  },
+                  {
+                      "path":  "\\feed.xml",
+                      "length":  3578
+                  },
+                  {
+                      "path":  "\\how-we-report.html",
+                      "length":  2423
+                  },
+                  {
+                      "path":  "\\index.html",
+                      "length":  4584
+                  },
+                  {
+                      "path":  "\\newsletter.md",
+                      "length":  1817
+                  },
+                  {
+                      "path":  "\\nextdoor-post.txt",
+                      "length":  308
+                  },
+                  {
+                      "path":  "\\print.css",
+                      "length":  668
+                  },
+                  {
+                      "path":  "\\publish-manifest.json",
+                      "length":  3328
+                  },
+                  {
+                      "path":  "\\share-package.md",
+                      "length":  2989
+                  },
+                  {
+                      "path":  "\\short-link-blurb.txt",
+                      "length":  90
+                  },
+                  {
+                      "path":  "\\styles.css",
+                      "length":  4240
+                  },
+                  {
+                      "path":  "\\subreddit-post.md",
+                      "length":  347
+                  },
+                  {
+                      "path":  "\\substack.md",
+                      "length":  1761
+                  },
+                  {
+                      "path":  "\\watch\\1.html",
+                      "length":  11872
+                  },
+                  {
+                      "path":  "\\watch\\2.html",
+                      "length":  12438
+                  },
+                  {
+                      "path":  "\\watch\\3.html",
+                      "length":  11652
+                  },
+                  {
+                      "path":  "\\watch\\4.html",
+                      "length":  7086
+                  },
+                  {
+                      "path":  "\\watch\\5.html",
+                      "length":  5521
+                  }
+              ]
+}

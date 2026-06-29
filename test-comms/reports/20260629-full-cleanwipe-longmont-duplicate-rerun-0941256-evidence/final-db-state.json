@@ -1,0 +1,296 @@
+{
+  "timestamp_utc": "2026-06-29T14:01:53.974559Z",
+  "db": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+  "tables": [
+    "civic_entities",
+    "civic_observation_entities",
+    "civic_observations",
+    "daily_scan_leads",
+    "daily_scan_runs",
+    "dark_signals",
+    "drafts",
+    "evidence_items",
+    "lead_evidence",
+    "leads",
+    "paired_clients",
+    "publish_runs",
+    "published_posts",
+    "settings",
+    "source_performance_scores",
+    "sources",
+    "sqlite_sequence",
+    "subscribers",
+    "verification_tasks"
+  ],
+  "counts": {
+    "civic_entities": 31,
+    "civic_observation_entities": 130,
+    "civic_observations": 110,
+    "daily_scan_leads": 7,
+    "daily_scan_runs": 2,
+    "dark_signals": 1,
+    "drafts": 5,
+    "evidence_items": 27,
+    "lead_evidence": 26,
+    "leads": 15,
+    "paired_clients": 0,
+    "publish_runs": 1,
+    "published_posts": 5,
+    "settings": 11,
+    "source_performance_scores": 6,
+    "sources": 6,
+    "sqlite_sequence": 12,
+    "subscribers": 0,
+    "verification_tasks": 3
+  },
+  "draft_status_counts": {
+    "ready_to_publish": 5
+  },
+  "sources": [
+    {
+      "id": 1,
+      "name": "Longmont Agenda Management Portal",
+      "url": "https://longmontcolorado.gov/city-clerk/agenda-management-portal/",
+      "tier": "official_record",
+      "type": "primary_record"
+    },
+    {
+      "id": 2,
+      "name": "Longmont City Council Meetings",
+      "url": "https://longmontcolorado.gov/government/city-council-meetings/",
+      "tier": "official_record",
+      "type": "primary_record"
+    },
+    {
+      "id": 6,
+      "name": "Longmont Colorado subreddit",
+      "url": "https://www.reddit.com/r/LongmontColorado/",
+      "tier": "community_signal",
+      "type": "community_signal"
+    },
+    {
+      "id": 3,
+      "name": "Longmont Public Information",
+      "url": "https://longmontcolorado.gov/public-information/",
+      "tier": "official_record",
+      "type": "official_comm"
+    },
+    {
+      "id": 5,
+      "name": "Longmont subreddit",
+      "url": "https://www.reddit.com/r/Longmont/",
+      "tier": "community_signal",
+      "type": "community_signal"
+    },
+    {
+      "id": 4,
+      "name": "Public Notice Colorado",
+      "url": "https://www.publicnoticecolorado.com/",
+      "tier": "official_record",
+      "type": "primary_record"
+    }
+  ],
+  "publish_runs": [
+    {
+      "id": 1,
+      "issue_id": "issue-20260629-135829-049469100",
+      "provider": "here_now",
+      "output_path": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/reports/20260629-full-cleanwipe-longmont-duplicate-rerun-0941256-evidence/publication-output/site",
+      "published_url": "https://dusky-bloom-9nx3.here.now",
+      "article_count": 5,
+      "skipped_count": 0
+    }
+  ],
+  "published_posts": [
+    {
+      "id": 5,
+      "url": "watch/1.html",
+      "published_at": "2026-06-29T13:51:35.212956300+00:00"
+    },
+    {
+      "id": 4,
+      "url": "watch/2.html",
+      "published_at": "2026-06-29T13:52:23.223889500+00:00"
+    },
+    {
+      "id": 3,
+      "url": "watch/3.html",
+      "published_at": "2026-06-29T13:52:56.099882200+00:00"
+    },
+    {
+      "id": 2,
+      "url": "watch/4.html",
+      "published_at": "2026-06-29T13:53:23.845171400+00:00"
+    },
+    {
+      "id": 1,
+      "url": "watch/5.html",
+      "published_at": "2026-06-29T13:55:04.295246600+00:00"
+    }
+  ],
+  "settings": [
+    {
+      "key": "identity.city",
+      "value": "Longmont"
+    },
+    {
+      "key": "identity.editor_name",
+      "value": "Publisher"
+    },
+    {
+      "key": "identity.newsroom_name",
+      "value": "My Local Publication"
+    },
+    {
+      "key": "identity.organization_type",
+      "value": "single_person"
+    },
+    {
+      "key": "identity.state",
+      "value": "CO"
+    },
+    {
+      "key": "model.selected",
+      "value": "qwen2.5:7b"
+    },
+    {
+      "key": "onboarding_complete",
+      "value": "1"
+    },
+    {
+      "key": "paths.backup",
+      "value": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\backups"
+    },
+    {
+      "key": "paths.publish",
+      "value": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default"
+    },
+    {
+      "key": "scan.latest_id",
+      "value": "2"
+    },
+    {
+      "key": "setup.recovered_input",
+      "value": "consumed"
+    }
+  ],
+  "columns": {
+    "drafts": [
+      "id",
+      "lead_id",
+      "format",
+      "title",
+      "content",
+      "status",
+      "verification_checklist",
+      "missing_evidence_notes",
+      "correction_note",
+      "created_at",
+      "updated_at",
+      "attested_by",
+      "attested_at",
+      "guardrail_override_reason"
+    ],
+    "sources": [
+      "id",
+      "name",
+      "url",
+      "type",
+      "status",
+      "last_success_at",
+      "last_failed_at",
+      "last_scraped",
+      "tier"
+    ],
+    "leads": [
+      "id",
+      "detector_name",
+      "why",
+      "confidence",
+      "risk_level",
+      "confirmation_checklist",
+      "created_at",
+      "from_scan_lead_id"
+    ],
+    "daily_scan_leads": [
+      "id",
+      "scan_id",
+      "title",
+      "summary",
+      "source_id",
+      "original_url",
+      "why_flagged",
+      "source_name",
+      "source_type",
+      "priority",
+      "suggested_next_step"
+    ],
+    "publish_runs": [
+      "id",
+      "issue_id",
+      "output_path",
+      "generated_files",
+      "provider",
+      "published_url",
+      "deployment_id",
+      "article_count",
+      "skipped_count",
+      "files_written",
+      "generated_at"
+    ],
+    "published_posts": [
+      "id",
+      "draft_id",
+      "file_path",
+      "url",
+      "published_at",
+      "correction_history"
+    ],
+    "settings": [
+      "key",
+      "value"
+    ]
+  },
+  "drafts": [
+    {
+      "id": 5,
+      "title": "Youth Center Programs in Longmont: The City of Longmont is focusing on youth development through programs at the Youth Center to support children, families, and communities.",
+      "status": "ready_to_publish",
+      "format": "watch",
+      "created_at": "2026-06-29T13:55:03.413514900+00:00",
+      "updated_at": "2026-06-29T13:55:04.295246600+00:00"
+    },
+    {
+      "id": 4,
+      "title": "A new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).",
+      "status": "ready_to_publish",
+      "format": "watch",
+      "created_at": "2026-06-29T13:53:19.246361+00:00",
+      "updated_at": "2026-06-29T13:53:23.845171400+00:00"
+    },
+    {
+      "id": 3,
+      "title": "City Council Meetings with Video Archive: City Council meetings are held regularly, and videos of the meetings are now available online. This provides transparency and allows residents to review past discussions.",
+      "status": "ready_to_publish",
+      "format": "watch",
+      "created_at": "2026-06-29T13:52:53.670627100+00:00",
+      "updated_at": "2026-06-29T13:52:56.099882200+00:00"
+    },
+    {
+      "id": 2,
+      "title": "City Council Second Reading Process: The City Council's process for approving ordinances, including the steps of first and second readings, public hearings, and voting requirements, is outlined. This transparency helps ensure the public understands how local laws are enacted.",
+      "status": "ready_to_publish",
+      "format": "watch",
+      "created_at": "2026-06-29T13:52:20.135514700+00:00",
+      "updated_at": "2026-06-29T13:52:23.223889500+00:00"
+    },
+    {
+      "id": 1,
+      "title": "Longmont Invites Applications for New Official City Flag: The city of Longmont is seeking public input to design its new official flag, engaging community members in the process of creating a symbol that represents their diverse and welcoming community.",
+      "status": "ready_to_publish",
+      "format": "watch",
+      "created_at": "2026-06-29T13:48:27.324949300+00:00",
+      "updated_at": "2026-06-29T13:51:35.212956300+00:00"
+    }
+  ]
+}

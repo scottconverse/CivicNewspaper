@@ -1,0 +1,16 @@
+[
+  {
+    "needle": "Youth Center Programs in Longmont",
+    "opened": true,
+    "generated": true,
+    "approved": true,
+    "error": null
+  },
+  {
+    "needle": "Public Notice Colorado",
+    "opened": false,
+    "generated": false,
+    "approved": false,
+    "error": "draft button not found"
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "timestamp_utc": "2026-06-29T14:02:34.266Z",
+  "article_count": 5,
+  "article_titles": [
+    "Youth Center Programs in Longmont: The City of Longmont is focusing on youth development through programs at the Youth Center to support children, families, and communities.",
+    "A new official primary document from &#x27;Longmont Public Information&#x27; was fetched today (https:&#x2F;&#x2F;longmontcolorado.gov&#x2F;public-information&#x2F;).",
+    "City Council Meetings with Video Archive: City Council meetings are held regularly, and videos of the meetings are now available online. This provides transparency and allows residents to review past discussions.",
+    "City Council Second Reading Process: The City Council&#x27;s process for approving ordinances, including the steps of first and second readings, public hearings, and voting requirements, is outlined. This transparency helps ensure the public understands how local laws are enacted.",
+    "Longmont Invites Applications for New Official City Flag: The city of Longmont is seeking public input to design its new official flag, engaging community members in the process of creating a symbol that represents their diverse and welcoming community."
+  ],
+  "candidate_duplicate_pairs": [],
+  "method": "normalized token overlap using Jaccard >= 0.50 plus explicit same-topic guards for Building Services/permitting portal, flag, and near-identical council titles",
+  "pass": true,
+  "building_services_permitting_titles": [],
+  "building_services_duplicate_recurred": false
+}

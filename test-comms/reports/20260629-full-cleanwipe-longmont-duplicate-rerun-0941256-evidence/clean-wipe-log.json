@@ -1,0 +1,48 @@
+﻿{
+    "timestamp_utc":  "2026-06-29T13:35:55.2884134Z",
+    "stopped_processes":  [
+                              {
+                                  "name":  "civicnews",
+                                  "id":  2736,
+                                  "path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe"
+                              },
+                              {
+                                  "name":  "ollama",
+                                  "id":  12808,
+                                  "path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\ollama-runtime\\v0.30.11\\ollama.exe"
+                              }
+                          ],
+    "uninstall":  [
+                      {
+                          "path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\uninstall.exe",
+                          "exit_code":  0
+                      }
+                  ],
+    "removed":  [
+                    "absent:C:\\Users\\civic\\AppData\\Local\\The Civic Desk",
+                    "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+                    "C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk",
+                    "C:\\Users\\civic\\.ollama"
+                ],
+    "remaining":  [
+                      {
+                          "path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk",
+                          "exists":  false
+                      },
+                      {
+                          "path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+                          "exists":  false
+                      },
+                      {
+                          "path":  "C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk",
+                          "exists":  false
+                      },
+                      {
+                          "path":  "C:\\Users\\civic\\.ollama",
+                          "exists":  false
+                      }
+                  ],
+    "errors":  [
+
+               ]
+}

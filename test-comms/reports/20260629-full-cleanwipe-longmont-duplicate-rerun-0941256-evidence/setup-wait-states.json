@@ -1,0 +1,327 @@
+[
+  {
+    "t": "2026-06-29T13:37:40.128Z",
+    "i": 0,
+    "text": "The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.\nAI Setup\nStep 3 of 5\nDownload AI Model\n\nDownload the local AI model. One-time setup - needs an internet connection.\n\nAI Model: qwen2.5:7b (Recommended)\n\nCivicNews will download this local AI model now - a one-time download of about ~4.7 GB that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.\n\nIt is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.\n\nInitializing download...\n7.8%\nCancel Download\nBack\nSkip for now\nNext",
+    "buttons": [
+      {
+        "i": 0,
+        "text": "Cancel Download",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 1,
+        "text": "Back",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 2,
+        "text": "Skip for now",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 3,
+        "text": "Next",
+        "id": "btn-wizard-next",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "t": "2026-06-29T13:37:50.141Z",
+    "i": 1,
+    "text": "The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.\nAI Setup\nStep 3 of 5\nDownload AI Model\n\nDownload the local AI model. One-time setup - needs an internet connection.\n\nAI Model: qwen2.5:7b (Recommended)\n\nCivicNews will download this local AI model now - a one-time download of about ~4.7 GB that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.\n\nIt is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.\n\nInitializing download...\n30.3%\nCancel Download\nBack\nSkip for now\nNext",
+    "buttons": [
+      {
+        "i": 0,
+        "text": "Cancel Download",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 1,
+        "text": "Back",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 2,
+        "text": "Skip for now",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 3,
+        "text": "Next",
+        "id": "btn-wizard-next",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "t": "2026-06-29T13:38:00.146Z",
+    "i": 2,
+    "text": "The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.\nAI Setup\nStep 3 of 5\nDownload AI Model\n\nDownload the local AI model. One-time setup - needs an internet connection.\n\nAI Model: qwen2.5:7b (Recommended)\n\nCivicNews will download this local AI model now - a one-time download of about ~4.7 GB that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.\n\nIt is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.\n\nInitializing download...\n52.8%\nCancel Download\nBack\nSkip for now\nNext",
+    "buttons": [
+      {
+        "i": 0,
+        "text": "Cancel Download",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 1,
+        "text": "Back",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 2,
+        "text": "Skip for now",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 3,
+        "text": "Next",
+        "id": "btn-wizard-next",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "t": "2026-06-29T13:38:10.153Z",
+    "i": 3,
+    "text": "The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.\nAI Setup\nStep 3 of 5\nDownload AI Model\n\nDownload the local AI model. One-time setup - needs an internet connection.\n\nAI Model: qwen2.5:7b (Recommended)\n\nCivicNews will download this local AI model now - a one-time download of about ~4.7 GB that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.\n\nIt is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.\n\nInitializing download...\n75.7%\nCancel Download\nBack\nSkip for now\nNext",
+    "buttons": [
+      {
+        "i": 0,
+        "text": "Cancel Download",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 1,
+        "text": "Back",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 2,
+        "text": "Skip for now",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 3,
+        "text": "Next",
+        "id": "btn-wizard-next",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "t": "2026-06-29T13:38:20.158Z",
+    "i": 4,
+    "text": "The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.\nAI Setup\nStep 3 of 5\nDownload AI Model\n\nDownload the local AI model. One-time setup - needs an internet connection.\n\nAI Model: qwen2.5:7b (Recommended)\n\nCivicNews will download this local AI model now - a one-time download of about ~4.7 GB that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.\n\nIt is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.\n\nInitializing download...\n98.4%\nCancel Download\nBack\nSkip for now\nNext",
+    "buttons": [
+      {
+        "i": 0,
+        "text": "Cancel Download",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 1,
+        "text": "Back",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 2,
+        "text": "Skip for now",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 3,
+        "text": "Next",
+        "id": "btn-wizard-next",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "t": "2026-06-29T13:38:30.162Z",
+    "i": 5,
+    "text": "The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.\nAI Setup\nStep 3 of 5\nDownload AI Model\n\nDownload the local AI model. One-time setup - needs an internet connection.\n\nAI Model: qwen2.5:7b (Recommended)\n\nCivicNews will download this local AI model now - a one-time download of about ~4.7 GB that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.\n\nIt is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.\n\nVerifying model integrity...\n100.0%\nCancel Download\nBack\nSkip for now\nNext",
+    "buttons": [
+      {
+        "i": 0,
+        "text": "Cancel Download",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 1,
+        "text": "Back",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 2,
+        "text": "Skip for now",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 3,
+        "text": "Next",
+        "id": "btn-wizard-next",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "t": "2026-06-29T13:38:40.172Z",
+    "i": 6,
+    "text": "The Civic Desk\nLONGMONT · CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nAdded 6 starter Longmont source(s). Fetching records and community signals...\nDismiss\nSources\n\nThe municipal feeds and record portals The Civic Desk watches for you.\n\nDiscover for my city\nBulk import\nSOURCE\tTIER\tLAST CHECK\t\n\nLongmont Agenda Management Portal\nPrimary\nOnline\nhttps://longmontcolorado.gov/city-clerk/agenda-management-portal/\n\tPrimary\tNever\t\n\n\nLongmont City Council Meetings\nPrimary\nOnline\nhttps://longmontcolorado.gov/government/city-council-meetings/\n\tPrimary\tNever\t\n\n\nLongmont Public Information\nOfficial\nOnline\nhttps://longmontcolorado.gov/public-information/\n\tPrimary\tNever\t\n\n\nPublic Notice Colorado\nPrimary\nOnline\nhttps://www.publicnoticecolorado.com/\n\tPrimary\tNever\t\n\n\nLongmont subreddit\nWatch\nOnline\nhttps://www.reddit.com/r/Longmont/\n\tWatch\tNever\t\n\n\nLongmont Colorado subreddit\nWatch\nOnline\nhttps://www.reddit.com/r/LongmontColorado/\n\tWatch\tNever\t\nAdd a source\n\nPaste a city webpage or RSS feed. The Civic Desk figures out the rest.\n\nName\nURL\nType\nAuto-detect\nRSS\nHTML\nMedia\nTier\nPrimary\nSecondary\nWatch\nAdd Source",
+    "buttons": [
+      {
+        "i": 0,
+        "text": "Story Queue",
+        "id": "nav-tab-queue",
+        "disabled": false
+      },
+      {
+        "i": 1,
+        "text": "Daily Scan",
+        "id": "nav-tab-dailyScan",
+        "disabled": false
+      },
+      {
+        "i": 2,
+        "text": "Dark Signals",
+        "id": "nav-tab-darkSignals",
+        "disabled": false
+      },
+      {
+        "i": 3,
+        "text": "Verification",
+        "id": "nav-tab-verification",
+        "disabled": false
+      },
+      {
+        "i": 4,
+        "text": "Workbench",
+        "id": "nav-tab-workbench",
+        "disabled": false
+      },
+      {
+        "i": 5,
+        "text": "Sources",
+        "id": "nav-tab-sources",
+        "disabled": false
+      },
+      {
+        "i": 6,
+        "text": "AI Model",
+        "id": "nav-tab-onboarding",
+        "disabled": false
+      },
+      {
+        "i": 7,
+        "text": "Publishing",
+        "id": "nav-tab-publish",
+        "disabled": false
+      },
+      {
+        "i": 8,
+        "text": "Browser Pairing",
+        "id": "nav-tab-pairing",
+        "disabled": false
+      },
+      {
+        "i": 9,
+        "text": "Ethics & Backups",
+        "id": "nav-tab-settings",
+        "disabled": false
+      },
+      {
+        "i": 10,
+        "text": "System & Status",
+        "id": "nav-tab-system",
+        "disabled": false
+      },
+      {
+        "i": 11,
+        "text": "",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 12,
+        "text": "Dismiss",
+        "id": "",
+        "disabled": false
+      },
+      {
+        "i": 13,
+        "text": "Discover for my city",
+        "id": "btn-trigger-discovery",
+        "disabled": false
+      },
+      {
+        "i": 14,
+        "text": "Bulk import",
+        "id": "btn-trigger-bulk-import",
+        "disabled": false
+      },
+      {
+        "i": 15,
+        "text": "",
+        "id": "btn-delete-source-1",
+        "disabled": false
+      },
+      {
+        "i": 16,
+        "text": "",
+        "id": "btn-delete-source-2",
+        "disabled": false
+      },
+      {
+        "i": 17,
+        "text": "",
+        "id": "btn-delete-source-3",
+        "disabled": false
+      },
+      {
+        "i": 18,
+        "text": "",
+        "id": "btn-delete-source-4",
+        "disabled": false
+      },
+      {
+        "i": 19,
+        "text": "",
+        "id": "btn-delete-source-5",
+        "disabled": false
+      },
+      {
+        "i": 20,
+        "text": "",
+        "id": "btn-delete-source-6",
+        "disabled": false
+      },
+      {
+        "i": 21,
+        "text": "Add Source",
+        "id": "btn-submit-add-source",
+        "disabled": false
+      }
+    ]
+  }
+]
