@@ -229,7 +229,7 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
     expect(invokeMock).toHaveBeenCalledWith("set_setting", {
       key: "identity.newsroom_name",
-      value: "Longmont Civic Desk",
+      value: "My Local Publication",
     });
   });
 
@@ -259,7 +259,7 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
     expect(invokeMock).toHaveBeenCalledWith("set_setting", {
       key: "identity.newsroom_name",
-      value: "Longmont Civic Desk",
+      value: "My Local Publication",
     });
   });
 
@@ -287,7 +287,7 @@ describe("OnboardingWizard Component Tests", () => {
     expect(screen.getByRole("status")).toHaveTextContent("starter Longmont profile");
     expect(invokeMock).toHaveBeenCalledWith("set_setting", {
       key: "identity.newsroom_name",
-      value: "Longmont Civic Desk",
+      value: "My Local Publication",
     });
   });
 

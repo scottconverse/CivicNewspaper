@@ -28,9 +28,9 @@ import { ConfirmModal } from "./ConfirmModal";
 const LOW_RAM_FLOOR_GB = 8;
 
 // QA-M3: a local model on CPU is slow even with adequate RAM, so caution at the
-// medium/high tiers too — not just below the low-RAM floor.
+// medium/high tiers too - not just below the low-RAM floor.
 const SLOW_CPU_CAUTION =
-  "Heads up: the AI model runs on your CPU, so generating a draft or daily scan can take a minute or more — this is normal.";
+  "Heads up: the AI model runs on your CPU, so generating a draft or daily scan can take a minute or more - this is normal.";
 const IDENTITY_INPUT_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 12000;
 const MODEL_DOWNLOAD_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 6000;
 const MODEL_READY_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 5000;
@@ -55,24 +55,24 @@ function modelInstalled(selected: string, installed: string[]): boolean {
 const starterProfiles = [
   {
     label: "Longmont",
-    pubName: "Longmont Civic Desk",
-    editorName: "Local editor",
+    pubName: "My Local Publication",
+    editorName: "Publisher",
     organizationType: "single_person",
     city: "Longmont",
     state: "CO",
   },
   {
     label: "Brighton",
-    pubName: "Brighton Civic Desk",
-    editorName: "Local editor",
+    pubName: "My Local Publication",
+    editorName: "Publisher",
     organizationType: "single_person",
     city: "Brighton",
     state: "CO",
   },
   {
     label: "Denver",
-    pubName: "Denver Civic Desk",
-    editorName: "Local editor",
+    pubName: "My Local Publication",
+    editorName: "Publisher",
     organizationType: "single_person",
     city: "Denver",
     state: "CO",
@@ -155,7 +155,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const steps = [
     { title: "Identity", desc: "Define your local news outlet name and mission." },
     { title: "AI Service Setup", desc: "Check the connection to the local AI service that runs on your computer." },
-    { title: "Download AI Model", desc: "Download the local AI model. One-time setup — needs an internet connection." },
+    { title: "Download AI Model", desc: "Download the local AI model. One-time setup - needs an internet connection." },
     { title: "Defaults", desc: "Configure publication directories and backup database paths." },
     { title: "Done", desc: "Onboarding completed. Ready to inspect local stories." }
   ];
@@ -211,7 +211,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         state: identity.state.trim() || profile.state,
       });
     } catch {
-      /* non-fatal — identity settings above are still saved */
+      /* non-fatal - identity settings above are still saved */
     }
   };
 
