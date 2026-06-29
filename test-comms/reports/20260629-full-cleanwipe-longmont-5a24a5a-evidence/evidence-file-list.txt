@@ -51,7 +51,9 @@
 404-approved.png
 405-approved.png
 50-story-queue-after-drafts.png
+60-publishing-output-path-set.png
 clean-wipe-log.json
+db-state-after-editor-flow.json
 evidence-file-list.txt
 final-db-state.json
 final-process-state.json
