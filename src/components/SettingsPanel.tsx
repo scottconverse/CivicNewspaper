@@ -90,7 +90,7 @@ const GuardrailWordList: React.FC<{
         <input
           type="text"
           value={draft}
-          placeholder="Add a word…"
+          placeholder="Add a word..."
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
@@ -133,7 +133,7 @@ const GuardrailEditor: React.FC = () => {
     return (
       <div className="card" id="card-guardrail-words">
         <h3 className="card-title">Story guardrails</h3>
-        <p className="help-text">Loading guardrail words…</p>
+        <p className="help-text">Loading guardrail words...</p>
       </div>
     );
   }
@@ -160,7 +160,7 @@ const GuardrailEditor: React.FC = () => {
 
   const save = async () => {
     try {
-      setSaveStatus("Saving…");
+      setSaveStatus("Saving...");
       await setGuardrailTerms(config);
       setSaveStatus("Saved. Stories checked from now on use these words.");
       setTimeout(() => setSaveStatus(""), 4000);

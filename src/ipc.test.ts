@@ -3,7 +3,7 @@ import { toUserMessage } from "./ipc";
 
 // QA-R2-mn1 / QA-R2-mn2: typed `UPPER_SNAKE:` prefixes the backend emits must be
 // translated into plain-language guidance with the machine token stripped, not
-// leaked as "Something went wrong: NO_EVIDENCE: …".
+// leaked as "Something went wrong: NO_EVIDENCE: ...".
 describe("toUserMessage typed-prefix translation", () => {
   it("translates NO_EVIDENCE: into neutral source/window guidance", () => {
     const msg = toUserMessage(

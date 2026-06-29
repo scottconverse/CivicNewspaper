@@ -11,7 +11,7 @@ function App() {
   // the workspace. `onboardingDone === null` means we're still checking.
   if (app.onboardingDone === null) {
     return (
-      <div style={{ padding: "2rem", color: "var(--text-secondary)" }}>Loading The Civic Desk…</div>
+      <div style={{ padding: "2rem", color: "var(--text-secondary)" }}>Loading The Civic Desk...</div>
     );
   }
   if (!app.onboardingDone) {
@@ -29,7 +29,7 @@ function App() {
   // GG (de-hardcode the masthead): show the newsroom's configured location and
   // the model the user actually selected, not baked-in fixtures.
   const kicker =
-    [app.communityProfile?.city, app.communityProfile?.state].filter(Boolean).join(" · ") ||
+    [app.communityProfile?.city, app.communityProfile?.state].filter(Boolean).join(" / ") ||
     "Local newsroom";
   const modelLabel = app.selectedModel || "No model selected";
 

@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 /// rather than an empty-but-successful run (QA-M2). The `NO_EVIDENCE:` prefix is
 /// a typed marker the frontend's `toUserMessage` (src/ipc.ts) recognizes: it
 /// strips the prefix and surfaces the plain "run Scrape & Detect first" guidance
-/// instead of a raw "Something went wrong: NO_EVIDENCE: …" leak.
+/// instead of a raw "Something went wrong: NO_EVIDENCE: ..." leak.
 pub const NO_EVIDENCE_SIGNAL: &str =
     "NO_EVIDENCE: No recent evidence was found after checking sources. Add sources, fix offline sources, or widen the scan window.";
 

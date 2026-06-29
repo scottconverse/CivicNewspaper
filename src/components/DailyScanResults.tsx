@@ -30,7 +30,7 @@ function priorityClass(value?: string | null): string {
 function sourceContext(lead: DailyScanLead): string {
   const sourceName = clean(lead.source_name);
   const sourceType = clean(lead.source_type);
-  if (sourceName && sourceType) return `${sourceName} · ${sourceType.replace(/_/g, " ")}`;
+  if (sourceName && sourceType) return `${sourceName} / ${sourceType.replace(/_/g, " ")}`;
   if (sourceName) return sourceName;
   if (lead.source_id !== undefined && lead.source_id !== null) return `Watched source #${lead.source_id}`;
   return "Aggregated across watched sources";
@@ -93,7 +93,7 @@ export const DailyScanResults: React.FC<Props> = ({ scanId, onRunScan }) => {
             />
           ))}
         </div>
-        <span className="sr-only">Loading scan results…</span>
+        <span className="sr-only">Loading scan results...</span>
       </div>
     );
   }

@@ -57,7 +57,7 @@ describe('DailyScanResults', () => {
     render(<DailyScanResults scanId={1} />);
 
     await waitFor(() => {
-      expect(screen.getByText('Council Agenda Center · primary record')).toBeInTheDocument();
+      expect(screen.getByText('Council Agenda Center / primary record')).toBeInTheDocument();
       expect(screen.getByText('Source #42')).toBeInTheDocument();
       expect(screen.queryByText('Source ID: 42')).not.toBeInTheDocument();
     });

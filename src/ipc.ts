@@ -60,7 +60,7 @@ export function toUserMessage(e: unknown): string {
   // QA-R2-mn1 / QA-R2-mn2: the backend tags some conditions with a typed
   // `UPPER_SNAKE:` prefix (e.g. `NO_EVIDENCE:`, `MODEL_NOT_INSTALLED:`). Strip the
   // machine token and translate to plain-language guidance, rather than leaking
-  // the raw "Something went wrong: NO_EVIDENCE: …" debug string to the user.
+  // the raw "Something went wrong: NO_EVIDENCE: ..." debug string to the user.
   const typedPrefix = raw.match(/^([A-Z][A-Z0-9_]+):\s*(.*)$/s);
   if (typedPrefix) {
     const [, token, rest] = typedPrefix;
