@@ -5,7 +5,7 @@ use std::error::Error;
 // IMPORTANT: the applied schema version is the *array position* (index + 1), NOT the
 // numeric prefix in the filename. The filenames are non-contiguous (there is no `0002`),
 // so `0003_settings` is applied as `user_version = 2`. When adding a migration, ALWAYS
-// append to the end of this array — never insert in the middle, or every later migration's
+// append to the end of this array - never insert in the middle, or every later migration's
 // applied version shifts and existing databases will re-run or skip migrations. The
 // debug-assert in `run_migrations` enforces that filename prefixes stay monotonically
 // increasing so an out-of-order insertion fails loudly in debug/test builds.
@@ -54,6 +54,10 @@ const MIGRATIONS: &[(&str, &str)] = &[
     (
         "0013_verification_queue",
         include_str!("../../migrations/0013_verification_queue.sql"),
+    ),
+    (
+        "0014_beat_memory",
+        include_str!("../../migrations/0014_beat_memory.sql"),
     ),
 ];
 

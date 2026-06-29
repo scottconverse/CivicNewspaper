@@ -451,7 +451,10 @@ fn save_daily_scan_lead_for_queue(
     if similar_scan_lead_exists(conn, lead)? {
         return Ok(0);
     }
-    let scan_lead_id = db::insert_daily_scan_lead(conn, lead)?;
+    let recurring_memory = find_recurring_memory(conn, lead)?;
+    let lead = lead_with_beat_memory(lead, recurring_memory.as_ref());
+    let scan_lead_id = db::insert_daily_scan_lead(conn, &lead)?;
+    upsert_beat_memory(conn, scan_lead_id, &lead)?;
     let title = lead.title.trim();
     let summary = lead.summary.trim();
     let mut why = match (title.is_empty(), summary.is_empty()) {
@@ -500,9 +503,159 @@ fn save_daily_scan_lead_for_queue(
         from_scan_lead_id: Some(scan_lead_id),
         created_at: String::new(),
     };
-    let evidence_ids = evidence_ids_for_scan_lead(conn, lead)?;
+    let evidence_ids = evidence_ids_for_scan_lead(conn, &lead)?;
     db::insert_lead(conn, &story_lead, &evidence_ids)?;
     Ok(scan_lead_id)
+}
+
+#[derive(Debug)]
+struct BeatMemory {
+    representative_title: String,
+    first_seen_at: String,
+    last_seen_at: String,
+    seen_count: i32,
+}
+
+fn lead_with_beat_memory(lead: &DailyScanLead, memory: Option<&BeatMemory>) -> DailyScanLead {
+    let Some(memory) = memory else {
+        return lead.clone();
+    };
+
+    let mut lead = lead.clone();
+    let seen_note = format!(
+        "Beat memory: similar topic '{}' was first seen {}, last seen {}, and has appeared {} previous time(s). Treat this as recurring/background unless the source shows a new vote, deadline, dollar amount, filing, outage, meeting item, or public impact.",
+        memory.representative_title, memory.first_seen_at, memory.last_seen_at, memory.seen_count
+    );
+    lead.why_flagged = Some(append_editor_note(
+        lead.why_flagged
+            .unwrap_or_else(|| "This lead deserves editor review.".to_string()),
+        Some(seen_note),
+    ));
+    lead.suggested_next_step = Some(append_editor_note(
+        lead.suggested_next_step.unwrap_or_else(|| {
+            "Open the original source and confirm whether anything has changed since the previous scan.".to_string()
+        }),
+        Some("Compare against beat memory before drafting; write a story only if there is a new reportable fact.".to_string()),
+    ));
+    if lead.priority.as_deref().unwrap_or("review") != "high"
+        && looks_like_background_or_unchanged(&lead)
+    {
+        lead.priority = Some("low".to_string());
+    }
+    lead
+}
+
+fn looks_like_background_or_unchanged(lead: &DailyScanLead) -> bool {
+    let text = format!(
+        "{} {} {}",
+        lead.why_flagged.as_deref().unwrap_or_default(),
+        lead.suggested_next_step.as_deref().unwrap_or_default(),
+        lead.summary
+    )
+    .to_lowercase();
+    [
+        "no current change found",
+        "suggested treatment: background",
+        "suggested treatment: watch",
+        "recurring",
+        "archive page",
+        "general service page",
+    ]
+    .iter()
+    .any(|needle| text.contains(needle))
+}
+
+fn find_recurring_memory(
+    conn: &rusqlite::Connection,
+    lead: &DailyScanLead,
+) -> rusqlite::Result<Option<BeatMemory>> {
+    let mut stmt = conn.prepare(
+        "SELECT representative_title, source_url, first_seen_at, last_seen_at, seen_count, last_summary
+         FROM beat_memory
+         ORDER BY last_seen_at DESC
+         LIMIT 200",
+    )?;
+    let rows = stmt.query_map([], |row| {
+        Ok((
+            row.get::<_, String>(0)?,
+            row.get::<_, String>(1)?,
+            row.get::<_, String>(2)?,
+            row.get::<_, String>(3)?,
+            row.get::<_, i32>(4)?,
+            row.get::<_, String>(5)?,
+        ))
+    })?;
+
+    for row in rows {
+        let (
+            representative_title,
+            source_url,
+            first_seen_at,
+            last_seen_at,
+            seen_count,
+            last_summary,
+        ) = row?;
+        if scan_leads_are_similar(&representative_title, &last_summary, &source_url, lead) {
+            return Ok(Some(BeatMemory {
+                representative_title,
+                first_seen_at,
+                last_seen_at,
+                seen_count,
+            }));
+        }
+    }
+
+    Ok(None)
+}
+
+fn upsert_beat_memory(
+    conn: &rusqlite::Connection,
+    scan_lead_id: i32,
+    lead: &DailyScanLead,
+) -> rusqlite::Result<()> {
+    let topic_key = memory_topic_key(lead);
+    if topic_key.is_empty() {
+        return Ok(());
+    }
+    let now = Utc::now().to_rfc3339();
+    conn.execute(
+        "INSERT INTO beat_memory (
+            topic_key, representative_title, source_url, first_seen_at, last_seen_at,
+            seen_count, last_scan_lead_id, last_summary
+         )
+         VALUES (?1, ?2, ?3, ?4, ?4, 1, ?5, ?6)
+         ON CONFLICT(topic_key) DO UPDATE SET
+            last_seen_at = excluded.last_seen_at,
+            seen_count = beat_memory.seen_count + 1,
+            last_scan_lead_id = excluded.last_scan_lead_id,
+            last_summary = excluded.last_summary",
+        rusqlite::params![
+            topic_key,
+            lead.title.trim(),
+            lead.original_url.trim(),
+            now,
+            scan_lead_id,
+            lead.summary.trim()
+        ],
+    )?;
+    Ok(())
+}
+
+fn memory_topic_key(lead: &DailyScanLead) -> String {
+    let url = lead.original_url.trim().to_lowercase();
+    if !url.is_empty() {
+        return format!("url:{url}");
+    }
+    let topic = normalized_topic(&scan_lead_topic_text(
+        &lead.title,
+        &lead.summary,
+        &lead.original_url,
+    ));
+    if topic.is_empty() {
+        String::new()
+    } else {
+        format!("topic:{topic}")
+    }
 }
 
 fn normalized_topic(text: &str) -> String {

@@ -1054,6 +1054,102 @@ mod tests {
     }
 
     #[test]
+    fn test_daily_scan_marks_cross_run_recurring_topics_without_hiding_them() {
+        let first_response = r#"
+        {
+          "leads": [
+            {
+              "title": "City Council meeting archive page",
+              "summary": "The city maintains an archive where residents can watch past council meetings.",
+              "original_url": "https://example.gov/council/videos",
+              "why_flagged": "This page may help residents review public meetings.",
+              "priority": "low",
+              "suggested_next_step": "Check whether a new meeting, vote, or transcript was posted.",
+              "story_type": "background",
+              "what_changed": "no current change found",
+              "immediacy": 1,
+              "impact": 2,
+              "conflict": 1,
+              "novelty": 1,
+              "what_would_make_it_publishable": "A newly posted meeting video, vote, transcript, deadline, or public response tied to a specific issue"
+            }
+          ]
+        }
+        "#;
+        let second_response = r#"
+        {
+          "leads": [
+            {
+              "title": "Council video archive remains available",
+              "summary": "Residents can review archived council meeting videos on the city website.",
+              "original_url": "https://example.gov/council/videos",
+              "why_flagged": "This is useful background for residents.",
+              "priority": "medium",
+              "suggested_next_step": "Check whether anything new was posted.",
+              "story_type": "background",
+              "what_changed": "no current change found",
+              "immediacy": 1,
+              "impact": 2,
+              "conflict": 1,
+              "novelty": 1,
+              "what_would_make_it_publishable": "A new vote, filing, deadline, transcript, public comment, or other specific change"
+            }
+          ]
+        }
+        "#;
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT INTO daily_scan_runs (started_at, run_status) VALUES ('2026-06-28T00:00:00Z', 'completed')",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO daily_scan_runs (started_at, run_status) VALUES ('2026-06-29T00:00:00Z', 'running')",
+            [],
+        )
+        .unwrap();
+
+        let first_saved =
+            crate::core::daily_scan::parse_and_save_scan_response(&conn, 1, first_response)
+                .unwrap();
+        let second_saved =
+            crate::core::daily_scan::parse_and_save_scan_response(&conn, 2, second_response)
+                .unwrap();
+
+        assert_eq!(first_saved, 1);
+        assert_eq!(
+            second_saved, 1,
+            "beat memory should warn about a recurring item, not hide it from the editor"
+        );
+        let second_lead = list_daily_scan_leads(&conn, 2).unwrap().pop().unwrap();
+        let why = second_lead.why_flagged.unwrap_or_default();
+        assert!(why.contains("Beat memory: similar topic"));
+        assert!(why.contains("1 previous time"));
+        assert_eq!(
+            second_lead.priority.as_deref(),
+            Some("low"),
+            "unchanged recurring background items should be labeled low priority"
+        );
+
+        let queue_lead = list_leads(&conn)
+            .unwrap()
+            .into_iter()
+            .find(|lead| lead.from_scan_lead_id == second_lead.id)
+            .expect("recurring lead should still appear in Story Queue");
+        assert!(queue_lead.why.contains("Beat memory: similar topic"));
+
+        let seen_count: i32 = conn
+            .query_row(
+                "SELECT seen_count FROM beat_memory WHERE topic_key = 'url:https://example.gov/council/videos'",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(seen_count, 2);
+    }
+
+    #[test]
     fn test_daily_scan_dedupes_paraphrased_building_services_portal_leads() {
         let response = r#"
         {
