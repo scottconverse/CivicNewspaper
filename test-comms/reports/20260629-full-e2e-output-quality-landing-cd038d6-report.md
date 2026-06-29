@@ -1,160 +1,92 @@
-# CivicNewspaper cleanroom E2E report - cd038d6
+# Full Cleanroom E2E Retest Report - cd038d6
 
 Status: FAIL
 
-UTC run window: 2026-06-29T15:24Z to 2026-06-29T15:43Z
-
-Coordination branch: `test-comms/cleanroom-coder-tester`
-
 Directive: `test-comms/directives/20260629-full-e2e-output-quality-landing-cd038d6.md`
 
-Product commit under test: `cd038d696fe9708aaa54c23dd766eff36112f93b`
+Product branch: `stable-readiness-local-gates`
+
+Product commit tested: `cd038d696fe9708aaa54c23dd766eff36112f93b`
 
 Evidence folder: `test-comms/reports/20260629-full-e2e-output-quality-landing-cd038d6-evidence/`
 
-## Summary
-
-The cleanroom install and full product loop mostly ran end to end: the landing page was reachable, the NSIS installer hash matched, The Civic Desk installed and launched, app-driven local AI setup reached `qwen2.5:7b`, Longmont sources were visible, Daily Scan produced leads, drafts were generated and approved, the site compiled, a ZIP was exported, and the issue was published anonymously to here.now.
-
-The build fails the directive because reader-facing public output still contains private/editorial scaffolding. The generated static site and live here.now article pages expose `EDITOR_NOTE` and `Body:` text to readers. That violates the directive's output-quality pass criteria and means a real local publisher should not use this build for a public beta issue without fixing or blocking those drafts before publication.
-
-Live here.now URL:
+here.now URL produced:
 
 `https://calm-monsoon-4sv7.here.now`
 
-## Installed Artifact
+## Summary
 
-Preferred NSIS installer used:
+The build passed the install/setup/publish mechanics but failed the required output-quality bar. The cleanroom machine installed the 0.2.9 NSIS artifact, the app drove local AI setup from clean state, selected `qwen2.5:7b`, discovered Longmont sources, ran Daily Scan, generated drafts, exported a ZIP, and published to here.now.
 
-`test-comms/artifacts/20260629-full-e2e-output-quality-landing-cd038d6/The Civic Desk_0.2.9_x64-setup.exe`
-
-Expected SHA256:
-
-`520F226F62FCD94B8BF8D3345EB492A990931938FC49D8AA2222EC22DEA07695`
-
-Observed SHA256:
-
-`520F226F62FCD94B8BF8D3345EB492A990931938FC49D8AA2222EC22DEA07695`
-
-Install result:
-
-- Method: NSIS
-- Exit code: 0
-- Installed EXE: `C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe`
-- App launched as The Civic Desk.
-
-Evidence:
-
-- `installer-hashes.json`
-- `install-result.json`
-- `launch-result.json`
-- `01-first-launch.png`
+The failure is public output quality: compiled reader-facing pages still expose reporter-note scaffolding including `EDITOR_NOTE` and `Body:`. The directive explicitly requires public story bodies not to expose reporter notes or scaffolding. A real local publisher could use this build to get through the mechanics, but should not use it for a public beta issue without fixing the output cleanup/filtering.
 
 ## Landing Page Check
 
-Public landing page checked:
+Landing page: `https://scottconverse.github.io/CivicNewspaper/`
 
-`https://scottconverse.github.io/CivicNewspaper/`
+- HTTP status: 200
+- here.now visible in first-page/product publishing messaging: True
+- Contains `Publish Statically`: False
+- Mentions Vercel as recommended default: False
+- Platform copy conditional on release assets: True
 
-Result:
+Screenshots: `landing-desktop.png`, `landing-mobile.png`
 
-- HTTP 200
-- here.now was visible in the public publishing messaging.
-- `Publish Statically` was not present.
-- Vercel was not presented as the recommended drag-and-drop default.
-- Platform download copy was conditional.
-- Desktop and mobile screenshots captured.
+## Installed Artifact
 
-Evidence:
+Preferred NSIS installer:
 
-- `landing-page-checks.json`
-- `landing-desktop.png`
-- `landing-mobile.png`
-- `landing-page.html`
+`test-comms/artifacts/20260629-full-e2e-output-quality-landing-cd038d6/The Civic Desk_0.2.9_x64-setup.exe`
 
-## App-Driven Setup
+- Expected SHA256: `520F226F62FCD94B8BF8D3345EB492A990931938FC49D8AA2222EC22DEA07695`
+- Observed SHA256: `520F226F62FCD94B8BF8D3345EB492A990931938FC49D8AA2222EC22DEA07695`
 
-The app completed the normal-user setup path without manual installer-side intervention for Ollama/model setup during this run. The UI reported:
+Fallback MSI was hash-checked but not used:
 
-- City/state display: `LONGMONT / CO`
-- AI status: `Local AI ready`
-- Model: `qwen2.5:7b`
+- Expected SHA256: `C72791A1BC269670EB0D376ED0BA452B2DA375D21588994355535E94294CB2AF`
+- Observed SHA256: `C72791A1BC269670EB0D376ED0BA452B2DA375D21588994355535E94294CB2AF`
 
-Evidence:
+NSIS install exit code: 0
 
-- `02-after-ai-setup-wait.png`
-- `03-sources-visible.png`
-- `06-story-queue-after-scan.txt`
+App launched as The Civic Desk and CDP/WebView capture was available: True
 
-## Sources
+## App-Guided AI Setup
 
-The app had 6 watched sources visible in the cleanroom run:
+App-driven AI setup worked from clean state. I did not install Ollama or models manually outside the app.
 
-- Longmont Agenda Management Portal
-- Longmont City Council Meetings
-- Longmont Public Information
-- Public Notice Colorado
-- Longmont subreddit
-- Longmont Colorado subreddit
+Model selected by the app: `qwen2.5:7b`
 
-Evidence:
+The visible app showed `LONGMONT / CO`, not the prior mojibake separator. Current app evidence: `app-sources-current.png`, `app-story-queue-current.png`, `app-publishing-current.png`.
 
-- `03-sources-visible.png`
-- `db-final-state.json`
+## Sources And Daily Scan
 
-## Daily Scan and Lead Quality
+Source count: 6
 
-Daily Scan ran from the UI and produced 15 visible story queue leads after the scan. The app showed deterministic/source evidence activity before and during AI summarization. The lead list still contained duplicate/paraphrase pressure and some low-quality/general primary-record leads, including:
+- Longmont Agenda Management Portal - primary_record / official_record - online
+- Longmont City Council Meetings - primary_record / official_record - online
+- Longmont Public Information - official_comm / official_record - online
+- Public Notice Colorado - primary_record / official_record - online
+- Longmont subreddit - community_signal / community_signal - online
+- Longmont Colorado subreddit - community_signal / community_signal - online
 
-- duplicate Youth Center lead variants
-- duplicate/overlapping technical-issues lead variants
-- generic primary-document leads
-- one visible mojibake lead in the story queue: `City Clerkâ€™s Agenda Management Portal Experiencing Technical Issues`
-
-Evidence:
-
-- `daily-scan-states.json`
-- `04-daily-scan-before.png`
-- `05-daily-scan-after.png`
-- `06-story-queue-after-scan.png`
-- `06-story-queue-after-scan.txt`
+Daily Scan produced 16 leads. The visible Story Queue evidence shows 15 new leads, 5 high-priority leads, and 6 sources.
 
 ## Editorial Workflow
 
-Five drafts were generated and approved for static publishing. The press-freedom/legal-risk advisor was run on the first draft. A separate draft was opened, held, and returned to queue successfully.
+Draft status counts:
 
-Observed approved drafts:
+- hold: 1
+- ready_to_publish: 5
 
-- Longmont Seeks Designs for Official City Flag
-- City Council Meeting Schedule Provides Insight into Ordinance Approval
-- Technical Issues Plague Building Services Online Portal
-- Youth Center Programs in Longmont: The Potential Impact on Community Development and Social Well-being
-- New Official Document from Public Notice Colorado
-
-Held/returned draft:
-
-- Upcoming City Council Meeting: Public Participation Information Available
-
-Evidence:
-
-- `draft-editor-results.json`
-- `draft-editor-results.pretty.json`
-- `hold-return-result.json`
-- `12-advisor-result-1.png`
-- `13-after-approve-1.png` through `13-after-approve-5.png`
-- `20-hold-candidate-workbench.png`
-- `21-after-hold.png`
-- `22-story-queue-after-editor-workflow.png`
+Five drafts were approved for static publish, and one additional draft was held/returned as workflow exercise. The app did not block editor decisions; it allowed approval, hold, and return-to-queue paths.
 
 ## Publication Output
 
-The publication workflow compiled the site, exported ZIP, tested here.now preview publishing, and published the issue.
-
 Output folder:
 
-`C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\reports\20260629-full-e2e-output-quality-landing-cd038d6-evidence\publication-output\site`
+`C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/reports/20260629-full-e2e-output-quality-landing-cd038d6-evidence/publication-output/site`
 
-ZIP:
+ZIP path:
 
 `C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\reports\20260629-full-e2e-output-quality-landing-cd038d6-evidence\publication-output\site\site-package.zip`
 
@@ -162,91 +94,66 @@ ZIP SHA256:
 
 `9E5E73D8A3ACF177750C8FF9B05B9E2642A6E0EC8068CA770D37524862F121EA`
 
-ZIP verification:
+ZIP extract check: True
 
-- `site-package.zip` exists.
-- 21 entries were readable through .NET ZIP APIs.
-- Sample entries included `index.html`, `feed.xml`, `share-package.md`, `substack.md`, `watch/1.html` through `watch/5.html`.
-
-here.now URL:
+here.now publish URL:
 
 `https://calm-monsoon-4sv7.here.now`
 
-Evidence:
+Public evidence includes desktop, mobile, print, homepage, article page, RSS/feed, and share package captures:
 
-- `publish-ui-state.json`
-- `publish-ui-result.json`
-- `publishing-final-ui.txt`
-- `zip-hash.json`
-- `39-herenow-homepage.png`
-- `40-herenow-article.png`
-- `41-herenow-mobile.png`
-- `herenow-links.json`
-- `herenow-homepage.txt`
-- `herenow-article.txt`
+- `public-desktop.png`
+- `public-mobile.png`
+- `public-print.png`
+- `public-watch-1-html.png`
+- `public-watch-3-html.png`
+- `public-feed-xml.txt`
+- `public-share-package-md.txt`
 
-## Blocking Product Failure
+## Public Article Titles
 
-Reader-facing article pages include editor/reporter scaffolding and should not have been publishable as public stories.
+- Longmont Seeks Designs for Official City Flag - Longmont E2E Quality Retest
+- City Council Meeting Schedule Provides Insight into Ordinance Approval - Longmont E2E Quality Retest
+- Technical Issues Plague Building Services Online Portal - Longmont E2E Quality Retest
+- Youth Center Programs in Longmont: The Potential Impact on Community Development and Social Well-being - Longmont E2E Quality Retest
+- New Official Document from Public Notice Colorado - Longmont E2E Quality Retest
 
-Exact local static output hits from `output-quality-audit.json`:
+The title fallback improved: article titles are real headlines rather than long lead-summary sentences.
 
-- `publication-output/site/watch/2.html`, line 46: `EDITOR_NOTE: This looks like background material, not a publishable news story yet...`
-- `publication-output/site/watch/3.html`, line 42: `Body:`
-- `publication-output/site/watch/3.html`, line 43: `EDITOR_NOTE: Not enough verified source material for a publishable story yet.`
-- `publication-output/site/watch/4.html`, line 42: `EDITOR_NOTE: Not enough verified source material for a publishable story yet.`
-- `publication-output/site/watch/5.html`, line 42: `Body:`
-- `publication-output/site/watch/5.html`, line 44: `EDITOR_NOTE: This looks like background material, not a publishable news story yet...`
+## Output Quality Failure
 
-Live here.now evidence:
+The output quality audit failed because public static pages contain reporter-note scaffolding:
 
-`herenow-article.txt` captured the public article `New Official Document from Public Notice Colorado` containing:
+- watch/2.html line 46 matched `/EDITOR_NOTE/g`: `<p>EDITOR_NOTE: This looks like background material, not a publishable news story yet. A current development or new information about upcoming meetings or specific ordinance proposals would make it more relevant and timely for publication.<`
+- watch/3.html line 42 matched `/Body:/g`: `                <p>Body:`
+- watch/3.html line 43 matched `/EDITOR_NOTE/g`: `EDITOR_NOTE: Not enough verified source material for a publishable story yet.</p>`
+- watch/4.html line 42 matched `/EDITOR_NOTE/g`: `                <p>EDITOR_NOTE: Not enough verified source material for a publishable story yet.</p>`
+- watch/5.html line 42 matched `/Body:/g`: `                <p>Body:`
+- watch/5.html line 44 matched `/EDITOR_NOTE/g`: `<p>EDITOR_NOTE: This looks like background material, not a publishable news story yet. Additional information would be needed, such as the subject matter of the document, its significance, or any immediate actions or impacts it might have o`
 
-- `Body: A new official primary document has been fetched from Public Notice Colorado...`
-- `EDITOR_NOTE: This looks like background material, not a publishable news story yet...`
+Audit file: `output-quality-audit.json`
 
-This is not just a hidden draft-state issue. It reached the generated static site, ZIP package, and live public here.now page.
+This violates the directive requirement that public story bodies not expose reporter-note scaffolding. The concrete exposed strings in this run were `EDITOR_NOTE` and `Body:`.
 
-## Mojibake / Encoding Audit
+## Other Quality Checks
 
-The sidebar UI correctly displayed `LONGMONT / CO`.
+- Duplicate story topics found: 0 candidate pairs in title/topic review
+- Public `Draft:` title-prefix hits: 0
+- Mojibake scanner hits in generated/public text: 0
+- ZIP exists and extracts: True
+- here.now publish succeeded: true
 
-However, mojibake was still visible in the workflow evidence:
+## Reproduction Steps For Failure
 
-- Story queue text included `City Clerkâ€™s Agenda Management Portal Experiencing Technical Issues`.
-- Draft database content included strings such as `City Clerkâ€™s Office` and `Longmontâ€™s`.
-- `output-quality-audit.json` article samples still captured `Longmontâ€™s official website` in static article text.
+1. Clean wipe The Civic Desk/CivicNewspaper app data and app-owned Ollama/model state.
+2. Install `The Civic Desk_0.2.9_x64-setup.exe` from the cd038d6 artifact folder.
+3. Launch the app and let app-driven AI setup complete.
+4. Run Daily Scan for Longmont.
+5. Generate and approve the five captured drafts.
+6. Compile the static site and publish to here.now.
+7. Open `watch/3.html`, `watch/4.html`, or `watch/5.html` in the generated output or public site.
+8. Observe `EDITOR_NOTE` and/or `Body:` in reader-facing article copy.
 
-Because the public-output quality failure already blocks the release, I did not classify mojibake as the sole blocker. It is still present and should be fixed or explicitly normalized before a release pass.
+## Final Assessment
 
-Evidence:
-
-- `06-story-queue-after-scan.txt`
-- `db-drafts-precompile.json`
-- `output-quality-audit.json`
-
-## Reproduction Steps
-
-1. Use coordination branch `test-comms/cleanroom-coder-tester`.
-2. Run directive `test-comms/directives/20260629-full-e2e-output-quality-landing-cd038d6.md`.
-3. Install `The Civic Desk_0.2.9_x64-setup.exe`; hash matches the expected NSIS SHA256.
-4. Launch The Civic Desk and complete app-driven setup for Longmont, Colorado.
-5. Run Daily Scan.
-6. Generate drafts from multiple leads.
-7. Approve drafts that contain `EDITOR_NOTE` / insufficient-material text.
-8. Compile and publish.
-9. Open `publication-output/site/watch/3.html` or the live article at `https://calm-monsoon-4sv7.here.now/watch/5.html`.
-10. Observe reader-facing `Body:` and/or `EDITOR_NOTE` content.
-
-## Final Determination
-
-FAIL.
-
-The build proves the end-to-end path can execute, including install, AI readiness, Daily Scan, draft generation, ZIP export, and here.now publication. It does not meet the public beta quality bar because the public issue includes explicit editor notes and nonstory/reporter-note scaffolding as reader-facing article copy.
-
-A real local publisher should not use this build to produce a public beta issue until the product either:
-
-- prevents drafts containing editor-only scaffolding from being approved/published,
-- strips or transforms editor-only notes from public output,
-- clearly labels insufficient-material items as internal holds rather than public articles, and
-- resolves the remaining mojibake seen in lead/draft/public text.
+FAIL. The full workflow is operational and the redesigned landing page checks passed, but this build still publishes reporter-note scaffolding into public pages. A real local publisher could use the app to produce a test issue, but the resulting public beta issue is not acceptable until output cleanup prevents `EDITOR_NOTE`/`Body:` style scaffolding from reaching reader-facing pages.
