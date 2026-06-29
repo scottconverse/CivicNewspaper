@@ -1,0 +1,24 @@
+The setup screen did not receive input events, so The Civic Desk continued with a starter Longmont profile. You can edit identity later in Settings.
+AI Setup
+Step 2 of 5
+AI Service Setup
+
+Check the connection to the local AI service that runs on your computer.
+
+Local AI Service Connection
+
+Local Ram: 15 GB
+
+Starting the local AI service
+
+CivicNews includes a local AI service that runs on your computer. It may take a moment to start up. Once it's running, you'll download a model in the next step.
+
+On a clean machine, use the install button if the service does not become ready.
+
+Starting the local AI runtime.
+
+Installing...
+Check Initialization Status
+Back
+Skip for now
+Next

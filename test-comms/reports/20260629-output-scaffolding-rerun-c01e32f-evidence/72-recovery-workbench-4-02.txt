@@ -1,0 +1,38 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Drafting Article
+
+Lead: Upcoming City Council Meeting: The upcoming City Council meeting on July 7th is scheduled from 7 pm - 11 pm and includes an open forum for public input. This provides a platform for residents to engage in local governance.
+
+Generating Draft...
+Cancel
+Asking the local AI model to write a working draft. Keep this window open.
+Article Format
+Brief (Under 200 words summary)
+Watch Alert (Highlights specific public safety or procurement issues)
+Explainer (Detailed review of a policy or decision background)
+Investigation (Traces spending and connections behind a story)
+Editorial / Opinion Piece (Presents a structured argument)
+Custom Guidelines / Instructions (Optional)
+Linked Sources (3)
+"Project and program updates, including money-saving rebates and efficiency resources Sustainable Bus..."
+"How? Scroll to Archived Meetings, click on the HTML Agenda for a particular council meeting, click o..."
+"City Council City Council Meeting Tuesday, July 7 • 7 pm - 11 pm 350 Kimbark St. Longmont, CO 80501..."
+Generating Draft...
+Cancel

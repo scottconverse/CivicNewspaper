@@ -1,0 +1,53 @@
+﻿{
+    "timestamp_utc":  "2026-06-29T16:06:05.8846677Z",
+    "actions":  [
+                    {
+                        "action":  "stop-process",
+                        "path":  "civicnews",
+                        "ok":  true,
+                        "note":  "pid=8724"
+                    },
+                    {
+                        "action":  "uninstall-skip",
+                        "path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\Uninstall The Civic Desk.exe",
+                        "ok":  true,
+                        "note":  "not present"
+                    },
+                    {
+                        "action":  "remove",
+                        "path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk",
+                        "ok":  true,
+                        "note":  ""
+                    },
+                    {
+                        "action":  "remove",
+                        "path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+                        "ok":  false,
+                        "note":  ""
+                    },
+                    {
+                        "action":  "remove",
+                        "path":  "C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk",
+                        "ok":  true,
+                        "note":  ""
+                    },
+                    {
+                        "action":  "remove-skip",
+                        "path":  "C:\\Users\\civic\\AppData\\Local\\Programs\\The Civic Desk",
+                        "ok":  true,
+                        "note":  "not present"
+                    },
+                    {
+                        "action":  "remove-skip",
+                        "path":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260629-output-scaffolding-rerun-c01e32f-evidence\\publication-output",
+                        "ok":  true,
+                        "note":  "not present"
+                    },
+                    {
+                        "action":  "install",
+                        "path":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260629-output-scaffolding-rerun-c01e32f\\The Civic Desk_0.2.9_x64-setup.exe",
+                        "ok":  true,
+                        "note":  "exit=0"
+                    }
+                ]
+}

@@ -1,0 +1,40 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Asking the local AI model to write a working draft... (this may take a moment)
+Dismiss
+Drafting Article
+
+Lead: New City Council Meeting Portal: The City of Longmont has launched a new Public Meeting Portal, providing easy access to agendas and meeting packets for the City Council and advisory boards.
+
+Generating Draft...
+Cancel
+Asking the local AI model to write a working draft. Keep this window open.
+Article Format
+Brief (Under 200 words summary)
+Watch Alert (Highlights specific public safety or procurement issues)
+Explainer (Detailed review of a policy or decision background)
+Investigation (Traces spending and connections behind a story)
+Editorial / Opinion Piece (Presents a structured argument)
+Custom Guidelines / Instructions (Optional)
+Linked Sources (3)
+"Search tip! The HTML agenda bookmarks the video to the item on the agenda so you don&#8217;t have to..."
+"Planning and Development Services Public Information Public Safety Purchasing and Contracts Recreati..."
+"Helping families, children and youth in Longmont grow, succeed and reach their best potential New La..."
+Generating Draft...
+Cancel

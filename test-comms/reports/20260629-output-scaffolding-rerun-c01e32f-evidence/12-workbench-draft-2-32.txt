@@ -1,0 +1,43 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Story Queue
+
+Civic signals your sources surfaced, ready to verify and turn into plain-language stories.
+
+Refresh
+Daily Scan
+Scrape & Detect
+NEW LEADS
+15
+IN DRAFTING
+0
+HIGH PRIORITY
+6
+SOURCES
+6
+Local-first workflow
+Scan sources, draft from linked evidence, run guardrails, then publish a static paper.
+Leads
+15
+Drafts
+0
+Scan results
+latest
+TITLE	FORMAT	STATUS	ACTIONS
+No drafts generated yet. Select a Lead and click "Draft Article" to begin.

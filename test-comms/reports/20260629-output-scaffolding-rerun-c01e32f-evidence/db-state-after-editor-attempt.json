@@ -1,0 +1,532 @@
+﻿{
+  "db": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+  "tables": [
+    {
+      "name": "civic_entities",
+      "count": 33
+    },
+    {
+      "name": "civic_observation_entities",
+      "count": 162
+    },
+    {
+      "name": "civic_observations",
+      "count": 126
+    },
+    {
+      "name": "daily_scan_leads",
+      "count": 7
+    },
+    {
+      "name": "daily_scan_runs",
+      "count": 2
+    },
+    {
+      "name": "dark_signals",
+      "count": 1
+    },
+    {
+      "name": "drafts",
+      "count": 0
+    },
+    {
+      "name": "evidence_items",
+      "count": 27
+    },
+    {
+      "name": "lead_evidence",
+      "count": 26
+    },
+    {
+      "name": "leads",
+      "count": 15
+    },
+    {
+      "name": "paired_clients",
+      "count": 0
+    },
+    {
+      "name": "publish_runs",
+      "count": 0
+    },
+    {
+      "name": "published_posts",
+      "count": 0
+    },
+    {
+      "name": "settings",
+      "count": 11
+    },
+    {
+      "name": "source_performance_scores",
+      "count": 6
+    },
+    {
+      "name": "sources",
+      "count": 6
+    },
+    {
+      "name": "sqlite_sequence",
+      "count": 9
+    },
+    {
+      "name": "subscribers",
+      "count": 0
+    },
+    {
+      "name": "verification_tasks",
+      "count": 3
+    }
+  ],
+  "daily_scan_leads": {
+    "columns": [
+      "id",
+      "scan_id",
+      "title",
+      "summary",
+      "source_id",
+      "original_url",
+      "why_flagged",
+      "source_name",
+      "source_type",
+      "priority",
+      "suggested_next_step"
+    ],
+    "rows": [
+      {
+        "id": 1,
+        "scan_id": 2,
+        "title": "New Public Meeting Portal Launched",
+        "summary": "The City of Longmont has launched a new public meeting portal, making it easier for residents to access and follow upcoming meetings and topics. This portal will enhance civic engagement by providing detailed agendas and video recordings.",
+        "source_id": null,
+        "original_url": "https://longmontcolorado.gov/city-clerk/agenda-management-portal/",
+        "why_flagged": "The portal improves transparency and accessibility of city governance information, which is crucial for local residents and stakeholders.",
+        "source_name": "City Clerk\u2019s Agenda Management Portal",
+        "source_type": "public notice",
+        "priority": "high",
+        "suggested_next_step": "Review the new portal to assess its features and usability for potential stories on improved civic engagement."
+      },
+      {
+        "id": 2,
+        "scan_id": 1,
+        "title": "New City Council Meeting Portal",
+        "summary": "The City of Longmont has launched a new Public Meeting Portal, providing easy access to agendas and meeting packets for the City Council and advisory boards.",
+        "source_id": null,
+        "original_url": "https://longmontcolorado.gov/city-clerk/agenda-management-portal/",
+        "why_flagged": "This portal will make it easier for residents to stay informed about city council meetings and topics, enhancing transparency.",
+        "source_name": "City Clerk's Agenda Management Portal",
+        "source_type": "official update",
+        "priority": "high",
+        "suggested_next_step": "Review the new features and compare with previous methods of accessing meeting information."
+      },
+      {
+        "id": 3,
+        "scan_id": 2,
+        "title": "Upcoming City Council Meeting",
+        "summary": "The upcoming City Council meeting on July 7th is scheduled from 7 pm - 11 pm and includes an open forum for public input. This provides a platform for residents to engage in local governance.",
+        "source_id": null,
+        "original_url": "https://longmontcolorado.gov/government/city-council-meetings/",
+        "why_flagged": "Residents can participate directly by providing feedback during the open forum, influencing future city policies and decisions.",
+        "source_name": "City of Longmont",
+        "source_type": "official update",
+        "priority": "high",
+        "suggested_next_step": "Alert community members about the upcoming meeting and encourage them to attend."
+      },
+      {
+        "id": 4,
+        "scan_id": 1,
+        "title": "City Council Meeting Schedule and Agendas",
+        "summary": "The City of Longmont provides detailed schedules, agendas, and live video recordings for its City Council meetings, allowing public participation in local governance.",
+        "source_id": null,
+        "original_url": "https://longmontcolorado.gov/government/city-council-meetings/",
+        "why_flagged": "This resource is crucial for civic engagement as it enables residents to participate in decision-making processes that affect their community.",
+        "source_name": "City of Longmont Government Website",
+        "source_type": "official update",
+        "priority": "high",
+        "suggested_next_step": "Contact the city clerk or council members to highlight the importance of attending and participating in these meetings."
+      },
+      {
+        "id": 5,
+        "scan_id": 1,
+        "title": "Public Records Request Options",
+        "summary": "Residents can now submit public records requests via WhatsApp, expanding the accessibility of city data.",
+        "source_id": null,
+        "original_url": "",
+        "why_flagged": "This change enhances transparency and citizen engagement by providing an additional avenue for accessing important information held by the city.",
+        "source_name": "Public Information Website",
+        "source_type": "official update",
+        "priority": "medium",
+        "suggested_next_step": "Verify with the city clerk's office that this new service is active and gather more details."
+      },
+      {
+        "id": 6,
+        "scan_id": 2,
+        "title": "Longmont Seeks Human Service Agency Funding",
+        "summary": "The City of Longmont is currently accepting applications for human service agency funding in preparation for the 2027 fiscal year. This call for proposals aims to support local organizations that provide critical services to residents.",
+        "source_id": null,
+        "original_url": "https://longmontcolorado.gov/public-information/",
+        "why_flagged": "This opportunity for community-based organizations could significantly impact local social services and funding availability.",
+        "source_name": "City of Longmont Public Information Department",
+        "source_type": "official update",
+        "priority": "high",
+        "suggested_next_step": "Review the application details and reach out to key contacts for more information."
+      },
+      {
+        "id": 7,
+        "scan_id": 1,
+        "title": "City of Longmont Seeks Applications for Human Service Agency Funding",
+        "summary": "The City of Longmont is accepting applications for its Human Service Agency funding, which supports local organizations that provide essential services to community members.",
+        "source_id": null,
+        "original_url": "https://longmontcolorado.gov/public-information/",
+        "why_flagged": "This information is important for local nonprofits and residents seeking support from the city.",
+        "source_name": "City of Longmont Public Information Department",
+        "source_type": "official update",
+        "priority": "high",
+        "suggested_next_step": "Reach out to key community organizations for interviews or quotes."
+      }
+    ]
+  },
+  "leads": {
+    "columns": [
+      "id",
+      "detector_name",
+      "why",
+      "confidence",
+      "risk_level",
+      "confirmation_checklist",
+      "created_at",
+      "from_scan_lead_id"
+    ],
+    "rows": [
+      {
+        "id": 1,
+        "detector_name": "New Primary Record",
+        "why": "A new official primary document from 'Longmont Agenda Management Portal' was fetched today (https://longmontcolorado.gov/city-clerk/agenda-management-portal/).",
+        "confidence": "high",
+        "risk_level": "low",
+        "confirmation_checklist": "[\"Read the source document thoroughly for hidden agendas\",\"Verify matching records from previous weeks\",\"Cross-reference this record with local news announcements\"]",
+        "created_at": "2026-06-29T16:08:33.480793700+00:00",
+        "from_scan_lead_id": null
+      },
+      {
+        "id": 2,
+        "detector_name": "Public Meeting Scheduled",
+        "why": "MEETING SCHEDULED: Meeting notification detected in 'Longmont Agenda Management Portal' record. Public attendance or comment may be permitted.",
+        "confidence": "medium",
+        "risk_level": "low",
+        "confirmation_checklist": "[\"Verify the date, time, and physical/virtual address of the meeting\",\"Download the meeting agenda when it becomes available\",\"Identify the public comment signup rules (e.g. register 24 hours in advance)\"]",
+        "created_at": "2026-06-29T16:08:33.482692300+00:00",
+        "from_scan_lead_id": null
+      },
+      {
+        "id": 3,
+        "detector_name": "New Primary Record",
+        "why": "A new official primary document from 'Public Notice Colorado' was fetched today (https://www.publicnoticecolorado.com/).",
+        "confidence": "high",
+        "risk_level": "low",
+        "confirmation_checklist": "[\"Read the source document thoroughly for hidden agendas\",\"Verify matching records from previous weeks\",\"Cross-reference this record with local news announcements\"]",
+        "created_at": "2026-06-29T16:08:33.484014800+00:00",
+        "from_scan_lead_id": null
+      },
+      {
+        "id": 4,
+        "detector_name": "New Primary Record",
+        "why": "A new official primary document from 'Longmont City Council Meetings' was fetched today (https://longmontcolorado.gov/government/city-council-meetings/).",
+        "confidence": "high",
+        "risk_level": "low",
+        "confirmation_checklist": "[\"Read the source document thoroughly for hidden agendas\",\"Verify matching records from previous weeks\",\"Cross-reference this record with local news announcements\"]",
+        "created_at": "2026-06-29T16:08:33.485217400+00:00",
+        "from_scan_lead_id": null
+      },
+      {
+        "id": 5,
+        "detector_name": "New Primary Record",
+        "why": "A new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).",
+        "confidence": "high",
+        "risk_level": "low",
+        "confirmation_checklist": "[\"Read the source document thoroughly for hidden agendas\",\"Verify matching records from previous weeks\",\"Cross-reference this record with local news announcements\"]",
+        "created_at": "2026-06-29T16:08:33.486483800+00:00",
+        "from_scan_lead_id": null
+      },
+      {
+        "id": 6,
+        "detector_name": "Decision / Vote",
+        "why": "VOTING SIGNAL: Found vote/decision keywords ([\"passed\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.",
+        "confidence": "medium",
+        "risk_level": "low",
+        "confirmation_checklist": "[\"Record the exact vote tally (e.g. 5-2, unanimous)\",\"Identify which board members voted 'No' or abstained, and find out why\",\"Determine what immediate local impact this decision has on the community\"]",
+        "created_at": "2026-06-29T16:08:33.487948900+00:00",
+        "from_scan_lead_id": null
+      },
+      {
+        "id": 7,
+        "detector_name": "Public Meeting Scheduled",
+        "why": "MEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.",
+        "confidence": "medium",
+        "risk_level": "low",
+        "confirmation_checklist": "[\"Verify the date, time, and physical/virtual address of the meeting\",\"Download the meeting agenda when it becomes available\",\"Identify the public comment signup rules (e.g. register 24 hours in advance)\"]",
+        "created_at": "2026-06-29T16:08:33.489377700+00:00",
+        "from_scan_lead_id": null
+      },
+      {
+        "id": 8,
+        "detector_name": "Decision / Vote",
+        "why": "VOTING SIGNAL: Found vote/decision keywords ([\"approved\", \"approved\", \"Approved\", \"passed\", \"Motion\", \"motion\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.",
+        "confidence": "medium",
+        "risk_level": "low",
+        "confirmation_checklist": "[\"Record the exact vote tally (e.g. 5-2, unanimous)\",\"Identify which board members voted 'No' or abstained, and find out why\",\"Determine what immediate local impact this decision has on the community\"]",
+        "created_at": "2026-06-29T16:08:33.491910900+00:00",
+        "from_scan_lead_id": null
+      },
+      {
+        "id": 9,
+        "detector_name": "daily_scan",
+        "why": "New Public Meeting Portal Launched: The City of Longmont has launched a new public meeting portal, making it easier for residents to access and follow upcoming meetings and topics. This portal will enhance civic engagement by providing detailed agendas and video recordings.",
+        "confidence": "high",
+        "risk_level": "high",
+        "confirmation_checklist": "[\"Review the new portal to assess its features and usability for potential stories on improved civic engagement.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+        "created_at": "2026-06-29T16:09:16.234755600+00:00",
+        "from_scan_lead_id": 1
+      },
+      {
+        "id": 10,
+        "detector_name": "daily_scan",
+        "why": "New City Council Meeting Portal: The City of Longmont has launched a new Public Meeting Portal, providing easy access to agendas and meeting packets for the City Council and advisory boards.",
+        "confidence": "high",
+        "risk_level": "high",
+        "confirmation_checklist": "[\"Review the new features and compare with previous methods of accessing meeting information.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+        "created_at": "2026-06-29T16:09:29.392638+00:00",
+        "from_scan_lead_id": 2
+      },
+      {
+        "id": 11,
+        "detector_name": "daily_scan",
+        "why": "Upcoming City Council Meeting: The upcoming City Council meeting on July 7th is scheduled from 7 pm - 11 pm and includes an open forum for public input. This provides a platform for residents to engage in local governance.",
+        "confidence": "high",
+        "risk_level": "high",
+        "confirmation_checklist": "[\"Alert community members about the upcoming meeting and encourage them to attend.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+        "created_at": "2026-06-29T16:09:45.533396400+00:00",
+        "from_scan_lead_id": 3
+      },
+      {
+        "id": 12,
+        "detector_name": "daily_scan",
+        "why": "City Council Meeting Schedule and Agendas: The City of Longmont provides detailed schedules, agendas, and live video recordings for its City Council meetings, allowing public participation in local governance.",
+        "confidence": "high",
+        "risk_level": "high",
+        "confirmation_checklist": "[\"Contact the city clerk or council members to highlight the importance of attending and participating in these meetings.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+        "created_at": "2026-06-29T16:09:58.519158300+00:00",
+        "from_scan_lead_id": 4
+      },
+      {
+        "id": 13,
+        "detector_name": "daily_scan",
+        "why": "Public Records Request Options: Residents can now submit public records requests via WhatsApp, expanding the accessibility of city data.",
+        "confidence": "med",
+        "risk_level": "med",
+        "confirmation_checklist": "[\"Verify with the city clerk's office that this new service is active and gather more details.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+        "created_at": "2026-06-29T16:11:05.086837100+00:00",
+        "from_scan_lead_id": 5
+      },
+      {
+        "id": 14,
+        "detector_name": "daily_scan",
+        "why": "Longmont Seeks Human Service Agency Funding: The City of Longmont is currently accepting applications for human service agency funding in preparation for the 2027 fiscal year. This call for proposals aims to support local organizations that provide critical services to residents.",
+        "confidence": "high",
+        "risk_level": "high",
+        "confirmation_checklist": "[\"Review the application details and reach out to key contacts for more information.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+        "created_at": "2026-06-29T16:11:19.344342500+00:00",
+        "from_scan_lead_id": 6
+      },
+      {
+        "id": 15,
+        "detector_name": "daily_scan",
+        "why": "City of Longmont Seeks Applications for Human Service Agency Funding: The City of Longmont is accepting applications for its Human Service Agency funding, which supports local organizations that provide essential services to community members.",
+        "confidence": "high",
+        "risk_level": "high",
+        "confirmation_checklist": "[\"Reach out to key community organizations for interviews or quotes.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+        "created_at": "2026-06-29T16:11:30.913820900+00:00",
+        "from_scan_lead_id": 7
+      }
+    ]
+  },
+  "drafts": {
+    "columns": [
+      "id",
+      "lead_id",
+      "format",
+      "title",
+      "content",
+      "status",
+      "verification_checklist",
+      "missing_evidence_notes",
+      "correction_note",
+      "created_at",
+      "updated_at",
+      "attested_by",
+      "attested_at",
+      "guardrail_override_reason"
+    ],
+    "rows": []
+  },
+  "published_posts": {
+    "columns": [
+      "id",
+      "draft_id",
+      "file_path",
+      "url",
+      "published_at",
+      "correction_history"
+    ],
+    "rows": []
+  },
+  "publish_runs": {
+    "columns": [
+      "id",
+      "issue_id",
+      "output_path",
+      "generated_files",
+      "provider",
+      "published_url",
+      "deployment_id",
+      "article_count",
+      "skipped_count",
+      "files_written",
+      "generated_at"
+    ],
+    "rows": []
+  },
+  "sources": {
+    "columns": [
+      "id",
+      "name",
+      "url",
+      "type",
+      "status",
+      "last_success_at",
+      "last_failed_at",
+      "last_scraped",
+      "tier"
+    ],
+    "rows": [
+      {
+        "id": 1,
+        "name": "Longmont Agenda Management Portal",
+        "url": "https://longmontcolorado.gov/city-clerk/agenda-management-portal/",
+        "type": "primary_record",
+        "status": "online",
+        "last_success_at": "2026-06-29T16:08:42.213051900+00:00",
+        "last_failed_at": null,
+        "last_scraped": "2026-06-29T16:08:42.213051900+00:00",
+        "tier": "official_record"
+      },
+      {
+        "id": 2,
+        "name": "Longmont City Council Meetings",
+        "url": "https://longmontcolorado.gov/government/city-council-meetings/",
+        "type": "primary_record",
+        "status": "online",
+        "last_success_at": "2026-06-29T16:08:45.263938900+00:00",
+        "last_failed_at": null,
+        "last_scraped": "2026-06-29T16:08:45.263938900+00:00",
+        "tier": "official_record"
+      },
+      {
+        "id": 3,
+        "name": "Longmont Public Information",
+        "url": "https://longmontcolorado.gov/public-information/",
+        "type": "official_comm",
+        "status": "online",
+        "last_success_at": "2026-06-29T16:08:48.314523400+00:00",
+        "last_failed_at": null,
+        "last_scraped": "2026-06-29T16:08:48.314523400+00:00",
+        "tier": "official_record"
+      },
+      {
+        "id": 4,
+        "name": "Public Notice Colorado",
+        "url": "https://www.publicnoticecolorado.com/",
+        "type": "primary_record",
+        "status": "online",
+        "last_success_at": "2026-06-29T16:08:51.779916+00:00",
+        "last_failed_at": null,
+        "last_scraped": "2026-06-29T16:08:51.779916+00:00",
+        "tier": "official_record"
+      },
+      {
+        "id": 5,
+        "name": "Longmont subreddit",
+        "url": "https://www.reddit.com/r/Longmont/",
+        "type": "community_signal",
+        "status": "online",
+        "last_success_at": "2026-06-29T16:08:54.833730900+00:00",
+        "last_failed_at": null,
+        "last_scraped": "2026-06-29T16:08:54.833730900+00:00",
+        "tier": "community_signal"
+      },
+      {
+        "id": 6,
+        "name": "Longmont Colorado subreddit",
+        "url": "https://www.reddit.com/r/LongmontColorado/",
+        "type": "community_signal",
+        "status": "online",
+        "last_success_at": "2026-06-29T16:08:57.872394200+00:00",
+        "last_failed_at": null,
+        "last_scraped": "2026-06-29T16:08:57.872394200+00:00",
+        "tier": "community_signal"
+      }
+    ]
+  },
+  "settings": {
+    "columns": [
+      "key",
+      "value"
+    ],
+    "rows": [
+      {
+        "key": "identity.newsroom_name",
+        "value": "My Local Publication"
+      },
+      {
+        "key": "identity.editor_name",
+        "value": "Publisher"
+      },
+      {
+        "key": "identity.organization_type",
+        "value": "single_person"
+      },
+      {
+        "key": "identity.city",
+        "value": "Longmont"
+      },
+      {
+        "key": "identity.state",
+        "value": "CO"
+      },
+      {
+        "key": "model.selected",
+        "value": "qwen2.5:7b"
+      },
+      {
+        "key": "paths.publish",
+        "value": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default"
+      },
+      {
+        "key": "paths.backup",
+        "value": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\backups"
+      },
+      {
+        "key": "onboarding_complete",
+        "value": "1"
+      },
+      {
+        "key": "scan.latest_id",
+        "value": "1"
+      },
+      {
+        "key": "setup.recovered_input",
+        "value": "consumed"
+      }
+    ]
+  }
+}

@@ -1,0 +1,106 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Daily Scan complete (Scan ID: 2).
+Dismiss
+
+MORNING EDITOR PACKET
+
+Daily Scan
+
+Run deterministic record checks first, then use local AI only to summarize and rank what needs an editor's look.
+
+Refresh
+Run Daily Scan
+SOURCES WATCHED
+6
+OPEN LEADS
+14
+DRAFTS IN DESK
+0
+AI STATUS
+Ready
+
+AI BRIEF
+
+Latest scan #2
+
+Civic Desk keeps this pass local, private, and evidence-first. Use it to find the handful of records worth turning into leads. If local AI is unavailable, deterministic checks still build a review packet.
+
+SCAN PROGRESS
+
+Daily Scan saved 3 lead(s).
+
+Model: qwen2.5:7b. Evidence: 20. Saved leads: 3.
+
+Complete
+Scan Results for Scan #2
+
+CITY CLERK’S AGENDA MANAGEMENT PORTAL / PUBLIC NOTICE
+
+New Public Meeting Portal Launched
+High priority
+
+The City of Longmont has launched a new public meeting portal, making it easier for residents to access and follow upcoming meetings and topics. This portal will enhance civic engagement by providing detailed agendas and video recordings.
+
+Why this was flagged
+
+The portal improves transparency and accessibility of city governance information, which is crucial for local residents and stakeholders.
+
+Suggested next step
+
+Review the new portal to assess its features and usability for potential stories on improved civic engagement.
+
+Open source and review
+Aggregated across sources
+
+CITY OF LONGMONT / OFFICIAL UPDATE
+
+Upcoming City Council Meeting
+High priority
+
+The upcoming City Council meeting on July 7th is scheduled from 7 pm - 11 pm and includes an open forum for public input. This provides a platform for residents to engage in local governance.
+
+Why this was flagged
+
+Residents can participate directly by providing feedback during the open forum, influencing future city policies and decisions.
+
+Suggested next step
+
+Alert community members about the upcoming meeting and encourage them to attend.
+
+Open source and review
+Aggregated across sources
+
+CITY OF LONGMONT PUBLIC INFORMATION DEPARTMENT / OFFICIAL UPDATE
+
+Longmont Seeks Human Service Agency Funding
+High priority
+
+The City of Longmont is currently accepting applications for human service agency funding in preparation for the 2027 fiscal year. This call for proposals aims to support local organizations that provide critical services to residents.
+
+Why this was flagged
+
+This opportunity for community-based organizations could significantly impact local social services and funding availability.
+
+Suggested next step
+
+Review the application details and reach out to key contacts for more information.
+
+Open source and review
+Aggregated across sources

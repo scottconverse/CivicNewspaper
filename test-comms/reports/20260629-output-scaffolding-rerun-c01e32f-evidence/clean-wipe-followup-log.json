@@ -1,0 +1,23 @@
+﻿{
+    "timestamp_utc":  "2026-06-29T16:06:54.4686681Z",
+    "actions":  [
+                    {
+                        "action":  "stop-process",
+                        "path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\ollama-runtime\\v0.30.11\\ollama.exe",
+                        "ok":  true,
+                        "note":  "pid=20376"
+                    },
+                    {
+                        "action":  "remove-after-stop",
+                        "path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+                        "ok":  true,
+                        "note":  ""
+                    },
+                    {
+                        "action":  "remove-after-stop",
+                        "path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk",
+                        "ok":  true,
+                        "note":  ""
+                    }
+                ]
+}

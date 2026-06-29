@@ -1,0 +1,240 @@
+[
+  {
+    "i": 0,
+    "text": "Story Queue",
+    "aria": null,
+    "disabled": false,
+    "cls": "nav-link active"
+  },
+  {
+    "i": 1,
+    "text": "Daily Scan",
+    "aria": null,
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "i": 2,
+    "text": "Dark Signals",
+    "aria": null,
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "i": 3,
+    "text": "Verification",
+    "aria": null,
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "i": 4,
+    "text": "Workbench",
+    "aria": null,
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "i": 5,
+    "text": "Sources",
+    "aria": null,
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "i": 6,
+    "text": "AI Model",
+    "aria": null,
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "i": 7,
+    "text": "Publishing",
+    "aria": null,
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "i": 8,
+    "text": "Browser Pairing",
+    "aria": null,
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "i": 9,
+    "text": "Ethics & Backups",
+    "aria": null,
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "i": 10,
+    "text": "System & Status",
+    "aria": null,
+    "disabled": false,
+    "cls": "nav-link "
+  },
+  {
+    "i": 11,
+    "text": "",
+    "aria": "Dismiss beta notice",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "i": 12,
+    "text": "Refresh",
+    "aria": null,
+    "disabled": false,
+    "cls": "btn btn-secondary"
+  },
+  {
+    "i": 13,
+    "text": "Daily Scan",
+    "aria": null,
+    "disabled": false,
+    "cls": "btn btn-secondary"
+  },
+  {
+    "i": 14,
+    "text": "Scrape & Detect",
+    "aria": null,
+    "disabled": false,
+    "cls": "btn btn-primary"
+  },
+  {
+    "i": 15,
+    "text": "IN DRAFTING\n0",
+    "aria": "Open 0 drafts",
+    "disabled": false,
+    "cls": "stat-card stat-amber stat-card-button"
+  },
+  {
+    "i": 16,
+    "text": "Leads\n15",
+    "aria": null,
+    "disabled": false,
+    "cls": "queue-tab active"
+  },
+  {
+    "i": 17,
+    "text": "Drafts\n0",
+    "aria": null,
+    "disabled": false,
+    "cls": "queue-tab "
+  },
+  {
+    "i": 18,
+    "text": "Scan results\nlatest",
+    "aria": null,
+    "disabled": false,
+    "cls": "queue-tab "
+  },
+  {
+    "i": 19,
+    "text": "Draft",
+    "aria": "Draft City of Longmont Seeks Applications for Human Service Agency Funding: The City of Longmont is accepting applications for its Human Service Agency funding, which supports local organizations that provide essential services to community members.",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "i": 20,
+    "text": "Draft",
+    "aria": "Draft Longmont Seeks Human Service Agency Funding: The City of Longmont is currently accepting applications for human service agency funding in preparation for the 2027 fiscal year. This call for proposals aims to support local organizations that provide critical services to residents.",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "i": 21,
+    "text": "Draft",
+    "aria": "Draft Public Records Request Options: Residents can now submit public records requests via WhatsApp, expanding the accessibility of city data.",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "i": 22,
+    "text": "Draft",
+    "aria": "Draft City Council Meeting Schedule and Agendas: The City of Longmont provides detailed schedules, agendas, and live video recordings for its City Council meetings, allowing public participation in local governance.",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "i": 23,
+    "text": "Draft",
+    "aria": "Draft Upcoming City Council Meeting: The upcoming City Council meeting on July 7th is scheduled from 7 pm - 11 pm and includes an open forum for public input. This provides a platform for residents to engage in local governance.",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "i": 24,
+    "text": "Draft",
+    "aria": "Draft New City Council Meeting Portal: The City of Longmont has launched a new Public Meeting Portal, providing easy access to agendas and meeting packets for the City Council and advisory boards.",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "i": 25,
+    "text": "Draft",
+    "aria": "Draft New Public Meeting Portal Launched: The City of Longmont has launched a new public meeting portal, making it easier for residents to access and follow upcoming meetings and topics. This portal will enhance civic engagement by providing detailed agendas and video recordings.",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "i": 26,
+    "text": "Draft",
+    "aria": "Draft VOTING SIGNAL: Found vote/decision keywords ([\"approved\", \"approved\", \"Approved\", \"passed\", \"Motion\", \"motion\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "i": 27,
+    "text": "Draft",
+    "aria": "Draft MEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "i": 28,
+    "text": "Draft",
+    "aria": "Draft VOTING SIGNAL: Found vote/decision keywords ([\"passed\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "i": 29,
+    "text": "Draft",
+    "aria": "Draft A new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "i": 30,
+    "text": "Draft",
+    "aria": "Draft A new official primary document from 'Longmont City Council Meetings' was fetched today (https://longmontcolorado.gov/government/city-council-meetings/).",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "i": 31,
+    "text": "Draft",
+    "aria": "Draft A new official primary document from 'Public Notice Colorado' was fetched today (https://www.publicnoticecolorado.com/).",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "i": 32,
+    "text": "Draft",
+    "aria": "Draft MEETING SCHEDULED: Meeting notification detected in 'Longmont Agenda Management Portal' record. Public attendance or comment may be permitted.",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  },
+  {
+    "i": 33,
+    "text": "Draft",
+    "aria": "Draft A new official primary document from 'Longmont Agenda Management Portal' was fetched today (https://longmontcolorado.gov/city-clerk/agenda-management-portal/).",
+    "disabled": false,
+    "cls": "btn btn-secondary btn-sm"
+  }
+]

@@ -1,0 +1,254 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Draft generated successfully.
+Dismiss
+Story Workbench
+
+Modify drafted content, review guardrail warnings, and link source material when it helps the editor.
+
+Back to Queue
+Save Draft
+Delete
+Press-freedom / legal-risk advisor
+
+Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.
+
+Run Advisor
+Distinguish verified facts, allegations, opinion, and unanswered questions.
+Use extra care with private individuals, minors, medical details, addresses, and active legal matters.
+Keep notes on source reliability and why publishing serves the community.
+Story Title
+Article Body (Markdown)
+Plain Language Rewrite
+Highlight text and click "Cite" in evidence pane to link.
+Current Status: draft generated
+Hold
+Kill Story
+Approve for Static Publish
+I have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision.
+Social Media Promo Pack
+Generate Posts
+
+Generate optimized posts for Twitter/X, Facebook, and Reddit based on the current draft.
+
+Linked Sources
+Citation ID: #15
+Fetched: 6/29/2026
+"Project and program updates, including money-saving rebates and efficiency resources
+Sustainable Business Program
+Promotes environmental stewardship, economic vitality and social equity
+Senior Center
+Senior Center news and updates about upcoming programs and events
+Vision Zero
+Vision Zero projects, activities and how to get involved to improve transportation safety
+Youth Center
+Helping families, children and youth in Longmont grow, succeed and reach their best potential
+New
+Language Preference
+English
+Spanish
+Most of our email newsletters are currently published in English only. We&#039;re recording preferences if we add Spanish translations in the future.
+Get City News in Spanish!
+Follow our WhatsApp channel for City of Longmont news and updates in Spanish.
+Join WhatsApp Channel →
+Choose Your Subscriptions
+Select the topics and departments you&#039;d like to hear from.
+Subscribe to Selections
+Skip
+"
+Link Citation
+Citation ID: #26
+Fetched: 6/29/2026
+"How? Scroll to Archived Meetings, click on the HTML Agenda for a particular council meeting, click on an agenda item and . . . Voila! The video jumps to that point in the video. It&#039;s much easier than scrolling through the YouTube video (but you can do that, too, if you prefer!).
+Note - Meetings prior to June 16, 2020, do not have this feature but can be viewed on the City&#039;s YouTube channel.
+Upcoming Events
+View Events
+City Council Meeting
+Tuesday, June 30 •  7 pm - 11 pm
+350 Kimbark St.
+Longmont,
+CO
+80501
+United States
+City Council
+Canceled: City Council Meeting
+Tuesday, June 30 •  7 pm - 11 pm
+350 Kimbark St.
+Longmont,
+CO
+80501
+United States
+City Council
+Open Forum
+Tuesday, July 7 •  7 pm - 11 pm
+350 Kimbark St.
+Longmont,
+CO
+80501
+United States
+City Council
+City Council Meeting
+Tuesday, July 7 •  7 pm - 11 pm
+350 Kimbark St.
+Longmont,
+CO
+80501
+United States
+City Council
+City Council Pre-Session
+Tuesday, July 14 •  6 pm - 7 pm
+350 Kimbark Street
+Longmont,
+Colorado
+80501
+City Clerk
+City Council Meeting
+Tuesday, July 14 •  7 pm - 11 pm
+350 Kimbark St.
+Longmont,
+CO
+80501
+United States
+City Council
+Coffee with Council
+Saturday, July 18 •  9 am - 10 am
+1200 Lashley Street
+Longmont,
+Colorado
+80504
+United States
+City Council
+Council at Longmont Farmers Market
+Saturday, July 25 •  8 am - 10 am
+9595 Nelson Rd.
+Longmont,
+Colorado
+80501
+United States
+City Council
+City Council Meeting
+Tuesday, July 28 •  7 pm - 11 pm
+350 Kimbark St.
+Longmont,
+CO
+80501
+United States
+City Council
+National Night Out
+Tuesday, Aug. 4 •  5 pm - 7 pm
+1251 Grandview Meadows Drive
+Longmont,
+Colorado
+80503
+United States
+City Council
+City Council Meeting
+Tuesday, June 30 •  7 pm - 11 pm
+350 Kimbark St.
+Longmont,
+CO
+80501
+United States
+City Council
+Canceled: City Council Meeting
+Tuesday, June 30 •  7 pm - 11 pm
+350 Kimbark St.
+Longmont,
+CO
+80501
+United States
+City Council
+Open Forum
+Tuesday, July 7 •  7 pm - 11 pm
+350 Kimbark St.
+Longmont,
+CO
+80501
+United States
+"
+Link Citation
+Citation ID: #27
+Fetched: 6/29/2026
+"City Council
+City Council Meeting
+Tuesday, July 7 •  7 pm - 11 pm
+350 Kimbark St.
+Longmont,
+CO
+80501
+United States
+City Council
+City Council Pre-Session
+Tuesday, July 14 •  6 pm - 7 pm
+350 Kimbark Street
+Longmont,
+Colorado
+80501
+City Clerk
+City Council Meeting
+Tuesday, July 14 •  7 pm - 11 pm
+350 Kimbark St.
+Longmont,
+CO
+80501
+United States
+City Council
+Coffee with Council
+Saturday, July 18 •  9 am - 10 am
+1200 Lashley Street
+Longmont,
+Colorado
+80504
+United States
+City Council
+Council at Longmont Farmers Market
+Saturday, July 25 •  8 am - 10 am
+9595 Nelson Rd.
+Longmont,
+Colorado
+80501
+United States
+City Council
+City Council Meeting
+Tuesday, July 28 •  7 pm - 11 pm
+350 Kimbark St.
+Longmont,
+CO
+80501
+United States
+City Council
+National Night Out
+Tuesday, Aug. 4 •  5 pm - 7 pm
+1251 Grandview Meadows Drive
+Longmont,
+Colorado
+80503
+United States
+City Council
+View Events
+Frequently Asked Questions
+What are the different types of City Council meetings?
+Regular Sessions
+Regular Sessions are the formal business meetings of City Council and they can only take formal action at Regular Sessions. Regular Sessions, prescribed by the City&#8217;s Charter to be held at least twice a month, are usually held on the second and fourth Tuesdays of every month but are sometimes scheduled on other Tuesdays due to holidays or scheduling conflicts.  Four members of Council constitute a quorum and may conduct City business. Council conducts business at a Regular Session in one of the following manners:
+&nbsp;
+Ordinances (Local Laws) –
+An ordinance is a type of local law. It must go through  two readings  before it becomes law.
+First Reading:  The ordinance is introduced to the City Council. Council members can ask staff questions. Then the Council votes on whether to publish the ordinance and schedule a public hearing.
+"
+Link Citation

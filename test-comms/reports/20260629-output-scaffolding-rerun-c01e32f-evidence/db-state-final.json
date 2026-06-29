@@ -1,0 +1,213 @@
+﻿{
+  "drafts": {
+    "columns": [
+      "id",
+      "lead_id",
+      "format",
+      "title",
+      "content",
+      "status",
+      "verification_checklist",
+      "missing_evidence_notes",
+      "correction_note",
+      "created_at",
+      "updated_at",
+      "attested_by",
+      "attested_at",
+      "guardrail_override_reason"
+    ],
+    "rows": [
+      {
+        "id": 1,
+        "lead_id": 15,
+        "format": "watch",
+        "title": "City of Longmont Accepting Applications for Human Service Agency Funding",
+        "content": "The City of Longmont is currently accepting applications for its Human Service Agency funding program, which supports local organizations that provide essential services to community members [Source](evidence:16).\n\nThis initiative aims to ensure ongoing support for vital programs such as food assistance, healthcare, and educational resources. According to the City's website, interested organizations can apply through their online portal or by contacting the Human Services Department directly [Source](evidence:16). The application period is open until September 30, 2026.\n\nApplications should be submitted no later than the deadline to qualify for funding. Recipients are expected to provide services that align with the City's mission of fostering a strong and inclusive community [Source](evidence:17).\n\nEDITOR_NOTE: This looks like background material, not a publishable news story yet. To make it newsworthy, there would need to be information about specific organizations that have been awarded funding or any changes in the application process this year compared to previous years.",
+        "status": "hold",
+        "verification_checklist": "[]",
+        "missing_evidence_notes": null,
+        "correction_note": null,
+        "created_at": "2026-06-29T16:33:01.161471800+00:00",
+        "updated_at": "2026-06-29T16:34:50.659266700+00:00",
+        "attested_by": "Publisher",
+        "attested_at": "2026-06-29T16:34:12.264468500+00:00",
+        "guardrail_override_reason": null
+      },
+      {
+        "id": 2,
+        "lead_id": 14,
+        "format": "watch",
+        "title": "Longmont Seeks Applications for 2027 Human Service Agency Funding",
+        "content": "The City of Longmont is currently accepting applications from human service agencies as part of its 2027 fiscal year funding process, aiming to support critical services provided by local organizations [Source](evidence:16). This initiative reflects the city's commitment to enhancing community well-being and ensuring that essential services are available to residents.\n\nLocal non-profits and charitable organizations offering a range of human services such as mental health support, educational programs, and social assistance can apply for funding. The call for proposals is open to those providing vital aid to Longmont residents [Source](evidence:16). Interested parties should review the detailed guidelines provided by the city government to ensure their applications meet the necessary criteria.\n\nThe application process will run through the end of October 2026, allowing ample time for eligible organizations to prepare and submit their proposals. Selected agencies will receive support that can significantly impact the lives of Longmont residents [Source](evidence:16).\n\n[EDITOR_NOTE: This looks like background material, not a publishable news story yet.] A specific announcement date or significant updates regarding the application process would make this more relevant for immediate readership and action.",
+        "status": "ready_to_publish",
+        "verification_checklist": "[]",
+        "missing_evidence_notes": null,
+        "correction_note": null,
+        "created_at": "2026-06-29T16:38:17.328214700+00:00",
+        "updated_at": "2026-06-29T16:38:20.839071+00:00",
+        "attested_by": "Publisher",
+        "attested_at": "2026-06-29T16:38:20.838051300+00:00",
+        "guardrail_override_reason": null
+      },
+      {
+        "id": 3,
+        "lead_id": 13,
+        "format": "watch",
+        "title": "New WhatsApp Option for Public Records Requests Expands City Data Accessibility",
+        "content": "Body:\nEDITOR_NOTE: Not enough verified source material for a publishable story yet.\n\n- When did the city implement this new option?\n- How does the process work exactly? Are there any specific instructions or limits?\n- Who is eligible to make public records requests via WhatsApp?\n- What types of records can be requested through this platform?\n- Is there a cost associated with submitting requests via WhatsApp, and if so, what is it?\n- Has the city provided training or support for using this new system?",
+        "status": "ready_to_publish",
+        "verification_checklist": "[]",
+        "missing_evidence_notes": null,
+        "correction_note": null,
+        "created_at": "2026-06-29T16:38:32.518429900+00:00",
+        "updated_at": "2026-06-29T16:38:32.556150200+00:00",
+        "attested_by": "Publisher",
+        "attested_at": "2026-06-29T16:38:32.555217100+00:00",
+        "guardrail_override_reason": null
+      },
+      {
+        "id": 4,
+        "lead_id": 12,
+        "format": "watch",
+        "title": "Upcoming City Council Meetings Highlight Community Engagement and Governance",
+        "content": "The City of Longmont is scheduled to host several important meetings in July 2023, offering residents various opportunities to engage with local governance.\n\n**City Council Meetings**\n\nRegular sessions of the City Council will be held on Tuesday, July 7th, and Tuesday, July 14th. Both meetings are set for 7:00 pm to 11:00 pm at 350 Kimbark Street in Longmont. The agenda includes a pre-session on the evening of July 14th from 6:00 pm to 7:00 pm, which is intended for City staff briefings and planning sessions [Source](evidence:26).\n\n**Open Forum**\n\nResidents are encouraged to participate in an Open Forum scheduled for Tuesday, July 7th. This forum provides a platform for public input on various city matters during the meeting [Source](evidence:26).\n\n**Coffee with Council**\n\nFor those interested in more informal engagement, there will be a \"Coffee with Council\" event on Saturday, July 18th, from 9:00 am to 10:00 am at 1200 Lashley Street [Source](evidence:26).\n\n**Council at Longmont Farmers Market**\n\nAdditionally, the City Council will be present at the Longmont Farmers Market on Saturday, July 25th, from 8:00 am to 10:00 am. This interaction aims to gather community feedback and promote local businesses [Source](evidence:26).\n\n**Upcoming Events**\n\nResidents should also mark their calendars for the National Night Out event on Tuesday, August 4th, where the City Council will be present from 5:00 pm to 7:00 pm at 1251 Grandview Meadows Drive [Source](evidence:26).\n\n**Note**: Meetings prior to June 16, 2020, do not have specific video features for direct agenda item navigation. However, live video recordings and detailed agendas are available online for all recent meetings.\n\nEDITOR_NOTE: This looks like background material, not a publishable news story yet. To make it newsworthy, there should be an indication of any changes or developments in the upcoming meetings that deviate from the usual schedule or include significant policy discussions.",
+        "status": "ready_to_publish",
+        "verification_checklist": "[]",
+        "missing_evidence_notes": null,
+        "correction_note": null,
+        "created_at": "2026-06-29T16:39:02.424484+00:00",
+        "updated_at": "2026-06-29T16:39:04.915282900+00:00",
+        "attested_by": "Publisher",
+        "attested_at": "2026-06-29T16:39:04.911350800+00:00",
+        "guardrail_override_reason": null
+      },
+      {
+        "id": 5,
+        "lead_id": 11,
+        "format": "watch",
+        "title": "Upcoming City Council Meeting on July 7th Includes Open Forum for Public Input",
+        "content": "The upcoming City Council meeting scheduled for Tuesday, July 7th, from 7 pm to 11 pm at the City Hall (350 Kimbark St., Longmont, CO) will feature an open forum where residents can engage in local governance. [Source](evidence:26)\n\nDuring this meeting, council members will discuss various topics including project and program updates such as money-saving rebates and efficiency resources, which are part of the Sustainable Business Program aimed at promoting environmental stewardship, economic vitality, and social equity. [Source](evidence:15)\n\nResidents interested in senior community engagement can also look forward to updates on programs and events at the Senior Center. Additionally, discussions will include Vision Zero projects and activities focused on improving transportation safety. The council may seek public input or feedback on these initiatives during the open forum. [Source](evidence:15)\n\nMoreover, the city is considering expanding its language services by recording email newsletter preferences for potential Spanish translations in the future. Longmont residents can now follow the City of Longmont\u2019s WhatsApp channel to receive news and updates in Spanish. [Source](evidence:27)\n\nThe agenda also includes regular sessions where formal business will be conducted, including ordinances (local laws) that must go through two readings before they become law. The first reading introduces an ordinance to the council for discussion and potential scheduling of a public hearing. [Source](evidence:26)\n\nEDITOR_NOTE: This looks like background material, not a publishable news story yet. To make it more relevant for current events, additional information on specific projects or changes in policy that are currently under discussion would be needed.",
+        "status": "ready_to_publish",
+        "verification_checklist": "[]",
+        "missing_evidence_notes": null,
+        "correction_note": null,
+        "created_at": "2026-06-29T16:39:29.222432500+00:00",
+        "updated_at": "2026-06-29T16:39:32.182175100+00:00",
+        "attested_by": "Publisher",
+        "attested_at": "2026-06-29T16:39:32.177912600+00:00",
+        "guardrail_override_reason": null
+      },
+      {
+        "id": 6,
+        "lead_id": 10,
+        "format": "watch",
+        "title": "New City Council Meeting Portal Aids Resident Access to Meetings",
+        "content": "Longmont has introduced an enhanced Public Meeting Portal designed to streamline access to city council and advisory board meetings for residents. This tool is part of the city's ongoing effort to foster transparency and community engagement.\n\nThe new portal, [Source](evidence:3), allows users to easily navigate through agendas by utilizing HTML bookmarks that link directly to video discussions on YouTube. Notably, this feature is currently available for City Council and Planning & Zoning Commission meetings only. Residents can find the agenda item of interest quickly without needing to search the entire video, significantly improving the user experience.\n\nAdditionally, the portal serves as a central repository for all meeting documents and packets, making it easier for residents to prepare for and follow along with discussions. [Source](evidence:3) notes that this initiative aims to make city governance more accessible and understandable for all Longmont residents.\n\nEDITOR_NOTE: This looks like background material, not a publishable news story yet. To turn this into a news item, it would need to include current developments or impacts on the community that are newsworthy. For example, details about recent meetings that utilized the portal effectively, or feedback from residents who have used it.",
+        "status": "ready_to_publish",
+        "verification_checklist": "[]",
+        "missing_evidence_notes": null,
+        "correction_note": null,
+        "created_at": "2026-06-29T16:39:49.190822700+00:00",
+        "updated_at": "2026-06-29T16:39:54.337182+00:00",
+        "attested_by": "Publisher",
+        "attested_at": "2026-06-29T16:39:54.336098+00:00",
+        "guardrail_override_reason": null
+      }
+    ]
+  },
+  "publish_runs": {
+    "columns": [
+      "id",
+      "issue_id",
+      "output_path",
+      "generated_files",
+      "provider",
+      "published_url",
+      "deployment_id",
+      "article_count",
+      "skipped_count",
+      "files_written",
+      "generated_at"
+    ],
+    "rows": [
+      {
+        "id": 1,
+        "issue_id": "issue-20260629-163636-332283700",
+        "output_path": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/reports/20260629-output-scaffolding-rerun-c01e32f-evidence/publication-output/site",
+        "generated_files": "[\"styles.css\",\"print.css\",\"index.html\",\"about.html\",\"ethics.html\",\"how-we-report.html\",\"corrections.html\",\"feed.xml\",\"newsletter.md\",\"substack.md\",\"share-package.md\",\"facebook-post.txt\",\"subreddit-post.md\",\"nextdoor-post.txt\",\"short-link-blurb.txt\",\"publish-manifest.json\",\"site-package.zip\"]",
+        "provider": "local_export",
+        "published_url": null,
+        "deployment_id": null,
+        "article_count": 0,
+        "skipped_count": 0,
+        "files_written": 17,
+        "generated_at": "2026-06-29T16:36:36.332283700+00:00"
+      },
+      {
+        "id": 2,
+        "issue_id": "issue-20260629-164020-476014700",
+        "output_path": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/reports/20260629-output-scaffolding-rerun-c01e32f-evidence/publication-output/site",
+        "generated_files": "[\"styles.css\",\"print.css\",\"watch/6.html\",\"watch/5.html\",\"watch/4.html\",\"watch/3.html\",\"watch/2.html\",\"index.html\",\"about.html\",\"ethics.html\",\"how-we-report.html\",\"corrections.html\",\"feed.xml\",\"newsletter.md\",\"substack.md\",\"share-package.md\",\"facebook-post.txt\",\"subreddit-post.md\",\"nextdoor-post.txt\",\"short-link-blurb.txt\",\"publish-manifest.json\",\"site-package.zip\"]",
+        "provider": "local_export",
+        "published_url": null,
+        "deployment_id": null,
+        "article_count": 5,
+        "skipped_count": 0,
+        "files_written": 22,
+        "generated_at": "2026-06-29T16:40:20.476014700+00:00"
+      }
+    ]
+  },
+  "published_posts": {
+    "columns": [
+      "id",
+      "draft_id",
+      "file_path",
+      "url",
+      "published_at",
+      "correction_history"
+    ],
+    "rows": [
+      {
+        "id": 1,
+        "draft_id": 6,
+        "file_path": "watch/6.html",
+        "url": "watch/6.html",
+        "published_at": "2026-06-29T16:39:54.337182+00:00",
+        "correction_history": "[]"
+      },
+      {
+        "id": 2,
+        "draft_id": 5,
+        "file_path": "watch/5.html",
+        "url": "watch/5.html",
+        "published_at": "2026-06-29T16:39:32.182175100+00:00",
+        "correction_history": "[]"
+      },
+      {
+        "id": 3,
+        "draft_id": 4,
+        "file_path": "watch/4.html",
+        "url": "watch/4.html",
+        "published_at": "2026-06-29T16:39:04.915282900+00:00",
+        "correction_history": "[]"
+      },
+      {
+        "id": 4,
+        "draft_id": 3,
+        "file_path": "watch/3.html",
+        "url": "watch/3.html",
+        "published_at": "2026-06-29T16:38:32.556150200+00:00",
+        "correction_history": "[]"
+      },
+      {
+        "id": 5,
+        "draft_id": 2,
+        "file_path": "watch/2.html",
+        "url": "watch/2.html",
+        "published_at": "2026-06-29T16:38:20.839071+00:00",
+        "correction_history": "[]"
+      }
+    ]
+  }
+}

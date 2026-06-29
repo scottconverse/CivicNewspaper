@@ -1,0 +1,23 @@
+The setup screen did not receive input events, so The Civic Desk continued with a starter Longmont profile. You can edit identity later in Settings.
+AI Setup
+Step 2 of 5
+AI Service Setup
+
+Check the connection to the local AI service that runs on your computer.
+
+Local AI Service Connection
+
+Local Ram: 15 GB
+
+The AI service is ready. Download a recommended model?
+
+Based on your 15GB of RAM, we recommend: qwen2.5:7b (one-time download, ~4.7 GB, needs internet).
+
+This may take 10-60+ minutes depending on your connection. You can cancel and resume later from AI Model; already downloaded pieces are usually reused by the model service.
+
+Heads up: the AI model runs on your CPU, so generating a draft or daily scan can take a minute or more - this is normal.
+
+Download qwen2.5:7b
+Back
+Skip for now
+Next

@@ -1,0 +1,138 @@
+{
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link active"
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 11,
+      "text": "",
+      "aria": "Dismiss beta notice",
+      "disabled": false,
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 12,
+      "text": "Refresh",
+      "aria": null,
+      "disabled": false,
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 13,
+      "text": "Daily Scan",
+      "aria": null,
+      "disabled": false,
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 14,
+      "text": "Scrape & Detect",
+      "aria": null,
+      "disabled": false,
+      "cls": "btn btn-primary"
+    },
+    {
+      "i": 15,
+      "text": "IN DRAFTING\n0",
+      "aria": "Open 0 drafts",
+      "disabled": false,
+      "cls": "stat-card stat-amber stat-card-button"
+    },
+    {
+      "i": 16,
+      "text": "Leads\n15",
+      "aria": null,
+      "disabled": false,
+      "cls": "queue-tab "
+    },
+    {
+      "i": 17,
+      "text": "Drafts\n0",
+      "aria": null,
+      "disabled": false,
+      "cls": "queue-tab active"
+    },
+    {
+      "i": 18,
+      "text": "Scan results\nlatest",
+      "aria": null,
+      "disabled": false,
+      "cls": "queue-tab "
+    }
+  ],
+  "inputs": []
+}

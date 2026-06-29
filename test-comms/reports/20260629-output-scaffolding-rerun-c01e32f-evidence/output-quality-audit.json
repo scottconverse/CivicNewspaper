@@ -1,0 +1,77 @@
+{
+  "hereNowUrl": "https://sentient-hill-qczg.here.now",
+  "localHits": [
+    {
+      "scope": "local-output",
+      "file": "watch/2.html",
+      "line": 45,
+      "pattern": "/EDITOR_NOTE/g",
+      "text": "<p>[EDITOR_NOTE: This looks like background material, not a publishable news story yet.] A specific announcement date or significant updates regarding the application process would make this more relevant for immediate readership and action"
+    }
+  ],
+  "liveHits": [
+    {
+      "scope": "here-now",
+      "file": "public-herenow-article-5.txt",
+      "line": 15,
+      "pattern": "/EDITOR_NOTE/g",
+      "text": "[EDITOR_NOTE: This looks like background material, not a publishable news story yet.] A specific announcement date or significant updates regarding the application process would make this more relevant for immediate readership and action."
+    }
+  ],
+  "localArticleCount": 5,
+  "liveArticleCount": 5,
+  "articles": [
+    {
+      "file": "watch/2.html",
+      "title": "Longmont Seeks Applications for 2027 Human Service Agency Funding - Longmont Scaffolding Cleanup Retest",
+      "text": "Longmont Seeks Applications for 2027 Human Service Agency Funding - Longmont Scaffolding Cleanup Retest :root { --accent-color: #5a1818; } Longmont Scaffolding Cleanup Retest Cleanroom output-quality verification for Longmont civic coverage. Home About Ethics Policy How We Report Corrections Ledger RSS Feed Longmont Seeks Applications for 2027 Human Service Agency Funding Published: 2026-06-29T16:38:20.839071+00:00 Format: watch The City of Longmont is currently accepting applications from human service agencies as part of its 2027 fiscal year funding process, aiming to support critical services provided by local organizations Source . This initiative reflects the city's commitment to enhancing community well-being and ensuring that essential services are available to residents. Local non-profits and charitable organizations offering a range of human services such as mental health support, educational programs, and social assistance can apply for funding. The call for proposals is open"
+    },
+    {
+      "file": "watch/3.html",
+      "title": "New WhatsApp Option for Public Records Requests Expands City Data Accessibility - Longmont Scaffolding Cleanup Retest",
+      "text": "New WhatsApp Option for Public Records Requests Expands City Data Accessibility - Longmont Scaffolding Cleanup Retest :root { --accent-color: #5a1818; } Longmont Scaffolding Cleanup Retest Cleanroom output-quality verification for Longmont civic coverage. Home About Ethics Policy How We Report Corrections Ledger RSS Feed New WhatsApp Option for Public Records Requests Expands City Data Accessibility Published: 2026-06-29T16:38:32.556150200+00:00 Format: watch This item needs more reporting before it is ready for publication. The editor should add verified source material before treating it as a complete story. Sources & Notes Source links attached by the editor: No source links were attached to this article. Temporary cleanroom test output."
+    },
+    {
+      "file": "watch/4.html",
+      "title": "Upcoming City Council Meetings Highlight Community Engagement and Governance - Longmont Scaffolding Cleanup Retest",
+      "text": "Upcoming City Council Meetings Highlight Community Engagement and Governance - Longmont Scaffolding Cleanup Retest :root { --accent-color: #5a1818; } Longmont Scaffolding Cleanup Retest Cleanroom output-quality verification for Longmont civic coverage. Home About Ethics Policy How We Report Corrections Ledger RSS Feed Upcoming City Council Meetings Highlight Community Engagement and Governance Published: 2026-06-29T16:39:04.915282900+00:00 Format: watch The City of Longmont is scheduled to host several important meetings in July 2023, offering residents various opportunities to engage with local governance. City Council Meetings Regular sessions of the City Council will be held on Tuesday, July 7th, and Tuesday, July 14th. Both meetings are set for 7:00 pm to 11:00 pm at 350 Kimbark Street in Longmont. The agenda includes a pre-session on the evening of July 14th from 6:00 pm to 7:00 pm, which is intended for City staff briefings and planning sessions Source . Open Forum Residents are "
+    },
+    {
+      "file": "watch/5.html",
+      "title": "Upcoming City Council Meeting on July 7th Includes Open Forum for Public Input - Longmont Scaffolding Cleanup Retest",
+      "text": "Upcoming City Council Meeting on July 7th Includes Open Forum for Public Input - Longmont Scaffolding Cleanup Retest :root { --accent-color: #5a1818; } Longmont Scaffolding Cleanup Retest Cleanroom output-quality verification for Longmont civic coverage. Home About Ethics Policy How We Report Corrections Ledger RSS Feed Upcoming City Council Meeting on July 7th Includes Open Forum for Public Input Published: 2026-06-29T16:39:32.182175100+00:00 Format: watch The upcoming City Council meeting scheduled for Tuesday, July 7th, from 7 pm to 11 pm at the City Hall (350 Kimbark St., Longmont, CO) will feature an open forum where residents can engage in local governance. Source During this meeting, council members will discuss various topics including project and program updates such as money-saving rebates and efficiency resources, which are part of the Sustainable Business Program aimed at promoting environmental stewardship, economic vitality, and social equity. Source Residents interested "
+    },
+    {
+      "file": "watch/6.html",
+      "title": "New City Council Meeting Portal Aids Resident Access to Meetings - Longmont Scaffolding Cleanup Retest",
+      "text": "New City Council Meeting Portal Aids Resident Access to Meetings - Longmont Scaffolding Cleanup Retest :root { --accent-color: #5a1818; } Longmont Scaffolding Cleanup Retest Cleanroom output-quality verification for Longmont civic coverage. Home About Ethics Policy How We Report Corrections Ledger RSS Feed New City Council Meeting Portal Aids Resident Access to Meetings Published: 2026-06-29T16:39:54.337182+00:00 Format: watch Longmont has introduced an enhanced Public Meeting Portal designed to streamline access to city council and advisory board meetings for residents. This tool is part of the city's ongoing effort to foster transparency and community engagement. The new portal, Source , allows users to easily navigate through agendas by utilizing HTML bookmarks that link directly to video discussions on YouTube. Notably, this feature is currently available for City Council and Planning &amp; Zoning Commission meetings only. Residents can find the agenda item of interest quickly with"
+    }
+  ],
+  "live": [
+    {
+      "url": "https://sentient-hill-qczg.here.now/watch/6.html",
+      "status": 200,
+      "textSample": "LONGMONT SCAFFOLDING CLEANUP RETEST\n\nCLEANROOM OUTPUT-QUALITY VERIFICATION FOR LONGMONT CIVIC COVERAGE.\n\nHOME ABOUT ETHICS POLICY HOW WE REPORT CORRECTIONS LEDGER RSS FEED\nNew City Council Meeting Portal Aids Resident Access to Meetings\nPUBLISHED: 2026-06-29T16:39:54.337182+00:00 FORMAT: WATCH\n\nLongmont has introduced an enhanced Public Meeting Portal designed to streamline access to city council and advisory board meetings for residents. This tool is part of the city's ongoing effort to foster transparency and community engagement.\n\nThe new portal, Source, allows users to easily navigate through agendas by utilizing HTML bookmarks that link directly to video discussions on YouTube. Notably, this feature is currently available for City Council and Planning & Zoning Commission meetings only. Residents can find the agenda item of interest quickly without needing to search the entire video, significantly improving the user experience.\n\nAdditionally, the portal serves as a central repository for all meeting documents and packets, making it easier for residents to prepare for and follow along with discussions. Source notes that this initiative aims to make city governance more accessibl"
+    },
+    {
+      "url": "https://sentient-hill-qczg.here.now/watch/5.html",
+      "status": 200,
+      "textSample": "LONGMONT SCAFFOLDING CLEANUP RETEST\n\nCLEANROOM OUTPUT-QUALITY VERIFICATION FOR LONGMONT CIVIC COVERAGE.\n\nHOME ABOUT ETHICS POLICY HOW WE REPORT CORRECTIONS LEDGER RSS FEED\nUpcoming City Council Meeting on July 7th Includes Open Forum for Public Input\nPUBLISHED: 2026-06-29T16:39:32.182175100+00:00 FORMAT: WATCH\n\nThe upcoming City Council meeting scheduled for Tuesday, July 7th, from 7 pm to 11 pm at the City Hall (350 Kimbark St., Longmont, CO) will feature an open forum where residents can engage in local governance. Source\n\nDuring this meeting, council members will discuss various topics including project and program updates such as money-saving rebates and efficiency resources, which are part of the Sustainable Business Program aimed at promoting environmental stewardship, economic vitality, and social equity. Source\n\nResidents interested in senior community engagement can also look forward to updates on programs and events at the Senior Center. Additionally, discussions will include Vision Zero projects and activities focused on improving transportation safety. The council may seek public input or feedback on these initiatives during the open forum. Source\n\nMoreover, the city is"
+    },
+    {
+      "url": "https://sentient-hill-qczg.here.now/watch/4.html",
+      "status": 200,
+      "textSample": "LONGMONT SCAFFOLDING CLEANUP RETEST\n\nCLEANROOM OUTPUT-QUALITY VERIFICATION FOR LONGMONT CIVIC COVERAGE.\n\nHOME ABOUT ETHICS POLICY HOW WE REPORT CORRECTIONS LEDGER RSS FEED\nUpcoming City Council Meetings Highlight Community Engagement and Governance\nPUBLISHED: 2026-06-29T16:39:04.915282900+00:00 FORMAT: WATCH\n\nThe City of Longmont is scheduled to host several important meetings in July 2023, offering residents various opportunities to engage with local governance.\n\nCity Council Meetings\n\nRegular sessions of the City Council will be held on Tuesday, July 7th, and Tuesday, July 14th. Both meetings are set for 7:00 pm to 11:00 pm at 350 Kimbark Street in Longmont. The agenda includes a pre-session on the evening of July 14th from 6:00 pm to 7:00 pm, which is intended for City staff briefings and planning sessions Source.\n\nOpen Forum\n\nResidents are encouraged to participate in an Open Forum scheduled for Tuesday, July 7th. This forum provides a platform for public input on various city matters during the meeting Source.\n\nCoffee with Council\n\nFor those interested in more informal engagement, there will be a \"Coffee with Council\" event on Saturday, July 18th, from 9:00 am to 10:00 am at 1"
+    },
+    {
+      "url": "https://sentient-hill-qczg.here.now/watch/3.html",
+      "status": 200,
+      "textSample": "LONGMONT SCAFFOLDING CLEANUP RETEST\n\nCLEANROOM OUTPUT-QUALITY VERIFICATION FOR LONGMONT CIVIC COVERAGE.\n\nHOME ABOUT ETHICS POLICY HOW WE REPORT CORRECTIONS LEDGER RSS FEED\nNew WhatsApp Option for Public Records Requests Expands City Data Accessibility\nPUBLISHED: 2026-06-29T16:38:32.556150200+00:00 FORMAT: WATCH\n\nThis item needs more reporting before it is ready for publication. The editor should add verified source material before treating it as a complete story.\n\nSOURCES & NOTES\n\nSource links attached by the editor:\n\nNo source links were attached to this article.\n\nTemporary cleanroom test output."
+    },
+    {
+      "url": "https://sentient-hill-qczg.here.now/watch/2.html",
+      "status": 200,
+      "textSample": "LONGMONT SCAFFOLDING CLEANUP RETEST\n\nCLEANROOM OUTPUT-QUALITY VERIFICATION FOR LONGMONT CIVIC COVERAGE.\n\nHOME ABOUT ETHICS POLICY HOW WE REPORT CORRECTIONS LEDGER RSS FEED\nLongmont Seeks Applications for 2027 Human Service Agency Funding\nPUBLISHED: 2026-06-29T16:38:20.839071+00:00 FORMAT: WATCH\n\nThe City of Longmont is currently accepting applications from human service agencies as part of its 2027 fiscal year funding process, aiming to support critical services provided by local organizations Source. This initiative reflects the city's commitment to enhancing community well-being and ensuring that essential services are available to residents.\n\nLocal non-profits and charitable organizations offering a range of human services such as mental health support, educational programs, and social assistance can apply for funding. The call for proposals is open to those providing vital aid to Longmont residents Source. Interested parties should review the detailed guidelines provided by the city government to ensure their applications meet the necessary criteria.\n\nThe application process will run through the end of October 2026, allowing ample time for eligible organizations to prepare and "
+    }
+  ]
+}

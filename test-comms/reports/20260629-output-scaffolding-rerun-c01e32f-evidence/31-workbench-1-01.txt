@@ -1,0 +1,38 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Drafting Article
+
+Lead: City of Longmont Seeks Applications for Human Service Agency Funding: The City of Longmont is accepting applications for its Human Service Agency funding, which supports local organizations that provide essential services to community members.
+
+Generating Draft...
+Cancel
+Asking the local AI model to write a working draft. Keep this window open.
+Article Format
+Brief (Under 200 words summary)
+Watch Alert (Highlights specific public safety or procurement issues)
+Explainer (Detailed review of a policy or decision background)
+Investigation (Traces spending and connections behind a story)
+Editorial / Opinion Piece (Presents a structured argument)
+Custom Guidelines / Instructions (Optional)
+Linked Sources (3)
+"--> Public Information - City of Longmont Skip to main content News &#038; Alerts Events Careers Con..."
+"Discover all the departments that make up the City of Longmont&#8217;s government. Get detailed info..."
+"Ascent at Hover Crossing Wins Housing Award June 24, 2026 View News Community Involvement Process an..."
+Generating Draft...
+Cancel

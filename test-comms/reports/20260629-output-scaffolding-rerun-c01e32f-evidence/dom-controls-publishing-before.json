@@ -1,0 +1,173 @@
+{
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link active"
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "aria": null,
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 11,
+      "text": "",
+      "aria": "Dismiss beta notice",
+      "disabled": false,
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 12,
+      "text": "Edit identity",
+      "aria": null,
+      "disabled": false,
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 13,
+      "text": "Browse",
+      "aria": null,
+      "disabled": false,
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 14,
+      "text": "Review compile checklist",
+      "aria": null,
+      "disabled": false,
+      "cls": "btn btn-primary btn-full"
+    },
+    {
+      "i": 15,
+      "text": "Open folder",
+      "aria": null,
+      "disabled": false,
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 16,
+      "text": "Reset",
+      "aria": null,
+      "disabled": false,
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 17,
+      "text": "Add",
+      "aria": null,
+      "disabled": false,
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 18,
+      "text": "Import CSV",
+      "aria": null,
+      "disabled": false,
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 19,
+      "text": "Export CSV",
+      "aria": null,
+      "disabled": false,
+      "cls": "btn btn-secondary"
+    }
+  ],
+  "inputs": [
+    {
+      "i": 0,
+      "tag": "INPUT",
+      "type": "text",
+      "value": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default",
+      "placeholder": "C:\\\\CivicDesk\\\\site",
+      "name": null,
+      "disabled": false
+    },
+    {
+      "i": 1,
+      "tag": "INPUT",
+      "type": "email",
+      "value": "",
+      "placeholder": "reader@example.com",
+      "name": null,
+      "disabled": false
+    },
+    {
+      "i": 2,
+      "tag": "INPUT",
+      "type": "text",
+      "value": "",
+      "placeholder": "optional",
+      "name": null,
+      "disabled": false
+    }
+  ]
+}

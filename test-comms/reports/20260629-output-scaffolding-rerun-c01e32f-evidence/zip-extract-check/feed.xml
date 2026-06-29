@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Longmont Scaffolding Cleanup Retest</title>
+    <link>index.html</link>
+    <description>Cleanroom output-quality verification for Longmont civic coverage.</description>
+    <language>en-us</language>
+    <pubDate>Mon, 29 Jun 2026 16:40:20 +0000</pubDate>
+    <lastBuildDate>Mon, 29 Jun 2026 16:40:20 +0000</lastBuildDate>
+    <item>
+      <title>New City Council Meeting Portal Aids Resident Access to Meetings</title>
+      <link>watch/6.html</link>
+      <guid>watch/6</guid>
+      <pubDate>2026-06-29T16:39:54.337182+00:00</pubDate>
+      <description>New City Council Meeting Portal Aids Resident Access to Meetings</description>
+    </item>
+    <item>
+      <title>Upcoming City Council Meeting on July 7th Includes Open Forum for Public Input</title>
+      <link>watch/5.html</link>
+      <guid>watch/5</guid>
+      <pubDate>2026-06-29T16:39:32.182175100+00:00</pubDate>
+      <description>Upcoming City Council Meeting on July 7th Includes Open Forum for Public Input</description>
+    </item>
+    <item>
+      <title>Upcoming City Council Meetings Highlight Community Engagement and Governance</title>
+      <link>watch/4.html</link>
+      <guid>watch/4</guid>
+      <pubDate>2026-06-29T16:39:04.915282900+00:00</pubDate>
+      <description>Upcoming City Council Meetings Highlight Community Engagement and Governance</description>
+    </item>
+    <item>
+      <title>New WhatsApp Option for Public Records Requests Expands City Data Accessibility</title>
+      <link>watch/3.html</link>
+      <guid>watch/3</guid>
+      <pubDate>2026-06-29T16:38:32.556150200+00:00</pubDate>
+      <description>New WhatsApp Option for Public Records Requests Expands City Data Accessibility</description>
+    </item>
+    <item>
+      <title>Longmont Seeks Applications for 2027 Human Service Agency Funding</title>
+      <link>watch/2.html</link>
+      <guid>watch/2</guid>
+      <pubDate>2026-06-29T16:38:20.839071+00:00</pubDate>
+      <description>Longmont Seeks Applications for 2027 Human Service Agency Funding</description>
+    </item>
+
+  </channel>
+</rss>

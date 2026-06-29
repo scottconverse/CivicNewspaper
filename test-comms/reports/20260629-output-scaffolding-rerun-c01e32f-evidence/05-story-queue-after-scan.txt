@@ -1,0 +1,116 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Story Queue
+
+Civic signals your sources surfaced, ready to verify and turn into plain-language stories.
+
+Refresh
+Daily Scan
+Scrape & Detect
+NEW LEADS
+14
+IN DRAFTING
+0
+HIGH PRIORITY
+5
+SOURCES
+6
+Local-first workflow
+Scan sources, draft from linked evidence, run guardrails, then publish a static paper.
+Leads
+14
+Drafts
+0
+Scan results
+latest
+Filter leads
+Sort by:
+Date Created
+Risk Level
+Confidence
+Risk: high
+daily_scan
+Longmont Seeks Human Service Agency Funding: The City of Longmont is currently accepting applications for human service agency funding in preparation for the 2027 fiscal year. This call for proposals aims to support local organizations that provide critical services to residents.
+Confidence: high
+Draft
+Risk: med
+daily_scan
+Public Records Request Options: Residents can now submit public records requests via WhatsApp, expanding the accessibility of city data.
+Confidence: med
+Draft
+Risk: high
+daily_scan
+City Council Meeting Schedule and Agendas: The City of Longmont provides detailed schedules, agendas, and live video recordings for its City Council meetings, allowing public participation in local governance.
+Confidence: high
+Draft
+Risk: high
+daily_scan
+Upcoming City Council Meeting: The upcoming City Council meeting on July 7th is scheduled from 7 pm - 11 pm and includes an open forum for public input. This provides a platform for residents to engage in local governance.
+Confidence: high
+Draft
+Risk: high
+daily_scan
+New City Council Meeting Portal: The City of Longmont has launched a new Public Meeting Portal, providing easy access to agendas and meeting packets for the City Council and advisory boards.
+Confidence: high
+Draft
+Risk: high
+daily_scan
+New Public Meeting Portal Launched: The City of Longmont has launched a new public meeting portal, making it easier for residents to access and follow upcoming meetings and topics. This portal will enhance civic engagement by providing detailed agendas and video recordings.
+Confidence: high
+Draft
+Risk: low
+Decision / Vote
+VOTING SIGNAL: Found vote/decision keywords (["approved", "approved", "Approved", "passed", "Motion", "motion"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.
+Confidence: medium
+Draft
+Risk: low
+Public Meeting Scheduled
+MEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.
+Confidence: medium
+Draft
+Risk: low
+Decision / Vote
+VOTING SIGNAL: Found vote/decision keywords (["passed"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.
+Confidence: medium
+Draft
+Risk: low
+New Primary Record
+A new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).
+Confidence: high
+Draft
+Risk: low
+New Primary Record
+A new official primary document from 'Longmont City Council Meetings' was fetched today (https://longmontcolorado.gov/government/city-council-meetings/).
+Confidence: high
+Draft
+Risk: low
+New Primary Record
+A new official primary document from 'Public Notice Colorado' was fetched today (https://www.publicnoticecolorado.com/).
+Confidence: high
+Draft
+Risk: low
+Public Meeting Scheduled
+MEETING SCHEDULED: Meeting notification detected in 'Longmont Agenda Management Portal' record. Public attendance or comment may be permitted.
+Confidence: medium
+Draft
+Risk: low
+New Primary Record
+A new official primary document from 'Longmont Agenda Management Portal' was fetched today (https://longmontcolorado.gov/city-clerk/agenda-management-portal/).
+Confidence: high
+Draft

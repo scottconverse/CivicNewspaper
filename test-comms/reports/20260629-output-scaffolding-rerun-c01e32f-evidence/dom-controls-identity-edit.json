@@ -1,0 +1,962 @@
+[
+  {
+    "i": 0,
+    "tag": "BUTTON",
+    "text": "Story Queue",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 1,
+    "tag": "BUTTON",
+    "text": "Daily Scan",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 2,
+    "tag": "BUTTON",
+    "text": "Dark Signals",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 3,
+    "tag": "BUTTON",
+    "text": "Verification",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 4,
+    "tag": "BUTTON",
+    "text": "Workbench",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 5,
+    "tag": "BUTTON",
+    "text": "Sources",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 6,
+    "tag": "BUTTON",
+    "text": "AI Model",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 7,
+    "tag": "BUTTON",
+    "text": "Publishing",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 8,
+    "tag": "BUTTON",
+    "text": "Browser Pairing",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 9,
+    "tag": "BUTTON",
+    "text": "Ethics & Backups",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 10,
+    "tag": "BUTTON",
+    "text": "System & Status",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 11,
+    "tag": "BUTTON",
+    "text": "",
+    "value": "",
+    "placeholder": null,
+    "type": null,
+    "aria": "Dismiss beta notice",
+    "disabled": false
+  },
+  {
+    "i": 12,
+    "tag": "BUTTON",
+    "text": "Save now",
+    "value": "",
+    "placeholder": null,
+    "type": "submit",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 13,
+    "tag": "INPUT",
+    "text": "",
+    "value": "My Local Publication",
+    "placeholder": null,
+    "type": "text",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 14,
+    "tag": "INPUT",
+    "text": "",
+    "value": "Local news and community information.",
+    "placeholder": null,
+    "type": "text",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 15,
+    "tag": "SELECT",
+    "text": "Single person\nFor-profit publication\nNonprofit publication\nPrivate organization\nCommunity group\nOther",
+    "value": "single_person",
+    "placeholder": null,
+    "type": null,
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 16,
+    "tag": "INPUT",
+    "text": "",
+    "value": "Longmont",
+    "placeholder": null,
+    "type": "text",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 17,
+    "tag": "INPUT",
+    "text": "",
+    "value": "CO",
+    "placeholder": null,
+    "type": "text",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 18,
+    "tag": "SELECT",
+    "text": "Classic newspaper\nCompact\nWide\nModern",
+    "value": "classic",
+    "placeholder": null,
+    "type": null,
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 19,
+    "tag": "INPUT",
+    "text": "",
+    "value": "#5a1818",
+    "placeholder": null,
+    "type": "color",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 20,
+    "tag": "INPUT",
+    "text": "",
+    "value": "250000",
+    "placeholder": null,
+    "type": "number",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 21,
+    "tag": "INPUT",
+    "text": "",
+    "value": "",
+    "placeholder": "https://example.com/logo.png",
+    "type": "text",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 22,
+    "tag": "BUTTON",
+    "text": "Choose image",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 23,
+    "tag": "TEXTAREA",
+    "text": "",
+    "value": "A locally edited publication for this community.",
+    "placeholder": null,
+    "type": null,
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 24,
+    "tag": "TEXTAREA",
+    "text": "",
+    "value": "Editorial standards are set by the publisher. Corrections are published when needed.",
+    "placeholder": null,
+    "type": null,
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 25,
+    "tag": "TEXTAREA",
+    "text": "",
+    "value": "Stories, sources, and publication decisions are reviewed by the editor before publication.",
+    "placeholder": null,
+    "type": null,
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 26,
+    "tag": "TEXTAREA",
+    "text": "",
+    "value": "",
+    "placeholder": "Optional copyright, ownership, sponsorship, ad, or contact note.",
+    "type": null,
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 27,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 28,
+    "tag": "BUTTON",
+    "text": "Save identity",
+    "value": "",
+    "placeholder": null,
+    "type": "submit",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 29,
+    "tag": "BUTTON",
+    "text": "Use neutral starter copy",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 30,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"corrupt\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 31,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove corrupt",
+    "disabled": false
+  },
+  {
+    "i": 32,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"stole\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 33,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove stole",
+    "disabled": false
+  },
+  {
+    "i": 34,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"illegal\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 35,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove illegal",
+    "disabled": false
+  },
+  {
+    "i": 36,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"fraud\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 37,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove fraud",
+    "disabled": false
+  },
+  {
+    "i": 38,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"embezzle\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 39,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove embezzle",
+    "disabled": false
+  },
+  {
+    "i": 40,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"bribe\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 41,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove bribe",
+    "disabled": false
+  },
+  {
+    "i": 42,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"scam\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 43,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove scam",
+    "disabled": false
+  },
+  {
+    "i": 44,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"theft\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 45,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove theft",
+    "disabled": false
+  },
+  {
+    "i": 46,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"criminal\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 47,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove criminal",
+    "disabled": false
+  },
+  {
+    "i": 48,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"guilty\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 49,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove guilty",
+    "disabled": false
+  },
+  {
+    "i": 50,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"conspiracy\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 51,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove conspiracy",
+    "disabled": false
+  },
+  {
+    "i": 52,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"extortion\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 53,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove extortion",
+    "disabled": false
+  },
+  {
+    "i": 54,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"misconduct\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 55,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove misconduct",
+    "disabled": false
+  },
+  {
+    "i": 56,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"kickback\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 57,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove kickback",
+    "disabled": false
+  },
+  {
+    "i": 58,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"laundering\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 59,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove laundering",
+    "disabled": false
+  },
+  {
+    "i": 60,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"arrested\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 61,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove arrested",
+    "disabled": false
+  },
+  {
+    "i": 62,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"charged\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 63,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove charged",
+    "disabled": false
+  },
+  {
+    "i": 64,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"indicted\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 65,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove indicted",
+    "disabled": false
+  },
+  {
+    "i": 66,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"convicted\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 67,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove convicted",
+    "disabled": false
+  },
+  {
+    "i": 68,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"prosecuted\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 69,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove prosecuted",
+    "disabled": false
+  },
+  {
+    "i": 70,
+    "tag": "INPUT",
+    "text": "",
+    "value": "",
+    "placeholder": "Add a word...",
+    "type": "text",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 71,
+    "tag": "BUTTON",
+    "text": "Add",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 72,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"arrested\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 73,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove arrested",
+    "disabled": false
+  },
+  {
+    "i": 74,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"charged\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 75,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove charged",
+    "disabled": false
+  },
+  {
+    "i": 76,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"indicted\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 77,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove indicted",
+    "disabled": false
+  },
+  {
+    "i": 78,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"accused\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 79,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove accused",
+    "disabled": false
+  },
+  {
+    "i": 80,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"suspect\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 81,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove suspect",
+    "disabled": false
+  },
+  {
+    "i": 82,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"theft\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 83,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove theft",
+    "disabled": false
+  },
+  {
+    "i": 84,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"embezzle\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 85,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove embezzle",
+    "disabled": false
+  },
+  {
+    "i": 86,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"fraud\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 87,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove fraud",
+    "disabled": false
+  },
+  {
+    "i": 88,
+    "tag": "INPUT",
+    "text": "",
+    "value": "on",
+    "placeholder": null,
+    "type": "checkbox",
+    "aria": "Mark the word \"misconduct\" as high concern",
+    "disabled": false
+  },
+  {
+    "i": 89,
+    "tag": "BUTTON",
+    "text": "×",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": "Remove misconduct",
+    "disabled": false
+  },
+  {
+    "i": 90,
+    "tag": "INPUT",
+    "text": "",
+    "value": "",
+    "placeholder": "Add a word...",
+    "type": "text",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 91,
+    "tag": "BUTTON",
+    "text": "Add",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 92,
+    "tag": "BUTTON",
+    "text": "Save guardrail words",
+    "value": "",
+    "placeholder": null,
+    "type": "button",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 93,
+    "tag": "INPUT",
+    "text": "",
+    "value": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\backups\\civic-desk.db",
+    "placeholder": null,
+    "type": "text",
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 94,
+    "tag": "BUTTON",
+    "text": "Back up now",
+    "value": "",
+    "placeholder": null,
+    "type": null,
+    "aria": null,
+    "disabled": false
+  },
+  {
+    "i": 95,
+    "tag": "BUTTON",
+    "text": "Restore from backup",
+    "value": "",
+    "placeholder": null,
+    "type": null,
+    "aria": null,
+    "disabled": false
+  }
+]

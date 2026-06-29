@@ -1,0 +1,78 @@
+{
+  "issue_id": "issue-20260629-164020-476014700",
+  "output_dir": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/reports/20260629-output-scaffolding-rerun-c01e32f-evidence/publication-output/site",
+  "generated_at": "2026-06-29T16:40:20.476014700+00:00",
+  "provider": "here_now",
+  "published_url": "https://sentient-hill-qczg.here.now",
+  "deployment_id": "slug=sentient-hill-qczg;version=01KWA495QWEHAW73DHPBJ28AJ5;created_slug=sentient-hill-qczg",
+  "article_count": 5,
+  "skipped_count": 0,
+  "files_written": 22,
+  "generated_files": [
+    "styles.css",
+    "print.css",
+    "watch/6.html",
+    "watch/5.html",
+    "watch/4.html",
+    "watch/3.html",
+    "watch/2.html",
+    "index.html",
+    "about.html",
+    "ethics.html",
+    "how-we-report.html",
+    "corrections.html",
+    "feed.xml",
+    "newsletter.md",
+    "substack.md",
+    "share-package.md",
+    "facebook-post.txt",
+    "subreddit-post.md",
+    "nextdoor-post.txt",
+    "short-link-blurb.txt",
+    "publish-manifest.json",
+    "site-package.zip"
+  ],
+  "index_path": "index.html",
+  "rss_path": "feed.xml",
+  "newsletter_path": "newsletter.md",
+  "substack_path": "substack.md",
+  "share_package_path": "share-package.md",
+  "facebook_post_path": "facebook-post.txt",
+  "subreddit_post_path": "subreddit-post.md",
+  "nextdoor_post_path": "nextdoor-post.txt",
+  "short_link_blurb_path": "short-link-blurb.txt",
+  "manifest_path": "publish-manifest.json",
+  "zip_path": "site-package.zip",
+  "articles": [
+    {
+      "title": "New City Council Meeting Portal Aids Resident Access to Meetings",
+      "format": "watch",
+      "relative_path": "watch/6.html",
+      "updated_at": "2026-06-29T16:39:54.337182+00:00"
+    },
+    {
+      "title": "Upcoming City Council Meeting on July 7th Includes Open Forum for Public Input",
+      "format": "watch",
+      "relative_path": "watch/5.html",
+      "updated_at": "2026-06-29T16:39:32.182175100+00:00"
+    },
+    {
+      "title": "Upcoming City Council Meetings Highlight Community Engagement and Governance",
+      "format": "watch",
+      "relative_path": "watch/4.html",
+      "updated_at": "2026-06-29T16:39:04.915282900+00:00"
+    },
+    {
+      "title": "New WhatsApp Option for Public Records Requests Expands City Data Accessibility",
+      "format": "watch",
+      "relative_path": "watch/3.html",
+      "updated_at": "2026-06-29T16:38:32.556150200+00:00"
+    },
+    {
+      "title": "Longmont Seeks Applications for 2027 Human Service Agency Funding",
+      "format": "watch",
+      "relative_path": "watch/2.html",
+      "updated_at": "2026-06-29T16:38:20.839071+00:00"
+    }
+  ]
+}
