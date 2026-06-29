@@ -3200,6 +3200,50 @@ I should produce JSON only.
             .chars()
             .any(|ch| matches!(ch as u32, 0x00c2 | 0x00c3 | 0x00e2)));
     }
+
+    #[test]
+    fn test_compile_strips_legacy_draft_prefix_from_public_titles() {
+        let conn = init_db("file:test_compile_strips_draft_prefix?mode=memory&cache=shared")
+            .unwrap();
+        let temp_dir = tempdir().unwrap();
+        let id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "watch".to_string(),
+                title: "Draft: Council reviews capital plan".to_string(),
+                content: "The council reviewed the capital plan.".to_string(),
+                status: "ready_to_publish".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        let result = compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+
+        assert_eq!(result.articles[0].title, "Council reviews capital plan");
+        for relative_path in [
+            format!("watch/{}.html", id),
+            "index.html".to_string(),
+            "feed.xml".to_string(),
+            "newsletter.md".to_string(),
+            "substack.md".to_string(),
+            "share-package.md".to_string(),
+            "subreddit-post.md".to_string(),
+            "nextdoor-post.txt".to_string(),
+            "publish-manifest.json".to_string(),
+        ] {
+            let text = fs::read_to_string(temp_dir.path().join(relative_path)).unwrap();
+            assert!(text.contains("Council reviews capital plan"));
+            assert!(!text.contains("Draft: Council reviews capital plan"));
+        }
+    }
+
     #[test]
     fn test_compile_removes_stale_article_files_when_story_is_no_longer_publishable() {
         let conn =

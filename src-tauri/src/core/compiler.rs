@@ -262,6 +262,17 @@ pub(crate) fn repair_common_mojibake(text: &str) -> String {
     }
     repaired
 }
+
+fn normalize_public_title(title: &str) -> String {
+    let repaired = repair_common_mojibake(title);
+    repaired
+        .trim()
+        .strip_prefix("Draft:")
+        .unwrap_or_else(|| repaired.trim())
+        .trim()
+        .to_string()
+}
+
 fn clean_generated_site_output(output_dir: &Path) -> Result<(), Box<dyn Error>> {
     for subdir in [
         "briefs",
@@ -607,7 +618,7 @@ pub fn compile_static_site(
     // 5. Compile each published article
     for draft in &published_drafts {
         let draft_id = draft.id.unwrap_or(0);
-        let title = repair_common_mojibake(&draft.title);
+        let title = normalize_public_title(&draft.title);
         let content = repair_common_mojibake(&draft.content);
 
         // Editorial review is advisory at compile time: do not silently filter a
@@ -679,7 +690,7 @@ pub fn compile_static_site(
             for item in items {
                 let item_id = item.id.unwrap_or(0);
                 let raw_url = item.url.clone().unwrap_or_else(|| "#".to_string());
-                // SEC (GG-B1 / QA-Min1): defense-in-depth at the publish sink —
+                // SEC (GG-B1 / QA-Min1): defense-in-depth at the publish sink -
                 // neutralize non-allowlisted schemes even though ingest validates
                 // source URLs upstream. encode_safe only escapes characters; it
                 // does not stop a `javascript:` scheme from being a live href.
