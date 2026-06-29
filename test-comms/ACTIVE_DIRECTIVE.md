@@ -19,9 +19,9 @@ C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms
 
 Run this directive now:
 
-test-comms/directives/20260628-rerun-full-e2e-current-5c6f141.md
+test-comms/directives/20260629-rerun-full-e2e-after-draft-reveal-2a96751.md
 
-This supersedes stale directive test-comms/directives/20260628-rerun-draft-action-above-fold-e2ac517.md and replaces the malformed placeholder directive reported in test-comms/reports/20260628-full-e2e-current-5c6f141-report.md.
+This supersedes stale directive test-comms/directives/20260628-rerun-full-e2e-current-5c6f141.md after the tester reported that the second visible lead did not visibly enter the draft workflow.
 
 Product branch:
 
@@ -29,19 +29,19 @@ stable-readiness-local-gates
 
 Product commit:
 
-5c6f141c87175de187f89a887d4f91f08a73da2d
+2a96751884f9bb7d23ba2c480cd51618e574913d
 
 Artifact folder:
 
-test-comms/artifacts/20260628-full-e2e-current-5c6f141/
+test-comms/artifacts/20260629-rerun-full-e2e-2a96751/
 
 Expected preferred NSIS SHA256:
 
-CF901350E6CA13A109FF1DFBFB3FF733B149CA53AB2D7D73014C2B5F8CCA86B7
+75B78452EB7863DEE16D69574D6E384D9232886BB308659B2D73E3813EAE05B6
 
 Expected fallback MSI SHA256:
 
-7ADA24DE59243CCF60D39601039AFAB5497D5715B15085EF7C78B04B49311FFA
+408164A4E6808C00F95CFCB0469DED20027C4BF9560C5C8808DB8DF84A61F5DA
 
 ## Current Goal
 
