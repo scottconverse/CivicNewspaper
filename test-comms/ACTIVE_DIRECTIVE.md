@@ -19,15 +19,15 @@ IMPORTANT MACHINE CONTEXT:
 
 Run this directive now:
 
-`test-comms/directives/20260629-bracketed-note-rerun-5791fb5.md`
+`test-comms/directives/20260629-story-quality-workflow-rerun-006c800.md`
 
-This is a cleanroom Longmont rerun after the prior c01e32f test failed because reader-facing public output still exposed bracketed internal editor scaffolding: `[EDITOR_NOTE: ...]`. This directive also checks adjacent mojibake cleanup in public evidence excerpts.
+This is a focused Longmont rerun for the latest story-quality and editor-workflow checkpoint. It verifies that held drafts expose Resume Editing and Send Back for More Work, and that Daily Scan/Draft generation label weak or evergreen material instead of inflating it into finished stories.
 
 Supersedes:
 
-`test-comms/directives/20260629-output-scaffolding-rerun-c01e32f.md`
+`test-comms/directives/20260629-bracketed-note-rerun-5791fb5.md`
 
-Reason: the c01e32f rerun proved install/setup/publish mechanics, but failed output quality. This directive verifies the fixed installer and public cleanup.
+Reason: the bracketed-note rerun passed. This directive tests the next checkpoint before beat-memory/suppression-ledger work begins.
 
 Product branch:
 
@@ -35,26 +35,26 @@ Product branch:
 
 Product commit:
 
-`5791fb5146d76fc5e97012488c995d0de1bb99c6`
+`006c8009083ea61ba71a365f055b65619d03aed5`
 
 Artifact folder:
 
-`test-comms/artifacts/20260629-bracketed-note-rerun-5791fb5/`
+`test-comms/artifacts/20260629-story-quality-workflow-rerun-006c800/`
 
 Expected preferred NSIS SHA256:
 
-`9CF4714A253E32D04E1FB1394B6D583B37CCC77C21FDACEBE212D6F1BBDD117C`
+`8F6111B3E9432CA81E256EE89E672685230D1FA6525375754150DD4EB916F451`
 
 Expected fallback MSI SHA256:
 
-`D53AF37831195AD2F36B59436ADA30D14D59313AADB819FBE7E5703AAB85ACCF`
+`EA6B6599E9AB2D17F51A01515DC33F66062DFCF7F91653D2AB90AA19BF9862A0`
 
 Expected report:
 
-`test-comms/reports/20260629-bracketed-note-rerun-5791fb5-report.md`
+`test-comms/reports/20260629-story-quality-workflow-rerun-006c800-report.md`
 
 ## Current Goal
 
-Run the cleanroom Longmont output-quality rerun. Confirm the app still installs, sets up local AI without tester-installed prerequisites, scans Longmont sources, exercises editorial workflow, exports ZIP, publishes to here.now, and no public artifact leaks internal scaffolding or mojibake markers.
+Run the focused Longmont story-quality and draft-workflow rerun. Confirm the app still installs, guides AI setup, scans Longmont sources, labels weak/background/watch material with story-quality context, keeps editor choice intact, exposes held-draft Resume Editing and Send Back for More Work controls, and only publishes/export genuine current stories if the run finds them.
 
 Commit reports/artifacts with `[skip ci]`.
