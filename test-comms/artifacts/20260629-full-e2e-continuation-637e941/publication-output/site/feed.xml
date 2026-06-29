@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>My Local Publication</title>
+    <link>index.html</link>
+    <description>Local news and community information.</description>
+    <language>en-us</language>
+    <pubDate>Mon, 29 Jun 2026 06:42:36 +0000</pubDate>
+    <lastBuildDate>Mon, 29 Jun 2026 06:42:36 +0000</lastBuildDate>
+    <item>
+      <title>Draft: New Public Meeting Portal Launched: Longmont City Council and advisory board agendas are now published on a new public meeting portal, making it easier for residents to access information about upcoming meetings.</title>
+      <link>watch/2.html</link>
+      <guid>watch/2</guid>
+      <pubDate>2026-06-29T06:42:14.684129100+00:00</pubDate>
+      <description>Draft: New Public Meeting Portal Launched: Longmont City Council and advisory board agendas are now published on a new public meeting portal, making it easier for residents to access information about upcoming meetings.</description>
+    </item>
+    <item>
+      <title>Draft: Youth Center Programs in Longmont: The city is committed to supporting youth development through the Youth Center, which provides resources and activities for families and children.</title>
+      <link>watch/1.html</link>
+      <guid>watch/1</guid>
+      <pubDate>2026-06-29T06:40:18.984521200+00:00</pubDate>
+      <description>Draft: Youth Center Programs in Longmont: The city is committed to supporting youth development through the Youth Center, which provides resources and activities for families and children.</description>
+    </item>
+    <item>
+      <title>Draft: Vision Zero Safety Projects: The city is actively working on Vision Zero projects to improve transportation safety, engaging citizens and stakeholders in these initiatives.</title>
+      <link>watch/5.html</link>
+      <guid>watch/5</guid>
+      <pubDate>2026-06-29T06:40:14.137713200+00:00</pubDate>
+      <description>Draft: Vision Zero Safety Projects: The city is actively working on Vision Zero projects to improve transportation safety, engaging citizens and stakeholders in these initiatives.</description>
+    </item>
+    <item>
+      <title>Draft: Sustainable Business Program: The city offers a Sustainable Business Program to promote environmental stewardship, economic vitality, and social equity among local businesses.</title>
+      <link>watch/4.html</link>
+      <guid>watch/4</guid>
+      <pubDate>2026-06-29T06:40:09.262594600+00:00</pubDate>
+      <description>Draft: Sustainable Business Program: The city offers a Sustainable Business Program to promote environmental stewardship, economic vitality, and social equity among local businesses.</description>
+    </item>
+    <item>
+      <title>Draft: Longmont Invites Applications for Official City Flag Design: The City of Longmont is seeking public input through an application process aimed at designing a new official city flag, fostering community engagement and pride.</title>
+      <link>watch/3.html</link>
+      <guid>watch/3</guid>
+      <pubDate>2026-06-29T06:39:40.541113+00:00</pubDate>
+      <description>Draft: Longmont Invites Applications for Official City Flag Design: The City of Longmont is seeking public input through an application process aimed at designing a new official city flag, fostering community engagement and pride.</description>
+    </item>
+    <item>
+      <title>Draft: City Council Meetings and Public Engagement: Residents can have their voices heard at the Public Invited to be Heard segment of City Council meetings, where staff often prepares ordinances based on citizen input. [tester edit]</title>
+      <link>watch/6.html</link>
+      <guid>watch/6</guid>
+      <pubDate>2026-06-29T06:37:24.636918700+00:00</pubDate>
+      <description>Draft: City Council Meetings and Public Engagement: Residents can have their voices heard at the Public Invited to be Heard segment of City Council meetings, where staff often prepares ordinances based on citizen input. [tester edit]</description>
+    </item>
+
+  </channel>
+</rss>

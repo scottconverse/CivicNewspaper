@@ -1,0 +1,29 @@
+{
+  "sources": 6,
+  "evidence_items": 27,
+  "leads": 18,
+  "drafts": 3,
+  "publish_runs": 0,
+  "published_posts": 0,
+  "verification_tasks": 3,
+  "draft_sample": [
+    [
+      1,
+      12,
+      "draft_generated",
+      "Draft: Youth Center Programs in Longmont: The city is committed to supporting youth development through the Youth Center, which provides resources and activitie"
+    ],
+    [
+      2,
+      10,
+      "draft_generated",
+      "Draft: New Public Meeting Portal Launched: Longmont City Council and advisory board agendas are now published on a new public meeting portal, making it easier f"
+    ],
+    [
+      3,
+      18,
+      "draft_generated",
+      "Draft: Longmont Invites Applications for Official City Flag Design: The City of Longmont is seeking public input through an application process aimed at designi"
+    ]
+  ]
+}

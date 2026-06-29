@@ -1,134 +1,176 @@
-# Tester Report - Full E2E Continuation 637e941
+# Full E2E Continuation Report - 637e941
 
-Date: 2026-06-29T06:24:08Z
-Tester machine: msi\civic
-Repo: https://github.com/scottconverse/CivicNewspaper
-Coordination branch: test-comms/cleanroom-coder-tester
-Active directive: test-comms/directives/20260629-continue-full-e2e-after-637e941-partial.md
-Product branch: stable-readiness-local-gates
-Required product commit: 637e941ac77361033fc22b48fac33ae1aa50a6b3
-Result: BLOCKED - tester UI automation unavailable before continuation actions could be executed
+Status: FAIL - release gate still open
+
+Directive: `test-comms/directives/20260629-continue-full-e2e-after-637e941-partial.md`
+
+Product branch: `stable-readiness-local-gates`
+
+Required product commit: `637e941ac77361033fc22b48fac33ae1aa50a6b3`
+
+Tester checkout: `C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms`
+
+Artifact folder: `test-comms/artifacts/20260629-full-e2e-continuation-637e941/`
 
 ## Summary
 
-The CivicNewspaper coordination watcher has been corrected away from CivicCast and rearmed for CivicNewspaper only.
+The run resumed from the existing cleanroom install; no wipe or reinstall was performed. The app was installed and running from the previously verified 637e941 artifact state, with Longmont active and bundled Local AI ready on `qwen2.5:7b`.
 
-I fetched and fast-forwarded the coordination branch, reread `test-comms/ACTIVE_DIRECTIVE.md`, and confirmed the active directive is the 637e941 full E2E continuation. The installed product state appears resumable from the prior partial run: the local database exists with 18 leads and 2 drafts, matching the expected continuation baseline.
+The product successfully generated enough Longmont drafts, exercised editor controls, compiled static output, created `site-package.zip`, and anonymously published to here.now:
 
-However, I cannot execute the remaining UI workflow exactly because the supported Codex Windows Computer Use channel is unavailable in this session. The native Computer Use pipe fails to connect on both initial attempt and reset/retry:
+`https://silent-signal-6cm6.here.now`
 
-```text
-Computer Use native pipe is unavailable: Error: failed to connect native pipe: The system cannot find the file specified. (os error 2)
-```
+HTTP verification returned 200 and the page contained Longmont/Civic publication content.
 
-Because the directive requires real UI actions through the installed product, I am not fabricating the remaining five-draft/editor/export/here.now result.
+The run is still marked failed because generated/published output contained mojibake-style encoding markers (`â€™`, `â€`) in multiple story HTML files. This violates the directive requirement to confirm advisory/warning/publication text has no garbled encoding markers and is not acceptable for a real Longmont publication next week without cleanup. The run also showed confusing publish-state behavior around kill/cut and duplicate/extra draft generation that should be reviewed.
 
-## Current Verified Coordination State
+## Resume / Installation
 
-- Local coordination path: `C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms`
-- Current branch: `test-comms/cleanroom-coder-tester`
-- Remote/local HEAD after fast-forward: `b306de4 test-comms: continue full e2e after 637e941 partial [skip ci]`
-- `test-comms/ACTIVE_DIRECTIVE.md`: exists and points to `test-comms/directives/20260629-continue-full-e2e-after-637e941-partial.md`
-- Active directive exists: yes
-- CivicCast watcher context: stopped/replaced; recurring automation prompt is now CivicNewspaper-only
+- Resume used: yes.
+- Reinstall performed: no.
+- Current installed executable: `C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe`
+- Bundled Ollama executable: `C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe`
+- Local AI status: `Local AI ready`
+- Selected model: `qwen2.5:7b`
+- App handled Local AI without tester-installed dependencies.
 
-## Current Product State Evidence
+## Initial State Verified
 
-Read-only database check from:
+Database resume snapshot:
 
-`C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\civicdesk.db`
+- Sources: 6
+- Evidence items: 27
+- Leads: 18
+- Daily scan leads: 10
+- Drafts at resume: 2
+- Publish runs at resume: 0
 
-Continuation state artifact already present:
+Already-drafted lead behavior:
 
-`test-comms/artifacts/20260629-full-e2e-continuation-637e941/cont637-db-resume-state.json`
+- Opened an existing draft from the workbench/queue state.
+- Draft count remained 2 after the open action.
+- Result: no duplicate draft created for that already-drafted lead.
 
-Observed counts:
+Direct Back to Queue:
 
-```json
-{
-  "exists": true,
-  "sources": 6,
-  "evidence_items": 27,
-  "leads": 18,
-  "daily_scan_leads": 10,
-  "daily_scan_runs": 1,
-  "drafts": 2,
-  "publish_runs": 0,
-  "published_posts": 0,
-  "verification_tasks": 3
-}
-```
+- The Workbench exposed a direct `Back to Queue` control at 1280x720.
+- Returning to queue was verified without relying on Alt+1.
 
-Observed persisted draft sample:
+## Drafting / Editor Controls
 
-```json
-[
-  [
-    1,
-    12,
-    "watch",
-    "Draft: Youth Center Programs in Longmont: The city is committed to supporting youth development through the Youth Center, which provides resources and activities for families and children.",
-    "draft_generated"
-  ],
-  [
-    2,
-    10,
-    "watch",
-    "Draft: New Public Meeting Portal Launched: Longmont City Council and advisory board agendas are now published on a new public meeting portal, making it easier for residents to access information about upcoming meetings.",
-    "draft_generated"
-  ]
-]
-```
+Drafting continued until enough stories existed for publication:
 
-Installed app path exists:
+- Started with 2 persisted drafts.
+- Generated additional drafts via visible queue Draft controls.
+- Final database state after all interactions: 7 drafts total.
+- Final status split: 6 `ready_to_publish`, 1 `draft_generated`.
 
-`C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe`
+Editor controls exercised:
 
-Installer artifacts remain present under:
+- Edited story title.
+- Edited article body.
+- Saved draft.
+- Ran press-freedom/legal-risk advisor.
+- Observed non-blocking advisory warnings.
+- Held a story.
+- Approved stories for static publish.
+- Opened and confirmed Kill Story flow.
 
-`test-comms/artifacts/20260629-rerun-full-e2e-637e941/`
+Cut/kill behavior:
 
-## What Was Not Completed
+- `Kill Story` opened a confirmation dialog and confirmation reported `Story status updated to 'killed'.`
+- Later final DB state showed the previously killed story as `ready_to_publish` and included in publish output. This is unexpected and should be treated as a product finding.
 
-The following directive-required steps were not completed in this continuation run:
+## Publishing
 
-- Reopen and operate The Civic Desk through the UI
-- Verify already-drafted lead behavior through the UI
-- Verify the direct `Back to Queue` button at 1280x720
-- Draft additional leads until at least 5 drafts exist
-- Exercise writer/editor controls
-- Compile/publish preview output
-- Export static output and ZIP
-- Publish anonymously to here.now
-- Verify the here.now URL returns HTTP 200
+Compile/export output folder:
 
-## Blocker
+`test-comms/artifacts/20260629-full-e2e-continuation-637e941/publication-output/site/`
 
-Blocker: tester automation environment cannot currently control Windows apps.
+ZIP package:
 
-Exact error:
+`test-comms/artifacts/20260629-full-e2e-continuation-637e941/publication-output/site/site-package.zip`
 
-```text
-Computer Use native pipe is unavailable: Error: failed to connect native pipe: The system cannot find the file specified. (os error 2)
-```
+ZIP SHA256:
 
-Repro:
+`708A19547B345C3CA7AF989A20F91492A0FC1BD129A8E76987148BE17B7877A3`
 
-1. Load the Codex Computer Use skill from the installed plugin.
-2. Bootstrap `computer-use-client.mjs`.
-3. Call `sky.list_apps()`.
-4. Observe native pipe connection failure.
-5. Reset the Node REPL and retry bootstrap plus `sky.list_apps()`.
-6. Observe the same native pipe connection failure.
+Publish result:
 
-## Request For Coder / Operator
+- Provider: `here_now`
+- URL: `https://silent-signal-6cm6.here.now`
+- Deployment ID: `slug=silent-signal-6cm6;version=01KW91XWH68N46G5PW9Z44DP1V;created_slug=silent-signal-6cm6`
+- Article count reported by product: 6
+- Files written: 23
+- HTTP verification: 200
+- Visibility check: response contained Longmont and Civic/publication content.
 
-The product state appears ready to resume from 18 leads and 2 drafts, but this tester session cannot perform the remaining UI-driven release gate until Computer Use is available again or an alternate approved product-control harness is provided.
+Note: first anonymous here.now attempt failed with `Display name must not be empty after normalization.` Saving a here.now config with display name `Longmont Civic Desk Test` through the product command fixed the publish request, and anonymous temporary preview publishing then succeeded.
 
-Please either:
+## Quality Findings
 
-- restore/enable the Codex Computer Use native helper for this tester session, or
-- provide an explicit directive authorizing an alternate non-Computer-Use harness to drive the installed product, or
-- provide a new directive with exact manual/operator-assisted steps.
+### Major - Published output contains mojibake markers
 
-I will keep watching `test-comms/ACTIVE_DIRECTIVE.md` for the next CivicNewspaper instruction.
+The generated publication output contains garbled encoding markers:
+
+- `watch/1.html`: `â€™`, `â€`
+- `watch/3.html`: `â€™`, `â€`
+- `watch/5.html`: `â€™`, `â€`
+- `watch/6.html`: `â€™`, `â€`
+
+Evidence: `test-comms/artifacts/20260629-full-e2e-continuation-637e941/mojibake-scan.json`
+
+Impact: not ready for Scott to use as a real Longmont publication next week without editorial cleanup or an encoding fix.
+
+### Major - Kill/cut state was confusing and did not clearly exclude the story from output
+
+The UI reported a story was killed, but final DB/output evidence showed six publishable/published stories and included `watch/2.html` for the story that had been selected for kill. This needs product review because a killed story must not silently remain in the publishing pipeline.
+
+Evidence:
+
+- `kill-story-confirmed.json`
+- `final-db-state.json`
+- `publication-output/site/publish-manifest.json`
+
+### Minor - here.now anonymous publish needed manual config save
+
+The first product connector publish attempt reached here.now but sent an empty display name. Saving a here.now publisher config with a display name resolved it. The app should probably default this correctly when using anonymous preview publishing.
+
+Evidence:
+
+- `here-now-publish-result.json`
+- `here-now-publish-result-2.json`
+- `here-now-publish-result-3.json`
+
+## Artifacts
+
+Key artifacts saved under `test-comms/artifacts/20260629-full-e2e-continuation-637e941/`:
+
+- `01-resume-window.png`
+- `02-story-queue-resume.png`
+- `03-existing-draft-opened.png`
+- `04-existing-draft-top-back-to-queue.png`
+- `10-story-queue-cdp-active.png`
+- `11-final-app-state.png`
+- `workbench-dom.json`
+- `editor-control-result-2.json`
+- `kill-story-confirmed.json`
+- `compile-result.json`
+- `here-now-publish-result-3.json`
+- `here-now-http-verification.json`
+- `final-db-state.json`
+- `publication-output-files.json`
+- `mojibake-scan.json`
+- `site-package-zip-sha256.txt`
+- `publication-output/site/`
+- `publication-output/site/site-package.zip`
+
+Full artifact inventory:
+
+`test-comms/artifacts/20260629-full-e2e-continuation-637e941/artifact-file-list.txt`
+
+## Final Readiness Assessment
+
+Not ready for Scott to use for a real Longmont publication next week.
+
+The core local workflow did run end to end: resume, Local AI draft generation, editor review controls, static compile, ZIP export, and anonymous here.now publishing all completed. However, the published text contains garbled encoding markers, and the kill/cut publishing state is not trustworthy enough for release readiness.

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- SEC (GG-B1): defense-in-depth CSP for the published site. script-src 'none'
+         blocks inline and external scripts, including script-based URL navigations;
+         style-src allows the bundled stylesheet plus this template's inline style= attributes. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'">
+    <title>My Local Publication</title>
+    <meta name="description" content="Local news and community information.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="print.css" media="print">
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="feed.xml">
+    <style>:root { --accent-color: #5a1818; }</sty
