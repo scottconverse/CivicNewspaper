@@ -1,0 +1,3 @@
+Computer Use attempt: failed.
+Exact error: Computer Use native pipe is unavailable: Error: failed to connect native pipe: The system cannot find the file specified. (os error 2)
+Fallback selected: Windows-native PowerShell/.NET/Win32/UI-visible inspection per directive.

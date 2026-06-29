@@ -1,0 +1,85 @@
+{
+  "issue_id": "issue-20260629-064922-482434100",
+  "output_dir": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/artifacts/20260629-full-e2e-continuation-637e941/publication-output/site",
+  "generated_at": "2026-06-29T06:49:22.482434100+00:00",
+  "provider": "here_now",
+  "published_url": "https://oaken-bloom-z7nj.here.now",
+  "deployment_id": "slug=oaken-bloom-z7nj;version=01KW927XZK84SDSG09DGPXNW9Q;created_slug=oaken-bloom-z7nj",
+  "article_count": 6,
+  "skipped_count": 0,
+  "files_written": 23,
+  "generated_files": [
+    "styles.css",
+    "print.css",
+    "watch/5.html",
+    "watch/2.html",
+    "watch/1.html",
+    "watch/4.html",
+    "watch/3.html",
+    "watch/6.html",
+    "index.html",
+    "about.html",
+    "ethics.html",
+    "how-we-report.html",
+    "corrections.html",
+    "feed.xml",
+    "newsletter.md",
+    "substack.md",
+    "share-package.md",
+    "facebook-post.txt",
+    "subreddit-post.md",
+    "nextdoor-post.txt",
+    "short-link-blurb.txt",
+    "publish-manifest.json",
+    "site-package.zip"
+  ],
+  "index_path": "index.html",
+  "rss_path": "feed.xml",
+  "newsletter_path": "newsletter.md",
+  "substack_path": "substack.md",
+  "share_package_path": "share-package.md",
+  "facebook_post_path": "facebook-post.txt",
+  "subreddit_post_path": "subreddit-post.md",
+  "nextdoor_post_path": "nextdoor-post.txt",
+  "short_link_blurb_path": "short-link-blurb.txt",
+  "manifest_path": "publish-manifest.json",
+  "zip_path": "site-package.zip",
+  "articles": [
+    {
+      "title": "Draft: Vision Zero Safety Projects: The city is actively working on Vision Zero projects to improve transportation safety, engaging citizens and stakeholders in these initiatives.",
+      "format": "watch",
+      "relative_path": "watch/5.html",
+      "updated_at": "2026-06-29T06:43:42.003704600+00:00"
+    },
+    {
+      "title": "Draft: New Public Meeting Portal Launched: Longmont City Council and advisory board agendas are now published on a new public meeting portal, making it easier for residents to access information about upcoming meetings.",
+      "format": "watch",
+      "relative_path": "watch/2.html",
+      "updated_at": "2026-06-29T06:42:14.684129100+00:00"
+    },
+    {
+      "title": "Draft: Youth Center Programs in Longmont: The city is committed to supporting youth development through the Youth Center, which provides resources and activities for families and children.",
+      "format": "watch",
+      "relative_path": "watch/1.html",
+      "updated_at": "2026-06-29T06:40:18.984521200+00:00"
+    },
+    {
+      "title": "Draft: Sustainable Business Program: The city offers a Sustainable Business Program to promote environmental stewardship, economic vitality, and social equity among local businesses.",
+      "format": "watch",
+      "relative_path": "watch/4.html",
+      "updated_at": "2026-06-29T06:40:09.262594600+00:00"
+    },
+    {
+      "title": "Draft: Longmont Invites Applications for Official City Flag Design: The City of Longmont is seeking public input through an application process aimed at designing a new official city flag, fostering community engagement and pride.",
+      "format": "watch",
+      "relative_path": "watch/3.html",
+      "updated_at": "2026-06-29T06:39:40.541113+00:00"
+    },
+    {
+      "title": "Draft: City Council Meetings and Public Engagement: Residents can have their voices heard at the Public Invited to be Heard segment of City Council meetings, where staff often prepares ordinances based on citizen input. [tester edit]",
+      "format": "watch",
+      "relative_path": "watch/6.html",
+      "updated_at": "2026-06-29T06:37:24.636918700+00:00"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+SHA256  3C6F79D14392B9279B35B05F23ACFFCCB34C4317B2B459F469CA6A8659CAE8A3  C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\artifacts\20260629-full-e2e-windows-ui-fallback-637e941\publication-output\site\site-package.zip
