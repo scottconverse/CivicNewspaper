@@ -19,9 +19,9 @@ C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms
 
 Run this directive now:
 
-test-comms/directives/20260629-rerun-full-e2e-workbench-return-8801b10.md
+test-comms/directives/20260629-rerun-full-e2e-queue-handoff-637e941.md
 
-This supersedes stale directive test-comms/directives/20260629-rerun-full-e2e-draft-wizard-a8c35fb.md because the completed f984006 report proved a post-draft workbench return/layout blocker that the a8c35fb artifact likely still contains.
+This supersedes stale directive test-comms/directives/20260629-rerun-full-e2e-workbench-return-8801b10.md because the completed a8c35fb report proved a Story Queue Draft handoff blocker that the 8801b10 artifact likely still contains.
 
 Product branch:
 
@@ -29,19 +29,19 @@ stable-readiness-local-gates
 
 Product commit:
 
-8801b105edf483d63ec065143eea5b20cd66e5fe
+637e941ac77361033fc22b48fac33ae1aa50a6b3
 
 Artifact folder:
 
-test-comms/artifacts/20260629-rerun-full-e2e-8801b10/
+test-comms/artifacts/20260629-rerun-full-e2e-637e941/
 
 Expected preferred NSIS SHA256:
 
-CFE61A7858523C370924F37BD7DCA2102F85C9CCF429F3FDC57C6B85C67CC506
+50F64FFCE76106BC1745766CA3AF0A50A46C5464F22BDB65220C8EDED348F67F
 
 Expected fallback MSI SHA256:
 
-BEF4C67E948AEFAE762DEDAF4362C16096D56F3C51A38BC43F8CE919923373E4
+04DCB36733FD969C4E17C763220BD9E135256524101883432FCD09E50EC1C7F1
 
 ## Current Goal
 
