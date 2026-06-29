@@ -21,7 +21,7 @@ Do not decide there are "no directives" by scanning for new filenames only. This
 
 Run this directive now:
 
-`test-comms/directives/20260628-rerun-draft-controls-b1aebf4.md`
+`test-comms/directives/20260628-rerun-draft-action-above-fold-e2ac517.md`
 
 Visibility confirmation has already been received in:
 
@@ -44,11 +44,11 @@ Product branch:
 
 Product commit:
 
-`b1aebf4`
+`e2ac517`
 
 Artifact folder:
 
-`test-comms/artifacts/20260628-draft-controls-b1aebf4/`
+`test-comms/artifacts/20260628-draft-action-above-fold-e2ac517/`
 
 ## Current Goal
 
@@ -80,10 +80,10 @@ If the app crashes, helper windows appear, Ollama disappears, model state is los
 
 Write the next report here:
 
-`test-comms/reports/20260628-draft-controls-rerun-report-b1aebf4.md`
+`test-comms/reports/20260628-draft-action-above-fold-rerun-report-e2ac517.md`
 
 Put artifacts here:
 
-`test-comms/artifacts/20260628-draft-controls-rerun-b1aebf4/`
+`test-comms/artifacts/20260628-draft-action-above-fold-rerun-e2ac517/`
 
 Commit and push with `[skip ci]`.
