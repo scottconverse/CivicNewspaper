@@ -1,0 +1,34 @@
+[
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk",
+        "Exists":  false
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+        "Exists":  false
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk",
+        "Exists":  false
+    },
+    {
+        "Path":  "C:\\Users\\civic\\.ollama",
+        "Exists":  false
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Local\\Ollama",
+        "Exists":  false
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\Ollama",
+        "Exists":  false
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Local\\Programs\\The Civic Desk",
+        "Exists":  false
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Local\\Programs\\Ollama",
+        "Exists":  false
+    }
+]
