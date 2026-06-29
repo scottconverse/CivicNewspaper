@@ -330,6 +330,61 @@ pub fn validate_publish_artifacts(output_dir: &str) -> Result<PathBuf, String> {
     Ok(path)
 }
 
+fn html_entity_decode_minimal(value: &str) -> String {
+    value
+        .replace("&amp;", "&")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"")
+        .replace("&#39;", "'")
+}
+
+fn extract_between_case_insensitive<'a>(
+    haystack: &'a str,
+    start: &str,
+    end: &str,
+) -> Option<&'a str> {
+    let lower = haystack.to_lowercase();
+    let start_pos = lower.find(&start.to_lowercase())? + start.len();
+    let end_pos = lower[start_pos..].find(&end.to_lowercase())? + start_pos;
+    Some(&haystack[start_pos..end_pos])
+}
+
+fn site_title_from_index(output_dir: &Path) -> Option<String> {
+    let html = std::fs::read_to_string(output_dir.join("index.html")).ok()?;
+    let raw_title = extract_between_case_insensitive(&html, "<title>", "</title>")
+        .or_else(|| extract_between_case_insensitive(&html, "<h1>", "</h1>"))?;
+    let title = html_entity_decode_minimal(raw_title)
+        .replace('\n', " ")
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ");
+    let title = title
+        .split(" - ")
+        .last()
+        .unwrap_or(&title)
+        .trim()
+        .to_string();
+    if title.is_empty() {
+        None
+    } else {
+        Some(title)
+    }
+}
+
+fn herenow_display_name(config: &PublisherConfig, output_dir: &Path) -> String {
+    let configured = config.display_name.trim();
+    let generic = configured.is_empty()
+        || matches!(
+            configured.to_lowercase().as_str(),
+            "here_now" | "here now" | "here.now" | "site" | "default" | "publisher"
+        );
+    if !generic {
+        return configured.to_string();
+    }
+    site_title_from_index(output_dir).unwrap_or_else(|| "Civic Newspaper preview".to_string())
+}
+
 fn fallback_url(
     config: &PublisherConfig,
     request: &PublisherPublishRequest,
@@ -544,7 +599,8 @@ async fn publish_herenow(
         file_bytes.insert(relative_path, bytes);
     }
 
-    let display_name = Some(config.display_name.clone()).filter(|value| !value.trim().is_empty());
+    let display_name = Some(herenow_display_name(config, &output_dir))
+        .filter(|value| !value.trim().is_empty());
     let display_description = config
         .project_hint
         .clone()
@@ -1529,4 +1585,65 @@ pub fn sanitize_config(config: PublisherConfigInput) -> Result<PublisherConfig, 
         username: clean_optional(config.username),
         has_credential: has_provider_credential(provider.as_str()),
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn herenow_uses_compiled_site_title_for_generic_display_name() {
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::write(
+            dir.path().join("index.html"),
+            "<!doctype html><html><head><title>Home - Longmont Cleanroom Test</title></head><body><h1>Ignored</h1></body></html>",
+        )
+        .unwrap();
+        let config = PublisherConfig {
+            provider: PublisherProvider::HereNow.as_str().to_string(),
+            display_name: "site".to_string(),
+            site_url: None,
+            project_hint: None,
+            site_id: None,
+            account_id: None,
+            repo: None,
+            branch: None,
+            path_prefix: None,
+            username: None,
+            has_credential: false,
+        };
+
+        assert_eq!(
+            herenow_display_name(&config, dir.path()),
+            "Longmont Cleanroom Test"
+        );
+    }
+
+    #[test]
+    fn herenow_keeps_explicit_non_generic_display_name() {
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::write(
+            dir.path().join("index.html"),
+            "<title>Home - Longmont Cleanroom Test</title>",
+        )
+        .unwrap();
+        let config = PublisherConfig {
+            provider: PublisherProvider::HereNow.as_str().to_string(),
+            display_name: "Publisher Chosen Name".to_string(),
+            site_url: None,
+            project_hint: None,
+            site_id: None,
+            account_id: None,
+            repo: None,
+            branch: None,
+            path_prefix: None,
+            username: None,
+            has_credential: false,
+        };
+
+        assert_eq!(
+            herenow_display_name(&config, dir.path()),
+            "Publisher Chosen Name"
+        );
+    }
 }

@@ -2898,7 +2898,10 @@ I should produce JSON only.
         let connector = crate::core::publisher::publisher_for("here_now").unwrap();
         let config = crate::core::publisher::PublisherConfig {
             provider: "here_now".to_string(),
-            display_name: "Civic Desk Release Smoke".to_string(),
+            // Exercise the same anonymous connector path the app uses before a
+            // saved here.now config exists: a generic connector/folder name
+            // must be replaced by the compiled publication title.
+            display_name: "site".to_string(),
             site_url: None,
             project_hint: Some("Temporary release-smoke preview from CivicNewspaper.".to_string()),
             site_id: None,
