@@ -2817,10 +2817,35 @@ tr:hover td {
 
 #workbench-editor-panel {
   max-width: 1180px;
+  min-width: 0;
+  overflow-x: hidden;
 }
 
 #workbench-editor-panel .page-header {
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px 16px;
   margin-bottom: 14px !important;
+}
+
+#workbench-editor-panel .page-title {
+  flex: 1 1 360px;
+  min-width: 0;
+}
+
+#workbench-editor-panel .page-title p {
+  max-width: 680px;
+}
+
+.workbench-editor-actions {
+  flex: 1 1 280px;
+  justify-content: flex-start;
+  min-width: 0;
+}
+
+.workbench-editor-actions .btn {
+  flex: 0 1 auto;
+  white-space: nowrap;
 }
 
 .workbench-container {

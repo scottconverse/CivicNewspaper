@@ -356,12 +356,12 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   if (selectedDraft) {
     return (
       <div id="workbench-editor-panel" tabIndex={-1}>
-        <div className="page-header" style={{ marginBottom: "1rem" }}>
+        <div className="page-header workbench-editor-header" style={{ marginBottom: "1rem" }}>
           <div className="page-title">
             <h1>Story Workbench</h1>
             <p>Modify drafted content, review guardrail warnings, and link source material when it helps the editor.</p>
           </div>
-          <div className="btn-group">
+          <div className="btn-group workbench-editor-actions">
             <button className="btn btn-secondary" onClick={onCloseWorkbench} id="btn-close-workbench">
               Back to Queue
             </button>
@@ -395,7 +395,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                   {!guardrailsReport.is_clean
                     ? "Review before publishing - these are warnings, not software vetoes."
                     : guardrailsReport.issues.length > 0
-                      ? "Advisory warnings â€” these do not block publishing."
+                      ? "Advisory warnings - these do not block publishing."
                       : "Pre-publication guardrails passed: no issues detected."}
                 </strong>
               </div>

@@ -241,4 +241,75 @@ describe("useApp Hook Tests", () => {
     expect(hookResult.selectedLead?.id).toBe(12);
     expect(invoke).toHaveBeenCalledWith("get_evidence", { leadId: 12 });
   });
+
+  test("generating a draft persists it and opens the editor", async () => {
+    const savedDrafts: any[] = [];
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
+      if (cmd === "get_queue") return { leads: [], drafts: savedDrafts };
+      if (cmd === "get_sources") return [];
+      if (cmd === "get_community_profile") return { city: "Longmont", state: "CO" };
+      if (cmd === "list_paired_clients") return [];
+      if (cmd === "get_system_ram") return 16;
+      if (cmd === "get_evidence") return [];
+      if (cmd === "get_setting" && args?.key === "model.selected") return "qwen2.5:7b";
+      if (cmd === "ollama_health") return { reachable: true, models: ["qwen2.5:7b"], version: "0.6.0" };
+      if (cmd === "generate_draft") return "Generated local AI draft body.";
+      if (cmd === "save_draft") {
+        const draft = { ...args.draft, id: 501 };
+        savedDrafts.push(draft);
+        return 501;
+      }
+      return null;
+    });
+
+    let hookResult: any;
+    const TestComp = () => {
+      hookResult = useApp();
+      return <span data-testid="active-tab">{hookResult.activeTab}</span>;
+    };
+
+    await act(async () => {
+      render(<TestComp />);
+    });
+
+    await act(async () => {
+      hookResult.handleOpenDraftWizard({
+        id: 77,
+        detector_name: "Public Meeting Scheduled",
+        why: "A Longmont board packet mentions a land purchase.",
+        confidence: "medium",
+        risk_level: "medium",
+        confirmation_checklist: "[]",
+        created_at: "2026-06-29T00:00:00Z",
+      });
+    });
+
+    vi.mocked(invoke).mockClear();
+
+    await act(async () => {
+      await hookResult.handleGenerateText();
+    });
+
+    expect(invoke).toHaveBeenCalledWith("get_setting", { key: "model.selected" });
+    expect(invoke).toHaveBeenCalledWith("ollama_health");
+    expect(invoke).toHaveBeenCalledWith("generate_draft", {
+      leadId: 77,
+      format: "watch",
+      systemPrompt: undefined,
+    });
+    expect(invoke).toHaveBeenCalledWith(
+      "save_draft",
+      expect.objectContaining({
+        draft: expect.objectContaining({
+          lead_id: 77,
+          content: "Generated local AI draft body.",
+          status: "draft_generated",
+        }),
+      })
+    );
+    expect(hookResult.selectedLead).toBeNull();
+    expect(hookResult.selectedDraft?.id).toBe(501);
+    expect(hookResult.selectedDraft?.content).toBe("Generated local AI draft body.");
+    expect(screen.getByTestId("active-tab")).toHaveTextContent("workbench");
+  });
 });

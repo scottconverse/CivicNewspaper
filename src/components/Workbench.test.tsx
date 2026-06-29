@@ -236,6 +236,37 @@ describe("Workbench Component Tests", () => {
     expect(screen.getByText(/Uncorroborated accusation/i)).toBeInTheDocument();
   });
 
+  test("keeps Back to Queue in the workbench action group and clickable", () => {
+    const onCloseWorkbench = vi.fn();
+
+    renderEditor({ onCloseWorkbench });
+
+    const actions = document.querySelector(".workbench-editor-actions");
+    const backButton = screen.getByRole("button", { name: /Back to Queue/i });
+
+    expect(actions).toContainElement(backButton);
+    fireEvent.click(backButton);
+    expect(onCloseWorkbench).toHaveBeenCalledTimes(1);
+  });
+
+  test("renders advisory warning copy without mojibake", () => {
+    const mockReport: GuardrailsReport = {
+      is_clean: true,
+      issues: [
+        {
+          category: "citation_gap",
+          message: "Needs one more source.",
+          severity: "warning",
+        },
+      ],
+    };
+
+    renderEditor({ guardrailsReport: mockReport });
+
+    expect(screen.getByText("Advisory warnings - these do not block publishing.")).toBeInTheDocument();
+    expect(screen.queryByText(/Ã|â/)).not.toBeInTheDocument();
+  });
+
   test("rewrite opens a diff modal instead of overwriting the draft in place", async () => {
     vi.mocked(plainLanguageRewrite).mockResolvedValue("Plain simple text\nsecond line");
     const onUpdateDraftContent = vi.fn();
