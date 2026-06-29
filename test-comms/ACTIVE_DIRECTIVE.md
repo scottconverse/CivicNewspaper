@@ -19,9 +19,15 @@ C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms
 
 Run this directive now:
 
+test-comms/directives/20260629-full-cleanwipe-longmont-4f0b09d.md
+
+This starts the full clean-wipe end-to-end Longmont publication test after the focused 59eb271 mojibake/output verification passed. It uses commit `4f0b09d9099ca5426c6e75ef36f962906634811a`, which strips legacy `Draft:` working-title prefixes from public publication output and keeps onboarding starter identity neutral instead of inventing city mastheads.
+
+Supersedes:
+
 test-comms/directives/20260629-full-cleanwipe-longmont-c3db2ac.md
 
-This starts the full clean-wipe end-to-end Longmont publication test after the focused 59eb271 mojibake/output verification passed. It uses commit `c3db2aca6166787e6fb74daf8e1f91c8d8e3dbbb`, which also strips legacy `Draft:` working-title prefixes from public publication output.
+Reason: the coder found an adjacent major issue before the tester finished the c3db2ac run. Onboarding starter profiles could still create invented publication names such as Longmont Civic Desk, which would poison the clean-run output.
 
 Product branch:
 
@@ -29,19 +35,19 @@ stable-readiness-local-gates
 
 Product commit:
 
-c3db2aca6166787e6fb74daf8e1f91c8d8e3dbbb
+4f0b09d9099ca5426c6e75ef36f962906634811a
 
 Artifact folder:
 
-test-comms/artifacts/20260629-full-cleanwipe-longmont-c3db2ac/
+test-comms/artifacts/20260629-full-cleanwipe-longmont-4f0b09d/
 
 Expected preferred NSIS SHA256:
 
-CDA5B555107980A9BC3C9D07D59EFA0A429F5F26A9AB197BB5FB6CC25A7BC0E5
+7B1A15005679678E1E3E99861D83F4B2BC0741266758C0EEA1898AB56D745CA0
 
 Expected fallback MSI SHA256:
 
-4C4543DCE006112775AC6A3DCBCF915454BE896D20E3266737583461FC2E5C6C
+5EA52BA952052E600C3736171365C328289A10E87A720180EDD7930D8217F871
 
 ## Current Goal
 
