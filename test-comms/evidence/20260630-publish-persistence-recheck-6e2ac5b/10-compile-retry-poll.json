@@ -1,0 +1,34 @@
+[
+  {
+    "i": 0,
+    "utc": "2026-06-30T16:24:14.432Z",
+    "text": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nCompiling HTML, CSS, and RSS templates to static site at: C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default...\nDismiss\nPublishing\n\nPublish instantly with here.now. Use GitHub Pages if you want a public archive in your own repository.\n\nPublic site identity review\n\nReview this before compile. The app publishes only the identity and policy copy you choose.\n\nEdit identity\nPublication\nAttempt Nine Longmont Ledger\nTagline\nLocal news and community information.\nPublisher type\nSingle person\nLayout\nclassic / #5a1818\nLogo\nText masthead\nFooter note\nBlank\nAdvisor\nOn\nFooter/legal note is blank; that is allowed, but nothing will be invented for you.\nCompile your gazette\nOutput folder\nBrowse\nCompile approved stories\npending\nPreview local website\npending\nExport hosting package\npending\nPublish to a host\npending\nShare with residents\npending\nCompiling...\nReady for final compile\n\nClick Compile site to write the static website files to the output folder.\n\nOpen folder\nReset\nSubscriber list\n\n0 active subscribers stored locally.\n\nEmail\nName\nAdd\nImport CSV\nExport CSV\n\nNo subscribers yet.\n\nNext step: publish instantly with here.now. Use GitHub Pages for a durable public archive, and use the newsletter and share package to tell residents where to read it.\n\nPublish history\nISSUE\nPROVIDER\nARTICLES\nGENERATED\nissue-20260630-155538-746222500\nhere now\n2\n6/30/2026, 9:55:38 AM",
+    "process": {
+      "ProcessName": "civicnews",
+      "Id": 7336,
+      "StartTime": "/Date(1782836330034)/",
+      "Path": "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe"
+    },
+    "debug": {
+      "ok": true,
+      "status": 200,
+      "body": "[ {\r\n   \"description\": \"\",\r\n   \"devtoolsFrontendUrl\": \"https://aka.ms/docs-landing-page/serve_rev/@d8414318246f5132427f455636044b6f79c4e03f/inspector.html?ws=127.0.0.1:9333/devtools/page/77B72475F5E2E83BCC3320FC04E4233A\",\r\n   \"faviconUrl\": \"http://tauri.localhost/favicon.svg\",\r\n   \"id\": \"77B72475F5E2E83BCC3320FC04E4233A\",\r\n   \"title\": \"CivicNews Dashboard\",\r\n   \"type\": \"page\",\r\n   \"url\": \"http://tauri.localhost/\",\r\n   \"webSocketDebuggerUrl\": \"ws://127.0.0.1:9333/devtools/page/77B72475F5E2E83BCC3320FC04E4233A\"\r\n} ]\r\n"
+    }
+  },
+  {
+    "i": 1,
+    "utc": "2026-06-30T16:24:16.674Z",
+    "text": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nStatic site compiled: 2 article(s), 19 file(s), ZIP package ready.\nDismiss\nPublishing\n\nPublish instantly with here.now. Use GitHub Pages if you want a public archive in your own repository.\n\nPublic site identity review\n\nReview this before compile. The app publishes only the identity and policy copy you choose.\n\nEdit identity\nPublication\nAttempt Nine Longmont Ledger\nTagline\nLocal news and community information.\nPublisher type\nSingle person\nLayout\nclassic / #5a1818\nLogo\nText masthead\nFooter note\nBlank\nAdvisor\nOn\nFooter/legal note is blank; that is allowed, but nothing will be invented for you.\nCompile your gazette\nOutput folder\nBrowse\nCompile approved stories\nHTML\nPreview local website\nindex.html\nExport hosting package\nZIP\nPublish to a host\npending\nShare with residents\nposts\nCompile site\nLast compiled\n\nGenerated locally. Publish instantly with here.now, or use GitHub Pages for a repository-backed archive.\n\nOpen folder\nReset\nCompile receipt\n2\narticles\n19\nfiles\n0\nskipped\nZIP package\nNewsletter\nSubstack draft\nShare package\nFacebook copy\nSubreddit post\nNextdoor copy\nRSS\nNewsletter and Substack\n\nUse the generated draft as the source of truth, then save the public URL after posting.\n\nOpen Substack editor\nCopy headline\nCopy deck\nCopy post body\nExport issue email\nSubscriber list\n\n0 active subscribers stored locally.\n\nEmail\nName\nAdd\nImport CSV\nExport CSV\n\nNo subscribers yet.\n\nNext step: publish instantly with here.now. Use GitHub Pages for a durable public archive, and use the newsletter and share package to tell residents where to read it.\n\nPublisher connector\n\nPublish instantly with here.now. Use a free API key for permanent civic newspaper sites, or publish a 24-hour preview without an account.\n\nAccount setup: Optional. Publish a 24-hour preview with no account, or save a here.now API key for permanent sites.\n\nTarget: Leave the slug blank to ",
+    "process": {
+      "ProcessName": "civicnews",
+      "Id": 7336,
+      "StartTime": "/Date(1782836330034)/",
+      "Path": "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe"
+    },
+    "debug": {
+      "ok": true,
+      "status": 200,
+      "body": "[ {\r\n   \"description\": \"\",\r\n   \"devtoolsFrontendUrl\": \"https://aka.ms/docs-landing-page/serve_rev/@d8414318246f5132427f455636044b6f79c4e03f/inspector.html?ws=127.0.0.1:9333/devtools/page/77B72475F5E2E83BCC3320FC04E4233A\",\r\n   \"faviconUrl\": \"http://tauri.localhost/favicon.svg\",\r\n   \"id\": \"77B72475F5E2E83BCC3320FC04E4233A\",\r\n   \"title\": \"CivicNews Dashboard\",\r\n   \"type\": \"page\",\r\n   \"url\": \"http://tauri.localhost/\",\r\n   \"webSocketDebuggerUrl\": \"ws://127.0.0.1:9333/devtools/page/77B72475F5E2E83BCC3320FC04E4233A\"\r\n} ]\r\n"
+    }
+  }
+]

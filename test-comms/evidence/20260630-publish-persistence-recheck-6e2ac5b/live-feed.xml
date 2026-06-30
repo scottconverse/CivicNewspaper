@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Attempt Nine Longmont Ledger</title>
+    <link>index.html</link>
+    <description>Local news and community information.</description>
+    <language>en-us</language>
+    <pubDate>Tue, 30 Jun 2026 16:24:14 +0000</pubDate>
+    <lastBuildDate>Tue, 30 Jun 2026 16:24:14 +0000</lastBuildDate>
+    <item>
+      <title>Longmont Youth Center Lists Summer Programs</title>
+      <link>briefs/2.html</link>
+      <guid>briefs/2</guid>
+      <pubDate>2026-06-30T15:52:26.219346+00:00</pubDate>
+      <description>Longmont Youth Center Lists Summer Programs</description>
+    </item>
+    <item>
+      <title>Longmont City Council Meeting Rescheduled for July 1</title>
+      <link>briefs/1.html</link>
+      <guid>briefs/1</guid>
+      <pubDate>2026-06-30T15:51:04.985759100+00:00</pubDate>
+      <description>Longmont City Council Meeting Rescheduled for July 1</description>
+    </item>
+
+  </channel>
+</rss>

@@ -1,0 +1,14 @@
+{
+  "process": {
+    "ProcessName": "civicnews",
+    "Id": 7336,
+    "StartTime": "/Date(1782836330034)/",
+    "Path": "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe"
+  },
+  "debug": {
+    "ok": true,
+    "status": 200,
+    "body": "[ {\r\n   \"description\": \"\",\r\n   \"devtoolsFrontendUrl\": \"https://aka.ms/docs-landing-page/serve_rev/@d8414318246f5132427f455636044b6f79c4e03f/inspector.html?ws=127.0.0.1:9333/devtools/page/77B72475F5E2E83BCC3320FC04E4233A\",\r\n   \"faviconUrl\": \"http://tauri.localhost/favicon.svg\",\r\n   \"id\": \"77B72475F5E2E83BCC3320FC04E4233A\",\r\n   \"title\": \"CivicNews Dashboard\",\r\n   \"type\": \"page\",\r\n   \"url\": \"http://tauri.localhost/\",\r\n   \"webSocketDebuggerUrl\": \"ws://127.0.0.1:9333/devtools/page/77B72475F5E2E83BCC3320FC04E4233A\"\r\n} ]\r\n"
+  },
+  "utc": "2026-06-30T16:19:32.484Z"
+}
