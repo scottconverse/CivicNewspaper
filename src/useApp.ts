@@ -347,40 +347,77 @@ export function useApp() {
     },
   ];
 
+  const addStarterLongmontSources = async () => {
+    let imported = 0;
+    for (const source of starterLongmontSources) {
+      try {
+        await addSource(source.name, source.url, source.type, source.tier);
+        imported++;
+      } catch (err) {
+        console.warn("Starter source import skipped:", source.url, err);
+      }
+    }
+    return imported;
+  };
+
   const routeAfterRecoveredSetup = async () => {
     try {
       const recovered = await getSetting("setup.recovered_input");
-      if (recovered !== "true") return;
-      await setSetting("setup.recovered_input", "running_source_intake");
+      const firstRunIntake = await getSetting("setup.first_run_intake");
+      if (recovered !== "true" && firstRunIntake !== "true") return;
+
+      const profile = await getCommunityProfile();
+      const city = (profile.city || "").trim();
+      const state = (profile.state || "").trim().toUpperCase();
+      const isRecovered = recovered === "true";
+      const isLongmont = city.toLowerCase() === "longmont" && state === "CO";
+
+      if (isRecovered) {
+        await setSetting("setup.recovered_input", "running_source_intake");
+      } else {
+        await setSetting("setup.first_run_intake", "running_source_intake");
+      }
       setActiveTab("sources");
-      setStatusMessage("Setup had to recover from missing input events, so The Civic Desk is adding starter Longmont sources and running the first scan automatically.");
+      setStatusMessage(
+        isRecovered
+          ? "Setup had to recover from missing input events, so The Civic Desk is adding starter Longmont sources and running the first scan automatically."
+          : "Adding starter Longmont sources for the first run."
+      );
       setLoading(true);
 
-      let imported = 0;
-      for (const source of starterLongmontSources) {
-        try {
-          await addSource(source.name, source.url, source.type, source.tier);
-          imported++;
-        } catch (err) {
-          console.warn("Recovered setup source import skipped:", source.url, err);
+      if (!isLongmont) {
+        if (isRecovered) {
+          await setSetting("setup.recovered_input", "consumed");
+        } else {
+          await setSetting("setup.first_run_intake", "consumed");
         }
+        setStatusMessage("Setup is complete. Use Discover for my city on Sources to add local feeds.");
+        setActiveTab("sources");
+        return;
       }
 
+      const imported = await addStarterLongmontSources();
       await loadInitialData();
-      setStatusMessage(`Added ${imported} starter Longmont source(s). Fetching records and community signals...`);
-      await ingest();
-      await loadInitialData();
-      setActiveTab("dailyScan");
-      setStatusMessage("Running the first Longmont Daily Scan automatically...");
-      const scanId = await runDailyScan("Longmont", "CO", 24);
-      setLatestScanId(scanId);
-      await setSetting("scan.latest_id", String(scanId));
-      await setSetting("setup.recovered_input", "consumed");
-      await loadInitialData();
-      setActiveTab("queue");
-      setStatusMessage(`Recovered setup completed source intake and Daily Scan ${scanId}. Open a Story Queue lead to draft the first issue.`);
+      if (isRecovered) {
+        setStatusMessage(`Added ${imported} starter Longmont source(s). Fetching records and community signals...`);
+        await ingest();
+        await loadInitialData();
+        setActiveTab("dailyScan");
+        setStatusMessage("Running the first Longmont Daily Scan automatically...");
+        const scanId = await runDailyScan("Longmont", "CO", 24);
+        setLatestScanId(scanId);
+        await setSetting("scan.latest_id", String(scanId));
+        await setSetting("setup.recovered_input", "consumed");
+        await loadInitialData();
+        setActiveTab("queue");
+        setStatusMessage(`Recovered setup completed source intake and Daily Scan ${scanId}. Open a Story Queue lead to draft the first issue.`);
+      } else {
+        await setSetting("setup.first_run_intake", "consumed");
+        setActiveTab("dailyScan");
+        setStatusMessage(`Added ${imported} starter Longmont source(s). Run Daily Scan to fetch records and build the first editor packet.`);
+      }
     } catch (err) {
-      console.error("Failed to consume recovered setup route flag", err);
+      console.error("Failed to consume first-run source intake flag", err);
       setErrorMessage(toUserMessage(err));
     } finally {
       setLoading(false);
@@ -1265,6 +1302,9 @@ export function useApp() {
     try {
       const profile = await getCommunityProfile();
       setCommunityProfile(profile);
+      if (profile.city?.trim() && profile.state?.trim()) {
+        await setSetting("setup.first_run_intake", "true");
+      }
     } catch {
       /* non-fatal */
     }

@@ -480,4 +480,49 @@ describe("useApp Hook Tests", () => {
     expect(hookResult.selectedLead).toBeNull();
     expect(hookResult.errorMessage).toContain("evidence unavailable");
   });
+
+  test("complete onboarding seeds Longmont starter sources for first run", async () => {
+    const settings = new Map<string, string | null>();
+    const addSourceCalls: any[] = [];
+
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
+      if (cmd === "is_onboarding_complete") return false;
+      if (cmd === "get_queue") return { leads: [], drafts: [] };
+      if (cmd === "get_sources") return [];
+      if (cmd === "get_community_profile") return { city: "Longmont", state: "CO" };
+      if (cmd === "list_paired_clients") return [];
+      if (cmd === "get_system_ram") return 16;
+      if (cmd === "ollama_health") return { reachable: true, models: ["qwen2.5:7b"], version: "0.6.0" };
+      if (cmd === "get_setting") return settings.get(args.key) ?? null;
+      if (cmd === "set_setting") {
+        settings.set(args.key, args.value);
+        return null;
+      }
+      if (cmd === "add_source") {
+        addSourceCalls.push(args);
+        return addSourceCalls.length;
+      }
+      return null;
+    });
+
+    let hookResult: any;
+    const TestComp = () => {
+      hookResult = useApp();
+      return <span data-testid="active-tab">{hookResult.activeTab}</span>;
+    };
+
+    await act(async () => {
+      render(<TestComp />);
+    });
+
+    await act(async () => {
+      await hookResult.completeOnboarding();
+    });
+
+    expect(settings.get("setup.first_run_intake")).toBe("consumed");
+    expect(addSourceCalls).toHaveLength(6);
+    expect(addSourceCalls.map(call => call.name)).toContain("Longmont Public Information");
+    expect(screen.getByTestId("active-tab")).toHaveTextContent("dailyScan");
+    expect(hookResult.statusMessage).toContain("starter Longmont source");
+  });
 });
