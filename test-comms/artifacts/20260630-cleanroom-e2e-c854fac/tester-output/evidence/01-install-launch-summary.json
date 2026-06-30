@@ -1,0 +1,17 @@
+{
+    "startedUtc":  "2026-06-30T11:07:46.0208002Z",
+    "installer":  "test-comms\\artifacts\\20260630-cleanroom-e2e-c854fac\\The Civic Desk_0.3.0_x64-setup.exe",
+    "sha256":  "22B8BFA79655A65B2310196A262166AF018850FE61C5A6B671F24DE80DA0A105",
+    "size":  5621437,
+    "exitCode":  0,
+    "exeExists":  true,
+    "launchPid":  4768,
+    "processes":  [
+                      {
+                          "ProcessName":  "civicnews",
+                          "Id":  4768,
+                          "StartTime":  "\/Date(1782817677911)\/",
+                          "Path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe"
+                      }
+                  ]
+}

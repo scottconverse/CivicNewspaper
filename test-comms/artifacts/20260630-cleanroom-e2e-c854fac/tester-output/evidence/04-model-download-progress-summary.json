@@ -1,0 +1,35 @@
+{
+  "samples": [
+    {
+      "i": 0,
+      "utc": "2026-06-30T11:09:31.590Z",
+      "pct": "54.9",
+      "excerpt": "The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.\nAI Setup\nStep 3 of 5\nDownload AI Model\n\nDownload the local AI model. One-time setup - needs an internet connection.\n\nAI Model: qwen2.5:7b (Recommended)\n\nCivicNews will download this local AI model now - a one-time download of about ~4.7 GB that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.\n\nIt is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.\n\nInitializing download...\n54.9%\nCancel Download\nBack\nSkip for now\nNext"
+    },
+    {
+      "i": 1,
+      "utc": "2026-06-30T11:09:41.664Z",
+      "pct": "77.3",
+      "excerpt": "The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.\nAI Setup\nStep 3 of 5\nDownload AI Model\n\nDownload the local AI model. One-time setup - needs an internet connection.\n\nAI Model: qwen2.5:7b (Recommended)\n\nCivicNews will download this local AI model now - a one-time download of about ~4.7 GB that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.\n\nIt is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.\n\nInitializing download...\n77.3%\nCancel Download\nBack\nSkip for now\nNext"
+    },
+    {
+      "i": 2,
+      "utc": "2026-06-30T11:09:51.670Z",
+      "pct": "99.7",
+      "excerpt": "The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.\nAI Setup\nStep 3 of 5\nDownload AI Model\n\nDownload the local AI model. One-time setup - needs an internet connection.\n\nAI Model: qwen2.5:7b (Recommended)\n\nCivicNews will download this local AI model now - a one-time download of about ~4.7 GB that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.\n\nIt is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.\n\nInitializing download...\n99.7%\nCancel Download\nBack\nSkip for now\nNext"
+    },
+    {
+      "i": 3,
+      "utc": "2026-06-30T11:10:01.681Z",
+      "pct": "100.0",
+      "excerpt": "The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.\nAI Setup\nStep 3 of 5\nDownload AI Model\n\nDownload the local AI model. One-time setup - needs an internet connection.\n\nAI Model: qwen2.5:7b (Recommended)\n\nCivicNews will download this local AI model now - a one-time download of about ~4.7 GB that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.\n\nIt is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.\n\nVerifying model integrity...\n100.0%\nCancel Download\nBack\nSkip for now\nNext"
+    },
+    {
+      "i": 4,
+      "utc": "2026-06-30T11:10:11.697Z",
+      "pct": null,
+      "excerpt": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nAdded 6 starter Longmont source(s). Fetching records and community signals...\nDismiss\nSources\n\nThe municipal feeds and record portals The Civic Desk watches for you.\n\nDiscover for my city\nBulk import\nSOURCE\tTIER\tLAST CHECK\t\n\nLongmont Agenda Management Portal\nPrimary\nOnline\nhttps://longmontcolorado.gov/city-clerk/agenda-management-portal/\n\tPrimary\tNever\t\n\n\nLongmont City Council Meetings\nPrimary\nOnline\nhttps://longmontcolorado.gov/government/city-council-meetings/\n\tPrimary\tNever\t\n\n\nLongmont Public Information\nOfficial\nOnline\nhttps://longmontcolorado.gov/public-information/\n\tPrimary\tNever\t\n\n\nPublic Notice Colorado\nPrimary\nOnline\nhttps://www.publicnoticecolorado.com/\n\tPrimary\tNever\t\n\n\nLongmont subreddit\nWatch\nOnline\nhttps://www.reddit.com/r/Longmont/\n\tWatch\tNever\t\n\n\nLongmont Colorado subreddit\nWatch\nOnline\nhttps://www.reddit.com/r/LongmontColorado/\n\tWatch\tNe"
+    }
+  ],
+  "final": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nAdded 6 starter Longmont source(s). Fetching records and community signals...\nDismiss\nSources\n\nThe municipal feeds and record portals The Civic Desk watches for you.\n\nDiscover for my city\nBulk import\nSOURCE\tTIER\tLAST CHECK\t\n\nLongmont Agenda Management Portal\nPrimary\nOnline\nhttps://longmontcolorado.gov/city-clerk/agenda-management-portal/\n\tPrimary\tNever\t\n\n\nLongmont City Council Meetings\nPrimary\nOnline\nhttps://longmontcolorado.gov/government/city-council-meetings/\n\tPrimary\tNever\t\n\n\nLongmont Public Information\nOfficial\nOnline\nhttps://longmontcolorado.gov/public-information/\n\tPrimary\tNever\t\n\n\nPublic Notice Colorado\nPrimary\nOnline\nhttps://www.publicnoticecolorado.com/\n\tPrimary\tNever\t\n\n\nLongmont subreddit\nWatch\nOnline\nhttps://www.reddit.com/r/Longmont/\n\tWatch\tNever\t\n\n\nLongmont Colorado subreddit\nWatch\nOnline\nhttps://www.reddit.com/r/LongmontColorado/\n\tWatch\tNever\t\nAdd a source\n\nPaste a city webpage or RSS feed. The Civic Desk figures out the rest.\n\nName\nURL\nType\nAuto-detect\nRSS\nHTML\nMedia\nTier\nPrimary\nSecondary\nWatch\nAdd Source"
+}

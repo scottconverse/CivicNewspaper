@@ -1,0 +1,72 @@
+[
+  {
+    "i": 0,
+    "button": "Draft anyway",
+    "context": "Risk: med\nBackground\nBackground\ndaily_scan\nCity Council Meeting Livestreams Available: Residents can watch live or recorded City Council meetings via the City’s Agenda Management Portal, Longmont Public Media’s website, or YouTube. This provides transparency and allows community members to stay informed about local governance. Editor context: This information is important for ensuring public access to government proceedings and maintaining accountability in local governance. Suggested treatment: background. Newsworthiness: 10/20 (immediacy 2, impact 3, conflict 1, novelty 4). Why now: No current change found. Suggested next step: Verify the accessibility of livestream links and confirm if there are any upcoming significant discussions scheduled for future meetings. What would make this publishable: Live stream availability, recorded session links, and specific agenda items for upcoming meetings.\n\nNovelty 4/5. No current change found\n\nConfidence: med\nDraft anyway"
+  },
+  {
+    "i": 1,
+    "button": "Draft anyway",
+    "context": "Risk: low\nBackground\nBackground\ndaily_scan\nPublic Invited to Be Heard Segment at City Council Meetings: Residents can sign up to speak during the Public Invited to Be Heard segment of City Council meetings, which are held on the first Monday of each month. This allows community members to voice concerns or ideas directly to elected officials. Editor context: This information could be valuable for local civic reporters who want to cover public engagement and ensure residents have a platform to share their opinions during meetings. Suggested treatment: background. Newsworthiness: 10/20 (immediacy 2, impact 3, conflict 1, novelty 4). Why now: No current change found. Suggested next step: Contact the City Clerk's Office for more details on upcoming meetings and sign-up procedures. What would make this publishable: Details on upcoming meetings, specific sign-up procedures, and any feedback from residents who have participated in the segment.\n\nNovelty 4/5. No current change found\n\nConfidence: low\nDraft anyway"
+  },
+  {
+    "i": 2,
+    "button": "Draft anyway",
+    "context": "Risk: med\nBrief\nBackground\ndaily_scan\nCity Council Meeting Rules for Public Participation: Residents need to sign up before speaking at City Council meetings, with a limit of 3 minutes per speaker. Editor context: This provides clear guidelines for public participation in council meetings, impacting community engagement and access to the decision-making process. Suggested treatment: brief. Newsworthiness: 7/20 (immediacy 2, impact 3, conflict 1, novelty 1). Why now: No current change found, but this rule is important for public participation. Suggested next step: Create a brief article explaining the speaking rules and their importance for community members. What would make this publishable: No specific missing fact, but a list of recent speakers and their topics would add value.\n\nNovelty 1/5. No current change found, but this rule is important for public participation.\n\nConfidence: med\nDraft anyway"
+  },
+  {
+    "i": 3,
+    "button": "Draft anyway",
+    "context": "Risk: low\nBackground\nBackground\nSeen before\ndaily_scan\nOvernight Closure of Hover Street/CO 119 Intersection: The city is scheduling a temporary overnight closure of the intersection for June 28, impacting local traffic and commuters. Editor context: This impacts daily traffic flow and public safety during construction work on a key intersection. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 4, impact 3, conflict 1, novelty 2). Why now: A scheduled overnight closure for June 28 is needed for construction work at an intersection. Beat memory: similar topic 'Longmont Museum Events' was first seen 2026-06-30T11:11:24.070735900+00:00, last seen 2026-06-30T11:11:24.070735900+00:00, and has appeared 1 previous time(s). Treat this as recurring/background unless the source shows a new vote, deadline, dollar amount, filing, outage, meeting item, or public impact. Suggested next step: Verify the dates, duration, and specific impacts on traffic patterns before publishing. What would make this publishable: Details on the specific impacts, alternative routes, and any potential detours. Compare against beat memory before drafting; write a story only if there is a new reportable fa"
+  },
+  {
+    "i": 4,
+    "button": "Draft",
+    "context": "Risk: low\nBrief\nReady to draft\ndaily_scan\nLongmont Museum Events: Updates on events, exhibits, and programs at the Longmont Museum. Editor context: Provides current information about community events and cultural activities. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 2, impact 3, conflict 1, novelty 4). Why now: New events and exhibit information are available. Suggested next step: Check for upcoming events or new exhibits to feature in a brief article. What would make this publishable: Detailed descriptions of new exhibits or events.\n\nNovelty 4/5. New events and exhibit information are available.\n\nConfidence: low\nDraft"
+  },
+  {
+    "i": 5,
+    "button": "Draft anyway",
+    "context": "Risk: low\nBackground\nBackground\ndaily_scan\nList of Colorado Cities: A comprehensive list of cities in Colorado, including Longmont. Editor context: While not specific to Longmont, this list can be useful for context when researching other areas related to the city. Suggested treatment: background. Newsworthiness: 5/20 (immediacy 1, impact 1, conflict 1, novelty 2). Why now: no current change found. Suggested next step: No immediate action needed; use as reference if relevant to another story. What would make this publishable: Specific information about Longmont not present.\n\nNovelty 2/5. no current change found\n\nConfidence: low\nDraft anyway"
+  },
+  {
+    "i": 6,
+    "button": "Draft",
+    "context": "Risk: low\nVerification\nNeeds verification\nDecision / Vote\nVOTING SIGNAL: Found vote/decision keywords ([\"approved\", \"approved\", \"Approved\", \"passed\", \"Motion\", \"motion\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.\n\nNovelty 2/5. Keyword detector found decision language; reporter must confirm the actual current vote, date, and impact.\n\nConfidence: medium\nDraft"
+  },
+  {
+    "i": 7,
+    "button": "Draft",
+    "context": "Risk: low\nWatch\nWatch\nPublic Meeting Scheduled\nMEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.\n\nNovelty 2/5. Meeting language found; verify a specific upcoming agenda, date, or action before drafting as news.\n\nConfidence: medium\nDraft"
+  },
+  {
+    "i": 8,
+    "button": "Draft",
+    "context": "Risk: low\nVerification\nNeeds verification\nDecision / Vote\nVOTING SIGNAL: Found vote/decision keywords ([\"passed\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.\n\nNovelty 2/5. Keyword detector found decision language; reporter must confirm the actual current vote, date, and impact.\n\nConfidence: medium\nDraft"
+  },
+  {
+    "i": 9,
+    "button": "Draft",
+    "context": "Risk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft"
+  },
+  {
+    "i": 10,
+    "button": "Draft",
+    "context": "Risk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont City Council Meetings' was fetched today (https://longmontcolorado.gov/government/city-council-meetings/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft"
+  },
+  {
+    "i": 11,
+    "button": "Draft",
+    "context": "Risk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Public Notice Colorado' was fetched today (https://www.publicnoticecolorado.com/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft"
+  },
+  {
+    "i": 12,
+    "button": "Draft",
+    "context": "Risk: low\nWatch\nWatch\nPublic Meeting Scheduled\nMEETING SCHEDULED: Meeting notification detected in 'Longmont Agenda Management Portal' record. Public attendance or comment may be permitted.\n\nNovelty 2/5. Meeting language found; verify a specific upcoming agenda, date, or action before drafting as news.\n\nConfidence: medium\nDraft"
+  },
+  {
+    "i": 13,
+    "button": "Draft",
+    "context": "Risk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont Agenda Management Portal' was fetched today (https://longmontcolorado.gov/city-clerk/agenda-management-portal/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft"
+  }
+]

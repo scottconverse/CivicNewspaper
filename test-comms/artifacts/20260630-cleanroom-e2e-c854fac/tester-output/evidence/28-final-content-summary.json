@@ -1,0 +1,131 @@
+{
+  "manifestArticleCount": 6,
+  "filesWritten": 23,
+  "hereNowUrl": "https://ancient-hearth-p3sb.here.now",
+  "articles": [
+    {
+      "title": "City Council Provides Guidance on Engaging in Lawmaking Processes",
+      "path": "watch/6.html",
+      "format": "watch"
+    },
+    {
+      "title": "City of Longmont Updates Public Information Page",
+      "path": "watch/5.html",
+      "format": "watch"
+    },
+    {
+      "title": "Longmont City Council Voting Process and Public Participation",
+      "path": "watch/4.html",
+      "format": "watch"
+    },
+    {
+      "title": "Upcoming City Council Meeting Allows Public Participation",
+      "path": "watch/3.html",
+      "format": "watch"
+    },
+    {
+      "title": "City Council Voting Activity Indicated in Recent Records",
+      "path": "watch/2.html",
+      "format": "watch"
+    },
+    {
+      "title": "Longmont Museum Offers New Exhibits and Programs",
+      "path": "watch/1.html",
+      "format": "watch"
+    }
+  ],
+  "draftResults": [
+    {
+      "i": 1,
+      "title": "Longmont Museum Offers New Exhibits and Programs",
+      "clean": true,
+      "forbidden": false,
+      "boiler": false,
+      "action": "approved",
+      "bodyStart": "Longmont Museum has exciting new events and exhibits to explore this summer [Source](evidence:20). Whether you're interested in history or looking for something fun with the family, there's plenty to see and do.\n\nThe museum will feature a new exhibit on local natural history [Source](evidence:19), showcasing the flora and fauna native to Longmont. Additionally, Discovery Days [Source](evidence:20) for early childhood visitors are scheduled throughout June and July. These interactive days offer hands-on activities and educational sessions designed to engage young minds.\n\nFor those interested in attending auditorium programs, the museum has a variety of events lined up, including lectures, wor"
+    },
+    {
+      "i": 2,
+      "title": "City Council Voting Activity Indicated in Recent Records",
+      "clean": true,
+      "forbidden": false,
+      "boiler": false,
+      "action": "approved",
+      "bodyStart": "The Longmont City Council has recently indicated approval of several ordinances and resolutions through their voting process [Source](evidence:10). Key terms such as \"approved,\" \"passed,\" and \"motion\" suggest official actions have been taken. Residents should monitor the city's official channels for updates on these decisions, particularly as they may affect local policies and procedures.\n\nFor the most current information, please visit the City of Longmont’s official website or contact the city council office directly."
+    },
+    {
+      "i": 3,
+      "title": "Upcoming City Council Meeting Allows Public Participation",
+      "clean": true,
+      "forbidden": false,
+      "boiler": false,
+      "action": "approved",
+      "bodyStart": "The Longmont City Council will hold its next meeting, offering opportunities for public participation. Residents and city employees can sign up to speak during the \"First Call – Public Invited to Be Heard\" segment starting at 6:30 p.m., with a time limit of three minutes per speaker. The meeting begins at 7:00 p.m.\n\nResidents who need assistance should contact the City Clerk’s Office at least five days in advance. Those interested can also access past meeting videos through the Agenda Management Portal or the city's YouTube channel for detailed agendas and recordings [Source](evidence:12).\n\nWhat to watch for next: Residents should prepare and sign up if they wish to participate during the pu"
+    },
+    {
+      "i": 4,
+      "title": "Longmont City Council Voting Process and Public Participation",
+      "clean": true,
+      "forbidden": false,
+      "boiler": false,
+      "action": "approved",
+      "bodyStart": "The Longmont City Council has taken an official action to pass an ordinance related to the city's legislative process [Source](evidence:12). This indicates that a decision was made during recent meetings regarding how laws are enacted in the city.\n\nResidents should stay informed about upcoming council meetings, as public participation opportunities may arise. For more details on how to participate, visit the Agenda Management Portal or contact the City Clerk's Office at 303-651-8649.\n\nWhat to watch for next: Future council meeting agendas and notices of any proposed changes to city ordinances."
+    },
+    {
+      "i": 5,
+      "title": "City of Longmont Updates Public Information Page",
+      "clean": true,
+      "forbidden": false,
+      "boiler": false,
+      "action": "approved",
+      "bodyStart": "The City of Longmont has recently updated its public information page to provide detailed insights into various city departments and their roles. This resource is designed to ensure clear and timely communication between the city government and residents, covering media relations, public announcements, and community outreach [Source](evidence:17).\n\nResidents can explore a range of topics such as press releases, city news, public records, and other essential resources to stay informed about municipal operations and events. The page also includes information on upcoming initiatives like the City of Longmont's Human Service Agency Funding applications and recent developments such as building se"
+    },
+    {
+      "i": 6,
+      "title": "City Council Provides Guidance on Engaging in Lawmaking Processes",
+      "clean": true,
+      "forbidden": false,
+      "boiler": false,
+      "action": "approved",
+      "bodyStart": "Residents interested in shaping Longmont’s laws are advised to first consult city staff or their local City Council member [Source](evidence:13). The Council often directs staff to develop ordinances based on public feedback received during the Public Invited to be Heard segment of meetings. For further guidance, contact the City Clerk's Office at 303-651-8649.\n\nWhat to watch for next: Residents can stay informed by attending upcoming city council meetings and engaging in discussions during the Public Invited to be Heard segments."
+    }
+  ],
+  "markerCounts": {},
+  "fetches": [
+    {
+      "url": "https://ancient-hearth-p3sb.here.now",
+      "status": 200,
+      "length": 4050
+    },
+    {
+      "url": "https://ancient-hearth-p3sb.here.now/watch/1.html",
+      "status": 200,
+      "length": 9519
+    },
+    {
+      "url": "https://ancient-hearth-p3sb.here.now/watch/2.html",
+      "status": 200,
+      "length": 5596
+    },
+    {
+      "url": "https://ancient-hearth-p3sb.here.now/watch/3.html",
+      "status": 200,
+      "length": 5923
+    },
+    {
+      "url": "https://ancient-hearth-p3sb.here.now/watch/4.html",
+      "status": 200,
+      "length": 5818
+    },
+    {
+      "url": "https://ancient-hearth-p3sb.here.now/watch/5.html",
+      "status": 200,
+      "length": 6074
+    },
+    {
+      "url": "https://ancient-hearth-p3sb.here.now/watch/6.html",
+      "status": 200,
+      "length": 5790
+    }
+  ]
+}

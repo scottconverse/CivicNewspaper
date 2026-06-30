@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Longmont E2E Attempt 3 Gazette</title>
+    <link>index.html</link>
+    <description>Neutral local information for Longmont residents.</description>
+    <language>en-us</language>
+    <pubDate>Tue, 30 Jun 2026 11:16:46 +0000</pubDate>
+    <lastBuildDate>Tue, 30 Jun 2026 11:16:46 +0000</lastBuildDate>
+    <item>
+      <title>City Council Provides Guidance on Engaging in Lawmaking Processes</title>
+      <link>watch/6.html</link>
+      <guid>watch/6</guid>
+      <pubDate>2026-06-30T11:16:18.435154300+00:00</pubDate>
+      <description>City Council Provides Guidance on Engaging in Lawmaking Processes</description>
+    </item>
+    <item>
+      <title>City of Longmont Updates Public Information Page</title>
+      <link>watch/5.html</link>
+      <guid>watch/5</guid>
+      <pubDate>2026-06-30T11:15:18.157210+00:00</pubDate>
+      <description>City of Longmont Updates Public Information Page</description>
+    </item>
+    <item>
+      <title>Longmont City Council Voting Process and Public Participation</title>
+      <link>watch/4.html</link>
+      <guid>watch/4</guid>
+      <pubDate>2026-06-30T11:15:03.711015600+00:00</pubDate>
+      <description>Longmont City Council Voting Process and Public Participation</description>
+    </item>
+    <item>
+      <title>Upcoming City Council Meeting Allows Public Participation</title>
+      <link>watch/3.html</link>
+      <guid>watch/3</guid>
+      <pubDate>2026-06-30T11:14:49.234047+00:00</pubDate>
+      <description>Upcoming City Council Meeting Allows Public Participation</description>
+    </item>
+    <item>
+      <title>City Council Voting Activity Indicated in Recent Records</title>
+      <link>watch/2.html</link>
+      <guid>watch/2</guid>
+      <pubDate>2026-06-30T11:14:34.757276300+00:00</pubDate>
+      <description>City Council Voting Activity Indicated in Recent Records</description>
+    </item>
+    <item>
+      <title>Longmont Museum Offers New Exhibits and Programs</title>
+      <link>watch/1.html</link>
+      <guid>watch/1</guid>
+      <pubDate>2026-06-30T11:14:25.219931100+00:00</pubDate>
+      <description>Longmont Museum Offers New Exhibits and Programs</description>
+    </item>
+
+  </channel>
+</rss>

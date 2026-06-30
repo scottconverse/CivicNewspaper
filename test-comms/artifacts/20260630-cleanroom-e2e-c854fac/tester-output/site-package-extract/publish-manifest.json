@@ -1,0 +1,85 @@
+{
+  "issue_id": "issue-20260630-111646-180031200",
+  "output_dir": "C:/Users/civic/AppData/Roaming/com.scottconverse.civicdesk/sites/default",
+  "generated_at": "2026-06-30T11:16:46.180031200+00:00",
+  "provider": "here_now",
+  "published_url": "https://ancient-hearth-p3sb.here.now",
+  "deployment_id": "slug=ancient-hearth-p3sb;version=01KWC3Y6QCVGZN2JSPEWBJ35C6;created_slug=ancient-hearth-p3sb",
+  "article_count": 6,
+  "skipped_count": 0,
+  "files_written": 23,
+  "generated_files": [
+    "styles.css",
+    "print.css",
+    "watch/6.html",
+    "watch/5.html",
+    "watch/4.html",
+    "watch/3.html",
+    "watch/2.html",
+    "watch/1.html",
+    "index.html",
+    "about.html",
+    "ethics.html",
+    "how-we-report.html",
+    "corrections.html",
+    "feed.xml",
+    "newsletter.md",
+    "substack.md",
+    "share-package.md",
+    "facebook-post.txt",
+    "subreddit-post.md",
+    "nextdoor-post.txt",
+    "short-link-blurb.txt",
+    "publish-manifest.json",
+    "site-package.zip"
+  ],
+  "index_path": "index.html",
+  "rss_path": "feed.xml",
+  "newsletter_path": "newsletter.md",
+  "substack_path": "substack.md",
+  "share_package_path": "share-package.md",
+  "facebook_post_path": "facebook-post.txt",
+  "subreddit_post_path": "subreddit-post.md",
+  "nextdoor_post_path": "nextdoor-post.txt",
+  "short_link_blurb_path": "short-link-blurb.txt",
+  "manifest_path": "publish-manifest.json",
+  "zip_path": "site-package.zip",
+  "articles": [
+    {
+      "title": "City Council Provides Guidance on Engaging in Lawmaking Processes",
+      "format": "watch",
+      "relative_path": "watch/6.html",
+      "updated_at": "2026-06-30T11:16:18.435154300+00:00"
+    },
+    {
+      "title": "City of Longmont Updates Public Information Page",
+      "format": "watch",
+      "relative_path": "watch/5.html",
+      "updated_at": "2026-06-30T11:15:18.157210+00:00"
+    },
+    {
+      "title": "Longmont City Council Voting Process and Public Participation",
+      "format": "watch",
+      "relative_path": "watch/4.html",
+      "updated_at": "2026-06-30T11:15:03.711015600+00:00"
+    },
+    {
+      "title": "Upcoming City Council Meeting Allows Public Participation",
+      "format": "watch",
+      "relative_path": "watch/3.html",
+      "updated_at": "2026-06-30T11:14:49.234047+00:00"
+    },
+    {
+      "title": "City Council Voting Activity Indicated in Recent Records",
+      "format": "watch",
+      "relative_path": "watch/2.html",
+      "updated_at": "2026-06-30T11:14:34.757276300+00:00"
+    },
+    {
+      "title": "Longmont Museum Offers New Exhibits and Programs",
+      "format": "watch",
+      "relative_path": "watch/1.html",
+      "updated_at": "2026-06-30T11:14:25.219931100+00:00"
+    }
+  ]
+}

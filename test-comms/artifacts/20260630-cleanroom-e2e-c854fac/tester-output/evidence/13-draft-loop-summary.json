@@ -1,0 +1,101 @@
+{
+  "results": [
+    {
+      "i": 1,
+      "opened": {
+        "ok": true,
+        "idx": 0,
+        "score": 140,
+        "context": "Risk: low\nBrief\nReady to draft\ndaily_scan\nLongmont Museum Events: Updates on events, exhibits, and programs at the Longmont Museum. Editor context: Provides current information about community events and cultural activities. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 2, impact 3, conflict 1, novelty 4). Why now: New events and exhibit information are available. Suggested next step: Check for upcoming events or new exhibits to feature in a brief article. What would make this publishable: Detailed descriptions of new exhibits or events.\n\nNovelty 4/5. New events and exhibit information are available.\n\nConfidence: low\nDraft"
+      },
+      "done": true,
+      "title": "Longmont Museum Offers New Exhibits and Programs",
+      "bodyStart": "Longmont Museum has exciting new events and exhibits to explore this summer [Source](evidence:20). Whether you're interested in history or looking for something fun with the family, there's plenty to see and do.\n\nThe museum will feature a new exhibit on local natural history [Source](evidence:19), showcasing the flora and fauna native to Longmont. Additionally, Discovery Days [Source](evidence:20) for early childhood visitors are scheduled throughout June and July. These interactive days offer hands-on activities and educational sessions designed to engage young minds.\n\nFor those interested in attending auditorium programs, the museum has a variety of events lined up, including lectures, wor",
+      "forbidden": false,
+      "boiler": false,
+      "clean": true,
+      "action": "approved"
+    },
+    {
+      "i": 2,
+      "opened": {
+        "ok": true,
+        "idx": 0,
+        "score": 20,
+        "context": "Risk: low\nVerification\nNeeds verification\nDecision / Vote\nVOTING SIGNAL: Found vote/decision keywords ([\"approved\", \"approved\", \"Approved\", \"passed\", \"Motion\", \"motion\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.\n\nNovelty 2/5. Keyword detector found decision language; reporter must confirm the actual current vote, date, and impact.\n\nConfidence: medium\nDraft"
+      },
+      "done": true,
+      "title": "City Council Voting Activity Indicated in Recent Records",
+      "bodyStart": "The Longmont City Council has recently indicated approval of several ordinances and resolutions through their voting process [Source](evidence:10). Key terms such as \"approved,\" \"passed,\" and \"motion\" suggest official actions have been taken. Residents should monitor the city's official channels for updates on these decisions, particularly as they may affect local policies and procedures.\n\nFor the most current information, please visit the City of Longmont’s official website or contact the city council office directly.",
+      "forbidden": false,
+      "boiler": false,
+      "clean": true,
+      "action": "approved"
+    },
+    {
+      "i": 3,
+      "opened": {
+        "ok": true,
+        "idx": 0,
+        "score": 20,
+        "context": "Risk: low\nWatch\nWatch\nPublic Meeting Scheduled\nMEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.\n\nNovelty 2/5. Meeting language found; verify a specific upcoming agenda, date, or action before drafting as news.\n\nConfidence: medium\nDraft"
+      },
+      "done": true,
+      "title": "Upcoming City Council Meeting Allows Public Participation",
+      "bodyStart": "The Longmont City Council will hold its next meeting, offering opportunities for public participation. Residents and city employees can sign up to speak during the \"First Call – Public Invited to Be Heard\" segment starting at 6:30 p.m., with a time limit of three minutes per speaker. The meeting begins at 7:00 p.m.\n\nResidents who need assistance should contact the City Clerk’s Office at least five days in advance. Those interested can also access past meeting videos through the Agenda Management Portal or the city's YouTube channel for detailed agendas and recordings [Source](evidence:12).\n\nWhat to watch for next: Residents should prepare and sign up if they wish to participate during the pu",
+      "forbidden": false,
+      "boiler": false,
+      "clean": true,
+      "action": "approved"
+    },
+    {
+      "i": 4,
+      "opened": {
+        "ok": true,
+        "idx": 0,
+        "score": 20,
+        "context": "Risk: low\nVerification\nNeeds verification\nDecision / Vote\nVOTING SIGNAL: Found vote/decision keywords ([\"passed\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.\n\nNovelty 2/5. Keyword detector found decision language; reporter must confirm the actual current vote, date, and impact.\n\nConfidence: medium\nDraft"
+      },
+      "done": true,
+      "title": "Longmont City Council Voting Process and Public Participation",
+      "bodyStart": "The Longmont City Council has taken an official action to pass an ordinance related to the city's legislative process [Source](evidence:12). This indicates that a decision was made during recent meetings regarding how laws are enacted in the city.\n\nResidents should stay informed about upcoming council meetings, as public participation opportunities may arise. For more details on how to participate, visit the Agenda Management Portal or contact the City Clerk's Office at 303-651-8649.\n\nWhat to watch for next: Future council meeting agendas and notices of any proposed changes to city ordinances.",
+      "forbidden": false,
+      "boiler": false,
+      "clean": true,
+      "action": "approved"
+    },
+    {
+      "i": 5,
+      "opened": {
+        "ok": true,
+        "idx": 0,
+        "score": 20,
+        "context": "Risk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft"
+      },
+      "done": true,
+      "title": "City of Longmont Updates Public Information Page",
+      "bodyStart": "The City of Longmont has recently updated its public information page to provide detailed insights into various city departments and their roles. This resource is designed to ensure clear and timely communication between the city government and residents, covering media relations, public announcements, and community outreach [Source](evidence:17).\n\nResidents can explore a range of topics such as press releases, city news, public records, and other essential resources to stay informed about municipal operations and events. The page also includes information on upcoming initiatives like the City of Longmont's Human Service Agency Funding applications and recent developments such as building se",
+      "forbidden": false,
+      "boiler": false,
+      "clean": true,
+      "action": "approved"
+    },
+    {
+      "i": 6,
+      "opened": {
+        "ok": true,
+        "idx": 0,
+        "score": 20,
+        "context": "Risk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont City Council Meetings' was fetched today (https://longmontcolorado.gov/government/city-council-meetings/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft"
+      },
+      "done": true,
+      "title": "City Council Provides Guidance on Engaging in Lawmaking Processes",
+      "bodyStart": "Residents interested in shaping Longmont’s laws are advised to first consult city staff or their local City Council member [Source](evidence:13). The Council often directs staff to develop ordinances based on public feedback received during the Public Invited to be Heard segment of meetings. For further guidance, contact the City Clerk's Office at 303-651-8649.\n\nWhat to watch for next: Residents can stay informed by attending upcoming city council meetings and engaging in discussions during the Public Invited to be Heard segments.",
+      "forbidden": false,
+      "boiler": false,
+      "clean": true,
+      "action": "approved"
+    }
+  ],
+  "queueText": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nStory Queue\n\nCivic signals your sources surfaced, ready to verify and turn into plain-language stories.\n\nRefresh\nDaily Scan\nScrape & Detect\nNEW LEADS\n15\nIN DRAFTING\n6\nHIGH PRIORITY\n0\nSOURCES\n6\nLocal-first workflow\nScan sources, draft from linked evidence, run guardrails, then publish a static paper.\nLeads\n15\nDrafts\n6\nScan results\nlatest\nFilter leads\nSort by:\nDate Created\nRisk Level\nConfidence\nRisk: low\nBackground\nBackground\nSeen before\ndaily_scan\nCity Council Meeting Scheduled for July 7: The City Council meeting on Tuesday, July 7 at 7 pm will feature a second reading of an ordinance and potential public hearings. Editor context: This is a regularly scheduled Council meeting with the possibility of important discussions or votes on ordinances. Suggested treatment: watch. Newsworthiness: 8/20 (immediacy 2, impact 3, conflict 1, novelty 2). Why now: A second reading of an ordinance is scheduled with potential public hearings. Beat memory: similar topic 'City Council Meeting Rules for Public Participation' was first seen 2026-06-30T11:12:23.037571100+00:00, last seen 2026-06-30T11:12:23.037571100+00:00, and has appeared 1 previous time(s). Treat this as recurring/background unless the source shows a new vote, deadline, dollar amount, filing, outage, meeting item, or public impact. Suggested next step: Review the agenda and prepare questions or comments for public hearing if relevant. What would make this publishable: Confirmation of the specific content and proposed changes of the ordinance, as well as any anticipated public opposition or support. Compare against beat memory before drafting; write a story only if there is a new reportable fact.\n\nBeat memory: Similar topic 'City Council Meeting Rules for Public Participation' was first seen 2026-06-30T11:12:23.037571100+00:00, last seen 2026-06-30T11:12:23.037571100+00:00, and has appeared 1 previous time(s).\n\nNovelty 2/5. Beat memory found this topic before, and this scan did not identify a concrete new reportable fact.\n\nConfidence: low\nDraft anyway\nRisk: med\nBackground\nBackground\ndaily_scan\nCity Council Meeting Livestreams Available: Residents can watch live or recorded City Council meetings via the City’s Agenda Management Portal, Longmont Public Media’s website, or YouTube. This provides transparency and allows community members to stay informed about local governance. Editor context: This information is important for ensuring public access to government proceedings and maintaining accountability in local governance. Suggested treatment: background. Newsworthiness: 10/20 (immediacy 2, impact 3, conflict 1, novelty 4). Why now: No current change found. Suggested next step: Verify the accessibility of livestream links and confirm if there are any upcoming significant discussions scheduled for future meetings. What would make this publishable: Live stream availability, recorded session links, and specific agenda items for upcoming meetings.\n\nNovelty 4/5. No current change found\n\nConfidence: med\nDraft anyway\nRisk: low\nBackground\nBackground\ndaily_scan\nPublic Invited to Be Heard Segment at City Council Meetings: Residents can sign up to speak during the Public Invited to Be Heard segment of City Council meetings, which are held on the first Monday of each month. This allows community members to voice concerns or ideas directly to elected officials. Editor context: This information could be valuable for local civic reporters who want to cover public engagement and ensure residents have a platform to share their opinions during meetings. Suggested treatment: background. Newsworthiness: 10/20 (immediacy 2, impact 3, conflict 1, novelty 4). Why now: No current change found. Suggested next step: Contact the City Clerk's Office for more details on upcoming meetings and sign-up procedures. What would make this publishable: Details on upcoming meetings, specific sign-up procedures, and any feedback from residents who have participated in the segment.\n\nNovelty 4/5. No current change found\n\nConfidence: low\nDraft anyway\nRisk: med\nBrief\nBackground\ndaily_scan\nCity Council Meeting Rules for Public Participation: Residents need to sign up before speaking at City Council meetings, with a limit of 3 minutes per speaker. Editor context: This provides clear guidelines for public participation in council meetings, impacting community engagement and access to the decision-making process. Suggested treatment: brief. Newsworthiness: 7/20 (immediacy 2, impact 3, conflict 1, novelty 1). Why now: No current change found, but this rule is important for public participation. Suggested next step: Create a brief article explaining the speaking rules and their importance for community members. What would make this publishable: No specific missing fact, but a list of recent speakers and their topics would add value.\n\nNovelty 1/5. No current change found, but this rule is important for public participation.\n\nConfidence: med\nDraft anyway\nRisk: low\nBackground\nBackground\nSeen before\ndaily_scan\nOvernight Closure of Hover Street/CO 119 Intersection: The city is scheduling a temporary overnight closure of the intersection for June 28, impacting local traffic and commuters. Editor context: This impacts daily traffic flow and public safety during construction work on a key intersection. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 4, impact 3, conflict 1, novelty 2). Why now: A scheduled overnight closure for June 28 is needed for construction work at an intersection. Beat memory: similar topic 'Longmont Museum Events' was first seen 2026-06-30T11:11:24.070735900+00:00, last seen 2026-06-30T11:11:24.070735900+00:00, and has appeared 1 prev"
+}
