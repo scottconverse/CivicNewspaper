@@ -1,0 +1,244 @@
+﻿{
+    "utc":  "2026-06-30T16:01:47.0951156Z",
+    "zipSha256":  "59C0D4B55B1809E75432EE6DBB3E7667DDDDAA553B662C96E133323B8BF9A537",
+    "http":  [
+                 {
+                     "url":  "https://bright-sphinx-ywpd.here.now/",
+                     "status":  200,
+                     "length":  2837
+                 },
+                 {
+                     "url":  "https://bright-sphinx-ywpd.here.now/briefs/1.html",
+                     "status":  200,
+                     "length":  3213
+                 },
+                 {
+                     "url":  "https://bright-sphinx-ywpd.here.now/briefs/2.html",
+                     "status":  200,
+                     "length":  3204
+                 },
+                 {
+                     "url":  "https://bright-sphinx-ywpd.here.now/feed.xml",
+                     "status":  200,
+                     "length":  980
+                 }
+             ],
+    "markerHits":  [
+                       {
+                           "scope":  "local",
+                           "file":  "about.html",
+                           "marker":  "�",
+                           "snippet":  "\u003c!DOCTYPE html\u003e\r\n\u003chtml lang=\"en\"\u003e\r\n\u003chead\u003e\r\n    \u003cmeta charset=\"UTF-8\"\u003e\r\n    \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e\r\n    \u003c!-- SEC (GG-B1): defense-in-depth CSP for the published site. script"
+                       },
+                       {
+                           "scope":  "local",
+                           "file":  "corrections.html",
+                           "marker":  "�",
+                           "snippet":  "\u003c!DOCTYPE html\u003e\r\n\u003chtml lang=\"en\"\u003e\r\n\u003chead\u003e\r\n    \u003cmeta charset=\"UTF-8\"\u003e\r\n    \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e\r\n    \u003c!-- SEC (GG-B1): defense-in-depth CSP for the published site. script"
+                       },
+                       {
+                           "scope":  "local",
+                           "file":  "ethics.html",
+                           "marker":  "�",
+                           "snippet":  "\u003c!DOCTYPE html\u003e\r\n\u003chtml lang=\"en\"\u003e\r\n\u003chead\u003e\r\n    \u003cmeta charset=\"UTF-8\"\u003e\r\n    \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e\r\n    \u003c!-- SEC (GG-B1): defense-in-depth CSP for the published site. script"
+                       },
+                       {
+                           "scope":  "local",
+                           "file":  "facebook-post.txt",
+                           "marker":  "�",
+                           "snippet":  "Attempt Nine Longmont Ledger is live. 2 local update(s), with links and an RSS feed for following future issues.\n\nRead it here: https://bright-sphinx-ywpd.here.now\n"
+                       },
+                       {
+                           "scope":  "local",
+                           "file":  "feed.xml",
+                           "marker":  "�",
+                           "snippet":  "\u003c?xml version=\"1.0\" encoding=\"UTF-8\" ?\u003e\n\u003crss version=\"2.0\"\u003e\n  \u003cchannel\u003e\n    \u003ctitle\u003eAttempt Nine Longmont Ledger\u003c/title\u003e\n    \u003clink\u003eindex.html\u003c/link\u003e\n    \u003cdescription\u003eLocal news and community information.\u003c/description\u003e\n   "
+                       },
+                       {
+                           "scope":  "local",
+                           "file":  "how-we-report.html",
+                           "marker":  "�",
+                           "snippet":  "\u003c!DOCTYPE html\u003e\r\n\u003chtml lang=\"en\"\u003e\r\n\u003chead\u003e\r\n    \u003cmeta charset=\"UTF-8\"\u003e\r\n    \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e\r\n    \u003c!-- SEC (GG-B1): defense-in-depth CSP for the published site. script"
+                       },
+                       {
+                           "scope":  "local",
+                           "file":  "index.html",
+                           "marker":  "�",
+                           "snippet":  "\u003c!DOCTYPE html\u003e\r\n\u003chtml lang=\"en\"\u003e\r\n\u003chead\u003e\r\n    \u003cmeta charset=\"UTF-8\"\u003e\r\n    \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e\r\n    \u003c!-- SEC (GG-B1): defense-in-depth CSP for the published site. script"
+                       },
+                       {
+                           "scope":  "local",
+                           "file":  "newsletter.md",
+                           "marker":  "�",
+                           "snippet":  "# Attempt Nine Longmont Ledger\n\nLocal news and community information.\n\nGenerated: 2026-06-30T15:55:38.746222500+00:00\n\n## This Issue\n\n- [Longmont Youth Center Lists Summer Programs](https://bright-sphinx-ywpd.here.now/br"
+                       },
+                       {
+                           "scope":  "local",
+                           "file":  "nextdoor-post.txt",
+                           "marker":  "�",
+                           "snippet":  "A new Attempt Nine Longmont Ledger issue is ready with 2 local update(s). Top item: Longmont Youth Center Lists Summer Programs. Read it here: https://bright-sphinx-ywpd.here.now"
+                       },
+                       {
+                           "scope":  "local",
+                           "file":  "publish-manifest.json",
+                           "marker":  "�",
+                           "snippet":  "{\n  \"issue_id\": \"issue-20260630-155538-746222500\",\n  \"output_dir\": \"C:/Users/civic/AppData/Roaming/com.scottconverse.civicdesk/sites/default\",\n  \"generated_at\": \"2026-06-30T15:55:38.746222500+00:00\",\n  \"provider\": \"here_"
+                       },
+                       {
+                           "scope":  "local",
+                           "file":  "share-package.md",
+                           "marker":  "�",
+                           "snippet":  "# Share Package\n\nGenerated: 2026-06-30T15:55:38.746222500+00:00\n\nWebsite home: https://bright-sphinx-ywpd.here.now\nRSS feed: https://bright-sphinx-ywpd.here.now/feed.xml\n\n## Suggested Community Posts\n\n### Longmont Youth "
+                       },
+                       {
+                           "scope":  "local",
+                           "file":  "short-link-blurb.txt",
+                           "marker":  "�",
+                           "snippet":  "Attempt Nine Longmont Ledger: 2 local update(s). Read: https://bright-sphinx-ywpd.here.now"
+                       },
+                       {
+                           "scope":  "local",
+                           "file":  "subreddit-post.md",
+                           "marker":  "�",
+                           "snippet":  "# Attempt Nine Longmont Ledger\n\n2 local update(s).\n\nTop item: Longmont Youth Center Lists Summer Programs\n\nRead the issue: https://bright-sphinx-ywpd.here.now\n\nSources and corrections policy are included on the site.\n"
+                       },
+                       {
+                           "scope":  "local",
+                           "file":  "substack.md",
+                           "marker":  "�",
+                           "snippet":  "# Attempt Nine Longmont Ledger\n\nLocal news and community information.\n\n_Publication package generated by The Civic Desk on 2026-06-30T15:55:38.746222500+00:00._\n\n## Longmont Youth Center Lists Summer Programs\n\nRead the f"
+                       },
+                       {
+                           "scope":  "local",
+                           "file":  "briefs\\1.html",
+                           "marker":  "�",
+                           "snippet":  "\u003c!DOCTYPE html\u003e\r\n\u003chtml lang=\"en\"\u003e\r\n\u003chead\u003e\r\n    \u003cmeta charset=\"UTF-8\"\u003e\r\n    \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e\r\n    \u003c!-- SEC (GG-B1): defense-in-depth CSP for the published site. script"
+                       },
+                       {
+                           "scope":  "local",
+                           "file":  "briefs\\2.html",
+                           "marker":  "�",
+                           "snippet":  "\u003c!DOCTYPE html\u003e\r\n\u003chtml lang=\"en\"\u003e\r\n\u003chead\u003e\r\n    \u003cmeta charset=\"UTF-8\"\u003e\r\n    \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e\r\n    \u003c!-- SEC (GG-B1): defense-in-depth CSP for the published site. script"
+                       },
+                       {
+                           "scope":  "zip",
+                           "file":  "about.html",
+                           "marker":  "�",
+                           "snippet":  "\u003c!DOCTYPE html\u003e\r\n\u003chtml lang=\"en\"\u003e\r\n\u003chead\u003e\r\n    \u003cmeta charset=\"UTF-8\"\u003e\r\n    \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e\r\n    \u003c!-- SEC (GG-B1): defense-in-depth CSP for the published site. script"
+                       },
+                       {
+                           "scope":  "zip",
+                           "file":  "corrections.html",
+                           "marker":  "�",
+                           "snippet":  "\u003c!DOCTYPE html\u003e\r\n\u003chtml lang=\"en\"\u003e\r\n\u003chead\u003e\r\n    \u003cmeta charset=\"UTF-8\"\u003e\r\n    \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e\r\n    \u003c!-- SEC (GG-B1): defense-in-depth CSP for the published site. script"
+                       },
+                       {
+                           "scope":  "zip",
+                           "file":  "ethics.html",
+                           "marker":  "�",
+                           "snippet":  "\u003c!DOCTYPE html\u003e\r\n\u003chtml lang=\"en\"\u003e\r\n\u003chead\u003e\r\n    \u003cmeta charset=\"UTF-8\"\u003e\r\n    \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e\r\n    \u003c!-- SEC (GG-B1): defense-in-depth CSP for the published site. script"
+                       },
+                       {
+                           "scope":  "zip",
+                           "file":  "facebook-post.txt",
+                           "marker":  "�",
+                           "snippet":  "Attempt Nine Longmont Ledger is live. 2 local update(s), with links and an RSS feed for following future issues.\n\nRead it here: https://bright-sphinx-ywpd.here.now\n"
+                       },
+                       {
+                           "scope":  "zip",
+                           "file":  "feed.xml",
+                           "marker":  "�",
+                           "snippet":  "\u003c?xml version=\"1.0\" encoding=\"UTF-8\" ?\u003e\n\u003crss version=\"2.0\"\u003e\n  \u003cchannel\u003e\n    \u003ctitle\u003eAttempt Nine Longmont Ledger\u003c/title\u003e\n    \u003clink\u003eindex.html\u003c/link\u003e\n    \u003cdescription\u003eLocal news and community information.\u003c/description\u003e\n   "
+                       },
+                       {
+                           "scope":  "zip",
+                           "file":  "how-we-report.html",
+                           "marker":  "�",
+                           "snippet":  "\u003c!DOCTYPE html\u003e\r\n\u003chtml lang=\"en\"\u003e\r\n\u003chead\u003e\r\n    \u003cmeta charset=\"UTF-8\"\u003e\r\n    \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e\r\n    \u003c!-- SEC (GG-B1): defense-in-depth CSP for the published site. script"
+                       },
+                       {
+                           "scope":  "zip",
+                           "file":  "index.html",
+                           "marker":  "�",
+                           "snippet":  "\u003c!DOCTYPE html\u003e\r\n\u003chtml lang=\"en\"\u003e\r\n\u003chead\u003e\r\n    \u003cmeta charset=\"UTF-8\"\u003e\r\n    \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e\r\n    \u003c!-- SEC (GG-B1): defense-in-depth CSP for the published site. script"
+                       },
+                       {
+                           "scope":  "zip",
+                           "file":  "newsletter.md",
+                           "marker":  "�",
+                           "snippet":  "# Attempt Nine Longmont Ledger\n\nLocal news and community information.\n\nGenerated: 2026-06-30T15:55:38.746222500+00:00\n\n## This Issue\n\n- [Longmont Youth Center Lists Summer Programs](https://bright-sphinx-ywpd.here.now/br"
+                       },
+                       {
+                           "scope":  "zip",
+                           "file":  "nextdoor-post.txt",
+                           "marker":  "�",
+                           "snippet":  "A new Attempt Nine Longmont Ledger issue is ready with 2 local update(s). Top item: Longmont Youth Center Lists Summer Programs. Read it here: https://bright-sphinx-ywpd.here.now"
+                       },
+                       {
+                           "scope":  "zip",
+                           "file":  "publish-manifest.json",
+                           "marker":  "�",
+                           "snippet":  "{\n  \"issue_id\": \"issue-20260630-155538-746222500\",\n  \"output_dir\": \"C:/Users/civic/AppData/Roaming/com.scottconverse.civicdesk/sites/default\",\n  \"generated_at\": \"2026-06-30T15:55:38.746222500+00:00\",\n  \"provider\": \"here_"
+                       },
+                       {
+                           "scope":  "zip",
+                           "file":  "share-package.md",
+                           "marker":  "�",
+                           "snippet":  "# Share Package\n\nGenerated: 2026-06-30T15:55:38.746222500+00:00\n\nWebsite home: https://bright-sphinx-ywpd.here.now\nRSS feed: https://bright-sphinx-ywpd.here.now/feed.xml\n\n## Suggested Community Posts\n\n### Longmont Youth "
+                       },
+                       {
+                           "scope":  "zip",
+                           "file":  "short-link-blurb.txt",
+                           "marker":  "�",
+                           "snippet":  "Attempt Nine Longmont Ledger: 2 local update(s). Read: https://bright-sphinx-ywpd.here.now"
+                       },
+                       {
+                           "scope":  "zip",
+                           "file":  "subreddit-post.md",
+                           "marker":  "�",
+                           "snippet":  "# Attempt Nine Longmont Ledger\n\n2 local update(s).\n\nTop item: Longmont Youth Center Lists Summer Programs\n\nRead the issue: https://bright-sphinx-ywpd.here.now\n\nSources and corrections policy are included on the site.\n"
+                       },
+                       {
+                           "scope":  "zip",
+                           "file":  "substack.md",
+                           "marker":  "�",
+                           "snippet":  "# Attempt Nine Longmont Ledger\n\nLocal news and community information.\n\n_Publication package generated by The Civic Desk on 2026-06-30T15:55:38.746222500+00:00._\n\n## Longmont Youth Center Lists Summer Programs\n\nRead the f"
+                       },
+                       {
+                           "scope":  "zip",
+                           "file":  "briefs\\1.html",
+                           "marker":  "�",
+                           "snippet":  "\u003c!DOCTYPE html\u003e\r\n\u003chtml lang=\"en\"\u003e\r\n\u003chead\u003e\r\n    \u003cmeta charset=\"UTF-8\"\u003e\r\n    \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e\r\n    \u003c!-- SEC (GG-B1): defense-in-depth CSP for the published site. script"
+                       },
+                       {
+                           "scope":  "zip",
+                           "file":  "briefs\\2.html",
+                           "marker":  "�",
+                           "snippet":  "\u003c!DOCTYPE html\u003e\r\n\u003chtml lang=\"en\"\u003e\r\n\u003chead\u003e\r\n    \u003cmeta charset=\"UTF-8\"\u003e\r\n    \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e\r\n    \u003c!-- SEC (GG-B1): defense-in-depth CSP for the published site. script"
+                       },
+                       {
+                           "scope":  "live",
+                           "file":  "https://bright-sphinx-ywpd.here.now/",
+                           "marker":  "�",
+                           "snippet":  "\u003c!DOCTYPE html\u003e\r\n\u003chtml lang=\"en\"\u003e\r\n\u003chead\u003e\r\n    \u003cmeta charset=\"UTF-8\"\u003e\r\n    \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e\r\n    \u003c!-- SEC (GG-B1): defense-in-depth CSP for the published site. script"
+                       },
+                       {
+                           "scope":  "live",
+                           "file":  "https://bright-sphinx-ywpd.here.now/briefs/1.html",
+                           "marker":  "�",
+                           "snippet":  "\u003c!DOCTYPE html\u003e\r\n\u003chtml lang=\"en\"\u003e\r\n\u003chead\u003e\r\n    \u003cmeta charset=\"UTF-8\"\u003e\r\n    \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e\r\n    \u003c!-- SEC (GG-B1): defense-in-depth CSP for the published site. script"
+                       },
+                       {
+                           "scope":  "live",
+                           "file":  "https://bright-sphinx-ywpd.here.now/briefs/2.html",
+                           "marker":  "�",
+                           "snippet":  "\u003c!DOCTYPE html\u003e\r\n\u003chtml lang=\"en\"\u003e\r\n\u003chead\u003e\r\n    \u003cmeta charset=\"UTF-8\"\u003e\r\n    \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e\r\n    \u003c!-- SEC (GG-B1): defense-in-depth CSP for the published site. script"
+                       },
+                       {
+                           "scope":  "live",
+                           "file":  "https://bright-sphinx-ywpd.here.now/feed.xml",
+                           "marker":  "�",
+                           "snippet":  "\u003c?xml version=\"1.0\" encoding=\"UTF-8\" ?\u003e\n\u003crss version=\"2.0\"\u003e\n  \u003cchannel\u003e\n    \u003ctitle\u003eAttempt Nine Longmont Ledger\u003c/title\u003e\n    \u003clink\u003eindex.html\u003c/link\u003e\n    \u003cdescription\u003eLocal news and community information.\u003c/description\u003e\n   "
+                       }
+                   ]
+}
