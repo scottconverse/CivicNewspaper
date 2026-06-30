@@ -1,0 +1,41 @@
+{
+    "generatedUtc":  "2026-06-30T09:50:03.1663190Z",
+    "coordinationHead":  "49d0814dfa9cc6633342a1929f2e3ce550c8ff8e",
+    "branch":  "test-comms/cleanroom-coder-tester",
+    "setupPath":  "test-comms\\artifacts\\20260630-cleanroom-e2e-a0b436a\\The Civic Desk_0.3.0_x64-setup.exe",
+    "setupExists":  true,
+    "setupSize":  5605081,
+    "setupSha256":  "B6777C66A7330A46F6FC443576C06E648E516EC52EC845004044DB4663A23BD8",
+    "msiPath":  "test-comms\\artifacts\\20260630-cleanroom-e2e-a0b436a\\The Civic Desk_0.3.0_x64_en-US.msi",
+    "msiExists":  true,
+    "msiSize":  9117696,
+    "msiSha256":  "4C4F40178017853DFA5E65AFD10595306018C0F2B803190A1DB431A28CA8AA2E",
+    "outputFolder":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default",
+    "outputFolderExists":  true,
+    "outputFileNames":  [
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\about.html",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\corrections.html",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\ethics.html",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\facebook-post.txt",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\feed.xml",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\how-we-report.html",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\index.html",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\newsletter.md",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\nextdoor-post.txt",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\print.css",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\publish-manifest.json",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\share-package.md",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\short-link-blurb.txt",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\styles.css",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\subreddit-post.md",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\substack.md",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\watch\\2.html",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\watch\\3.html",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\watch\\4.html",
+                            "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\watch\\5.html"
+                        ],
+    "appProcessNames":  [
+                            "civicnews:14156:C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+                            "ollama:11320:C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\ollama-runtime\\v0.30.11\\ollama.exe"
+                        ]
+}

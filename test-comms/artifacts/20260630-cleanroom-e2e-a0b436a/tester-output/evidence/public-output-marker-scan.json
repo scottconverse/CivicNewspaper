@@ -1,0 +1,38 @@
+[
+    {
+        "Pattern":  "EDITOR_NOTE",
+        "Path":  "test-comms\\artifacts\\20260630-cleanroom-e2e-a0b436a\\tester-output\\site-output-copy\\watch\\2.html",
+        "Line":  49,
+        "Text":  "TESTER EDIT: saved during cleanroom workflow exercise; original draft began with editor_note and remains a quality failure unless rewritten by product/user.\u003c/li\u003e"
+    },
+    {
+        "Pattern":  "editor_note",
+        "Path":  "test-comms\\artifacts\\20260630-cleanroom-e2e-a0b436a\\tester-output\\site-output-copy\\watch\\2.html",
+        "Line":  49,
+        "Text":  "TESTER EDIT: saved during cleanroom workflow exercise; original draft began with editor_note and remains a quality failure unless rewritten by product/user.\u003c/li\u003e"
+    },
+    {
+        "Pattern":  "Editor Note",
+        "Path":  "test-comms\\artifacts\\20260630-cleanroom-e2e-a0b436a\\tester-output\\site-output-copy\\watch\\4.html",
+        "Line":  42,
+        "Text":  "\u003cp\u003eEditor Note: This looks like background material, not a publishable news story yet. A specific change or update to the participation guidelines would be needed to make this information newsworthy."
+    },
+    {
+        "Pattern":  "employee login",
+        "Path":  "test-comms\\artifacts\\20260630-cleanroom-e2e-a0b436a\\tester-output\\site-output-copy\\watch\\3.html",
+        "Line":  163,
+        "Text":  "Accessibility  Land Acknowledgment  InsideLongmont  Employee Login  Terms of Use  Privacy Policy"
+    },
+    {
+        "Pattern":  "employee login",
+        "Path":  "test-comms\\artifacts\\20260630-cleanroom-e2e-a0b436a\\tester-output\\site-output-copy\\watch\\4.html",
+        "Line":  161,
+        "Text":  "Accessibility  Land Acknowledgment  InsideLongmont  Employee Login  Terms of Use  Privacy Policy"
+    },
+    {
+        "Pattern":  "employee login",
+        "Path":  "test-comms\\artifacts\\20260630-cleanroom-e2e-a0b436a\\tester-output\\site-output-copy\\watch\\5.html",
+        "Line":  164,
+        "Text":  "Accessibility  Land Acknowledgment  InsideLongmont  Employee Login  Terms of Use  Privacy Policy"
+    }
+]
