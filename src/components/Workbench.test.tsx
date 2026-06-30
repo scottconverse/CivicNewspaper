@@ -533,7 +533,9 @@ describe("Workbench Component Tests", () => {
     fireEvent.click(screen.getByRole("button", { name: /Resume Editing/i }));
     expect(onDecision).toHaveBeenCalledWith("draft_generated");
 
-    fireEvent.click(screen.getByRole("button", { name: /Send Back for More Work/i }));
+    const sendBackButtons = screen.getAllByRole("button", { name: /Send Back for More Work/i });
+    expect(sendBackButtons.length).toBeGreaterThanOrEqual(2);
+    fireEvent.click(sendBackButtons[0]);
     expect(onDecision).toHaveBeenCalledWith("needs_verification");
   });
 

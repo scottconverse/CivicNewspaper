@@ -3751,11 +3751,11 @@ I should produce JSON only.
     }
 
     #[test]
-    fn test_compile_removes_editor_note_and_body_scaffolding_from_public_pages() {
+    fn test_compile_blocks_editor_note_only_story_before_manifest_or_zip() {
         let conn =
             init_db("file:test_compile_editor_note_cleanup?mode=memory&cache=shared").unwrap();
         let temp_dir = tempdir().unwrap();
-        let id = insert_draft(
+        insert_draft(
             &conn,
             &Draft {
                 id: None,
@@ -3773,13 +3773,20 @@ I should produce JSON only.
         )
         .unwrap();
 
-        compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+        let err = compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}")
+            .expect_err("editor-note-only output must not compile as a public story");
 
-        let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
-        assert!(!html.contains("EDITOR_NOTE"));
-        assert!(!html.contains("Body:"));
-        assert!(!html.contains("These questions will help"));
-        assert!(html.contains("This item needs more reporting before it is ready for publication."));
+        assert!(err
+            .to_string()
+            .contains("Public output quality gate failed"));
+        assert!(
+            !temp_dir.path().join("publish-manifest.json").exists(),
+            "failed public output must not leave a manifest that promises a ZIP"
+        );
+        assert!(
+            !temp_dir.path().join("site-package.zip").exists(),
+            "failed public output must not leave a missing or stale ZIP state"
+        );
     }
 
     #[test]
@@ -3844,6 +3851,122 @@ I should produce JSON only.
         assert!(html.contains("A specific announcement date would make this more relevant"));
         assert!(!html.contains("EDITOR_NOTE"));
         assert!(!html.contains("not a publishable news story yet"));
+    }
+
+    #[test]
+    fn test_compile_removes_space_editor_note_and_tester_edit_lines() {
+        let conn =
+            init_db("file:test_compile_space_editor_note_cleanup?mode=memory&cache=shared")
+                .unwrap();
+        let temp_dir = tempdir().unwrap();
+        let id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "watch".to_string(),
+                title: "Overnight road closure planned near Hover Street".to_string(),
+                content: "Headline: Overnight road closure planned near Hover Street\n\nThe city announced an overnight closure near Hover Street for scheduled work.\n\nEditor Note: This line is for the newsroom only.\n\nTESTER EDIT: saved during cleanroom workflow exercise; original draft began with editor_note.\n\nDrivers should check the city notice before traveling through the area.".to_string(),
+                status: "ready_to_publish".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+
+        let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
+        assert!(html.contains("The city announced an overnight closure"));
+        assert!(html.contains("Drivers should check the city notice"));
+        assert!(!html.contains("Editor Note"));
+        assert!(!html.contains("TESTER EDIT"));
+        assert!(!html.contains("editor_note"));
+        assert!(temp_dir.path().join("publish-manifest.json").exists());
+        assert!(temp_dir.path().join("site-package.zip").exists());
+    }
+
+    #[test]
+    fn test_compile_removes_combined_city_footer_boilerplate_from_evidence() {
+        let conn =
+            init_db("file:test_compile_combined_boilerplate?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Longmont Public Information".to_string(),
+                url: "https://longmontcolorado.gov/public-information/".to_string(),
+                r#type: "official_comm".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        let evidence_id = insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://longmontcolorado.gov/public-information/".to_string()),
+                excerpt: "Road work notice issued.\nAccessibility  Land Acknowledgment  InsideLongmont  Employee Login  Terms of Use  Privacy Policy".to_string(),
+                content_hash: "combined-footer".to_string(),
+                entities: "[]".to_string(),
+                fetched_at: "2026-06-25T12:00:00Z".to_string(),
+            },
+        )
+        .unwrap();
+        let lead_id = insert_lead(
+            &conn,
+            &Lead {
+                id: None,
+                detector_name: "test".to_string(),
+                why: "Recent road work notice.".to_string(),
+                confidence: "high".to_string(),
+                risk_level: "low".to_string(),
+                confirmation_checklist: "[]".to_string(),
+                from_scan_lead_id: None,
+                story_type: Some("brief".to_string()),
+                disposition: Some("ready_to_draft".to_string()),
+                novelty_score: Some(3),
+                novelty_reason: Some("Recent road work notice.".to_string()),
+                recurrence_count: None,
+                recurrence_note: None,
+                created_at: Utc::now().to_rfc3339(),
+            },
+            &[evidence_id],
+        )
+        .unwrap();
+        let id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: Some(lead_id),
+                format: "watch".to_string(),
+                title: "Road work notice issued".to_string(),
+                content: "The city issued a road work notice. [Source](evidence:1).".to_string(),
+                status: "ready_to_publish".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+
+        let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
+        assert!(html.contains("Road work notice issued"));
+        assert!(!html.to_lowercase().contains("employee login"));
+        assert!(!html.to_lowercase().contains("privacy policy"));
     }
 
     #[test]

@@ -441,7 +441,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
     const workflowStatus = selectedDraft.status;
     const finalStatus = workflowStatus === "published" || workflowStatus === "corrected";
     const canResume = workflowStatus === "needs_verification" || workflowStatus === "killed";
-    const canSendBack = !["hold", "needs_verification", "killed", "published", "corrected"].includes(workflowStatus);
+    const canSendBack = !["needs_verification", "killed", "published", "corrected"].includes(workflowStatus);
     const canHold = workflowStatus !== "hold" && !finalStatus;
     const canCut = workflowStatus !== "killed" && !finalStatus;
     const canMarkReady = !["ready_to_review", "ready_to_publish", "killed", "published", "corrected"].includes(workflowStatus);

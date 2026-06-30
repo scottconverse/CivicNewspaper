@@ -650,7 +650,23 @@ fn is_likely_site_boilerplate_line(line: &str) -> bool {
         "social media",
         "newsletter signup",
     ];
-    contains.iter().any(|needle| lower.contains(needle))
+    if contains.iter().any(|needle| lower.contains(needle)) {
+        return true;
+    }
+
+    let footer_nav_terms = [
+        "accessibility",
+        "land acknowledgment",
+        "insidelongmont",
+        "employee login",
+        "terms of use",
+        "privacy policy",
+    ];
+    footer_nav_terms
+        .iter()
+        .filter(|needle| lower.contains(**needle))
+        .count()
+        >= 2
 }
 
 pub(crate) fn strip_public_boilerplate(text: &str) -> String {

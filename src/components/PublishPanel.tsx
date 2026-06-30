@@ -419,16 +419,16 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
 
           <div className="publish-step-list">
             {[
-              ["Compile approved stories", "HTML"],
-              ["Preview local website", "index.html"],
-              ["Export hosting package", "ZIP"],
-              ["Publish to a host", "next"],
-              ["Share with residents", "posts"],
-            ].map(([label, meta]) => (
+              { label: "Compile approved stories", meta: "HTML", complete: !!publishResult },
+              { label: "Preview local website", meta: "index.html", complete: !!publishResult },
+              { label: "Export hosting package", meta: "ZIP", complete: !!publishResult?.zip_path },
+              { label: "Publish to a host", meta: "next", complete: false },
+              { label: "Share with residents", meta: "posts", complete: !!publishResult },
+            ].map(({ label, meta, complete }) => (
               <div className="publish-step-row" key={label}>
-                <CheckCircle size={19} />
+                {complete ? <CheckCircle size={19} /> : <AlertTriangle size={19} />}
                 <span>{label}</span>
-                <code>{meta}</code>
+                <code>{complete ? meta : "pending"}</code>
               </div>
             ))}
           </div>

@@ -31,10 +31,14 @@ pub fn app_data_dir<R: Runtime>(app: &AppHandle<R>) -> Result<PathBuf, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::{LazyLock, Mutex};
     use tempfile::tempdir;
+
+    static ENV_LOCK: LazyLock<Mutex<()>> = LazyLock::new(|| Mutex::new(()));
 
     #[test]
     fn app_data_override_requires_absolute_path() {
+        let _guard = ENV_LOCK.lock().unwrap();
         std::env::set_var(APP_DATA_OVERRIDE_ENV, "relative-profile");
         let result = app_data_override_dir();
         std::env::remove_var(APP_DATA_OVERRIDE_ENV);
@@ -43,6 +47,7 @@ mod tests {
 
     #[test]
     fn app_data_override_creates_clean_profile_dir() {
+        let _guard = ENV_LOCK.lock().unwrap();
         let root = tempdir().unwrap();
         let profile = root.path().join("clean-profile");
         std::env::set_var(APP_DATA_OVERRIDE_ENV, &profile);

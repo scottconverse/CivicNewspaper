@@ -380,6 +380,9 @@ fn strip_editor_note_marker(line: &str) -> Option<String> {
     if lower.starts_with("editor_note:") {
         return Some(String::new());
     }
+    if lower.starts_with("editor note:") {
+        return Some(String::new());
+    }
 
     if lower.starts_with("[editor_note:") {
         if let Some(end_idx) = trimmed.find(']') {
@@ -387,8 +390,23 @@ fn strip_editor_note_marker(line: &str) -> Option<String> {
         }
         return Some(String::new());
     }
+    if lower.starts_with("[editor note:") {
+        if let Some(end_idx) = trimmed.find(']') {
+            return Some(trimmed[end_idx + 1..].trim_start().to_string());
+        }
+        return Some(String::new());
+    }
 
     if let Some(idx) = lower.find("[editor_note:") {
+        let before = &trimmed[..idx];
+        if let Some(close_rel) = trimmed[idx..].find(']') {
+            let after = &trimmed[idx + close_rel + 1..];
+            let joined = format!("{}{}", before.trim_end(), after);
+            return Some(joined.trim().to_string());
+        }
+        return Some(before.trim().to_string());
+    }
+    if let Some(idx) = lower.find("[editor note:") {
         let before = &trimmed[..idx];
         if let Some(close_rel) = trimmed[idx..].find(']') {
             let after = &trimmed[idx + close_rel + 1..];
@@ -450,7 +468,7 @@ fn public_title_and_content(draft_title: &str, draft_content: &str) -> (String, 
                         .unwrap_or_default(),
                 ));
             }
-            if lower.starts_with("editor_note:") {
+            if lower.starts_with("editor_note:") || lower.starts_with("editor note:") {
                 skipping_editor_note = true;
                 return None;
             }
@@ -460,6 +478,12 @@ fn public_title_and_content(draft_title: &str, draft_content: &str) -> (String, 
                     return None;
                 }
                 return Some(cleaned);
+            }
+            if lower.contains("editor_note")
+                || lower.contains("editor note:")
+                || lower.starts_with("tester edit:")
+            {
+                return None;
             }
             if skipping_editor_note {
                 if trimmed.is_empty()
@@ -533,6 +557,9 @@ fn public_output_quality_issue(contents: &str) -> Option<String> {
     let blocked_markers = [
         "editor_note",
         "[editor_note",
+        "editor note:",
+        "[editor note:",
+        "tester edit:",
         "nut graf:",
         "reporting steps:",
         "next reporting steps:",
@@ -545,6 +572,7 @@ fn public_output_quality_issue(contents: &str) -> Option<String> {
         "get city news in spanish",
         "follow our whatsapp channel",
         "employee login",
+        "needs more reporting before it is ready for publication",
     ];
     blocked_markers
         .iter()
@@ -1380,6 +1408,7 @@ pub fn compile_static_site(
         articles: compiled_articles,
     };
 
+    assert_public_output_quality(output_dir, &result.generated_files)?;
     result.files_written = files_written + 2;
     let manifest = serde_json::to_string_pretty(&result)?;
     write_site_file(
@@ -1389,7 +1418,6 @@ pub fn compile_static_site(
     )?;
 
     let zip_path = output_dir.join("site-package.zip");
-    assert_public_output_quality(output_dir, &result.generated_files)?;
     write_zip_package(output_dir, &zip_path)?;
     files_written += 1;
     result.files_written = files_written;
