@@ -19,19 +19,19 @@ IMPORTANT MACHINE CONTEXT:
 
 Run this directive now:
 
-`test-comms/directives/20260630-cleanroom-e2e-a0b436a-attempt1.md`
+`test-comms/directives/20260630-cleanroom-e2e-c4c10b0-attempt2.md`
 
 The tester must first produce:
 
-`test-comms/reports/20260630-cleanroom-e2e-a0b436a-visibility-attempt-1.md`
+`test-comms/reports/20260630-cleanroom-e2e-c4c10b0-visibility-attempt-2.md`
 
 Then continue and produce the final human-readable cleanroom report:
 
-`test-comms/reports/20260630-cleanroom-e2e-a0b436a-report.md`
+`test-comms/reports/20260630-cleanroom-e2e-c4c10b0-report.md`
 
 Evidence and output artifacts must be written under:
 
-`test-comms/artifacts/20260630-cleanroom-e2e-a0b436a/tester-output/`
+`test-comms/artifacts/20260630-cleanroom-e2e-c4c10b0/tester-output/`
 
 Product branch:
 
@@ -39,22 +39,22 @@ Product branch:
 
 Product commit:
 
-`a0b436af3009500714055a2bff01612716ee36c1`
+`c4c10b0bcbce8fee789a6209ee10a8c216d88dc9`
 
 Artifact folder:
 
-`test-comms/artifacts/20260630-cleanroom-e2e-a0b436a/`
+`test-comms/artifacts/20260630-cleanroom-e2e-c4c10b0/`
 
 Expected preferred NSIS SHA256:
 
-`B6777C66A7330A46F6FC443576C06E648E516EC52EC845004044DB4663A23BD8`
+`BF12F1B020D355B95ABBF79597EB629A505C5E966C892B57338BD3AE5AFC498C`
 
 Expected fallback MSI SHA256:
 
-`4C4F40178017853DFA5E65AFD10595306018C0F2B803190A1DB431A28CA8AA2E`
+`46EDAC61E261D1E17BFA9BE26C0664554486FC826F6B91DCE01DD8264D5A3DA1`
 
 ## Current Goal
 
-Run the full CivicNewspaper cleanroom end-to-end test from a product clean wipe. Prove or disprove install, first-run AI setup, Longmont source discovery, lead generation, local AI drafting, writer/editor workflow, export ZIP, here.now publish, output quality, duplicate-topic prevention, and mojibake/scaffolding cleanup.
+Rerun the full CivicNewspaper cleanroom E2E after the cleanroom quality fixes. Specifically verify ZIP creation, publish checklist honesty, public-output scaffolding cleanup, Longmont boilerplate cleanup, Workbench held/send-back workflow, Workbench empty-state visibility, here.now publish, and finished output quality.
 
 Commit reports/artifacts with `[skip ci]`.
