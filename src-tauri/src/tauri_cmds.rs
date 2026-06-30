@@ -1117,23 +1117,29 @@ fn build_draft_prompt(
     disposition: Option<&str>,
     novelty_score: Option<i32>,
     novelty_reason: Option<&str>,
+    recurrence_count: Option<i32>,
+    recurrence_note: Option<&str>,
     template_guidance: Option<&str>,
     evidence_context: &str,
     evidence_count: usize,
     format: &str,
 ) -> String {
     let lead_quality_context = format!(
-        "Story type: {}\nEditorial disposition: {}\nNovelty score: {}\nNovelty reason: {}\nStory template guidance: {}\n",
+        "Story type: {}\nEditorial disposition: {}\nNovelty score: {}\nNovelty reason: {}\nBeat recurrence: {}\nBeat recurrence note: {}\nStory template guidance: {}\n",
         story_type.unwrap_or("unspecified"),
         disposition.unwrap_or("review"),
         novelty_score
             .map(|score| format!("{score}/5"))
             .unwrap_or_else(|| "unspecified".to_string()),
         novelty_reason.unwrap_or("unspecified"),
+        recurrence_count
+            .map(|count| format!("{count} previous appearance(s)"))
+            .unwrap_or_else(|| "not known".to_string()),
+        recurrence_note.unwrap_or("none"),
         template_guidance
             .unwrap_or("Use the editor's selected format and keep the draft evidence-bound.")
     );
-    let advisory = "If editorial disposition is background, watch, needs_verification, low novelty, or no current change found, return an editor memo or watch item. Do not make it sound like a finished news story unless the attached evidence shows a current, specific, verified development.";
+    let advisory = "If editorial disposition is background, watch, needs_verification, low novelty, no current change found, or recurring beat memory with no new fact, return an editor memo or watch item. Do not make it sound like a finished news story unless the attached evidence shows a current, specific, verified development.";
 
     if evidence_count == 0 {
         format!(
@@ -1165,6 +1171,8 @@ mod draft_prompt_tests {
             Some("background"),
             Some(1),
             Some("no current change found"),
+            Some(2),
+            Some("Similar topic was seen on earlier scans."),
             Some("Do not frame this as news. State what new fact would make it publishable."),
             "Evidence Citation ID: 7\nExcerpt: Archived council meetings are available.\n\n",
             1,
@@ -1175,6 +1183,8 @@ mod draft_prompt_tests {
         assert!(prompt.contains("Editorial disposition: background"));
         assert!(prompt.contains("Novelty score: 1/5"));
         assert!(prompt.contains("Novelty reason: no current change found"));
+        assert!(prompt.contains("Beat recurrence: 2 previous appearance(s)"));
+        assert!(prompt.contains("Similar topic was seen on earlier scans."));
         assert!(prompt.contains("Do not frame this as news"));
         assert!(prompt.contains("return an editor memo or watch item"));
         assert!(prompt.contains("not a publishable news story yet"));
@@ -1214,6 +1224,8 @@ pub async fn generate_draft<R: tauri::Runtime>(
         disposition,
         novelty_score,
         novelty_reason,
+        recurrence_count,
+        recurrence_note,
         template_guidance,
         evidence_items,
     ) = {
@@ -1221,11 +1233,21 @@ pub async fn generate_draft<R: tauri::Runtime>(
             .lock()
             .map_err(|_| "Failed to lock database".to_string())?;
         let mut stmt = conn
-            .prepare("SELECT why, story_type, disposition, novelty_score, novelty_reason FROM leads WHERE id = ?1")
+            .prepare("SELECT why, story_type, disposition, novelty_score, novelty_reason, recurrence_count, recurrence_note FROM leads WHERE id = ?1")
             .map_err(|e| e.to_string())?;
-        let (why, story_type, disposition, novelty_score, novelty_reason): (
+        let (
+            why,
+            story_type,
+            disposition,
+            novelty_score,
+            novelty_reason,
+            recurrence_count,
+            recurrence_note,
+        ): (
             String,
             Option<String>,
+            Option<String>,
+            Option<i32>,
             Option<String>,
             Option<i32>,
             Option<String>,
@@ -1237,6 +1259,8 @@ pub async fn generate_draft<R: tauri::Runtime>(
                     row.get(2)?,
                     row.get(3)?,
                     row.get(4)?,
+                    row.get(5)?,
+                    row.get(6)?,
                 ))
             })
             .map_err(|e| e.to_string())?;
@@ -1248,6 +1272,8 @@ pub async fn generate_draft<R: tauri::Runtime>(
             disposition,
             novelty_score,
             novelty_reason,
+            recurrence_count,
+            recurrence_note,
             template_guidance,
             items,
         )
@@ -1268,6 +1294,8 @@ pub async fn generate_draft<R: tauri::Runtime>(
         disposition.as_deref(),
         novelty_score,
         novelty_reason.as_deref(),
+        recurrence_count,
+        recurrence_note.as_deref(),
         template_guidance.as_deref(),
         &evidence_context,
         evidence_items.len(),

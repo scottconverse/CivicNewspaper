@@ -158,6 +158,91 @@ describe("Workbench Component Tests", () => {
     expect(handleGenerateText).toHaveBeenCalledTimes(1);
   });
 
+  test("draft wizard surfaces recurring background quality context before generation", () => {
+    render(
+      <Workbench
+        selectedLead={{
+          ...mockLead,
+          story_type: "background",
+          disposition: "background",
+          novelty_score: 1,
+          novelty_reason: "no current change found",
+          recurrence_count: 2,
+          recurrence_note: "Similar topic was first seen last week.",
+        }}
+        selectedDraft={null}
+        evidenceList={[]}
+        guardrailsReport={null}
+        ollamaOnline={true}
+        manualLlmMode={false}
+        draftFormat="watch"
+        onDraftFormatChange={vi.fn()}
+        customSystemPrompt=""
+        onCustomSystemPromptChange={vi.fn()}
+        generatingText={false}
+        onGenerateText={vi.fn()}
+        onCancelDraftWizard={vi.fn()}
+        onSaveDraftEditor={vi.fn()}
+        onCloseWorkbench={vi.fn()}
+        onDeleteDraft={vi.fn()}
+        onDecision={vi.fn()}
+        isGeneratingSocial={false}
+        socialPackResult=""
+        onSocialPackResultChange={vi.fn()}
+        onGenerateSocial={vi.fn()}
+        onUpdateDraftTitle={vi.fn()}
+        onUpdateDraftContent={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("Background")).toBeInTheDocument();
+    expect(screen.getByText("Novelty 1/5")).toBeInTheDocument();
+    expect(screen.getByText("Seen 2 times before")).toBeInTheDocument();
+    expect(screen.getByText(/Recurring topic/i)).toBeInTheDocument();
+    expect(screen.getByText(/no current change found/i)).toBeInTheDocument();
+    expect(screen.getByText(/first seen last week/i)).toBeInTheDocument();
+  });
+
+  test("draft wizard labels verification leads as reporting notes", () => {
+    render(
+      <Workbench
+        selectedLead={{
+          ...mockLead,
+          story_type: "verification",
+          disposition: "needs_verification",
+          novelty_reason: "Needs a second public source.",
+        }}
+        selectedDraft={null}
+        evidenceList={[]}
+        guardrailsReport={null}
+        ollamaOnline={true}
+        manualLlmMode={false}
+        draftFormat="watch"
+        onDraftFormatChange={vi.fn()}
+        customSystemPrompt=""
+        onCustomSystemPromptChange={vi.fn()}
+        generatingText={false}
+        onGenerateText={vi.fn()}
+        onCancelDraftWizard={vi.fn()}
+        onSaveDraftEditor={vi.fn()}
+        onCloseWorkbench={vi.fn()}
+        onDeleteDraft={vi.fn()}
+        onDecision={vi.fn()}
+        isGeneratingSocial={false}
+        socialPackResult=""
+        onSocialPackResultChange={vi.fn()}
+        onGenerateSocial={vi.fn()}
+        onUpdateDraftTitle={vi.fn()}
+        onUpdateDraftContent={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("Needs verification")).toBeInTheDocument();
+    expect(screen.getByText(/Verification assignment/i)).toBeInTheDocument();
+    expect(screen.getByText(/reporting notes/i)).toBeInTheDocument();
+    expect(screen.getByText(/Needs a second public source/i)).toBeInTheDocument();
+  });
+
   test("shows local progress while a draft is generating", () => {
     render(
       <Workbench

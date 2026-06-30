@@ -284,6 +284,35 @@ export const Workbench: React.FC<WorkbenchProps> = ({
     }
   };
 
+  const getLeadDispositionLabel = (disposition?: string) => {
+    switch ((disposition ?? "review").toLowerCase()) {
+      case "ready_to_draft": return "Ready to draft";
+      case "needs_verification": return "Needs verification";
+      case "background": return "Background";
+      case "watch": return "Watch";
+      default: return "Editor review";
+    }
+  };
+
+  const getLeadQualityGuidance = (lead: Lead) => {
+    const disposition = (lead.disposition ?? "review").toLowerCase();
+    const storyType = (lead.story_type ?? "").toLowerCase();
+    const recurrence = lead.recurrence_count !== undefined && lead.recurrence_count > 0;
+    if (recurrence) {
+      return "Recurring topic. Draft only if the source shows a new vote, deadline, dollar amount, filing, outage, meeting item, or public impact.";
+    }
+    if (disposition === "background" || storyType === "background") {
+      return "Background item. Treat as context or an editor memo unless you have a current, specific change.";
+    }
+    if (disposition === "needs_verification" || storyType === "verification") {
+      return "Verification assignment. Use the draft as reporting notes until the missing facts are checked.";
+    }
+    if (disposition === "watch" || storyType === "watch") {
+      return "Watch item. Explain what is known, what is missing, and what would make it publishable.";
+    }
+    return "Use linked evidence and the novelty notes to decide whether this is ready for reader-facing copy.";
+  };
+
   // If drafting from a Lead
   if (selectedLead && !selectedDraft) {
     return (
@@ -292,6 +321,36 @@ export const Workbench: React.FC<WorkbenchProps> = ({
         <p className="help-text" style={{ marginBottom: "1.5rem" }}>
           Lead: <strong>{selectedLead.why}</strong>
         </p>
+
+        <div className="card" id="draft-lead-quality-card" style={{ background: "var(--accent-light)", marginBottom: "1rem" }}>
+          <div className="lead-header" style={{ marginBottom: "0.65rem" }}>
+            {selectedLead.story_type && (
+              <span className="badge badge-neutral" style={{ textTransform: "capitalize" }}>
+                {selectedLead.story_type}
+              </span>
+            )}
+            <span className="badge badge-info">{getLeadDispositionLabel(selectedLead.disposition)}</span>
+            {selectedLead.novelty_score !== undefined && (
+              <span className="badge badge-neutral">Novelty {selectedLead.novelty_score}/5</span>
+            )}
+            {selectedLead.recurrence_count !== undefined && selectedLead.recurrence_count > 0 && (
+              <span className="badge badge-warning">
+                {selectedLead.recurrence_count === 1 ? "Seen before" : `Seen ${selectedLead.recurrence_count} times before`}
+              </span>
+            )}
+          </div>
+          <p className="help-text" style={{ margin: 0 }}>{getLeadQualityGuidance(selectedLead)}</p>
+          {selectedLead.novelty_reason && (
+            <p className="help-text" style={{ margin: "0.5rem 0 0 0" }}>
+              <strong>Why now:</strong> {selectedLead.novelty_reason}
+            </p>
+          )}
+          {selectedLead.recurrence_note && (
+            <p className="help-text" style={{ margin: "0.5rem 0 0 0" }}>
+              <strong>Beat memory:</strong> {selectedLead.recurrence_note}
+            </p>
+          )}
+        </div>
 
         <div className="draft-wizard-top-actions">
           <button ref={generateDraftButtonRef} type="button" className="btn btn-primary" onClick={onGenerateText} disabled={generatingText || (!ollamaOnline && !manualLlmMode)} id="btn-generate-draft-top">
