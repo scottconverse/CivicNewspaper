@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Longmont E2E Test Gazette</title>
+    <link>index.html</link>
+    <description>Neutral local information for Longmont residents.</description>
+    <language>en-us</language>
+    <pubDate>Tue, 30 Jun 2026 09:46:56 +0000</pubDate>
+    <lastBuildDate>Tue, 30 Jun 2026 09:46:56 +0000</lastBuildDate>
+    <item>
+      <title>City to Close Intersection of Hover Street&#x2F;CO 119 for Overnight Roof Work</title>
+      <link>watch/5.html</link>
+      <guid>watch/5</guid>
+      <pubDate>2026-06-30T09:45:52.411456400+00:00</pubDate>
+      <description>City to Close Intersection of Hover Street&#x2F;CO 119 for Overnight Roof Work</description>
+    </item>
+    <item>
+      <title>Understanding How to Participate in City Council Meetings</title>
+      <link>watch/4.html</link>
+      <guid>watch/4</guid>
+      <pubDate>2026-06-30T09:45:37.773867300+00:00</pubDate>
+      <description>Understanding How to Participate in City Council Meetings</description>
+    </item>
+    <item>
+      <title>Overview of City Departments in Longmont</title>
+      <link>watch/3.html</link>
+      <guid>watch/3</guid>
+      <pubDate>2026-06-30T09:45:08.115241900+00:00</pubDate>
+      <description>Overview of City Departments in Longmont</description>
+    </item>
+    <item>
+      <title>City Council Set to Discuss Temporary Closure of Hover Street&#x2F;CO 119 Intersection</title>
+      <link>watch/2.html</link>
+      <guid>watch/2</guid>
+      <pubDate>2026-06-30T09:44:19.392523300+00:00</pubDate>
+      <description>City Council Set to Discuss Temporary Closure of Hover Street&#x2F;CO 119 Intersection</description>
+    </item>
+
+  </channel>
+</rss>

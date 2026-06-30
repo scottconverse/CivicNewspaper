@@ -1,0 +1,71 @@
+{
+  "issue_id": "issue-20260630-094656-152599200",
+  "output_dir": "C:/Users/civic/AppData/Roaming/com.scottconverse.civicdesk/sites/default",
+  "generated_at": "2026-06-30T09:46:56.152599200+00:00",
+  "provider": "local_export",
+  "published_url": null,
+  "deployment_id": null,
+  "article_count": 4,
+  "skipped_count": 0,
+  "files_written": 21,
+  "generated_files": [
+    "styles.css",
+    "print.css",
+    "watch/5.html",
+    "watch/4.html",
+    "watch/3.html",
+    "watch/2.html",
+    "index.html",
+    "about.html",
+    "ethics.html",
+    "how-we-report.html",
+    "corrections.html",
+    "feed.xml",
+    "newsletter.md",
+    "substack.md",
+    "share-package.md",
+    "facebook-post.txt",
+    "subreddit-post.md",
+    "nextdoor-post.txt",
+    "short-link-blurb.txt",
+    "publish-manifest.json",
+    "site-package.zip"
+  ],
+  "index_path": "index.html",
+  "rss_path": "feed.xml",
+  "newsletter_path": "newsletter.md",
+  "substack_path": "substack.md",
+  "share_package_path": "share-package.md",
+  "facebook_post_path": "facebook-post.txt",
+  "subreddit_post_path": "subreddit-post.md",
+  "nextdoor_post_path": "nextdoor-post.txt",
+  "short_link_blurb_path": "short-link-blurb.txt",
+  "manifest_path": "publish-manifest.json",
+  "zip_path": "site-package.zip",
+  "articles": [
+    {
+      "title": "City to Close Intersection of Hover Street/CO 119 for Overnight Roof Work",
+      "format": "watch",
+      "relative_path": "watch/5.html",
+      "updated_at": "2026-06-30T09:45:52.411456400+00:00"
+    },
+    {
+      "title": "Understanding How to Participate in City Council Meetings",
+      "format": "watch",
+      "relative_path": "watch/4.html",
+      "updated_at": "2026-06-30T09:45:37.773867300+00:00"
+    },
+    {
+      "title": "Overview of City Departments in Longmont",
+      "format": "watch",
+      "relative_path": "watch/3.html",
+      "updated_at": "2026-06-30T09:45:08.115241900+00:00"
+    },
+    {
+      "title": "City Council Set to Discuss Temporary Closure of Hover Street/CO 119 Intersection",
+      "format": "watch",
+      "relative_path": "watch/2.html",
+      "updated_at": "2026-06-30T09:44:19.392523300+00:00"
+    }
+  ]
+}

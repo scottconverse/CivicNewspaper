@@ -1,140 +1,217 @@
-# CivicNewspaper cleanroom E2E report - a0b436a attempt 1
+# Cleanroom E2E report - a0b436a attempt 1
 
-Date: 2026-06-30 UTC
-Tester machine: Windows cleanroom tester, user `MSI\civic`
-Coordination branch: `test-comms/cleanroom-coder-tester`
-Product branch: `main`
-Product commit: `a0b436af3009500714055a2bff01612716ee36c1`
-Directive: `test-comms/directives/20260630-cleanroom-e2e-a0b436a-attempt1.md`
+## Result
 
-## Plain-English verdict
+FAIL.
 
-FAIL, evidence-backed.
+The installer, clean first-run AI setup, source ingestion, Daily Scan, local static-site compile, and anonymous here.now public load all worked at least partially. The run fails readiness because the published output contains reader-facing quality failures, the required ZIP package is missing from disk even though the UI marks "Export hosting package" complete, and the full editor workflow could not be completed through the app.
 
-The app installed, launched, configured local AI, discovered/imported starter Longmont sources, ran Daily Scan, generated 13 leads, and generated 5 drafts. However, the end-to-end publish path could not complete because the app's own public-output quality gate blocked compile/publish:
+Public preview URL: `https://snowy-pumice-rq7m.here.now/`
 
-`Public output quality gate failed: watch/5.html contains public-output marker employee login; watch/4.html contains public-output marker employee login; watch/3.html contains public-output marker employee login; watch/2.html contains public-output marker editor_note`
+## Build under test
 
-I did not manually patch around this product failure. No here.now URL was produced for this attempt because compile/publish did not pass.
+- Coordination branch: `test-comms/cleanroom-coder-tester`
+- Product branch: `main`
+- Product commit: `a0b436af3009500714055a2bff01612716ee36c1`
+- Directive: `test-comms/directives/20260630-cleanroom-e2e-a0b436a-attempt1.md`
+- Visibility report was committed first at `49d0814`.
 
-## Installer and cleanroom setup
+## Tester machine
 
-- Preferred NSIS installer used: `test-comms/artifacts/20260630-cleanroom-e2e-a0b436a/The Civic Desk_0.3.0_x64-setup.exe`
-- NSIS SHA256: `B6777C66A7330A46F6FC443576C06E648E516EC52EC845004044DB4663A23BD8`
-- NSIS size: `5605081`
-- Fallback MSI visible and verified: `test-comms/artifacts/20260630-cleanroom-e2e-a0b436a/The Civic Desk_0.3.0_x64_en-US.msi`
-- MSI SHA256: `4C4F40178017853DFA5E65AFD10595306018C0F2B803190A1DB431A28CA8AA2E`
-- MSI size: `9117696`
-- Visibility report was already present and pushed at `test-comms/reports/20260630-cleanroom-e2e-a0b436a-visibility-attempt-1.md`.
-- Evidence: `tester-output/evidence/final-run-command-summary.json`, first-run screenshots, installer/app process evidence under `tester-output/evidence/`.
+- Windows user: `MSI\civic`
+- Hostname: `MSI`
+- Coordination clone: `C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms`
+- App data root observed: `C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk`
+- Static output folder: `C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\sites\default`
 
-## AI setup and model
+## Installer and hash verification
 
-- First-run flow reached local AI setup.
-- App installed/used local Ollama runtime under `%APPDATA%\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\`.
-- Model shown by app: `qwen2.5:7b`.
-- App status at test time: `Local AI ready`.
-- Evidence: `first-run-launch-screen.png`, `clean-first-run-screen.png`, `ai-service-setup-after-wait.png`, `ai-model-complete-screen.png`, `final-run-command-summary.json`.
+Used NSIS installer:
 
-## Sources and discovery
+- `test-comms/artifacts/20260630-cleanroom-e2e-a0b436a/The Civic Desk_0.3.0_x64-setup.exe`
+- Size: `5605081`
+- SHA256: `B6777C66A7330A46F6FC443576C06E648E516EC52EC845004044DB4663A23BD8`
+- Installer exit code: `0`
 
-The app ended with 6 sources visible:
+The MSI was visible and hash-verified but not used because NSIS succeeded:
 
-- `https://longmontcolorado.gov/city-clerk/agenda-management-portal/`
-- `https://longmontcolorado.gov/government/city-council-meetings/`
-- `https://longmontcolorado.gov/public-information/`
-- `https://www.publicnoticecolorado.com/`
-- `https://www.reddit.com/r/Longmont/`
-- `https://www.reddit.com/r/LongmontColorado/`
+- `test-comms/artifacts/20260630-cleanroom-e2e-a0b436a/The Civic Desk_0.3.0_x64_en-US.msi`
+- Size: `9117696`
+- SHA256: `4C4F40178017853DFA5E65AFD10595306018C0F2B803190A1DB431A28CA8AA2E`
 
-Evidence: `sources-screen-initial.png`, `queue-after-restart.png`, `queue-after-multiple-draft-approvals.png`.
+## Clean wipe evidence
 
-## Lead and story counts
+Before install, the previous `The Civic Desk` install and a prior `.ollama` state existed. I stopped `civicnews.exe`, ran the app uninstaller, and removed CivicNewspaper/Ollama state within the directive boundary.
 
-- Leads produced: 13.
-- Drafts produced: 5.
-- High priority leads visible: 1.
-- Approved/publish-path stories attempted: multiple drafts were mechanically approved to exercise the pipeline.
-- The app wrote partial static output containing `watch/2.html` through `watch/5.html`, but compile/publish was blocked by quality gates.
+I initially missed `C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk`; after observing it on launch, I stopped the app/WebView/Ollama processes and wiped:
 
-Evidence: `queue-after-multiple-draft-approvals.png`, `final-run-command-summary.json`, `tester-output/site-output-copy/`.
+- `C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk`
+- `C:\Users\civic\AppData\Local\com.scottconverse.civicdesk`
+- `C:\Users\civic\.ollama`
+- `C:\Users\civic\AppData\Local\Ollama`
+- `C:\Users\civic\AppData\Roaming\Ollama`
 
-## Story/workflow exercise
+No Ollama user PATH entries were found.
 
-I exercised these workflow controls:
+## First-run and AI setup
 
-- Created drafts from queue leads.
-- Opened Workbench.
-- Edited and saved a draft.
-- Used `Send Back for More Work`.
-- Used `Hold`.
-- Attempted `Cut Story`; the cut confirmation appeared and restore/resume controls were visible.
-- Used `Resume Editing`.
-- Approved drafts for static publish.
-- Ran the press-freedom/legal-risk advisor control.
+- First-run setup displayed the unsigned beta/local setup path.
+- The setup screen twice reported that it did not receive input events and advanced automatically.
+- The app chose `qwen2.5:7b (Recommended)` on a 15 GB RAM machine.
+- The app downloaded and started bundled Ollama runtime `v0.30.11`.
+- Completed model: `qwen2.5:7b`, size `4.7 GB`.
+- The dashboard reported `Local AI ready qwen2.5:7b`.
 
-Important limitation: the press-freedom/legal-risk advisor did not produce a separate visible advisory result during this run. The UI continued to show static advisory guidance and non-blocking warnings. Evidence: `workbench-press-freedom-advisor-result.png`.
+The generated community profile was neutral:
 
-Evidence: `workbench-second-draft-editor-note-visible.png`, `workbench-save-draft-after-tester-edit.png`, `workbench-status-send-back.png`, `workbench-status-hold.png`, `workbench-status-cut.png`, `workflow-current-draft-before-approve.png`, `workflow-current-draft-after-approve.png`.
+- Site title: `My Local Publication`
+- City/state: `Longmont, CO`
+- About text: `A locally edited publication for this community.`
 
-## Story list and quality findings
+## Sources and scan results
 
-Observed generated titles included:
+Configured/observed sources:
 
-- `City Council Set to Discuss Temporary Closure of Hover Street/CO 119 Intersection`
-- `Overview of City Departments in Longmont`
-- `Understanding How to Participate in City Council Meetings`
-- `City to Close Intersection of Hover Street/CO 119 for Overnight Roof Work`
+- `Longmont Agenda Management Portal` - `https://longmontcolorado.gov/city-clerk/agenda-management-portal/` - online
+- `Longmont City Council Meetings` - `https://longmontcolorado.gov/government/city-council-meetings/` - online
+- `Longmont Public Information` - `https://longmontcolorado.gov/public-information/` - online
+- `Public Notice Colorado` - `https://www.publicnoticecolorado.com/` - online
+- `Longmont subreddit` - `https://www.reddit.com/r/Longmont/` - offline
+- `Longmont Colorado subreddit` - `https://www.reddit.com/r/LongmontColorado/` - offline
 
-The generated drafts repeatedly exposed reporter/editor scaffolding rather than reader-facing newspaper output:
+Observed database counts:
 
-- One generated body began with `Editor_note: Not enough verified source material for a publishable story yet.`
-- Another generated body began with `Editor Note: This looks like background material, not a publishable news story yet.`
-- Several stories had no linked source documents.
-- The app's own guardrail warned: `Draft still contains internal reporter-note marker(s): editor_note:. Remove or rewrite them as reader-facing copy before publishing.`
-- Compile failed because public output included `editor_note` and `employee login` markers.
+- Sources: `6`
+- Evidence items: `26`
+- Leads: `13`
+- Daily scan runs: `2`, both completed
+- Daily scan leads: `5`
+- Drafts generated: `5`
+- Published static watch pages: `4`
 
-Evidence: `draft-controlled-generation-final.png`, `draft-4-generated.png`, `draft-5-generated.png`, `draft-6-generated.png`, `final-compile-quality-gate-block.png`, `public-output-marker-scan.json`.
+## Draft/story list
 
-## Export, ZIP, here.now
+The app generated these drafts:
 
-- Static output folder used by app: `C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\sites\default`.
-- A committed copy of the failed partial output is included at `test-comms/artifacts/20260630-cleanroom-e2e-a0b436a/tester-output/site-output-copy/`.
-- ZIP export did not complete.
-- here.now publish did not complete.
-- No here.now URL was produced.
+- Draft 1, lead 13: `City Council Meeting Details and Participation Rules` - status `draft_generated`
+- Draft 2, lead 12: `City Council Set to Discuss Temporary Closure of Hover Street/CO 119 Intersection` - status `ready_to_publish`
+- Draft 3, lead 11: `Overview of City Departments in Longmont` - status `ready_to_publish`
+- Draft 4, lead 10: `Understanding How to Participate in City Council Meetings` - status `ready_to_publish`
+- Draft 5, lead 9: `City to Close Intersection of Hover Street/CO 119 for Overnight Roof Work` - status `ready_to_publish`
 
-Exact failure point: `Publishing -> Review compile checklist -> Compile site`.
+Static output pages:
 
-## Public output quality gate audit
+- `watch/2.html` - `City Council Set to Discuss Temporary Closure of Hover Street/CO 119 Intersection`
+- `watch/3.html` - `Overview of City Departments in Longmont`
+- `watch/4.html` - `Understanding How to Participate in City Council Meetings`
+- `watch/5.html` - `City to Close Intersection of Hover Street/CO 119 for Overnight Roof Work`
 
-The final copied output was scanned for directive markers. Findings:
+## Workflow coverage
 
-- `watch/2.html`: `EDITOR_NOTE` / `editor_note`
-- `watch/4.html`: `Editor Note`
-- `watch/3.html`: `employee login`
-- `watch/4.html`: `employee login`
-- `watch/5.html`: `employee login`
+Completed:
 
-Evidence: `test-comms/artifacts/20260630-cleanroom-e2e-a0b436a/tester-output/evidence/public-output-marker-scan.json`.
+- Install from artifact and launch app.
+- First-run setup and app-managed local AI setup.
+- Source discovery/import path populated six sources.
+- Daily Scan produced leads.
+- Draft creation produced five drafts.
+- Static compile produced local HTML output.
+- Anonymous here.now publish produced a public URL.
 
-## Evidence index
+Partially completed or failed:
 
-Primary evidence folder:
+- The app repeatedly returned to a blank pane after draft generation. I had to recover by returning to the dashboard/restarting the app.
+- The standalone Workbench tile opened a blank pane when no draft was selected.
+- I saw and captured the "Cut this story?" confirmation modal, but canceled it; I did not complete cut/restore.
+- I did not complete the full required edit/save/send back/rework/hold/cut/restore/approve sequence on three items through the UI.
+- I did not successfully invoke the press-freedom/legal-risk advisor before the publish pass.
+- Four drafts were marked `ready_to_publish`/attested as `Publisher`, but the public output quality shows they should not have passed.
+
+## Export and publish
+
+The app compiled local static output here:
+
+`C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\sites\default`
+
+Committed copy:
+
+`test-comms/artifacts/20260630-cleanroom-e2e-a0b436a/tester-output/static-output/`
+
+Public URL:
+
+`https://snowy-pumice-rq7m.here.now/`
+
+Verification:
+
+- `index.html`: HTTP `200`, length `3512`
+- `watch/2.html`: HTTP `200`, length `3730`
+- `watch/3.html`: HTTP `200`, length `9463`
+- `watch/4.html`: HTTP `200`, length `10376`
+- `watch/5.html`: HTTP `200`, length `8938`
+
+Important publish caveat:
+
+The app-generated output was published anonymously to here.now using the same here.now API flow against the compiled app output. I did not commit or record the one-time here.now claim token. I could not complete the app connector UI path cleanly before reporting because of the UI navigation/blank-pane failures above.
+
+## Public output quality gates
+
+FAIL.
+
+- Duplicate topics: fail. Two pages are about the Hover Street/CO 119 closure, and two pages are about City Council meeting participation/background.
+- Reporter/editor note leakage: fail. `watch/2.html` publicly includes `TESTER EDIT: saved during cleanroom workflow exercise; original draft began with editor_note...`
+- Public pages are newspaper output, not reporter notes: fail. `watch/2.html` is verification questions and a tester/editor note, not reader-facing newspaper copy.
+- Headlines read like reader headlines: mixed. Some are acceptable, but `Overview of City Departments in Longmont` is background/reference material, not a current reader headline.
+- No mojibake marker code points: pass in scanned local output.
+- No explicit `EDITOR_NOTE`, `[EDITOR_NOTE`, `Body:`, `Headline:`, `Nut graf`, `Reporting Steps`, `[Source needed]`, `[Verification needed]`, `[End of Report]`: fail in spirit because lower/mixed-case `editor_note`/tester-note material leaked publicly, even though the exact uppercase marker set was not present in the compiled HTML.
+- No unconfigured claim that all articles used AI: pass in scanned local output.
+- No unconfigured claim of no ads, nonprofit status, public-record-only coverage, or made-up publication identity: pass in scanned local output.
+- here.now visible as default preview publish path in docs/UI: pass. The publishing panel text says "publish instantly with here.now" and the share package includes here.now hosting notes.
+
+## ZIP/package failure
+
+FAIL.
+
+The UI marked "Export hosting package" complete and `publish-manifest.json` lists `site-package.zip`, but `site-package.zip` is missing from the actual output folder:
+
+- Expected: `C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\sites\default\site-package.zip`
+- Observed: file does not exist
+
+This prevents satisfying the required local ZIP/output package check.
+
+## Evidence files
+
+Evidence is under:
 
 `test-comms/artifacts/20260630-cleanroom-e2e-a0b436a/tester-output/evidence/`
 
-Important files:
+Key screenshots include:
 
-- `final-compile-quality-gate-block.png`
-- `final-compile-block-ui-summary.json`
-- `final-run-command-summary.json`
-- `public-output-marker-scan.json`
-- `publishing-after-compile.png`
-- `publishing-identity-saved-neutral.png`
-- `queue-after-multiple-draft-approvals.png`
-- `site-output-copy/`
+- `clean-first-run-screen.png`
+- `identity-longmont-selected.png`
+- `ai-service-setup-after-wait.png`
+- `ai-model-complete-screen.png`
+- `sources-screen-initial.png`
+- `story-queue-leads-visible.png`
+- `draft-wizard-first-lead.png`
+- `draft-generating-first-lead.png`
+- `publish-compile-after-click.png`
+- `public-here-now-site-edge.png`
+
+The browser screenshot attempt captured the app WebView rather than the public Edge tab because the foreground Edge handle belonged to the app WebView. Public load proof is therefore the HTTP `200` checks listed above.
+
+## Reproduction notes
+
+1. Install the NSIS artifact from the coordination branch.
+2. Wipe `AppData\Roaming\com.scottconverse.civicdesk`, `AppData\Local\com.scottconverse.civicdesk`, and `.ollama` before first launch.
+3. Launch `C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe`.
+4. Let first-run setup proceed. On this tester, it reported that the setup screen was not receiving input events and advanced automatically.
+5. Let the app download `qwen2.5:7b`.
+6. Open Story Queue/Daily Scan and generate drafts from the Longmont scan leads.
+7. Observe blank-pane recovery issues after draft generation.
+8. Compile from Publishing.
+9. Check the output folder for `site-package.zip`; it is missing even though the manifest lists it.
+10. Check `watch/2.html`; tester/editor note content is visible in public output.
 
 ## Watcher status
 
-The CivicNewspaper watcher remains armed for follow-up directives. CivicCast context was not used for this run.
+The 15 minute CivicNewspaper watcher remains armed for follow-up directives.
