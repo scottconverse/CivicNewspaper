@@ -1,0 +1,77 @@
+{
+  "results": [
+    {
+      "idx": 1,
+      "opened": {
+        "ok": true,
+        "context": "Risk: med\nWatch\nWatch\ndaily_scan\nCity Council Meetings: The city council will discuss Vision Zero projects, activities, and opportunities for community involvement to enhance transportation safety. Editor context: Council meetings often involve public engagement and potential policy changes related to transportation safety. Suggested treatment: watch. Newsworthiness: 13/20 (immediacy 3, impact 4, conflict 2, novelty 4). Why now: The council will review and possibly act on Vision Zero initiatives, which could impact local safety measures. Suggested next step: Review the agenda packet for specific items on Vision Zero and prepare questions or follow-up actions as needed. What would make this publishable: Details on the specific projects being discussed and any new policies or strategies prop"
+      },
+      "done": true,
+      "title": "City Council to Review Vision Zero Initiatives",
+      "bodyStart": "The city council will convene for its regular meeting on [insert date if available], where they will discuss Vision Zero projects aimed at enhancing transportation safety in Longmont. Vision Zero is an international initiative that prioritizes eliminating traffic fatalities and serious injuries by focusing on engineering, education, enforcement, and emergency medical services.\n\nDuring the meeting, which includes a segment for public engagement, residents are encouraged to provide input and sugge",
+      "marker": true,
+      "action": "sent-back-and-held-marker-draft"
+    },
+    {
+      "idx": 2,
+      "opened": {
+        "ok": true,
+        "context": "Risk: med\nBrief\nReady to draft\ndaily_scan\nOvernight Closure of Hover Street/CO 119 Intersection: The city has scheduled a temporary overnight closure at the intersection of Hover Street and CO 119 starting June 28, impacting local traffic patterns. Editor context: This event affects local residents and commuters, requiring advance notice for travel adjustments. Suggested treatment: brief. Newsworthiness: 11/20 (immediacy 3, impact 4, conflict 1, novelty 3). Why now: The intersection will be closed overnight starting June 28, affecting local traffic. Suggested next step: Verify the specific dates and duration of the closure to ensure accuracy in reporting. What would make this publishable: Additional details on detour routes and potential impact on businesses or events.\n\nNovelty 3/5. The in"
+      },
+      "done": true,
+      "title": "Temporary Overnight Closure of Hover Street/CO 119 Intersection Scheduled for June 28",
+      "bodyStart": "Starting on June 28, the city will temporarily close the intersection of Hover Street and CO 119 overnight for unspecified work [Source](evidence:18). This closure will impact local traffic patterns. Residents and commuters should plan accordingly to avoid delays during these periods.\n\nThe specific dates and duration of the closure are yet to be fully verified, so any travel plans based on this information may need adjustment as more details become available [Source](evidence:20). For now, drive",
+      "marker": true,
+      "action": "sent-back-and-held-marker-draft"
+    },
+    {
+      "idx": 3,
+      "opened": {
+        "ok": true,
+        "context": "Risk: low\nEditor review\nDecision / Vote\nVOTING SIGNAL: Found vote/decision keywords ([\"approved\", \"approved\", \"Approved\", \"passed\", \"Motion\", \"motion\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.\n\nNovelty /5.\n\nConfidence: medium\nDraft"
+      },
+      "done": true,
+      "title": "City Council Approves Ordinances Through Majority Votes",
+      "bodyStart": "EDITOR_NOTE: This looks like background material, not a publishable news story yet. Current, specific developments such as newly approved ordinances or votes would be needed to elevate this into a newsworthy item.\n\nExcerpts from Longmont City Council Meeting Records [Source](evidence:10):\n\n- Ordinances require a majority vote for approval.\n- Resolutions are passed by a majority of Council members present.\n- Public hearings are required only for ordinances, not for resolutions or motions.\n- Once ",
+      "marker": true,
+      "action": "sent-back-and-held-marker-draft"
+    },
+    {
+      "idx": 4,
+      "opened": {
+        "ok": true,
+        "context": "Risk: low\nEditor review\nPublic Meeting Scheduled\nMEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.\n\nNovelty /5.\n\nConfidence: medium\nDraft"
+      },
+      "done": true,
+      "title": "Meeting Notification for Longmont City Council",
+      "bodyStart": "EDITOR_NOTE: This looks like background material, not a publishable news story yet. A specific upcoming meeting or new development would be needed to elevate this to a news item.\n\nLongmont residents can participate in upcoming City Council meetings by signing up before the meeting starts. The easiest way to stay informed is through the Agenda Management Portal, which provides direct access to relevant sections of the video recordings. For assistance, contact the City Clerk's Office at 303-651-86",
+      "marker": true,
+      "action": "sent-back-and-held-marker-draft"
+    },
+    {
+      "idx": 5,
+      "opened": {
+        "ok": true,
+        "context": "Risk: low\nEditor review\nDecision / Vote\nVOTING SIGNAL: Found vote/decision keywords ([\"passed\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.\n\nNovelty /5.\n\nConfidence: medium\nDraft"
+      },
+      "done": true,
+      "title": "City Council Meeting Process Updated",
+      "bodyStart": "EDITOR_NOTE: This looks like background material, not a publishable news story yet. A current, specific development such as a recently passed ordinance or changes to the meeting process would be needed to create a newsworthy story.\n\nLongmont residents seeking to participate in City Council meetings can find detailed information on how to sign up and speak during sessions. The city offers an Agenda Management Portal where attendees can directly access relevant sections of recorded meetings, and p",
+      "marker": true,
+      "action": "sent-back-and-held-marker-draft"
+    },
+    {
+      "idx": 6,
+      "opened": {
+        "ok": true,
+        "context": "Risk: low\nEditor review\nNew Primary Record\nA new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).\n\nNovelty /5.\n\nConfidence: high\nDraft"
+      },
+      "done": true,
+      "title": "New Official Document from Longmont Public Information Available",
+      "bodyStart": "Editor Note: This document provides an overview of the City of Longmont's Public Information Department and its roles. It is primarily informational and serves as background material for understanding how the city communicates with residents.\n\nThe new official primary document from 'Longmont Public Information' [Source](evidence:17) offers detailed information on the various departments that make up the government of Longmont, their roles, responsibilities, and community services. The document h",
+      "marker": true,
+      "action": "sent-back-and-held-marker-draft"
+    }
+  ],
+  "queueText": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nStory Queue\n\nCivic signals your sources surfaced, ready to verify and turn into plain-language stories.\n\nRefresh\nDaily Scan\nScrape & Detect\nNEW LEADS\n14\nIN DRAFTING\n6\nHIGH PRIORITY\n0\nSOURCES\n6\nLocal-first workflow\nScan sources, draft from linked evidence, run guardrails, then publish a static paper.\nLeads\n14\nDrafts\n6\nScan results\nlatest\nFilter leads\nSort by:\nDate Created\nRisk Level\nConfidence\nRisk: low\nBackground\nBackground\ndaily_scan\nCity Council Code of Ethics: The City of Longmont provides a detailed Code of Ethics document that outlines the ethical standards expected of its elected officials. Editor context: This document is important for ensuring transparency and accountability in local government, which affects all residents. Suggested treatment: background. Newsworthiness: 10/20 (immediacy 2, impact 3, conflict 1, novelty 4). Why now: No change found, but understanding the code is crucial for ongoing reporting. Suggested next step: Review the Code of Ethics to understand its implications on current or upcoming council decisions. What would make this publishable: A detailed analysis of how the Code of Ethics influences recent or upcoming council actions.\n\nNovelty 4/5. No change found, but understanding the code is crucial for ongoing reporting.\n\nConfidence: low\nDraft anyway\nRisk: low\nBackground\nBackground\nSeen before\ndaily_scan\nCity Council Meeting Participation Rules: Residents can participate in City Council meetings by signing up before the meeting starts, with a limit of three minutes per speaker. Editor context: This provides clear guidelines for public participation in critical city governance events. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 3, impact 2, conflict 1, novelty 4). Why now: No current change found, but this document outlines participation rules for upcoming meetings. Beat memory: similar topic 'City Council Meetings' was first seen 2026-06-30T10:20:57.574922800+00:00, last seen 2026-06-30T10:20:57.574922800+00:00, and has appeared 1 previous time(s). Treat this as recurring/background unless the source shows a new vote, deadline, dollar amount, filing, outage, meeting item, or public impact. Suggested next step: Review the rules to ensure clarity and fairness in public input during meetings. What would make this publishable: A specific example of a recent public input session and how it was handled. Compare against beat memory before drafting; write a story only if there is a new reportable fact.\n\nBeat memory: Similar topic 'City Council Meetings' was first seen 2026-06-30T10:20:57.574922800+00:00, last seen 2026-06-30T10:20:57.574922800+00:00, and has appeared 1 previous time(s).\n\nNovelty 4/5. Beat memory found this topic before, and this scan did not identify a concrete new reportable fact.\n\nConfidence: low\nDraft anyway\nRisk: low\nBackground\nBackground\nSeen before\ndaily_scan\nLongmont Museum Events and Exhibits: The Longmont Museum is hosting a variety of events and exhibits, including Discovery Days for early childhood and museum exhibits that cover a range of topics. Editor context: This provides information on community programs and activities, which are important to residents looking for local engagement opportunities. Suggested treatment: background. Newsworthiness: 7/20 (immediacy 1, impact 3, conflict 1, novelty 2). Why now: No current change found, but events are listed for public information. Beat memory: similar topic 'Overnight Closure of Hover Street/CO 119 Intersection' was first seen 2026-06-30T10:20:57.570781300+00:00, last seen 2026-06-30T10:20:57.570781300+00:00, and has appeared 1 previous time(s). Treat this as recurring/background unless the source shows a new vote, deadline, dollar amount, filing, outage, meeting item, or public impact. Suggested next step: Check event dates and confirm details before promoting them in the newsletter or social media. What would make this publishable: Details on upcoming events and dates. Compare against beat memory before drafting; write a story only if there is a new reportable fact.\n\nBeat memory: Similar topic 'Overnight Closure of Hover Street/CO 119 Intersection' was first seen 2026-06-30T10:20:57.570781300+00:00, last seen 2026-06-30T10:20:57.570781300+00:00, and has appeared 1 previous time(s).\n\nNovelty 2/5. Beat memory found this topic before, and this scan did not identify a concrete new reportable fact.\n\nConfidence: low\nDraft anyway\nRisk: med\nDraft exists\nWatch\nWatch\ndaily_scan\nCity Council Meetings: The city council will discuss Vision Zero projects, activities, and opportunities for community involvement to enhance transportation safety. Editor context: Council meetings "
+}

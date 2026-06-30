@@ -1,0 +1,89 @@
+{
+    "generatedUtc":  "2026-06-30T10:43:31.2300199Z",
+    "branch":  "test-comms/cleanroom-coder-tester",
+    "head":  "30bd94eb656e15d488eb73042e338f13309c1700",
+    "setupSha256":  "BF12F1B020D355B95ABBF79597EB629A505C5E966C892B57338BD3AE5AFC498C",
+    "msiSha256":  "46EDAC61E261D1E17BFA9BE26C0664554486FC826F6B91DCE01DD8264D5A3DA1",
+    "outputFolder":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default",
+    "outputExists":  true,
+    "outputFiles":  [
+                        {
+                            "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\about.html",
+                            "Length":  2376
+                        },
+                        {
+                            "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\corrections.html",
+                            "Length":  2365
+                        },
+                        {
+                            "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\ethics.html",
+                            "Length":  2422
+                        },
+                        {
+                            "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\facebook-post.txt",
+                            "Length":  163
+                        },
+                        {
+                            "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\feed.xml",
+                            "Length":  402
+                        },
+                        {
+                            "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\how-we-report.html",
+                            "Length":  2364
+                        },
+                        {
+                            "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\index.html",
+                            "Length":  2381
+                        },
+                        {
+                            "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\newsletter.md",
+                            "Length":  301
+                        },
+                        {
+                            "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\nextdoor-post.txt",
+                            "Length":  155
+                        },
+                        {
+                            "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\print.css",
+                            "Length":  668
+                        },
+                        {
+                            "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\publish-manifest.json",
+                            "Length":  1322
+                        },
+                        {
+                            "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\share-package.md",
+                            "Length":  451
+                        },
+                        {
+                            "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\short-link-blurb.txt",
+                            "Length":  89
+                        },
+                        {
+                            "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\site-package.zip",
+                            "Length":  10144
+                        },
+                        {
+                            "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\styles.css",
+                            "Length":  4271
+                        },
+                        {
+                            "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\subreddit-post.md",
+                            "Length":  194
+                        },
+                        {
+                            "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\substack.md",
+                            "Length":  286
+                        }
+                    ],
+    "hereNowUrl":  "https://humble-canvas-82dn.here.now",
+    "hereNowFetch":  {
+                         "indexStatus":  200,
+                         "indexLength":  2381,
+                         "indexExcerpt":  "\u003c!DOCTYPE html\u003e\r\n\u003chtml lang=\"en\"\u003e\r\n\u003chead\u003e\r\n    \u003cmeta charset=\"UTF-8\"\u003e\r\n    \u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003e\r\n    \u003c!-- SEC (GG-B1): defense-in-depth CSP for the published site. script-src \u0027none\u0027\r\n         blocks inline and external scripts, including script-based URL navigations;\r\n         style-src allows the bundled stylesheet plus this template\u0027s inline style= attributes. --\u003e\r\n    \u003cmeta http-equiv=\"Content-Security-Policy\" content=\"default-src \u0027self\u0027; script-src \u0027none\u0027; style-src \u0027self\u0027 \u0027unsafe-inline\u0027; img-src \u0027self\u0027 https: data:; object-src \u0027none\u0027; base-uri \u0027none\u0027; frame-ancestors \u0027none\u0027\"\u003e\r\n    \u003ctitle\u003eLongmont E2E Retest Gazette\u003c/title\u003e\r\n    \u003cmeta name=\"description\" content=\"Neutral local information for Longmont residents.\"\u003e\r\n    \u003clink rel=\"stylesheet\" href=\"styles.css\"\u003e\r\n    \u003clink rel=\"stylesheet\" href=\"print.css\" media=\"print\"\u003e\r\n    \u003clink rel=\"alternate\" type=\"application/rss+xml\" title=\"RSS Feed\" href=\"feed.xml\"\u003e\r\n    \u003cstyle\u003e:root { --accen"
+                     },
+    "appProcesses":  [
+                         "civicnews:7468:C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+                         "ollama:3656:C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\ollama-runtime\\v0.30.11\\ollama.exe"
+                     ]
+}

@@ -1,0 +1,366 @@
+{
+  "controls": {
+    "inputs": [
+      {
+        "i": 0,
+        "tag": "INPUT",
+        "id": "input-publish-path",
+        "value": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default",
+        "placeholder": "C:\\\\CivicDesk\\\\site"
+      },
+      {
+        "i": 1,
+        "tag": "INPUT",
+        "id": "input-subscriber-email",
+        "value": "",
+        "placeholder": "reader@example.com"
+      },
+      {
+        "i": 2,
+        "tag": "INPUT",
+        "id": "input-subscriber-name",
+        "value": "",
+        "placeholder": "optional"
+      },
+      {
+        "i": 3,
+        "tag": "SELECT",
+        "id": "select-publish-provider",
+        "value": "here_now"
+      },
+      {
+        "i": 4,
+        "tag": "INPUT",
+        "id": "input-published-url",
+        "value": "",
+        "placeholder": "optional for API connectors; required for manual save"
+      },
+      {
+        "i": 5,
+        "tag": "INPUT",
+        "id": "input-deployment-id",
+        "value": "",
+        "placeholder": "optional"
+      },
+      {
+        "i": 6,
+        "tag": "INPUT",
+        "id": "input-publisher-name",
+        "value": "here.now",
+        "placeholder": ""
+      },
+      {
+        "i": 7,
+        "tag": "INPUT",
+        "id": "input-publisher-site-url",
+        "value": "",
+        "placeholder": "https://your-town-news.example.com"
+      },
+      {
+        "i": 8,
+        "tag": "INPUT",
+        "id": "input-publisher-site-id",
+        "value": "",
+        "placeholder": "blank creates a new site; enter a slug to update"
+      },
+      {
+        "i": 9,
+        "tag": "INPUT",
+        "id": "input-publisher-project",
+        "value": "",
+        "placeholder": "optional internal note"
+      },
+      {
+        "i": 10,
+        "tag": "INPUT",
+        "id": "input-publisher-credential",
+        "value": "",
+        "placeholder": "optional for permanent here.now sites"
+      },
+      {
+        "i": 11,
+        "tag": "INPUT",
+        "id": "",
+        "value": "on",
+        "placeholder": ""
+      }
+    ],
+    "buttons": [
+      {
+        "i": 0,
+        "id": "nav-tab-queue",
+        "text": "Story Queue",
+        "disabled": false,
+        "cls": "nav-link "
+      },
+      {
+        "i": 1,
+        "id": "nav-tab-dailyScan",
+        "text": "Daily Scan",
+        "disabled": false,
+        "cls": "nav-link "
+      },
+      {
+        "i": 2,
+        "id": "nav-tab-darkSignals",
+        "text": "Dark Signals",
+        "disabled": false,
+        "cls": "nav-link "
+      },
+      {
+        "i": 3,
+        "id": "nav-tab-verification",
+        "text": "Verification",
+        "disabled": false,
+        "cls": "nav-link "
+      },
+      {
+        "i": 4,
+        "id": "nav-tab-workbench",
+        "text": "Workbench",
+        "disabled": false,
+        "cls": "nav-link "
+      },
+      {
+        "i": 5,
+        "id": "nav-tab-sources",
+        "text": "Sources",
+        "disabled": false,
+        "cls": "nav-link "
+      },
+      {
+        "i": 6,
+        "id": "nav-tab-onboarding",
+        "text": "AI Model",
+        "disabled": false,
+        "cls": "nav-link "
+      },
+      {
+        "i": 7,
+        "id": "nav-tab-publish",
+        "text": "Publishing",
+        "disabled": false,
+        "cls": "nav-link active"
+      },
+      {
+        "i": 8,
+        "id": "nav-tab-pairing",
+        "text": "Browser Pairing",
+        "disabled": false,
+        "cls": "nav-link "
+      },
+      {
+        "i": 9,
+        "id": "nav-tab-settings",
+        "text": "Ethics & Backups",
+        "disabled": false,
+        "cls": "nav-link "
+      },
+      {
+        "i": 10,
+        "id": "nav-tab-system",
+        "text": "System & Status",
+        "disabled": false,
+        "cls": "nav-link "
+      },
+      {
+        "i": 11,
+        "id": "",
+        "text": "",
+        "disabled": false,
+        "cls": "btn btn-secondary btn-sm"
+      },
+      {
+        "i": 12,
+        "id": "btn-edit-publish-identity",
+        "text": "Edit identity",
+        "disabled": false,
+        "cls": "btn btn-secondary btn-sm"
+      },
+      {
+        "i": 13,
+        "id": "btn-publish-browse",
+        "text": "Browse",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 14,
+        "id": "btn-publish-compile",
+        "text": "Compile site",
+        "disabled": false,
+        "cls": "btn btn-primary btn-full"
+      },
+      {
+        "i": 15,
+        "id": "btn-publish-open-folder",
+        "text": "Open folder",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 16,
+        "id": "btn-publish-restart",
+        "text": "Reset",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 17,
+        "id": "",
+        "text": "ZIP package",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 18,
+        "id": "",
+        "text": "Newsletter",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 19,
+        "id": "",
+        "text": "Substack draft",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 20,
+        "id": "",
+        "text": "Share package",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 21,
+        "id": "",
+        "text": "Facebook copy",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 22,
+        "id": "",
+        "text": "Subreddit post",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 23,
+        "id": "",
+        "text": "Nextdoor copy",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 24,
+        "id": "",
+        "text": "RSS",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 25,
+        "id": "",
+        "text": "Open Substack editor",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 26,
+        "id": "",
+        "text": "Copy headline",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 27,
+        "id": "",
+        "text": "Copy deck",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 28,
+        "id": "",
+        "text": "Copy post body",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 29,
+        "id": "",
+        "text": "Export issue email",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 30,
+        "id": "",
+        "text": "Add",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 31,
+        "id": "",
+        "text": "Import CSV",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 32,
+        "id": "",
+        "text": "Export CSV",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 33,
+        "id": "",
+        "text": "Save public URL",
+        "disabled": false,
+        "cls": "btn btn-primary"
+      },
+      {
+        "i": 34,
+        "id": "",
+        "text": "Publish with connector",
+        "disabled": true,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 35,
+        "id": "",
+        "text": "Save connector",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 36,
+        "id": "",
+        "text": "Test connection",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 37,
+        "id": "",
+        "text": "Open here.now",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      },
+      {
+        "i": 38,
+        "id": "",
+        "text": "Open ZIP",
+        "disabled": false,
+        "cls": "btn btn-secondary"
+      }
+    ]
+  },
+  "afterTest": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nhere.now is ready for temporary preview publishing. Save an API key for permanent sites.\nDismiss\nPublishing\n\nPublish instantly with here.now. Use GitHub Pages if you want a public archive in your own repository.\n\nPublic site identity review\n\nReview this before compile. The app publishes only the identity and policy copy you choose.\n\nEdit identity\nPublication\nLongmont E2E Retest Gazette\nTagline\nNeutral local information for Longmont residents.\nPublisher type\nSingle person\nLayout\nclassic / #5a1818\nLogo\nText masthead\nFooter note\nBlank\nAdvisor\nOn\nFooter/legal note is blank; that is allowed, but nothing will be invented for you.\nCompile your gazette\nOutput folder\nBrowse\nCompile approved stories\nHTML\nPreview local website\nindex.html\nExport hosting package\nZIP\nPublish to a host\npending\nShare with residents\nposts\nCompile site\nLast compiled\n\nGenerated locally. Publish instantly with here.now, or use GitHub Pages for a repository-backed archive.\n\nOpen folder\nReset\nCompile receipt\n0\narticles\n17\nfiles\n0\nskipped\nZIP package\nNewsletter\nSubstack draft\nShare package\nFacebook copy\nSubreddit post\nNextdoor copy\nRSS\n\nNo approved stories were included. Approve a story in Workbench, then compile again.\n\nNewsletter and Substack\n\nUse the generated draft as the source of truth, then save the public URL after posting.\n\nOpen Substack editor\nCopy headline\nCopy deck\nCopy post body\nExport issue email\nSubscriber list\n\n0 active subscribers stored locally.\n\nEmail\nName\nAdd\nImport CSV\nExport CSV\n\nNo subscribers yet.\n\nNext step: publish instantly with here.now. Use GitHub Pages for a durable public archive, and use the newsletter and share package to tell residents where to read it.\n\nPublisher connector\n\nPublish instantly with here.now. Use a free API key for permanent civic newspaper sites, or publish a 24-hour preview without an account.\n\nAccount setup: Optional. Publish a 24-hour preview with no account, or save a here.now API key for permanent sites.\n\nTarget: Leave the slug blank to create a new site, or enter an existing here.now slug to update that site.\n\nRequired access: An API key owns permanent sites. Anonymous previews are temporary and can be claimed in here.now.\n\nCheck: Test connection checks the saved API key when present; otherwise it confirms preview publishing is available.\n\nProvider\nhere.now\nGitHub Pages\nNetlify\nCloudflare Pages\nSubstack\nWordPress\nOther host\nPublic URL\nDeployment ID or note\nSave public URL\nPublish with connector\nConnector name\nDefault public URL\nhere.now slug\nNotes\nhere.now API key\nClear saved credential\nSave connector\nTest connection\n\nTest passed: here.now is ready for temporary preview publishing. Save an API key for permanent sites.\n\nOpen here.now\nOpen ZIP\nPublish history\nISSUE\nPROVIDER\nARTICLES\nGENERATED\nissue-20260630-104208-866758100\nlocal export\n0\n6/30/2026, 4:42:08 AM",
+  "afterPublish": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nPublishing\n\nPublish instantly with here.now. Use GitHub Pages if you want a public archive in your own repository.\n\nPublic site identity review\n\nReview this before compile. The app publishes only the identity and policy copy you choose.\n\nEdit identity\nPublication\nLongmont E2E Retest Gazette\nTagline\nNeutral local information for Longmont residents.\nPublisher type\nSingle person\nLayout\nclassic / #5a1818\nLogo\nText masthead\nFooter note\nBlank\nAdvisor\nOn\nFooter/legal note is blank; that is allowed, but nothing will be invented for you.\nCompile your gazette\nOutput folder\nBrowse\nCompile approved stories\nHTML\nPreview local website\nindex.html\nExport hosting package\nZIP\nPublish to a host\npending\nShare with residents\nposts\nCompile site\nLast compiled\n\nGenerated locally. Publish instantly with here.now, or use GitHub Pages for a repository-backed archive.\n\nOpen folder\nReset\nCompile receipt\n0\narticles\n17\nfiles\n0\nskipped\nZIP package\nNewsletter\nSubstack draft\nShare package\nFacebook copy\nSubreddit post\nNextdoor copy\nRSS\n\nNo approved stories were included. Approve a story in Workbench, then compile again.\n\nNewsletter and Substack\n\nUse the generated draft as the source of truth, then save the public URL after posting.\n\nOpen Substack editor\nCopy headline\nCopy deck\nCopy post body\nExport issue email\nSubscriber list\n\n0 active subscribers stored locally.\n\nEmail\nName\nAdd\nImport CSV\nExport CSV\n\nNo subscribers yet.\n\nNext step: publish instantly with here.now. Use GitHub Pages for a durable public archive, and use the newsletter and share package to tell residents where to read it.\n\nPublisher connector\n\nPublish instantly with here.now. Use a free API key for permanent civic newspaper sites, or publish a 24-hour preview without an account.\n\nAccount setup: Optional. Publish a 24-hour preview with no account, or save a here.now API key for permanent sites.\n\nTarget: Leave the slug blank to create a new site, or enter an existing here.now slug to update that site.\n\nRequired access: An API key owns permanent sites. Anonymous previews are temporary and can be claimed in here.now.\n\nCheck: Test connection checks the saved API key when present; otherwise it confirms preview publishing is available.\n\nProvider\nhere.now\nGitHub Pages\nNetlify\nCloudflare Pages\nSubstack\nWordPress\nOther host\nPublic URL\nDeployment ID or note\nSave public URL\nPublish with connector\n\nSaved live URL: https://humble-canvas-82dn.here.now\n\nConnector name\nDefault public URL\nhere.now slug\nNotes\nhere.now API key\nClear saved credential\nSave connector\nTest connection\n\nTest passed: here.now is ready for temporary preview publishing. Save an API key for permanent sites.\n\nOpen here.now\nOpen ZIP\nPublish history\nISSUE\nPROVIDER\nARTICLES\nGENERATED\nissue-20260630-104208-866758100\nhere now\n0\n6/30/2026, 4:42:08 AM"
+}
