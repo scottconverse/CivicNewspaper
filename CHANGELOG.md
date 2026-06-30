@@ -4,6 +4,23 @@ All notable changes to CivicNewspaper will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-06-29
+
+### Added
+- Added story-quality metadata across daily scan leads and the story queue, including story type, editorial disposition, novelty score, novelty reason, publishability notes, and recurrence memory.
+- Added seeded story templates for briefs, explainers, accountability stories, background items, watch items, and verification-only leads.
+- Added recurring-topic/beat-memory warnings so repeated background items are visible before editors treat them as fresh news.
+- Added guardrail warnings for low-novelty, background, watch, needs-verification, and recurring linked leads while preserving the rule that software never vetoes the editor.
+
+### Changed
+- Improved local-AI draft prompts so recurring or low-novelty leads produce editor memos/watch items unless the evidence shows a current verified development.
+- Improved Workbench status controls for hold, send back, ready for review, approve, unapprove, cut, and restore flows.
+- Improved Story Queue and Workbench displays so editors can see why a lead is timely, what changed, and whether the same topic appeared in prior scans.
+
+### Fixed
+- Reduced the chance that evergreen civic pages or source-intake notes publish as ordinary news by surfacing novelty and recurrence warnings in review.
+- Kept backend `killed` status compatibility while presenting user-facing copy as `Cut`.
+
 ## [0.2.8] - 2026-06-26
 
 ### Added

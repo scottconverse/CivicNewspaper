@@ -56,19 +56,19 @@ A SHA256 checksum proves that the file you downloaded matches the file listed in
 ### Windows PowerShell
 
 ```powershell
-Get-FileHash -Algorithm SHA256 "C:\Users\YourName\Downloads\The Civic Desk_0.2.9_x64_en-US.msi"
+Get-FileHash -Algorithm SHA256 "C:\Users\YourName\Downloads\The Civic Desk_0.3.0_x64_en-US.msi"
 ```
 
 ### macOS
 
 ```bash
-shasum -a 256 "$HOME/Downloads/The Civic Desk_0.2.9_x64.dmg"
+shasum -a 256 "$HOME/Downloads/The Civic Desk_0.3.0_x64.dmg"
 ```
 
 ### Linux
 
 ```bash
-sha256sum "$HOME/Downloads/the-civic-desk_0.2.9_amd64.deb"
+sha256sum "$HOME/Downloads/the-civic-desk_0.3.0_amd64.deb"
 ```
 
 If the hash does not match, delete the installer and report it on the project issue tracker. Do not run a mismatched installer.

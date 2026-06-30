@@ -1,6 +1,6 @@
 // core/guardrails.rs
 use super::db::{get_draft, get_evidence_by_lead};
-use rusqlite::Connection;
+use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::error::Error;
@@ -150,6 +150,9 @@ pub fn run_guardrails_check(
     let lead_id = draft.lead_id;
 
     add_newsroom_quality_warnings(&mut issues, &title, &content);
+    if let Some(lid) = lead_id {
+        add_lead_quality_warnings(conn, lid, &mut issues)?;
+    }
 
     // Fetch linked evidence items to check for verbatim overlap
     let evidence_items = if let Some(lid) = lead_id {
@@ -356,6 +359,88 @@ fn add_newsroom_quality_warnings(issues: &mut Vec<GuardrailsIssue>, title: &str,
             paragraph_index: 0,
         });
     }
+}
+
+fn add_lead_quality_warnings(
+    conn: &Connection,
+    lead_id: i32,
+    issues: &mut Vec<GuardrailsIssue>,
+) -> Result<(), Box<dyn Error>> {
+    let mut stmt = conn.prepare(
+        "SELECT story_type, disposition, novelty_score, novelty_reason, recurrence_count, recurrence_note FROM leads WHERE id = ?1",
+    )?;
+    let mut rows = stmt.query(params![lead_id])?;
+    let Some(row) = rows.next()? else {
+        return Ok(());
+    };
+
+    let story_type: Option<String> = row.get(0)?;
+    let disposition: Option<String> = row.get(1)?;
+    let novelty_score: Option<i32> = row.get(2)?;
+    let novelty_reason: Option<String> = row.get(3)?;
+    let recurrence_count: Option<i32> = row.get(4)?;
+    let recurrence_note: Option<String> = row.get(5)?;
+
+    let story_type_norm = story_type.as_deref().unwrap_or("").trim().to_lowercase();
+    let disposition_norm = disposition.as_deref().unwrap_or("").trim().to_lowercase();
+
+    if ["background", "watch", "needs_verification"].contains(&story_type_norm.as_str())
+        || ["background", "watch", "needs_verification"].contains(&disposition_norm.as_str())
+    {
+        let label = match (story_type_norm.as_str(), disposition_norm.as_str()) {
+            ("needs_verification", _) | (_, "needs_verification") => "needs verification",
+            ("background", _) | (_, "background") => "background",
+            _ => "watch",
+        };
+        issues.push(GuardrailsIssue {
+            category: "Lead Readiness".to_string(),
+            message: format!(
+                "The linked lead is marked as {}. Confirm a current, specific, verified development before treating this as a reader-facing news story.",
+                label
+            ),
+            severity: "warning".to_string(),
+            paragraph_index: 0,
+        });
+    }
+
+    if let Some(score) = novelty_score {
+        if score <= 1 {
+            let reason = novelty_reason
+                .as_deref()
+                .map(str::trim)
+                .filter(|r| !r.is_empty())
+                .unwrap_or("no novelty reason recorded");
+            issues.push(GuardrailsIssue {
+                category: "Lead Novelty".to_string(),
+                message: format!(
+                    "The linked lead has a low novelty score ({}/5): {}. Confirm what changed now before publishing.",
+                    score, reason
+                ),
+                severity: "warning".to_string(),
+                paragraph_index: 0,
+            });
+        }
+    }
+
+    if recurrence_count.unwrap_or(0) > 0 {
+        let note = recurrence_note
+            .as_deref()
+            .map(str::trim)
+            .filter(|n| !n.is_empty())
+            .unwrap_or("this topic has appeared in prior scans");
+        issues.push(GuardrailsIssue {
+            category: "Beat Memory".to_string(),
+            message: format!(
+                "This topic has appeared before ({} previous appearance(s)): {}. Verify there is a new fact, decision, deadline, impact, or conflict before publishing as news.",
+                recurrence_count.unwrap_or(0),
+                note
+            ),
+            severity: "warning".to_string(),
+            paragraph_index: 0,
+        });
+    }
+
+    Ok(())
 }
 
 // Find verbatim sequences of length N matching between a paragraph and an evidence text

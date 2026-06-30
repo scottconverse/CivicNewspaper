@@ -2,7 +2,7 @@
 
 > **Project name:** CivicNewspaper. **Installed app name:** The Civic Desk.
 >
-> **Current source/tag:** v0.2.9 public beta. Published GitHub Release installers may lag the source tag. Installers are unsigned. This is not a stable production release.
+> **Current source/tag:** v0.3.0 public beta. Published GitHub Release installers may lag the source tag. Installers are unsigned. This is not a stable production release.
 
 The Civic Desk is a local-first desktop newsroom tool for small local publishers, civic reporters, and community editors. It helps one person or a small team monitor public local sources, discover story leads, draft articles with a local AI model, review risks and evidence, and publish a static local-news issue.
 
@@ -123,7 +123,7 @@ The sidecar binary is not committed to the repo. The fetch script downloads the 
 
 ## Release Status
 
-v0.2.9 is public beta source. Cleanroom testing has proven a full Longmont issue can be generated, exported, zipped, and anonymously published to here.now on Windows, but output quality still needs newsroom-grade story selection/editing improvements. Stable release still requires signed installers, cross-platform clean-machine proof, matching published release artifacts, and credentialed live verification for external publishing providers.
+v0.3.0 is public beta source. Cleanroom testing has proven a full Longmont issue can be generated, exported, zipped, and anonymously published to here.now on Windows. This release improves story-quality metadata, recurring-topic memory, lead novelty warnings, and editor workflow controls, but stable release still requires signed installers, cross-platform clean-machine proof, matching published release artifacts, and credentialed live verification for external publishing providers.
 
 ## License
 

@@ -351,6 +351,73 @@ mod tests {
             .any(|i| i.category == "Newsworthiness" && i.severity == "warning"));
     }
 
+    #[test]
+    fn test_guardrails_warn_on_low_novelty_recurring_lead_without_veto() {
+        let conn = init_db("file:test_guardrails_lead_quality?mode=memory&cache=shared").unwrap();
+        let lead_id = insert_lead(
+            &conn,
+            &Lead {
+                id: None,
+                detector_name: "Source Intake".to_string(),
+                why: "City page was fetched but no new decision was found.".to_string(),
+                confidence: "med".to_string(),
+                risk_level: "low".to_string(),
+                confirmation_checklist: "[]".to_string(),
+                from_scan_lead_id: None,
+                story_type: Some("background".to_string()),
+                disposition: Some("background".to_string()),
+                novelty_score: Some(1),
+                novelty_reason: Some(
+                    "Existing city information with no new current fact.".to_string(),
+                ),
+                recurrence_count: Some(2),
+                recurrence_note: Some(
+                    "Seen in two prior scans without a new development.".to_string(),
+                ),
+                created_at: Utc::now().to_rfc3339(),
+            },
+            &[],
+        )
+        .unwrap();
+        let draft_id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: Some(lead_id),
+                format: "watch".to_string(),
+                title: "City service page remains available".to_string(),
+                content: "Residents can review the city service page for general information."
+                    .to_string(),
+                status: "draft_generated".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        let report = run_guardrails_check(&conn, draft_id).unwrap();
+
+        assert!(
+            report.is_clean,
+            "lead-quality checks must warn but never veto the editor"
+        );
+        assert!(report
+            .issues
+            .iter()
+            .any(|i| i.category == "Lead Readiness" && i.severity == "warning"));
+        assert!(report
+            .issues
+            .iter()
+            .any(|i| i.category == "Lead Novelty" && i.severity == "warning"));
+        assert!(report
+            .issues
+            .iter()
+            .any(|i| i.category == "Beat Memory" && i.severity == "warning"));
+    }
+
     // 5. Backups Tests
     #[test]
     fn test_backups() {
