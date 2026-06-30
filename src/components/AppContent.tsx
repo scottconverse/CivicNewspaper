@@ -51,6 +51,14 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
     return () => window.clearTimeout(timer);
   }, [app.activeTab, app.selectedDraft?.id]);
 
+  React.useEffect(() => {
+    if (app.activeTab !== "workbench") return;
+    if (app.selectedLead?.id || app.selectedDraft?.id) return;
+    const drafts = app.drafts ?? [];
+    if (drafts.length !== 1) return;
+    app.handleOpenDraftEditor(drafts[0].id ?? drafts[0]);
+  }, [app.activeTab, app.selectedLead?.id, app.selectedDraft?.id, app.drafts?.length]);
+
   return (
     <>
       {/* First-run beta notice (#12): unsigned-beta / SmartScreen disclosure */}

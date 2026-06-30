@@ -472,11 +472,24 @@ describe("useApp Hook Tests", () => {
     });
 
     await act(async () => {
-      await hookResult.handleOpenDraftEditor(existingDraft);
+      hookResult.setSelectedLead({
+        id: 99,
+        detector_name: "Decision / Vote",
+        why: "Stale verification lead should not hijack an existing draft.",
+        confidence: "medium",
+        risk_level: "low",
+        confirmation_checklist: "[]",
+        created_at: "2026-06-29T00:00:00Z",
+      });
+    });
+
+    await act(async () => {
+      await hookResult.handleOpenDraftEditor(44);
     });
 
     expect(screen.getByTestId("active-tab")).toHaveTextContent("workbench");
     expect(hookResult.selectedDraft?.id).toBe(44);
+    expect(hookResult.selectedDraft?.title).toBe("Draft: Longmont budget item");
     expect(hookResult.selectedLead).toBeNull();
     expect(hookResult.errorMessage).toContain("evidence unavailable");
   });

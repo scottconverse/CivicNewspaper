@@ -1185,9 +1185,17 @@ export function useApp() {
     }
   };
 
-  const handleOpenDraftEditor = async (draft: Draft) => {
-    setSelectedDraft(draft);
+  const handleOpenDraftEditor = async (draftOrId: Draft | number) => {
+    const draft =
+      typeof draftOrId === "number"
+        ? drafts.find((item) => item.id === draftOrId)
+        : draftOrId;
+    if (!draft) {
+      setErrorMessage("That draft could not be found. Refresh the queue and try again.");
+      return;
+    }
     setSelectedLead(null);
+    setSelectedDraft({ ...draft });
     setGuardrailsReport(null);
     setSocialPackResult("");
     setActiveTab("workbench");

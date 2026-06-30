@@ -480,7 +480,7 @@ describe("Workbench Component Tests", () => {
     expect(screen.getByText("Suspicious Spending")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /Suspicious Spending/i }));
-    expect(onOpenDraftEditor).toHaveBeenCalledWith(mockDraft);
+    expect(onOpenDraftEditor).toHaveBeenCalledWith(123);
   });
 
   test("Approve remains available and records editorial responsibility for a clean draft", () => {

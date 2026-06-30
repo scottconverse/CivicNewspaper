@@ -75,7 +75,7 @@ interface WorkbenchProps {
   onOpenAiSetup?: () => void;
   onSaveDraftEditor: () => void;
   onCloseWorkbench: () => void;
-  onOpenDraftEditor?: (draft: Draft) => void;
+  onOpenDraftEditor?: (draft: Draft | number) => void;
   onDeleteDraft: (id: number) => void;
   onDecision: (status: string) => void;
   onApprovePublish?: (overrideReason?: string) => void;
@@ -923,7 +923,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
               type="button"
               key={draft.id ?? draft.title}
               className="draft-picker-row"
-              onClick={() => onOpenDraftEditor?.(draft)}
+              onClick={() => onOpenDraftEditor?.(draft.id ?? draft)}
               id={draft.id ? `btn-workbench-picker-open-${draft.id}` : undefined}
             >
               <span>
