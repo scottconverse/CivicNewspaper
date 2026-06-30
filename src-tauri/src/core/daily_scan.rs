@@ -75,6 +75,20 @@ pub fn parse_and_save_scan_response(
     let result: ScanResult = serde_json::from_str(cleaned).map_err(|e| e.to_string())?;
     let mut saved = 0;
     for item in result.leads {
+        let story_type = normalize_story_type(item.story_type.clone());
+        let what_changed = normalize_optional(item.what_changed.clone());
+        let immediacy = clamped_score_i32(item.immediacy);
+        let impact = clamped_score_i32(item.impact);
+        let conflict = clamped_score_i32(item.conflict);
+        let novelty = clamped_score_i32(item.novelty);
+        let publishability_note = normalize_optional(item.what_would_make_it_publishable.clone());
+        let disposition = classify_disposition(
+            story_type.as_deref(),
+            what_changed.as_deref(),
+            immediacy,
+            impact,
+            novelty,
+        );
         let quality_note = newsworthiness_note(&item);
         let next_step_note = publishability_next_step(&item);
         let why_flagged = append_editor_note(
@@ -117,6 +131,14 @@ pub fn parse_and_save_scan_response(
             source_type: normalize_optional(item.source_type),
             priority: normalize_priority(item.priority),
             suggested_next_step: Some(suggested_next_step),
+            story_type,
+            what_changed,
+            immediacy,
+            impact,
+            conflict,
+            novelty,
+            publishability_note,
+            disposition: Some(disposition),
         };
         match save_daily_scan_lead_for_queue(conn, &lead) {
             Ok(id) if id > 0 => saved += 1,
@@ -140,6 +162,60 @@ fn clamped_score(score: Option<u8>) -> Option<u8> {
     score.map(|score| score.clamp(1, 5))
 }
 
+fn clamped_score_i32(score: Option<u8>) -> Option<i32> {
+    clamped_score(score).map(i32::from)
+}
+
+fn normalize_story_type(value: Option<String>) -> Option<String> {
+    let normalized = normalize_optional(value)?.to_lowercase().replace('_', " ");
+    match normalized.as_str() {
+        "story" | "article" | "reported story" | "hard news" => Some("story".to_string()),
+        "brief" | "short brief" => Some("brief".to_string()),
+        "watch" | "watchlist" | "watch item" => Some("watch".to_string()),
+        "background" | "evergreen" | "background note" => Some("background".to_string()),
+        "verification" | "needs verification" | "verification assignment" => {
+            Some("verification".to_string())
+        }
+        _ => Some("verification".to_string()),
+    }
+}
+
+fn classify_disposition(
+    story_type: Option<&str>,
+    what_changed: Option<&str>,
+    immediacy: Option<i32>,
+    impact: Option<i32>,
+    novelty: Option<i32>,
+) -> String {
+    let change_text = what_changed.unwrap_or_default().to_lowercase();
+    let no_current_change = [
+        "no current change",
+        "no new fact",
+        "not current",
+        "background",
+        "evergreen",
+    ]
+    .iter()
+    .any(|needle| change_text.contains(needle));
+
+    match story_type.unwrap_or("verification") {
+        "background" => "background".to_string(),
+        "watch" => "watch".to_string(),
+        "verification" => "needs_verification".to_string(),
+        "story" | "brief" if no_current_change => "background".to_string(),
+        "story" | "brief" => {
+            let novelty = novelty.unwrap_or(0);
+            let urgency = immediacy.unwrap_or(0) + impact.unwrap_or(0);
+            if novelty >= 3 && urgency >= 5 {
+                "ready_to_draft".to_string()
+            } else {
+                "review".to_string()
+            }
+        }
+        _ => "review".to_string(),
+    }
+}
+
 fn newsworthiness_note(item: &ScanResultItem) -> Option<String> {
     let scores = [
         clamped_score(item.immediacy),
@@ -160,7 +236,7 @@ fn newsworthiness_note(item: &ScanResultItem) -> Option<String> {
     } else {
         None
     };
-    let story_type = normalize_optional(item.story_type.clone())
+    let story_type = normalize_story_type(item.story_type.clone())
         .map(|value| format!("Suggested treatment: {}.", value));
     let what_changed = normalize_optional(item.what_changed.clone())
         .map(|value| format!("Why now: {}.", value.trim_end_matches('.')));
@@ -327,6 +403,14 @@ fn save_fallback_leads(
             source_type,
             priority: Some("review".to_string()),
             suggested_next_step: Some("Open the source, decide whether it contains a reportable civic action, then save or dismiss it from the queue.".to_string()),
+            story_type: Some("verification".to_string()),
+            what_changed: None,
+            immediacy: None,
+            impact: None,
+            conflict: None,
+            novelty: None,
+            publishability_note: Some("A specific current fact, document, vote, deadline, impact, or cross-check is needed before publication.".to_string()),
+            disposition: Some("needs_verification".to_string()),
         };
         if save_daily_scan_lead_for_queue(conn, &lead).unwrap_or(0) > 0 {
             saved += 1;
@@ -436,6 +520,18 @@ fn save_dark_signal_leads(
                 .to_string(),
             ),
             suggested_next_step: Some(signal.verification_path),
+            story_type: Some("verification".to_string()),
+            what_changed: Some("Dark-signal pattern detected from recent evidence.".to_string()),
+            immediacy: Some(2),
+            impact: Some(match signal.risk_level.as_str() {
+                "high" => 4,
+                "medium" => 3,
+                _ => 2,
+            }),
+            conflict: None,
+            novelty: None,
+            publishability_note: Some("Confirm the signal against source records or a second public source before drafting.".to_string()),
+            disposition: Some("needs_verification".to_string()),
         };
         if save_daily_scan_lead_for_queue(conn, &lead).unwrap_or(0) > 0 {
             saved += 1;
@@ -501,6 +597,13 @@ fn save_daily_scan_lead_for_queue(
         risk_level: normalized_level.to_string(),
         confirmation_checklist: checklist,
         from_scan_lead_id: Some(scan_lead_id),
+        story_type: lead.story_type.clone(),
+        disposition: lead
+            .disposition
+            .clone()
+            .or_else(|| Some("review".to_string())),
+        novelty_score: lead.novelty,
+        novelty_reason: lead.what_changed.clone(),
         created_at: String::new(),
     };
     let evidence_ids = evidence_ids_for_scan_lead(conn, &lead)?;
@@ -541,6 +644,7 @@ fn lead_with_beat_memory(lead: &DailyScanLead, memory: Option<&BeatMemory>) -> D
         && looks_like_background_or_unchanged(&lead)
     {
         lead.priority = Some("low".to_string());
+        lead.disposition = Some("background".to_string());
     }
     lead
 }

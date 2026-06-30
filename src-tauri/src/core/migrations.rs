@@ -59,6 +59,10 @@ const MIGRATIONS: &[(&str, &str)] = &[
         "0014_beat_memory",
         include_str!("../../migrations/0014_beat_memory.sql"),
     ),
+    (
+        "0015_story_quality_metadata",
+        include_str!("../../migrations/0015_story_quality_metadata.sql"),
+    ),
 ];
 
 pub fn run_migrations(conn: &mut Connection) -> Result<(), Box<dyn Error + Send + Sync>> {

@@ -1095,6 +1095,102 @@ mod draft_citation_tests {
     }
 }
 
+fn story_template_guidance(
+    conn: &rusqlite::Connection,
+    story_type: Option<&str>,
+) -> Option<String> {
+    let key = story_type
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .unwrap_or("verification");
+    conn.query_row(
+        "SELECT prompt_guidance FROM story_templates WHERE key = ?1",
+        [key],
+        |row| row.get::<_, String>(0),
+    )
+    .ok()
+}
+
+fn build_draft_prompt(
+    lead_why: &str,
+    story_type: Option<&str>,
+    disposition: Option<&str>,
+    novelty_score: Option<i32>,
+    novelty_reason: Option<&str>,
+    template_guidance: Option<&str>,
+    evidence_context: &str,
+    evidence_count: usize,
+    format: &str,
+) -> String {
+    let lead_quality_context = format!(
+        "Story type: {}\nEditorial disposition: {}\nNovelty score: {}\nNovelty reason: {}\nStory template guidance: {}\n",
+        story_type.unwrap_or("unspecified"),
+        disposition.unwrap_or("review"),
+        novelty_score
+            .map(|score| format!("{score}/5"))
+            .unwrap_or_else(|| "unspecified".to_string()),
+        novelty_reason.unwrap_or("unspecified"),
+        template_guidance
+            .unwrap_or("Use the editor's selected format and keep the draft evidence-bound.")
+    );
+    let advisory = "If editorial disposition is background, watch, needs_verification, low novelty, or no current change found, return an editor memo or watch item. Do not make it sound like a finished news story unless the attached evidence shows a current, specific, verified development.";
+
+    if evidence_count == 0 {
+        format!(
+            "Lead topic: {}\n\n{}\nNo source documents are attached to this lead yet. Prepare a '{}' editor memo, not a finished article.\n\n{}\n\nReturn clean Markdown. First line must be `Headline: ...`. If there is not enough current, specific, verified information to draft a story, start the body with `EDITOR_NOTE: Not enough verified source material for a publishable story yet.` Then list concise verification questions. Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, impacts, community reaction, or technical details.",
+            lead_why, lead_quality_context, format, advisory
+        )
+    } else if evidence_count < 2 {
+        format!(
+            "Lead topic: {}\n\n{}\nHere is the only attached source material:\n{}\nPlease draft a '{}' item.\n\n{}\n\nReturn clean Markdown for an editor. First line must be `Headline: ...`. Because there is only one linked source, write this as a short brief or watchlist item unless the evidence shows a current, specific development. Use only the attached excerpt and cite it as [Source](evidence:ID). Do not include labels such as Nut graf, Reporting Steps, Source needed, Verification needed, or End of Report. Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, impacts, community reaction, or technical details. If the excerpt is evergreen/background material, start the body with `EDITOR_NOTE: This looks like background material, not a publishable news story yet.` and explain what current fact would make it news.",
+            lead_why, lead_quality_context, evidence_context, format, advisory
+        )
+    } else {
+        format!(
+            "Lead topic: {}\n\n{}\nHere is the attached source material:\n{}\nPlease draft a '{}' item.\n\n{}\n\nWrite for Longmont residents in clean Markdown. First line must be `Headline: ...`. After the headline, write reader-facing article copy only: a clear lede, 3-5 factual paragraphs or short sections, and a concise explanation of what remains uncertain when needed. Use only the listed Evidence Citation IDs in citations like [Source](evidence:ID). Do not cite any other evidence ID. Use a citation for every factual claim drawn from the source material. Do not include labels such as Nut graf, Reporting Steps, Source needed, Verification needed, or End of Report. Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, impacts, community reaction, or technical details. If the evidence is evergreen/background material or does not show a current development, start the body with `EDITOR_NOTE: This looks like background material, not a publishable news story yet.` and explain what current fact would make it news.",
+            lead_why, lead_quality_context, evidence_context, format, advisory
+        )
+    }
+}
+
+#[cfg(test)]
+mod draft_prompt_tests {
+    use super::{build_draft_prompt, story_template_guidance};
+
+    #[test]
+    fn background_leads_include_quality_context_and_template_guidance() {
+        let prompt = build_draft_prompt(
+            "Council video archive: no current change found.",
+            Some("background"),
+            Some("background"),
+            Some(1),
+            Some("no current change found"),
+            Some("Do not frame this as news. State what new fact would make it publishable."),
+            "Evidence Citation ID: 7\nExcerpt: Archived council meetings are available.\n\n",
+            1,
+            "story",
+        );
+
+        assert!(prompt.contains("Story type: background"));
+        assert!(prompt.contains("Editorial disposition: background"));
+        assert!(prompt.contains("Novelty score: 1/5"));
+        assert!(prompt.contains("Novelty reason: no current change found"));
+        assert!(prompt.contains("Do not frame this as news"));
+        assert!(prompt.contains("return an editor memo or watch item"));
+        assert!(prompt.contains("not a publishable news story yet"));
+    }
+
+    #[test]
+    fn story_template_guidance_reads_seeded_templates() {
+        let mut conn = rusqlite::Connection::open_in_memory().unwrap();
+        crate::core::migrations::run_migrations(&mut conn).unwrap();
+
+        let guidance = story_template_guidance(&conn, Some("background")).unwrap();
+
+        assert!(guidance.contains("Do not frame this as news"));
+    }
+}
+
 /// Record that a human reviewed this draft and accepts responsibility.
 #[tauri::command]
 pub fn attest_draft(db: tauri::State<'_, DbConn>, id: i32, editor: String) -> Result<(), String> {
@@ -1112,18 +1208,49 @@ pub async fn generate_draft<R: tauri::Runtime>(
     format: String,
     system_prompt: Option<String>,
 ) -> Result<String, String> {
-    let (lead_why, evidence_items) = {
+    let (
+        lead_why,
+        story_type,
+        disposition,
+        novelty_score,
+        novelty_reason,
+        template_guidance,
+        evidence_items,
+    ) = {
         let conn = db
             .lock()
             .map_err(|_| "Failed to lock database".to_string())?;
         let mut stmt = conn
-            .prepare("SELECT why FROM leads WHERE id = ?1")
+            .prepare("SELECT why, story_type, disposition, novelty_score, novelty_reason FROM leads WHERE id = ?1")
             .map_err(|e| e.to_string())?;
-        let why: String = stmt
-            .query_row([lead_id], |row| row.get(0))
+        let (why, story_type, disposition, novelty_score, novelty_reason): (
+            String,
+            Option<String>,
+            Option<String>,
+            Option<i32>,
+            Option<String>,
+        ) = stmt
+            .query_row([lead_id], |row| {
+                Ok((
+                    row.get(0)?,
+                    row.get(1)?,
+                    row.get(2)?,
+                    row.get(3)?,
+                    row.get(4)?,
+                ))
+            })
             .map_err(|e| e.to_string())?;
+        let template_guidance = story_template_guidance(&conn, story_type.as_deref());
         let items = db::get_evidence_by_lead(&conn, lead_id).map_err(|e| e.to_string())?;
-        (why, items)
+        (
+            why,
+            story_type,
+            disposition,
+            novelty_score,
+            novelty_reason,
+            template_guidance,
+            items,
+        )
     };
 
     let mut evidence_context = String::new();
@@ -1135,22 +1262,17 @@ pub async fn generate_draft<R: tauri::Runtime>(
         ));
     }
 
-    let prompt = if evidence_items.is_empty() {
-        format!(
-            "Lead topic: {}\n\nNo source documents are attached to this lead yet. Prepare a '{}' editor memo, not a finished article.\n\nUse any advisory context in the lead topic, including story type, newsworthiness score, and 'what would make this publishable'. If the lead is marked background, watch, verification, low-newsworthiness, or no current change found, do not inflate it into a full story.\n\nReturn clean Markdown. First line must be `Headline: ...`. If there is not enough current, specific, verified information to draft a story, start the body with `EDITOR_NOTE: Not enough verified source material for a publishable story yet.` Then list concise verification questions. Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, impacts, community reaction, or technical details.",
-            lead_why, format
-        )
-    } else if evidence_items.len() < 2 {
-        format!(
-            "Lead topic: {}\n\nHere is the only attached source material:\n{}\nPlease draft a '{}' item.\n\nUse any advisory context in the lead topic, including story type, newsworthiness score, and 'what would make this publishable'. If the lead is marked background, watch, verification, low-newsworthiness, or no current change found, do not inflate it into a full story.\n\nReturn clean Markdown for an editor. First line must be `Headline: ...`. Because there is only one linked source, write this as a short brief or watchlist item unless the evidence shows a current, specific development. Use only the attached excerpt and cite it as [Source](evidence:ID). Do not include labels such as Nut graf, Reporting Steps, Source needed, Verification needed, or End of Report. Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, impacts, community reaction, or technical details. If the excerpt is evergreen/background material, start the body with `EDITOR_NOTE: This looks like background material, not a publishable news story yet.` and explain what current fact would make it news.",
-            lead_why, evidence_context, format
-        )
-    } else {
-        format!(
-            "Lead topic: {}\n\nHere is the attached source material:\n{}\nPlease draft a '{}' item.\n\nUse any advisory context in the lead topic, including story type, newsworthiness score, and 'what would make this publishable'. If the lead is marked background, watch, verification, low-newsworthiness, or no current change found, do not inflate it into a full story.\n\nWrite for Longmont residents in clean Markdown. First line must be `Headline: ...`. After the headline, write reader-facing article copy only: a clear lede, 3-5 factual paragraphs or short sections, and a concise explanation of what remains uncertain when needed. Use only the listed Evidence Citation IDs in citations like [Source](evidence:ID). Do not cite any other evidence ID. Use a citation for every factual claim drawn from the source material. Do not include labels such as Nut graf, Reporting Steps, Source needed, Verification needed, or End of Report. Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, impacts, community reaction, or technical details. If the evidence is evergreen/background material or does not show a current development, start the body with `EDITOR_NOTE: This looks like background material, not a publishable news story yet.` and explain what current fact would make it news.",
-            lead_why, evidence_context, format
-        )
-    };
+    let prompt = build_draft_prompt(
+        &lead_why,
+        story_type.as_deref(),
+        disposition.as_deref(),
+        novelty_score,
+        novelty_reason.as_deref(),
+        template_guidance.as_deref(),
+        &evidence_context,
+        evidence_items.len(),
+        &format,
+    );
 
     let sys = system_prompt.unwrap_or_else(|| "You are an assistant for a local publication editor. You help prepare careful working drafts. Do not decide what is publishable; warn about uncertainty and leave final judgment to the human editor.".to_string());
 

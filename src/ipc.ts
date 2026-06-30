@@ -140,6 +140,10 @@ export interface Lead {
   risk_level: string; // 'low', 'med', 'high'
   confirmation_checklist: string; // JSON array
   from_scan_lead_id?: number;
+  story_type?: string;
+  disposition?: string;
+  novelty_score?: number;
+  novelty_reason?: string;
   created_at: string;
 }
 
@@ -198,6 +202,14 @@ export interface DailyScanLead {
   source_type?: string;
   priority?: string;
   suggested_next_step?: string;
+  story_type?: string;
+  what_changed?: string;
+  immediacy?: number;
+  impact?: number;
+  conflict?: number;
+  novelty?: number;
+  publishability_note?: string;
+  disposition?: string;
 }
 
 export interface QueueData {

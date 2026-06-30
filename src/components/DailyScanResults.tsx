@@ -27,6 +27,23 @@ function priorityClass(value?: string | null): string {
   return "badge-info";
 }
 
+function dispositionLabel(value?: string | null): string {
+  const disposition = clean(value)?.toLowerCase();
+  if (disposition === "ready_to_draft") return "Ready to draft";
+  if (disposition === "needs_verification") return "Needs verification";
+  if (disposition === "background") return "Background";
+  if (disposition === "watch") return "Watch";
+  return "Editor review";
+}
+
+function dispositionClass(value?: string | null): string {
+  const disposition = clean(value)?.toLowerCase();
+  if (disposition === "ready_to_draft") return "badge-success";
+  if (disposition === "needs_verification") return "badge-warning";
+  if (disposition === "background" || disposition === "watch") return "badge-neutral";
+  return "badge-info";
+}
+
 function sourceContext(lead: DailyScanLead): string {
   const sourceName = clean(lead.source_name);
   const sourceType = clean(lead.source_type);
@@ -134,10 +151,37 @@ export const DailyScanResults: React.FC<Props> = ({ scanId, onRunScan }) => {
                     <p className="eyebrow" style={{ marginBottom: "0.35rem" }}>{sourceContext(lead)}</p>
                     <h4 style={{ margin: '0 0 0.5rem 0' }}>{lead.title}</h4>
                   </div>
-                  <span className={`badge ${priorityClass(lead.priority)}`}>{priorityLabel(lead.priority)}</span>
+                  <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                    {clean(lead.story_type) && (
+                      <span className="badge badge-neutral" style={{ textTransform: "capitalize" }}>
+                        {lead.story_type}
+                      </span>
+                    )}
+                    <span className={`badge ${dispositionClass(lead.disposition)}`}>{dispositionLabel(lead.disposition)}</span>
+                    <span className={`badge ${priorityClass(lead.priority)}`}>{priorityLabel(lead.priority)}</span>
+                  </div>
                 </div>
 
                 <p style={{ margin: '0 0 0.75rem 0' }}>{lead.summary ?? "No summary available for this lead."}</p>
+                {(clean(lead.what_changed) || clean(lead.publishability_note) || lead.novelty !== undefined) && (
+                  <div className="scan-quality-panel" style={{ display: "grid", gap: "0.35rem", margin: "0 0 0.85rem 0" }}>
+                    {clean(lead.what_changed) && (
+                      <p className="help-text" style={{ margin: 0 }}>
+                        <strong>Why now:</strong> {clean(lead.what_changed)}
+                      </p>
+                    )}
+                    {lead.novelty !== undefined && lead.novelty !== null && (
+                      <p className="help-text" style={{ margin: 0 }}>
+                        <strong>Novelty:</strong> {lead.novelty}/5
+                      </p>
+                    )}
+                    {clean(lead.publishability_note) && (
+                      <p className="help-text" style={{ margin: 0 }}>
+                        <strong>Before publishing:</strong> {clean(lead.publishability_note)}
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 <div style={{ display: "grid", gap: "0.65rem", marginBottom: "0.85rem" }}>
                   <div>

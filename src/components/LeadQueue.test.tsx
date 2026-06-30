@@ -156,4 +156,69 @@ describe("LeadQueue Component Tests", () => {
     expect(handleOpenDraft).toHaveBeenCalledWith(fixtureDrafts[0]);
     expect(handleSelect).not.toHaveBeenCalled();
   });
+
+  test("drafts tab filters send-back, held, and cut workflow states", () => {
+    const workflowDrafts: Draft[] = [
+      ...fixtureDrafts,
+      {
+        id: 202,
+        lead_id: 102,
+        format: "brief",
+        title: "Needs More Reporting",
+        content: "Draft content",
+        status: "needs_verification",
+        verification_checklist: "[]",
+      },
+      {
+        id: 203,
+        lead_id: 103,
+        format: "brief",
+        title: "Held Story",
+        content: "Draft content",
+        status: "hold",
+        verification_checklist: "[]",
+      },
+      {
+        id: 204,
+        format: "brief",
+        title: "Cut Story",
+        content: "Draft content",
+        status: "killed",
+        verification_checklist: "[]",
+      },
+    ];
+
+    render(
+      <LeadQueue
+        leads={fixtureLeads}
+        drafts={workflowDrafts}
+        loading={false}
+        onSelect={vi.fn()}
+        onSyncList={vi.fn()}
+        onIngest={vi.fn()}
+        onDailyScan={vi.fn()}
+        onOpenDraftEditor={vi.fn()}
+        onOpenCorrectionModal={vi.fn()}
+        onDeleteDraft={vi.fn()}
+      />
+    );
+
+    fireEvent.click(document.getElementById("queue-tab-drafts")!);
+    expect(screen.getByText("Needs More Reporting")).toBeInTheDocument();
+    expect(screen.getByText("Held Story")).toBeInTheDocument();
+    expect(screen.getByText("Cut Story")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText(/Draft status/i), {
+      target: { value: "needs_verification" },
+    });
+    expect(screen.getByText("Needs More Reporting")).toBeInTheDocument();
+    expect(screen.queryByText("Held Story")).not.toBeInTheDocument();
+    expect(screen.queryByText("Cut Story")).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText(/Draft status/i), {
+      target: { value: "killed" },
+    });
+    expect(screen.getByText("Cut Story")).toBeInTheDocument();
+    expect(screen.queryByText("Needs More Reporting")).not.toBeInTheDocument();
+  });
 });

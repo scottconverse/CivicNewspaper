@@ -408,7 +408,7 @@ describe("Workbench Component Tests", () => {
     expect(onApprovePublish).toHaveBeenCalledWith();
   });
 
-  test("killed drafts cannot be accidentally approved from the editor", () => {
+  test("cut drafts cannot be accidentally approved from the editor", () => {
     const onApprovePublish = vi.fn();
     renderEditor({
       onApprovePublish,
@@ -417,19 +417,19 @@ describe("Workbench Component Tests", () => {
 
     const approve = screen.getByRole("button", { name: /Approve for Static Publish/i });
     expect(approve).toBeDisabled();
-    expect(screen.getByText(/move it back to Hold first/i)).toBeInTheDocument();
+    expect(screen.getByText(/cut from the issue/i)).toBeInTheDocument();
 
     fireEvent.click(approve);
     expect(onApprovePublish).not.toHaveBeenCalled();
   });
 
-  test("routes Kill Story through the confirmed kill handler", () => {
+  test("routes Cut Story through the confirmed cut handler", () => {
     const onKillStory = vi.fn();
     const onDecision = vi.fn();
 
     renderEditor({ onKillStory, onDecision });
 
-    fireEvent.click(screen.getByRole("button", { name: /Kill Story/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Cut Story/i }));
 
     expect(onKillStory).toHaveBeenCalledTimes(1);
     expect(onDecision).not.toHaveBeenCalledWith("killed");
@@ -453,11 +453,39 @@ describe("Workbench Component Tests", () => {
   });
 
   test("needs-verification drafts explain that more work is required", () => {
+    const onDecision = vi.fn();
     renderEditor({
+      onDecision,
       selectedDraft: { ...mockDraft, status: "needs_verification" },
     });
 
-    expect(screen.getByText(/needs more work before publication/i)).toBeInTheDocument();
+    expect(screen.getByText(/sent back for more work/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Resume Editing/i })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /Mark Ready for Review/i }));
+    expect(onDecision).toHaveBeenCalledWith("ready_to_review");
+  });
+
+  test("approved drafts can be unapproved back to review", () => {
+    const onDecision = vi.fn();
+    renderEditor({
+      onDecision,
+      selectedDraft: { ...mockDraft, status: "ready_to_publish" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /Unapprove/i }));
+    expect(onDecision).toHaveBeenCalledWith("ready_to_review");
+  });
+
+  test("cut drafts can be restored to drafting", () => {
+    const onDecision = vi.fn();
+    renderEditor({
+      onDecision,
+      selectedDraft: { ...mockDraft, status: "killed" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /Restore to Drafting/i }));
+    expect(onDecision).toHaveBeenCalledWith("draft_generated");
   });
 
   test("a sensitive guardrail issue warns without vetoing approval", async () => {

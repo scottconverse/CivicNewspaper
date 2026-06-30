@@ -1235,16 +1235,16 @@ export function useApp() {
     await routeAfterRecoveredSetup();
   };
 
-  // UX-m5: "Kill Story" is destructive and was a single unguarded click, unlike
+  // UX-m5: cutting a story is destructive and was a single unguarded click, unlike
   // draft delete which is confirmed. Route it through the same confirm dialog.
   const handleKillStory = () => {
     if (!selectedDraft || !selectedDraft.id) return;
     const draftId = selectedDraft.id;
     setConfirmDialog({
-      title: "Kill this story?",
+      title: "Cut this story?",
       message:
-        "Killing this story marks it as killed and removes it from the publishing pipeline. You can reopen it later, but any in-progress review state is cleared.",
-      confirmLabel: "Kill story",
+        "Cutting this story removes it from the publishing pipeline. You can restore it later, but any in-progress review state is cleared.",
+      confirmLabel: "Cut story",
       danger: true,
       onConfirm: () => handleDecision("killed", draftId),
     });

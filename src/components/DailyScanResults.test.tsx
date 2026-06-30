@@ -63,6 +63,38 @@ describe('DailyScanResults', () => {
     });
   });
 
+  it('surfaces story-quality metadata for background and verification decisions', async () => {
+    vi.mocked(ipc.listDailyScanLeads).mockResolvedValue([
+      {
+        scan_id: 1,
+        title: 'Council video archive',
+        summary: 'The city maintains an archive of past meetings.',
+        original_url: 'https://example.gov/videos',
+        source_name: 'Council Archive',
+        source_type: 'official update',
+        priority: 'low',
+        story_type: 'background',
+        disposition: 'background',
+        what_changed: 'no current change found',
+        novelty: 1,
+        publishability_note: 'A newly posted vote, transcript, or deadline would make this publishable.',
+      }
+    ]);
+
+    render(<DailyScanResults scanId={1} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Background')).toBeInTheDocument();
+      expect(screen.getByText('background')).toBeInTheDocument();
+      expect(screen.getByText(/Why now:/)).toBeInTheDocument();
+      expect(screen.getByText(/no current change found/)).toBeInTheDocument();
+      expect(screen.getByText(/Novelty:/)).toBeInTheDocument();
+      expect(screen.getByText(/1\/5/)).toBeInTheDocument();
+      expect(screen.getByText(/Before publishing:/)).toBeInTheDocument();
+      expect(screen.getByText(/newly posted vote/)).toBeInTheDocument();
+    });
+  });
+
   it('shows empty state with a "Run scan again" button when there are no leads', async () => {
     vi.mocked(ipc.listDailyScanLeads).mockResolvedValue([]);
     const onRunScan = vi.fn();

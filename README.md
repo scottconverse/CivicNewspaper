@@ -64,6 +64,8 @@ Sources -> Fetch/Scrape -> Evidence -> Detectors/Entities/Diffs
 ```text
 README.md
 docs/
+  prd-local-llm-newsroom-v1.md
+  implementation-plan-v0.2.9-to-v1.0.0.md
   install.md
   user_manual.md
   architecture.md
@@ -110,6 +112,8 @@ The sidecar binary is not committed to the repo. The fetch script downloads the 
 
 ## Current Documentation
 
+- [V1 PRD: local LLM newsroom](docs/prd-local-llm-newsroom-v1.md) - product requirements for the local-intelligence newsroom roadmap.
+- [Implementation plan: v0.2.9 to v1.0.0](docs/implementation-plan-v0.2.9-to-v1.0.0.md) - phased roadmap with technology integrations and release gates.
 - [User manual](docs/user_manual.md) - plain-English operator guide plus technical appendix.
 - [Architecture](docs/architecture.md) - system design, schema, security, publishing, and AI boundaries.
 - [Install guide](docs/install.md) - unsigned installer and checksum instructions.

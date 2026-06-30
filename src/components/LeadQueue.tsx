@@ -42,6 +42,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
   const [queueSubTab, setQueueSubTab] = useState<"leads" | "drafts" | "scan">("leads");
   const [filterText, setFilterText] = useState<string>(filter);
   const [sortBy, setSortBy] = useState<"risk" | "confidence" | "date">("date");
+  const [draftStatusFilter, setDraftStatusFilter] = useState<string>("all");
 
   // Filtering leads based on filter prop and local filter text
   const filteredLeads = leads.filter(lead => {
@@ -71,13 +72,49 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
       case "ready_to_review": return "info";
       case "ready_to_publish": return "online";
       case "hold": return "warning";
+      case "needs_verification": return "warning";
       case "killed": return "offline";
       case "corrected": return "info";
       default: return "warning";
     }
   };
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "draft_generated": return "Drafting";
+      case "ready_to_review": return "Ready for review";
+      case "ready_to_publish": return "Approved for publishing";
+      case "needs_verification": return "Sent back / needs work";
+      case "hold": return "On hold";
+      case "killed": return "Cut";
+      case "published": return "Published";
+      case "corrected": return "Corrected";
+      default: return status.replace(/_/g, " ");
+    }
+  };
+
+  const getDispositionLabel = (disposition?: string) => {
+    switch ((disposition ?? "review").toLowerCase()) {
+      case "ready_to_draft": return "Ready to draft";
+      case "needs_verification": return "Needs verification";
+      case "background": return "Background";
+      case "watch": return "Watch";
+      default: return "Editor review";
+    }
+  };
+
+  const getDispositionColor = (disposition?: string) => {
+    switch ((disposition ?? "review").toLowerCase()) {
+      case "ready_to_draft": return "success";
+      case "needs_verification": return "warning";
+      case "background":
+      case "watch": return "neutral";
+      default: return "info";
+    }
+  };
+
   const highRiskCount = leads.filter((lead) => lead.risk_level === "high").length;
+  const filteredDrafts = drafts.filter((draft) => draftStatusFilter === "all" || draft.status === draftStatusFilter);
   const draftByLeadId = new Map<number, Draft>();
   for (const draft of drafts) {
     if (draft.lead_id && !draftByLeadId.has(draft.lead_id)) {
@@ -260,9 +297,23 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                           Draft exists
                         </span>
                       )}
+                      {lead.story_type && (
+                        <span className="badge badge-neutral" style={{ textTransform: "capitalize" }}>
+                          {lead.story_type}
+                        </span>
+                      )}
+                      <span className={`badge badge-${getDispositionColor(lead.disposition)}`}>
+                        {getDispositionLabel(lead.disposition)}
+                      </span>
                       <span className="help-text">{lead.detector_name}</span>
                     </div>
                     <h4 className="lead-why">{lead.why}</h4>
+                    {(lead.novelty_score !== undefined || lead.novelty_reason) && (
+                      <p className="help-text" style={{ margin: "0.75rem 0 0 0" }}>
+                        {lead.novelty_score !== undefined && <>Novelty {lead.novelty_score}/5. </>}
+                        {lead.novelty_reason}
+                      </p>
+                    )}
                     <div style={{ marginTop: "1rem" }}>
                       <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
                         Confidence: <strong>{lead.confidence}</strong>
@@ -291,6 +342,27 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
         </div>
       ) : (
         <div className="card">
+          <div className="queue-filter-card" style={{ marginBottom: "1rem" }}>
+            <div>
+              <label htmlFor="draft-status-filter" style={{ marginRight: "0.5rem", fontSize: "0.9rem", fontWeight: 600 }}>
+                Draft status:
+              </label>
+              <select
+                id="draft-status-filter"
+                value={draftStatusFilter}
+                onChange={(e) => setDraftStatusFilter(e.target.value)}
+                style={{ padding: "0.5rem", width: "220px" }}
+              >
+                <option value="all">All drafts</option>
+                <option value="draft_generated">Drafting</option>
+                <option value="needs_verification">Sent back / needs work</option>
+                <option value="ready_to_review">Ready for review</option>
+                <option value="ready_to_publish">Approved for publishing</option>
+                <option value="hold">On hold</option>
+                <option value="killed">Cut</option>
+              </select>
+            </div>
+          </div>
           <div className="table-container">
             <table>
               <thead>
@@ -308,8 +380,14 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                       No drafts generated yet. Select a Lead and click "Draft Article" to begin.
                     </td>
                   </tr>
+                ) : filteredDrafts.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="text-center" style={{ padding: "3rem" }}>
+                      No drafts match this status filter.
+                    </td>
+                  </tr>
                 ) : (
-                  drafts.map((draft) => (
+                  filteredDrafts.map((draft) => (
                     <tr key={draft.id} data-testid={`draft-row-${draft.id}`}>
                       <td>
                         <strong>{draft.title}</strong>
@@ -326,7 +404,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                       </td>
                       <td>
                         <span className={`badge badge-${getStatusColor(draft.status)}`}>
-                          {draft.status.replace(/_/g, " ")}
+                          {getStatusLabel(draft.status)}
                         </span>
                       </td>
                       <td>

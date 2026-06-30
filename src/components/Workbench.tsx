@@ -263,9 +263,24 @@ export const Workbench: React.FC<WorkbenchProps> = ({
       case "ready_to_review": return "info";
       case "ready_to_publish": return "online";
       case "hold": return "warning";
+      case "needs_verification": return "warning";
       case "killed": return "offline";
       case "corrected": return "info";
       default: return "warning";
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "draft_generated": return "Drafting";
+      case "ready_to_review": return "Ready for review";
+      case "ready_to_publish": return "Approved for publishing";
+      case "needs_verification": return "Sent back / needs work";
+      case "hold": return "On hold";
+      case "killed": return "Cut";
+      case "published": return "Published";
+      case "corrected": return "Corrected";
+      default: return status.replace(/_/g, " ");
     }
   };
 
@@ -357,6 +372,15 @@ export const Workbench: React.FC<WorkbenchProps> = ({
 
   // If editing an existing Draft
   if (selectedDraft) {
+    const workflowStatus = selectedDraft.status;
+    const finalStatus = workflowStatus === "published" || workflowStatus === "corrected";
+    const canResume = workflowStatus === "hold" || workflowStatus === "needs_verification" || workflowStatus === "killed";
+    const canSendBack = !["needs_verification", "killed", "published", "corrected"].includes(workflowStatus);
+    const canHold = workflowStatus !== "hold" && !finalStatus;
+    const canCut = workflowStatus !== "killed" && !finalStatus;
+    const canMarkReady = !["ready_to_review", "ready_to_publish", "killed", "published", "corrected"].includes(workflowStatus);
+    const canUnapprove = workflowStatus === "ready_to_publish";
+
     return (
       <div id="workbench-editor-panel" tabIndex={-1}>
         <div className="page-header workbench-editor-header" style={{ marginBottom: "1rem" }}>
@@ -537,33 +561,49 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                   <div>
                     <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>Current Status: </span>
                     <strong className={`badge badge-${getStatusColor(selectedDraft.status)}`} style={{ fontSize: "0.85rem" }}>
-                      {selectedDraft.status.replace(/_/g, " ")}
+                      {getStatusLabel(selectedDraft.status)}
                     </strong>
                   </div>
                   <div className="btn-group">
-                    {selectedDraft.status === "hold" && (
-                      <>
-                        <button className="btn btn-secondary btn-sm" onClick={() => onDecision("draft_generated")} id="btn-status-resume-draft">
-                          Resume Editing
-                        </button>
-                        <button className="btn btn-secondary btn-sm" onClick={() => onDecision("needs_verification")} id="btn-status-send-back">
-                          Send Back for More Work
-                        </button>
-                      </>
+                    {canResume && (
+                      <button className="btn btn-secondary btn-sm" onClick={() => onDecision("draft_generated")} id="btn-status-resume-draft">
+                        {workflowStatus === "killed" ? "Restore to Drafting" : "Resume Editing"}
+                      </button>
                     )}
-                    <button className="btn btn-secondary btn-sm" onClick={() => onDecision("hold")} id="btn-status-hold">
-                      {selectedDraft.status === "killed" ? "Move to Hold" : "Hold"}
-                    </button>
-                    <button className="btn btn-danger btn-sm" onClick={() => (onKillStory ? onKillStory() : onDecision("killed"))} id="btn-status-kill">
-                      Kill Story
-                    </button>
+                    {canSendBack && (
+                      <button className="btn btn-secondary btn-sm" onClick={() => onDecision("needs_verification")} id="btn-status-send-back">
+                        Send Back for More Work
+                      </button>
+                    )}
+                    {canMarkReady && (
+                      <button className="btn btn-secondary btn-sm" onClick={() => onDecision("ready_to_review")} id="btn-status-ready-review">
+                        Mark Ready for Review
+                      </button>
+                    )}
+                    {canUnapprove && (
+                      <button className="btn btn-secondary btn-sm" onClick={() => onDecision("ready_to_review")} id="btn-status-unapprove">
+                        Unapprove
+                      </button>
+                    )}
+                    {canHold && (
+                      <button className="btn btn-secondary btn-sm" onClick={() => onDecision("hold")} id="btn-status-hold">
+                        Hold
+                      </button>
+                    )}
+                    {canCut && (
+                      <button className="btn btn-danger btn-sm" onClick={() => (onKillStory ? onKillStory() : onDecision("killed"))} id="btn-status-kill">
+                        Cut Story
+                      </button>
+                    )}
                     <button
                       className="btn btn-primary btn-sm"
                       onClick={handleApproveClick}
-                      disabled={selectedDraft.status === "killed"}
+                      disabled={selectedDraft.status === "killed" || finalStatus}
                       title={
                         selectedDraft.status === "killed"
-                          ? "Move this story back to Hold before approving it for publishing"
+                          ? "Restore this story before approving it for publishing"
+                          : finalStatus
+                            ? "This story is already in a final publishing state"
                           : !attested
                           ? "Approve and record editorial responsibility"
                           : errorIssues.length > 0
@@ -589,7 +629,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                     role="status"
                     style={{ background: "rgba(59, 130, 246, 0.08)", borderLeft: "4px solid var(--color-info)", borderRadius: "4px", color: "var(--text-primary)", padding: "0.75rem" }}
                   >
-                    This draft needs more work before publication. Keep editing, add evidence, or move it to Hold if it should wait.
+                    This draft was sent back for more work. Keep editing, add evidence, then mark it ready for review when it is ready for an editor again.
                   </div>
                 )}
                 {selectedDraft.status === "killed" && (
@@ -597,7 +637,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                     role="status"
                     style={{ background: "rgba(245, 158, 11, 0.08)", borderLeft: "4px solid var(--color-warning)", borderRadius: "4px", color: "var(--text-primary)", padding: "0.75rem" }}
                   >
-                    This story is killed and will not be approved for publishing unless you move it back to Hold first.
+                    This story is cut from the issue. Restore it to drafting if the newsroom decides to keep working on it.
                   </div>
                 )}
                 <label
@@ -795,7 +835,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
             >
               <span>
                 <strong>{draft.title || "Untitled draft"}</strong>
-                <small>{draft.format} - {draft.status.replace(/_/g, " ")}</small>
+                <small>{draft.format} - {getStatusLabel(draft.status)}</small>
               </span>
               <span className={`badge badge-${getStatusColor(draft.status)}`}>Open</span>
             </button>

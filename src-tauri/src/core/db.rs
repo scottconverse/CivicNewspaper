@@ -82,6 +82,14 @@ pub struct Lead {
     pub risk_level: String,             // 'low', 'med', 'high'
     pub confirmation_checklist: String, // JSON array
     pub from_scan_lead_id: Option<i32>,
+    #[serde(default)]
+    pub story_type: Option<String>,
+    #[serde(default)]
+    pub disposition: Option<String>,
+    #[serde(default)]
+    pub novelty_score: Option<i32>,
+    #[serde(default)]
+    pub novelty_reason: Option<String>,
     pub created_at: String,
 }
 
@@ -106,6 +114,22 @@ pub struct DailyScanLead {
     pub source_type: Option<String>,
     pub priority: Option<String>,
     pub suggested_next_step: Option<String>,
+    #[serde(default)]
+    pub story_type: Option<String>,
+    #[serde(default)]
+    pub what_changed: Option<String>,
+    #[serde(default)]
+    pub immediacy: Option<i32>,
+    #[serde(default)]
+    pub impact: Option<i32>,
+    #[serde(default)]
+    pub conflict: Option<i32>,
+    #[serde(default)]
+    pub novelty: Option<i32>,
+    #[serde(default)]
+    pub publishability_note: Option<String>,
+    #[serde(default)]
+    pub disposition: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -416,8 +440,20 @@ pub fn insert_lead(conn: &Connection, lead: &Lead, evidence_ids: &[i32]) -> SqlR
     // and we want this call to be atomic:
     // If the connection is already in a transaction, this might fail, so we use execute block
     conn.execute(
-        "INSERT INTO leads (detector_name, why, confidence, risk_level, confirmation_checklist, from_scan_lead_id, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
-        params![lead.detector_name, lead.why, lead.confidence, lead.risk_level, lead.confirmation_checklist, lead.from_scan_lead_id, now],
+        "INSERT INTO leads (detector_name, why, confidence, risk_level, confirmation_checklist, from_scan_lead_id, story_type, disposition, novelty_score, novelty_reason, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)",
+        params![
+            lead.detector_name,
+            lead.why,
+            lead.confidence,
+            lead.risk_level,
+            lead.confirmation_checklist,
+            lead.from_scan_lead_id,
+            lead.story_type,
+            lead.disposition.as_deref().unwrap_or("review"),
+            lead.novelty_score,
+            lead.novelty_reason,
+            now
+        ],
     )?;
     let lead_id = conn.last_insert_rowid() as i32;
     for &eid in evidence_ids {
@@ -430,7 +466,7 @@ pub fn insert_lead(conn: &Connection, lead: &Lead, evidence_ids: &[i32]) -> SqlR
 }
 
 pub fn list_leads(conn: &Connection) -> SqlResult<Vec<Lead>> {
-    let mut stmt = conn.prepare("SELECT id, detector_name, why, confidence, risk_level, confirmation_checklist, from_scan_lead_id, created_at FROM leads")?;
+    let mut stmt = conn.prepare("SELECT id, detector_name, why, confidence, risk_level, confirmation_checklist, from_scan_lead_id, story_type, disposition, novelty_score, novelty_reason, created_at FROM leads")?;
     let iter = stmt.query_map([], |row| {
         Ok(Lead {
             id: Some(row.get(0)?),
@@ -440,7 +476,11 @@ pub fn list_leads(conn: &Connection) -> SqlResult<Vec<Lead>> {
             risk_level: row.get(4)?,
             confirmation_checklist: row.get(5)?,
             from_scan_lead_id: row.get(6)?,
-            created_at: row.get(7)?,
+            story_type: row.get(7)?,
+            disposition: row.get(8)?,
+            novelty_score: row.get(9)?,
+            novelty_reason: row.get(10)?,
+            created_at: row.get(11)?,
         })
     })?;
     let mut leads = Vec::new();
@@ -469,7 +509,7 @@ pub fn update_daily_scan_run(conn: &Connection, run: &DailyScanRun) -> SqlResult
 
 pub fn insert_daily_scan_lead(conn: &Connection, lead: &DailyScanLead) -> SqlResult<i32> {
     conn.execute(
-        "INSERT INTO daily_scan_leads (scan_id, title, summary, source_id, original_url, why_flagged, source_name, source_type, priority, suggested_next_step) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
+        "INSERT INTO daily_scan_leads (scan_id, title, summary, source_id, original_url, why_flagged, source_name, source_type, priority, suggested_next_step, story_type, what_changed, immediacy, impact, conflict, novelty, publishability_note, disposition) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18)",
         params![
             lead.scan_id,
             lead.title,
@@ -480,7 +520,15 @@ pub fn insert_daily_scan_lead(conn: &Connection, lead: &DailyScanLead) -> SqlRes
             lead.source_name,
             lead.source_type,
             lead.priority,
-            lead.suggested_next_step
+            lead.suggested_next_step,
+            lead.story_type,
+            lead.what_changed,
+            lead.immediacy,
+            lead.impact,
+            lead.conflict,
+            lead.novelty,
+            lead.publishability_note,
+            lead.disposition.as_deref().unwrap_or("review")
         ],
     )?;
     Ok(conn.last_insert_rowid() as i32)
@@ -488,7 +536,7 @@ pub fn insert_daily_scan_lead(conn: &Connection, lead: &DailyScanLead) -> SqlRes
 
 #[allow(dead_code)]
 pub fn list_daily_scan_leads(conn: &Connection, scan_id: i32) -> SqlResult<Vec<DailyScanLead>> {
-    let mut stmt = conn.prepare("SELECT id, scan_id, title, summary, source_id, original_url, why_flagged, source_name, source_type, priority, suggested_next_step FROM daily_scan_leads WHERE scan_id = ?1")?;
+    let mut stmt = conn.prepare("SELECT id, scan_id, title, summary, source_id, original_url, why_flagged, source_name, source_type, priority, suggested_next_step, story_type, what_changed, immediacy, impact, conflict, novelty, publishability_note, disposition FROM daily_scan_leads WHERE scan_id = ?1")?;
     let iter = stmt.query_map(params![scan_id], |row| {
         Ok(DailyScanLead {
             id: Some(row.get(0)?),
@@ -502,6 +550,14 @@ pub fn list_daily_scan_leads(conn: &Connection, scan_id: i32) -> SqlResult<Vec<D
             source_type: row.get(8)?,
             priority: row.get(9)?,
             suggested_next_step: row.get(10)?,
+            story_type: row.get(11)?,
+            what_changed: row.get(12)?,
+            immediacy: row.get(13)?,
+            impact: row.get(14)?,
+            conflict: row.get(15)?,
+            novelty: row.get(16)?,
+            publishability_note: row.get(17)?,
+            disposition: row.get(18)?,
         })
     })?;
     let mut leads = Vec::new();

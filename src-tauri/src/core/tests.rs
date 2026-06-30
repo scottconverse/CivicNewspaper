@@ -203,6 +203,10 @@ mod tests {
                 confidence: "high".to_string(),
                 risk_level: "low".to_string(),
                 from_scan_lead_id: None,
+                story_type: None,
+                disposition: Some("review".to_string()),
+                novelty_score: None,
+                novelty_reason: None,
                 confirmation_checklist: "[]".to_string(),
                 created_at: Utc::now().to_rfc3339(),
             },
@@ -487,6 +491,10 @@ mod tests {
                 confidence: "high".to_string(),
                 risk_level: "low".to_string(),
                 from_scan_lead_id: None,
+                story_type: None,
+                disposition: Some("review".to_string()),
+                novelty_score: None,
+                novelty_reason: None,
                 confirmation_checklist: "[]".to_string(),
                 created_at: Utc::now().to_rfc3339(),
             },
@@ -612,6 +620,10 @@ mod tests {
                 confidence: "high".to_string(),
                 risk_level: "low".to_string(),
                 from_scan_lead_id: None,
+                story_type: None,
+                disposition: Some("review".to_string()),
+                novelty_score: None,
+                novelty_reason: None,
                 confirmation_checklist: "[]".to_string(),
                 created_at: chrono::Utc::now().to_rfc3339(),
             },
@@ -996,6 +1008,7 @@ mod tests {
         assert_eq!(lead.source_name.as_deref(), Some("Council Agenda Center"));
         assert_eq!(lead.source_type.as_deref(), Some("agenda"));
         assert_eq!(lead.priority.as_deref(), Some("high"));
+        assert_eq!(lead.disposition.as_deref(), Some("needs_verification"));
         assert_eq!(
             lead.suggested_next_step.as_deref(),
             Some("Confirm the hearing date and agenda item number.")
@@ -1038,6 +1051,21 @@ mod tests {
         crate::core::daily_scan::parse_and_save_scan_response(&conn, 1, response).unwrap();
 
         let lead = list_daily_scan_leads(&conn, 1).unwrap().pop().unwrap();
+        assert_eq!(lead.story_type.as_deref(), Some("background"));
+        assert_eq!(
+            lead.what_changed.as_deref(),
+            Some("no current change found")
+        );
+        assert_eq!(lead.immediacy, Some(1));
+        assert_eq!(lead.impact, Some(2));
+        assert_eq!(lead.conflict, Some(1));
+        assert_eq!(lead.novelty, Some(1));
+        assert_eq!(lead.disposition.as_deref(), Some("background"));
+        assert!(lead
+            .publishability_note
+            .as_deref()
+            .unwrap_or_default()
+            .contains("newly posted meeting video"));
         let why = lead.why_flagged.unwrap_or_default();
         assert!(why.contains("Suggested treatment: background."));
         assert!(why.contains("Newsworthiness: 5/20"));
@@ -1050,6 +1078,13 @@ mod tests {
         assert!(
             queue_lead.why.contains("Newsworthiness: 5/20"),
             "Story Queue should retain quality context for drafting"
+        );
+        assert_eq!(queue_lead.story_type.as_deref(), Some("background"));
+        assert_eq!(queue_lead.disposition.as_deref(), Some("background"));
+        assert_eq!(queue_lead.novelty_score, Some(1));
+        assert_eq!(
+            queue_lead.novelty_reason.as_deref(),
+            Some("no current change found")
         );
     }
 
@@ -1131,6 +1166,7 @@ mod tests {
             Some("low"),
             "unchanged recurring background items should be labeled low priority"
         );
+        assert_eq!(second_lead.disposition.as_deref(), Some("background"));
 
         let queue_lead = list_leads(&conn)
             .unwrap()
@@ -1138,6 +1174,7 @@ mod tests {
             .find(|lead| lead.from_scan_lead_id == second_lead.id)
             .expect("recurring lead should still appear in Story Queue");
         assert!(queue_lead.why.contains("Beat memory: similar topic"));
+        assert_eq!(queue_lead.disposition.as_deref(), Some("background"));
 
         let seen_count: i32 = conn
             .query_row(
@@ -3227,6 +3264,10 @@ I should produce JSON only.
                 risk_level: "med".to_string(),
                 confirmation_checklist: r#"["Confirm agenda packet item","Confirm vendor name","Confirm vote outcome"]"#.to_string(),
                 from_scan_lead_id: None,
+                story_type: Some("story".to_string()),
+                disposition: Some("ready_to_draft".to_string()),
+                novelty_score: Some(4),
+                novelty_reason: Some("A current contract approval with spending impact.".to_string()),
                 created_at: Utc::now().to_rfc3339(),
             },
             &[evidence_id],
@@ -3649,6 +3690,10 @@ I should produce JSON only.
                 risk_level: "low".to_string(),
                 confirmation_checklist: "[]".to_string(),
                 from_scan_lead_id: None,
+                story_type: Some("brief".to_string()),
+                disposition: Some("ready_to_draft".to_string()),
+                novelty_score: Some(3),
+                novelty_reason: Some("Recent funding notice.".to_string()),
                 created_at: Utc::now().to_rfc3339(),
             },
             &[evidence_id],
