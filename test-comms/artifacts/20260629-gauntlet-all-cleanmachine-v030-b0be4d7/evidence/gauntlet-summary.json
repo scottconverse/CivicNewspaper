@@ -1,0 +1,23 @@
+{
+  "status": "FAIL",
+  "testedAtUtc": "2026-06-30T06:25:00Z",
+  "coordinationBranch": "test-comms/cleanroom-coder-tester",
+  "coordinationCommit": "e4342ce test-comms: add v0.3.0 clean-machine gauntlet directive [skip ci]",
+  "productBranch": "main",
+  "productCommit": "b0be4d7432e9f5f791da68770a9631b8c5892697",
+  "installerUsed": "test-comms/artifacts/20260629-gauntlet-all-cleanmachine-v030-b0be4d7/The Civic Desk_0.3.0_x64-setup.exe",
+  "installerSha256": "F3256C116F04B734C8C311E5B3EFEB69B24DAF3134C521C986BDF2C45CC1DF7E",
+  "cleanWipeCompleted": true,
+  "dependencyAbsentStateProven": true,
+  "appGuidedAiSetupCompleted": true,
+  "localAiGeneratedContent": true,
+  "leadCount": 11,
+  "draftCount": 2,
+  "approvedStoryCount": 1,
+  "publishedStoryCount": 1,
+  "publishUrl": "https://plucky-pebble-yfam.here.now",
+  "exportPath": "C:/Users/civic/AppData/Roaming/com.scottconverse.civicdesk/sites/default",
+  "zipPath": "C:/Users/civic/AppData/Roaming/com.scottconverse.civicdesk/sites/default/site-package.zip",
+  "publicHtmlScaffoldingMarkerScan": "PASS: no EDITOR_NOTE, [EDITOR_NOTE, Body:, Headline:, Nut graf, Reporting Steps, [Source needed], [Verification needed], [End of Report], or mojibake markers found by rg in static output",
+  "releaseGateFailure": "Published watch/1.html contains reader-facing body text that is still an editor instruction: 'Please review the agenda packet for detailed information and ensure all important points are captured.' It is not a usable civic story or brief."
+}

@@ -1,0 +1,149 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Story Queue
+
+Civic signals your sources surfaced, ready to verify and turn into plain-language stories.
+
+Refresh
+Daily Scan
+Scrape & Detect
+NEW LEADS
+11
+IN DRAFTING
+1
+HIGH PRIORITY
+1
+SOURCES
+6
+Local-first workflow
+Scan sources, draft from linked evidence, run guardrails, then publish a static paper.
+Leads
+11
+Drafts
+1
+Scan results
+latest
+Filter leads
+Sort by:
+Date Created
+Risk Level
+Confidence
+Risk: high
+Draft exists
+Story
+Ready to draft
+daily_scan
+Longmont City Council Meeting Agenda: The upcoming city council meeting includes discussions on several community projects and decisions, such as a library roof contract. Editor context: This agenda contains current actions by the city council that impact local facilities and services. Suggested treatment: story. Newsworthiness: 14/20 (immediacy 5, impact 4, conflict 2, novelty 3). Why now: A city council meeting with relevant topics scheduled for this week. Suggested next step: Review the agenda packet for details on discussions, votes, and projects to ensure all important information is captured for reporting. What would make this publishable: The agenda packet should detail the specific projects, funding amounts, and any potential controversies.
+
+Novelty 3/5. A city council meeting with relevant topics scheduled for this week.
+
+Confidence: high
+Open draft
+Risk: med
+Background
+Background
+daily_scan
+Sustainability Programs Updates: The city updates on sustainability programs provide insights into current initiatives and future projects aimed at environmental stewardship. Editor context: These updates can highlight new or ongoing sustainability efforts that impact the community. Suggested treatment: background. Newsworthiness: 8/20 (immediacy 2, impact 3, conflict 1, novelty 2). Why now: No current change found, but it suggests potential future stories based on ongoing sustainability efforts. Suggested next step: Review recent sustainability program updates to identify any new initiatives, projects, or services that could be of interest to readers. What would make this publishable: Details of new initiatives or specific programs that have launched recently.
+
+Novelty 2/5. No current change found, but it suggests potential future stories based on ongoing sustainability efforts.
+
+Confidence: med
+Draft
+Risk: med
+Watch
+Watch
+daily_scan
+City Council to meet on July 14 for Pre-Session: The City Council will hold a pre-session meeting on July 14 from 6 pm to 7 pm at the City Clerk’s office. This is an opportunity for public input before upcoming council meetings. Editor context: This pre-session meeting allows public participation in shaping local policies and decisions. Suggested treatment: watch. Newsworthiness: 8/20 (immediacy 3, impact 2, conflict 1, novelty 2). Why now: A pre-session meeting is scheduled for July 14, providing a platform for public engagement. Suggested next step: Attend the pre-session to note any important issues or citizen input that may be discussed. What would make this publishable: Notes from the pre-session on citizen feedback and discussion points.
+
+Novelty 2/5. A pre-session meeting is scheduled for July 14, providing a platform for public engagement.
+
+Confidence: med
+Draft
+Risk: low
+Editor review
+Decision / Vote
+VOTING SIGNAL: Found vote/decision keywords (["approved", "approved", "Approved", "passed", "Motion", "motion"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.
+
+Novelty /5.
+
+Confidence: medium
+Draft
+Risk: low
+Editor review
+Public Meeting Scheduled
+MEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.
+
+Novelty /5.
+
+Confidence: medium
+Draft
+Risk: low
+Editor review
+Decision / Vote
+VOTING SIGNAL: Found vote/decision keywords (["passed"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.
+
+Novelty /5.
+
+Confidence: medium
+Draft
+Risk: low
+Editor review
+New Primary Record
+A new official primary document from 'Longmont City Council Meetings' was fetched today (https://longmontcolorado.gov/government/city-council-meetings/).
+
+Novelty /5.
+
+Confidence: high
+Draft
+Risk: low
+Editor review
+New Primary Record
+A new official primary document from 'Public Notice Colorado' was fetched today (https://www.publicnoticecolorado.com/).
+
+Novelty /5.
+
+Confidence: high
+Draft
+Risk: low
+Editor review
+Public Meeting Scheduled
+MEETING SCHEDULED: Meeting notification detected in 'Longmont Agenda Management Portal' record. Public attendance or comment may be permitted.
+
+Novelty /5.
+
+Confidence: medium
+Draft
+Risk: low
+Editor review
+New Primary Record
+A new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).
+
+Novelty /5.
+
+Confidence: high
+Draft
+Risk: low
+Editor review
+New Primary Record
+A new official primary document from 'Longmont Agenda Management Portal' was fetched today (https://longmontcolorado.gov/city-clerk/agenda-management-portal/).
+
+Novelty /5.
+
+Confidence: high
+Draft

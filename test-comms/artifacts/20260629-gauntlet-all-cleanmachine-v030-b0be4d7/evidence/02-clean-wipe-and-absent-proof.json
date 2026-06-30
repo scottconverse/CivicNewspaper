@@ -1,0 +1,44 @@
+﻿{
+    "utc":  "2026-06-30T05:50:53.1850346Z",
+    "removed":  [
+                    "C:\\Users\\civic\\AppData\\Local\\The Civic Desk",
+                    "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+                    "C:\\Users\\civic\\.ollama"
+                ],
+    "failed":  [
+
+               ],
+    "pathBefore":  "C:\\CivicCastTester\\tools\\ffmpeg-release-essentials\\ffmpeg-8.1.1-essentials_build\\bin;C:\\CivicCastTester\\tools\\TSDuck-Win64-3.44-4676-Portable\\TSDuck\\bin;C:\\Users\\civic\\AppData\\Local\\Programs\\Python\\Launcher\\;C:\\Users\\civic\\AppData\\Local\\Programs\\GitHub CLI\\gh_2.92.0\\bin",
+    "pathAfter":  "C:\\CivicCastTester\\tools\\ffmpeg-release-essentials\\ffmpeg-8.1.1-essentials_build\\bin;C:\\CivicCastTester\\tools\\TSDuck-Win64-3.44-4676-Portable\\TSDuck\\bin;C:\\Users\\civic\\AppData\\Local\\Programs\\Python\\Launcher\\;C:\\Users\\civic\\AppData\\Local\\Programs\\GitHub CLI\\gh_2.92.0\\bin",
+    "processesAfter":  {
+
+                       },
+    "ollamaOnPath":  {
+
+                     },
+    "modelFiles":  [
+
+                   ],
+    "appDataRemaining":  [
+                             {
+                                 "path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk",
+                                 "exists":  false
+                             },
+                             {
+                                 "path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+                                 "exists":  false
+                             },
+                             {
+                                 "path":  "C:\\Users\\civic\\AppData\\Local\\CivicNewspaper",
+                                 "exists":  false
+                             },
+                             {
+                                 "path":  "C:\\Users\\civic\\AppData\\Roaming\\CivicNewspaper",
+                                 "exists":  false
+                             },
+                             {
+                                 "path":  "C:\\Users\\civic\\.ollama",
+                                 "exists":  false
+                             }
+                         ]
+}

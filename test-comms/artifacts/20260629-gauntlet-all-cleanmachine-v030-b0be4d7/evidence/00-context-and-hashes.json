@@ -1,0 +1,12 @@
+﻿{
+    "pwd":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms",
+    "branch":  "test-comms/cleanroom-coder-tester",
+    "head":  "e4342ce test-comms: add v0.3.0 clean-machine gauntlet directive [skip ci]",
+    "activeDirective":  "test-comms/directives/20260629-gauntlet-all-cleanmachine-v030-b0be4d7.md",
+    "installer":  "test-comms\\artifacts\\20260629-gauntlet-all-cleanmachine-v030-b0be4d7\\The Civic Desk_0.3.0_x64-setup.exe",
+    "sha256":  "F3256C116F04B734C8C311E5B3EFEB69B24DAF3134C521C986BDF2C45CC1DF7E",
+    "expected":  "F3256C116F04B734C8C311E5B3EFEB69B24DAF3134C521C986BDF2C45CC1DF7E",
+    "msi":  "test-comms\\artifacts\\20260629-gauntlet-all-cleanmachine-v030-b0be4d7\\The Civic Desk_0.3.0_x64_en-US.msi",
+    "msiSha256":  "D294096A95FEBF55E0CB30D104ADD8B31BC27981F150BA8B70FEDFD547EC07E1",
+    "msiExpected":  "D294096A95FEBF55E0CB30D104ADD8B31BC27981F150BA8B70FEDFD547EC07E1"
+}

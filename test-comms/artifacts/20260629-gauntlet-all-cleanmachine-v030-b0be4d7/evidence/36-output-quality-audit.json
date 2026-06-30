@@ -1,0 +1,21 @@
+﻿{
+    "liveUrl":  "https://plucky-pebble-yfam.here.now",
+    "sitePath":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260629-gauntlet-all-cleanmachine-v030-b0be4d7\\evidence\\publication-output\\site",
+    "zipPath":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260629-gauntlet-all-cleanmachine-v030-b0be4d7\\evidence\\publication-output\\site\\site-package.zip",
+    "zipSha256":  "9BE2D38879ABBC43A9C468858413ED94A5F918D68856B5F96DF0F130EE8ABBAA",
+    "articleCount":  1,
+    "fileCount":  18,
+    "zipEntryCount":  17,
+    "localHitCount":  0,
+    "zipHitCount":  0,
+    "liveHitCount":  0,
+    "localHits":  [
+
+                  ],
+    "zipHits":  {
+
+                },
+    "liveHits":  [
+
+                 ]
+}

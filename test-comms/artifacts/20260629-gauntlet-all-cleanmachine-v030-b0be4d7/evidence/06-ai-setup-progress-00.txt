@@ -1,0 +1,24 @@
+The setup screen did not receive input events, so The Civic Desk continued with a starter Longmont profile. You can edit identity later in Settings.
+AI Setup
+Step 2 of 5
+AI Service Setup
+
+Check the connection to the local AI service that runs on your computer.
+
+Local AI Service Connection
+
+Local Ram: 15 GB
+
+Couldn't reach the AI service
+
+The private AI service did not start. First try restarting Civic Desk. If Windows or antivirus asked about this app, allow it, then retry. If it still fails, save a diagnostics file for support.
+
+If this is a clean machine, Civic Desk can download and install its local AI runtime for you. This is a large one-time download and may take a while.
+
+Starting the local AI runtime.
+Installing...
+Retry
+Save diagnostics file
+Back
+Skip for now
+Next

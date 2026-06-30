@@ -1,0 +1,44 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Setup had to recover from missing input events, so The Civic Desk is adding starter Longmont sources and running the first scan automatically.
+Dismiss
+Sources
+
+The municipal feeds and record portals The Civic Desk watches for you.
+
+Discover for my city
+Bulk import
+SOURCE	TIER	LAST CHECK	
+No feeds or portals registered yet. Add one in the right panel.
+Add a source
+
+Paste a city webpage or RSS feed. The Civic Desk figures out the rest.
+
+Name
+URL
+Type
+Auto-detect
+RSS
+HTML
+Media
+Tier
+Primary
+Secondary
+Watch
+Add Source

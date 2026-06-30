@@ -1,0 +1,47 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Story approved for publishing; a verification record was saved.
+Dismiss
+Drafting Article
+
+Lead: Sustainability Programs Updates: The city updates on sustainability programs provide insights into current initiatives and future projects aimed at environmental stewardship. Editor context: These updates can highlight new or ongoing sustainability efforts that impact the community. Suggested treatment: background. Newsworthiness: 8/20 (immediacy 2, impact 3, conflict 1, novelty 2). Why now: No current change found, but it suggests potential future stories based on ongoing sustainability efforts. Suggested next step: Review recent sustainability program updates to identify any new initiatives, projects, or services that could be of interest to readers. What would make this publishable: Details of new initiatives or specific programs that have launched recently.
+
+Background
+Background
+Novelty 2/5
+
+Background item. Treat as context or an editor memo unless you have a current, specific change.
+
+Why now: No current change found, but it suggests potential future stories based on ongoing sustainability efforts.
+
+Generate Draft
+Cancel
+Article Format
+Brief (Under 200 words summary)
+Watch Alert (Highlights specific public safety or procurement issues)
+Explainer (Detailed review of a policy or decision background)
+Investigation (Traces spending and connections behind a story)
+Editorial / Opinion Piece (Presents a structured argument)
+Custom Guidelines / Instructions (Optional)
+Linked Sources (3)
+"Discover all the departments that make up the City of Longmont&#8217;s government. Get detailed info..."
+"Temporary overnight closure of Hover Street/CO 119 intersection scheduled for June 28 June 26, 2026 ..."
+"Community and Neighborhood Resources Enterprise Technology Services Environment Finance Forestry Gol..."
+Generate Draft
+Cancel

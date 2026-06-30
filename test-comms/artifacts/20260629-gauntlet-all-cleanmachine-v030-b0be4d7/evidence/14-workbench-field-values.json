@@ -1,0 +1,23 @@
+[
+  {
+    "i": 0,
+    "tag": "INPUT",
+    "placeholder": null,
+    "aria": null,
+    "value": "Council agenda includes library roof contract"
+  },
+  {
+    "i": 1,
+    "tag": "TEXTAREA",
+    "placeholder": null,
+    "aria": null,
+    "value": "Longmont City Council has a current meeting agenda that includes several city business items, including a library roof contract.\n\nThe agenda item is worth editor review because it may affect a public facility and city spending. Before publication, the story should be checked against the agenda packet for the contract amount, vendor name, vote timing, and whether public comment or council debate is expected.\n\nThis brief was edited during testing from the app-generated draft to remove reporter notes and verification scaffolding. It should remain a cautious brief unless the editor confirms the packet details."
+  },
+  {
+    "i": 2,
+    "tag": "INPUT",
+    "placeholder": null,
+    "aria": null,
+    "value": "on"
+  }
+]

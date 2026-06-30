@@ -1,0 +1,14 @@
+[
+  {
+    "i": 0,
+    "text": "The setup screen did not receive input events, so The Civic Desk continued with a starter Longmont profile. You can edit identity later in Settings.\nAI Setup\nStep 2 of 5\nAI Service Setup\n\nCheck the connection to the local AI service that runs on your computer.\n\nLocal AI Service Connection\n\nLocal Ram: 15 GB\n\nCouldn't reach the AI service\n\nThe private AI service did not start. First try restarting Civic Desk. If Windows or antivirus asked about this app, allow it, then retry. If it still fails, save a diagnostics file for support.\n\nIf this is a clean machine, Civic Desk can download and install its local AI runtime for you. This is a large one-time download and may take a while.\n\nStarting the local AI runtime.\nInstalling...\nRetry\nSave diagnostics file\nBack\nSkip for now\nNext"
+  },
+  {
+    "i": 1,
+    "text": "The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.\nAI Setup\nStep 3 of 5\nDownload AI Model\n\nDownload the local AI model. One-time setup - needs an internet connection.\n\nAI Model: qwen2.5:7b (Recommended)\n\nCivicNews will download this local AI model now - a one-time download of about ~4.7 GB that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.\n\nIt is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.\n\nInitializing download...\n0.4%\nCancel Download\nBack\nSkip for now\nNext"
+  },
+  {
+    "i": "final",
+    "text": "The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.\nAI Setup\nStep 3 of 5\nDownload AI Model\n\nDownload the local AI model. One-time setup - needs an internet connection.\n\nAI Model: qwen2.5:7b (Recommended)\n\nCivicNews will download this local AI model now - a one-time download of about ~4.7 GB that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.\n\nIt is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.\n\nInitializing download...\n32.3%\nCancel Download\nBack\nSkip for now\nNext"
+  }
+]
