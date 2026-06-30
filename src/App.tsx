@@ -48,6 +48,7 @@ function App() {
           app.setStatusMessage("");
           app.setActiveTab(tab);
           app.setSelectedLead(null);
+          app.setSelectedDraft(null);
         }}
         ollamaOnline={app.ollamaOnline}
         selectedDraft={app.selectedDraft}

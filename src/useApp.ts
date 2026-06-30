@@ -1344,9 +1344,8 @@ export function useApp() {
   };
 
   // GG-B2 / GG-C1: approving for publish records a human attestation, then asks
-  // the backend to advance the status. The backend re-checks guardrails and
-  // refuses error-severity (editor-marked blocking) issues unless an override
-  // reason is supplied, which the Workbench collects before calling this.
+  // the backend to advance the status. Guardrails are advisory and logged; the
+  // software never vetoes the editor's publish/hold/cut decision.
   const handleApprovePublish = async (overrideReason?: string) => {
     if (!selectedDraft || !selectedDraft.id) return;
     try {
@@ -1360,6 +1359,9 @@ export function useApp() {
       }
       await storyDecision(selectedDraft.id, "ready_to_publish", overrideReason);
       setSelectedDraft({ ...selectedDraft, status: "ready_to_publish" });
+      setDrafts(current =>
+        current.map(draft => (draft.id === selectedDraft.id ? { ...draft, status: "ready_to_publish" } : draft))
+      );
       setStatusMessage("Story approved for publishing; a verification record was saved.");
       await loadInitialData();
     } catch (e: any) {

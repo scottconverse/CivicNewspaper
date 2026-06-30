@@ -4276,6 +4276,48 @@ I should produce JSON only.
         );
     }
 
+    // Cleanroom regression: advisory publish-audit failures must never leave an
+    // editor-approved story stranded in review after attestation is recorded.
+    #[test]
+    fn test_story_decision_advances_status_when_publish_audit_fails() {
+        use crate::tauri_cmds::story_decision_with_conn;
+        let conn = init_db("file:test_story_decision_audit_failure?mode=memory&cache=shared").unwrap();
+        let id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "story".to_string(),
+                title: "Teen tattoo studio".to_string(),
+                content: "The library will host a teen temporary tattoo studio.".to_string(),
+                status: "ready_to_review".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+        crate::core::db::attest_draft(&conn, id, "Editor").unwrap();
+        conn.execute_batch("DROP TABLE publish_decision_audits;")
+            .unwrap();
+
+        story_decision_with_conn(
+            &conn,
+            id,
+            "ready_to_publish",
+            Some("Editor reviewed warnings and approved publication."),
+        )
+        .unwrap();
+
+        let draft = crate::core::db::get_draft(&conn, id).unwrap().unwrap();
+        assert_eq!(
+            draft.status, "ready_to_publish",
+            "audit logging is advisory and must not veto or strand the editor decision"
+        );
+    }
+
     // RE-AUDIT NEW-3: whole-word/inflection matching avoids substring false
     // positives but still catches real inflections.
     #[test]

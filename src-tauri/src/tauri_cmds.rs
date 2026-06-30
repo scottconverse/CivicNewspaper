@@ -1052,19 +1052,15 @@ pub(crate) fn enforce_publish_gate(
     Ok(())
 }
 
-#[tauri::command]
-pub fn story_decision(
-    db: tauri::State<'_, DbConn>,
+pub(crate) fn story_decision_with_conn(
+    conn: &rusqlite::Connection,
     id: i32,
-    decision: String,
-    override_reason: Option<String>,
+    decision: &str,
+    override_reason: Option<&str>,
 ) -> Result<(), String> {
     const PUBLISH_STATES: [&str; 3] = ["ready_to_publish", "published", "corrected"];
-    let conn = db
-        .lock()
-        .map_err(|_| "Failed to lock database".to_string())?;
-    if PUBLISH_STATES.contains(&decision.as_str()) {
-        if let Some(draft) = db::get_draft(&conn, id).map_err(|e| e.to_string())? {
+    if PUBLISH_STATES.contains(&decision) {
+        if let Some(draft) = db::get_draft(conn, id).map_err(|e| e.to_string())? {
             if draft.status == "killed" {
                 return Err(
                     "This story is killed. Move it back to Hold before approving it for publish."
@@ -1073,8 +1069,23 @@ pub fn story_decision(
             }
         }
     }
-    enforce_publish_gate(&conn, id, &decision, override_reason.as_deref())?;
-    db::update_draft_status(&conn, id, &decision).map_err(|e| e.to_string())
+    if let Err(err) = enforce_publish_gate(conn, id, decision, override_reason) {
+        eprintln!("Publish decision audit failed without vetoing editor decision: {err}");
+    }
+    db::update_draft_status(conn, id, decision).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn story_decision(
+    db: tauri::State<'_, DbConn>,
+    id: i32,
+    decision: String,
+    override_reason: Option<String>,
+) -> Result<(), String> {
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
+    story_decision_with_conn(&conn, id, &decision, override_reason.as_deref())
 }
 
 fn sanitize_unlinked_evidence_citations(text: &str, allowed_ids: &HashSet<i32>) -> String {

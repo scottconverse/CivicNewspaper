@@ -873,7 +873,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
             <p className="help-text" style={{ marginTop: 0 }}>
               This story has {guardrailIssues.length} review warning(s)
               {severeIssueCount > 0 ? `, including ${severeIssueCount} high-concern issue(s),` : ""}
-              from your newsroom's guardrail and story-quality checks. The app will not veto the editor,
+              {" "}from your newsroom's guardrail and story-quality checks. The app will not veto the editor,
               but this decision is recorded with the story.
             </p>
             <ul style={{ fontSize: "0.85rem", margin: "0 0 1rem 0", paddingLeft: "1.2rem" }}>
