@@ -1,0 +1,166 @@
+{
+  "utc": "2026-06-30T15:49:15.223Z",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "disabled": false,
+      "id": "nav-tab-queue",
+      "cls": "nav-link active"
+    },
+    {
+      "i": 12,
+      "text": "Refresh",
+      "disabled": false,
+      "id": "btn-sync-list",
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 16,
+      "text": "Leads\n19",
+      "disabled": false,
+      "id": "queue-tab-leads",
+      "cls": "queue-tab active"
+    },
+    {
+      "i": 17,
+      "text": "Drafts\n0",
+      "disabled": false,
+      "id": "queue-tab-drafts",
+      "cls": "queue-tab "
+    },
+    {
+      "i": 19,
+      "text": "Draft anyway",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 20,
+      "text": "Draft anyway",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 21,
+      "text": "Draft",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 22,
+      "text": "Draft anyway",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 23,
+      "text": "Draft anyway",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 24,
+      "text": "Draft anyway",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 25,
+      "text": "Draft anyway",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 26,
+      "text": "Draft anyway",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 27,
+      "text": "Draft anyway",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 28,
+      "text": "Draft anyway",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 29,
+      "text": "Draft anyway",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 30,
+      "text": "Draft anyway",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 31,
+      "text": "Draft anyway",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 32,
+      "text": "Draft anyway",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 33,
+      "text": "Draft anyway",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 34,
+      "text": "Draft anyway",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 35,
+      "text": "Draft anyway",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 36,
+      "text": "Draft anyway",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 37,
+      "text": "Draft anyway",
+      "disabled": false,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    }
+  ]
+}

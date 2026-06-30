@@ -1,0 +1,30 @@
+{
+  "utc": "2026-06-30T15:41:21.164Z",
+  "poll": [
+    {
+      "i": 0,
+      "utc": "2026-06-30T15:41:01.141Z",
+      "text": "AI Setup\nStep 2 of 5\nAI Service Setup\n\nCheck the connection to the local AI service that runs on your computer.\n\nLocal AI Service Connection\n\nLocal Ram: 15 GB\n\nStarting the local AI service\n\nCivicNews includes a local AI service that runs on your computer. It may take a moment to start up. Once it's running, you'll download a model in the next step.\n\nOn a clean machine, use the install button if the service does not become ready.\n\nDownloading the local AI runtime from Ollama.\n\nInstalling...\nCheck Initialization Status\nBack\nSkip for now\nNext"
+    },
+    {
+      "i": 1,
+      "utc": "2026-06-30T15:41:06.144Z",
+      "text": "AI Setup\nStep 2 of 5\nAI Service Setup\n\nCheck the connection to the local AI service that runs on your computer.\n\nLocal AI Service Connection\n\nLocal Ram: 15 GB\n\nStarting the local AI service\n\nCivicNews includes a local AI service that runs on your computer. It may take a moment to start up. Once it's running, you'll download a model in the next step.\n\nOn a clean machine, use the install button if the service does not become ready.\n\nDownloading the local AI runtime from Ollama.\n\nInstalling...\nCheck Initialization Status\nBack\nSkip for now\nNext"
+    },
+    {
+      "i": 2,
+      "utc": "2026-06-30T15:41:11.150Z",
+      "text": "AI Setup\nStep 2 of 5\nAI Service Setup\n\nCheck the connection to the local AI service that runs on your computer.\n\nLocal AI Service Connection\n\nLocal Ram: 15 GB\n\nStarting the local AI service\n\nCivicNews includes a local AI service that runs on your computer. It may take a moment to start up. Once it's running, you'll download a model in the next step.\n\nOn a clean machine, use the install button if the service does not become ready.\n\nDownloading the local AI runtime from Ollama.\n\nInstalling...\nCheck Initialization Status\nBack\nSkip for now\nNext"
+    },
+    {
+      "i": 3,
+      "utc": "2026-06-30T15:41:16.156Z",
+      "text": "AI Setup\nStep 2 of 5\nAI Service Setup\n\nCheck the connection to the local AI service that runs on your computer.\n\nLocal AI Service Connection\n\nLocal Ram: 15 GB\n\nStarting the local AI service\n\nCivicNews includes a local AI service that runs on your computer. It may take a moment to start up. Once it's running, you'll download a model in the next step.\n\nOn a clean machine, use the install button if the service does not become ready.\n\nInstalling the local AI runtime.\n\nInstalling...\nCheck Initialization Status\nBack\nSkip for now\nNext"
+    },
+    {
+      "i": 4,
+      "utc": "2026-06-30T15:41:21.164Z",
+      "text": "AI Setup\nStep 2 of 5\nAI Service Setup\n\nCheck the connection to the local AI service that runs on your computer.\n\nLocal AI Service Connection\n\nLocal Ram: 15 GB\n\nCouldn't reach the AI service\n\nThe private AI service did not start. First try restarting Civic Desk. If Windows or antivirus asked about this app, allow it, then retry. If it still fails, save a diagnostics file for support.\n\nIf this is a clean machine, Civic Desk can download and install its local AI runtime for you. This is a large one-time download and may take a while.\n\nStarting the local AI runtime.\nInstalling...\nRetry\nSave diagnostics file\nBack\nSkip for now\nNext"
+    }
+  ]
+}

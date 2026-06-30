@@ -1,0 +1,240 @@
+{
+  "utc": "2026-06-30T15:54:55.359Z",
+  "text": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nStory status updated to 'hold'.\nDismiss\nStory Queue\n\nCivic signals your sources surfaced, ready to verify and turn into plain-language stories.\n\nRefresh\nDaily Scan\nScrape & Detect\nNEW LEADS\n19\nIN DRAFTING\n4\nHIGH PRIORITY\n2\nSOURCES\n19\nLocal-first workflow\nScan sources, draft from linked evidence, run guardrails, then publish a static paper.\nLeads\n19\nDrafts\n4\nScan results\nlatest\nFilter leads\nSort by:\nDate Created\nRisk Level\nConfidence\nRisk: low\nBackground\nBackground\ndaily_scan\nSpanish-English Conversation Group: The Longmont Public Library is hosting a Spanish-English conversation group for language learners every Thursday from 1 pm to 2 pm. Editor context: This event promotes community engagement and provides resources for non-native speakers. Suggested treatment: background. Newsworthiness: 9/20 (immediacy 2, impact 2, conflict 1, novelty 4). Why now: The library hosts a weekly Spanish-English conversation group for language learners. Suggested next step: Provide details on the location, frequency, and any additional resources or support available. What would make this publishable: More details on the event format, participants, and any success stories or feedback from attendees.\n\nNovelty 4/5. The library hosts a weekly Spanish-English conversation group for language learners.\n\nConfidence: low\nDraft anyway\nRisk: med\nDraft exists\nWatch\nWatch\ndaily_scan\nSummer Programs at Longmont Youth Center: The Youth Center is hosting a series of summer programs including Navigators, Glam Group, and Make it Better from July 2 to 5 pm. Editor context: These youth-focused events have public impact on children's activities during the school break. Suggested treatment: watch. Newsworthiness: 13/20 (immediacy 4, impact 3, conflict 1, novelty 5). Why now: Summer programs are scheduled at the Youth Center from July 2 to 5 pm. Suggested next step: Check for additional details such as program descriptions, fees, or registration information. What would make this publishable: Detailed descriptions of each program, fees, registration information, and any special guest speakers or activities.\n\nNovelty 5/5. Summer programs are scheduled at the Youth Center from July 2 to 5 pm.\n\nConfidence: med\nOpen draft\nRisk: high\nDraft exists\nBrief\nReady to draft\ndaily_scan\nLongmont City Council Meeting Rescheduled: The originally scheduled Tuesday, June 30 City Council meeting was canceled and rescheduled for July 1 at 7 pm. Editor context: This change in the council meeting schedule may affect public participation and agenda items. Suggested treatment: brief. Newsworthiness: 14/20 (immediacy 5, impact 3, conflict 2, novelty 4). Why now: The city council meeting was canceled and rescheduled for July 1 at 7 pm. Suggested next step: Check the City Council agenda for any changes or new items added due to the rescheduling. What would make this publishable: A detailed agenda of the new City Council meeting, any changes in agenda items, or public feedback on the rescheduling.\n\nNovelty 4/5. The city council meeting was canceled and rescheduled for July 1 at 7 pm.\n\nConfidence: high\nOpen draft\nRisk: low\nDraft exists\nBackground\nBackground\nSeen before\ndaily_scan\nLibrary hosts Open Chess Night: Longmont Public Library is hosting an open chess evening with basic instruction and a selection of books about the game. Editor context: This event provides a community activity opportunity for residents interested in chess, offering both practice and learning resources. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 3, impact 2, conflict 1, novelty 4). Why now: A new chess event is scheduled at the library, providing a community activity. Beat memory: similar topic 'City Council Meeting Canceled' was first seen 2026-06-30T15:45:19.264891500+00:00, last seen 2026-06-30T15:45:19.264891500+00:00, and has appeared 1 previous time(s). Treat this as recurring/background unless the source shows a new vote, deadline, dollar amount, filing, outage, meeting item, or public impact. Suggested next step: Verify the location and timing details before drafting the story. What would make this publishable: Confirmation of the location, time, and any special guest instructors. Compare against beat memory before drafting; write a story only if there is a new reportable fact.\n\nBeat memory: Similar topic 'City Council Meeting Canceled' was first seen 2026-06-30T15:45:19.264891500+00:00, last seen 2026-06-30T15:45:19.264891500+00:00, and has appeared 1 previous time(s).\n\nNovelty 4/5. Beat memory found this topic before, and this scan did not identify a concrete new reportable fact.\n\nConfidence: low\nOpen draft\nRisk: med\nWatch\nWatch\ndaily_scan\nCity Council Meeting Canceled: The City Council meeting scheduled for June 30th has been canceled, potentially affecting council agenda items and public participation. Editor context: This change in schedule could impact upcoming city decisions and public engagement opportunities. Suggested treatment: watch. Newsworthiness: 10/20 (immediacy 4, impact 3, conflict 1, novelty 2). Why now: The June 30th City Council meeting has been canceled, which may affect upcoming agendas and public involvement. Suggested next step: Contact the City Clerk's office for more information on why the meeting was canceled and if it will be rescheduled. What would make this publishable: Confirmation of the cancellation reason, rescheduling information, or any public impact.\n\nNovelty 2/5. The June 30th City Council meeting has been canceled, which may affect upcoming agendas and public involvement.\n\nConfidence: med\nDraft anyway\nRisk: low\nBackground\nBackground\nSeen before\ndaily_scan\nReview community signal from Downtown Longmont events: Open Mic @ Bricks On Main- Every Tuesday Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Beat memory: similar topic 'Review community signal from Downtown Longmont events' was first seen 2026-06-30T15:44:39.417376200+00:00, last seen 2026-06-30T15:44:39.417376200+00:00, and has appeared 1 previous time(s). Treat this as recurring/background unless the source shows a new vote, deadline, dollar amount, filing, outage, meeting item, or public impact. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Compare against beat memory before drafting; write a story only if there is a new reportable fact.\n\nBeat memory: Similar topic 'Review community signal from Downtown Longmont events' was first seen 2026-06-30T15:44:39.417376200+00:00, last seen 2026-06-30T15:44:39.417376200+00:00, and has appeared 1 previous time(s).\n\nNovelty /5. Beat memory found this topic before, and this scan did not identify a concrete new reportable fact.\n\nConfidence: low\nDraft anyway\nRisk: high\nVerification\nNeeds verification\ndaily_scan\nReview community signal from Downtown Longmont events: Open Mic @ Bricks On Main- Every Tuesday Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting.\n\nNovelty /5. Dark-signal pattern detected from recent evidence.\n\nConfidence: high\nDraft anyway\nRisk: low\nVerification\nNeeds verification\nDecision / Vote\nVOTING SIGNAL: Found vote/decision keywords ([\"approved\", \"approved\", \"Approved\", \"passed\", \"Motion\", \"motion\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.\n\nNovelty 2/5. Keyword detector found decision language; reporter must confirm the actual current vote, date, and impact.\n\nConfidence: medium\nDraft anyway\nRisk: low\nWatch\nWatch\nPublic Meeting Scheduled\nMEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.\n\nNovelty 2/5. Meeting language found; verify a specific upcoming agenda, date, or action before drafting as news.\n\nConfidence: medium\nDraft anyway\nRisk: low\nVerification\nNeeds verification\nDecision / Vote\nVOTING SIGNAL: Found vote/decision keywords ([\"passed\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.\n\nNovelty 2/5. Keyword detector found decision language; reporter must confirm the actual current vote, date, and impact.\n\nConfidence: medium\nDraft anyway\nRisk: low\nDraft exists\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nOpen draft\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont City Council Meetings' was fetched today (https://longmontcolorado.gov/government/city-council-meetings/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Public Notice Colorado' was fetched today (https://www.publicnoticecolorado.com/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nPublic Meeting Scheduled\nMEETING SCHEDULED: Meeting notification detected in 'Longmont Agenda Management Portal' record. Public attendance or comment may be permitted.\n\nNovelty 2/5. Meeting language found; verify a specific upcoming agenda, date, or action before drafting as news.\n\nConfidence: medium\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont official city website' was fetched today (https://www.longmontcolorado.gov/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont Agenda Management Portal' was fetched today (https://longmontcolorado.gov/city-clerk/agenda-management-portal/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont city events' was fetched today (https://longmontcolorado.gov/events/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont city news' was fetched today (https://www.longmontcolorado.gov/news).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'St. Vrain Valley Schools' was fetched today (https://www.svvsd.org/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "id": "nav-tab-queue",
+      "disabled": false
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "id": "nav-tab-dailyScan",
+      "disabled": false
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "id": "nav-tab-darkSignals",
+      "disabled": false
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "id": "nav-tab-verification",
+      "disabled": false
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "id": "nav-tab-workbench",
+      "disabled": false
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "id": "nav-tab-sources",
+      "disabled": false
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "id": "nav-tab-onboarding",
+      "disabled": false
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "id": "nav-tab-publish",
+      "disabled": false
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "id": "nav-tab-pairing",
+      "disabled": false
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "id": "nav-tab-settings",
+      "disabled": false
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "id": "nav-tab-system",
+      "disabled": false
+    },
+    {
+      "i": 11,
+      "text": "",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 12,
+      "text": "Dismiss",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 13,
+      "text": "Refresh",
+      "id": "btn-sync-list",
+      "disabled": false
+    },
+    {
+      "i": 14,
+      "text": "Daily Scan",
+      "id": "btn-daily-scan",
+      "disabled": false
+    },
+    {
+      "i": 15,
+      "text": "Scrape & Detect",
+      "id": "btn-scrape-detect",
+      "disabled": false
+    },
+    {
+      "i": 16,
+      "text": "IN DRAFTING\n4",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 17,
+      "text": "Leads\n19",
+      "id": "queue-tab-leads",
+      "disabled": false
+    },
+    {
+      "i": 18,
+      "text": "Drafts\n4",
+      "id": "queue-tab-drafts",
+      "disabled": false
+    },
+    {
+      "i": 19,
+      "text": "Scan results\nlatest",
+      "id": "queue-tab-scan-results",
+      "disabled": false
+    },
+    {
+      "i": 20,
+      "text": "Draft anyway",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 21,
+      "text": "Open draft",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 22,
+      "text": "Open draft",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 23,
+      "text": "Open draft",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 24,
+      "text": "Draft anyway",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 25,
+      "text": "Draft anyway",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 26,
+      "text": "Draft anyway",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 27,
+      "text": "Draft anyway",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 28,
+      "text": "Draft anyway",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 29,
+      "text": "Draft anyway",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 30,
+      "text": "Open draft",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 31,
+      "text": "Draft anyway",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 32,
+      "text": "Draft anyway",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 33,
+      "text": "Draft anyway",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 34,
+      "text": "Draft anyway",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 35,
+      "text": "Draft anyway",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 36,
+      "text": "Draft anyway",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 37,
+      "text": "Draft anyway",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 38,
+      "text": "Draft anyway",
+      "id": "",
+      "disabled": false
+    }
+  ]
+}

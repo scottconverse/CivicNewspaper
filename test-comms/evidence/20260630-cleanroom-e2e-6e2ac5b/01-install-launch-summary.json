@@ -1,0 +1,9 @@
+﻿{
+    "utc":  "2026-06-30T15:40:18.4355050Z",
+    "installer":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260630-cleanroom-e2e-6e2ac5b\\The Civic Desk_0.3.0_x64-setup.exe",
+    "installerExitCode":  "previous command completed before summary variable error",
+    "installPath":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+    "installExists":  true,
+    "launched":  true,
+    "launchPid":  16428
+}

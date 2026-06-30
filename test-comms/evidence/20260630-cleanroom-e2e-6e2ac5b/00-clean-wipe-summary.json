@@ -1,0 +1,12 @@
+﻿{
+    "utc":  "2026-06-30T15:38:45.2693405Z",
+    "actions":  [
+                    "ran uninstall.exe /S exit 0",
+                    "FAILED remove C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk :: Access to the path \u0027cublas64_13.dll\u0027 is denied.",
+                    "absent C:\\Users\\civic\\AppData\\Local\\The Civic Desk",
+                    "absent C:\\Users\\civic\\AppData\\Local\\civicnews",
+                    "removed C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk",
+                    "absent C:\\Users\\civic\\.civicnewspaper",
+                    "absent C:\\Users\\civic\\.ollama"
+                ]
+}

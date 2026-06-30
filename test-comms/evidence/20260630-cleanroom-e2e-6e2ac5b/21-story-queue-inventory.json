@@ -1,0 +1,118 @@
+{
+  "utc": "2026-06-30T15:49:40.323Z",
+  "body": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nDrafting Article\n\nLead: Library hosts Open Chess Night: Longmont Public Library is hosting an open chess evening with basic instruction and a selection of books about the game. Editor context: This event provides a community activity opportunity for residents interested in chess, offering both practice and learning resources. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 3, impact 2, conflict 1, novelty 4). Why now: A new chess event is scheduled at the library, providing a community activity. Beat memory: similar topic 'City Council Meeting Canceled' was first seen 2026-06-30T15:45:19.264891500+00:00, last seen 2026-06-30T15:45:19.264891500+00:00, and has appeared 1 previous time(s). Treat this as recurring/background unless the source shows a new vote, deadline, dollar amount, filing, outage, meeting item, or public impact. Suggested next step: Verify the location and timing details before drafting the story. What would make this publishable: Confirmation of the location, time, and any special guest instructors. Compare against beat memory before drafting; write a story only if there is a new reportable fact.\n\nBackground\nBackground\nNovelty 4/5\nSeen before\n\nRecurring topic. Draft only if the source shows a new vote, deadline, dollar amount, filing, outage, meeting item, or public impact.\n\nWhy now: Beat memory found this topic before, and this scan did not identify a concrete new reportable fact.\n\nBeat memory: Similar topic 'City Council Meeting Canceled' was first seen 2026-06-30T15:45:19.264891500+00:00, last seen 2026-06-30T15:45:19.264891500+00:00, and has appeared 1 previous time(s).\n\nGenerate anyway\nCancel\nArticle Format\nBrief (Under 200 words summary)\nWatch Alert (Highlights specific public safety or procurement issues)\nExplainer (Detailed review of a policy or decision background)\nInvestigation (Traces spending and connections behind a story)\nEditorial / Opinion Piece (Presents a structured argument)\nCustom Guidelines / Instructions (Optional)\nLinked Sources (3)\n\"Department Newsletters Subscribe to updates from specific city departments Select all in this catego...\"\n\"Government Housing Human Services Information Jobs Library Licensing Maintenance Museum NextLight Fi...\"\n\"Wednesday, July 1 · 6 pm - 7 pm Longmont Public Library 355 Emery St., Longmont, CO, United States...\"\nGenerate anyway\nCancel",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "id": "nav-tab-queue",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "id": "nav-tab-dailyScan",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "id": "nav-tab-darkSignals",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "id": "nav-tab-verification",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "id": "nav-tab-workbench",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "id": "nav-tab-sources",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "id": "nav-tab-onboarding",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "id": "nav-tab-publish",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "id": "nav-tab-pairing",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "id": "nav-tab-settings",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "id": "nav-tab-system",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 11,
+      "text": "",
+      "id": "",
+      "aria": "Dismiss beta notice",
+      "disabled": false
+    },
+    {
+      "i": 12,
+      "text": "Generate anyway",
+      "id": "btn-generate-draft-top",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 13,
+      "text": "Cancel",
+      "id": "btn-cancel-draft-top",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 14,
+      "text": "Generate anyway",
+      "id": "btn-generate-draft-bottom",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 15,
+      "text": "Cancel",
+      "id": "btn-cancel-draft-bottom",
+      "aria": null,
+      "disabled": false
+    }
+  ]
+}

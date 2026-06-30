@@ -1,0 +1,67 @@
+{
+  "published_url": "https://bright-sphinx-ywpd.here.now",
+  "article_count": 2,
+  "zip_path": "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-6e2ac5b\\site-output-copy\\site-package.zip",
+  "scan_findings": [],
+  "taxonomy": [
+    {
+      "title": "Longmont Youth Center Lists Summer Programs",
+      "format": "brief",
+      "relative_path": "briefs/2.html",
+      "path_ok": true
+    },
+    {
+      "title": "Longmont City Council Meeting Rescheduled for July 1",
+      "format": "brief",
+      "relative_path": "briefs/1.html",
+      "path_ok": true
+    }
+  ],
+  "samples": {
+    "site-output-copy\\index.html": {
+      "title": "Attempt Nine Longmont Ledger",
+      "h1": "Attempt Nine Longmont Ledger",
+      "text_snippet": " \n \n \n     \n     \n     \n     \n     Attempt Nine Longmont Ledger \n     \n     \n     \n     \n     :root { --accent-color: #5a1818; } \n \n \n     \n        \n          Attempt Nine Longmont Ledger  \n         Local news and community information. \n         \n             Home \n             About \n             Ethics Policy \n             How We Report \n             Corrections Ledger \n             RSS Feed \n         \n     \n\n     \n         \n             \n                 \n    Longmont Youth Center Lists Summer Programs  \n   \n     2026-06-30T15:52:26.219346+00:00 \n     Format:  brief  \n   \n \n\n \n    Longmont City Council Meeting Rescheduled for July 1  \n   \n     2026-06-30T15:51:04.985759100+00:00 \n     Format:  brief  \n   \n \n\n\n             \n             \n                 \n   About this Site \n   A locally edited publication for this community. \n \n \n   Ethics Standards \n   Editorial standards are set by the publisher. Corrections are published when needed. \n \n             \n         \n     \n\n     \n     "
+    },
+    "site-output-copy\\briefs\\1.html": {
+      "title": "Longmont City Council Meeting Rescheduled for July 1 - Attempt Nine Longmont Ledger",
+      "h1": "Attempt Nine Longmont Ledger",
+      "text_snippet": " \n \n \n     \n     \n     \n     \n     Longmont City Council Meeting Rescheduled for July 1 - Attempt Nine Longmont Ledger \n     \n     \n     \n     :root { --accent-color: #5a1818; } \n \n \n     \n        \n          Attempt Nine Longmont Ledger  \n         Local news and community information. \n         \n             Home \n             About \n             Ethics Policy \n             How We Report \n             Corrections Ledger \n             RSS Feed \n         \n     \n\n     \n         \n            \n            \n             Longmont City Council Meeting Rescheduled for July 1 \n             \n                 Published: 2026-06-30T15:51:04.985759100+00:00 \n                 Format:  brief  \n             \n            \n             \n                 Longmont City Council will meet July 1 at 7 p.m. after the previously scheduled June 30 meeting was canceled. Residents who planned to attend or comment should check the city agenda page for the latest meeting details before going to City Hall. \n\n        "
+    },
+    "site-output-copy\\briefs\\2.html": {
+      "title": "Longmont Youth Center Lists Summer Programs - Attempt Nine Longmont Ledger",
+      "h1": "Attempt Nine Longmont Ledger",
+      "text_snippet": " \n \n \n     \n     \n     \n     \n     Longmont Youth Center Lists Summer Programs - Attempt Nine Longmont Ledger \n     \n     \n     \n     :root { --accent-color: #5a1818; } \n \n \n     \n        \n          Attempt Nine Longmont Ledger  \n         Local news and community information. \n         \n             Home \n             About \n             Ethics Policy \n             How We Report \n             Corrections Ledger \n             RSS Feed \n         \n     \n\n     \n         \n            \n            \n             Longmont Youth Center Lists Summer Programs \n             \n                 Published: 2026-06-30T15:52:26.219346+00:00 \n                 Format:  brief  \n             \n            \n             \n                 Longmont Youth Center has summer programs on its calendar, including Navigators, Glam Group and Make it Better. Families should check the Youth Center listing before attending because the scan did not provide program fees, registration details or full descriptions. \n\n        "
+    },
+    "site-package-extract\\index.html": {
+      "title": "Attempt Nine Longmont Ledger",
+      "h1": "Attempt Nine Longmont Ledger",
+      "text_snippet": " \n \n \n     \n     \n     \n     \n     Attempt Nine Longmont Ledger \n     \n     \n     \n     \n     :root { --accent-color: #5a1818; } \n \n \n     \n        \n          Attempt Nine Longmont Ledger  \n         Local news and community information. \n         \n             Home \n             About \n             Ethics Policy \n             How We Report \n             Corrections Ledger \n             RSS Feed \n         \n     \n\n     \n         \n             \n                 \n    Longmont Youth Center Lists Summer Programs  \n   \n     2026-06-30T15:52:26.219346+00:00 \n     Format:  brief  \n   \n \n\n \n    Longmont City Council Meeting Rescheduled for July 1  \n   \n     2026-06-30T15:51:04.985759100+00:00 \n     Format:  brief  \n   \n \n\n\n             \n             \n                 \n   About this Site \n   A locally edited publication for this community. \n \n \n   Ethics Standards \n   Editorial standards are set by the publisher. Corrections are published when needed. \n \n             \n         \n     \n\n     \n     "
+    },
+    "site-package-extract\\briefs\\1.html": {
+      "title": "Longmont City Council Meeting Rescheduled for July 1 - Attempt Nine Longmont Ledger",
+      "h1": "Attempt Nine Longmont Ledger",
+      "text_snippet": " \n \n \n     \n     \n     \n     \n     Longmont City Council Meeting Rescheduled for July 1 - Attempt Nine Longmont Ledger \n     \n     \n     \n     :root { --accent-color: #5a1818; } \n \n \n     \n        \n          Attempt Nine Longmont Ledger  \n         Local news and community information. \n         \n             Home \n             About \n             Ethics Policy \n             How We Report \n             Corrections Ledger \n             RSS Feed \n         \n     \n\n     \n         \n            \n            \n             Longmont City Council Meeting Rescheduled for July 1 \n             \n                 Published: 2026-06-30T15:51:04.985759100+00:00 \n                 Format:  brief  \n             \n            \n             \n                 Longmont City Council will meet July 1 at 7 p.m. after the previously scheduled June 30 meeting was canceled. Residents who planned to attend or comment should check the city agenda page for the latest meeting details before going to City Hall. \n\n        "
+    },
+    "site-package-extract\\briefs\\2.html": {
+      "title": "Longmont Youth Center Lists Summer Programs - Attempt Nine Longmont Ledger",
+      "h1": "Attempt Nine Longmont Ledger",
+      "text_snippet": " \n \n \n     \n     \n     \n     \n     Longmont Youth Center Lists Summer Programs - Attempt Nine Longmont Ledger \n     \n     \n     \n     :root { --accent-color: #5a1818; } \n \n \n     \n        \n          Attempt Nine Longmont Ledger  \n         Local news and community information. \n         \n             Home \n             About \n             Ethics Policy \n             How We Report \n             Corrections Ledger \n             RSS Feed \n         \n     \n\n     \n         \n            \n            \n             Longmont Youth Center Lists Summer Programs \n             \n                 Published: 2026-06-30T15:52:26.219346+00:00 \n                 Format:  brief  \n             \n            \n             \n                 Longmont Youth Center has summer programs on its calendar, including Navigators, Glam Group and Make it Better. Families should check the Youth Center listing before attending because the scan did not provide program fees, registration details or full descriptions. \n\n        "
+    },
+    "here-now-fetch\\briefs__1.html.httpclient.html": {
+      "title": "Longmont City Council Meeting Rescheduled for July 1 - Attempt Nine Longmont Ledger",
+      "h1": "Attempt Nine Longmont Ledger",
+      "text_snippet": "\ufeff \n \n \n     \n     \n     \n     \n     Longmont City Council Meeting Rescheduled for July 1 - Attempt Nine Longmont Ledger \n     \n     \n     \n     :root { --accent-color: #5a1818; } \n \n \n     \n        \n          Attempt Nine Longmont Ledger  \n         Local news and community information. \n         \n             Home \n             About \n             Ethics Policy \n             How We Report \n             Corrections Ledger \n             RSS Feed \n         \n     \n\n     \n         \n            \n            \n             Longmont City Council Meeting Rescheduled for July 1 \n             \n                 Published: 2026-06-30T15:51:04.985759100+00:00 \n                 Format:  brief  \n             \n            \n             \n                 Longmont City Council will meet July 1 at 7 p.m. after the previously scheduled June 30 meeting was canceled. Residents who planned to attend or comment should check the city agenda page for the latest meeting details before going to City Hall. \n\n       "
+    },
+    "here-now-fetch\\briefs__2.html.httpclient.html": {
+      "title": "Longmont Youth Center Lists Summer Programs - Attempt Nine Longmont Ledger",
+      "h1": "Attempt Nine Longmont Ledger",
+      "text_snippet": "\ufeff \n \n \n     \n     \n     \n     \n     Longmont Youth Center Lists Summer Programs - Attempt Nine Longmont Ledger \n     \n     \n     \n     :root { --accent-color: #5a1818; } \n \n \n     \n        \n          Attempt Nine Longmont Ledger  \n         Local news and community information. \n         \n             Home \n             About \n             Ethics Policy \n             How We Report \n             Corrections Ledger \n             RSS Feed \n         \n     \n\n     \n         \n            \n            \n             Longmont Youth Center Lists Summer Programs \n             \n                 Published: 2026-06-30T15:52:26.219346+00:00 \n                 Format:  brief  \n             \n            \n             \n                 Longmont Youth Center has summer programs on its calendar, including Navigators, Glam Group and Make it Better. Families should check the Youth Center listing before attending because the scan did not provide program fees, registration details or full descriptions. \n\n       "
+    },
+    "here-now-fetch\\root.httpclient.html": {
+      "title": "Attempt Nine Longmont Ledger",
+      "h1": "Attempt Nine Longmont Ledger",
+      "text_snippet": "\ufeff \n \n \n     \n     \n     \n     \n     Attempt Nine Longmont Ledger \n     \n     \n     \n     \n     :root { --accent-color: #5a1818; } \n \n \n     \n        \n          Attempt Nine Longmont Ledger  \n         Local news and community information. \n         \n             Home \n             About \n             Ethics Policy \n             How We Report \n             Corrections Ledger \n             RSS Feed \n         \n     \n\n     \n         \n             \n                 \n    Longmont Youth Center Lists Summer Programs  \n   \n     2026-06-30T15:52:26.219346+00:00 \n     Format:  brief  \n   \n \n\n \n    Longmont City Council Meeting Rescheduled for July 1  \n   \n     2026-06-30T15:51:04.985759100+00:00 \n     Format:  brief  \n   \n \n\n\n             \n             \n                 \n   About this Site \n   A locally edited publication for this community. \n \n \n   Ethics Standards \n   Editorial standards are set by the publisher. Corrections are published when needed. \n \n             \n         \n     \n\n     \n    "
+    }
+  }
+}

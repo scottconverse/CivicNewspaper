@@ -1,0 +1,11 @@
+﻿{
+    "utc":  "2026-06-30T15:41:42.8388723Z",
+    "runtimeExists":  true,
+    "runtimeChildren":  [
+                            {
+                                "Name":  "v0.30.11",
+                                "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\ollama-runtime\\v0.30.11"
+                            }
+                        ],
+    "modelsExists":  true
+}

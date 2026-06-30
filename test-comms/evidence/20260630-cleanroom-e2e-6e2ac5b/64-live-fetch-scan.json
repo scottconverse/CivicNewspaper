@@ -1,0 +1,40 @@
+{
+  "published_url": "https://bright-sphinx-ywpd.here.now",
+  "fetched": [
+    {
+      "url": "https://bright-sphinx-ywpd.here.now/",
+      "status": "error",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "url": "https://bright-sphinx-ywpd.here.now/index.html",
+      "status": "error",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "url": "https://bright-sphinx-ywpd.here.now/briefs/2.html",
+      "status": "error",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "url": "https://bright-sphinx-ywpd.here.now/briefs/1.html",
+      "status": "error",
+      "error": "HTTP Error 403: Forbidden"
+    }
+  ],
+  "scan_findings": [],
+  "taxonomy": [
+    {
+      "title": "Longmont Youth Center Lists Summer Programs",
+      "format": "brief",
+      "relative_path": "briefs/2.html",
+      "path_ok": true
+    },
+    {
+      "title": "Longmont City Council Meeting Rescheduled for July 1",
+      "format": "brief",
+      "relative_path": "briefs/1.html",
+      "path_ok": true
+    }
+  ]
+}
