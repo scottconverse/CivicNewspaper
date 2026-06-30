@@ -1,0 +1,78 @@
+{
+  "issue_id": "issue-20260630-130606-451237600",
+  "output_dir": "C:/Users/civic/AppData/Roaming/com.scottconverse.civicdesk/sites/default",
+  "generated_at": "2026-06-30T13:06:06.451237600+00:00",
+  "provider": "here_now",
+  "published_url": "https://subtle-pepper-nq3a.here.now",
+  "deployment_id": "slug=subtle-pepper-nq3a;version=01KWCA77CAXSZAJSY1EKN3EDJT;created_slug=subtle-pepper-nq3a",
+  "article_count": 5,
+  "skipped_count": 0,
+  "files_written": 22,
+  "generated_files": [
+    "styles.css",
+    "print.css",
+    "watch/1.html",
+    "watch/2.html",
+    "watch/3.html",
+    "watch/4.html",
+    "watch/5.html",
+    "index.html",
+    "about.html",
+    "ethics.html",
+    "how-we-report.html",
+    "corrections.html",
+    "feed.xml",
+    "newsletter.md",
+    "substack.md",
+    "share-package.md",
+    "facebook-post.txt",
+    "subreddit-post.md",
+    "nextdoor-post.txt",
+    "short-link-blurb.txt",
+    "publish-manifest.json",
+    "site-package.zip"
+  ],
+  "index_path": "index.html",
+  "rss_path": "feed.xml",
+  "newsletter_path": "newsletter.md",
+  "substack_path": "substack.md",
+  "share_package_path": "share-package.md",
+  "facebook_post_path": "facebook-post.txt",
+  "subreddit_post_path": "subreddit-post.md",
+  "nextdoor_post_path": "nextdoor-post.txt",
+  "short_link_blurb_path": "short-link-blurb.txt",
+  "manifest_path": "publish-manifest.json",
+  "zip_path": "site-package.zip",
+  "articles": [
+    {
+      "title": "City Council to Vote on Roof Contract for Longmont Library",
+      "format": "watch",
+      "relative_path": "watch/1.html",
+      "updated_at": "2026-06-30T13:05:21.040216400+00:00"
+    },
+    {
+      "title": "New Official Document Fetched from Public Notice Colorado",
+      "format": "watch",
+      "relative_path": "watch/2.html",
+      "updated_at": "2026-06-30T13:05:14.813470900+00:00"
+    },
+    {
+      "title": "City to Close Hover Street/CO 119 Intersection for Roof Work",
+      "format": "watch",
+      "relative_path": "watch/3.html",
+      "updated_at": "2026-06-30T13:05:08.587273800+00:00"
+    },
+    {
+      "title": "City Council Decision Keywords Identified",
+      "format": "watch",
+      "relative_path": "watch/4.html",
+      "updated_at": "2026-06-30T13:05:02.381786900+00:00"
+    },
+    {
+      "title": "City of Longmont Updates Public Information Resources",
+      "format": "watch",
+      "relative_path": "watch/5.html",
+      "updated_at": "2026-06-30T13:04:23.969224100+00:00"
+    }
+  ]
+}

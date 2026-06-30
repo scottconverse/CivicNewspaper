@@ -1,0 +1,77 @@
+{
+  "utc": "2026-06-30T13:05:23.070Z",
+  "results": [
+    {
+      "openIndex": 22,
+      "open": {
+        "ok": true,
+        "index": 22,
+        "text": "Open"
+      },
+      "before": {
+        "text": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nStory Workbench\n\nModify drafted content, review guardrail warnings, and link source material when it helps the editor.\n\nBack to Queue\nSave Draft\nDelete\nAdvisory warnings - these do not block publishing.\n1 ISSUE(S)\nWarns\n- Review this guardrail issue\n\nThe linked lead is marked as needs verification. Confirm a current, specific, verified development before treating this as a reader-facing news story.\n\nTechnical details\nPress-freedom / legal-risk advisor\n\nAdvisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.\n\nRun Advisor\nDistinguish verified facts, allegations, opinion, and unanswered questions.\nUse extra care with private individuals, minors, medical details, addresses, and active legal matters.\nKeep notes on source reliability and why publishing serves ",
+        "title": "City Council Decision Keywords Identified",
+        "body": "Excerpt from Longmont City Council Meetings record indicates recent official board actions have been taken. Key phrases like \"approved,\" \"passed,\" and \"motion\" suggest decisions were made, but specific details such as the current vote, date, and impacts are not provided in this source [Source](evide"
+      },
+      "approve": {
+        "ok": true,
+        "i": 21,
+        "text": "Approve for Static Publish"
+      }
+    },
+    {
+      "openIndex": 25,
+      "open": {
+        "ok": true,
+        "index": 25,
+        "text": "Open"
+      },
+      "before": {
+        "text": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nStory Workbench\n\nModify drafted content, review guardrail warnings, and link source material when it helps the editor.\n\nBack to Queue\nSave Draft\nDelete\nAdvisory warnings - these do not block publishing.\n4 ISSUE(S)\nWarns\n- Review this guardrail issue\n\nThe linked lead is marked as background. Confirm a current, specific, verified development before treating this as a reader-facing news story.\n\nTechnical details\nWarns\n- Review this guardrail issue\n\nThis topic has appeared before (1 previous appearance(s)): Similar topic 'Library Intersection Closure Scheduled' was first seen 2026-06-30T12:43:42.986306500+00:00, last seen 2026-06-30T12:43:42.986306500+00:00, and has appeared 1 previous time(s).. Verify there is a new fact, decision, deadline, impact, or conflict before publishing as news.\n\nTechnical details\nWarns\n- Consider adding a source link\n\nThis passage",
+        "title": "City to Close Hover Street/CO 119 Intersection for Roof Work",
+        "body": "The city will temporarily shut down the intersection of Hover Street and CO 119 from June 28 due to roof work at the library. Residents and local drivers should plan alternative routes or expect delays during this time.\n\nThis closure affects traffic patterns in the area, impacting both Hover Street "
+      },
+      "approve": {
+        "ok": true,
+        "i": 21,
+        "text": "Approve for Static Publish"
+      }
+    },
+    {
+      "openIndex": 28,
+      "open": {
+        "ok": true,
+        "index": 28,
+        "text": "Open"
+      },
+      "before": {
+        "text": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nStory Workbench\n\nModify drafted content, review guardrail warnings, and link source material when it helps the editor.\n\nBack to Queue\nSave Draft\nDelete\nAdvisory warnings - these do not block publishing.\n2 ISSUE(S)\nWarns\n- Review this guardrail issue\n\nThe linked lead is marked as watch. Confirm a current, specific, verified development before treating this as a reader-facing news story.\n\nTechnical details\nWarns\n- Consider adding a source link\n\nThis passage looks like a factual claim without a linked source. Add a link if one exists, rewrite the claim, or leave it for the editor to approve.\n\nTechnical details\nPress-freedom / legal-risk advisor\n\nAdvisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.\n\nRun Advisor\nDistinguish verified facts, allegations, opi",
+        "title": "New Official Document Fetched from Public Notice Colorado",
+        "body": "A new official document has been fetched from Public Notice Colorado [Source](evidence:21). The page provides access to various public notices, including those related to architecture, construction, engineering, demolition, foreclosure, recycling, unclaimed property, and more. Residents may want to "
+      },
+      "approve": {
+        "ok": true,
+        "i": 21,
+        "text": "Approve for Static Publish"
+      }
+    },
+    {
+      "openIndex": 31,
+      "open": {
+        "ok": true,
+        "index": 31,
+        "text": "Open"
+      },
+      "before": {
+        "text": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nStory Workbench\n\nModify drafted content, review guardrail warnings, and link source material when it helps the editor.\n\nBack to Queue\nSave Draft\nDelete\nAdvisory warnings - these do not block publishing.\n1 ISSUE(S)\nWarns\n- Consider adding a source link\n\nThis passage looks like a factual claim without a linked source. Add a link if one exists, rewrite the claim, or leave it for the editor to approve.\n\nTechnical details\nPress-freedom / legal-risk advisor\n\nAdvisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.\n\nRun Advisor\nDistinguish verified facts, allegations, opinion, and unanswered questions.\nUse extra care with private individuals, minors, medical details, addresses, and active legal matters.\nKeep notes on source reliability and why publishing serves ",
+        "title": "City Council to Vote on Roof Contract for Longmont Library",
+        "body": "The city council will vote this week on a contract for roof work at the public library, impacting local government spending and construction timelines.\n\nAs outlined in the upcoming agenda [Source](evidence:13), the contract is part of essential maintenance efforts to ensure the library remains safe "
+      },
+      "approve": {
+        "ok": true,
+        "i": 21,
+        "text": "Approve for Static Publish"
+      }
+    }
+  ]
+}

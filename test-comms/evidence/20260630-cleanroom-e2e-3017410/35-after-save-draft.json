@@ -1,0 +1,133 @@
+{
+  "text": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nDraft saved.\nDismiss\nStory Workbench\n\nModify drafted content, review guardrail warnings, and link source material when it helps the editor.\n\nBack to Queue\nSave Draft\nDelete\nAdvisory warnings - these do not block publishing.\n2 ISSUE(S)\nWarns\n- Review this guardrail issue\n\nThe linked lead is marked as watch. Confirm a current, specific, verified development before treating this as a reader-facing news story.\n\nTechnical details\nWarns\n- Consider adding a source link\n\nThis passage looks like a factual claim without a linked source. Add a link if one exists, rewrite the claim, or leave it for the editor to approve.\n\nTechnical details\nPress-freedom / legal-risk advisor\n\nAdvisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.\n\nRun Advisor\nDistinguish verified facts, allegations, opinion, and unanswered questions.\nUse extra care with private individuals, minors, medical details, addresses, and active legal matters.\nKeep notes on source reliability and why publishing serves the community.\nStory Title\nArticle Body (Markdown)\nPlain Language Rewrite\nHighlight text and click \"Cite\" in evidence pane to link.\nCurrent Status: Drafting\nSend Back for More Work\nMark Ready for Review\nHold\nCut Story\nApprove for Static Publish\nI have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision.\nSocial Media Promo Pack\nGenerate Posts\n\nGenerate optimized posts for Twitter/X, Facebook, and Reddit based on the current draft.\n\nLinked Sources\nCitation ID: #17\nFetched: 6/30/2026\n\"Discover all the departments that make up the City of Longmont&#8217;s government. Get detailed information on their roles, responsibilities, and how they serve the community.\nAll Departments\nGovernment\nHome\nDepartments\nPublic Information\nPublic Information\nCity and Public Safety Media Inquiries\nCity Public Information\nPIO Line: 720-899-0758 (no text messages)\nPIO Email\nLongmont Power &amp; Communications\nScott Rochat\nPublic Relations and Marketing Specialist\nEmail\nWelcome to the City of Longmont&#8217;s Public Information Department. Our mission is to ensure clear and timely communication between the city government and residents. We handle media relations, public announcements, and community outreach to keep you informed about municipal operations, initiatives, and events.\nExplore Information and Resources\nStay updated with the latest information from the City of Longmont. Access press releases, city news, public records, and other essential resources to keep you informed about what&#8217;s happening in your community.\nADA Grievance Form\nADA Request For Accommodation\nAbout Longmont\nAwards\nBusiness Resources\nFinancial Assistance and Rebate Programs\nFun Things To Do In Longmont\nHoliday Closures\nImmigration Policies\nOil and Gas\nSevere Weather Updates\nStandards of Behavior\nYouTube Channel\nView More\nLatest News and Alerts\nStay informed with the most recent news and alerts from the City of Longmont. From public announcements to safety advisories, we provide timely updates to keep you aware of important events and developments.\nView News\nGraphic Novels Offer Unique Literacy Skills\nJune 29, 2026\nCountdown to Longmont Independence Weekend\nJune 29, 2026\nCity of Longmont Seeking Applications for 2027 Human Service Agency Funding\nJune 29, 2026\nBuilding Services online permitting portal is currently experiencing technical issues\nJune 26, 2026\nMural Painting on Parking Deck Next to Hotel Longmont Has Begun\nJune 26, 2026\n\"\nLink Citation",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "disabled": false
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "disabled": false
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "disabled": false
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "disabled": false
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "disabled": false
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "disabled": false
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "disabled": false
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "disabled": false
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "disabled": false
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "disabled": false
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "disabled": false
+    },
+    {
+      "i": 11,
+      "text": "",
+      "disabled": false
+    },
+    {
+      "i": 12,
+      "text": "Dismiss",
+      "disabled": false
+    },
+    {
+      "i": 13,
+      "text": "Back to Queue",
+      "disabled": false
+    },
+    {
+      "i": 14,
+      "text": "Save Draft",
+      "disabled": false
+    },
+    {
+      "i": 15,
+      "text": "Delete",
+      "disabled": false
+    },
+    {
+      "i": 16,
+      "text": "Run Advisor",
+      "disabled": false
+    },
+    {
+      "i": 17,
+      "text": "Plain Language Rewrite",
+      "disabled": false
+    },
+    {
+      "i": 18,
+      "text": "Send Back for More Work",
+      "disabled": false
+    },
+    {
+      "i": 19,
+      "text": "Mark Ready for Review",
+      "disabled": false
+    },
+    {
+      "i": 20,
+      "text": "Hold",
+      "disabled": false
+    },
+    {
+      "i": 21,
+      "text": "Cut Story",
+      "disabled": false
+    },
+    {
+      "i": 22,
+      "text": "Approve for Static Publish",
+      "disabled": false
+    },
+    {
+      "i": 23,
+      "text": "Generate Posts",
+      "disabled": false
+    },
+    {
+      "i": 24,
+      "text": "Link Citation",
+      "disabled": false
+    }
+  ],
+  "body": [
+    "The City of Longmont has updated its official public information page, providing detailed insights into various departments and their roles within the city government [Source](evidence:17). Residents can explore a range of resources including press releases, community news, and updates on municipal operations. The latest news section features articles such as \"Graphic Novels Offer Unique Literacy Skills,\" highlighting current initiatives aimed at engaging the community.\n\nWhat to watch for next: Keep an eye on upcoming city events and announcements through this updated resource."
+  ]
+}

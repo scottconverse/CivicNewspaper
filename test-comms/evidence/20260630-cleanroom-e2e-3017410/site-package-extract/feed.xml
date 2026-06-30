@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Attempt Five Longmont Ledger</title>
+    <link>index.html</link>
+    <description>Local news and community information.</description>
+    <language>en-us</language>
+    <pubDate>Tue, 30 Jun 2026 13:06:06 +0000</pubDate>
+    <lastBuildDate>Tue, 30 Jun 2026 13:06:06 +0000</lastBuildDate>
+    <item>
+      <title>City Council to Vote on Roof Contract for Longmont Library</title>
+      <link>watch/1.html</link>
+      <guid>watch/1</guid>
+      <pubDate>2026-06-30T13:05:21.040216400+00:00</pubDate>
+      <description>City Council to Vote on Roof Contract for Longmont Library</description>
+    </item>
+    <item>
+      <title>New Official Document Fetched from Public Notice Colorado</title>
+      <link>watch/2.html</link>
+      <guid>watch/2</guid>
+      <pubDate>2026-06-30T13:05:14.813470900+00:00</pubDate>
+      <description>New Official Document Fetched from Public Notice Colorado</description>
+    </item>
+    <item>
+      <title>City to Close Hover Street&#x2F;CO 119 Intersection for Roof Work</title>
+      <link>watch/3.html</link>
+      <guid>watch/3</guid>
+      <pubDate>2026-06-30T13:05:08.587273800+00:00</pubDate>
+      <description>City to Close Hover Street&#x2F;CO 119 Intersection for Roof Work</description>
+    </item>
+    <item>
+      <title>City Council Decision Keywords Identified</title>
+      <link>watch/4.html</link>
+      <guid>watch/4</guid>
+      <pubDate>2026-06-30T13:05:02.381786900+00:00</pubDate>
+      <description>City Council Decision Keywords Identified</description>
+    </item>
+    <item>
+      <title>City of Longmont Updates Public Information Resources</title>
+      <link>watch/5.html</link>
+      <guid>watch/5</guid>
+      <pubDate>2026-06-30T13:04:23.969224100+00:00</pubDate>
+      <description>City of Longmont Updates Public Information Resources</description>
+    </item>
+
+  </channel>
+</rss>

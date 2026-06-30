@@ -1,0 +1,54 @@
+{
+  "utc": "2026-06-30T13:01:17.271Z",
+  "steps": [
+    {
+      "save": {
+        "ok": true,
+        "i": 13,
+        "text": "Save Draft"
+      }
+    },
+    {
+      "advisor": {
+        "ok": true,
+        "i": 16,
+        "text": "Run Advisor"
+      }
+    },
+    {
+      "hold": {
+        "ok": true,
+        "i": 19,
+        "text": "Hold"
+      }
+    },
+    {
+      "resume": {
+        "ok": true,
+        "i": 19,
+        "text": "Mark Ready for Review"
+      }
+    },
+    {
+      "sendBack": {
+        "ok": true,
+        "i": 18,
+        "text": "Send Back for More Work"
+      }
+    },
+    {
+      "markReady": {
+        "ok": true,
+        "i": 19,
+        "text": "Mark Ready for Review"
+      }
+    },
+    {
+      "approve": {
+        "ok": true,
+        "i": 21,
+        "text": "Approve for Static Publish"
+      }
+    }
+  ]
+}

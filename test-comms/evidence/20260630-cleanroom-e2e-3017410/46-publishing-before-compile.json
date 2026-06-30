@@ -1,0 +1,105 @@
+{
+  "text": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nPublishing\n\nPublish instantly with here.now. Use GitHub Pages if you want a public archive in your own repository.\n\nPublic site identity review\n\nReview this before compile. The app publishes only the identity and policy copy you choose.\n\nEdit identity\nPublication\nAttempt Five Longmont Ledger\nTagline\nLocal news and community information.\nPublisher type\nSingle person\nLayout\nclassic / #5a1818\nLogo\nText masthead\nFooter note\nBlank\nAdvisor\nOn\nFooter/legal note is blank; that is allowed, but nothing will be invented for you.\nCompile your gazette\nOutput folder\nBrowse\nCompile approved stories\npending\nPreview local website\npending\nExport hosting package\npending\nPublish to a host\npending\nShare with residents\npending\nReview compile checklist\nReview before compiling\n\nChoose an output folder, then review the compile checklist before writing files.\n\nOpen folder\nReset\nSubscriber list\n\n0 active subscribers stored locally.\n\nEmail\nName\nAdd\nImport CSV\nExport CSV\n\nNo subscribers yet.\n\nNext step: publish instantly with here.now. Use GitHub Pages for a durable public archive, and use the newsletter and share package to tell residents where to read it.\n\nPublish history\n\nNo publish runs recorded yet.",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "disabled": false
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "disabled": false
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "disabled": false
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "disabled": false
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "disabled": false
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "disabled": false
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "disabled": false
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "disabled": false
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "disabled": false
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "disabled": false
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "disabled": false
+    },
+    {
+      "i": 11,
+      "text": "",
+      "disabled": false
+    },
+    {
+      "i": 12,
+      "text": "Edit identity",
+      "disabled": false
+    },
+    {
+      "i": 13,
+      "text": "Browse",
+      "disabled": false
+    },
+    {
+      "i": 14,
+      "text": "Review compile checklist",
+      "disabled": false
+    },
+    {
+      "i": 15,
+      "text": "Open folder",
+      "disabled": false
+    },
+    {
+      "i": 16,
+      "text": "Reset",
+      "disabled": false
+    },
+    {
+      "i": 17,
+      "text": "Add",
+      "disabled": false
+    },
+    {
+      "i": 18,
+      "text": "Import CSV",
+      "disabled": false
+    },
+    {
+      "i": 19,
+      "text": "Export CSV",
+      "disabled": false
+    }
+  ]
+}
