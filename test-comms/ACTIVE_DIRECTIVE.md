@@ -19,42 +19,42 @@ IMPORTANT MACHINE CONTEXT:
 
 Run this directive now:
 
-`test-comms/directives/20260629-beat-memory-rerun-77ece86.md`
+`test-comms/directives/20260629-gauntlet-all-cleanmachine-v030-b0be4d7.md`
 
-This is a focused Longmont rerun for the latest story-quality and editor-workflow checkpoint. It verifies that held drafts expose Resume Editing and Send Back for More Work, and that Daily Scan uses advisory beat memory to label recurring or evergreen material without hiding or blocking it from the editor.
+This is the full clean-machine v0.3.0 GauntletGate test for The Civic Desk. It wipes prior app/Ollama/model state within the approved boundary, installs from the v0.3.0 installer artifact on this coordination branch, proves first-run dependency-absent state, verifies app-guided AI setup, generates and edits a Longmont issue, exports ZIP/static output, publishes anonymously to here.now, and reports human-readable release evidence.
 
 Supersedes:
 
-`test-comms/directives/20260629-story-quality-workflow-rerun-006c800.md`
+`test-comms/directives/20260629-beat-memory-rerun-77ece86.md`
 
-Reason: the beat-memory product change is now implemented and should be tested instead of the earlier pre-beat-memory checkpoint.
+Reason: v0.3.0 source is now on main and must receive a full clean-machine release-gate run before any tag, merge, or GitHub Release work.
 
 Product branch:
 
-`stable-readiness-local-gates`
+`main`
 
 Product commit:
 
-`77ece863db668df9889828587416696f3a39b6cc`
+`b0be4d7432e9f5f791da68770a9631b8c5892697`
 
 Artifact folder:
 
-`test-comms/artifacts/20260629-beat-memory-rerun-77ece86/`
+`test-comms/artifacts/20260629-gauntlet-all-cleanmachine-v030-b0be4d7/`
 
 Expected preferred NSIS SHA256:
 
-`FBAA8AB176A0AB256A0D710B781472DEC15216F99250C30D787D99D430DC85F0`
+`F3256C116F04B734C8C311E5B3EFEB69B24DAF3134C521C986BDF2C45CC1DF7E`
 
 Expected fallback MSI SHA256:
 
-`EA30BB05B5FFFFDEB7576D42B6C61DB780B2BBE5EF3C6D727AEC94C70125622F`
+`D294096A95FEBF55E0CB30D104ADD8B31BC27981F150BA8B70FEDFD547EC07E1`
 
 Expected report:
 
-`test-comms/reports/20260629-beat-memory-rerun-77ece86-report.md`
+`test-comms/reports/20260629-gauntlet-all-cleanmachine-v030-b0be4d7-report.md`
 
 ## Current Goal
 
-Run the focused Longmont story-quality, beat-memory, and draft-workflow rerun. Confirm the app still installs, guides AI setup, scans Longmont sources, labels weak/background/watch material with story-quality and beat-memory context, keeps editor choice intact, exposes held-draft Resume Editing and Send Back for More Work controls, and only publishes/exports genuine current stories if the run finds them.
+Run the full clean-machine v0.3.0 release-gate test. Confirm the app installs from the provided installer, guides AI/Ollama/model setup without tester-installed dependencies, scans Longmont official and public/social sources, generates leads and drafts, exercises writer/editor workflow, exports a ZIP/static publication package, publishes anonymously to here.now, and produces a human-readable report with evidence artifacts.
 
 Commit reports/artifacts with `[skip ci]`.
