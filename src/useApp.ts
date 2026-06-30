@@ -310,6 +310,18 @@ export function useApp() {
 
   const starterLongmontSources = [
     {
+      name: "Longmont official city website",
+      url: "https://www.longmontcolorado.gov/",
+      type: "primary_record",
+      tier: "official_record",
+    },
+    {
+      name: "Longmont city news",
+      url: "https://www.longmontcolorado.gov/news",
+      type: "official_comm",
+      tier: "official_record",
+    },
+    {
       name: "Longmont Agenda Management Portal",
       url: "https://longmontcolorado.gov/city-clerk/agenda-management-portal/",
       type: "primary_record",
@@ -328,10 +340,46 @@ export function useApp() {
       tier: "official_record",
     },
     {
+      name: "Longmont Public Safety",
+      url: "https://www.longmontcolorado.gov/departments/departments-n-z/public-safety",
+      type: "official_comm",
+      tier: "official_record",
+    },
+    {
       name: "Public Notice Colorado",
       url: "https://www.publicnoticecolorado.com/",
       type: "primary_record",
       tier: "official_record",
+    },
+    {
+      name: "St. Vrain Valley Schools",
+      url: "https://www.svvsd.org/",
+      type: "primary_record",
+      tier: "official_record",
+    },
+    {
+      name: "Longmont Leader local news",
+      url: "https://www.longmontleader.com/local-news",
+      type: "media_lead",
+      tier: "media_lead",
+    },
+    {
+      name: "Times-Call Longmont news",
+      url: "https://www.timescall.com/location/colorado/boulder-county/longmont/",
+      type: "media_lead",
+      tier: "media_lead",
+    },
+    {
+      name: "City of Longmont Facebook",
+      url: "https://www.facebook.com/cityoflongmontco/",
+      type: "community_signal",
+      tier: "community_signal",
+    },
+    {
+      name: "Longmont Public Safety Facebook",
+      url: "https://www.facebook.com/LongmontFirePoliceOEM/",
+      type: "community_signal",
+      tier: "community_signal",
     },
     {
       name: "Longmont subreddit",
@@ -345,7 +393,35 @@ export function useApp() {
       type: "community_signal",
       tier: "community_signal",
     },
+    {
+      name: "Longmont city events",
+      url: "https://longmontcolorado.gov/events/",
+      type: "official_comm",
+      tier: "official_record",
+    },
+    {
+      name: "Longmont city YouTube",
+      url: "https://www.youtube.com/cityoflongmont",
+      type: "official_comm",
+      tier: "official_record",
+    },
   ];
+
+  const leadNeedsDraftCaution = (lead: Lead) => {
+    const disposition = (lead.disposition ?? "review").toLowerCase();
+    const storyType = (lead.story_type ?? "").toLowerCase();
+    const novelty = lead.novelty_score ?? 0;
+    return Boolean(
+      (lead.recurrence_count ?? 0) > 0 ||
+      storyType === "background" ||
+      storyType === "watch" ||
+      storyType === "verification" ||
+      disposition === "background" ||
+      disposition === "watch" ||
+      disposition === "needs_verification" ||
+      (novelty > 0 && novelty <= 2)
+    );
+  };
 
   const addStarterLongmontSources = async () => {
     let imported = 0;
@@ -1159,12 +1235,13 @@ export function useApp() {
       const leadTitle = selectedLead.why.replace(/\s+/g, " ").trim();
       const normalizedDraft = normalizeGeneratedDraft(text, leadTitle);
       const now = new Date().toISOString();
+      const cautiousLead = leadNeedsDraftCaution(selectedLead);
       const draftObj: Draft = {
         lead_id: selectedLead.id,
         format: draftFormat,
         title: normalizedDraft.title,
         content: normalizedDraft.content,
-        status: "draft_generated",
+        status: cautiousLead ? "needs_verification" : "draft_generated",
         verification_checklist: "[]",
         created_at: now,
         updated_at: now,
@@ -1176,7 +1253,18 @@ export function useApp() {
       setSelectedLead(null);
       setSelectedDraft(draftObj);
       setActiveTab("workbench");
-      setStatusMessage("Draft generated successfully.");
+      try {
+        const report = await guardrailsCheck(newId);
+        setGuardrailsReport(report);
+      } catch (err) {
+        console.warn("Could not run guardrails on generated draft:", err);
+        setGuardrailsReport(null);
+      }
+      setStatusMessage(
+        cautiousLead
+          ? "Draft generated and marked as needing more work because the lead has watch, background, verification, recurrence, or low-novelty signals."
+          : "Draft generated successfully."
+      );
       await loadInitialData();
     } catch (e: any) {
       setErrorMessage(`Draft generation failed: ${toUserMessage(e)}`);

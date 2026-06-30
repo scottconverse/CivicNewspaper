@@ -576,7 +576,7 @@ describe("Workbench Component Tests", () => {
     expect(onDecision).toHaveBeenCalledWith("draft_generated");
   });
 
-  test("a sensitive guardrail issue warns without vetoing approval", async () => {
+  test("guardrail warnings require conscious review without vetoing approval", async () => {
     const onApprovePublish = vi.fn();
     const report: GuardrailsReport = {
       is_clean: false,
@@ -589,16 +589,16 @@ describe("Workbench Component Tests", () => {
     fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
 
     // Review modal appears; editor can continue without a note.
-    expect(await screen.findByText(/Publish with sensitive warnings/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Publish with review warnings/i)).toBeInTheDocument();
     expect(onApprovePublish).not.toHaveBeenCalled();
 
     const confirm = screen.getByRole("button", { name: /Publish anyway \(logged\)/i });
     expect(confirm).toBeEnabled();
     fireEvent.click(confirm);
-    expect(onApprovePublish).toHaveBeenCalledWith();
+    expect(onApprovePublish).toHaveBeenCalledWith("Editor reviewed pre-publication warnings and chose to publish.");
 
     fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
-    await screen.findByText(/Publish with sensitive warnings/i);
+    await screen.findByText(/Publish with review warnings/i);
 
     fireEvent.change(screen.getByLabelText(/Editor note/i), {
       target: { value: "Verified against indictment." },
@@ -606,5 +606,23 @@ describe("Workbench Component Tests", () => {
     fireEvent.click(screen.getByRole("button", { name: /Publish anyway \(logged\)/i }));
 
     expect(onApprovePublish).toHaveBeenCalledWith("Verified against indictment.");
+  });
+
+  test("story-quality warning opens the same review checkpoint", async () => {
+    const onApprovePublish = vi.fn();
+    const report: GuardrailsReport = {
+      is_clean: true,
+      issues: [
+        { category: "Lead Readiness", message: "watch item", severity: "warning" },
+      ],
+    };
+    renderEditor({ onApprovePublish, guardrailsReport: report });
+
+    fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
+
+    expect(await screen.findByText(/Publish with review warnings/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/watch item/i).length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("button", { name: /Publish anyway \(logged\)/i }));
+    expect(onApprovePublish).toHaveBeenCalledWith("Editor reviewed pre-publication warnings and chose to publish.");
   });
 });

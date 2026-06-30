@@ -194,15 +194,16 @@ export const Workbench: React.FC<WorkbenchProps> = ({
     }
   };
 
-  // Error-severity issues = words the newsroom marked as especially sensitive.
-  // They ask for an override note, but the editor still decides.
-  const errorIssues = guardrailsReport?.issues.filter((i) => i.severity === "error") ?? [];
+  // Any guardrail issue should be consciously reviewed before publishing. The
+  // editor can still continue; software records the choice instead of vetoing it.
+  const guardrailIssues = guardrailsReport?.issues ?? [];
+  const severeIssueCount = guardrailIssues.filter((i) => i.severity === "error").length;
 
   const handleApproveClick = () => {
     if (selectedDraft?.status === "killed") {
       return;
     }
-    if (errorIssues.length > 0) {
+    if (guardrailIssues.length > 0) {
       setShowOverrideModal(true);
     } else {
       onApprovePublish?.();
@@ -214,6 +215,8 @@ export const Workbench: React.FC<WorkbenchProps> = ({
     setShowOverrideModal(false);
     if (reason) {
       onApprovePublish?.(reason);
+    } else if (guardrailIssues.length > 0) {
+      onApprovePublish?.("Editor reviewed pre-publication warnings and chose to publish.");
     } else {
       onApprovePublish?.();
     }
@@ -689,8 +692,8 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                             ? "This story is already in a final publishing state"
                           : !attested
                           ? "Approve and record editorial responsibility"
-                          : errorIssues.length > 0
-                            ? "This story has sensitive warnings - you'll be asked to confirm an override note"
+                          : guardrailIssues.length > 0
+                            ? "This story has review warnings - you'll be asked to confirm that the editor reviewed them"
                             : "Approve this story for publishing"
                       }
                       id="btn-status-publish"
@@ -864,15 +867,17 @@ export const Workbench: React.FC<WorkbenchProps> = ({
 
         {showOverrideModal && (
           <Modal id="override-modal" labelledBy="override-modal-title" onClose={() => setShowOverrideModal(false)}>
-            <h3 id="override-modal-title" style={{ marginTop: 0, color: "var(--color-error)" }}>
-              Publish with sensitive warnings?
+            <h3 id="override-modal-title" style={{ marginTop: 0, color: severeIssueCount > 0 ? "var(--color-error)" : "var(--color-warning)" }}>
+              Publish with review warnings?
             </h3>
             <p className="help-text" style={{ marginTop: 0 }}>
-              This story has {errorIssues.length} high-concern issue(s) from your newsroom's guardrail list.
-              The app will not veto the editor, but your reason is recorded with the story.
+              This story has {guardrailIssues.length} review warning(s)
+              {severeIssueCount > 0 ? `, including ${severeIssueCount} high-concern issue(s),` : ""}
+              from your newsroom's guardrail and story-quality checks. The app will not veto the editor,
+              but this decision is recorded with the story.
             </p>
             <ul style={{ fontSize: "0.85rem", margin: "0 0 1rem 0", paddingLeft: "1.2rem" }}>
-              {errorIssues.map((iss: any, idx: number) => (
+              {guardrailIssues.map((iss: any, idx: number) => (
                 <li key={idx}>
                   [{iss.category.replace(/_/g, " ")}] {iss.message}
                 </li>
@@ -893,7 +898,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                 Cancel
               </button>
               <button
-                className="btn btn-danger"
+                className={severeIssueCount > 0 ? "btn btn-danger" : "btn btn-primary"}
                 onClick={confirmOverride}
                 id="btn-override-confirm"
               >

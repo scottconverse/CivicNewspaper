@@ -309,6 +309,7 @@ describe("useApp Hook Tests", () => {
         }),
       })
     );
+    expect(invoke).toHaveBeenCalledWith("guardrails_check", { draftId: 501 });
     expect(hookResult.selectedLead).toBeNull();
     expect(hookResult.selectedDraft?.id).toBe(501);
     expect(hookResult.selectedDraft?.title).toBe("Council weighs land purchase");
@@ -370,6 +371,68 @@ describe("useApp Hook Tests", () => {
     expect(content).not.toMatch(/EDITOR_NOTE|Reporting Steps|End of Report|\[insert/i);
     expect(content).toContain("The council will review traffic safety at an upcoming meeting.");
     expect(content).toContain("Residents can follow the next posted agenda for details.");
+  });
+
+  test("drafts from watch or low-novelty leads open as needs-work with guardrails loaded", async () => {
+    const savedDrafts: any[] = [];
+    const guardrailsReport = {
+      is_clean: true,
+      issues: [
+        { category: "Lead Readiness", message: "Watch item needs a current fact.", severity: "warning" },
+      ],
+    };
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
+      if (cmd === "get_queue") return { leads: [], drafts: savedDrafts };
+      if (cmd === "get_sources") return [];
+      if (cmd === "get_community_profile") return { city: "Longmont", state: "CO" };
+      if (cmd === "list_paired_clients") return [];
+      if (cmd === "get_system_ram") return 16;
+      if (cmd === "get_evidence") return [];
+      if (cmd === "get_setting" && args?.key === "model.selected") return "qwen2.5:7b";
+      if (cmd === "ollama_health") return { reachable: true, models: ["qwen2.5:7b"], version: "0.6.0" };
+      if (cmd === "generate_draft") return "A city page was updated and residents may want to watch it.";
+      if (cmd === "save_draft") {
+        const draft = { ...args.draft, id: 503 };
+        savedDrafts.push(draft);
+        return 503;
+      }
+      if (cmd === "guardrails_check") return guardrailsReport;
+      return null;
+    });
+
+    let hookResult: any;
+    const TestComp = () => {
+      hookResult = useApp();
+      return <span data-testid="active-tab">{hookResult.activeTab}</span>;
+    };
+
+    await act(async () => {
+      render(<TestComp />);
+    });
+
+    await act(async () => {
+      hookResult.handleOpenDraftWizard({
+        id: 79,
+        detector_name: "Monitoring Item",
+        why: "A Longmont source page was fetched again.",
+        confidence: "medium",
+        risk_level: "low",
+        confirmation_checklist: "[]",
+        story_type: "watch",
+        disposition: "watch",
+        novelty_score: 1,
+        created_at: "2026-06-29T00:00:00Z",
+      });
+    });
+
+    await act(async () => {
+      await hookResult.handleGenerateText();
+    });
+
+    expect(savedDrafts[0].status).toBe("needs_verification");
+    expect(hookResult.selectedDraft?.status).toBe("needs_verification");
+    expect(hookResult.guardrailsReport).toEqual(guardrailsReport);
+    expect(hookResult.statusMessage).toContain("marked as needing more work");
   });
 
   test("can draft multiple leads sequentially without losing queue/workbench state", async () => {
@@ -533,8 +596,11 @@ describe("useApp Hook Tests", () => {
     });
 
     expect(settings.get("setup.first_run_intake")).toBe("consumed");
-    expect(addSourceCalls).toHaveLength(6);
+    expect(addSourceCalls).toHaveLength(16);
     expect(addSourceCalls.map(call => call.name)).toContain("Longmont Public Information");
+    expect(addSourceCalls.map(call => call.name)).toContain("Longmont Leader local news");
+    expect(addSourceCalls.map(call => call.name)).toContain("Longmont Public Safety Facebook");
+    expect(addSourceCalls.map(call => call.name)).toContain("Longmont city YouTube");
     expect(screen.getByTestId("active-tab")).toHaveTextContent("dailyScan");
     expect(hookResult.statusMessage).toContain("starter Longmont source");
   });
