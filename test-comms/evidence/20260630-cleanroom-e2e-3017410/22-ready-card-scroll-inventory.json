@@ -1,0 +1,216 @@
+{
+  "y": 2599.999755859375,
+  "text": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nStory Queue\n\nCivic signals your sources surfaced, ready to verify and turn into plain-language stories.\n\nRefresh\nDaily Scan\nScrape & Detect\nNEW LEADS\n16\nIN DRAFTING\n1\nHIGH PRIORITY\n1\nSOURCES\n12\nLocal-first workflow\nScan sources, draft from linked evidence, run guardrails, then publish a static paper.\nLeads\n16\nDrafts\n1\nScan results\nlatest\nFilter leads\nSort by:\nDate Created\nRisk Level\nConfidence\nRisk: low\nBackground\nBackground\nSeen before\ndaily_scan\nCity Council to Hold Regular Sessions on July 7 and 14: The City Council will hold regular sessions on July 7 and 14, with specific times and locations provided for public participation. Editor context: Regular meetings provide opportunities for public input on city policies and projects. Suggested treatment: watch. Newsworthiness: 5/20 (immediacy 1, impact 2, conflict 1, novelty 1). Why now: No current change found; meetings are regular occurrences. Beat memory: similar topic 'City Council to vote on roof contract for library' was first seen 2026-06-30T12:44:03.188929500+00:00, last seen 2026-06-30T12:44:03.188929500+00:00, and has appeared 1 previous time(s). Treat this as recurring/background unless the source shows a new vote, deadline, dollar amount, filing, outage, meeting item, or public impact. Suggested next step: Check the agenda packets to identify any new or ongoing issues, confirm scheduled votes, and prepare questions for public participation. What would make this publishable: Specific agenda items, such as new ordinances or votes on public projects. Compare against beat memory before drafting; write a story only if there is a new reportable fact.\n\nBeat memory: Similar topic 'City Council to vote on roof contract for library' was first seen 2026-06-30T12:44:03.188929500+00:00, last seen 2026-06-30T12:44:03.188929500+00:00, and has appeared 1 previous time(s).\n\nNovelty 1/5. Beat memory found this topic before, and this scan did not identify a concrete new reportable fact.\n\nConfidence: low\nDraft anyway\nRisk: med\nWatch\nWatch\ndaily_scan\nCity Council Meeting Participation Opportunities: Residents can participate in City Council meetings, either during regular sessions or through public hearings. Editor context: Provides information for residents on how to engage with the city governance process. Suggested treatment: watch. Newsworthiness: 10/20 (immediacy 2, impact 3, conflict 1, novelty 4). Why now: No current change found, but useful information for upcoming meetings. Suggested next step: Identify potential topics for public discussion and draft a brief or story if there are upcoming relevant issues. What would make this publishable: An upcoming issue that residents are passionate about could make this relevant.\n\nNovelty 4/5. No current change found, but useful information for upcoming meetings.\n\nConfidence: med\nDraft anyway\nRisk: med\nBackground\nBackground\ndaily_scan\nCity Council Meeting Participation Rules: The City Council meeting rules for public participation include a sign-up process and time limits, ensuring structured engagement. Editor context: This information is essential for residents to participate effectively in City Council meetings. Suggested treatment: background. Newsworthiness: 10/20 (immediacy 2, impact 3, conflict 1, novelty 4). Why now: No current change found, but useful background information. Suggested next step: Review the rules and determine if any changes or updates are needed for a potential story. What would make this publishable: A resident complaint or feedback on the participation rules could provide a newsworthy angle.\n\nNovelty 4/5. No current change found, but useful background information.\n\nConfidence: med\nDraft anyway\nRisk: med\nDraft exists\nStory\nReady to draft\ndaily_scan\nCity Council to vote on roof contract for library: A city council meeting agenda includes a vote on a contract for roof work at the public library. This impacts local government spending and construction timelines. Editor context: This is an upcoming council decision with potential city spending implications. Suggested treatment: story. Newsworthiness: 12/20 (immediacy 4, impact 3, conflict 2, novelty 3). Why now: A council vote is scheduled this week regarding a public facility project. Suggested next step: Review the agenda packet for details on the contract amount, vendor information, and any community input processes before drafting. What would make this publishable: The full agenda packet with details on the contract, vendor information, and any community input processes.\n\nNovelty 3/5. A council vote is scheduled this week regarding a public facility project.\n\nConfidence: med\nOpen draft\nRisk: low\nBackground\nBackground\nSeen before\ndaily_scan\nCity to close Hover Street/CO 119 intersection for roof work: The city will temporarily shut down the intersection of Hover Street and CO 119 on June 28 for a library roof contract vote. This affects local traffic patterns and public access. Editor context: This is a current traffic impact with potential travel disruption. Suggested treatment: story. Newsworthiness: 13/20 (immediacy 5, impact 4, conflict 1, novelty 3). Why now: A temporary intersection closure for construction is scheduled this month. Beat memory: similar topic 'Library Intersection Closure Scheduled' was first seen 2026-06-30T12:43:42.986306500+00:00, last seen 2026-06-30T12:43:42.986306500+00:00, and has appeared 1 previous time(s). Treat this as recurring/background unless the source shows a new vote, deadline, dollar amount, filing, outage, meeting item, or public impact. Suggested next step: Verify the exact closure dates and times, affected roads, and any detour routes before drafting. Wha",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "disabled": false,
+      "y": -2324.748291015625
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "disabled": false,
+      "y": -2324.748291015625
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "disabled": false,
+      "y": -2324.748291015625
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "disabled": false,
+      "y": -2324.748291015625
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "disabled": false,
+      "y": -2280.754150390625
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "disabled": false,
+      "y": -2280.754150390625
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "disabled": false,
+      "y": -2280.754150390625
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "disabled": false,
+      "y": -2280.754150390625
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "disabled": false,
+      "y": -2236.760009765625
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "disabled": false,
+      "y": -2236.760009765625
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "disabled": false,
+      "y": -2236.760009765625
+    },
+    {
+      "i": 11,
+      "text": "",
+      "disabled": false,
+      "y": -2270.064453125
+    },
+    {
+      "i": 12,
+      "text": "Refresh",
+      "disabled": false,
+      "y": -2082.83740234375
+    },
+    {
+      "i": 13,
+      "text": "Daily Scan",
+      "disabled": false,
+      "y": -2082.83740234375
+    },
+    {
+      "i": 14,
+      "text": "Scrape & Detect",
+      "disabled": false,
+      "y": -2082.83740234375
+    },
+    {
+      "i": 15,
+      "text": "IN DRAFTING\n1",
+      "disabled": false,
+      "y": -2020.8475341796875
+    },
+    {
+      "i": 16,
+      "text": "Leads\n16",
+      "disabled": false,
+      "y": -1718.3404541015625
+    },
+    {
+      "i": 17,
+      "text": "Drafts\n1",
+      "disabled": false,
+      "y": -1718.3404541015625
+    },
+    {
+      "i": 18,
+      "text": "Scan results\nlatest",
+      "disabled": false,
+      "y": -1718.3404541015625
+    },
+    {
+      "i": 19,
+      "text": "Draft anyway",
+      "disabled": false,
+      "y": -1003.1536865234375
+    },
+    {
+      "i": 20,
+      "text": "Draft anyway",
+      "disabled": false,
+      "y": -592.5789794921875
+    },
+    {
+      "i": 21,
+      "text": "Draft anyway",
+      "disabled": false,
+      "y": -182.00430297851562
+    },
+    {
+      "i": 22,
+      "text": "Open draft",
+      "disabled": false,
+      "y": 252.98849487304688
+    },
+    {
+      "i": 23,
+      "text": "Draft anyway",
+      "disabled": false,
+      "y": 835.1508178710938
+    },
+    {
+      "i": 24,
+      "text": "Draft anyway",
+      "disabled": false,
+      "y": 1245.7254638671875
+    },
+    {
+      "i": 25,
+      "text": "Draft anyway",
+      "disabled": false,
+      "y": 1631.882080078125
+    },
+    {
+      "i": 26,
+      "text": "Draft anyway",
+      "disabled": false,
+      "y": 2018.0386962890625
+    },
+    {
+      "i": 27,
+      "text": "Draft anyway",
+      "disabled": false,
+      "y": 2282.104736328125
+    },
+    {
+      "i": 28,
+      "text": "Draft anyway",
+      "disabled": false,
+      "y": 2521.752685546875
+    },
+    {
+      "i": 29,
+      "text": "Draft anyway",
+      "disabled": false,
+      "y": 2761.400634765625
+    },
+    {
+      "i": 30,
+      "text": "Draft anyway",
+      "disabled": false,
+      "y": 3001.048583984375
+    },
+    {
+      "i": 31,
+      "text": "Draft anyway",
+      "disabled": false,
+      "y": 3240.696533203125
+    },
+    {
+      "i": 32,
+      "text": "Draft anyway",
+      "disabled": false,
+      "y": 3480.344482421875
+    },
+    {
+      "i": 33,
+      "text": "Draft anyway",
+      "disabled": false,
+      "y": 3719.99267578125
+    },
+    {
+      "i": 34,
+      "text": "Draft anyway",
+      "disabled": false,
+      "y": 3959.640625
+    }
+  ]
+}

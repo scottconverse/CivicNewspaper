@@ -1,0 +1,50 @@
+{
+  "utc": "2026-06-30T12:41:28.605Z",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Download qwen2.5:7b",
+      "disabled": false,
+      "rect": {
+        "x": 78.93677520751953,
+        "y": 316.3793029785156,
+        "w": 215.58187866210938,
+        "h": 37.99568557739258
+      }
+    },
+    {
+      "i": 1,
+      "text": "Back",
+      "disabled": false,
+      "rect": {
+        "x": 78.93677520751953,
+        "y": 418.6996765136719,
+        "w": 74.11637115478516,
+        "h": 37.99568557739258
+      }
+    },
+    {
+      "i": 2,
+      "text": "Skip for now",
+      "disabled": false,
+      "rect": {
+        "x": 507.1838684082031,
+        "y": 418.6996765136719,
+        "w": 122.83763885498047,
+        "h": 37.99568557739258
+      }
+    },
+    {
+      "i": 3,
+      "text": "Next",
+      "disabled": false,
+      "rect": {
+        "x": 646.0200805664062,
+        "y": 418.6996765136719,
+        "w": 103.08907318115234,
+        "h": 37.99568557739258
+      }
+    }
+  ],
+  "text": "The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.\nAI Setup\nStep 3 of 5\nDownload AI Model\n\nDownload the local AI model. One-time setup - needs an internet connection.\n\nAI Model: qwen2.5:7b (Recommended)\n\nCivicNews will download this local AI model now - a one-time download of about ~4.7 GB that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.\n\nIt is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.\n\nDownload qwen2.5:7b\n\nWarning: You can skip this download. Daily Scan can still run deterministic evidence checks, but AI drafting and AI-assisted lead review will stay limited until you download a model.\n\nBack\nSkip for now\nNext"
+}

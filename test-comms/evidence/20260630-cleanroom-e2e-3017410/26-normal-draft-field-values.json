@@ -1,0 +1,35 @@
+{
+  "utc": "2026-06-30T12:51:05.639Z",
+  "fields": [
+    {
+      "i": 0,
+      "tag": "INPUT",
+      "id": "input-draft-title",
+      "name": null,
+      "aria": null,
+      "placeholder": null,
+      "value": "City Council to Vote on Roof Contract for Longmont Library",
+      "text": ""
+    },
+    {
+      "i": 1,
+      "tag": "TEXTAREA",
+      "id": "draft-editor-textarea",
+      "name": null,
+      "aria": null,
+      "placeholder": null,
+      "value": "The city council will vote this week on a contract for roof work at the public library, impacting local government spending and construction timelines.\n\nAs outlined in the upcoming agenda [Source](evidence:13), the contract is part of essential maintenance efforts to ensure the library remains safe and functional. The total cost of the project has not yet been disclosed, but it will significantly affect city finances. Residents can expect potential changes to library hours during the construction period.\n\nThe public has an opportunity to provide input on this decision through the council's community engagement process [Source](evidence:13). Community members are encouraged to attend the meeting or submit comments in advance to ensure their voices are heard. The exact date and time of the vote will be updated as more information becomes available.\n\nThis vote is part of ongoing efforts to maintain public facilities, which are crucial for community engagement and education [Source](evidence:14). As construction timelines are established, further updates on library operations and access will be provided.\n\nFor more details, residents can review the full agenda packet or contact city officials directly. The council's next meeting is scheduled for this week; specific timing and location will be announced closer to the date [Source](evidence:13).",
+      "text": ""
+    },
+    {
+      "i": 2,
+      "tag": "INPUT",
+      "id": "chk-attest",
+      "name": null,
+      "aria": null,
+      "placeholder": null,
+      "value": "on",
+      "text": ""
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+    "utc":  "2026-06-30T12:39:01.7120504Z",
+    "installer":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260630-cleanroom-e2e-3017410\\The Civic Desk_0.3.0_x64-setup.exe",
+    "sha256":  "0C79098D0B8720978E7AE056430B2DB7F3247D0072574DE05EC5F5AA9737D35C",
+    "size":  5622123,
+    "exitCode":  0,
+    "exeExists":  true,
+    "launchPid":  19764,
+    "processes":  [
+                      {
+                          "ProcessId":  3144,
+                          "Name":  "msedgewebview2.exe",
+                          "CommandLine":  "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\149.0.4022.98\\msedgewebview2.exe\" --embedded-browser-webview=1 --webview-exe-name=SearchHost.exe --webview-exe-version=2604.28014.500.0 --user-data-dir=\"C:\\Users\\civic\\AppData\\Local\\Packages\\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\\LocalState\\EBWebView\" --noerrdialogs --disable-features=msSmartScreenProtection --edge-webview-enable-mojo-ipcz --enable-features=msEdgeFluentOverlayScrollbar --user-agent=\"Mozilla/5.0 (Windows NT 10.0; Win64; x64; Cortana 1.18.9.23723; 10.0.0.0.26200.8655) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.26200 IsWebView2/True (WebView2Version 149.0.4022.98)\" --lang=en-US --mojo-named-platform-channel-pipe=12400.13004.2546419072813344072 /pfhostedapp:f7892d8bdbf1a324d9d32d2a53dacc9bdfaf6f99"
+                      },
+                      {
+                          "ProcessId":  5892,
+                          "Name":  "msedgewebview2.exe",
+                          "CommandLine":  "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\149.0.4022.98\\msedgewebview2.exe\" --type=crashpad-handler --user-data-dir=C:\\Users\\civic\\AppData\\Local\\Packages\\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\\LocalState\\EBWebView /prefetch:4 /pfhostedapp:f7892d8bdbf1a324d9d32d2a53dacc9bdfaf6f99 --monitor-self-annotation=ptype=crashpad-handler --database=C:\\Users\\civic\\AppData\\Local\\Packages\\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\\LocalState\\EBWebView\\Crashpad --annotation=IsOfficialBuild=1 --annotation=channel= --annotation=chromium-version=149.0.7827.201 \"--annotation=exe=C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\149.0.4022.98\\msedgewebview2.exe\" --annotation=plat=Win64 \"--annotation=prod=Edge WebView2\" --annotation=ver=149.0.4022.98 --initial-client-data=0x17c,0x180,0x184,0x158,0x9c,0x7ff8fbba9c38,0x7ff8fbba9c44,0x7ff8fbba9c50"
+                      },
+                      {
+                          "ProcessId":  13360,
+                          "Name":  "msedgewebview2.exe",
+                          "CommandLine":  "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\149.0.4022.98\\msedgewebview2.exe\" --type=gpu-process --noerrdialogs --user-agent=\"Mozilla/5.0 (Windows NT 10.0; Win64; x64; Cortana 1.18.9.23723; 10.0.0.0.26200.8655) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.26200 IsWebView2/True (WebView2Version 149.0.4022.98)\" --user-data-dir=\"C:\\Users\\civic\\AppData\\Local\\Packages\\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\\LocalState\\EBWebView\" --webview-exe-name=SearchHost.exe --webview-exe-version=2604.28014.500.0 --embedded-browser-webview=1 --gpu-preferences=SAAAAAAAAADgAAAEAAAAAAAAAAAAAGAAAQAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAQAAAAAAAAABAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAA== --always-read-main-dll --metrics-shmem-handle=1984,i,17984995217626531797,5297185873599954166,262144 --field-trial-handle=2096,i,8537313634178795598,18304020295072525188,262144 --enable-features=msEdgeFluentOverlayScrollbar --disable-features=msSmartScreenProtection --variations-seed-version --pseudonymization-salt-handle=2100,i,12191785276567921936,13862274221441945482,4 --trace-process-track-uuid=3190708988185955192 --mojo-platform-channel-handle=2092 /prefetch:2 /pfhostedapp:f7892d8bdbf1a324d9d32d2a53dacc9bdfaf6f99"
+                      },
+                      {
+                          "ProcessId":  18472,
+                          "Name":  "msedgewebview2.exe",
+                          "CommandLine":  "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\149.0.4022.98\\msedgewebview2.exe\" --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --noerrdialogs --user-agent=\"Mozilla/5.0 (Windows NT 10.0; Win64; x64; Cortana 1.18.9.23723; 10.0.0.0.26200.8655) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.26200 IsWebView2/True (WebView2Version 149.0.4022.98)\" --user-data-dir=\"C:\\Users\\civic\\AppData\\Local\\Packages\\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\\LocalState\\EBWebView\" --webview-exe-name=SearchHost.exe --webview-exe-version=2604.28014.500.0 --embedded-browser-webview=1 --always-read-main-dll --metrics-shmem-handle=2276,i,8038928512098385165,12303170731561839450,524288 --field-trial-handle=2096,i,8537313634178795598,18304020295072525188,262144 --enable-features=msEdgeFluentOverlayScrollbar --disable-features=msSmartScreenProtection --variations-seed-version --pseudonymization-salt-handle=2100,i,12191785276567921936,13862274221441945482,4 --trace-process-track-uuid=3190708989122997041 --mojo-platform-channel-handle=2288 /prefetch:11 /pfhostedapp:f7892d8bdbf1a324d9d32d2a53dacc9bdfaf6f99"
+                      },
+                      {
+                          "ProcessId":  9712,
+                          "Name":  "msedgewebview2.exe",
+                          "CommandLine":  "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\149.0.4022.98\\msedgewebview2.exe\" --type=utility --utility-sub-type=storage.mojom.StorageService --lang=en-US --service-sandbox-type=service --noerrdialogs --user-agent=\"Mozilla/5.0 (Windows NT 10.0; Win64; x64; Cortana 1.18.9.23723; 10.0.0.0.26200.8655) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.26200 IsWebView2/True (WebView2Version 149.0.4022.98)\" --user-data-dir=\"C:\\Users\\civic\\AppData\\Local\\Packages\\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\\LocalState\\EBWebView\" --webview-exe-name=SearchHost.exe --webview-exe-version=2604.28014.500.0 --embedded-browser-webview=1 --always-read-main-dll --metrics-shmem-handle=2592,i,17791137533784342071,9793121147754185783,524288 --field-trial-handle=2096,i,8537313634178795598,18304020295072525188,262144 --enable-features=msEdgeFluentOverlayScrollbar --disable-features=msSmartScreenProtection --variations-seed-version --pseudonymization-salt-handle=2100,i,12191785276567921936,13862274221441945482,4 --trace-process-track-uuid=3190708990060038890 --mojo-platform-channel-handle=2456 /prefetch:13 /pfhostedapp:f7892d8bdbf1a324d9d32d2a53dacc9bdfaf6f99"
+                      },
+                      {
+                          "ProcessId":  18816,
+                          "Name":  "msedgewebview2.exe",
+                          "CommandLine":  "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\149.0.4022.98\\msedgewebview2.exe\" --type=renderer --noerrdialogs --user-agent=\"Mozilla/5.0 (Windows NT 10.0; Win64; x64; Cortana 1.18.9.23723; 10.0.0.0.26200.8655) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.26200 IsWebView2/True (WebView2Version 149.0.4022.98)\" --user-data-dir=\"C:\\Users\\civic\\AppData\\Local\\Packages\\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\\LocalState\\EBWebView\" --webview-exe-name=SearchHost.exe --webview-exe-version=2604.28014.500.0 --embedded-browser-webview=1 --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags=--expose-gc --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=5 --time-ticks-at-unix-epoch=-1782362098292366 --launch-time-ticks=453416408171 --always-read-main-dll --metrics-shmem-handle=3928,i,17533734360914125854,12030568762140827499,2097152 --field-trial-handle=2096,i,8537313634178795598,18304020295072525188,262144 --enable-features=msEdgeFluentOverlayScrollbar --disable-features=msSmartScreenProtection --variations-seed-version --pseudonymization-salt-handle=2100,i,12191785276567921936,13862274221441945482,4 --trace-process-track-uuid=3190708990997080739 --mojo-platform-channel-handle=3984 /pfhostedapp:f7892d8bdbf1a324d9d32d2a53dacc9bdfaf6f99 /prefetch:1"
+                      },
+                      {
+                          "ProcessId":  19764,
+                          "Name":  "civicnews.exe",
+                          "CommandLine":  "\"C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe\" "
+                      },
+                      {
+                          "ProcessId":  14572,
+                          "Name":  "msedgewebview2.exe",
+                          "CommandLine":  "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\149.0.4022.98\\msedgewebview2.exe\" --embedded-browser-webview=1 --webview-exe-name=civicnews.exe --webview-exe-version=0.3.0 --user-data-dir=\"C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk\\EBWebView\" --noerrdialogs --embedded-browser-webview-dpi-awareness=2 --autoplay-policy=no-user-gesture-required --disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --remote-allow-origins=* --remote-debugging-port=9444 --lang=en-US --mojo-named-platform-channel-pipe=19764.12100.6834836972862629479 /pfhostedapp:0ecd82165c29376470ffec17c574ff0a5417e370"
+                      },
+                      {
+                          "ProcessId":  10496,
+                          "Name":  "msedgewebview2.exe",
+                          "CommandLine":  "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\149.0.4022.98\\msedgewebview2.exe\" --type=crashpad-handler --user-data-dir=C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk\\EBWebView /prefetch:4 /pfhostedapp:0ecd82165c29376470ffec17c574ff0a5417e370 --monitor-self-annotation=ptype=crashpad-handler --database=C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk\\EBWebView\\Crashpad --annotation=IsOfficialBuild=1 --annotation=channel= --annotation=chromium-version=149.0.7827.201 \"--annotation=exe=C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\149.0.4022.98\\msedgewebview2.exe\" --annotation=plat=Win64 \"--annotation=prod=Edge WebView2\" --annotation=ver=149.0.4022.98 --initial-client-data=0x17c,0x180,0x184,0xa0,0x18c,0x7ff8fbba9c38,0x7ff8fbba9c44,0x7ff8fbba9c50"
+                      },
+                      {
+                          "ProcessId":  5024,
+                          "Name":  "msedgewebview2.exe",
+                          "CommandLine":  "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\149.0.4022.98\\msedgewebview2.exe\" --type=gpu-process --noerrdialogs --user-data-dir=\"C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk\\EBWebView\" --webview-exe-name=civicnews.exe --webview-exe-version=0.3.0 --embedded-browser-webview=1 --embedded-browser-webview-dpi-awareness=2 --gpu-preferences=SAAAAAAAAADgAAAEAAAAAAAAAAAAAGAAAQAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAQAAAAAAAAABAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAA== --startup-read-main-dll --metrics-shmem-handle=1700,i,15054231092893701324,15428766614799098938,262144 --field-trial-handle=1960,i,1526445033070960765,11478462543262193046,262144 --disable-features=msPdfOOUI,msSmartScreenProtection,msWebOOUI --variations-seed-version --pseudonymization-salt-handle=1968,i,3288079651630878738,8116044641634604113,4 --trace-process-track-uuid=3190708988185955192 --mojo-platform-channel-handle=1936 /prefetch:2 /pfhostedapp:0ecd82165c29376470ffec17c574ff0a5417e370"
+                      },
+                      {
+                          "ProcessId":  5576,
+                          "Name":  "msedgewebview2.exe",
+                          "CommandLine":  "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\149.0.4022.98\\msedgewebview2.exe\" --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --noerrdialogs --user-data-dir=\"C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk\\EBWebView\" --webview-exe-name=civicnews.exe --webview-exe-version=0.3.0 --embedded-browser-webview=1 --embedded-browser-webview-dpi-awareness=2 --startup-read-main-dll --metrics-shmem-handle=2164,i,9065073302126053635,10038516659087853888,524288 --field-trial-handle=1960,i,1526445033070960765,11478462543262193046,262144 --disable-features=msPdfOOUI,msSmartScreenProtection,msWebOOUI --variations-seed-version --pseudonymization-salt-handle=1968,i,3288079651630878738,8116044641634604113,4 --trace-process-track-uuid=3190708989122997041 --mojo-platform-channel-handle=2172 /prefetch:11 /pfhostedapp:0ecd82165c29376470ffec17c574ff0a5417e370"
+                      },
+                      {
+                          "ProcessId":  17848,
+                          "Name":  "msedgewebview2.exe",
+                          "CommandLine":  "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\149.0.4022.98\\msedgewebview2.exe\" --type=utility --utility-sub-type=storage.mojom.StorageService --lang=en-US --service-sandbox-type=service --noerrdialogs --user-data-dir=\"C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk\\EBWebView\" --webview-exe-name=civicnews.exe --webview-exe-version=0.3.0 --embedded-browser-webview=1 --embedded-browser-webview-dpi-awareness=2 --startup-read-main-dll --metrics-shmem-handle=2492,i,292861740835648838,1265739154857120126,524288 --field-trial-handle=1960,i,1526445033070960765,11478462543262193046,262144 --disable-features=msPdfOOUI,msSmartScreenProtection,msWebOOUI --variations-seed-version --pseudonymization-salt-handle=1968,i,3288079651630878738,8116044641634604113,4 --trace-process-track-uuid=3190708990060038890 --mojo-platform-channel-handle=2516 /prefetch:13 /pfhostedapp:0ecd82165c29376470ffec17c574ff0a5417e370"
+                      },
+                      {
+                          "ProcessId":  14364,
+                          "Name":  "msedgewebview2.exe",
+                          "CommandLine":  "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\149.0.4022.98\\msedgewebview2.exe\" --type=renderer --noerrdialogs --user-data-dir=\"C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk\\EBWebView\" --webview-exe-name=civicnews.exe --webview-exe-version=0.3.0 --embedded-browser-webview=1 --embedded-browser-webview-dpi-awareness=2 --autoplay-policy=no-user-gesture-required --remote-debugging-port=9444 --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags=--expose-gc --device-scale-factor=1.5 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=5 --time-ticks-at-unix-epoch=-1782362098292366 --launch-time-ticks=461035627208 --ssd-no-pressure-read-main-dll --metrics-shmem-handle=3952,i,4949592002655823333,17640552388080197078,2097152 --field-trial-handle=1960,i,1526445033070960765,11478462543262193046,262144 --disable-features=msPdfOOUI,msSmartScreenProtection,msWebOOUI --variations-seed-version --pseudonymization-salt-handle=1968,i,3288079651630878738,8116044641634604113,4 --trace-process-track-uuid=3190708990997080739 --mojo-platform-channel-handle=4016 /pfhostedapp:0ecd82165c29376470ffec17c574ff0a5417e370 /prefetch:1"
+                      }
+                  ],
+    "listeners":  {
+                      "LocalAddress":  "127.0.0.1",
+                      "LocalPort":  9444,
+                      "OwningProcess":  14572
+                  }
+}

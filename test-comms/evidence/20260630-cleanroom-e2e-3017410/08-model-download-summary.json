@@ -1,0 +1,11 @@
+{
+  "utc": "2026-06-30T12:40:59.363Z",
+  "samples": [
+    {
+      "i": 0,
+      "utc": "2026-06-30T12:40:59.237Z",
+      "text": "The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.\nAI Setup\nStep 3 of 5\nDownload AI Model\n\nDownload the local AI model. One-time setup - needs an internet connection.\n\nAI Model: qwen2.5:7b (Recommended)\n\nCivicNews will download this local AI model now - a one-time download of about ~4.7 GB that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.\n\nIt is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.\n\nDownload qwen2.5:7b\n\nWarning: You can skip this download. Daily Scan can still run deterministic evidence checks, but AI drafting and AI-assisted lead review will stay limited until you download a model.\n\nBack\nSkip for now\nNext"
+    }
+  ],
+  "final": "The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.\nAI Setup\nStep 3 of 5\nDownload AI Model\n\nDownload the local AI model. One-time setup - needs an internet connection.\n\nAI Model: qwen2.5:7b (Recommended)\n\nCivicNews will download this local AI model now - a one-time download of about ~4.7 GB that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.\n\nIt is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.\n\nDownload qwen2.5:7b\n\nWarning: You can skip this download. Daily Scan can still run deterministic evidence checks, but AI drafting and AI-assisted lead review will stay limited until you download a model.\n\nBack\nSkip for now\nNext"
+}

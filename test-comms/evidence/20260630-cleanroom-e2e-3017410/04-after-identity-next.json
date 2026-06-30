@@ -1,0 +1,5 @@
+{
+  "utc": "2026-06-30T12:39:47.861Z",
+  "text": "AI Setup\nStep 2 of 5\nAI Service Setup\n\nCheck the connection to the local AI service that runs on your computer.\n\nLocal AI Service Connection\n\nLocal Ram: 15 GB\n\nStarting the local AI service\n\nCivicNews includes a local AI service that runs on your computer. It may take a moment to start up. Once it's running, you'll download a model in the next step.\n\nOn a clean machine, use the install button if the service does not become ready.\n\nDownloading the local AI runtime from Ollama.\n\nInstalling...\nCheck Initialization Status\nBack\nSkip for now\nNext",
+  "values": []
+}

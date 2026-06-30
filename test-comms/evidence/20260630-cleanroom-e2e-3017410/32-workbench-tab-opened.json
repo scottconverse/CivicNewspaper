@@ -1,0 +1,118 @@
+{
+  "utc": "2026-06-30T12:53:34.970Z",
+  "text": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nNo lead or draft selected\n\nOpen a draft below, or return to the queue to start a new story from a lead.\n\nCity Council to Vote on Roof Contract for Longmont Library\nwatch - Drafting\nOpen\nBack to Story Queue",
+  "controls": [
+    {
+      "i": 0,
+      "tag": "BUTTON",
+      "id": "nav-tab-queue",
+      "text": "Story Queue",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 1,
+      "tag": "BUTTON",
+      "id": "nav-tab-dailyScan",
+      "text": "Daily Scan",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 2,
+      "tag": "BUTTON",
+      "id": "nav-tab-darkSignals",
+      "text": "Dark Signals",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 3,
+      "tag": "BUTTON",
+      "id": "nav-tab-verification",
+      "text": "Verification",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 4,
+      "tag": "BUTTON",
+      "id": "nav-tab-workbench",
+      "text": "Workbench",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 5,
+      "tag": "BUTTON",
+      "id": "nav-tab-sources",
+      "text": "Sources",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 6,
+      "tag": "BUTTON",
+      "id": "nav-tab-onboarding",
+      "text": "AI Model",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 7,
+      "tag": "BUTTON",
+      "id": "nav-tab-publish",
+      "text": "Publishing",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 8,
+      "tag": "BUTTON",
+      "id": "nav-tab-pairing",
+      "text": "Browser Pairing",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 9,
+      "tag": "BUTTON",
+      "id": "nav-tab-settings",
+      "text": "Ethics & Backups",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 10,
+      "tag": "BUTTON",
+      "id": "nav-tab-system",
+      "text": "System & Status",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 11,
+      "tag": "BUTTON",
+      "id": "",
+      "text": "",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 12,
+      "tag": "BUTTON",
+      "id": "btn-workbench-picker-open-1",
+      "text": "City Council to Vote on Roof Contract for Longmont Library\nwatch - Drafting\nOpen",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 13,
+      "tag": "BUTTON",
+      "id": "btn-workbench-empty-back",
+      "text": "Back to Story Queue",
+      "value": "",
+      "disabled": false
+    }
+  ]
+}

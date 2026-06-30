@@ -1,0 +1,23 @@
+{
+    "startedUtc":  "2026-06-30T12:38:06.3710789Z",
+    "beforeProcesses":  null,
+    "uninstallExitCode":  0,
+    "removed":  [
+                    "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+                    "C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk",
+                    "C:\\Users\\civic\\.ollama"
+                ],
+    "failed":  [
+
+               ],
+    "afterWipe":  {
+                      "C:\\Users\\civic\\AppData\\Local\\The Civic Desk":  false,
+                      "C:\\Users\\civic\\.ollama":  false,
+                      "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk":  false,
+                      "C:\\Users\\civic\\AppData\\Local\\here.now":  false,
+                      "C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk":  false,
+                      "C:\\Users\\civic\\AppData\\Roaming\\The Civic Desk":  false,
+                      "C:\\Users\\civic\\.here":  false
+                  },
+    "afterProcesses":  null
+}

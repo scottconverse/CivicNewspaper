@@ -1,0 +1,142 @@
+{
+  "utc": "2026-06-30T12:54:25.273Z",
+  "text": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nDrafting Article\n\nLead: VOTING SIGNAL: Found vote/decision keywords ([\"approved\", \"approved\", \"Approved\", \"passed\", \"Motion\", \"motion\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.\n\nVerification\nNeeds verification\nNovelty 2/5\n\nVerification assignment. Use the draft as reporting notes until the missing facts are checked.\n\nWhy now: Keyword detector found decision language; reporter must confirm the actual current vote, date, and impact.\n\nGenerate anyway\nCancel\nArticle Format\nBrief (Under 200 words summary)\nWatch Alert (Highlights specific public safety or procurement issues)\nExplainer (Detailed review of a policy or decision background)\nInvestigation (Traces spending and connections behind a story)\nEditorial / Opinion Piece (Presents a structured argument)\nCustom Guidelines / Instructions (Optional)\nLinked Sources (1)\n\"Second Reading: The Council can ask more questions and may make changes to the ordinance. A public...\"\nGenerate anyway\nCancel",
+  "controls": [
+    {
+      "i": 0,
+      "tag": "BUTTON",
+      "id": "nav-tab-queue",
+      "text": "Story Queue",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 1,
+      "tag": "BUTTON",
+      "id": "nav-tab-dailyScan",
+      "text": "Daily Scan",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 2,
+      "tag": "BUTTON",
+      "id": "nav-tab-darkSignals",
+      "text": "Dark Signals",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 3,
+      "tag": "BUTTON",
+      "id": "nav-tab-verification",
+      "text": "Verification",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 4,
+      "tag": "BUTTON",
+      "id": "nav-tab-workbench",
+      "text": "Workbench",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 5,
+      "tag": "BUTTON",
+      "id": "nav-tab-sources",
+      "text": "Sources",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 6,
+      "tag": "BUTTON",
+      "id": "nav-tab-onboarding",
+      "text": "AI Model",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 7,
+      "tag": "BUTTON",
+      "id": "nav-tab-publish",
+      "text": "Publishing",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 8,
+      "tag": "BUTTON",
+      "id": "nav-tab-pairing",
+      "text": "Browser Pairing",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 9,
+      "tag": "BUTTON",
+      "id": "nav-tab-settings",
+      "text": "Ethics & Backups",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 10,
+      "tag": "BUTTON",
+      "id": "nav-tab-system",
+      "text": "System & Status",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 11,
+      "tag": "BUTTON",
+      "id": "",
+      "text": "",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 12,
+      "tag": "BUTTON",
+      "id": "btn-generate-draft-top",
+      "text": "Generate anyway",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 13,
+      "tag": "BUTTON",
+      "id": "btn-cancel-draft-top",
+      "text": "Cancel",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 14,
+      "tag": "TEXTAREA",
+      "id": "textarea-custom-instructions",
+      "text": "",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 15,
+      "tag": "BUTTON",
+      "id": "btn-generate-draft-bottom",
+      "text": "Generate anyway",
+      "value": "",
+      "disabled": false
+    },
+    {
+      "i": 16,
+      "tag": "BUTTON",
+      "id": "btn-cancel-draft-bottom",
+      "text": "Cancel",
+      "value": "",
+      "disabled": false
+    }
+  ]
+}
