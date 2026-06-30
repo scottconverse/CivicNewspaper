@@ -1,0 +1,7 @@
+{
+  "utc": "2026-06-30T14:50:56.014Z",
+  "url": "http://tauri.localhost/",
+  "title": "CivicNews Dashboard",
+  "body": "Initialization Error: Local AI runtime install failed: The Civic Desk didn't have permission to complete this. Check the file or folder permissions and try again.\nAI Setup\nStep 2 of 5\nAI Service Setup\n\nCheck the connection to the local AI service that runs on your computer.\n\nLocal AI Service Connection\n\nLocal Ram: 15 GB\n\nCouldn't reach the AI service\n\nThe private AI service did not start. First try restarting Civic Desk. If Windows or antivirus asked about this app, allow it, then retry. If it still fails, save a diagnostics file for support.\n\nIf this is a clean machine, Civic Desk can download and install its local AI runtime for you. This is a large one-time download and may take a while.\n\nThe Civic Desk didn't have permission to complete this. Check the file or folder permissions and try again.\n\nInstall local AI runtime\nRetry\nSave diagnostics file\nBack\nSkip for now\nNext",
+  "inputs": []
+}
