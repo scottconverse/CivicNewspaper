@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "lead_id": 13,
+    "title": "Longmont Public Library Offers Teen Temporary Tattoo Studio",
+    "status": "ready_to_review",
+    "attested_by": "Attempt Six Editor",
+    "attested_at": "2026-06-30T13:42:48.784949200+00:00",
+    "guardrail_override_reason": "Editor reviewed pre-publication warnings and chose to publish."
+  },
+  {
+    "id": 2,
+    "lead_id": 17,
+    "title": "Vision Zero Projects Continue to Improve Transportation Safety in Longmont",
+    "status": "killed",
+    "attested_by": null,
+    "attested_at": null,
+    "guardrail_override_reason": null
+  }
+]

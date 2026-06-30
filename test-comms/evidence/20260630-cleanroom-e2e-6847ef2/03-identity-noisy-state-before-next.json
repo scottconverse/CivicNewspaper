@@ -1,0 +1,59 @@
+{
+  "utc": "2026-06-30T13:29:35.444Z",
+  "body": "AI Setup\nStep 1 of 5\nIdentity\n\nDefine your local news outlet name and mission.\n\nStarter profiles\nLongmont\nBrighton\nDenver\nPublication Name\nEditor Name\nPublisher Type\nSingle person\nFor-profit publication\nNonprofit publication\nPrivate organization\nCommunity group\nOther\nCity\nState\nBack\nNext",
+  "inputs": [
+    {
+      "i": 0,
+      "tag": "INPUT",
+      "type": "text",
+      "name": "",
+      "id": "onboarding-publication-name",
+      "label": "Publication Name",
+      "placeholder": "e.g. The Brighton Gazette",
+      "value": "Attempt Six Longmont Ledger",
+      "checked": false
+    },
+    {
+      "i": 1,
+      "tag": "INPUT",
+      "type": "text",
+      "name": "",
+      "id": "onboarding-editor-name",
+      "label": "Editor Name",
+      "placeholder": "e.g. Jane Doe",
+      "value": "Attempt Six Editor",
+      "checked": false
+    },
+    {
+      "i": 2,
+      "tag": "SELECT",
+      "type": "select-one",
+      "name": "",
+      "id": "onboarding-organization-type",
+      "label": "Publisher Type",
+      "value": "single_person"
+    },
+    {
+      "i": 3,
+      "tag": "INPUT",
+      "type": "text",
+      "name": "",
+      "id": "onboarding-city",
+      "label": "City",
+      "placeholder": "Brighton",
+      "value": "Longmont",
+      "checked": false
+    },
+    {
+      "i": 4,
+      "tag": "INPUT",
+      "type": "text",
+      "name": "",
+      "id": "onboarding-state",
+      "label": "State",
+      "placeholder": "CO",
+      "value": "CO",
+      "checked": false
+    }
+  ]
+}

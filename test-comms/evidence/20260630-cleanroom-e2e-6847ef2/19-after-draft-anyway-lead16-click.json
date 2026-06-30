@@ -1,0 +1,118 @@
+{
+  "utc": "2026-06-30T13:45:38.765Z",
+  "body": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nDrafting Article\n\nLead: St. Vrain Valley Schools' Career Elevation & Technology Center Offers High-Demand Courses: The CETC provides high-wage, high-growth pathways that prepare students for future careers in technology and other fields. Editor context: This highlights a specific educational resource that could be of interest to local students and parents seeking career preparation opportunities. Suggested treatment: background. Newsworthiness: 10/20 (immediacy 2, impact 3, conflict 1, novelty 4). Why now: Details on the offerings and benefits of the Career Elevation & Technology Center. Suggested next step: Explore the curriculum offered at CETC to determine if it aligns with current labor market demands. What would make this publishable: More specific details about course content, enrollment numbers, and success rates.\n\nBackground\nBackground\nNovelty 4/5\n\nBackground item. Treat as context or an editor memo unless you have a current, specific change.\n\nWhy now: Details on the offerings and benefits of the Career Elevation & Technology Center.\n\nGenerate anyway\nCancel\nArticle Format\nBrief (Under 200 words summary)\nWatch Alert (Highlights specific public safety or procurement issues)\nExplainer (Detailed review of a policy or decision background)\nInvestigation (Traces spending and connections behind a story)\nEditorial / Opinion Piece (Presents a structured argument)\nCustom Guidelines / Instructions (Optional)\nLinked Sources (0)\n\nNo source documents are linked to this lead yet. You can still generate a working draft; mark anything that needs verification before publishing.\n\nGenerate anyway\nCancel",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "disabled": false,
+      "aria": null,
+      "testid": null
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "disabled": false,
+      "aria": null,
+      "testid": null
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "disabled": false,
+      "aria": null,
+      "testid": null
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "disabled": false,
+      "aria": null,
+      "testid": null
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "disabled": false,
+      "aria": null,
+      "testid": null
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "disabled": false,
+      "aria": null,
+      "testid": null
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "disabled": false,
+      "aria": null,
+      "testid": null
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "disabled": false,
+      "aria": null,
+      "testid": null
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "disabled": false,
+      "aria": null,
+      "testid": null
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "disabled": false,
+      "aria": null,
+      "testid": null
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "disabled": false,
+      "aria": null,
+      "testid": null
+    },
+    {
+      "i": 11,
+      "text": "",
+      "disabled": false,
+      "aria": "Dismiss beta notice",
+      "testid": "beta-notice-dismiss"
+    },
+    {
+      "i": 12,
+      "text": "Generate anyway",
+      "disabled": false,
+      "aria": null,
+      "testid": null
+    },
+    {
+      "i": 13,
+      "text": "Cancel",
+      "disabled": false,
+      "aria": null,
+      "testid": null
+    },
+    {
+      "i": 14,
+      "text": "Generate anyway",
+      "disabled": false,
+      "aria": null,
+      "testid": null
+    },
+    {
+      "i": 15,
+      "text": "Cancel",
+      "disabled": false,
+      "aria": null,
+      "testid": null
+    }
+  ]
+}

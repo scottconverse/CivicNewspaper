@@ -1,0 +1,81 @@
+﻿{
+    "utc":  "2026-06-30T13:51:01.5987651Z",
+    "fetchResults":  [
+                         {
+                             "url":  "https://quaint-larch-pvqx.here.now",
+                             "status":  200,
+                             "length":  2570
+                         },
+                         {
+                             "url":  "https://quaint-larch-pvqx.here.now/watch/1.html",
+                             "status":  200,
+                             "length":  9960
+                         }
+                     ],
+    "markers":  [
+                    "EDITOR_NOTE",
+                    "[EDITOR_NOTE",
+                    "Editor Note:",
+                    "TESTER EDIT",
+                    "Nut graf",
+                    "Reporting Steps",
+                    "[Source needed]",
+                    "[Verification needed]",
+                    "[End of Report]",
+                    "Body:",
+                    "Headline:",
+                    "[insert",
+                    "Employee Login",
+                    "Â",
+                    "Ã",
+                    "�",
+                    "Source check:",
+                    "unlinked-evidence"
+                ],
+    "hits":  [
+                 {
+                     "root":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default",
+                     "file":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\watch\\1.html",
+                     "marker":  "Â"
+                 },
+                 {
+                     "root":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default",
+                     "file":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\watch\\1.html",
+                     "marker":  "Source check:"
+                 },
+                 {
+                     "root":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default",
+                     "file":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\watch\\1.html",
+                     "marker":  "unlinked-evidence"
+                 },
+                 {
+                     "root":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-6847ef2\\quality-scan\\zip-extract",
+                     "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-6847ef2\\quality-scan\\zip-extract\\watch\\1.html",
+                     "marker":  "Â"
+                 },
+                 {
+                     "root":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-6847ef2\\quality-scan\\zip-extract",
+                     "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-6847ef2\\quality-scan\\zip-extract\\watch\\1.html",
+                     "marker":  "Source check:"
+                 },
+                 {
+                     "root":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-6847ef2\\quality-scan\\zip-extract",
+                     "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-6847ef2\\quality-scan\\zip-extract\\watch\\1.html",
+                     "marker":  "unlinked-evidence"
+                 },
+                 {
+                     "root":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-6847ef2\\quality-scan\\live-fetch",
+                     "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-6847ef2\\quality-scan\\live-fetch\\watch-1.html",
+                     "marker":  "Source check:"
+                 },
+                 {
+                     "root":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-6847ef2\\quality-scan\\live-fetch",
+                     "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-6847ef2\\quality-scan\\live-fetch\\watch-1.html",
+                     "marker":  "unlinked-evidence"
+                 }
+             ],
+    "zipSha256":  "3B1BE5083A1F1E4C0EAAED35F3042DD2F871F181CEF6E83F45C82588200D0E3F",
+    "localOutput":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default",
+    "zipPath":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\site-package.zip",
+    "liveUrl":  "https://quaint-larch-pvqx.here.now"
+}

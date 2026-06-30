@@ -1,0 +1,4 @@
+{
+  "utc": "2026-06-30T13:30:11.131Z",
+  "body": "AI Setup\nStep 2 of 5\nAI Service Setup\n\nCheck the connection to the local AI service that runs on your computer.\n\nLocal AI Service Connection\n\nLocal Ram: 15 GB\n\nThe AI service is ready. Download a recommended model?\n\nBased on your 15GB of RAM, we recommend: qwen2.5:7b (one-time download, ~4.7 GB, needs internet).\n\nThis may take 10-60+ minutes depending on your connection. You can cancel and resume later from AI Model; already downloaded pieces are usually reused by the model service.\n\nHeads up: the AI model runs on your CPU, so generating a draft or daily scan can take a minute or more - this is normal.\n\nDownload qwen2.5:7b\nBack\nSkip for now\nNext"
+}

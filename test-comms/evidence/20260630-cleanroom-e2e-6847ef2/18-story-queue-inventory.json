@@ -1,0 +1,222 @@
+{
+  "utc": "2026-06-30T13:44:58.388Z",
+  "body": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nStory Queue\n\nCivic signals your sources surfaced, ready to verify and turn into plain-language stories.\n\nRefresh\nDaily Scan\nScrape & Detect\nNEW LEADS\n17\nIN DRAFTING\n2\nHIGH PRIORITY\n0\nSOURCES\n14\nLocal-first workflow\nScan sources, draft from linked evidence, run guardrails, then publish a static paper.\nLeads\n17\nDrafts\n2\nScan results\nlatest\nFilter leads\nSort by:\nDate Created\nRisk Level\nConfidence\nRisk: med\nDraft exists\nWatch\nWatch\ndaily_scan\nVision Zero projects updates: The Vision Zero initiative is working on transportation safety improvements, and public engagement is encouraged through various activities. Editor context: Vision Zero efforts are ongoing, impacting community safety with potential policy changes or new initiatives. Suggested treatment: watch. Newsworthiness: 12/20 (immediacy 3, impact 4, conflict 2, novelty 3). Why now: Vision Zero projects are ongoing, with activities and ways to get involved. Suggested next step: Check for recent project updates and public involvement opportunities. What would make this publishable: Detailed updates on specific projects, progress reports, or new initiatives.\n\nNovelty 3/5. Vision Zero projects are ongoing, with activities and ways to get involved.\n\nConfidence: med\nOpen draft\nRisk: med\nBackground\nBackground\ndaily_scan\nSt. Vrain Valley Schools' Career Elevation & Technology Center Offers High-Demand Courses: The CETC provides high-wage, high-growth pathways that prepare students for future careers in technology and other fields. Editor context: This highlights a specific educational resource that could be of interest to local students and parents seeking career preparation opportunities. Suggested treatment: background. Newsworthiness: 10/20 (immediacy 2, impact 3, conflict 1, novelty 4). Why now: Details on the offerings and benefits of the Career Elevation & Technology Center. Suggested next step: Explore the curriculum offered at CETC to determine if it aligns with current labor market demands. What would make this publishable: More specific details about course content, enrollment numbers, and success rates.\n\nNovelty 4/5. Details on the offerings and benefits of the Career Elevation & Technology Center.\n\nConfidence: med\nDraft anyway\nRisk: med\nBackground\nBackground\ndaily_scan\nSt. Vrain Valley Schools Receives $53 Million in Competitive Grants: The St. Vrain Valley School District has received over $53 million in competitive grants since January 2018, indicating significant funding for new educational initiatives. Editor context: This financial information highlights substantial grant funding that could impact school resources and programs, making it relevant to local reporting. Suggested treatment: background. Newsworthiness: 10/20 (immediacy 2, impact 3, conflict 1, novelty 4). Why now: New financial information regarding competitive grant awards. Suggested next step: Research the specific grants received, their purposes, and any recent projects funded by these grants. What would make this publishable: Details on the specific grants, their sources, and how they are being used to improve educational programs.\n\nNovelty 4/5. New financial information regarding competitive grant awards.\n\nConfidence: med\nDraft anyway\nRisk: med\nWatch\nWatch\ndaily_scan\nBoard of Education Regular Meeting: The St. Vrain Valley School District Board of Education will hold a regular meeting on August 12 at 6:00 p.m., providing an opportunity for public input. Editor context: Public education matters to the community, and this meeting offers insight into district governance. Suggested treatment: watch. Newsworthiness: 10/20 (immediacy 3, impact 4, conflict 1, novelty 2). Why now: A regular school board meeting is scheduled, providing an opportunity for public engagement. Suggested next step: Confirm the exact location of the meeting before drafting a story or brief. What would make this publishable: The exact location and agenda of the upcoming Board of Education meeting.\n\nNovelty 2/5. A regular school board meeting is scheduled, providing an opportunity for public engagement.\n\nConfidence: med\nDraft anyway\nRisk: med\nDraft exists\nBrief\nReady to draft\ndaily_scan\nLongmont Public Library hosting Teen Temporary Tattoo Studio: The Longmont Public Library is offering a Teen Temporary Tattoo Studio on Wednesday, July 1 from 5-6 pm, providing teens with an opportunity to get temporary tattoos. Editor context: This event provides information about activities for local youth and their families. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 3, impact 2, conflict 1, novelty 4). Why now: A new event has been added to the library's schedule. Suggested next step: Verify the location, time, and any specific requirements or materials needed for participants. What would make this publishable: Confirmation of the specific materials provided, any registration requirements, and target age group.\n\nNovelty 4/5. A new event has been added to the library's schedule.\n\nConfidence: med\nOpen draft\nRisk: low\nVerification\nNeeds verification\nDecision / Vote\nVOTING SIGNAL: Found vote/decision keywords ([\"approved\", \"approved\", \"Approved\", \"passed\", \"Motion\", \"motion\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.\n\nNovelty 2/5. Keyword detector found decision language; reporter must confirm the actual current vote, date, and impact.\n\nConfidence: medium\nDraft anyway\nRisk: low\nWatch\nWatch\nPublic Meeting Scheduled\nMEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.\n\nNovelty 2/5. Meeting language found; verify a specific upcoming agenda, date, or action before drafting as news.\n\nConfidence: medium\nDraft anyway\nRisk: low\nVerification\nNeeds verification\nDecision / Vote\nVOTING SIGNAL: Found vote/decision keywords ([\"passed\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.\n\nNovelty 2/5. Keyword detector found decision language; reporter must confirm the actual current vote, date, and impact.\n\nConfidence: medium\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont City Council Meetings' was fetched today (https://longmontcolorado.gov/government/city-council-meetings/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Public Notice Colorado' was fetched today (https://www.publicnoticecolorado.com/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nPublic Meeting Scheduled\nMEETING SCHEDULED: Meeting notification detected in 'Longmont Agenda Management Portal' record. Public attendance or comment may be permitted.\n\nNovelty 2/5. Meeting language found; verify a specific upcoming agenda, date, or action before drafting as news.\n\nConfidence: medium\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont official city website' was fetched today (https://www.longmontcolorado.gov/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont Agenda Management Portal' was fetched today (https://longmontcolorado.gov/city-clerk/agenda-management-portal/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont city events' was fetched today (https://longmontcolorado.gov/events/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont city news' was fetched today (https://www.longmontcolorado.gov/news).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'St. Vrain Valley Schools' was fetched today (https://www.svvsd.org/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "disabled": false,
+      "outer": "<button class=\"nav-link active\" type=\"button\" data-nav-tab=\"queue\" id=\"nav-tab-queue\" title=\"Story Queue (Alt+1)\" aria-current=\"page\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-li"
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "disabled": false,
+      "outer": "<button class=\"nav-link \" type=\"button\" data-nav-tab=\"dailyScan\" id=\"nav-tab-dailyScan\" title=\"Daily Scan (Alt+2)\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" clas"
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "disabled": false,
+      "outer": "<button class=\"nav-link \" type=\"button\" data-nav-tab=\"darkSignals\" id=\"nav-tab-darkSignals\" title=\"Dark Signals (Alt+3)\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round"
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "disabled": false,
+      "outer": "<button class=\"nav-link \" type=\"button\" data-nav-tab=\"verification\" id=\"nav-tab-verification\" title=\"Verification (Alt+4)\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"rou"
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "disabled": false,
+      "outer": "<button class=\"nav-link \" type=\"button\" data-nav-tab=\"workbench\" id=\"nav-tab-workbench\" title=\"Workbench (Alt+5)\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class"
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "disabled": false,
+      "outer": "<button class=\"nav-link \" type=\"button\" data-nav-tab=\"sources\" id=\"nav-tab-sources\" title=\"Sources (Alt+6)\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"luci"
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "disabled": false,
+      "outer": "<button class=\"nav-link \" type=\"button\" data-nav-tab=\"onboarding\" id=\"nav-tab-onboarding\" title=\"AI Model (Alt+7)\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" clas"
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "disabled": false,
+      "outer": "<button class=\"nav-link \" type=\"button\" data-nav-tab=\"publish\" id=\"nav-tab-publish\" title=\"Publishing (Alt+8)\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"l"
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "disabled": false,
+      "outer": "<button class=\"nav-link \" type=\"button\" data-nav-tab=\"pairing\" id=\"nav-tab-pairing\" title=\"Browser Pairing (Alt+9)\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" cla"
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "disabled": false,
+      "outer": "<button class=\"nav-link \" type=\"button\" data-nav-tab=\"settings\" id=\"nav-tab-settings\" title=\"Ethics &amp; Backups (Alt+10)\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"ro"
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "disabled": false,
+      "outer": "<button class=\"nav-link \" type=\"button\" data-nav-tab=\"system\" id=\"nav-tab-system\" title=\"System &amp; Status (Alt+11)\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" "
+    },
+    {
+      "i": 11,
+      "text": "",
+      "disabled": false,
+      "outer": "<button class=\"btn btn-secondary btn-sm\" aria-label=\"Dismiss beta notice\" data-testid=\"beta-notice-dismiss\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"luci"
+    },
+    {
+      "i": 12,
+      "text": "Refresh",
+      "disabled": false,
+      "outer": "<button class=\"btn btn-secondary\" id=\"btn-sync-list\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-refresh-cw\"><path d=\"M3 12a9 9 0 0 1 9-9 9.75"
+    },
+    {
+      "i": 13,
+      "text": "Daily Scan",
+      "disabled": false,
+      "outer": "<button class=\"btn btn-secondary\" id=\"btn-daily-scan\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-play\"><polygon points=\"6 3 20 12 6 21 6 3\"><"
+    },
+    {
+      "i": 14,
+      "text": "Scrape & Detect",
+      "disabled": false,
+      "outer": "<button class=\"btn btn-primary\" id=\"btn-scrape-detect\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-play\"><polygon points=\"6 3 20 12 6 21 6 3\">"
+    },
+    {
+      "i": 15,
+      "text": "IN DRAFTING\n2",
+      "disabled": false,
+      "outer": "<button class=\"stat-card stat-amber stat-card-button\" type=\"button\" aria-label=\"Open 2 drafts\"><span>In drafting</span><strong>2</strong></button>"
+    },
+    {
+      "i": 16,
+      "text": "Leads\n17",
+      "disabled": false,
+      "outer": "<button class=\"queue-tab active\" id=\"queue-tab-leads\">Leads <span class=\"badge badge-neutral\">17</span></button>"
+    },
+    {
+      "i": 17,
+      "text": "Drafts\n2",
+      "disabled": false,
+      "outer": "<button class=\"queue-tab \" id=\"queue-tab-drafts\">Drafts <span class=\"badge badge-neutral\">2</span></button>"
+    },
+    {
+      "i": 18,
+      "text": "Scan results\nlatest",
+      "disabled": false,
+      "outer": "<button class=\"queue-tab \" id=\"queue-tab-scan-results\">Scan results <span class=\"badge badge-neutral\">latest</span></button>"
+    },
+    {
+      "i": 19,
+      "text": "Open draft",
+      "disabled": false,
+      "outer": "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-testid=\"btn-draft-lead-17\" aria-label=\"Open draft Vision Zero projects updates: The Vision Zero initiative is working on transportation safety improvements, and public engagement is encouraged through various activities. Editor context: Vis"
+    },
+    {
+      "i": 20,
+      "text": "Draft anyway",
+      "disabled": false,
+      "outer": "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-testid=\"btn-draft-lead-16\" aria-label=\"Draft anyway St. Vrain Valley Schools' Career Elevation &amp; Technology Center Offers High-Demand Courses: The CETC provides high-wage, high-growth pathways that prepare students for future careers in"
+    },
+    {
+      "i": 21,
+      "text": "Draft anyway",
+      "disabled": false,
+      "outer": "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-testid=\"btn-draft-lead-15\" aria-label=\"Draft anyway St. Vrain Valley Schools Receives $53 Million in Competitive Grants: The St. Vrain Valley School District has received over $53 million in competitive grants since January 2018, indicating"
+    },
+    {
+      "i": 22,
+      "text": "Draft anyway",
+      "disabled": false,
+      "outer": "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-testid=\"btn-draft-lead-14\" aria-label=\"Draft anyway Board of Education Regular Meeting: The St. Vrain Valley School District Board of Education will hold a regular meeting on August 12 at 6:00 p.m., providing an opportunity for public input"
+    },
+    {
+      "i": 23,
+      "text": "Open draft",
+      "disabled": false,
+      "outer": "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-testid=\"btn-draft-lead-13\" aria-label=\"Open draft Longmont Public Library hosting Teen Temporary Tattoo Studio: The Longmont Public Library is offering a Teen Temporary Tattoo Studio on Wednesday, July 1 from 5-6 pm, providing teens with an"
+    },
+    {
+      "i": 24,
+      "text": "Draft anyway",
+      "disabled": false,
+      "outer": "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-testid=\"btn-draft-lead-12\" aria-label=\"Draft anyway VOTING SIGNAL: Found vote/decision keywords ([&quot;approved&quot;, &quot;approved&quot;, &quot;Approved&quot;, &quot;passed&quot;, &quot;Motion&quot;, &quot;motion&quot;]) in 'Longmont Ci"
+    },
+    {
+      "i": 25,
+      "text": "Draft anyway",
+      "disabled": false,
+      "outer": "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-testid=\"btn-draft-lead-11\" aria-label=\"Draft anyway MEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.\">Draft anyway <svg xmlns=\"http://www.w3.org/2000"
+    },
+    {
+      "i": 26,
+      "text": "Draft anyway",
+      "disabled": false,
+      "outer": "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-testid=\"btn-draft-lead-10\" aria-label=\"Draft anyway VOTING SIGNAL: Found vote/decision keywords ([&quot;passed&quot;]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.\">Draft anyway <svg xmlns"
+    },
+    {
+      "i": 27,
+      "text": "Draft anyway",
+      "disabled": false,
+      "outer": "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-testid=\"btn-draft-lead-9\" aria-label=\"Draft anyway A new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).\">Draft anyway <svg xmlns=\"http://www.w3.org/2000/svg"
+    },
+    {
+      "i": 28,
+      "text": "Draft anyway",
+      "disabled": false,
+      "outer": "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-testid=\"btn-draft-lead-8\" aria-label=\"Draft anyway A new official primary document from 'Longmont City Council Meetings' was fetched today (https://longmontcolorado.gov/government/city-council-meetings/).\">Draft anyway <svg xmlns=\"http://ww"
+    },
+    {
+      "i": 29,
+      "text": "Draft anyway",
+      "disabled": false,
+      "outer": "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-testid=\"btn-draft-lead-7\" aria-label=\"Draft anyway A new official primary document from 'Public Notice Colorado' was fetched today (https://www.publicnoticecolorado.com/).\">Draft anyway <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" hei"
+    },
+    {
+      "i": 30,
+      "text": "Draft anyway",
+      "disabled": false,
+      "outer": "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-testid=\"btn-draft-lead-6\" aria-label=\"Draft anyway MEETING SCHEDULED: Meeting notification detected in 'Longmont Agenda Management Portal' record. Public attendance or comment may be permitted.\">Draft anyway <svg xmlns=\"http://www.w3.org/20"
+    },
+    {
+      "i": 31,
+      "text": "Draft anyway",
+      "disabled": false,
+      "outer": "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-testid=\"btn-draft-lead-5\" aria-label=\"Draft anyway A new official primary document from 'Longmont official city website' was fetched today (https://www.longmontcolorado.gov/).\">Draft anyway <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\""
+    },
+    {
+      "i": 32,
+      "text": "Draft anyway",
+      "disabled": false,
+      "outer": "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-testid=\"btn-draft-lead-4\" aria-label=\"Draft anyway A new official primary document from 'Longmont Agenda Management Portal' was fetched today (https://longmontcolorado.gov/city-clerk/agenda-management-portal/).\">Draft anyway <svg xmlns=\"htt"
+    },
+    {
+      "i": 33,
+      "text": "Draft anyway",
+      "disabled": false,
+      "outer": "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-testid=\"btn-draft-lead-3\" aria-label=\"Draft anyway A new official primary document from 'Longmont city events' was fetched today (https://longmontcolorado.gov/events/).\">Draft anyway <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height"
+    },
+    {
+      "i": 34,
+      "text": "Draft anyway",
+      "disabled": false,
+      "outer": "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-testid=\"btn-draft-lead-2\" aria-label=\"Draft anyway A new official primary document from 'Longmont city news' was fetched today (https://www.longmontcolorado.gov/news).\">Draft anyway <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height="
+    },
+    {
+      "i": 35,
+      "text": "Draft anyway",
+      "disabled": false,
+      "outer": "<button type=\"button\" class=\"btn btn-secondary btn-sm\" data-testid=\"btn-draft-lead-1\" aria-label=\"Draft anyway A new official primary document from 'St. Vrain Valley Schools' was fetched today (https://www.svvsd.org/).\">Draft anyway <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" view"
+    }
+  ]
+}

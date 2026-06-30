@@ -1,0 +1,138 @@
+{
+  "utc": "2026-06-30T13:43:17.980Z",
+  "url": "http://tauri.localhost/",
+  "title": "CivicNews Dashboard",
+  "body": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nDrafting Article\n\nLead: Vision Zero projects updates: The Vision Zero initiative is working on transportation safety improvements, and public engagement is encouraged through various activities. Editor context: Vision Zero efforts are ongoing, impacting community safety with potential policy changes or new initiatives. Suggested treatment: watch. Newsworthiness: 12/20 (immediacy 3, impact 4, conflict 2, novelty 3). Why now: Vision Zero projects are ongoing, with activities and ways to get involved. Suggested next step: Check for recent project updates and public involvement opportunities. What would make this publishable: Detailed updates on specific projects, progress reports, or new initiatives.\n\nWatch\nWatch\nNovelty 3/5\n\nWatch item. Explain what is known, what is missing, and what would make it publishable.\n\nWhy now: Vision Zero projects are ongoing, with activities and ways to get involved.\n\nGenerate anyway\nCancel\nArticle Format\nBrief (Under 200 words summary)\nWatch Alert (Highlights specific public safety or procurement issues)\nExplainer (Detailed review of a policy or decision background)\nInvestigation (Traces spending and connections behind a story)\nEditorial / Opinion Piece (Presents a structured argument)\nCustom Guidelines / Instructions (Optional)\nLinked Sources (3)\n\"Senior Center news and updates about upcoming programs and events Vision Zero Vision Zero projects, ...\"\n\"Longmont Museum Longmont Power &amp; Communications Municipal Court Municipal Probation NextLight F...\"\n\"Temporary overnight closure of Hover Street/CO 119 intersection scheduled for June 28 June 26, 2026 ...\"\nGenerate anyway\nCancel",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link active"
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 11,
+      "text": "",
+      "disabled": false,
+      "aria": "Dismiss beta notice",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 12,
+      "text": "Generate anyway",
+      "disabled": false,
+      "aria": null,
+      "cls": "btn btn-primary"
+    },
+    {
+      "i": 13,
+      "text": "Cancel",
+      "disabled": false,
+      "aria": null,
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 14,
+      "text": "Generate anyway",
+      "disabled": false,
+      "aria": null,
+      "cls": "btn btn-primary"
+    },
+    {
+      "i": 15,
+      "text": "Cancel",
+      "disabled": false,
+      "aria": null,
+      "cls": "btn btn-secondary"
+    }
+  ],
+  "inputs": [
+    {
+      "i": 0,
+      "tag": "SELECT",
+      "id": "select-draft-format",
+      "value": "watch",
+      "placeholder": null,
+      "disabled": false
+    },
+    {
+      "i": 1,
+      "tag": "TEXTAREA",
+      "id": "textarea-custom-instructions",
+      "value": "",
+      "placeholder": "e.g. Focus specifically on the budget numbers, keep tone highly objective...",
+      "disabled": false
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+﻿{
+    "utc":  "2026-06-30T13:28:08.7149666Z",
+    "actions":  [
+                    "removed C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+                    "removed C:\\Users\\civic\\AppData\\Local\\The Civic Desk",
+                    "absent C:\\Users\\civic\\AppData\\Local\\civicnews",
+                    "removed C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk",
+                    "absent C:\\Users\\civic\\.civicnewspaper",
+                    "removed C:\\Users\\civic\\.ollama",
+                    "removed temp C:\\Users\\civic\\AppData\\Local\\Temp\\empty-civicdesk-delete",
+                    "removed temp C:\\Users\\civic\\AppData\\Local\\Temp\\pytest-of-civic"
+                ]
+}

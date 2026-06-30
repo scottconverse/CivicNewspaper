@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "lead_id": 13,
+    "title": "Longmont Public Library Offers Teen Temporary Tattoo Studio",
+    "status": "ready_to_review",
+    "attested_by": "Attempt Six Editor",
+    "attested_at": "2026-06-30T13:42:48.784949200+00:00",
+    "guardrail_override_reason": "Editor reviewed pre-publication warnings and chose to publish.",
+    "content": "The Longmont Public Library is hosting a Teen Temporary Tattoo Studio on Wednesday, July 1 from 5-6 pm, providing teens with an opportunity to get temporary tattoos.\n\nThis event is part of the library's ongoing efforts to engage local youth and offer creative activities. The session will take place "
+  },
+  {
+    "id": 2,
+    "lead_id": 17,
+    "title": "Vision Zero Projects Continue to Improve Transportation Safety in Longmont",
+    "status": "killed",
+    "attested_by": null,
+    "attested_at": null,
+    "guardrail_override_reason": null,
+    "content": "Vision Zero initiatives are ongoing efforts to enhance transportation safety across Longmont. The city is actively working on several projects aimed at reducing traffic-related injuries and fatalities [Source](evidence:30). Residents can get involved by staying informed about upcoming activities and"
+  }
+]

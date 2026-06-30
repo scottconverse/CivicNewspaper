@@ -1,0 +1,90 @@
+{
+  "utc": "2026-06-30T13:44:44.601Z",
+  "body": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nMORNING EDITOR PACKET\n\nDaily Scan\n\nRun deterministic record checks first, then use local AI only to summarize and rank what needs an editor's look.\n\nRefresh\nRun Daily Scan\nSOURCES WATCHED\n14\nOPEN LEADS\n17\nDRAFTS IN DESK\n2\nAI STATUS\nReady\n\nAI BRIEF\n\nLatest scan #1\n\nCivic Desk keeps this pass local, private, and evidence-first. Use it to find the handful of records worth turning into leads. If local AI is unavailable, deterministic checks still build a review packet.\n\nSCAN PROGRESS\n\nDaily Scan saved 5 lead(s).\n\nModel: qwen2.5:7b. Evidence: 20. Reviewed newest 20 of 49. Saved leads: 5.\n\n29 older evidence item(s) were not included in this pass. Run again or narrow sources if you need a smaller packet.\n\nComplete\nScan Results for Scan #1\n\nCITY OF LONGMONT EVENTS PAGE / EVENTS\n\nLongmont Public Library hosting Teen Temporary Tattoo Studio\nBrief\nReady to draft\nMedium priority\n\nThe Longmont Public Library is offering a Teen Temporary Tattoo Studio on Wednesday, July 1 from 5-6 pm, providing teens with an opportunity to get temporary tattoos.\n\nWhy now: A new event has been added to the library's schedule.\n\nNovelty: 4/5\n\nBefore publishing: Confirmation of the specific materials provided, any registration requirements, and target age group.\n\nWhy this was flagged\n\nThis event provides information about activities for local youth and their families. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 3, impact 2, conflict 1, novelty 4). Why now: A new event has been added to the library's schedule.\n\nSuggested next step\n\nVerify the location, time, and any specific requirements or materials needed for participants. What would make this publishable: Confirmation of the specific materials provided, any registration requirements, and target age group.\n\nOpen source and review\nAggregated across sources\n\nST. VRAIN VALLEY SCHOOLS WEBSITE / PUBLIC NOTICE\n\nBoard of Education Regular Meeting\nWatch\nWatch\nMedium priority\n\nThe St. Vrain Valley School District Board of Education will hold a regular meeting on August 12 at 6:00 p.m., providing an opportunity for public input.\n\nWhy now: A regular school board meeting is scheduled, providing an opportunity for public engagement.\n\nNovelty: 2/5\n\nBefore publishing: The exact location and agenda of the upcoming Board of Education meeting.\n\nWhy this was flagged\n\nPublic education matters to the community, and this meeting offers insight into district governance. Suggested treatment: watch. Newsworthiness: 10/20 (immediacy 3, impact 4, conflict 1, novelty 2). Why now: A regular school board meeting is scheduled, providing an opportunity for public engagement.\n\nSuggested next step\n\nConfirm the exact location of the meeting before drafting a story or brief. What would make this publishable: The exact location and agenda of the upcoming Board of Education meeting.\n\nOpen source and review\nAggregated across sources\n\nST. VRAIN VALLEY SCHOOLS / FINANCIAL TRANSPARENCY\n\nSt. Vrain Valley Schools Receives $53 Million in Competitive Grants\nBackground\nBackground\nMedium priority\n\nThe St. Vrain Valley School District has received over $53 million in competitive grants since January 2018, indicating significant funding for new educational initiatives.\n\nWhy now: New financial information regarding competitive grant awards.\n\nNovelty: 4/5\n\nBefore publishing: Details on the specific grants, their sources, and how they are being used to improve educational programs.\n\nWhy this was flagged\n\nThis financial information highlights substantial grant funding that could impact school resources and programs, making it relevant to local reporting. Suggested treatment: background. Newsworthiness: 10/20 (immediacy 2, impact 3, conflict 1, novelty 4). Why now: New financial information regarding competitive grant awards.\n\nSuggested next step\n\nResearch the specific grants received, their purposes, and any recent projects funded by these grants. What would make this publishable: Details on the specific grants, their sources, and how they are being used to improve educational programs.\n\nNo original source URL\nAggregated across sources\n\nST. VRAIN VALLEY SCHOOLS / CURRICULAR RESOURCES\n\nSt. Vrain Valley Schools' Career Elevation & Technology Center Offers High-Demand Courses\nBackground\nBackground\nMedium priority\n\nThe CETC provides high-wage, high-growth pathways that prepare students for future careers in technology and other fields.\n\nWhy now: Details on the offerings and benefits of the Career Elevation & Technology Center.\n\nNovelty: 4/5\n\nBefore publishing: More specific details about course content, enrollment numbers, and success rates.\n\nWhy this was flagged\n\nThis highlights a specific educational resource that could be of interest to local students and parents seeking career preparation opportunities. Suggested treatment: background. Newsworthiness: 10/20 (immediacy 2, impact 3, conflict 1, novelty 4). Why now: Details on the offerings and benefits of the Career Elevation & Technology Center.\n\nSuggested next step\n\nExplore the curriculum offered at CETC to determine if it aligns with current labor market demands. What would make this publishable: More specific details about course content, enrollment numbers, and success rates.\n\nNo original source URL\nAggregated across sources\n\nCITY OF LONGMONT PUBLIC INFORMATION / OFFICIAL UPDATE\n\nVision Zero projects updates\nWatch\nWatch\nMedium priority\n\nThe Vision Zero initiative is working on transportation safety improvements, and public engagement is encouraged through various activities.\n\nWhy now: Vision Zero projects are ongoing, with activities and ways to get involved.\n\nNovelty: 3/5\n\nBefore publishing: Detailed updates on specific projects, progress reports, or new initiatives.\n\nWhy this was flagged\n\nVision Zero efforts are ongoing, impacting community safety with potential policy changes or new initiatives. Suggested treatment: watch. Newsworthiness: 12/20 (immediacy 3, impact 4, conflict 2, novelty 3). Why now: Vision Zero projects are ongoing, with activities and ways to get involved.\n\nSuggested next step\n\nCheck for recent project updates and public involvement opportunities. What would make this publishable: Detailed updates on specific projects, progress reports, or new initiatives.\n\nOpen source and review\nAggregated across sources",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "disabled": false,
+      "cls": "nav-link active"
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "disabled": false,
+      "cls": "nav-link "
+    },
+    {
+      "i": 11,
+      "text": "",
+      "disabled": false,
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 12,
+      "text": "Refresh",
+      "disabled": false,
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 13,
+      "text": "Run Daily Scan",
+      "disabled": false,
+      "cls": "btn btn-primary"
+    }
+  ]
+}

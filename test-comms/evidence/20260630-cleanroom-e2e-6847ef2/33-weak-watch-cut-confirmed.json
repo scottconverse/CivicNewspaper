@@ -1,0 +1,209 @@
+{
+  "utc": "2026-06-30T13:44:02.025Z",
+  "url": "http://tauri.localhost/",
+  "title": "CivicNews Dashboard",
+  "body": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nStory status updated to 'killed'.\nDismiss\nStory Workbench\n\nModify drafted content, review guardrail warnings, and link source material when it helps the editor.\n\nBack to Queue\nSave Draft\nDelete\nAdvisory warnings - these do not block publishing.\n2 ISSUE(S)\nWarns\n- Review this guardrail issue\n\nThe linked lead is marked as watch. Confirm a current, specific, verified development before treating this as a reader-facing news story.\n\nTechnical details\nWarns\n- Consider adding a source link\n\nThis passage looks like a factual claim without a linked source. Add a link if one exists, rewrite the claim, or leave it for the editor to approve.\n\nTechnical details\nPress-freedom / legal-risk advisor\n\nAdvisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.\n\nRun Advisor\nDistinguish verified facts, allegations, opinion, and unanswered questions.\nUse extra care with private individuals, minors, medical details, addresses, and active legal matters.\nKeep notes on source reliability and why publishing serves the community.\nStory Title\nArticle Body (Markdown)\nPlain Language Rewrite\nHighlight text and click \"Cite\" in evidence pane to link.\nCurrent Status: Cut\nRestore to Drafting\nHold\nApprove for Static Publish\nThis story is cut from the issue. Restore it to drafting if the newsroom decides to keep working on it.\nI have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision.\nSocial Media Promo Pack\nGenerate Posts\n\nGenerate optimized posts for Twitter/X, Facebook, and Reddit based on the current draft.\n\nLinked Sources\nCitation ID: #31\nFetched: 6/30/2026\n\"Senior Center news and updates about upcoming programs and events\nVision Zero\nVision Zero projects, activities and how to get involved to improve transportation safety\nYouth Center\nHelping families, children and youth in Longmont grow, succeed and reach their best potential\nNew\nLanguage Preference\nEnglish\nSpanish\nMost of our email newsletters are currently published in English only. We&#039;re recording preferences if we add Spanish translations in the future.\n\"\nLink Citation\nCitation ID: #30\nFetched: 6/30/2026\n\"Longmont Museum\nLongmont Power &amp;  Communications\nMunicipal Court\nMunicipal Probation\nNextLight Fiber Internet\nParks and Natural Resources\nPlanning and Development Services\nPublic Information\nPublic Safety\nPurchasing and Contracts\nRecreation Services\nRisk Management\nSenior Services\nTransportation\nTrash, Recycling, and Composting\nUtilities and Public Works\nWater\nExplore All Departments\nDiscover all the departments that make up the City of Longmont&#8217;s government. Get detailed information on their roles, responsibilities, and how they serve the community.\nAll Departments\nGovernment\nNews &#038; Alerts\nEvents\nCareers\nContact\nSubscribe to Email Updates\nEmail Address\nStay Connected\nGet the latest updates from the City of Longmont\nThis is Longmont\nThe official newsletter of the City of Longmont\nWeekly\nTopics of Interest\nChoose specific topics you want to hear about\nSelect all in this category\nNews &amp; Alerts\nLatest news information, notices and alerts from the city\nEvents &amp; Activities\nCommunity events, programs and activities happening in Longmont\nWeekly\nCity Events\nDowntown Events\nEvents for Kids\nJob Announcements\nEmployment opportunities delivered to your inbox\nWeekly\nDepartment Newsletters\nSubscribe to updates from specific city departments\nSelect all in this category\nLongmont Library\nUpdates and registration information about library programs and events\nAdult Programs\nChildren Programs (Infant - 5th Grade)\nTechnology + Computer Classes\nTeens Program Notices (6th-12th graders)\nThis Month @ the Library\nLongmont Museum\nEvents, exhibits and more from the museum\nAuditorium Programs\nDiscovery Days (Early Childhood)\nMuseum Exhibits &amp; Events\nRecreation\nActivities, classes, sports and more\nSustainability\nProject and program updates, including money-saving rebates and efficiency resources\nSustainable Business Program\nPromotes environmental stewardship, economic vitality and social equity\nSenior Center\n\"\nLink Citation\nCitation ID: #29\nFetched: 6/30/2026\n\"Temporary overnight closure of Hover Street/CO 119 intersection scheduled for June 28\nJune 26, 2026\nView News\nCommunity Involvement Process and Resources\nCommunity Engagement Guide\nInterested in engaging your neighbors and friends in positive change? The Community Engagement Guide, the City’s community involvement resource manual, provides a comprehensive guide on how and when the City uses different community involvement processes.\nCommunity Engagement Guide\nCommunity Engagement Training\nTrain yourself in the art of community involvement by viewing the Community Engagement Training. Enhance your skills and learn how to effectively participate in community initiatives.\nCommunity Engagement Training\nWelcome\nLongmont is a diverse, multicultural and welcoming city.\nContact\nView All Services\nDepartments\nView All Departments\nQuick Links\nAgendas and Meetings\nCode Enforcement\nEmergency Notifications\nEmployment Opportunities\nPermits and Inspections\nPublic Records\nService Requests\nEmail Signup\nStay up-to-date on news and events in Longmont.\nSign Up\nFor questions or assistance, please contact our help and information line at  303-776-6050 .\nActivities\nBuilding\nBusiness\nEducation\nGovernment\nHousing\nHuman Services\nInformation\nJobs\nLibrary\nLicensing\nMaintenance\nMuseum\nNextLight Fiber Internet\nPublic Safety\nSustainability\nTransportation\nUtilities\nWellness\nExplore All Services\nExplore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place.\nAll Services\nDepartments\nAirport\nBoards, Committees and Commissions\nBuilding Services\nChildren, Youth and Families at the Youth Center\nCity Attorney\nCity Clerk\nCity Council\nCity Manager\nCommunity and Neighborhood Resources\nEnterprise Technology Services\nEnvironment\nFinance\nForestry\nGolf Services\nHousing and Community Investment\nHuman Resources\nHuman Services\nJudicial Department\nLibrary\nLongmont Housing Authority\n\"\nLink Citation",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link active"
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "disabled": false,
+      "aria": null,
+      "cls": "nav-link "
+    },
+    {
+      "i": 11,
+      "text": "",
+      "disabled": false,
+      "aria": "Dismiss beta notice",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 12,
+      "text": "Dismiss",
+      "disabled": false,
+      "aria": null,
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 13,
+      "text": "Back to Queue",
+      "disabled": false,
+      "aria": null,
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 14,
+      "text": "Save Draft",
+      "disabled": false,
+      "aria": null,
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 15,
+      "text": "Delete",
+      "disabled": false,
+      "aria": null,
+      "cls": "btn btn-danger"
+    },
+    {
+      "i": 16,
+      "text": "Run Advisor",
+      "disabled": false,
+      "aria": null,
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 17,
+      "text": "Plain Language Rewrite",
+      "disabled": false,
+      "aria": null,
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 18,
+      "text": "Restore to Drafting",
+      "disabled": false,
+      "aria": null,
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 19,
+      "text": "Hold",
+      "disabled": false,
+      "aria": null,
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 20,
+      "text": "Approve for Static Publish",
+      "disabled": true,
+      "aria": null,
+      "cls": "btn btn-primary btn-sm"
+    },
+    {
+      "i": 21,
+      "text": "Generate Posts",
+      "disabled": false,
+      "aria": null,
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 22,
+      "text": "Link Citation",
+      "disabled": false,
+      "aria": null,
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 23,
+      "text": "Link Citation",
+      "disabled": false,
+      "aria": null,
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 24,
+      "text": "Link Citation",
+      "disabled": false,
+      "aria": null,
+      "cls": "btn btn-secondary btn-sm"
+    }
+  ],
+  "inputs": [
+    {
+      "i": 0,
+      "tag": "INPUT",
+      "id": "input-draft-title",
+      "value": "Vision Zero Projects Continue to Improve Transportation Safety in Longmont",
+      "placeholder": null,
+      "disabled": false
+    },
+    {
+      "i": 1,
+      "tag": "TEXTAREA",
+      "id": "draft-editor-textarea",
+      "value": "Vision Zero initiatives are ongoing efforts to enhance transportation safety across Longmont. The city is actively working on several projects aimed at reducing traffic-related injuries and fatalities [Source](evidence:30). Residents can get involved by staying informed about upcoming activities and participating where possible.\n\nThe Vision Zero program includes a variety of actions, such as improving infrastructure, implementing traffic calming measures, and enhancing public awareness campaigns. These efforts are part of the city's commitment to making transportation safer for everyone [Source](evidence:31).\n\nTo learn more or get involved, Longmont residents can explore department newsletters or check the official newsletter \"This is Longmont\" for updates on Vision Zero activities [Source](evidence:29). Additionally, interested community members can attend public meetings and engage with city officials to provide input and feedback.\n\nWhat remains uncertain is the specific timeline and scope of upcoming projects, as detailed progress reports are yet to be released. However, residents can expect continued improvements in transportation safety through ongoing initiatives [Source](evidence:30).\n\nStay tuned for more updates on these important safety measures that will benefit Longmont's community.",
+      "placeholder": null,
+      "disabled": false
+    },
+    {
+      "i": 2,
+      "tag": "INPUT",
+      "id": "chk-attest",
+      "value": "on",
+      "placeholder": null,
+      "disabled": false
+    }
+  ]
+}
