@@ -88,6 +88,8 @@ pub fn run_detectors(
                         disposition: Some("review".to_string()),
                         novelty_score: None,
                         novelty_reason: None,
+                        recurrence_count: None,
+                        recurrence_note: None,
                         created_at: Utc::now().to_rfc3339(),
                     };
 
@@ -147,6 +149,8 @@ pub fn run_detectors(
                     disposition: Some("review".to_string()),
                     novelty_score: None,
                     novelty_reason: None,
+                    recurrence_count: None,
+                    recurrence_note: None,
                     created_at: Utc::now().to_rfc3339(),
                 };
                 let exists = lead_exists(conn, "New Primary Record", &lead.why)?;
@@ -179,6 +183,8 @@ pub fn run_detectors(
                             disposition: Some("review".to_string()),
                             novelty_score: None,
                             novelty_reason: None,
+                            recurrence_count: None,
+                            recurrence_note: None,
                             created_at: Utc::now().to_rfc3339(),
                         };
                         let exists = lead_exists(conn, "Money Threshold", &lead.why)?;
@@ -212,6 +218,8 @@ pub fn run_detectors(
                     disposition: Some("review".to_string()),
                     novelty_score: None,
                     novelty_reason: None,
+                    recurrence_count: None,
+                    recurrence_note: None,
                     created_at: Utc::now().to_rfc3339(),
                 };
                 let exists = lead_exists(conn, "Decision / Vote", &lead.why)?;
@@ -245,6 +253,8 @@ pub fn run_detectors(
                     disposition: Some("review".to_string()),
                     novelty_score: None,
                     novelty_reason: None,
+                    recurrence_count: None,
+                    recurrence_note: None,
                     created_at: Utc::now().to_rfc3339(),
                 };
                 let exists = lead_exists(conn, "Personnel Change", &lead.why)?;
@@ -274,6 +284,8 @@ pub fn run_detectors(
                     disposition: Some("review".to_string()),
                     novelty_score: None,
                     novelty_reason: None,
+                    recurrence_count: None,
+                    recurrence_note: None,
                     created_at: Utc::now().to_rfc3339(),
                 };
                 let exists = lead_exists(conn, "Public Meeting Scheduled", &lead.why)?;
@@ -303,6 +315,8 @@ pub fn run_detectors(
                     disposition: Some("review".to_string()),
                     novelty_score: None,
                     novelty_reason: None,
+                    recurrence_count: None,
+                    recurrence_note: None,
                     created_at: Utc::now().to_rfc3339(),
                 };
                 let exists = lead_exists(conn, "Deadline", &lead.why)?;
@@ -337,6 +351,8 @@ pub fn run_detectors(
                         disposition: Some("review".to_string()),
                         novelty_score: None,
                         novelty_reason: None,
+                        recurrence_count: None,
+                        recurrence_note: None,
                         created_at: Utc::now().to_rfc3339(),
                     };
                     let exists = lead_exists(conn, "Watchlist Hit", &lead.why)?;

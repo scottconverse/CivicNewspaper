@@ -53,6 +53,11 @@ function sourceContext(lead: DailyScanLead): string {
   return "Aggregated across watched sources";
 }
 
+function recurrenceLabel(count?: number | null): string | null {
+  if (count === undefined || count === null || count < 1) return null;
+  return count === 1 ? "Seen before" : `Seen ${count} times before`;
+}
+
 export const DailyScanResults: React.FC<Props> = ({ scanId, onRunScan }) => {
   const [leads, setLeads] = useState<DailyScanLead[]>([]);
   const [loading, setLoading] = useState(true);
@@ -158,13 +163,21 @@ export const DailyScanResults: React.FC<Props> = ({ scanId, onRunScan }) => {
                       </span>
                     )}
                     <span className={`badge ${dispositionClass(lead.disposition)}`}>{dispositionLabel(lead.disposition)}</span>
+                    {recurrenceLabel(lead.recurrence_count) && (
+                      <span className="badge badge-warning">{recurrenceLabel(lead.recurrence_count)}</span>
+                    )}
                     <span className={`badge ${priorityClass(lead.priority)}`}>{priorityLabel(lead.priority)}</span>
                   </div>
                 </div>
 
                 <p style={{ margin: '0 0 0.75rem 0' }}>{lead.summary ?? "No summary available for this lead."}</p>
-                {(clean(lead.what_changed) || clean(lead.publishability_note) || lead.novelty !== undefined) && (
+                {(clean(lead.what_changed) || clean(lead.publishability_note) || clean(lead.recurrence_note) || lead.novelty !== undefined) && (
                   <div className="scan-quality-panel" style={{ display: "grid", gap: "0.35rem", margin: "0 0 0.85rem 0" }}>
+                    {clean(lead.recurrence_note) && (
+                      <p className="help-text" style={{ margin: 0 }}>
+                        <strong>Beat memory:</strong> {clean(lead.recurrence_note)}
+                      </p>
+                    )}
                     {clean(lead.what_changed) && (
                       <p className="help-text" style={{ margin: 0 }}>
                         <strong>Why now:</strong> {clean(lead.what_changed)}

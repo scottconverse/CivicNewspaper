@@ -139,6 +139,8 @@ pub fn parse_and_save_scan_response(
             novelty,
             publishability_note,
             disposition: Some(disposition),
+            recurrence_count: None,
+            recurrence_note: None,
         };
         match save_daily_scan_lead_for_queue(conn, &lead) {
             Ok(id) if id > 0 => saved += 1,
@@ -411,6 +413,8 @@ fn save_fallback_leads(
             novelty: None,
             publishability_note: Some("A specific current fact, document, vote, deadline, impact, or cross-check is needed before publication.".to_string()),
             disposition: Some("needs_verification".to_string()),
+            recurrence_count: None,
+            recurrence_note: None,
         };
         if save_daily_scan_lead_for_queue(conn, &lead).unwrap_or(0) > 0 {
             saved += 1;
@@ -532,6 +536,8 @@ fn save_dark_signal_leads(
             novelty: None,
             publishability_note: Some("Confirm the signal against source records or a second public source before drafting.".to_string()),
             disposition: Some("needs_verification".to_string()),
+            recurrence_count: None,
+            recurrence_note: None,
         };
         if save_daily_scan_lead_for_queue(conn, &lead).unwrap_or(0) > 0 {
             saved += 1;
@@ -604,6 +610,8 @@ fn save_daily_scan_lead_for_queue(
             .or_else(|| Some("review".to_string())),
         novelty_score: lead.novelty,
         novelty_reason: lead.what_changed.clone(),
+        recurrence_count: lead.recurrence_count,
+        recurrence_note: lead.recurrence_note.clone(),
         created_at: String::new(),
     };
     let evidence_ids = evidence_ids_for_scan_lead(conn, &lead)?;
@@ -629,6 +637,12 @@ fn lead_with_beat_memory(lead: &DailyScanLead, memory: Option<&BeatMemory>) -> D
         "Beat memory: similar topic '{}' was first seen {}, last seen {}, and has appeared {} previous time(s). Treat this as recurring/background unless the source shows a new vote, deadline, dollar amount, filing, outage, meeting item, or public impact.",
         memory.representative_title, memory.first_seen_at, memory.last_seen_at, memory.seen_count
     );
+    let display_note = format!(
+        "Similar topic '{}' was first seen {}, last seen {}, and has appeared {} previous time(s).",
+        memory.representative_title, memory.first_seen_at, memory.last_seen_at, memory.seen_count
+    );
+    lead.recurrence_count = Some(memory.seen_count);
+    lead.recurrence_note = Some(display_note);
     lead.why_flagged = Some(append_editor_note(
         lead.why_flagged
             .unwrap_or_else(|| "This lead deserves editor review.".to_string()),

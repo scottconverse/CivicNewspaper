@@ -115,6 +115,10 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
 
   const highRiskCount = leads.filter((lead) => lead.risk_level === "high").length;
   const filteredDrafts = drafts.filter((draft) => draftStatusFilter === "all" || draft.status === draftStatusFilter);
+  const recurrenceLabel = (count?: number) => {
+    if (count === undefined || count === null || count < 1) return null;
+    return count === 1 ? "Seen before" : `Seen ${count} times before`;
+  };
   const draftByLeadId = new Map<number, Draft>();
   for (const draft of drafts) {
     if (draft.lead_id && !draftByLeadId.has(draft.lead_id)) {
@@ -305,9 +309,19 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                       <span className={`badge badge-${getDispositionColor(lead.disposition)}`}>
                         {getDispositionLabel(lead.disposition)}
                       </span>
+                      {recurrenceLabel(lead.recurrence_count) && (
+                        <span className="badge badge-warning">
+                          {recurrenceLabel(lead.recurrence_count)}
+                        </span>
+                      )}
                       <span className="help-text">{lead.detector_name}</span>
                     </div>
                     <h4 className="lead-why">{lead.why}</h4>
+                    {lead.recurrence_note && (
+                      <p className="help-text" style={{ margin: "0.75rem 0 0 0" }}>
+                        <strong>Beat memory:</strong> {lead.recurrence_note}
+                      </p>
+                    )}
                     {(lead.novelty_score !== undefined || lead.novelty_reason) && (
                       <p className="help-text" style={{ margin: "0.75rem 0 0 0" }}>
                         {lead.novelty_score !== undefined && <>Novelty {lead.novelty_score}/5. </>}

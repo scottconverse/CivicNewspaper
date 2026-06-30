@@ -157,6 +157,35 @@ describe("LeadQueue Component Tests", () => {
     expect(handleSelect).not.toHaveBeenCalled();
   });
 
+  test("surfaces recurring beat-memory context before drafting", () => {
+    render(
+      <LeadQueue
+        leads={[
+          {
+            ...fixtureLeads[0],
+            recurrence_count: 1,
+            recurrence_note: "Similar topic 'budget portal' was first seen last run.",
+            disposition: "background",
+          },
+        ]}
+        drafts={[]}
+        loading={false}
+        onSelect={vi.fn()}
+        onSyncList={vi.fn()}
+        onIngest={vi.fn()}
+        onDailyScan={vi.fn()}
+        onOpenDraftEditor={vi.fn()}
+        onOpenCorrectionModal={vi.fn()}
+        onDeleteDraft={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("Seen before")).toBeInTheDocument();
+    expect(screen.getByText(/Beat memory:/)).toBeInTheDocument();
+    expect(screen.getByText(/budget portal/)).toBeInTheDocument();
+    expect(screen.getByText("Background")).toBeInTheDocument();
+  });
+
   test("drafts tab filters send-back, held, and cut workflow states", () => {
     const workflowDrafts: Draft[] = [
       ...fixtureDrafts,

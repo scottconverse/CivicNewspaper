@@ -263,6 +263,8 @@ pub fn create_lead_from_dark_signal(conn: &Connection, dark_signal_id: i32) -> S
         novelty_reason: Some(
             "Created from a verification task rather than a current-story scan.".to_string(),
         ),
+        recurrence_count: None,
+        recurrence_note: None,
         created_at: Utc::now().to_rfc3339(),
     };
     let evidence_ids = evidence_id.into_iter().collect::<Vec<_>>();

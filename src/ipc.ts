@@ -144,6 +144,8 @@ export interface Lead {
   disposition?: string;
   novelty_score?: number;
   novelty_reason?: string;
+  recurrence_count?: number;
+  recurrence_note?: string;
   created_at: string;
 }
 
@@ -210,6 +212,8 @@ export interface DailyScanLead {
   novelty?: number;
   publishability_note?: string;
   disposition?: string;
+  recurrence_count?: number;
+  recurrence_note?: string;
 }
 
 export interface QueueData {

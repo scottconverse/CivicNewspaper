@@ -78,6 +78,8 @@ describe('DailyScanResults', () => {
         what_changed: 'no current change found',
         novelty: 1,
         publishability_note: 'A newly posted vote, transcript, or deadline would make this publishable.',
+        recurrence_count: 2,
+        recurrence_note: "Similar topic 'Council archive' was first seen yesterday.",
       }
     ]);
 
@@ -92,6 +94,9 @@ describe('DailyScanResults', () => {
       expect(screen.getByText(/1\/5/)).toBeInTheDocument();
       expect(screen.getByText(/Before publishing:/)).toBeInTheDocument();
       expect(screen.getByText(/newly posted vote/)).toBeInTheDocument();
+      expect(screen.getByText('Seen 2 times before')).toBeInTheDocument();
+      expect(screen.getByText(/Beat memory:/)).toBeInTheDocument();
+      expect(screen.getByText(/first seen yesterday/)).toBeInTheDocument();
     });
   });
 

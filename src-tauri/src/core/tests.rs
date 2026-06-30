@@ -207,6 +207,8 @@ mod tests {
                 disposition: Some("review".to_string()),
                 novelty_score: None,
                 novelty_reason: None,
+                recurrence_count: None,
+                recurrence_note: None,
                 confirmation_checklist: "[]".to_string(),
                 created_at: Utc::now().to_rfc3339(),
             },
@@ -495,6 +497,8 @@ mod tests {
                 disposition: Some("review".to_string()),
                 novelty_score: None,
                 novelty_reason: None,
+                recurrence_count: None,
+                recurrence_note: None,
                 confirmation_checklist: "[]".to_string(),
                 created_at: Utc::now().to_rfc3339(),
             },
@@ -624,6 +628,8 @@ mod tests {
                 disposition: Some("review".to_string()),
                 novelty_score: None,
                 novelty_reason: None,
+                recurrence_count: None,
+                recurrence_note: None,
                 confirmation_checklist: "[]".to_string(),
                 created_at: chrono::Utc::now().to_rfc3339(),
             },
@@ -1167,6 +1173,12 @@ mod tests {
             "unchanged recurring background items should be labeled low priority"
         );
         assert_eq!(second_lead.disposition.as_deref(), Some("background"));
+        assert_eq!(second_lead.recurrence_count, Some(1));
+        assert!(second_lead
+            .recurrence_note
+            .as_deref()
+            .unwrap_or_default()
+            .contains("first seen"));
 
         let queue_lead = list_leads(&conn)
             .unwrap()
@@ -1175,6 +1187,12 @@ mod tests {
             .expect("recurring lead should still appear in Story Queue");
         assert!(queue_lead.why.contains("Beat memory: similar topic"));
         assert_eq!(queue_lead.disposition.as_deref(), Some("background"));
+        assert_eq!(queue_lead.recurrence_count, Some(1));
+        assert!(queue_lead
+            .recurrence_note
+            .as_deref()
+            .unwrap_or_default()
+            .contains("Council meeting archive"));
 
         let seen_count: i32 = conn
             .query_row(
@@ -3268,6 +3286,8 @@ I should produce JSON only.
                 disposition: Some("ready_to_draft".to_string()),
                 novelty_score: Some(4),
                 novelty_reason: Some("A current contract approval with spending impact.".to_string()),
+                recurrence_count: None,
+                recurrence_note: None,
                 created_at: Utc::now().to_rfc3339(),
             },
             &[evidence_id],
@@ -3694,6 +3714,8 @@ I should produce JSON only.
                 disposition: Some("ready_to_draft".to_string()),
                 novelty_score: Some(3),
                 novelty_reason: Some("Recent funding notice.".to_string()),
+                recurrence_count: None,
+                recurrence_note: None,
                 created_at: Utc::now().to_rfc3339(),
             },
             &[evidence_id],
