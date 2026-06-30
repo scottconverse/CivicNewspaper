@@ -1,201 +1,122 @@
-# CivicNewspaper Cleanroom E2E Attempt 6 - Final Report
+# CivicNewspaper Cleanroom E2E Attempt 6 - 6847ef2
 
-UTC report time: 2026-06-30T13:54:00Z
+Date: 2026-06-30 UTC
 
 Verdict: FAIL.
 
-The attempt-6 build fixed several major workflow mechanics, but the final public output still fails the directive's public-output quality gate. The app installed from the NSIS installer, completed app-guided AI/runtime/model setup, seeded Longmont sources, ran Daily Scan, enforced visible weak-lead checkpoints, compiled a static issue, exported a ZIP, and published to here.now. The generated public article still leaked source-check scaffolding and unlinked-evidence text, and local/ZIP output contained mojibake marker `Â`.
+The attempt-6 build fixed the prior output-quality failure class in an important way: weak/background/watch leads are no longer allowed to slide through as ordinary publishable stories. However, the run fails because the Workbench became stuck at the approval/editor transition and I could not approve the remaining reviewable story or navigate out to Publishing.
 
-## Repo And Directive
+## Product Under Test
 
-- Coordination branch: `test-comms/cleanroom-coder-tester`
-- Coordination HEAD observed before final report: `d94f808 test-comms: visibility for cleanroom e2e 6847ef2 [skip ci]`
-- Active directive: `test-comms/directives/20260630-cleanroom-e2e-6847ef2-attempt6.md`
 - Product branch: `main`
-- Product commit installed: `6847ef2844a1a859eb82ae900ef03b08c94b132a`
+- Product commit: `6847ef2844a1a859eb82ae900ef03b08c94b132a`
 - Product version: `0.3.0`
+- Installer used: NSIS
+- Install path: `C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe`
+- NSIS SHA256 expected: `33C20999ED297839EBA26548DAD2DA4903C43D6F402A4483363032CF5D78D89C`
+- NSIS SHA256 observed: `33C20999ED297839EBA26548DAD2DA4903C43D6F402A4483363032CF5D78D89C`
+- MSI fallback SHA256 observed: `CCE83919EC53EB1A782B4412ACEA61C2235F6AD4FA3E621679409414C98925A1`
 
-## Installer And Cleanroom Setup
+## What Passed
 
-- Clean wipe evidence: `test-comms/evidence/20260630-cleanroom-e2e-6847ef2/00-clean-wipe-summary.json`
-- Installer used: `test-comms/artifacts/20260630-cleanroom-e2e-6847ef2/The Civic Desk_0.3.0_x64-setup.exe`
-- Installed executable: `C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe`
-- NSIS expected SHA256: `33C20999ED297839EBA26548DAD2DA4903C43D6F402A4483363032CF5D78D89C`
-- NSIS observed SHA256: `33C20999ED297839EBA26548DAD2DA4903C43D6F402A4483363032CF5D78D89C`
-- MSI fallback expected SHA256: `CCE83919EC53EB1A782B4412ACEA61C2235F6AD4FA3E621679409414C98925A1`
-- MSI fallback observed SHA256: `CCE83919EC53EB1A782B4412ACEA61C2235F6AD4FA3E621679409414C98925A1`
-- NSIS install result: PASS.
-- MSI fallback used: no.
+- Product clean wipe completed.
+- NSIS install completed.
+- Onboarding accepted noisy state input and shell displayed `LONGMONT / CO`.
+- App-guided local AI/runtime setup worked without tester manual installation.
+- The app installed and used `qwen2.5:7b`.
+- First-run Longmont starter sources were seeded without manual import.
+- Source count after onboarding: 14.
+- Source breadth included official city website, city news, agenda portal, council meetings, public information, public safety, Public Notice Colorado, St. Vrain Valley Schools, Facebook watch sources, subreddits, events, and YouTube.
+- Daily Scan completed with `SOURCES WATCHED 14`, `OPEN LEADS 17`, `DRAFTS IN DESK 2`, and `AI STATUS Ready`.
+- Low-novelty/background/watch/verification items were visibly labeled and were not presented as ordinary ready stories.
+- `Draft anyway` on a background lead showed a clear warning checkpoint before generation.
+- That weak generated draft was automatically marked as needing more work with advisory warnings.
+- Cut/remove workflow worked through a confirmation modal; the unsuitable weak draft was deleted.
 
-## App-Guided AI Setup
+## Break Point
 
-- App-guided runtime setup worked without tester manually installing Ollama or models.
-- Evidence: `05-ai-setup-poll.json`, `06-ai-setup-summary.json`, `10-model-download-summary.json`
-- The app downloaded/installed its local runtime and model through the first-run flow.
-- Model shown ready: `qwen2.5:7b`
-- Shell identity after onboarding: `LONGMONT / CO`
-- Identity result: PASS.
+The run failed in Workbench approval/navigation after exercising the editor workflow.
 
-## First-Run Sources
+The remaining reviewable story was:
 
-Starter sources were seeded without manual import.
+- `Longmont Public Library Offers Teen Temporary Tattoo Studio`
+- Status after workflow: `ready_to_review`
+- Guardrail warnings: 5 advisory warnings, including missing source links and source wording overlap.
 
-Source count observed: 14.
+I exercised:
 
-Representative sources:
+- Save Draft
+- Run Advisor
+- Hold
+- Resume/Mark Ready for Review
+- Cut Story on weak/background item
+- Attempted approval with editor responsibility attestation
 
-- Longmont official city website
-- Longmont city news
-- Longmont Agenda Management Portal
-- Longmont City Council Meetings
-- Longmont Public Information
-- Longmont Public Safety
-- Public Notice Colorado
-- St. Vrain Valley Schools
-- City of Longmont Facebook
-- Longmont Public Safety Facebook
-- Longmont subreddit
-- Longmont Colorado subreddit
-- Longmont city events
-- Longmont city YouTube
+After the story was returned to `ready_to_review`, the Workbench would not complete approval:
 
-Evidence: `test-comms/evidence/20260630-cleanroom-e2e-6847ef2/13-sources-seeded.json`
+- Clicking `Approve for Static Publish` did not transition the draft to `ready_to_publish`.
+- The attestation checkbox was visible but did not reliably update the app's approval state through normal WebView-driven clicks.
+- Direct DOM toggling changed the raw checkbox state but did not update React/app state, so I did not count it as valid product proof.
+- `Back to Queue` did not leave Workbench.
+- The `Publishing` nav button did not leave Workbench.
 
-Source breadth result: PASS.
+Because no story reached approved/publishable state after this workflow transition, I could not honestly proceed to static compile, ZIP export, or here.now publish for this attempt.
 
-## Daily Scan And Queue
+## Counts
 
-- Daily Scan completed.
-- Lead count: 17.
-- Draft count after normal draft: 1.
-- High priority count: 0.
-- Source count in queue: 14.
+- Starter sources: 14.
+- Open leads after Daily Scan: 17.
+- Drafts created: 2.
+- Weak/background draft generated through `Draft anyway`: 1.
+- Weak/background draft cut: 1.
+- Reviewable draft left in Workbench: 1.
+- Approved stories at final state: 0.
+- Published stories: 0.
+- here.now URL: none for this attempt.
+- ZIP output: none for this attempt.
 
-The queue did not present weak/background/watch/verification leads as ordinary ready stories. It used labels such as:
+## Evidence
 
-- `Watch`
-- `Background`
-- `Needs verification`
-- `Ready to draft`
-- `Draft`
-- `Draft anyway`
+Evidence folder:
 
-Only one lead had the normal `Draft` action:
+`test-comms/evidence/20260630-cleanroom-e2e-6847ef2/`
 
-- `Longmont Public Library hosting Teen Temporary Tattoo Studio`
+Key files:
 
-All other visible lead actions were `Draft anyway` and had explicit risk/treatment/novelty context.
+- `00-clean-wipe-summary.json`
+- `01-install-launch-summary.json`
+- `03-identity-noisy-state-before-next.json`
+- `10-model-download-summary.json`
+- `12-after-onboarding.json`
+- `13-sources-seeded.json`
+- `17-daily-scan-page-corrected.json`
+- `18-story-queue-inventory.json`
+- `19-after-draft-anyway-lead16-click.json`
+- `21-lead16-generated.json`
+- `25-cut-confirm-modal.json`
+- `26-after-force-confirm-cut.json`
+- `27-open-library-draft.json`
+- `28-after-save-draft.json`
+- `29-after-run-advisor.json`
+- `30-after-hold.json`
+- `31-after-resume-or-ready.json`
+- `32-after-mark-ready.json`
+- `35-after-final-approve-library.json`
+- `37-after-attest-approve-library.json`
+- `41-draft-db-state-after-approve-attempt.json`
+- `44-direct-dom-approval-attempt.json`
+- `46-current-state-before-report.json`
+- `47-final-db-snapshot.json`
 
-Queue labeling result: PASS.
+## Request For Coder
 
-## Editorial Workflow
+Keep the attempt-6 weak-lead quality behavior. It is materially better than attempt 5: weak/background/watch items are warned, sent back, and removable instead of being counted as good reader-facing copy.
 
-Normal ready lead:
+Fix the Workbench approval/navigation dead end:
 
-- Opened normal `Draft` action for the Teen Temporary Tattoo Studio brief.
-- Generated draft.
-- Edited copy.
-- Saved draft.
-- Put story on hold.
-- Resumed editing.
-- Marked ready for review.
-- Attempted approval.
-- App displayed a conscious review checkpoint before final approval because advisory warnings remained.
-- Clicked `Publish anyway (logged)`.
-- App reported: `Story approved for publishing; a verification record was saved.`
+- A ready-for-review story with warnings should be approvable after the editor checks the responsibility attestation.
+- The checkbox must update product state through normal user input.
+- `Back to Queue` and sidebar nav should remain usable from Workbench after workflow transitions.
+- Once approval works, rerun compile, ZIP export, here.now publish, and public-output scans.
 
-Approval checkpoint text included:
-
-- `Publish with review warnings?`
-- `This story has 5 review warning(s) from your newsroom's guardrail and story-quality checks. The app will not veto the editor, but this decision is recorded with the story.`
-- Warning examples included citation coverage and verbatim overlap.
-
-Weak/watch lead:
-
-- Opened `Draft anyway` for `Vision Zero projects updates`.
-- App did not present this as ordinary ready drafting. It showed `Generate anyway` and labeled the lead `Watch`.
-- Generated anyway only to test the weak-lead path.
-- App automatically reported: `Draft generated and marked as needing more work because the lead has watch, background, verification, recurrence, or low-novelty signals.`
-- Workbench status: `Sent back / needs work`.
-- Guardrail warning: `The linked lead is marked as watch. Confirm a current, specific, verified development before treating this as a reader-facing news story.`
-- Cut the weak story.
-- App required confirmation and then reported: `Story status updated to 'killed'.`
-- The cut story's `Approve for Static Publish` control became disabled.
-
-Workflow result: PASS.
-
-## Static Output, ZIP, And here.now
-
-- Local static output path: `C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\sites\default`
-- Tester output copy: `test-comms/artifacts/20260630-cleanroom-e2e-6847ef2/tester-output/`
-- Evidence output copy: `test-comms/evidence/20260630-cleanroom-e2e-6847ef2/site-output-copy/`
-- ZIP path: `C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\sites\default\site-package.zip`
-- ZIP copied to tester output folder: `test-comms/artifacts/20260630-cleanroom-e2e-6847ef2/tester-output/site-package.zip`
-- ZIP SHA256: `3B1BE5083A1F1E4C0EAAED35F3042DD2F871F181CEF6E83F45C82588200D0E3F`
-- Publish manifest: `test-comms/artifacts/20260630-cleanroom-e2e-6847ef2/tester-output/publish-manifest.json`
-- Issue id: `issue-20260630-134431-264139800`
-- here.now URL: `https://quaint-larch-pvqx.here.now`
-- Deployment id: `slug=quaint-larch-pvqx;version=01KWCCE1DDG3GHRJWGWTEVJ39S;created_slug=quaint-larch-pvqx`
-- Article count: 1
-- Files written: 18
-- here.now fetch result: HTTP 200 for `/` and `/watch/1.html`
-
-Publish mechanics result: PASS.
-
-## Public Output Quality Failure
-
-Quality scan evidence: `test-comms/evidence/20260630-cleanroom-e2e-6847ef2/quality-scan/quality-scan-results.json`
-
-Scanned:
-
-- Local output folder
-- ZIP extract
-- here.now fetched pages
-
-The public output failed the directive's public-output quality checks.
-
-Failures:
-
-1. Mojibake marker `Â` appears in local output and ZIP output:
-   - `watch/1.html`
-   - Example source text includes `Wednesday, July 1 Â· 6 pm - 7 pm`
-
-2. Public article leaks source-check/reporting scaffolding:
-   - Marker: `Source check:`
-   - Marker: `unlinked-evidence`
-   - Appears in local output, ZIP extract, and live here.now fetched page.
-
-3. Public article includes a blockquote that reads like internal verification scaffolding:
-   - `Source check: The AI draft referenced unlinked evidence ID(s) 355. Those citation markers were disabled automatically. Verify the claim against the linked sources before publishing.`
-
-4. The generated article count is only 1, not 5. The app did not provide five ordinary ready reader-facing leads. The weak/watch path now correctly blocks or warns, but this means the run cannot honestly claim five successful reader-facing stories from this scan.
-
-5. The published article is tagged `Format: watch` even though the approved lead was a brief/event item. This is confusing public taxonomy and should be reviewed.
-
-Output quality result: FAIL.
-
-## Exact User-Visible Result
-
-The user could complete install, onboarding, AI setup, scan, draft, edit, approval-with-warning, compile, ZIP export, and here.now publication.
-
-The user could not get a clean public issue that satisfies the directive's quality bar because the public article still includes mojibake and source-check/unlinked-evidence scaffolding.
-
-## Evidence Index
-
-- Visibility report: `test-comms/reports/20260630-cleanroom-e2e-6847ef2-visibility-attempt-6.md`
-- Clean wipe: `test-comms/evidence/20260630-cleanroom-e2e-6847ef2/00-clean-wipe-summary.json`
-- Install launch: `test-comms/evidence/20260630-cleanroom-e2e-6847ef2/01-install-launch-summary.json`
-- Identity/onboarding: `02-first-launch*`, `03-identity-noisy-state-before-next*`, `04-after-identity-next*`
-- AI setup/model: `05-ai-setup*`, `06-ai-setup*`, `08-model-download*`, `10-model-download*`
-- Sources: `13-sources-seeded.json`
-- Daily Scan/queue: `14-daily-scan*`, `15-daily-scan*`, `16-story-queue-before-drafting*`
-- Normal draft workflow: `17-after-normal-draft-click*` through `28-back-to-queue-after-approval*`
-- Weak-lead workflow: `29-weak-watch-draft-anyway-opened*` through `33-weak-watch-cut-confirmed*`
-- Publishing: `34-publishing-tab-start*` through `43-here-now-publish-final-state*`
-- Output copy: `test-comms/evidence/20260630-cleanroom-e2e-6847ef2/site-output-copy/`
-- Tester output: `test-comms/artifacts/20260630-cleanroom-e2e-6847ef2/tester-output/`
-- Quality scan: `test-comms/evidence/20260630-cleanroom-e2e-6847ef2/quality-scan/quality-scan-results.json`
-
-## Final Result
-
-FAIL. Attempt 6 is substantially improved on source seeding, weak-lead workflow, and publishing mechanics, but public output still fails because mojibake and source-check/unlinked-evidence scaffolding appear in the generated public article and because the run produced only one approved article.
+Watcher remains armed.
