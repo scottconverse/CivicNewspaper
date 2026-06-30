@@ -9,7 +9,7 @@ use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::sync::{LazyLock, Mutex};
-use std::time::Duration;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tauri::AppHandle;
 use tauri::Manager;
 use tauri_plugin_shell::process::CommandChild;
@@ -792,13 +792,53 @@ fn runtime_base_dir<R: tauri::Runtime>(app: &AppHandle<R>) -> Result<PathBuf, St
     super::app_paths::app_data_dir(app).map(|dir| dir.join("ollama-runtime"))
 }
 
-pub fn downloaded_ollama_exe<R: tauri::Runtime>(app: &AppHandle<R>) -> Result<PathBuf, String> {
-    let version_dir = runtime_base_dir(app)?.join(OLLAMA_RUNTIME_VERSION);
-    let root_exe = version_dir.join("ollama.exe");
-    if root_exe.exists() {
-        return Ok(root_exe);
+pub(crate) fn find_downloaded_ollama_exe_in_base(
+    base_dir: &Path,
+) -> Result<Option<PathBuf>, String> {
+    let canonical = base_dir.join(OLLAMA_RUNTIME_VERSION);
+    if let Some(path) = find_file_named(&canonical, "ollama.exe")? {
+        return Ok(Some(path));
     }
-    find_file_named(&version_dir, "ollama.exe")?
+
+    if !base_dir.exists() {
+        return Ok(None);
+    }
+
+    let mut candidates = Vec::new();
+    for entry in fs::read_dir(base_dir).map_err(|e| {
+        format!(
+            "Could not inspect local AI runtime directory {}: {e}",
+            base_dir.display()
+        )
+    })? {
+        let entry =
+            entry.map_err(|e| format!("Could not read local AI runtime directory entry: {e}"))?;
+        let path = entry.path();
+        if !path.is_dir() || path == canonical {
+            continue;
+        }
+        let name = path
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or_default();
+        if name.starts_with(&format!("{OLLAMA_RUNTIME_VERSION}-")) {
+            candidates.push(path);
+        }
+    }
+    candidates.sort_by(|a, b| b.file_name().cmp(&a.file_name()));
+
+    for candidate in candidates {
+        if let Some(path) = find_file_named(&candidate, "ollama.exe")? {
+            return Ok(Some(path));
+        }
+    }
+
+    Ok(None)
+}
+
+pub fn downloaded_ollama_exe<R: tauri::Runtime>(app: &AppHandle<R>) -> Result<PathBuf, String> {
+    let base_dir = runtime_base_dir(app)?;
+    find_downloaded_ollama_exe_in_base(&base_dir)?
         .ok_or_else(|| "The downloaded local AI runtime is not installed yet.".to_string())
 }
 
@@ -848,7 +888,6 @@ pub async fn install_windows_ollama_runtime<R: tauri::Runtime>(
     }
 
     let base_dir = runtime_base_dir(&app)?;
-    let version_dir = base_dir.join(OLLAMA_RUNTIME_VERSION);
     if downloaded_ollama_exe(&app).is_ok() {
         sink.progress(RuntimeInstallProgress {
             stage: "ready".to_string(),
@@ -859,8 +898,17 @@ pub async fn install_windows_ollama_runtime<R: tauri::Runtime>(
         return Ok(());
     }
 
-    fs::create_dir_all(&base_dir).map_err(|e| e.to_string())?;
-    let zip_path = base_dir.join(format!("ollama-windows-amd64-{OLLAMA_RUNTIME_VERSION}.zip"));
+    fs::create_dir_all(&base_dir).map_err(|e| {
+        format!(
+            "Could not create local AI runtime folder {}: {e}",
+            base_dir.display()
+        )
+    })?;
+    let install_id = runtime_install_id();
+    let install_dir = runtime_install_dir_for_base(&base_dir);
+    let zip_path = base_dir.join(format!(
+        "ollama-windows-amd64-{OLLAMA_RUNTIME_VERSION}-{install_id}.zip"
+    ));
 
     sink.progress(RuntimeInstallProgress {
         stage: "download".to_string(),
@@ -883,14 +931,24 @@ pub async fn install_windows_ollama_runtime<R: tauri::Runtime>(
     }
 
     let total = response.content_length();
-    let mut file = fs::File::create(&zip_path).map_err(|e| e.to_string())?;
+    let mut file = fs::File::create(&zip_path).map_err(|e| {
+        format!(
+            "Could not create local AI runtime download file {}: {e}",
+            zip_path.display()
+        )
+    })?;
     let mut downloaded = 0u64;
     while let Some(chunk) = response
         .chunk()
         .await
         .map_err(|e| format!("Runtime download failed: {e}"))?
     {
-        file.write_all(&chunk).map_err(|e| e.to_string())?;
+        file.write_all(&chunk).map_err(|e| {
+            format!(
+                "Could not write local AI runtime download file {}: {e}",
+                zip_path.display()
+            )
+        })?;
         downloaded += chunk.len() as u64;
         sink.progress(RuntimeInstallProgress {
             stage: "download".to_string(),
@@ -908,10 +966,20 @@ pub async fn install_windows_ollama_runtime<R: tauri::Runtime>(
         total: None,
     });
     let mut hasher = sha2::Sha256::new();
-    let mut file = fs::File::open(&zip_path).map_err(|e| e.to_string())?;
+    let mut file = fs::File::open(&zip_path).map_err(|e| {
+        format!(
+            "Could not reopen local AI runtime download file {} for verification: {e}",
+            zip_path.display()
+        )
+    })?;
     let mut buf = [0u8; 1024 * 1024];
     loop {
-        let read = file.read(&mut buf).map_err(|e| e.to_string())?;
+        let read = file.read(&mut buf).map_err(|e| {
+            format!(
+                "Could not read local AI runtime download file {} for verification: {e}",
+                zip_path.display()
+            )
+        })?;
         if read == 0 {
             break;
         }
@@ -932,15 +1000,18 @@ pub async fn install_windows_ollama_runtime<R: tauri::Runtime>(
         completed: None,
         total: None,
     });
-    if version_dir.exists() {
-        fs::remove_dir_all(&version_dir).map_err(|e| e.to_string())?;
-    }
-    fs::create_dir_all(&version_dir).map_err(|e| e.to_string())?;
-    extract_zip(&zip_path, &version_dir)?;
+    fs::create_dir_all(&install_dir).map_err(|e| {
+        format!(
+            "Could not create local AI runtime install folder {}: {e}",
+            install_dir.display()
+        )
+    })?;
+    extract_zip(&zip_path, &install_dir)?;
 
-    if find_file_named(&version_dir, "ollama.exe")?.is_none() {
+    if find_file_named(&install_dir, "ollama.exe")?.is_none() {
         return Err("The local AI runtime archive did not contain ollama.exe.".to_string());
     }
+    let _ = fs::remove_file(&zip_path);
 
     sink.progress(RuntimeInstallProgress {
         stage: "start".to_string(),
@@ -972,24 +1043,73 @@ pub async fn install_windows_ollama_runtime<R: tauri::Runtime>(
     Err("The local AI runtime was installed but did not become reachable.".to_string())
 }
 
+pub(crate) fn runtime_install_dir_for_base(base_dir: &Path) -> PathBuf {
+    let canonical = base_dir.join(OLLAMA_RUNTIME_VERSION);
+    if canonical.exists() {
+        base_dir.join(format!("{OLLAMA_RUNTIME_VERSION}-{}", runtime_install_id()))
+    } else {
+        canonical
+    }
+}
+
+fn runtime_install_id() -> String {
+    let millis = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_millis();
+    format!("{}-{millis}", std::process::id())
+}
+
 fn extract_zip(zip_path: &Path, dest_dir: &Path) -> Result<(), String> {
-    let file = fs::File::open(zip_path).map_err(|e| e.to_string())?;
-    let mut archive = zip::ZipArchive::new(file).map_err(|e| e.to_string())?;
+    let file = fs::File::open(zip_path).map_err(|e| {
+        format!(
+            "Could not open local AI runtime archive {}: {e}",
+            zip_path.display()
+        )
+    })?;
+    let mut archive = zip::ZipArchive::new(file).map_err(|e| {
+        format!(
+            "Could not read local AI runtime archive {}: {e}",
+            zip_path.display()
+        )
+    })?;
     for i in 0..archive.len() {
-        let mut entry = archive.by_index(i).map_err(|e| e.to_string())?;
+        let mut entry = archive
+            .by_index(i)
+            .map_err(|e| format!("Could not read local AI runtime archive entry {i}: {e}"))?;
         let Some(name) = entry.enclosed_name().map(|p| p.to_owned()) else {
             continue;
         };
         let out = dest_dir.join(name);
         if entry.is_dir() {
-            fs::create_dir_all(&out).map_err(|e| e.to_string())?;
+            fs::create_dir_all(&out).map_err(|e| {
+                format!(
+                    "Could not create local AI runtime folder {}: {e}",
+                    out.display()
+                )
+            })?;
             continue;
         }
         if let Some(parent) = out.parent() {
-            fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+            fs::create_dir_all(parent).map_err(|e| {
+                format!(
+                    "Could not create local AI runtime folder {}: {e}",
+                    parent.display()
+                )
+            })?;
         }
-        let mut outfile = fs::File::create(&out).map_err(|e| e.to_string())?;
-        std::io::copy(&mut entry, &mut outfile).map_err(|e| e.to_string())?;
+        let mut outfile = fs::File::create(&out).map_err(|e| {
+            format!(
+                "Could not create local AI runtime file {}: {e}",
+                out.display()
+            )
+        })?;
+        std::io::copy(&mut entry, &mut outfile).map_err(|e| {
+            format!(
+                "Could not write local AI runtime file {}: {e}",
+                out.display()
+            )
+        })?;
     }
     Ok(())
 }

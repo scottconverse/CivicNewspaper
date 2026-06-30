@@ -1212,7 +1212,11 @@ fn clean_generated_draft_for_workbench(text: &str) -> String {
         if skipping_reporting_steps {
             if trimmed.is_empty()
                 || trimmed.starts_with('-')
-                || trimmed.chars().next().map(|ch| ch.is_ascii_digit()).unwrap_or(false)
+                || trimmed
+                    .chars()
+                    .next()
+                    .map(|ch| ch.is_ascii_digit())
+                    .unwrap_or(false)
                 || trimmed.ends_with('?')
             {
                 continue;
@@ -1221,7 +1225,12 @@ fn clean_generated_draft_for_workbench(text: &str) -> String {
         }
 
         let line = strip_bracketed_insert_placeholders(line);
-        if !line.trim().is_empty() || cleaned.last().map(|last: &String| !last.is_empty()).unwrap_or(false) {
+        if !line.trim().is_empty()
+            || cleaned
+                .last()
+                .map(|last: &String| !last.is_empty())
+                .unwrap_or(false)
+        {
             cleaned.push(line);
         }
     }

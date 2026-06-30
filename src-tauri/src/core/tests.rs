@@ -272,10 +272,7 @@ mod tests {
             .find(|l| l.detector_name == "Decision / Vote")
             .expect("Decision / Vote lead should be created");
         assert_eq!(vote_lead.story_type.as_deref(), Some("verification"));
-        assert_eq!(
-            vote_lead.disposition.as_deref(),
-            Some("needs_verification")
-        );
+        assert_eq!(vote_lead.disposition.as_deref(), Some("needs_verification"));
     }
 
     // 4. Guardrails Tests
@@ -2943,6 +2940,46 @@ I should produce JSON only.
         assert!(child_guard.is_none());
     }
 
+    #[test]
+    fn test_downloaded_ollama_falls_back_to_unique_runtime_dir() {
+        let temp = tempfile::tempdir().unwrap();
+        let canonical = temp.path().join(crate::core::llm::OLLAMA_RUNTIME_VERSION);
+        let unique = temp.path().join(format!(
+            "{}-cleanroom",
+            crate::core::llm::OLLAMA_RUNTIME_VERSION
+        ));
+        std::fs::create_dir_all(&canonical).unwrap();
+        std::fs::create_dir_all(&unique).unwrap();
+        let exe = unique.join("ollama.exe");
+        std::fs::write(&exe, b"test-runtime").unwrap();
+
+        let found = crate::core::llm::find_downloaded_ollama_exe_in_base(temp.path())
+            .unwrap()
+            .unwrap();
+        assert_eq!(found, exe);
+    }
+
+    #[test]
+    fn test_runtime_install_dir_avoids_existing_partial_dir() {
+        let temp = tempfile::tempdir().unwrap();
+        let canonical = temp.path().join(crate::core::llm::OLLAMA_RUNTIME_VERSION);
+        std::fs::create_dir_all(&canonical).unwrap();
+
+        let install_dir = crate::core::llm::runtime_install_dir_for_base(temp.path());
+
+        assert_ne!(install_dir, canonical);
+        assert_eq!(install_dir.parent(), Some(temp.path()));
+        assert!(
+            install_dir
+                .file_name()
+                .and_then(|name| name.to_str())
+                .unwrap_or_default()
+                .starts_with(&format!("{}-", crate::core::llm::OLLAMA_RUNTIME_VERSION)),
+            "expected a unique runtime directory name, got {:?}",
+            install_dir
+        );
+    }
+
     // TEST-001: compute_hash is the sole dedup key for evidence. A silent change
     // to its output (e.g. normalizing whitespace/case, or a crate swap) would
     // re-ingest every item as "new" and flood the lead queue. Pin the algorithm
@@ -3880,9 +3917,8 @@ I should produce JSON only.
 
     #[test]
     fn test_compile_removes_space_editor_note_and_tester_edit_lines() {
-        let conn =
-            init_db("file:test_compile_space_editor_note_cleanup?mode=memory&cache=shared")
-                .unwrap();
+        let conn = init_db("file:test_compile_space_editor_note_cleanup?mode=memory&cache=shared")
+            .unwrap();
         let temp_dir = tempdir().unwrap();
         let id = insert_draft(
             &conn,
@@ -4290,7 +4326,8 @@ I should produce JSON only.
     #[test]
     fn test_story_decision_advances_status_when_publish_audit_fails() {
         use crate::tauri_cmds::story_decision_with_conn;
-        let conn = init_db("file:test_story_decision_audit_failure?mode=memory&cache=shared").unwrap();
+        let conn =
+            init_db("file:test_story_decision_audit_failure?mode=memory&cache=shared").unwrap();
         let id = insert_draft(
             &conn,
             &Draft {

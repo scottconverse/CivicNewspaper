@@ -182,7 +182,9 @@ pub fn run_detectors(
                             story_type: Some("story".to_string()),
                             disposition: Some("ready_to_draft".to_string()),
                             novelty_score: Some(4),
-                            novelty_reason: Some("Specific dollar amount met the newsroom threshold.".to_string()),
+                            novelty_reason: Some(
+                                "Specific dollar amount met the newsroom threshold.".to_string(),
+                            ),
                             recurrence_count: None,
                             recurrence_note: None,
                             created_at: Utc::now().to_rfc3339(),
