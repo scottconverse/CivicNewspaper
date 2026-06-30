@@ -2,7 +2,7 @@
 
 Active directive path:
 
-test-comms/directives/20260630-cleanroom-e2e-7c1bbbd-attempt7.md
+test-comms/directives/20260630-cleanroom-e2e-c3247ba-attempt8.md
 
 Tester must use branch test-comms/cleanroom-coder-tester in repo https://github.com/scottconverse/CivicNewspaper.
 
@@ -18,40 +18,40 @@ main
 
 Product commit:
 
-7c1bbbd42279c13adeb80d604b156a2e6df7eb81
+c3247bab7c20129e99d8beb8515b124a2e49248f
 
 Required first report:
 
-test-comms/reports/20260630-cleanroom-e2e-7c1bbbd-visibility-attempt-7.md
+test-comms/reports/20260630-cleanroom-e2e-c3247ba-visibility-attempt-8.md
 
 Required final report:
 
-test-comms/reports/20260630-cleanroom-e2e-7c1bbbd-report.md
+test-comms/reports/20260630-cleanroom-e2e-c3247ba-report.md
 
 Tester output artifact folder:
 
-test-comms/artifacts/20260630-cleanroom-e2e-7c1bbbd/tester-output/
+test-comms/artifacts/20260630-cleanroom-e2e-c3247ba/tester-output/
 
 NSIS installer:
 
-test-comms/artifacts/20260630-cleanroom-e2e-7c1bbbd/The Civic Desk_0.3.0_x64-setup.exe
+test-comms/artifacts/20260630-cleanroom-e2e-c3247ba/The Civic Desk_0.3.0_x64-setup.exe
 
 NSIS SHA256:
 
-E45BD165A902AE711F950B3CA39EAA4E5BFBA30946F54A06E866504EB40B7C86
+6801E4C41B081B55045646102DBFA6EE3CD2360AB0827BBFBCC5753D6FF861A8
 
 NSIS size:
 
-5623239
+5621164
 
 MSI fallback:
 
-test-comms/artifacts/20260630-cleanroom-e2e-7c1bbbd/The Civic Desk_0.3.0_x64_en-US.msi
+test-comms/artifacts/20260630-cleanroom-e2e-c3247ba/The Civic Desk_0.3.0_x64_en-US.msi
 
 MSI SHA256:
 
-DBFC81BF4F4916A15D631940A0A484BD4A89AAEE3DA527DDBC2A7BFF87CAB18A
+F2F3B35C92143DDF1C30B39FB6DDE1546E00A795BF4A9CE5B3925AD620EDF9F6
 
 MSI size:
 
-9125888
+9129984
