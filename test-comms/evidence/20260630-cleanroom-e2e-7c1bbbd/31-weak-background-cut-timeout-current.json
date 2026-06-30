@@ -1,0 +1,156 @@
+{
+  "utc": "2026-06-30T14:21:40.225Z",
+  "url": "http://tauri.localhost/",
+  "title": "CivicNews Dashboard",
+  "body": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nDrafting Article\n\nLead: 2026 Summer Reading Challenge: The Longmont Public Library is hosting its annual summer reading challenge, running from May 21 to July 31, with various events and activities for children. Editor context: This event involves a community service and impacts local youth's educational experience. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 3, impact 2, conflict 1, novelty 4). Why now: The summer reading challenge is currently active, providing ongoing community engagement. Suggested next step: Check the calendar for upcoming events and confirm details with the library. What would make this publishable: Detailed information on the program's structure, registration process, and expected outcomes.\n\nBrief\nReady to draft\nNovelty 4/5\n\nUse linked evidence and the novelty notes to decide whether this is ready for reader-facing copy.\n\nWhy now: The summer reading challenge is currently active, providing ongoing community engagement.\n\nGenerating Draft...\nCancel\nAsking the local AI model to write a working draft. Keep this window open.\nArticle Format\nBrief (Under 200 words summary)\nWatch Alert (Highlights specific public safety or procurement issues)\nExplainer (Detailed review of a policy or decision background)\nInvestigation (Traces spending and connections behind a story)\nEditorial / Opinion Piece (Presents a structured argument)\nCustom Guidelines / Instructions (Optional)\nLinked Sources (3)\n\"Subscribe to updates from specific city departments Select all in this category Longmont Library Upd...\"\n\"Human Services Information Jobs Library Licensing Maintenance Museum NextLight Fiber Internet Public...\"\n\"Wednesday, July 1 · 6 pm - 7 pm Longmont Public Library 355 Emery St., Longmont, CO, United States...\"\nGenerating Draft...\nCancel",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-queue",
+      "cls": "nav-link "
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-dailyScan",
+      "cls": "nav-link "
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-darkSignals",
+      "cls": "nav-link "
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-verification",
+      "cls": "nav-link "
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-workbench",
+      "cls": "nav-link active"
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-sources",
+      "cls": "nav-link "
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-onboarding",
+      "cls": "nav-link "
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-publish",
+      "cls": "nav-link "
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-pairing",
+      "cls": "nav-link "
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-settings",
+      "cls": "nav-link "
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-system",
+      "cls": "nav-link "
+    },
+    {
+      "i": 11,
+      "text": "",
+      "disabled": false,
+      "aria": "Dismiss beta notice",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 12,
+      "text": "Generating Draft...",
+      "disabled": true,
+      "aria": null,
+      "id": "btn-generate-draft-top",
+      "cls": "btn btn-primary"
+    },
+    {
+      "i": 13,
+      "text": "Cancel",
+      "disabled": true,
+      "aria": null,
+      "id": "btn-cancel-draft-top",
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 14,
+      "text": "Generating Draft...",
+      "disabled": true,
+      "aria": null,
+      "id": "btn-generate-draft-bottom",
+      "cls": "btn btn-primary"
+    },
+    {
+      "i": 15,
+      "text": "Cancel",
+      "disabled": true,
+      "aria": null,
+      "id": "btn-cancel-draft-bottom",
+      "cls": "btn btn-secondary"
+    }
+  ],
+  "inputs": [
+    {
+      "i": 0,
+      "tag": "SELECT",
+      "id": "select-draft-format",
+      "value": "watch",
+      "placeholder": null,
+      "disabled": false,
+      "type": "select-one"
+    },
+    {
+      "i": 1,
+      "tag": "TEXTAREA",
+      "id": "textarea-custom-instructions",
+      "value": "",
+      "placeholder": "e.g. Focus specifically on the budget numbers, keep tone highly objective...",
+      "disabled": false,
+      "type": "textarea"
+    }
+  ]
+}

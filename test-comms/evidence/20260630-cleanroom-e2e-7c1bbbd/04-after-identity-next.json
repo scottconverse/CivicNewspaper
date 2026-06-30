@@ -1,0 +1,33 @@
+{
+  "utc": "2026-06-30T14:10:26.373Z",
+  "url": "http://tauri.localhost/",
+  "title": "CivicNews Dashboard",
+  "body": "AI Setup\nStep 2 of 5\nAI Service Setup\n\nCheck the connection to the local AI service that runs on your computer.\n\nStarting the local AI service...\n\nBack\nSkip for now\nNext",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Back",
+      "disabled": false,
+      "aria": null,
+      "id": "",
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 1,
+      "text": "Skip for now",
+      "disabled": false,
+      "aria": null,
+      "id": "",
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 2,
+      "text": "Next",
+      "disabled": true,
+      "aria": null,
+      "id": "btn-wizard-next",
+      "cls": "btn btn-primary"
+    }
+  ],
+  "inputs": []
+}

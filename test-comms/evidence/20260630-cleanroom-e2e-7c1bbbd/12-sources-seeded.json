@@ -1,0 +1,278 @@
+{
+  "utc": "2026-06-30T14:18:53.245Z",
+  "url": "http://tauri.localhost/",
+  "title": "CivicNews Dashboard",
+  "body": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nSources\n\nThe municipal feeds and record portals The Civic Desk watches for you.\n\nDiscover for my city\nBulk import\nSOURCE\tTIER\tLAST CHECK\t\n\nLongmont official city website\nPrimary\nOnline\nhttps://www.longmontcolorado.gov/\n\tPrimary\t6/30/2026\t\n\n\nLongmont city news\nOfficial\nOnline\nhttps://www.longmontcolorado.gov/news\n\tPrimary\t6/30/2026\t\n\n\nLongmont Agenda Management Portal\nPrimary\nOnline\nhttps://longmontcolorado.gov/city-clerk/agenda-management-portal/\n\tPrimary\t6/30/2026\t\n\n\nLongmont City Council Meetings\nPrimary\nOnline\nhttps://longmontcolorado.gov/government/city-council-meetings/\n\tPrimary\t6/30/2026\t\n\n\nLongmont Public Information\nOfficial\nOnline\nhttps://longmontcolorado.gov/public-information/\n\tPrimary\t6/30/2026\t\n\n\nLongmont Public Safety\nOfficial\nOffline\nhttps://www.longmontcolorado.gov/departments/departments-n-z/public-safety\n\tPrimary\tNever\t\n\n\nPublic Notice Colorado\nPrimary\nOnline\nhttps://www.publicnoticecolorado.com/\n\tPrimary\t6/30/2026\t\n\n\nSt. Vrain Valley Schools\nPrimary\nOnline\nhttps://www.svvsd.org/\n\tPrimary\t6/30/2026\t\n\n\nCity of Longmont Facebook\nWatch\nOffline\nhttps://www.facebook.com/cityoflongmontco/\n\tWatch\tNever\t\n\n\nLongmont Public Safety Facebook\nWatch\nOffline\nhttps://www.facebook.com/LongmontFirePoliceOEM/\n\tWatch\tNever\t\n\n\nLongmont subreddit\nWatch\nOffline\nhttps://www.reddit.com/r/Longmont/\n\tWatch\tNever\t\n\n\nLongmont Colorado subreddit\nWatch\nOffline\nhttps://www.reddit.com/r/LongmontColorado/\n\tWatch\tNever\t\n\n\nLongmont city events\nOfficial\nOnline\nhttps://longmontcolorado.gov/events/\n\tPrimary\t6/30/2026\t\n\n\nLongmont city YouTube\nOfficial\nOnline\nhttps://www.youtube.com/cityoflongmont\n\tPrimary\t6/30/2026\t\nAdd a source\n\nPaste a city webpage or RSS feed. The Civic Desk figures out the rest.\n\nName\nURL\nType\nAuto-detect\nRSS\nHTML\nMedia\nTier\nPrimary\nSecondary\nWatch\nAdd Source",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-queue",
+      "cls": "nav-link "
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-dailyScan",
+      "cls": "nav-link "
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-darkSignals",
+      "cls": "nav-link "
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-verification",
+      "cls": "nav-link "
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-workbench",
+      "cls": "nav-link "
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-sources",
+      "cls": "nav-link active"
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-onboarding",
+      "cls": "nav-link "
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-publish",
+      "cls": "nav-link "
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-pairing",
+      "cls": "nav-link "
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-settings",
+      "cls": "nav-link "
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-system",
+      "cls": "nav-link "
+    },
+    {
+      "i": 11,
+      "text": "",
+      "disabled": false,
+      "aria": "Dismiss beta notice",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 12,
+      "text": "Discover for my city",
+      "disabled": false,
+      "aria": null,
+      "id": "btn-trigger-discovery",
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 13,
+      "text": "Bulk import",
+      "disabled": false,
+      "aria": null,
+      "id": "btn-trigger-bulk-import",
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 14,
+      "text": "",
+      "disabled": false,
+      "aria": "Delete source",
+      "id": "btn-delete-source-1",
+      "cls": "icon-button danger"
+    },
+    {
+      "i": 15,
+      "text": "",
+      "disabled": false,
+      "aria": "Delete source",
+      "id": "btn-delete-source-2",
+      "cls": "icon-button danger"
+    },
+    {
+      "i": 16,
+      "text": "",
+      "disabled": false,
+      "aria": "Delete source",
+      "id": "btn-delete-source-3",
+      "cls": "icon-button danger"
+    },
+    {
+      "i": 17,
+      "text": "",
+      "disabled": false,
+      "aria": "Delete source",
+      "id": "btn-delete-source-4",
+      "cls": "icon-button danger"
+    },
+    {
+      "i": 18,
+      "text": "",
+      "disabled": false,
+      "aria": "Delete source",
+      "id": "btn-delete-source-5",
+      "cls": "icon-button danger"
+    },
+    {
+      "i": 19,
+      "text": "",
+      "disabled": false,
+      "aria": "Delete source",
+      "id": "btn-delete-source-6",
+      "cls": "icon-button danger"
+    },
+    {
+      "i": 20,
+      "text": "",
+      "disabled": false,
+      "aria": "Delete source",
+      "id": "btn-delete-source-7",
+      "cls": "icon-button danger"
+    },
+    {
+      "i": 21,
+      "text": "",
+      "disabled": false,
+      "aria": "Delete source",
+      "id": "btn-delete-source-8",
+      "cls": "icon-button danger"
+    },
+    {
+      "i": 22,
+      "text": "",
+      "disabled": false,
+      "aria": "Delete source",
+      "id": "btn-delete-source-9",
+      "cls": "icon-button danger"
+    },
+    {
+      "i": 23,
+      "text": "",
+      "disabled": false,
+      "aria": "Delete source",
+      "id": "btn-delete-source-10",
+      "cls": "icon-button danger"
+    },
+    {
+      "i": 24,
+      "text": "",
+      "disabled": false,
+      "aria": "Delete source",
+      "id": "btn-delete-source-11",
+      "cls": "icon-button danger"
+    },
+    {
+      "i": 25,
+      "text": "",
+      "disabled": false,
+      "aria": "Delete source",
+      "id": "btn-delete-source-12",
+      "cls": "icon-button danger"
+    },
+    {
+      "i": 26,
+      "text": "",
+      "disabled": false,
+      "aria": "Delete source",
+      "id": "btn-delete-source-13",
+      "cls": "icon-button danger"
+    },
+    {
+      "i": 27,
+      "text": "",
+      "disabled": false,
+      "aria": "Delete source",
+      "id": "btn-delete-source-14",
+      "cls": "icon-button danger"
+    },
+    {
+      "i": 28,
+      "text": "Add Source",
+      "disabled": false,
+      "aria": null,
+      "id": "btn-submit-add-source",
+      "cls": "btn btn-primary"
+    }
+  ],
+  "inputs": [
+    {
+      "i": 0,
+      "tag": "INPUT",
+      "id": "input-new-source-name",
+      "value": "",
+      "placeholder": "e.g. City Council Agendas",
+      "disabled": false,
+      "type": "text"
+    },
+    {
+      "i": 1,
+      "tag": "INPUT",
+      "id": "input-new-source-url",
+      "value": "",
+      "placeholder": "e.g. https://city.gov/agendas/rss",
+      "disabled": false,
+      "type": "url"
+    },
+    {
+      "i": 2,
+      "tag": "SELECT",
+      "id": "select-new-source-type",
+      "value": "primary_record",
+      "placeholder": null,
+      "disabled": false,
+      "type": "select-one"
+    },
+    {
+      "i": 3,
+      "tag": "SELECT",
+      "id": "select-new-source-tier",
+      "value": "community_signal",
+      "placeholder": null,
+      "disabled": false,
+      "type": "select-one"
+    }
+  ]
+}

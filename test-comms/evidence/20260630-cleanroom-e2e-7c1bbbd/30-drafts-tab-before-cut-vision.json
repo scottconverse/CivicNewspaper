@@ -1,0 +1,202 @@
+{
+  "utc": "2026-06-30T14:23:16.689Z",
+  "body": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nStory Queue\n\nCivic signals your sources surfaced, ready to verify and turn into plain-language stories.\n\nRefresh\nDaily Scan\nScrape & Detect\nNEW LEADS\n17\nIN DRAFTING\n3\nHIGH PRIORITY\n1\nSOURCES\n14\nLocal-first workflow\nScan sources, draft from linked evidence, run guardrails, then publish a static paper.\nLeads\n17\nDrafts\n3\nScan results\nlatest\nDraft status:\nAll drafts\nDrafting\nSent back / needs work\nReady for review\nApproved for publishing\nOn hold\nCut\nTITLE\tFORMAT\tSTATUS\tACTIONS\nLongmont Public Library Launches Annual Summer Reading Challenge\tWatch\tApproved for publishing\t\nOpen\nCorrection\n\nVision Zero Initiatives Continue in Longmont\tWatch\tSent back / needs work\t\nOpen\nCorrection\n\nCity Council Meeting Rescheduled for July 1st\tWatch\tApproved for publishing\t\nOpen\nCorrection",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "aria": null,
+      "id": "nav-tab-queue",
+      "disabled": false
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "aria": null,
+      "id": "nav-tab-dailyScan",
+      "disabled": false
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "aria": null,
+      "id": "nav-tab-darkSignals",
+      "disabled": false
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "aria": null,
+      "id": "nav-tab-verification",
+      "disabled": false
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "aria": null,
+      "id": "nav-tab-workbench",
+      "disabled": false
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "aria": null,
+      "id": "nav-tab-sources",
+      "disabled": false
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "aria": null,
+      "id": "nav-tab-onboarding",
+      "disabled": false
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "aria": null,
+      "id": "nav-tab-publish",
+      "disabled": false
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "aria": null,
+      "id": "nav-tab-pairing",
+      "disabled": false
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "aria": null,
+      "id": "nav-tab-settings",
+      "disabled": false
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "aria": null,
+      "id": "nav-tab-system",
+      "disabled": false
+    },
+    {
+      "i": 11,
+      "text": "",
+      "aria": "Dismiss beta notice",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 12,
+      "text": "Refresh",
+      "aria": null,
+      "id": "btn-sync-list",
+      "disabled": false
+    },
+    {
+      "i": 13,
+      "text": "Daily Scan",
+      "aria": null,
+      "id": "btn-daily-scan",
+      "disabled": false
+    },
+    {
+      "i": 14,
+      "text": "Scrape & Detect",
+      "aria": null,
+      "id": "btn-scrape-detect",
+      "disabled": false
+    },
+    {
+      "i": 15,
+      "text": "IN DRAFTING\n3",
+      "aria": "Open 3 drafts",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 16,
+      "text": "Leads\n17",
+      "aria": null,
+      "id": "queue-tab-leads",
+      "disabled": false
+    },
+    {
+      "i": 17,
+      "text": "Drafts\n3",
+      "aria": null,
+      "id": "queue-tab-drafts",
+      "disabled": false
+    },
+    {
+      "i": 18,
+      "text": "Scan results\nlatest",
+      "aria": null,
+      "id": "queue-tab-scan-results",
+      "disabled": false
+    },
+    {
+      "i": 19,
+      "text": "Open",
+      "aria": null,
+      "id": "btn-open-workbench-3",
+      "disabled": false
+    },
+    {
+      "i": 20,
+      "text": "Correction",
+      "aria": null,
+      "id": "btn-correction-3",
+      "disabled": false
+    },
+    {
+      "i": 21,
+      "text": "",
+      "aria": "Delete draft",
+      "id": "btn-delete-draft-3",
+      "disabled": false
+    },
+    {
+      "i": 22,
+      "text": "Open",
+      "aria": null,
+      "id": "btn-open-workbench-2",
+      "disabled": false
+    },
+    {
+      "i": 23,
+      "text": "Correction",
+      "aria": null,
+      "id": "btn-correction-2",
+      "disabled": false
+    },
+    {
+      "i": 24,
+      "text": "",
+      "aria": "Delete draft",
+      "id": "btn-delete-draft-2",
+      "disabled": false
+    },
+    {
+      "i": 25,
+      "text": "Open",
+      "aria": null,
+      "id": "btn-open-workbench-1",
+      "disabled": false
+    },
+    {
+      "i": 26,
+      "text": "Correction",
+      "aria": null,
+      "id": "btn-correction-1",
+      "disabled": false
+    },
+    {
+      "i": 27,
+      "text": "",
+      "aria": "Delete draft",
+      "id": "btn-delete-draft-1",
+      "disabled": false
+    }
+  ]
+}

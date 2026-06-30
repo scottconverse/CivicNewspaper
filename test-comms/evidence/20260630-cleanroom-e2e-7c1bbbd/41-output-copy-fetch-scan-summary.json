@@ -1,0 +1,252 @@
+﻿{
+    "utc":  "2026-06-30T14:24:58.2075817Z",
+    "sitePath":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default",
+    "copiedOutput":  "test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\site-output-copy",
+    "extract":  "test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\site-package-extract",
+    "zipPath":  "test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\site-output-copy\\site-package.zip",
+    "zipSha256":  "239582CE90B91BB346CFFE5E5884EF7D02E04E196E03B4C09607F4BFE98F54B1",
+    "hereNow":  "https://faint-lodge-c9h5.here.now",
+    "fetches":  [
+                    {
+                        "url":  "https://faint-lodge-c9h5.here.now",
+                        "status":  200,
+                        "length":  2854,
+                        "file":  "live-faint-lodge-c9h5.here.now.html"
+                    },
+                    {
+                        "url":  "https://faint-lodge-c9h5.here.now/watch/1.html",
+                        "status":  200,
+                        "length":  3399,
+                        "file":  "live-faint-lodge-c9h5.here.now_watch_1.html.html"
+                    },
+                    {
+                        "url":  "https://faint-lodge-c9h5.here.now/watch/2.html",
+                        "error":  "The remote server returned an error: (404) Not Found."
+                    }
+                ],
+    "filesScanned":  177,
+    "findingCount":  41,
+    "findings":  [
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\site-output-copy\\watch\\3.html",
+                         "pattern":  "Â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\site-package-extract\\watch\\3.html",
+                         "pattern":  "Â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\14-normal-lead16-draft-opened.json",
+                         "pattern":  "Â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\23-summer-draft-dialog.json",
+                         "pattern":  "Â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\25-summer-after-approve.json",
+                         "pattern":  "Â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\25-summer-workbench.json",
+                         "pattern":  "Â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\26-summer-after-second-approve.json",
+                         "pattern":  "Â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\27-before-summer-approve-retry.json",
+                         "pattern":  "Â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\27-before-summer-approve-retry.json",
+                         "pattern":  "â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\28-after-summer-approve-retry-click.json",
+                         "pattern":  "Â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\28-after-summer-approve-retry-click.json",
+                         "pattern":  "â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\29-after-summer-warning-confirm.json",
+                         "pattern":  "Â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\29-after-summer-warning-confirm.json",
+                         "pattern":  "â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\31-weak-background-cut-timeout-current.json",
+                         "pattern":  "Â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\33-second-normal-generation-poll.json",
+                         "pattern":  "Â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\34-second-normal-generated.json",
+                         "pattern":  "Â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\34-second-normal-generated.json",
+                         "pattern":  "â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\35-second-normal-existing-modal.json",
+                         "pattern":  "Â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\35-second-normal-existing-modal.json",
+                         "pattern":  "â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\36-second-normal-approved.json",
+                         "pattern":  "Â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\36-second-normal-approved.json",
+                         "pattern":  "â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\quality-scan\\quality-scan-results.json",
+                         "pattern":  "EDITOR_NOTE"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\quality-scan\\quality-scan-results.json",
+                         "pattern":  "[EDITOR_NOTE"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\quality-scan\\quality-scan-results.json",
+                         "pattern":  "Editor Note:"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\quality-scan\\quality-scan-results.json",
+                         "pattern":  "TESTER EDIT"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\quality-scan\\quality-scan-results.json",
+                         "pattern":  "Nut graf"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\quality-scan\\quality-scan-results.json",
+                         "pattern":  "Reporting Steps"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\quality-scan\\quality-scan-results.json",
+                         "pattern":  "[Source needed]"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\quality-scan\\quality-scan-results.json",
+                         "pattern":  "[Verification needed]"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\quality-scan\\quality-scan-results.json",
+                         "pattern":  "[End of Report]"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\quality-scan\\quality-scan-results.json",
+                         "pattern":  "Body:"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\quality-scan\\quality-scan-results.json",
+                         "pattern":  "Headline:"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\quality-scan\\quality-scan-results.json",
+                         "pattern":  "[insert"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\quality-scan\\quality-scan-results.json",
+                         "pattern":  "Employee Login"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\quality-scan\\quality-scan-results.json",
+                         "pattern":  "Â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\quality-scan\\quality-scan-results.json",
+                         "pattern":  "Ã"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\quality-scan\\quality-scan-results.json",
+                         "pattern":  "â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\quality-scan\\quality-scan-results.json",
+                         "pattern":  "�"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\quality-scan\\zip-extract\\watch\\3.html",
+                         "pattern":  "Â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\site-output-copy\\watch\\3.html",
+                         "pattern":  "Â"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\site-package-extract\\watch\\3.html",
+                         "pattern":  "Â"
+                     }
+                 ],
+    "manifest":  {
+                     "issue_id":  "issue-20260630-142345-121201700",
+                     "output_dir":  "C:/Users/civic/AppData/Roaming/com.scottconverse.civicdesk/sites/default",
+                     "generated_at":  "2026-06-30T14:23:45.121201700+00:00",
+                     "provider":  "here_now",
+                     "published_url":  "https://faint-lodge-c9h5.here.now",
+                     "deployment_id":  "slug=faint-lodge-c9h5;version=01KWCENEXT7TEMN4BP45PTGDDE;created_slug=faint-lodge-c9h5",
+                     "article_count":  2,
+                     "skipped_count":  0,
+                     "files_written":  19,
+                     "generated_files":  [
+                                             "styles.css",
+                                             "print.css",
+                                             "watch/3.html",
+                                             "watch/1.html",
+                                             "index.html",
+                                             "about.html",
+                                             "ethics.html",
+                                             "how-we-report.html",
+                                             "corrections.html",
+                                             "feed.xml",
+                                             "newsletter.md",
+                                             "substack.md",
+                                             "share-package.md",
+                                             "facebook-post.txt",
+                                             "subreddit-post.md",
+                                             "nextdoor-post.txt",
+                                             "short-link-blurb.txt",
+                                             "publish-manifest.json",
+                                             "site-package.zip"
+                                         ],
+                     "index_path":  "index.html",
+                     "rss_path":  "feed.xml",
+                     "newsletter_path":  "newsletter.md",
+                     "substack_path":  "substack.md",
+                     "share_package_path":  "share-package.md",
+                     "facebook_post_path":  "facebook-post.txt",
+                     "subreddit_post_path":  "subreddit-post.md",
+                     "nextdoor_post_path":  "nextdoor-post.txt",
+                     "short_link_blurb_path":  "short-link-blurb.txt",
+                     "manifest_path":  "publish-manifest.json",
+                     "zip_path":  "site-package.zip",
+                     "articles":  [
+                                      {
+                                          "title":  "Longmont Public Library Launches Annual Summer Reading Challenge",
+                                          "format":  "watch",
+                                          "relative_path":  "watch/3.html",
+                                          "updated_at":  "2026-06-30T14:22:50.206170100+00:00"
+                                      },
+                                      {
+                                          "title":  "City Council Meeting Rescheduled for July 1st",
+                                          "format":  "watch",
+                                          "relative_path":  "watch/1.html",
+                                          "updated_at":  "2026-06-30T14:20:24.901479500+00:00"
+                                      }
+                                  ]
+                 }
+}

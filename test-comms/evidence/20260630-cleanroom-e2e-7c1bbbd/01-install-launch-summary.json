@@ -1,0 +1,10 @@
+﻿{
+    "utc":  "2026-06-30T14:09:57.1101128Z",
+    "installer":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260630-cleanroom-e2e-7c1bbbd\\The Civic Desk_0.3.0_x64-setup.exe",
+    "installerExitCode":  0,
+    "installPath":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+    "installExists":  true,
+    "launched":  true,
+    "launchPid":  10932,
+    "webviewDebug":  "--remote-debugging-port=9333 --remote-allow-origins=*"
+}

@@ -1,0 +1,294 @@
+{
+  "utc": "2026-06-30T14:19:22.253Z",
+  "body": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nStory Queue\n\nCivic signals your sources surfaced, ready to verify and turn into plain-language stories.\n\nRefresh\nDaily Scan\nScrape & Detect\nNEW LEADS\n17\nIN DRAFTING\n0\nHIGH PRIORITY\n1\nSOURCES\n14\nLocal-first workflow\nScan sources, draft from linked evidence, run guardrails, then publish a static paper.\nLeads\n17\nDrafts\n0\nScan results\nlatest\nFilter leads\nSort by:\nDate Created\nRisk Level\nConfidence\nRisk: med\nBrief\nEditor review\ndaily_scan\nBoard of Education Regular Meeting: The St. Vrain Valley Schools Board of Education will hold a regular meeting on August 12 at 6:00 p.m., discussing potential updates or decisions. Editor context: Educational boards often make significant policy changes and can impact the local community. Suggested treatment: brief. Newsworthiness: 9/20 (immediacy 3, impact 3, conflict 1, novelty 2). Why now: The next regular board meeting is scheduled, which could discuss new policies or decisions affecting the district. Suggested next step: Review previous board meeting minutes to identify potential ongoing issues or new developments. What would make this publishable: Agenda items and any proposed changes or discussions for the upcoming meeting.\n\nNovelty 2/5. The next regular board meeting is scheduled, which could discuss new policies or decisions affecting the district.\n\nConfidence: med\nDraft anyway\nRisk: med\nBrief\nReady to draft\ndaily_scan\n2026 Summer Reading Challenge: The Longmont Public Library is hosting its annual summer reading challenge, running from May 21 to July 31, with various events and activities for children. Editor context: This event involves a community service and impacts local youth's educational experience. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 3, impact 2, conflict 1, novelty 4). Why now: The summer reading challenge is currently active, providing ongoing community engagement. Suggested next step: Check the calendar for upcoming events and confirm details with the library. What would make this publishable: Detailed information on the program's structure, registration process, and expected outcomes.\n\nNovelty 4/5. The summer reading challenge is currently active, providing ongoing community engagement.\n\nConfidence: med\nDraft\nRisk: med\nBackground\nBackground\ndaily_scan\nVision Zero Initiatives: The City of Longmont continues its Vision Zero projects to improve transportation safety through various activities and community involvement. Editor context: Vision Zero is a critical initiative impacting public safety, especially for vulnerable road users. Suggested treatment: background. Newsworthiness: 12/20 (immediacy 3, impact 4, conflict 2, novelty 3). Why now: No specific change, but ongoing initiatives are of public interest. Suggested next step: Verify the latest activities and events related to Vision Zero from official sources. What would make this publishable: Details of upcoming or recent Vision Zero activities and events.\n\nNovelty 3/5. No specific change, but ongoing initiatives are of public interest.\n\nConfidence: med\nDraft anyway\nRisk: med\nBackground\nBackground\ndaily_scan\nLongmont Public Library Summer Programs: The Longmont Public Library offers a variety of summer programs for children, including gaming clubs, storytimes, and craft activities. Editor context: These ongoing community programs provide services to local families and are relevant to the city's recreational offerings. Suggested treatment: background. Newsworthiness: 10/20 (immediacy 3, impact 4, conflict 1, novelty 2). Why now: No current change, but these programs are ongoing. Suggested next step: Check for upcoming dates and details of specific events before drafting. What would make this publishable: Details of upcoming events and schedules.\n\nNovelty 2/5. No current change, but these programs are ongoing.\n\nConfidence: med\nDraft anyway\nRisk: high\nBrief\nReady to draft\ndaily_scan\nCity Council Meeting Rescheduled: The City Council meeting originally scheduled for June 30th is now rescheduled to July 1st at 7 PM. Editor context: This is a current change in the schedule of a city council meeting, which affects public participation and transparency. Suggested treatment: brief. Newsworthiness: 14/20 (immediacy 5, impact 3, conflict 2, novelty 4). Why now: The City Council meeting has been rescheduled to July 1st. Suggested next step: Verify the new date and time with official sources before drafting the story. What would make this publishable: Confirmation of the new date, time, and location from official sources.\n\nNovelty 4/5. The City Council meeting has been rescheduled to July 1st.\n\nConfidence: high\nDraft\nRisk: low\nVerification\nNeeds verification\nDecision / Vote\nVOTING SIGNAL: Found vote/decision keywords ([\"approved\", \"approved\", \"Approved\", \"passed\", \"Motion\", \"motion\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.\n\nNovelty 2/5. Keyword detector found decision language; reporter must confirm the actual current vote, date, and impact.\n\nConfidence: medium\nDraft anyway\nRisk: low\nWatch\nWatch\nPublic Meeting Scheduled\nMEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.\n\nNovelty 2/5. Meeting language found; verify a specific upcoming agenda, date, or action before drafting as news.\n\nConfidence: medium\nDraft anyway\nRisk: low\nVerification\nNeeds verification\nDecision / Vote\nVOTING SIGNAL: Found vote/decision keywords ([\"passed\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.\n\nNovelty 2/5. Keyword detector found decision language; reporter must confirm the actual current vote, date, and impact.\n\nConfidence: medium\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont City Council Meetings' was fetched today (https://longmontcolorado.gov/government/city-council-meetings/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Public Notice Colorado' was fetched today (https://www.publicnoticecolorado.com/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nPublic Meeting Scheduled\nMEETING SCHEDULED: Meeting notification detected in 'Longmont Agenda Management Portal' record. Public attendance or comment may be permitted.\n\nNovelty 2/5. Meeting language found; verify a specific upcoming agenda, date, or action before drafting as news.\n\nConfidence: medium\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont official city website' was fetched today (https://www.longmontcolorado.gov/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont Agenda Management Portal' was fetched today (https://longmontcolorado.gov/city-clerk/agenda-management-portal/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont city events' was fetched today (https://longmontcolorado.gov/events/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'Longmont city news' was fetched today (https://www.longmontcolorado.gov/news).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway\nRisk: low\nWatch\nWatch\nNew Primary Record\nA new official primary document from 'St. Vrain Valley Schools' was fetched today (https://www.svvsd.org/).\n\nNovelty 2/5. Newly fetched official page; verify a current change before treating it as news.\n\nConfidence: high\nDraft anyway",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-queue",
+      "cls": "nav-link active"
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-dailyScan",
+      "cls": "nav-link "
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-darkSignals",
+      "cls": "nav-link "
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-verification",
+      "cls": "nav-link "
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-workbench",
+      "cls": "nav-link "
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-sources",
+      "cls": "nav-link "
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-onboarding",
+      "cls": "nav-link "
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-publish",
+      "cls": "nav-link "
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-pairing",
+      "cls": "nav-link "
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-settings",
+      "cls": "nav-link "
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-system",
+      "cls": "nav-link "
+    },
+    {
+      "i": 11,
+      "text": "",
+      "disabled": false,
+      "aria": "Dismiss beta notice",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 12,
+      "text": "Refresh",
+      "disabled": false,
+      "aria": null,
+      "id": "btn-sync-list",
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 13,
+      "text": "Daily Scan",
+      "disabled": false,
+      "aria": null,
+      "id": "btn-daily-scan",
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 14,
+      "text": "Scrape & Detect",
+      "disabled": false,
+      "aria": null,
+      "id": "btn-scrape-detect",
+      "cls": "btn btn-primary"
+    },
+    {
+      "i": 15,
+      "text": "IN DRAFTING\n0",
+      "disabled": false,
+      "aria": "Open 0 drafts",
+      "id": "",
+      "cls": "stat-card stat-amber stat-card-button"
+    },
+    {
+      "i": 16,
+      "text": "Leads\n17",
+      "disabled": false,
+      "aria": null,
+      "id": "queue-tab-leads",
+      "cls": "queue-tab active"
+    },
+    {
+      "i": 17,
+      "text": "Drafts\n0",
+      "disabled": false,
+      "aria": null,
+      "id": "queue-tab-drafts",
+      "cls": "queue-tab "
+    },
+    {
+      "i": 18,
+      "text": "Scan results\nlatest",
+      "disabled": false,
+      "aria": null,
+      "id": "queue-tab-scan-results",
+      "cls": "queue-tab "
+    },
+    {
+      "i": 19,
+      "text": "Draft anyway",
+      "disabled": false,
+      "aria": "Draft anyway Board of Education Regular Meeting: The St. Vrain Valley Schools Board of Education will hold a regular meeting on August 12 at 6:00 p.m., discussing potential updates or decisions. Editor context: Educational boards often make significant policy changes and can impact the local community. Suggested treatment: brief. Newsworthiness: 9/20 (immediacy 3, impact 3, conflict 1, novelty 2). Why now: The next regular board meeting is scheduled, which could discuss new policies or decisions affecting the district. Suggested next step: Review previous board meeting minutes to identify potential ongoing issues or new developments. What would make this publishable: Agenda items and any proposed changes or discussions for the upcoming meeting.",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 20,
+      "text": "Draft",
+      "disabled": false,
+      "aria": "Draft 2026 Summer Reading Challenge: The Longmont Public Library is hosting its annual summer reading challenge, running from May 21 to July 31, with various events and activities for children. Editor context: This event involves a community service and impacts local youth's educational experience. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 3, impact 2, conflict 1, novelty 4). Why now: The summer reading challenge is currently active, providing ongoing community engagement. Suggested next step: Check the calendar for upcoming events and confirm details with the library. What would make this publishable: Detailed information on the program's structure, registration process, and expected outcomes.",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 21,
+      "text": "Draft anyway",
+      "disabled": false,
+      "aria": "Draft anyway Vision Zero Initiatives: The City of Longmont continues its Vision Zero projects to improve transportation safety through various activities and community involvement. Editor context: Vision Zero is a critical initiative impacting public safety, especially for vulnerable road users. Suggested treatment: background. Newsworthiness: 12/20 (immediacy 3, impact 4, conflict 2, novelty 3). Why now: No specific change, but ongoing initiatives are of public interest. Suggested next step: Verify the latest activities and events related to Vision Zero from official sources. What would make this publishable: Details of upcoming or recent Vision Zero activities and events.",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 22,
+      "text": "Draft anyway",
+      "disabled": false,
+      "aria": "Draft anyway Longmont Public Library Summer Programs: The Longmont Public Library offers a variety of summer programs for children, including gaming clubs, storytimes, and craft activities. Editor context: These ongoing community programs provide services to local families and are relevant to the city's recreational offerings. Suggested treatment: background. Newsworthiness: 10/20 (immediacy 3, impact 4, conflict 1, novelty 2). Why now: No current change, but these programs are ongoing. Suggested next step: Check for upcoming dates and details of specific events before drafting. What would make this publishable: Details of upcoming events and schedules.",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 23,
+      "text": "Draft",
+      "disabled": false,
+      "aria": "Draft City Council Meeting Rescheduled: The City Council meeting originally scheduled for June 30th is now rescheduled to July 1st at 7 PM. Editor context: This is a current change in the schedule of a city council meeting, which affects public participation and transparency. Suggested treatment: brief. Newsworthiness: 14/20 (immediacy 5, impact 3, conflict 2, novelty 4). Why now: The City Council meeting has been rescheduled to July 1st. Suggested next step: Verify the new date and time with official sources before drafting the story. What would make this publishable: Confirmation of the new date, time, and location from official sources.",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 24,
+      "text": "Draft anyway",
+      "disabled": false,
+      "aria": "Draft anyway VOTING SIGNAL: Found vote/decision keywords ([\"approved\", \"approved\", \"Approved\", \"passed\", \"Motion\", \"motion\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 25,
+      "text": "Draft anyway",
+      "disabled": false,
+      "aria": "Draft anyway MEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 26,
+      "text": "Draft anyway",
+      "disabled": false,
+      "aria": "Draft anyway VOTING SIGNAL: Found vote/decision keywords ([\"passed\"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 27,
+      "text": "Draft anyway",
+      "disabled": false,
+      "aria": "Draft anyway A new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 28,
+      "text": "Draft anyway",
+      "disabled": false,
+      "aria": "Draft anyway A new official primary document from 'Longmont City Council Meetings' was fetched today (https://longmontcolorado.gov/government/city-council-meetings/).",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 29,
+      "text": "Draft anyway",
+      "disabled": false,
+      "aria": "Draft anyway A new official primary document from 'Public Notice Colorado' was fetched today (https://www.publicnoticecolorado.com/).",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 30,
+      "text": "Draft anyway",
+      "disabled": false,
+      "aria": "Draft anyway MEETING SCHEDULED: Meeting notification detected in 'Longmont Agenda Management Portal' record. Public attendance or comment may be permitted.",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 31,
+      "text": "Draft anyway",
+      "disabled": false,
+      "aria": "Draft anyway A new official primary document from 'Longmont official city website' was fetched today (https://www.longmontcolorado.gov/).",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 32,
+      "text": "Draft anyway",
+      "disabled": false,
+      "aria": "Draft anyway A new official primary document from 'Longmont Agenda Management Portal' was fetched today (https://longmontcolorado.gov/city-clerk/agenda-management-portal/).",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 33,
+      "text": "Draft anyway",
+      "disabled": false,
+      "aria": "Draft anyway A new official primary document from 'Longmont city events' was fetched today (https://longmontcolorado.gov/events/).",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 34,
+      "text": "Draft anyway",
+      "disabled": false,
+      "aria": "Draft anyway A new official primary document from 'Longmont city news' was fetched today (https://www.longmontcolorado.gov/news).",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 35,
+      "text": "Draft anyway",
+      "disabled": false,
+      "aria": "Draft anyway A new official primary document from 'St. Vrain Valley Schools' was fetched today (https://www.svvsd.org/).",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    }
+  ]
+}

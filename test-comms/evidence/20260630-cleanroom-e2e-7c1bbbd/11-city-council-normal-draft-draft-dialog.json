@@ -1,0 +1,142 @@
+{
+  "utc": "2026-06-30T14:19:23.917Z",
+  "body": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nAsking the local AI model to write a working draft... (this may take a moment)\nDismiss\nDrafting Article\n\nLead: City Council Meeting Rescheduled: The City Council meeting originally scheduled for June 30th is now rescheduled to July 1st at 7 PM. Editor context: This is a current change in the schedule of a city council meeting, which affects public participation and transparency. Suggested treatment: brief. Newsworthiness: 14/20 (immediacy 5, impact 3, conflict 2, novelty 4). Why now: The City Council meeting has been rescheduled to July 1st. Suggested next step: Verify the new date and time with official sources before drafting the story. What would make this publishable: Confirmation of the new date, time, and location from official sources.\n\nBrief\nReady to draft\nNovelty 4/5\n\nUse linked evidence and the novelty notes to decide whether this is ready for reader-facing copy.\n\nWhy now: The City Council meeting has been rescheduled to July 1st.\n\nGenerating Draft...\nCancel\nAsking the local AI model to write a working draft. Keep this window open.\nArticle Format\nBrief (Under 200 words summary)\nWatch Alert (Highlights specific public safety or procurement issues)\nExplainer (Detailed review of a policy or decision background)\nInvestigation (Traces spending and connections behind a story)\nEditorial / Opinion Piece (Presents a structured argument)\nCustom Guidelines / Instructions (Optional)\nLinked Sources (0)\n\nNo source documents are linked to this lead yet. You can still generate a working draft; mark anything that needs verification before publishing.\n\nGenerating Draft...\nCancel",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-queue",
+      "cls": "nav-link "
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-dailyScan",
+      "cls": "nav-link "
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-darkSignals",
+      "cls": "nav-link "
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-verification",
+      "cls": "nav-link "
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-workbench",
+      "cls": "nav-link active"
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-sources",
+      "cls": "nav-link "
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-onboarding",
+      "cls": "nav-link "
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-publish",
+      "cls": "nav-link "
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-pairing",
+      "cls": "nav-link "
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-settings",
+      "cls": "nav-link "
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "disabled": false,
+      "aria": null,
+      "id": "nav-tab-system",
+      "cls": "nav-link "
+    },
+    {
+      "i": 11,
+      "text": "",
+      "disabled": false,
+      "aria": "Dismiss beta notice",
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 12,
+      "text": "Dismiss",
+      "disabled": false,
+      "aria": null,
+      "id": "",
+      "cls": "btn btn-secondary btn-sm"
+    },
+    {
+      "i": 13,
+      "text": "Generating Draft...",
+      "disabled": true,
+      "aria": null,
+      "id": "btn-generate-draft-top",
+      "cls": "btn btn-primary"
+    },
+    {
+      "i": 14,
+      "text": "Cancel",
+      "disabled": true,
+      "aria": null,
+      "id": "btn-cancel-draft-top",
+      "cls": "btn btn-secondary"
+    },
+    {
+      "i": 15,
+      "text": "Generating Draft...",
+      "disabled": true,
+      "aria": null,
+      "id": "btn-generate-draft-bottom",
+      "cls": "btn btn-primary"
+    },
+    {
+      "i": 16,
+      "text": "Cancel",
+      "disabled": true,
+      "aria": null,
+      "id": "btn-cancel-draft-bottom",
+      "cls": "btn btn-secondary"
+    }
+  ]
+}

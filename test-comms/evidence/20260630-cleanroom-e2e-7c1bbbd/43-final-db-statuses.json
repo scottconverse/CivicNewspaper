@@ -1,0 +1,160 @@
+{
+  "drafts": [
+    {
+      "id": 1,
+      "lead_id": 13,
+      "title": "City Council Meeting Rescheduled for July 1st",
+      "status": "ready_to_publish",
+      "attested_by": "Attempt Seven Editor",
+      "attested_at": "2026-06-30T14:20:24.898772+00:00",
+      "guardrail_override_reason": "Tester approval checkpoint: proceeding to verify attempt-7 warning override logs and transitions to ready_to_publish despite citation warnings."
+    },
+    {
+      "id": 2,
+      "lead_id": 15,
+      "title": "Vision Zero Initiatives Continue in Longmont",
+      "status": "killed",
+      "attested_by": null,
+      "attested_at": null,
+      "guardrail_override_reason": null
+    },
+    {
+      "id": 3,
+      "lead_id": 16,
+      "title": "Longmont Public Library Launches Annual Summer Reading Challenge",
+      "status": "ready_to_publish",
+      "attested_by": "Attempt Seven Editor",
+      "attested_at": "2026-06-30T14:22:50.203161800+00:00",
+      "guardrail_override_reason": "Tester approval checkpoint: citation warnings reviewed; approving this current summer reading brief as a reader-facing item."
+    }
+  ],
+  "sources": [
+    {
+      "id": 1,
+      "name": "Longmont official city website",
+      "url": "https://www.longmontcolorado.gov/",
+      "type": "primary_record",
+      "status": "online",
+      "tier": "official_record",
+      "last_success_at": "2026-06-30T14:13:02.111179300+00:00"
+    },
+    {
+      "id": 2,
+      "name": "Longmont city news",
+      "url": "https://www.longmontcolorado.gov/news",
+      "type": "official_comm",
+      "status": "online",
+      "tier": "official_record",
+      "last_success_at": "2026-06-30T14:13:05.237520500+00:00"
+    },
+    {
+      "id": 3,
+      "name": "Longmont Agenda Management Portal",
+      "url": "https://longmontcolorado.gov/city-clerk/agenda-management-portal/",
+      "type": "primary_record",
+      "status": "online",
+      "tier": "official_record",
+      "last_success_at": "2026-06-30T14:13:08.323577200+00:00"
+    },
+    {
+      "id": 4,
+      "name": "Longmont City Council Meetings",
+      "url": "https://longmontcolorado.gov/government/city-council-meetings/",
+      "type": "primary_record",
+      "status": "online",
+      "tier": "official_record",
+      "last_success_at": "2026-06-30T14:13:11.408020+00:00"
+    },
+    {
+      "id": 5,
+      "name": "Longmont Public Information",
+      "url": "https://longmontcolorado.gov/public-information/",
+      "type": "official_comm",
+      "status": "online",
+      "tier": "official_record",
+      "last_success_at": "2026-06-30T14:13:14.487091300+00:00"
+    },
+    {
+      "id": 6,
+      "name": "Longmont Public Safety",
+      "url": "https://www.longmontcolorado.gov/departments/departments-n-z/public-safety",
+      "type": "official_comm",
+      "status": "offline",
+      "tier": "official_record",
+      "last_success_at": null
+    },
+    {
+      "id": 7,
+      "name": "Public Notice Colorado",
+      "url": "https://www.publicnoticecolorado.com/",
+      "type": "primary_record",
+      "status": "online",
+      "tier": "official_record",
+      "last_success_at": "2026-06-30T14:13:21.232518400+00:00"
+    },
+    {
+      "id": 8,
+      "name": "St. Vrain Valley Schools",
+      "url": "https://www.svvsd.org/",
+      "type": "primary_record",
+      "status": "online",
+      "tier": "official_record",
+      "last_success_at": "2026-06-30T14:13:24.300378700+00:00"
+    },
+    {
+      "id": 9,
+      "name": "City of Longmont Facebook",
+      "url": "https://www.facebook.com/cityoflongmontco/",
+      "type": "community_signal",
+      "status": "offline",
+      "tier": "community_signal",
+      "last_success_at": null
+    },
+    {
+      "id": 10,
+      "name": "Longmont Public Safety Facebook",
+      "url": "https://www.facebook.com/LongmontFirePoliceOEM/",
+      "type": "community_signal",
+      "status": "offline",
+      "tier": "community_signal",
+      "last_success_at": null
+    },
+    {
+      "id": 11,
+      "name": "Longmont subreddit",
+      "url": "https://www.reddit.com/r/Longmont/",
+      "type": "community_signal",
+      "status": "offline",
+      "tier": "community_signal",
+      "last_success_at": null
+    },
+    {
+      "id": 12,
+      "name": "Longmont Colorado subreddit",
+      "url": "https://www.reddit.com/r/LongmontColorado/",
+      "type": "community_signal",
+      "status": "offline",
+      "tier": "community_signal",
+      "last_success_at": null
+    },
+    {
+      "id": 13,
+      "name": "Longmont city events",
+      "url": "https://longmontcolorado.gov/events/",
+      "type": "official_comm",
+      "status": "online",
+      "tier": "official_record",
+      "last_success_at": "2026-06-30T14:13:39.537721+00:00"
+    },
+    {
+      "id": 14,
+      "name": "Longmont city YouTube",
+      "url": "https://www.youtube.com/cityoflongmont",
+      "type": "official_comm",
+      "status": "online",
+      "tier": "official_record",
+      "last_success_at": "2026-06-30T14:13:43.084929+00:00"
+    }
+  ],
+  "lead_count": 17
+}

@@ -1,0 +1,55 @@
+﻿{
+    "utc":  "2026-06-30T14:25:19.2015725Z",
+    "hereNow":  "https://faint-lodge-c9h5.here.now",
+    "fetches":  [
+                    {
+                        "url":  "https://faint-lodge-c9h5.here.now",
+                        "status":  200,
+                        "length":  2854,
+                        "file":  "live-faint-lodge-c9h5.here.now.html"
+                    },
+                    {
+                        "url":  "https://faint-lodge-c9h5.here.now/watch/3.html",
+                        "status":  200,
+                        "length":  10705,
+                        "file":  "live-faint-lodge-c9h5.here.now_watch_3.html.html"
+                    },
+                    {
+                        "url":  "https://faint-lodge-c9h5.here.now/watch/1.html",
+                        "status":  200,
+                        "length":  3399,
+                        "file":  "live-faint-lodge-c9h5.here.now_watch_1.html.html"
+                    }
+                ],
+    "filesScanned":  39,
+    "findingCount":  2,
+    "findings":  [
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\site-output-copy\\watch\\3.html",
+                         "pattern":  "Â",
+                         "snippet":  "riginal Document Link\u003c/a\u003e: \u003cspan style=\"font-style: italic;\"\u003e\"Wednesday, July 1 Â· 6 pm  -  7 pm\nLongmont Public Library\n355 Emery St., Longmont, CO, United States\nA free gaming club for 3rd-5th graders! Play on the Libr"
+                     },
+                     {
+                         "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260630-cleanroom-e2e-7c1bbbd\\site-package-extract\\watch\\3.html",
+                         "pattern":  "Â",
+                         "snippet":  "riginal Document Link\u003c/a\u003e: \u003cspan style=\"font-style: italic;\"\u003e\"Wednesday, July 1 Â· 6 pm  -  7 pm\nLongmont Public Library\n355 Emery St., Longmont, CO, United States\nA free gaming club for 3rd-5th graders! Play on the Libr"
+                     }
+                 ],
+    "zipSha256":  "239582CE90B91BB346CFFE5E5884EF7D02E04E196E03B4C09607F4BFE98F54B1",
+    "manifestArticleCount":  2,
+    "filesWritten":  19,
+    "articles":  [
+                     {
+                         "title":  "Longmont Public Library Launches Annual Summer Reading Challenge",
+                         "format":  "watch",
+                         "relative_path":  "watch/3.html",
+                         "updated_at":  "2026-06-30T14:22:50.206170100+00:00"
+                     },
+                     {
+                         "title":  "City Council Meeting Rescheduled for July 1st",
+                         "format":  "watch",
+                         "relative_path":  "watch/1.html",
+                         "updated_at":  "2026-06-30T14:20:24.901479500+00:00"
+                     }
+                 ]
+}

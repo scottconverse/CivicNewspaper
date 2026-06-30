@@ -1,0 +1,181 @@
+{
+  "utc": "2026-06-30T14:23:19.426Z",
+  "body": "The Civic Desk\nLONGMONT / CO\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nCut this story?\n\nCutting this story removes it from the publishing pipeline. You can restore it later, but any in-progress review state is cleared.\n\nCancel\nCut story\nStory Workbench\n\nModify drafted content, review guardrail warnings, and link source material when it helps the editor.\n\nBack to Queue\nSave Draft\nDelete\nAdvisory warnings - these do not block publishing.\n4 ISSUE(S)\nWarns\n- Review this guardrail issue\n\nThe linked lead is marked as background. Confirm a current, specific, verified development before treating this as a reader-facing news story.\n\nTechnical details\nWarns\n- Consider adding a source link\n\nThis passage looks like a factual claim without a linked source. Add a link if one exists, rewrite the claim, or leave it for the editor to approve.\n\nTechnical details\nWarns\n- Consider adding a source link\n\nThis passage looks like a factual claim without a linked source. Add a link if one exists, rewrite the claim, or leave it for the editor to approve.\n\nTechnical details\nWarns\n- Consider adding a source link\n\nThis passage looks like a factual claim without a linked source. Add a link if one exists, rewrite the claim, or leave it for the editor to approve.\n\nTechnical details\nPress-freedom / legal-risk advisor\n\nAdvisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.\n\nRun Advisor\nDistinguish verified facts, allegations, opinion, and unanswered questions.\nUse extra care with private individuals, minors, medical details, addresses, and active legal matters.\nKeep notes on source reliability and why publishing serves the community.\nStory Title\nArticle Body (Markdown)\nPlain Language Rewrite\nHighlight text and click \"Cite\" in evidence pane to link.\nCurrent Status: Sent back / needs work\nResume Editing\nMark Ready for Review\nHold\nCut Story\nApprove for Static Publish\nThis draft was sent back for more work. Keep editing, add evidence, then mark it ready for review when it is ready for an editor again.\nI have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision.\nSocial Media Promo Pack\nGenerate Posts\n\nGenerate optimized posts for Twitter/X, Facebook, and Reddit based on the current draft.\n\nLinked Sources\n\nNo source documents are linked to this story draft.",
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "aria": null,
+      "id": "nav-tab-queue",
+      "disabled": false
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "aria": null,
+      "id": "nav-tab-dailyScan",
+      "disabled": false
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "aria": null,
+      "id": "nav-tab-darkSignals",
+      "disabled": false
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "aria": null,
+      "id": "nav-tab-verification",
+      "disabled": false
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "aria": null,
+      "id": "nav-tab-workbench",
+      "disabled": false
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "aria": null,
+      "id": "nav-tab-sources",
+      "disabled": false
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "aria": null,
+      "id": "nav-tab-onboarding",
+      "disabled": false
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "aria": null,
+      "id": "nav-tab-publish",
+      "disabled": false
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "aria": null,
+      "id": "nav-tab-pairing",
+      "disabled": false
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "aria": null,
+      "id": "nav-tab-settings",
+      "disabled": false
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "aria": null,
+      "id": "nav-tab-system",
+      "disabled": false
+    },
+    {
+      "i": 11,
+      "text": "",
+      "aria": "Dismiss beta notice",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 12,
+      "text": "Cancel",
+      "aria": null,
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 13,
+      "text": "Cut story",
+      "aria": null,
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 14,
+      "text": "Back to Queue",
+      "aria": null,
+      "id": "btn-close-workbench",
+      "disabled": false
+    },
+    {
+      "i": 15,
+      "text": "Save Draft",
+      "aria": null,
+      "id": "btn-save-draft",
+      "disabled": false
+    },
+    {
+      "i": 16,
+      "text": "Delete",
+      "aria": null,
+      "id": "btn-delete-workbench-draft",
+      "disabled": false
+    },
+    {
+      "i": 17,
+      "text": "Run Advisor",
+      "aria": null,
+      "id": "btn-press-freedom-review",
+      "disabled": false
+    },
+    {
+      "i": 18,
+      "text": "Plain Language Rewrite",
+      "aria": null,
+      "id": "btn-plain-language-rewrite",
+      "disabled": false
+    },
+    {
+      "i": 19,
+      "text": "Resume Editing",
+      "aria": null,
+      "id": "btn-status-resume-draft",
+      "disabled": false
+    },
+    {
+      "i": 20,
+      "text": "Mark Ready for Review",
+      "aria": null,
+      "id": "btn-status-ready-review",
+      "disabled": false
+    },
+    {
+      "i": 21,
+      "text": "Hold",
+      "aria": null,
+      "id": "btn-status-hold",
+      "disabled": false
+    },
+    {
+      "i": 22,
+      "text": "Cut Story",
+      "aria": null,
+      "id": "btn-status-kill",
+      "disabled": false
+    },
+    {
+      "i": 23,
+      "text": "Approve for Static Publish",
+      "aria": null,
+      "id": "btn-status-publish",
+      "disabled": false
+    },
+    {
+      "i": 24,
+      "text": "Generate Posts",
+      "aria": null,
+      "id": "btn-generate-social",
+      "disabled": false
+    }
+  ]
+}
