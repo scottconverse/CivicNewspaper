@@ -2,7 +2,7 @@
 
 Active directive path:
 
-test-comms/directives/20260630-cleanroom-e2e-6e2ac5b-attempt9.md
+test-comms/directives/20260630-publish-persistence-recheck-6e2ac5b.md
 
 Tester must use branch test-comms/cleanroom-coder-tester in repo https://github.com/scottconverse/CivicNewspaper.
 
@@ -22,15 +22,15 @@ Product commit:
 
 Required first report:
 
-test-comms/reports/20260630-cleanroom-e2e-6e2ac5b-visibility-attempt-9.md
+test-comms/reports/20260630-publish-persistence-recheck-6e2ac5b-visibility.md
 
 Required final report:
 
-test-comms/reports/20260630-cleanroom-e2e-6e2ac5b-report.md
+test-comms/reports/20260630-publish-persistence-recheck-6e2ac5b-report.md
 
 Tester output artifact folder:
 
-test-comms/artifacts/20260630-cleanroom-e2e-6e2ac5b/tester-output/
+test-comms/evidence/20260630-publish-persistence-recheck-6e2ac5b/
 
 NSIS installer:
 
