@@ -1122,7 +1122,7 @@ fn sanitize_unlinked_evidence_citations(text: &str, allowed_ids: &HashSet<i32>) 
         output
     } else {
         format!(
-            "{output}\n\n> Editor note: The AI draft referenced unlinked evidence ID(s) {}. Those citation markers were disabled automatically. Verify the claim against the linked sources before publishing.",
+            "{output}\n\n> Source check: The AI draft referenced unlinked evidence ID(s) {}. Those citation markers were disabled automatically. Verify the claim against the linked sources before publishing.",
             removed_ids
                 .iter()
                 .map(i32::to_string)
@@ -1130,6 +1130,92 @@ fn sanitize_unlinked_evidence_citations(text: &str, allowed_ids: &HashSet<i32>) 
                 .join(", ")
         )
     }
+}
+
+fn line_has_forbidden_draft_marker(line: &str) -> bool {
+    let trimmed = line.trim();
+    let lower = trimmed.to_lowercase();
+    lower.starts_with("editor_note:")
+        || lower.starts_with("editor note:")
+        || lower.starts_with("[editor_note:")
+        || lower.starts_with("[editor note:")
+        || lower.starts_with("tester edit:")
+        || lower == "[source needed]"
+        || lower == "[verification needed]"
+        || lower == "[end of report]"
+        || lower == "end of report"
+}
+
+fn strip_bracketed_insert_placeholders(line: &str) -> String {
+    let mut output = String::with_capacity(line.len());
+    let mut rest = line;
+    while let Some(start) = rest.find('[') {
+        output.push_str(&rest[..start]);
+        let after = &rest[start + 1..];
+        let Some(end) = after.find(']') else {
+            output.push_str(&rest[start..]);
+            return output;
+        };
+        let inside = &after[..end];
+        let lower = inside.trim().to_lowercase();
+        if lower.starts_with("insert ")
+            || lower.contains(" if available")
+            || lower.contains("source needed")
+            || lower.contains("verification needed")
+        {
+            rest = &after[end + 1..];
+        } else {
+            output.push('[');
+            output.push_str(inside);
+            output.push(']');
+            rest = &after[end + 1..];
+        }
+    }
+    output.push_str(rest);
+    let mut compacted = output.split_whitespace().collect::<Vec<_>>().join(" ");
+    for punct in [".", ",", ";", ":", "!", "?"] {
+        compacted = compacted.replace(&format!(" {punct}"), punct);
+    }
+    compacted
+}
+
+fn clean_generated_draft_for_workbench(text: &str) -> String {
+    let mut cleaned = Vec::new();
+    let mut skipping_reporting_steps = false;
+
+    for line in text.lines() {
+        let trimmed = line.trim();
+        let plain = trimmed.trim_matches('*').trim();
+        let lower = plain.to_lowercase();
+
+        if line_has_forbidden_draft_marker(plain) {
+            skipping_reporting_steps = false;
+            continue;
+        }
+
+        if lower.starts_with("reporting steps:") || lower.starts_with("next reporting steps:") {
+            skipping_reporting_steps = true;
+            continue;
+        }
+
+        if skipping_reporting_steps {
+            if trimmed.is_empty()
+                || trimmed.starts_with('-')
+                || trimmed.chars().next().map(|ch| ch.is_ascii_digit()).unwrap_or(false)
+                || trimmed.ends_with('?')
+            {
+                continue;
+            }
+            skipping_reporting_steps = false;
+        }
+
+        let line = strip_bracketed_insert_placeholders(line);
+        if !line.trim().is_empty() || cleaned.last().map(|last: &String| !last.is_empty()).unwrap_or(false) {
+            cleaned.push(line);
+        }
+    }
+
+    cleaned.join("\n").trim().to_string()
 }
 
 #[cfg(test)]
@@ -1146,7 +1232,7 @@ mod draft_citation_tests {
 
         assert!(sanitized.contains("evidence:3"));
         assert!(sanitized.contains("unlinked-evidence-224"));
-        assert!(sanitized.contains("Editor note"));
+        assert!(sanitized.contains("Source check"));
         assert!(sanitized.contains("224"));
     }
 
@@ -1159,7 +1245,21 @@ mod draft_citation_tests {
 
         assert!(!sanitized.contains("](evidence:12)"));
         assert!(sanitized.contains("unlinked-evidence-12"));
-        assert!(sanitized.contains("Editor note"));
+        assert!(sanitized.contains("Source check"));
+    }
+
+    #[test]
+    fn cleans_model_reporter_markers_before_workbench() {
+        let draft = "Headline: Council to review traffic safety\n\nEDITOR_NOTE: weak source\n\nThe council will review traffic safety at an upcoming meeting [insert date if available].\n\nReporting Steps:\n- Call the clerk.\n- Verify date.\n\nResidents can follow the agenda for the next posted meeting. [Source](evidence:4)\n\n[End of Report]";
+
+        let cleaned = super::clean_generated_draft_for_workbench(draft);
+
+        assert!(!cleaned.to_lowercase().contains("editor_note"));
+        assert!(!cleaned.to_lowercase().contains("reporting steps"));
+        assert!(!cleaned.to_lowercase().contains("[insert"));
+        assert!(!cleaned.to_lowercase().contains("end of report"));
+        assert!(cleaned.contains("Headline: Council to review traffic safety"));
+        assert!(cleaned.contains("Residents can follow the agenda"));
     }
 }
 
@@ -1207,22 +1307,23 @@ fn build_draft_prompt(
         template_guidance
             .unwrap_or("Use the editor's selected format and keep the draft evidence-bound.")
     );
-    let advisory = "If editorial disposition is background, watch, needs_verification, low novelty, no current change found, or recurring beat memory with no new fact, return an editor memo or watch item. Do not make it sound like a finished news story unless the attached evidence shows a current, specific, verified development.";
+    let advisory = "If editorial disposition is background, watch, needs_verification, low novelty, no current change found, or recurring beat memory with no new fact, write a short reader-facing watch item or background brief instead of inflating it into a full story. Do not use internal editor labels, placeholders, or private newsroom notes in the draft body.";
+    let forbidden_output = "Never include EDITOR_NOTE, Editor Note, TESTER EDIT, Nut graf, Reporting Steps, Source needed, Verification needed, End of Report, Body:, or bracketed placeholders such as [insert date]. If a fact is not in the source, omit it or say only what the source actually says.";
 
     if evidence_count == 0 {
         format!(
-            "Lead topic: {}\n\n{}\nNo source documents are attached to this lead yet. Prepare a '{}' editor memo, not a finished article.\n\n{}\n\nReturn clean Markdown. First line must be `Headline: ...`. If there is not enough current, specific, verified information to draft a story, start the body with `EDITOR_NOTE: Not enough verified source material for a publishable story yet.` Then list concise verification questions. Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, impacts, community reaction, or technical details.",
-            lead_why, lead_quality_context, format, advisory
+            "Lead topic: {}\n\n{}\nNo source documents are attached to this lead yet. Prepare a short '{}' watch item for an editor to expand later.\n\n{}\n\nReturn clean Markdown. First line must be `Headline: ...`. After the headline, write reader-facing copy only: what is known, why a resident might watch it, and what should be checked next. {} Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, impacts, community reaction, or technical details.",
+            lead_why, lead_quality_context, format, advisory, forbidden_output
         )
     } else if evidence_count < 2 {
         format!(
-            "Lead topic: {}\n\n{}\nHere is the only attached source material:\n{}\nPlease draft a '{}' item.\n\n{}\n\nReturn clean Markdown for an editor. First line must be `Headline: ...`. Because there is only one linked source, write this as a short brief or watchlist item unless the evidence shows a current, specific development. Use only the attached excerpt and cite it as [Source](evidence:ID). Do not include labels such as Nut graf, Reporting Steps, Source needed, Verification needed, or End of Report. Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, impacts, community reaction, or technical details. If the excerpt is evergreen/background material, start the body with `EDITOR_NOTE: This looks like background material, not a publishable news story yet.` and explain what current fact would make it news.",
-            lead_why, lead_quality_context, evidence_context, format, advisory
+            "Lead topic: {}\n\n{}\nHere is the only attached source material:\n{}\nPlease draft a '{}' item.\n\n{}\n\nReturn clean Markdown for an editor. First line must be `Headline: ...`. Because there is only one linked source, write this as a short brief or watch item unless the evidence shows a current, specific development. If the excerpt includes dated current items, choose the strongest dated item rather than describing the whole page. Use only the attached excerpt and cite it as [Source](evidence:ID). {} Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, impacts, community reaction, or technical details. If the excerpt is evergreen/background material, write a reader-facing background brief with a final sentence on what residents should watch for next.",
+            lead_why, lead_quality_context, evidence_context, format, advisory, forbidden_output
         )
     } else {
         format!(
-            "Lead topic: {}\n\n{}\nHere is the attached source material:\n{}\nPlease draft a '{}' item.\n\n{}\n\nWrite for Longmont residents in clean Markdown. First line must be `Headline: ...`. After the headline, write reader-facing article copy only: a clear lede, 3-5 factual paragraphs or short sections, and a concise explanation of what remains uncertain when needed. Use only the listed Evidence Citation IDs in citations like [Source](evidence:ID). Do not cite any other evidence ID. Use a citation for every factual claim drawn from the source material. Do not include labels such as Nut graf, Reporting Steps, Source needed, Verification needed, or End of Report. Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, impacts, community reaction, or technical details. If the evidence is evergreen/background material or does not show a current development, start the body with `EDITOR_NOTE: This looks like background material, not a publishable news story yet.` and explain what current fact would make it news.",
-            lead_why, lead_quality_context, evidence_context, format, advisory
+            "Lead topic: {}\n\n{}\nHere is the attached source material:\n{}\nPlease draft a '{}' item.\n\n{}\n\nWrite for Longmont residents in clean Markdown. First line must be `Headline: ...`. After the headline, write reader-facing article copy only: a clear lede, 3-5 factual paragraphs or short sections, and a concise explanation of what remains uncertain when needed. If the excerpts include dated current items, choose the strongest dated/current item rather than describing the source page itself. Use only the listed Evidence Citation IDs in citations like [Source](evidence:ID). Do not cite any other evidence ID. Use a citation for every factual claim drawn from the source material. {} Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, impacts, community reaction, or technical details. If the evidence is evergreen/background material or does not show a current development, write a reader-facing watch/background brief rather than a full news story.",
+            lead_why, lead_quality_context, evidence_context, format, advisory, forbidden_output
         )
     }
 }
@@ -1253,9 +1354,9 @@ mod draft_prompt_tests {
         assert!(prompt.contains("Novelty reason: no current change found"));
         assert!(prompt.contains("Beat recurrence: 2 previous appearance(s)"));
         assert!(prompt.contains("Similar topic was seen on earlier scans."));
-        assert!(prompt.contains("Do not frame this as news"));
-        assert!(prompt.contains("return an editor memo or watch item"));
-        assert!(prompt.contains("not a publishable news story yet"));
+        assert!(prompt.contains("reader-facing watch item or background brief"));
+        assert!(prompt.contains("Do not use internal editor labels"));
+        assert!(prompt.contains("Never include EDITOR_NOTE"));
     }
 
     #[test]
@@ -1265,7 +1366,8 @@ mod draft_prompt_tests {
 
         let guidance = story_template_guidance(&conn, Some("background")).unwrap();
 
-        assert!(guidance.contains("Do not frame this as news"));
+        assert!(guidance.contains("reader-facing background brief"));
+        assert!(guidance.contains("private editor-note labels"));
     }
 }
 
@@ -1396,7 +1498,8 @@ pub async fn generate_draft<R: tauri::Runtime>(
         .iter()
         .filter_map(|item| item.id)
         .collect::<HashSet<_>>();
-    Ok(sanitize_unlinked_evidence_citations(&draft, &allowed_ids))
+    let citation_safe = sanitize_unlinked_evidence_citations(&draft, &allowed_ids);
+    Ok(clean_generated_draft_for_workbench(&citation_safe))
 }
 
 #[tauri::command]

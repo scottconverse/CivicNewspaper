@@ -102,13 +102,43 @@ function normalizeGeneratedDraft(raw: string, fallbackTitle: string): { title: s
     if (titleLineIndex >= 0) break;
   }
 
+  let skippingReportingSteps = false;
   const content = lines
     .filter((_line, idx) => idx !== titleLineIndex)
     .map((line) => {
+      const plain = line.trim().replace(/^\*\*|\*\*$/g, "").trim();
+      const lower = plain.toLowerCase();
+      if (
+        lower.startsWith("editor_note:") ||
+        lower.startsWith("editor note:") ||
+        lower.startsWith("[editor_note:") ||
+        lower.startsWith("[editor note:") ||
+        lower.startsWith("tester edit:") ||
+        /^\s*\[?\s*(source needed|verification needed|end of report)\s*\]?\s*$/i.test(plain)
+      ) {
+        skippingReportingSteps = false;
+        return "";
+      }
+      if (/^(reporting steps|next reporting steps)\s*:/i.test(plain)) {
+        skippingReportingSteps = true;
+        return "";
+      }
+      if (skippingReportingSteps) {
+        if (!plain || /^[-*]\s+/.test(plain) || /^\d+[.)]\s+/.test(plain) || plain.endsWith("?")) {
+          return "";
+        }
+        skippingReportingSteps = false;
+      }
       const labelMatch = line.match(/^\s*(?:\*\*)?\s*(nut graf|lede)\s*:\s*(?:\*\*)?\s*(.*)$/i);
-      return labelMatch ? labelMatch[2].trim() : line;
+      const normalizedLine = labelMatch ? labelMatch[2].trim() : line;
+      return normalizedLine
+        .replace(/\[(?:insert [^\]]+|[^\]]+ if available|source needed|verification needed)\]/gi, "")
+        .replace(/\s+([.,;:!?])/g, "$1")
+        .replace(/\s{2,}/g, " ")
+        .trimEnd();
     })
     .filter((line) => !/^\s*\[?\s*end of report\s*\]?\s*$/i.test(line))
+    .filter((line, idx, arr) => line.trim() || (idx > 0 && idx < arr.length - 1 && arr[idx - 1].trim() && arr[idx + 1]?.trim()))
     .join("\n")
     .trim();
 

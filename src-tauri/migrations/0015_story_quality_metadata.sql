@@ -23,6 +23,6 @@ CREATE TABLE IF NOT EXISTS story_templates (
 INSERT OR IGNORE INTO story_templates (key, label, description, prompt_guidance) VALUES
 ('story', 'Reported story', 'A current, specific civic development with enough verified evidence for a reader-facing article.', 'Write a clean lede, explain why this matters now, use only cited evidence, and do not inflate weak facts.'),
 ('brief', 'Brief', 'A short item with one clear current fact, useful to readers but not enough for a full story.', 'Keep it short, precise, and evidence-bound. Avoid background filler.'),
-('watch', 'Watch item', 'Something worth monitoring, but not yet a publishable story.', 'Explain what is known, what is missing, and what should be checked next.'),
-('background', 'Background note', 'Evergreen or recurring information with no current news development.', 'Do not frame this as news. State what new fact would make it publishable.'),
-('verification', 'Verification assignment', 'A lead that may matter but needs more checking before drafting.', 'List concrete verification steps and do not write reader-facing article copy yet.');
+('watch', 'Watch item', 'Something worth monitoring, but not yet a full story.', 'Write a short reader-facing watch item. Explain what is known, why residents might care, and what to watch for next. Do not use internal editor labels or placeholders.'),
+('background', 'Background note', 'Evergreen or recurring information with no current news development.', 'Write a reader-facing background brief only if the editor chooses to draft it. Make clear what current fact would turn it into news, without using private editor-note labels.'),
+('verification', 'Verification assignment', 'A lead that may matter but needs more checking before drafting.', 'Write a short verification brief for the editor and avoid public-sounding certainty. Do not use internal labels, bracketed placeholders, or reporter-note scaffolding.');

@@ -267,9 +267,15 @@ mod tests {
         .unwrap();
         run_detectors(&conn, &[ev_vote], profile_json).unwrap();
         let leads_vote = list_leads(&conn).unwrap();
-        assert!(leads_vote
+        let vote_lead = leads_vote
             .iter()
-            .any(|l| l.detector_name == "Decision / Vote"));
+            .find(|l| l.detector_name == "Decision / Vote")
+            .expect("Decision / Vote lead should be created");
+        assert_eq!(vote_lead.story_type.as_deref(), Some("verification"));
+        assert_eq!(
+            vote_lead.disposition.as_deref(),
+            Some("needs_verification")
+        );
     }
 
     // 4. Guardrails Tests
@@ -2447,6 +2453,16 @@ I should produce JSON only.
                 expected
             );
         }
+        let decision = leads
+            .iter()
+            .find(|l| l.detector_name == "Decision / Vote")
+            .expect("decision detector lead");
+        assert_eq!(decision.disposition.as_deref(), Some("needs_verification"));
+        let money = leads
+            .iter()
+            .find(|l| l.detector_name == "Money Threshold")
+            .expect("money detector lead");
+        assert_eq!(money.disposition.as_deref(), Some("ready_to_draft"));
     }
 
     // ===== TEST-Mn3: list_evidence_since window boundary =====

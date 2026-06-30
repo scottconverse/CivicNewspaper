@@ -317,6 +317,61 @@ describe("useApp Hook Tests", () => {
     expect(screen.getByTestId("active-tab")).toHaveTextContent("workbench");
   });
 
+  test("generated draft normalization removes reporter-note scaffolding", async () => {
+    const savedDrafts: any[] = [];
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
+      if (cmd === "get_queue") return { leads: [], drafts: savedDrafts };
+      if (cmd === "get_sources") return [];
+      if (cmd === "get_community_profile") return { city: "Longmont", state: "CO" };
+      if (cmd === "list_paired_clients") return [];
+      if (cmd === "get_system_ram") return 16;
+      if (cmd === "get_evidence") return [];
+      if (cmd === "get_setting" && args?.key === "model.selected") return "qwen2.5:7b";
+      if (cmd === "ollama_health") return { reachable: true, models: ["qwen2.5:7b"], version: "0.6.0" };
+      if (cmd === "generate_draft") {
+        return "Headline: Council to review traffic safety\n\nEDITOR_NOTE: This needs more reporting.\n\nThe council will review traffic safety at an upcoming meeting [insert date if available].\n\nReporting Steps:\n- Call the clerk.\n- Verify the agenda.\n\nResidents can follow the next posted agenda for details. [Source](evidence:4)\n\n[End of Report]";
+      }
+      if (cmd === "save_draft") {
+        const draft = { ...args.draft, id: 502 };
+        savedDrafts.push(draft);
+        return 502;
+      }
+      return null;
+    });
+
+    let hookResult: any;
+    const TestComp = () => {
+      hookResult = useApp();
+      return <span data-testid="active-tab">{hookResult.activeTab}</span>;
+    };
+
+    await act(async () => {
+      render(<TestComp />);
+    });
+
+    await act(async () => {
+      hookResult.handleOpenDraftWizard({
+        id: 78,
+        detector_name: "Public Meeting Scheduled",
+        why: "A Longmont traffic safety item appeared.",
+        confidence: "medium",
+        risk_level: "low",
+        confirmation_checklist: "[]",
+        created_at: "2026-06-29T00:00:00Z",
+      });
+    });
+
+    await act(async () => {
+      await hookResult.handleGenerateText();
+    });
+
+    const content = hookResult.selectedDraft?.content ?? "";
+    expect(hookResult.selectedDraft?.title).toBe("Council to review traffic safety");
+    expect(content).not.toMatch(/EDITOR_NOTE|Reporting Steps|End of Report|\[insert/i);
+    expect(content).toContain("The council will review traffic safety at an upcoming meeting.");
+    expect(content).toContain("Residents can follow the next posted agenda for details.");
+  });
+
   test("can draft multiple leads sequentially without losing queue/workbench state", async () => {
     let nextDraftId = 700;
     const savedDrafts: any[] = [];
