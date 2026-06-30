@@ -152,6 +152,17 @@ fn logo_html(profile: &CompilerProfile) -> String {
     )
 }
 
+fn public_format_and_folder(format: &str) -> (&'static str, &'static str) {
+    match format {
+        "brief" | "watch" => ("brief", "briefs"),
+        "explainer" => ("explainer", "explainers"),
+        "investigation" => ("story", "stories"),
+        "opinion" => ("opinion", "opinions"),
+        "correction" => ("correction", "corrections"),
+        _ => ("story", "stories"),
+    }
+}
+
 fn write_site_file(
     path: impl AsRef<Path>,
     contents: impl AsRef<[u8]>,
@@ -294,7 +305,8 @@ pub(crate) fn repair_common_mojibake(text: &str) -> String {
         .replace('\u{201c}', "\"")
         .replace('\u{201d}', "\"")
         .replace('\u{2013}', "-")
-        .replace('\u{2014}', "-");
+        .replace('\u{2014}', "-")
+        .replace('\u{00b7}', "-");
     repaired
         .chars()
         .filter(|ch| {
@@ -510,7 +522,12 @@ fn public_title_and_content(draft_title: &str, draft_content: &str) -> (String, 
                         .unwrap_or_default(),
                 );
             }
-            if lower.starts_with("reporting steps:") || lower.starts_with("next reporting steps:") {
+            if lower.starts_with("reporting steps:")
+                || lower.starts_with("next reporting steps:")
+                || lower.starts_with("next steps:")
+                || lower.starts_with("next step:")
+                || lower.starts_with("verification steps:")
+            {
                 skipping_reporting_steps = true;
                 return None;
             }
@@ -563,6 +580,8 @@ fn public_output_quality_issue(contents: &str) -> Option<String> {
         "nut graf:",
         "reporting steps:",
         "next reporting steps:",
+        "next steps:",
+        "verification steps:",
         "[source needed]",
         "[verification needed]",
         "[end of report]",
@@ -1009,14 +1028,7 @@ pub fn compile_static_site(
             }
         }
 
-        let subfolder = match draft.format.as_str() {
-            "brief" => "briefs",
-            "watch" => "watch",
-            "explainer" => "explainers",
-            "investigation" => "stories",
-            "opinion" => "opinions",
-            _ => "stories",
-        };
+        let (public_format, subfolder) = public_format_and_folder(&draft.format);
 
         // Convert Markdown body to HTML
         let raw_html = render_markdown(&content);
@@ -1090,7 +1102,7 @@ pub fn compile_static_site(
         post_html = post_html.replace("{{POST_TITLE}}", &safe_title);
         post_html = post_html.replace("{{POST_DESCRIPTION}}", &safe_title);
         post_html = post_html.replace("{{POST_DATE}}", &draft.updated_at);
-        post_html = post_html.replace("{{POST_FORMAT}}", &draft.format);
+        post_html = post_html.replace("{{POST_FORMAT}}", public_format);
         post_html = post_html.replace("{{POST_CONTENT}}", &html_content);
         post_html = post_html.replace(
             "{{EVIDENCE_SECTION}}",
@@ -1122,7 +1134,7 @@ pub fn compile_static_site(
         generated_files.push(relative_path.clone());
         compiled_articles.push(CompiledArticle {
             title: title.clone(),
-            format: draft.format.clone(),
+            format: public_format.to_string(),
             relative_path: relative_path.clone(),
             updated_at: draft.updated_at.clone(),
         });
@@ -1154,7 +1166,7 @@ pub fn compile_static_site(
         // Add to Homepage listing HTML
         article_list_html.push_str(&format!(
             "<article>\n  <h2 class=\"article-title\"><a href=\"{}\">{}</a></h2>\n  <div class=\"article-meta\">\n    <span>{}</span>\n    <span>Format: <span class=\"tag\">{}</span></span>\n  </div>\n</article>\n\n",
-            relative_path, safe_title, draft.updated_at, draft.format
+            relative_path, safe_title, draft.updated_at, public_format
         ));
 
         // Add to RSS feed items

@@ -596,9 +596,12 @@ describe("useApp Hook Tests", () => {
     });
 
     expect(settings.get("setup.first_run_intake")).toBe("consumed");
-    expect(addSourceCalls).toHaveLength(16);
+    expect(addSourceCalls).toHaveLength(19);
     expect(addSourceCalls.map(call => call.name)).toContain("Longmont Public Information");
     expect(addSourceCalls.map(call => call.name)).toContain("Longmont Leader local news");
+    expect(addSourceCalls.find(call => call.name === "Longmont Leader local news")?.tier).toBe("news_reporting");
+    expect(addSourceCalls.map(call => call.name)).toContain("Visit Longmont events");
+    expect(addSourceCalls.map(call => call.name)).toContain("Downtown Longmont events");
     expect(addSourceCalls.map(call => call.name)).toContain("Longmont Public Safety Facebook");
     expect(addSourceCalls.map(call => call.name)).toContain("Longmont city YouTube");
     expect(screen.getByTestId("active-tab")).toHaveTextContent("dailyScan");

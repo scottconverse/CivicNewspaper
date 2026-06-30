@@ -361,13 +361,31 @@ export function useApp() {
       name: "Longmont Leader local news",
       url: "https://www.longmontleader.com/local-news",
       type: "media_lead",
-      tier: "media_lead",
+      tier: "news_reporting",
     },
     {
       name: "Times-Call Longmont news",
       url: "https://www.timescall.com/location/colorado/boulder-county/longmont/",
       type: "media_lead",
-      tier: "media_lead",
+      tier: "news_reporting",
+    },
+    {
+      name: "Longmont Area Chamber of Commerce",
+      url: "https://longmontchamber.org/",
+      type: "community_signal",
+      tier: "community_signal",
+    },
+    {
+      name: "Visit Longmont events",
+      url: "https://www.visitlongmont.org/events/",
+      type: "community_signal",
+      tier: "community_signal",
+    },
+    {
+      name: "Downtown Longmont events",
+      url: "https://www.downtownlongmont.com/events/calendar",
+      type: "community_signal",
+      tier: "community_signal",
     },
     {
       name: "City of Longmont Facebook",

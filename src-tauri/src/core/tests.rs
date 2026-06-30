@@ -3250,7 +3250,7 @@ I should produce JSON only.
         assert!(share.contains("Website home: https://example.org/civic"));
         assert!(share.contains("RSS feed: https://example.org/civic/feed.xml"));
         assert!(share.contains(&format!(
-            "https://example.org/civic/watch/{}.html",
+            "https://example.org/civic/briefs/{}.html",
             draft_id
         )));
 
@@ -3541,7 +3541,7 @@ I should produce JSON only.
         assert!(output_path.join("publish-manifest.json").exists());
         assert!(output_path.join("site-package.zip").exists());
 
-        let article_path = output_path.join(format!("watch/{draft_id}.html"));
+        let article_path = output_path.join(format!("briefs/{draft_id}.html"));
         let article = fs::read_to_string(&article_path).unwrap();
         assert!(article.contains("Council Approves Library Roof Contract"));
         assert!(article.contains("href=\"#evidence-"));
@@ -3554,7 +3554,7 @@ I should produce JSON only.
 
         let home = fs::read_to_string(output_path.join("index.html")).unwrap();
         assert!(home.contains("Fixture Test Publication"));
-        assert!(home.contains(&format!("watch/{draft_id}.html")));
+        assert!(home.contains(&format!("briefs/{draft_id}.html")));
         let feed = fs::read_to_string(output_path.join("feed.xml")).unwrap();
         assert!(feed.contains("Council Approves Library Roof Contract"));
         let corrections = fs::read_to_string(output_path.join("corrections.html")).unwrap();
@@ -3661,7 +3661,7 @@ I should produce JSON only.
                 lead_id: None,
                 format: "watch".to_string(),
                 title: "City\u{00e2}\u{20ac}\u{2122}s library plan".to_string(),
-                content: "Copyright \u{00c2}\u{00a9} 2026.\nJoin WhatsApp \u{00e2}\u{2020}\u{2019}.\nThe Youth Center\u{00e2}\u{20ac}\u{2122}s offerings need verification."
+                content: "Copyright \u{00c2}\u{00a9} 2026.\nJoin WhatsApp \u{00e2}\u{2020}\u{2019}.\nWednesday, July 1 \u{00b7} 6 pm - 7 pm.\nThe Youth Center\u{00e2}\u{20ac}\u{2122}s offerings need verification."
                     .to_string(),
                 status: "ready_to_publish".to_string(),
                 verification_checklist: "[]".to_string(),
@@ -3675,15 +3675,17 @@ I should produce JSON only.
 
         compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
 
-        let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
+        let html = fs::read_to_string(temp_dir.path().join(format!("briefs/{}.html", id))).unwrap();
         assert!(html.contains("City&#x27;s library plan"));
         assert!(!html.contains("Copyright"));
         assert!(!html.contains("WhatsApp"));
+        assert!(!html.contains('\u{00b7}'));
+        assert!(html.contains("July 1 - 6 pm"));
         assert!(html.contains("Center"));
         assert!(html.contains("offerings"));
         assert!(!html
             .chars()
-            .any(|ch| matches!(ch as u32, 0x00c2 | 0x00c3 | 0x00e2)));
+            .any(|ch| matches!(ch as u32, 0x00c2 | 0x00c3 | 0x00e2 | 0xfffd)));
     }
 
     #[test]
@@ -3712,8 +3714,13 @@ I should produce JSON only.
         let result = compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
 
         assert_eq!(result.articles[0].title, "Council reviews capital plan");
+        assert_eq!(result.articles[0].format, "brief");
+        assert_eq!(
+            result.articles[0].relative_path,
+            format!("briefs/{}.html", id)
+        );
         for relative_path in [
-            format!("watch/{}.html", id),
+            format!("briefs/{}.html", id),
             "index.html".to_string(),
             "feed.xml".to_string(),
             "newsletter.md".to_string(),
@@ -3740,7 +3747,7 @@ I should produce JSON only.
                 lead_id: None,
                 format: "watch".to_string(),
                 title: "City Council Meetings with Video Archive: City Council meetings are held regularly, and videos of the meetings are now available online.".to_string(),
-                content: "Headline: Council meeting archive gives residents a way to review votes\n\nNut graf: Longmont residents can use the city archive to review recent council meetings.\n\nThe archive can help residents follow council decisions.\n\nReporting Steps:\nCall the clerk.\n\n[End of Report]".to_string(),
+                content: "Headline: Council meeting archive gives residents a way to review votes\n\nNut graf: Longmont residents can use the city archive to review recent council meetings.\n\nThe archive can help residents follow council decisions.\n\nNext steps:\n- Confirm the new meeting details from the city's official website.\n\nReporting Steps:\nCall the clerk.\n\n[End of Report]".to_string(),
                 status: "ready_to_publish".to_string(),
                 verification_checklist: "[]".to_string(),
                 missing_evidence_notes: None,
@@ -3757,11 +3764,13 @@ I should produce JSON only.
             result.articles[0].title,
             "Council meeting archive gives residents a way to review votes"
         );
-        let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
+        let html = fs::read_to_string(temp_dir.path().join(format!("briefs/{}.html", id))).unwrap();
         assert!(html.contains("Council meeting archive gives residents a way to review votes"));
         assert!(!html.contains("City Council Meetings with Video Archive:"));
         assert!(!html.contains("Headline:"));
         assert!(!html.contains("Nut graf:"));
+        assert!(!html.contains("Next steps"));
+        assert!(!html.contains("Confirm the new meeting details"));
         assert!(!html.contains("Reporting Steps"));
         assert!(!html.contains("End of Report"));
     }
@@ -3830,7 +3839,7 @@ I should produce JSON only.
 
         compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
 
-        let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
+        let html = fs::read_to_string(temp_dir.path().join(format!("briefs/{}.html", id))).unwrap();
         assert!(html.contains("The council posted its meeting schedule"));
         assert!(html.contains("Residents can use the schedule"));
         assert!(!html.contains("EDITOR_NOTE"));
@@ -3862,7 +3871,7 @@ I should produce JSON only.
 
         compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
 
-        let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
+        let html = fs::read_to_string(temp_dir.path().join(format!("briefs/{}.html", id))).unwrap();
         assert!(html.contains("The city opened a new application process"));
         assert!(html.contains("A specific announcement date would make this more relevant"));
         assert!(!html.contains("EDITOR_NOTE"));
@@ -3895,7 +3904,7 @@ I should produce JSON only.
 
         compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
 
-        let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
+        let html = fs::read_to_string(temp_dir.path().join(format!("briefs/{}.html", id))).unwrap();
         assert!(html.contains("The city announced an overnight closure"));
         assert!(html.contains("Drivers should check the city notice"));
         assert!(!html.contains("Editor Note"));
@@ -3979,7 +3988,7 @@ I should produce JSON only.
 
         compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
 
-        let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
+        let html = fs::read_to_string(temp_dir.path().join(format!("briefs/{}.html", id))).unwrap();
         assert!(html.contains("Road work notice issued"));
         assert!(!html.to_lowercase().contains("employee login"));
         assert!(!html.to_lowercase().contains("privacy policy"));
@@ -4059,7 +4068,7 @@ I should produce JSON only.
 
         compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
 
-        let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
+        let html = fs::read_to_string(temp_dir.path().join(format!("briefs/{}.html", id))).unwrap();
         assert!(html.contains("City of Longmont Seeking Applications"));
         assert!(html.contains("This is Longmont - June 25, 2026"));
         assert!(html.contains("The City"));
@@ -4091,7 +4100,7 @@ I should produce JSON only.
             },
         )
         .unwrap();
-        let article_path = temp_dir.path().join(format!("watch/{}.html", id));
+        let article_path = temp_dir.path().join(format!("briefs/{}.html", id));
 
         let first = compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
         assert_eq!(first.article_count, 1);
