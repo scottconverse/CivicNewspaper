@@ -1,0 +1,45 @@
+{
+  "text": "The Civic Desk\nLONGMONT / CO94 TES\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSources\nAI Model\nPublishing\nBrowser Pairing\nEthics & Backups\nSystem & Status\nLocal AI ready\nqwen2.5:7b\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nSources\n\nThe municipal feeds and record portals The Civic Desk watches for you.\n\nDiscover for my city\nBulk import\nSOURCE\tTIER\tLAST CHECK\t\nNo feeds or portals registered yet. Add one in the right panel.\nAdd a source\n\nPaste a city webpage or RSS feed. The Civic Desk figures out the rest.\n\nName\nURL\nType\nAuto-detect\nRSS\nHTML\nMedia\nTier\nPrimary\nSecondary\nWatch\nAdd Source\nTown Setup & Source Auto-Discovery\nClose\nCity name\nState\nAuto-Find Feeds\n\nEnter your town's name and state above to auto-discover local civic feeds.",
+  "inputs": [
+    {
+      "i": 0,
+      "id": "input-new-source-name",
+      "placeholder": "e.g. City Council Agendas",
+      "value": "",
+      "type": "text"
+    },
+    {
+      "i": 1,
+      "id": "input-new-source-url",
+      "placeholder": "e.g. https://city.gov/agendas/rss",
+      "value": "",
+      "type": "url"
+    },
+    {
+      "i": 2,
+      "id": "select-new-source-type",
+      "value": "primary_record",
+      "type": "select-one"
+    },
+    {
+      "i": 3,
+      "id": "select-new-source-tier",
+      "value": "community_signal",
+      "type": "select-one"
+    },
+    {
+      "i": 4,
+      "id": "input-discovery-city",
+      "placeholder": "City Name (e.g. Brighton)",
+      "value": "",
+      "type": "text"
+    },
+    {
+      "i": 5,
+      "id": "input-discovery-state",
+      "placeholder": "State (e.g. CO)",
+      "value": "",
+      "type": "text"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{
+  "utc": "2026-06-30T12:09:51.078Z",
+  "text": "AI Setup\nStep 4 of 5\nDefaults\n\nConfigure publication directories and backup database paths.\n\nPublish Path\n\nWhere your static sites will be compiled.\n\nBackup Path\n\nWhere database backups are saved.\n\nBack\nNext"
+}

@@ -1,0 +1,107 @@
+[
+  {
+    "i": 0,
+    "checked": true,
+    "text": "Longmont official city website\nOfficial record\nhttps://www.longmontcolorado.gov/\n\nLikely a primary civic source. Confirm it is the right department/feed."
+  },
+  {
+    "i": 1,
+    "checked": true,
+    "text": "Longmont city news\nOfficial record\nhttps://www.longmontcolorado.gov/news\n\nLikely a primary civic source. Confirm it is the right department/feed."
+  },
+  {
+    "i": 2,
+    "checked": true,
+    "text": "Longmont agendas and minutes\nOfficial record\nhttps://www.longmontcolorado.gov/departments/departments-a-d/city-clerk/agendas-and-minutes\n\nLikely a primary civic source. Confirm it is the right department/feed."
+  },
+  {
+    "i": 3,
+    "checked": true,
+    "text": "Longmont City Council\nOfficial record\nhttps://www.longmontcolorado.gov/departments/departments-a-d/city-council\n\nLikely a primary civic source. Confirm it is the right department/feed."
+  },
+  {
+    "i": 4,
+    "checked": true,
+    "text": "Longmont public notices search\nOfficial record\nhttps://www.longmontcolorado.gov/departments/departments-a-d/city-clerk\n\nLikely a primary civic source. Confirm it is the right department/feed."
+  },
+  {
+    "i": 5,
+    "checked": false,
+    "text": "Colorado public notices\nNeeds review\nhttps://www.publicnoticecolorado.com/\n\nCheck ownership and usefulness before importing."
+  },
+  {
+    "i": 6,
+    "checked": true,
+    "text": "Boulder County public notices\nOfficial record\nhttps://bouldercounty.gov/\n\nLikely a primary civic source. Confirm it is the right department/feed."
+  },
+  {
+    "i": 7,
+    "checked": false,
+    "text": "St. Vrain Valley Schools\nNeeds review\nhttps://www.svvsd.org/\n\nCheck ownership and usefulness before importing."
+  },
+  {
+    "i": 8,
+    "checked": true,
+    "text": "Longmont Public Safety\nOfficial record\nhttps://www.longmontcolorado.gov/departments/departments-n-z/public-safety\n\nLikely a primary civic source. Confirm it is the right department/feed."
+  },
+  {
+    "i": 9,
+    "checked": true,
+    "text": "City of Longmont Facebook\nCommunity signal\nhttps://www.facebook.com/cityoflongmontco/\n\nUseful for leads, but verify against public records before publishing."
+  },
+  {
+    "i": 10,
+    "checked": true,
+    "text": "Longmont Public Safety Facebook\nCommunity signal\nhttps://www.facebook.com/LongmontFirePoliceOEM/\n\nUseful for leads, but verify against public records before publishing."
+  },
+  {
+    "i": 11,
+    "checked": true,
+    "text": "r/Longmont\nCommunity signal\nhttps://www.reddit.com/r/Longmont/\n\nUseful for leads, but verify against public records before publishing."
+  },
+  {
+    "i": 12,
+    "checked": false,
+    "text": "r/Boulder\nCommunity signal\nhttps://www.reddit.com/r/boulder/\n\nUseful for leads, but verify against public records before publishing."
+  },
+  {
+    "i": 13,
+    "checked": true,
+    "text": "Longmont Leader local news\nNews source\nhttps://www.longmontleader.com/local-news\n\nGood for leads and context; verify facts against primary records."
+  },
+  {
+    "i": 14,
+    "checked": false,
+    "text": "Times-Call Longmont news\nNews source\nhttps://www.timescall.com/location/colorado/boulder-county/longmont/\n\nGood for leads and context; verify facts against primary records."
+  },
+  {
+    "i": 15,
+    "checked": false,
+    "text": "Longmont Area Chamber of Commerce\nNeeds review\nhttps://longmontchamber.org/\n\nCheck ownership and usefulness before importing."
+  },
+  {
+    "i": 16,
+    "checked": true,
+    "text": "Longmont Library\nOfficial record\nhttps://www.longmontcolorado.gov/departments/departments-e-m/library\n\nLikely a primary civic source. Confirm it is the right department/feed."
+  },
+  {
+    "i": 17,
+    "checked": false,
+    "text": "Visit Longmont events\nNeeds review\nhttps://www.visitlongmont.org/events/\n\nCheck ownership and usefulness before importing."
+  },
+  {
+    "i": 18,
+    "checked": false,
+    "text": "Downtown Longmont events\nNeeds review\nhttps://www.downtownlongmont.com/events/calendar\n\nCheck ownership and usefulness before importing."
+  },
+  {
+    "i": 19,
+    "checked": true,
+    "text": "Longmont city events\nOfficial record\nhttps://longmontcolorado.gov/events/\n\nLikely a primary civic source. Confirm it is the right department/feed."
+  },
+  {
+    "i": 20,
+    "checked": false,
+    "text": "Longmont city YouTube\nNeeds review\nhttps://www.youtube.com/cityoflongmont\n\nCheck ownership and usefulness before importing."
+  }
+]

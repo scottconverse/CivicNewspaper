@@ -1,0 +1,68 @@
+{
+  "url": "http://tauri.localhost/",
+  "title": "CivicNews Dashboard",
+  "text": "AI Setup\nStep 1 of 5\nIdentity\n\nDefine your local news outlet name and mission.\n\nStarter profiles\nLongmont\nBrighton\nDenver\nPublication Name\nEditor Name\nPublisher Type\nSingle person\nFor-profit publication\nNonprofit publication\nPrivate organization\nCommunity group\nOther\nCity\nState\nBack\nNext",
+  "inputs": [
+    {
+      "i": 0,
+      "tag": "INPUT",
+      "type": "text",
+      "name": "",
+      "id": "onboarding-publication-name",
+      "placeholder": "e.g. The Brighton Gazette",
+      "value": "",
+      "aria": null
+    },
+    {
+      "i": 1,
+      "tag": "INPUT",
+      "type": "text",
+      "name": "",
+      "id": "onboarding-editor-name",
+      "placeholder": "e.g. Jane Doe",
+      "value": "",
+      "aria": null
+    },
+    {
+      "i": 2,
+      "tag": "SELECT",
+      "type": "select-one",
+      "name": "",
+      "id": "onboarding-organization-type",
+      "value": "single_person",
+      "aria": null
+    },
+    {
+      "i": 3,
+      "tag": "INPUT",
+      "type": "text",
+      "name": "",
+      "id": "onboarding-city",
+      "placeholder": "Brighton",
+      "value": "",
+      "aria": null
+    },
+    {
+      "i": 4,
+      "tag": "INPUT",
+      "type": "text",
+      "name": "",
+      "id": "onboarding-state",
+      "placeholder": "CO",
+      "value": "",
+      "aria": null
+    }
+  ],
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Back",
+      "disabled": true
+    },
+    {
+      "i": 1,
+      "text": "Next",
+      "disabled": false
+    }
+  ]
+}

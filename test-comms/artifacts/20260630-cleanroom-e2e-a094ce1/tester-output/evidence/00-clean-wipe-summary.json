@@ -1,0 +1,35 @@
+﻿{
+    "startedUtc":  "2026-06-30T11:50:31.4318008Z",
+    "beforeProcesses":  [
+                            {
+                                "ProcessName":  "civicnews",
+                                "Id":  4768,
+                                "StartTime":  "\/Date(1782817677911)\/",
+                                "Path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe"
+                            },
+                            {
+                                "ProcessName":  "ollama",
+                                "Id":  7548,
+                                "StartTime":  "\/Date(1782817733315)\/",
+                                "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\ollama-runtime\\v0.30.11\\ollama.exe"
+                            }
+                        ],
+    "uninstallExitCode":  0,
+    "removed":  [
+                    "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+                    "C:\\Users\\civic\\.ollama",
+                    "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260630-cleanroom-e2e-a094ce1\\tester-output"
+                ],
+    "failed":  [
+
+               ],
+    "afterWipe":  {
+                      "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk":  false,
+                      "C:\\Users\\civic\\AppData\\Roaming\\The Civic Desk":  false,
+                      "C:\\Users\\civic\\AppData\\Local\\The Civic Desk":  false,
+                      "C:\\Users\\civic\\.ollama":  false
+                  },
+    "afterProcesses":  [
+
+                       ]
+}

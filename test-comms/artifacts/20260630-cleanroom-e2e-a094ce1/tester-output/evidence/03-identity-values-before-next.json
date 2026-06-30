@@ -1,0 +1,30 @@
+{
+  "text": "AI Setup\nStep 1 of 5\nIdentity\n\nDefine your local news outlet name and mission.\n\nStarter profiles\nLongmont\nBrighton\nDenver\nPublication Name\nEditor Name\nPublisher Type\nSingle person\nFor-profit publication\nNonprofit publication\nPrivate organization\nCommunity group\nOther\nCity\nState\nBack\nNext",
+  "values": [
+    {
+      "id": "onboarding-publication-name",
+      "value": "Attempt Four Longmont Ledger",
+      "text": ""
+    },
+    {
+      "id": "onboarding-editor-name",
+      "value": "A094 Tester Editor",
+      "text": ""
+    },
+    {
+      "id": "onboarding-organization-type",
+      "value": "community_group",
+      "text": "Community group"
+    },
+    {
+      "id": "onboarding-city",
+      "value": "Longmont",
+      "text": ""
+    },
+    {
+      "id": "onboarding-state",
+      "value": "CO",
+      "text": ""
+    }
+  ]
+}
