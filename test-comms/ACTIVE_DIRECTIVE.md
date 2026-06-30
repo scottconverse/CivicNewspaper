@@ -6,9 +6,9 @@ Tester, always read this file first on every 15-minute watcher tick.
 
 IMPORTANT MACHINE CONTEXT:
 
-- You are the tester on the separate cleanroom machine running as `msi\civic`.
+- You are the tester on the separate cleanroom machine, not the coder machine.
 - Do not use any path under `C:\Users\instynct`; that path belongs to the coder machine and is invalid on the tester machine.
-- The approved tester coordination checkout path is:
+- Use your actual tester checkout path. The approved tester coordination checkout path is:
 
 `C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms`
 
@@ -19,17 +19,19 @@ IMPORTANT MACHINE CONTEXT:
 
 Run this directive now:
 
-`test-comms/directives/20260630-canonical-walkthrough-v030-b0be4d7.md`
+`test-comms/directives/20260630-cleanroom-e2e-a0b436a-attempt1.md`
 
-This is the GauntletGate Walkthrough lane only. Do not run Full.
+The tester must first produce:
 
-The tester must produce:
+`test-comms/reports/20260630-cleanroom-e2e-a0b436a-visibility-attempt-1.md`
 
-`test-comms/reports/20260630-canonical-walkthrough-v030-b0be4d7-report.md`
+Then continue and produce the final human-readable cleanroom report:
 
-Evidence must be written under:
+`test-comms/reports/20260630-cleanroom-e2e-a0b436a-report.md`
 
-`test-comms/artifacts/20260630-canonical-walkthrough-v030-b0be4d7/evidence/`
+Evidence and output artifacts must be written under:
+
+`test-comms/artifacts/20260630-cleanroom-e2e-a0b436a/tester-output/`
 
 Product branch:
 
@@ -37,23 +39,22 @@ Product branch:
 
 Product commit:
 
-`b0be4d7432e9f5f791da68770a9631b8c5892697`
+`a0b436af3009500714055a2bff01612716ee36c1`
 
 Artifact folder:
 
-`test-comms/artifacts/20260630-canonical-walkthrough-v030-b0be4d7/`
+`test-comms/artifacts/20260630-cleanroom-e2e-a0b436a/`
 
 Expected preferred NSIS SHA256:
 
-`6C28D0ACEDAA1A367CA8F2EBFFDCB60B2AFC002F123442D1C7FF84EFD1CC95E4`
+`B6777C66A7330A46F6FC443576C06E648E516EC52EC845004044DB4663A23BD8`
 
 Expected fallback MSI SHA256:
 
-`AA510FA91B519883190638CBEDB584648B148731DB842371ECB8671D6D7CA154`
+`4C4F40178017853DFA5E65AFD10595306018C0F2B803190A1DB431A28CA8AA2E`
 
 ## Current Goal
 
-Run the Walkthrough lane for GauntletGate all. Prove or disprove clean first-run dependency-absent behavior with evidence artifacts. Do not run Full.
+Run the full CivicNewspaper cleanroom end-to-end test from a product clean wipe. Prove or disprove install, first-run AI setup, Longmont source discovery, lead generation, local AI drafting, writer/editor workflow, export ZIP, here.now publish, output quality, duplicate-topic prevention, and mojibake/scaffolding cleanup.
 
 Commit reports/artifacts with `[skip ci]`.
-
