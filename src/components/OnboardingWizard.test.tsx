@@ -293,6 +293,56 @@ describe("OnboardingWizard Component Tests", () => {
     });
   });
 
+  test("state field normalizes accidental extra characters before saving", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      if (cmd === "set_setting") return Promise.resolve();
+      if (cmd === "get_community_profile") return Promise.resolve({
+        site_title: "My Local Publication",
+        organization_type: "single_person",
+        city: "Brighton",
+        state: "CO",
+      });
+      if (cmd === "save_community_profile") return Promise.resolve();
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
+
+    fireEvent.change(screen.getByLabelText(/Publication Name/i), {
+      target: { value: "Attempt Four Longmont Ledger" },
+    });
+    fireEvent.change(screen.getByLabelText(/Editor Name/i), {
+      target: { value: "A094 Tester Editor" },
+    });
+    fireEvent.change(screen.getByLabelText(/^City$/i), {
+      target: { value: "Longmont" },
+    });
+    fireEvent.change(screen.getByLabelText(/^State$/i), {
+      target: { value: "CO94 TES" },
+    });
+
+    expect(screen.getByLabelText(/^State$/i)).toHaveValue("CO");
+
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+
+    await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "identity.state",
+      value: "CO",
+    });
+    expect(invokeMock).toHaveBeenCalledWith("save_community_profile", {
+      profile: expect.objectContaining({
+        city: "Longmont",
+        state: "CO",
+      }),
+    });
+  });
+
   test("model setup auto-starts pull and completes onboarding when no input events arrive", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;

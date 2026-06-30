@@ -43,6 +43,10 @@ function downloadSizeFor(modelTag: string): string {
   return modelSizes[modelTag] || "a few GB";
 }
 
+function sanitizeStateCode(value: string): string {
+  return value.replace(/[^A-Za-z]/g, "").slice(0, 2).toUpperCase();
+}
+
 function modelInstalled(selected: string, installed: string[]): boolean {
   const want = selected.includes(":") ? selected : `${selected}:latest`;
   return installed.some((m) => {
@@ -191,26 +195,34 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   });
 
   const persistIdentity = async (identity = currentIdentityValues()) => {
-    setPubName(identity.pubName);
-    setEditorName(identity.editorName);
-    setOrganizationType(identity.organizationType);
-    setCity(identity.city);
-    setState(identity.state);
+    const normalizedIdentity = {
+      ...identity,
+      pubName: identity.pubName.trim(),
+      editorName: identity.editorName.trim(),
+      city: identity.city.trim(),
+      state: sanitizeStateCode(identity.state),
+    };
 
-    await saveSetting("identity.newsroom_name", identity.pubName);
-    await saveSetting("identity.editor_name", identity.editorName);
-    await saveSetting("identity.organization_type", identity.organizationType);
-    await saveSetting("identity.city", identity.city);
-    await saveSetting("identity.state", identity.state);
+    setPubName(normalizedIdentity.pubName);
+    setEditorName(normalizedIdentity.editorName);
+    setOrganizationType(normalizedIdentity.organizationType);
+    setCity(normalizedIdentity.city);
+    setState(normalizedIdentity.state);
+
+    await saveSetting("identity.newsroom_name", normalizedIdentity.pubName);
+    await saveSetting("identity.editor_name", normalizedIdentity.editorName);
+    await saveSetting("identity.organization_type", normalizedIdentity.organizationType);
+    await saveSetting("identity.city", normalizedIdentity.city);
+    await saveSetting("identity.state", normalizedIdentity.state);
 
     try {
       const profile = await getCommunityProfile();
       await saveCommunityProfile({
         ...profile,
-        site_title: identity.pubName.trim() || profile.site_title,
-        organization_type: identity.organizationType,
-        city: identity.city.trim() || profile.city,
-        state: identity.state.trim() || profile.state,
+        site_title: normalizedIdentity.pubName || profile.site_title,
+        organization_type: normalizedIdentity.organizationType,
+        city: normalizedIdentity.city || profile.city,
+        state: normalizedIdentity.state || profile.state,
       });
     } catch {
       /* non-fatal - identity settings above are still saved */
@@ -834,8 +846,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   type="text"
                   placeholder="CO"
                   value={state}
-                  onInput={e => setState(e.currentTarget.value)}
-                  onChange={e => setState(e.target.value)}
+                  maxLength={2}
+                  autoCapitalize="characters"
+                  onInput={e => setState(sanitizeStateCode(e.currentTarget.value))}
+                  onChange={e => setState(sanitizeStateCode(e.target.value))}
                 />
               </div>
             </div>
