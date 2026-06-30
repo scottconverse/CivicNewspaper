@@ -1,0 +1,350 @@
+Window: "The Civic Desk", App: civicnews.exe.
+	0 window The Civic Desk Secondary Actions: Raise
+		1 pane
+			2 pane CivicNews Dashboard
+				3 pane (disabled)
+				4 region CivicNews Dashboard - Web content
+					5 region
+						6 region
+							7 region
+								8 region
+								9 region
+									10 region
+										11 region
+											12 region
+												13 region
+													14 document CivicNews Dashboard ID: RootWebArea
+														15 group
+															16 group ID: root
+																17 complementary
+																	18 text The Civic Desk
+																	19 text LONGMONT / CO
+																	20 navigation
+																		21 list
+																			22 list item Story Queue
+																				23 button Story Queue Description: Story Queue (Alt+1) ID: nav-tab-queue
+																					24 graphic
+																			25 list item Daily Scan
+																				26 button Daily Scan Description: Daily Scan (Alt+2) ID: nav-tab-dailyScan
+																					27 graphic
+																			28 list item Dark Signals
+																				29 button Dark Signals Description: Dark Signals (Alt+3) ID: nav-tab-darkSignals
+																					30 graphic
+																			31 list item Verification
+																				32 button Verification Description: Verification (Alt+4) ID: nav-tab-verification
+																					33 graphic
+																			34 list item Workbench
+																				35 button Workbench Description: Workbench (Alt+5) ID: nav-tab-workbench
+																					36 graphic
+																		37 list
+																			38 list item Sources
+																				39 button Sources Description: Sources (Alt+6) ID: nav-tab-sources
+																					40 graphic
+																			41 list item AI Model
+																				42 button AI Model Description: AI Model (Alt+7) ID: nav-tab-onboarding
+																					43 graphic
+																			44 list item Publishing
+																				45 button Publishing Description: Publishing (Alt+8) ID: nav-tab-publish
+																					46 graphic
+																		47 list
+																			48 list item Browser Pairing
+																				49 button Browser Pairing Description: Browser Pairing (Alt+9) ID: nav-tab-pairing
+																					50 graphic
+																			51 list item Ethics & Backups
+																				52 button Ethics & Backups Description: Ethics & Backups (Alt+10) ID: nav-tab-settings
+																					53 graphic
+																			54 list item System & Status
+																				55 button System & Status Description: System & Status (Alt+11) ID: nav-tab-system
+																					56 graphic
+																	57 text Local AI ready
+																	58 text qwen2.5:7b
+																59 main
+																	60 alert
+																		61 graphic
+																		62 text You're running an
+																		63 text unsigned public beta
+																		64 text of The Civic Desk. Windows SmartScreen may warn on install; that's expected.
+																		65 text 
+																		66 link Report issues on GitHub
+																		67 text .
+																		68 button Dismiss beta notice
+																			69 graphic
+																	70 heading Story Queue
+																	71 text Civic signals your sources surfaced, ready to verify and turn into plain-language stories.
+																	72 button Refresh ID: btn-sync-list
+																		73 graphic
+																	74 button Daily Scan ID: btn-daily-scan
+																		75 graphic
+																	76 button Scrape & Detect ID: btn-scrape-detect
+																		77 graphic
+																	78 text NEW LEADS
+																	79 text 9
+																	80 button Open 0 drafts
+																	81 text HIGH PRIORITY
+																	82 text 0
+																	83 text SOURCES
+																	84 text 6
+																	85 graphic
+																	86 text Local-first workflow
+																	87 text Scan sources, draft from linked evidence, run guardrails, then publish a static paper.
+																	88 button Leads 9 ID: queue-tab-leads
+																	89 button Drafts 0 ID: queue-tab-drafts
+																	90 button Scan results latest ID: queue-tab-scan-results
+																	91 graphic
+																	92 text Filter leads
+																	93 edit Filter leads Description: Filter leads... ID: leads-filter-input
+																	94 text Sort by:
+																	95 combo box Sort by: ID: leads-sort-select
+																	96 group
+																		97 text Risk:
+																		98 text low
+																		99 text Verification
+																		100 text Needs verification
+																		101 text daily_scan
+																		102 heading Review new source evidence from source #1: --> Agenda Management Portal - City of Longmont Skip to main content News &#038; Alerts Events Careers Contact Services Accessibility Ensuring accessible government services. Activities Providing community activities. Building Guiding construction and developm... Editor context: The model did not return usable JSON, so this evidence was preserved for editor review instead of being discarded. Suggested next step: Open the source, decide whether it contains a reportable civic action, then save or dismiss it from the queue.
+																		103 text Novelty
+																		104 text /5.
+																		105 text Confidence:
+																		106 text low
+																		107 button Draft Review new source evidence from source #1: --> Agenda Management Portal - City of Longmont Skip to main content News &#038; Alerts Events Careers Contact Services Accessibility Ensuring accessible government services. Activities Providing community activities. Building Guiding construction and developm... Editor context: The model did not return usable JSON, so this evidence was preserved for editor review instead of being discarded. Suggested next step: Open the source, decide whether it contains a reportable civic action, then save or dismiss it from the queue.
+																			108 graphic
+																	109 group
+																		110 text Risk:
+																		111 text low
+																		112 text Editor review
+																		113 text Decision / Vote
+																		114 heading VOTING SIGNAL: Found vote/decision keywords (["approved", "approved", "Approved", "passed", "Motion", "motion"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.
+																		115 text Novelty
+																		116 text /5.
+																		117 text Confidence:
+																		118 text medium
+																		119 button Draft VOTING SIGNAL: Found vote/decision keywords (["approved", "approved", "Approved", "passed", "Motion", "motion"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.
+																			120 graphic
+																	121 group
+																		122 text Risk:
+																		123 text low
+																		124 text Editor review
+																		125 text Public Meeting Scheduled
+																		126 heading MEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.
+																		127 text Novelty
+																		128 text /5.
+																		129 text Confidence:
+																		130 text medium
+																		131 button Draft MEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.
+																			132 graphic
+																	133 group
+																		134 text Risk:
+																		135 text low
+																		136 text Editor review
+																		137 text Decision / Vote
+																		138 heading VOTING SIGNAL: Found vote/decision keywords (["passed"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.
+																		139 text Novelty
+																		140 text /5.
+																		141 text Confidence:
+																		142 text medium
+																		143 button Draft VOTING SIGNAL: Found vote/decision keywords (["passed"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.
+																			144 graphic
+																	145 group
+																		146 text Risk:
+																		147 text low
+																		148 text Editor review
+																		149 text New Primary Record
+																		150 heading A new official primary document from 'Longmont City Council Meetings' was fetched today (https://longmontcolorado.gov/government/city-council-meetings/).
+																		151 text Novelty
+																		152 text /5.
+																		153 text Confidence:
+																		154 text high
+																		155 button Draft A new official primary document from 'Longmont City Council Meetings' was fetched today (https://longmontcolorado.gov/government/city-council-meetings/).
+																			156 graphic
+																	157 group
+																		158 text Risk:
+																		159 text low
+																		160 text Editor review
+																		161 text New Primary Record
+																		162 heading A new official primary document from 'Public Notice Colorado' was fetched today (https://www.publicnoticecolorado.com/).
+																		163 text Novelty
+																		164 text /5.
+																		165 text Confidence:
+																		166 text high
+																		167 button Draft A new official primary document from 'Public Notice Colorado' was fetched today (https://www.publicnoticecolorado.com/).
+																			168 graphic
+																	169 group
+																		170 text Risk:
+																		171 text low
+																		172 text Editor review
+																		173 text Public Meeting Scheduled
+																		174 heading MEETING SCHEDULED: Meeting notification detected in 'Longmont Agenda Management Portal' record. Public attendance or comment may be permitted.
+																		175 text Novelty
+																		176 text /5.
+																		177 text Confidence:
+																		178 text medium
+																		179 button Draft MEETING SCHEDULED: Meeting notification detected in 'Longmont Agenda Management Portal' record. Public attendance or comment may be permitted.
+																			180 graphic
+																	181 group
+																		182 text Risk:
+																		183 text low
+																		184 text Editor review
+																		185 text New Primary Record
+																		186 heading A new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).
+																		187 text Novelty
+																		188 text /5.
+																		189 text Confidence:
+																		190 text high
+																		191 button Draft A new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).
+																			192 graphic
+																	193 group
+																		194 text Risk:
+																		195 text low
+																		196 text Editor review
+																		197 text New Primary Record
+																		198 heading A new official primary document from 'Longmont Agenda Management Portal' was fetched today (https://longmontcolorado.gov/city-clerk/agenda-management-portal/).
+																		199 text Novelty
+																		200 text /5.
+																		201 text Confidence:
+																		202 text high
+																		203 button Draft A new official primary document from 'Longmont Agenda Management Portal' was fetched today (https://longmontcolorado.gov/city-clerk/agenda-management-portal/).
+																			204 graphic
+								205 region
+						206 region
+						207 region
+		208 title bar
+			209 menu bar System ID: MenuBar
+				210 menu item System
+			211 button Minimize
+			212 button Maximize
+			213 button Close
+
+Document text: ```
+The Civic Desk
+LONGMONT / CO
+￼
+Story Queue
+￼
+Daily Scan
+￼
+Dark Signals
+￼
+Verification
+￼
+Workbench
+￼
+Sources
+￼
+AI Model
+￼
+Publishing
+￼
+Browser Pairing
+￼
+Ethics & Backups
+￼
+System & Status
+Local AI ready
+qwen2.5:7b
+￼
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+￼
+Story Queue
+Civic signals your sources surfaced, ready to verify and turn into plain-language stories.
+￼
+Refresh
+￼
+Daily Scan
+￼
+Scrape & Detect
+NEW LEADS
+9
+IN DRAFTING
+0
+HIGH PRIORITY
+0
+SOURCES
+6
+￼
+Local-first workflow
+Scan sources, draft from linked evidence, run guardrails, then publish a static paper.
+Leads
+9
+Drafts
+0
+Scan results
+latest
+￼
+Filter leads
+￼
+Sort by:
+￼
+Risk: low
+Verification
+Needs verification
+daily_scan
+Review new source evidence from source #1: --> Agenda Management Portal - City of Longmont Skip to main content News &#038; Alerts Events Careers Contact Services Accessibility Ensuring accessible government services. Activities Providing community activities. Building Guiding construction and developm... Editor context: The model did not return usable JSON, so this evidence was preserved for editor review instead of being discarded. Suggested next step: Open the source, decide whether it contains a reportable civic action, then save or dismiss it from the queue.
+Novelty /5.
+Confidence: low
+Draft
+￼
+Risk: low
+Editor review
+Decision / Vote
+VOTING SIGNAL: Found vote/decision keywords (["approved", "approved", "Approved", "passed", "Motion", "motion"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.
+Novelty /5.
+Confidence: medium
+Draft
+￼
+Risk: low
+Editor review
+Public Meeting Scheduled
+MEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.
+Novelty /5.
+Confidence: medium
+Draft
+￼
+Risk: low
+Editor review
+Decision / Vote
+VOTING SIGNAL: Found vote/decision keywords (["passed"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.
+Novelty /5.
+Confidence: medium
+Draft
+￼
+Risk: low
+Editor review
+New Primary Record
+A new official primary document from 'Longmont City Council Meetings' was fetched today (https://longmontcolorado.gov/government/city-council-meetings/).
+Novelty /5.
+Confidence: high
+Draft
+￼
+Risk: low
+Editor review
+New Primary Record
+A new official primary document from 'Public Notice Colorado' was fetched today (https://www.publicnoticecolorado.com/).
+Novelty /5.
+Confidence: high
+Draft
+￼
+Risk: low
+Editor review
+Public Meeting Scheduled
+MEETING SCHEDULED: Meeting notification detected in 'Longmont Agenda Management Portal' record. Public attendance or comment may be permitted.
+Novelty /5.
+Confidence: medium
+Draft
+￼
+Risk: low
+Editor review
+New Primary Record
+A new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).
+Novelty /5.
+Confidence: high
+Draft
+￼
+Risk: low
+Editor review
+New Primary Record
+A new official primary document from 'Longmont Agenda Management Portal' was fetched today (https://longmontcolorado.gov/city-clerk/agenda-management-portal/).
+Novelty /5.
+Confidence: high
+Draft
+￼
+```

@@ -1,0 +1,26 @@
+Window: "The Civic Desk", App: civicnews.exe.
+	0 window The Civic Desk Secondary Actions: Raise
+		1 pane
+			2 pane CivicNews Dashboard
+				3 pane (disabled)
+				4 region CivicNews Dashboard - Web content
+					5 region
+						6 region
+							7 region
+								8 region
+								9 region
+									10 region
+										11 region
+											12 region
+												13 region
+								14 region
+						15 region
+						16 region
+		17 title bar
+			18 menu bar System ID: MenuBar
+				19 menu item System
+			20 button Minimize
+			21 button Maximize
+			22 button Close
+
+The focused UI element is 2 pane CivicNews Dashboard.

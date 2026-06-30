@@ -1,0 +1,295 @@
+Window: "The Civic Desk", App: civicnews.exe.
+	0 window The Civic Desk Secondary Actions: Raise
+		1 pane
+			2 pane CivicNews Dashboard
+				3 pane (disabled)
+				4 region CivicNews Dashboard - Web content
+					5 region
+						6 region
+							7 region
+								8 region
+								9 region
+									10 region
+										11 region
+											12 region
+												13 region
+													14 document CivicNews Dashboard ID: RootWebArea
+														15 group
+															16 group ID: root
+																17 complementary
+																	18 text The Civic Desk
+																	19 text LONGMONT / CO
+																	20 navigation
+																		21 list
+																			22 list item Story Queue
+																				23 button Story Queue Description: Story Queue (Alt+1) ID: nav-tab-queue
+																					24 graphic
+																			25 list item Daily Scan
+																				26 button Daily Scan Description: Daily Scan (Alt+2) ID: nav-tab-dailyScan
+																					27 graphic
+																			28 list item Dark Signals
+																				29 button Dark Signals Description: Dark Signals (Alt+3) ID: nav-tab-darkSignals
+																					30 graphic
+																			31 list item Verification
+																				32 button Verification Description: Verification (Alt+4) ID: nav-tab-verification
+																					33 graphic
+																			34 list item Workbench
+																				35 button Workbench Description: Workbench (Alt+5) ID: nav-tab-workbench
+																					36 graphic
+																		37 list
+																			38 list item Sources
+																				39 button Sources Description: Sources (Alt+6) ID: nav-tab-sources
+																					40 graphic
+																			41 list item AI Model
+																				42 button AI Model Description: AI Model (Alt+7) ID: nav-tab-onboarding
+																					43 graphic
+																			44 list item Publishing
+																				45 button Publishing Description: Publishing (Alt+8) ID: nav-tab-publish
+																					46 graphic
+																		47 list
+																			48 list item Browser Pairing
+																				49 button Browser Pairing Description: Browser Pairing (Alt+9) ID: nav-tab-pairing
+																					50 graphic
+																			51 list item Ethics & Backups
+																				52 button Ethics & Backups Description: Ethics & Backups (Alt+10) ID: nav-tab-settings
+																					53 graphic
+																			54 list item System & Status
+																				55 button System & Status Description: System & Status (Alt+11) ID: nav-tab-system
+																					56 graphic
+																	57 text Local AI ready
+																	58 text qwen2.5:7b
+																59 main
+																	60 alert
+																		61 graphic
+																		62 text You're running an
+																		63 text unsigned public beta
+																		64 text of The Civic Desk. Windows SmartScreen may warn on install; that's expected.
+																		65 text 
+																		66 link Report issues on GitHub
+																		67 text .
+																		68 button Dismiss beta notice
+																			69 graphic
+																	70 status
+																		71 text Ethics standard and community profile updated.
+																		72 button Dismiss
+																	73 heading Ethics & Backups
+																	74 text Your publication identity and where your records are kept safe.
+																	75 heading Publication identity
+																	76 button Save now
+																	77 form ID: form-save-profile
+																		78 text Publication name
+																		79 edit Publication name ID: input-profile-title
+																		80 text Publication tagline
+																		81 edit Publication tagline ID: input-profile-subtitle
+																		82 text Publisher type
+																		83 combo box Publisher type ID: input-profile-organization-type
+																		84 text City
+																		85 edit City ID: input-profile-city
+																		86 text State
+																		87 edit State ID: input-profile-state
+																		88 text Site layout
+																		89 combo box Site layout ID: input-profile-layout
+																		90 text Accent color
+																		91 color picker Accent color ID: input-profile-accent
+																		92 text High-cost contract alert threshold
+																		93 spin button High-cost contract alert threshold ID: input-profile-threshold
+																		94 text Logo image URL
+																		95 edit Logo image URL Description: https://example.com/logo.png ID: input-profile-logo
+																		96 button Choose image ID: btn-choose-logo
+																		97 text Optional. Choose a local image or paste an HTTPS logo URL. Leave blank for a text-only masthead.
+																		98 text About this site
+																		99 edit About this site ID: input-profile-about
+																		100 text Ethics statement
+																		101 edit Ethics statement ID: input-profile-ethics
+																		102 text How we report (published on your site)
+																		103 edit How we report (published on your site) ID: input-profile-howwereport
+																		104 text This text is published as written. Add AI, ad, ownership, corrections, or sourcing disclosures only if they match your publication.
+																		105 text Footer / legal note
+																		106 edit Footer / legal note Description: Optional copyright, ownership, sponsorship, ad, or contact note. ID: input-profile-footer
+																		107 text The app will not invent copyright, ownership, ad-policy, or AI-disclosure language.
+																		108 check box Show the First Amendment advisor in the Workbench. Advisory only. It warns and asks good questions; it does not decide what can be shown to the editor or published. ID: chk-first-amendment-advisor
+																		109 text Show the First Amendment advisor in the Workbench.
+																		110 text Advisory only. It warns and asks good questions; it does not decide what can be shown to the editor or published.
+																		111 button Save identity ID: btn-save-profile
+																		112 button Use neutral starter copy ID: btn-neutral-starter-copy
+																		113 status
+																			114 text Identity saved.
+																	115 heading Story guardrails
+																	116 text Drafts are scanned for these words. By default a match only
+																	117 text warns
+																	118 text the editor. Tick
+																	119 text high concern
+																	120 text on a word to ask for an editor note before approval. The app ranks and records concerns; it does not decide what the editor may see or publish. Changes apply to stories checked from now on.
+																	121 heading Accusatory terms
+																	122 text Flagged when used in a paragraph with no linked source.
+																	123 text corrupt
+																	124 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		125 check box Mark the word "corrupt" as high concern
+																		126 text high concern
+																	127 button Remove corrupt
+																	128 text stole
+																	129 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		130 check box Mark the word "stole" as high concern
+																		131 text high concern
+																	132 button Remove stole
+																	133 text illegal
+																	134 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		135 check box Mark the word "illegal" as high concern
+																		136 text high concern
+																	137 button Remove illegal
+																	138 text fraud
+																	139 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		140 check box Mark the word "fraud" as high concern
+																		141 text high concern
+																	142 button Remove fraud
+																	143 text embezzle
+																	144 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		145 check box Mark the word "embezzle" as high concern
+																		146 text high concern
+																	147 button Remove embezzle
+																	148 text bribe
+																	149 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		150 check box Mark the word "bribe" as high concern
+																		151 text high concern
+																	152 button Remove bribe
+																	153 text scam
+																	154 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		155 check box Mark the word "scam" as high concern
+																		156 text high concern
+																	157 button Remove scam
+																	158 text theft
+																	159 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		160 check box Mark the word "theft" as high concern
+																		161 text high concern
+																	162 button Remove theft
+																	163 text criminal
+																	164 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		165 check box Mark the word "criminal" as high concern
+																		166 text high concern
+																	167 button Remove criminal
+																	168 text guilty
+																	169 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		170 check box Mark the word "guilty" as high concern
+																		171 text high concern
+																	172 button Remove guilty
+																	173 text conspiracy
+																	174 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		175 check box Mark the word "conspiracy" as high concern
+																		176 text high concern
+																	177 button Remove conspiracy
+																	178 text extortion
+																	179 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		180 check box Mark the word "extortion" as high concern
+																		181 text high concern
+																	182 button Remove extortion
+																	183 text misconduct
+																	184 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		185 check box Mark the word "misconduct" as high concern
+																		186 text high concern
+																	187 button Remove misconduct
+																	188 text kickback
+																	189 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		190 check box Mark the word "kickback" as high concern
+																		191 text high concern
+																	192 button Remove kickback
+																	193 text laundering
+																	194 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		195 check box Mark the word "laundering" as high concern
+																		196 text high concern
+																	197 button Remove laundering
+																	198 text arrested
+																	199 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		200 check box Mark the word "arrested" as high concern
+																		201 text high concern
+																	202 button Remove arrested
+																	203 text charged
+																	204 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		205 check box Mark the word "charged" as high concern
+																		206 text high concern
+																	207 button Remove charged
+																	208 text indicted
+																	209 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		210 check box Mark the word "indicted" as high concern
+																		211 text high concern
+																	212 button Remove indicted
+																	213 text convicted
+																	214 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		215 check box Mark the word "convicted" as high concern
+																		216 text high concern
+																	217 button Remove convicted
+																	218 text prosecuted
+																	219 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		220 check box Mark the word "prosecuted" as high concern
+																		221 text high concern
+																	222 button Remove prosecuted
+																	223 edit Add a word... Description: Add a word...
+																	224 button Add
+																	225 heading Charge / legal terms
+																	226 text Flagged when used without "alleged" / "allegedly" (presumption of innocence).
+																	227 text arrested
+																	228 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		229 check box Mark the word "arrested" as high concern
+																		230 text high concern
+																	231 button Remove arrested
+																	232 text charged
+																	233 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		234 check box Mark the word "charged" as high concern
+																		235 text high concern
+																	236 button Remove charged
+																	237 text indicted
+																	238 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		239 check box Mark the word "indicted" as high concern
+																		240 text high concern
+																	241 button Remove indicted
+																	242 text accused
+																	243 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		244 check box Mark the word "accused" as high concern
+																		245 text high concern
+																	246 button Remove accused
+																	247 text suspect
+																	248 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		249 check box Mark the word "suspect" as high concern
+																		250 text high concern
+																	251 button Remove suspect
+																	252 text theft
+																	253 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		254 check box Mark the word "theft" as high concern
+																		255 text high concern
+																	256 button Remove theft
+																	257 text embezzle
+																	258 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		259 check box Mark the word "embezzle" as high concern
+																		260 text high concern
+																	261 button Remove embezzle
+																	262 text fraud
+																	263 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		264 check box Mark the word "fraud" as high concern
+																		265 text high concern
+																	266 button Remove fraud
+																	267 text misconduct
+																	268 group Ask for an editor note when this word is used (otherwise it only warns) Description: Ask for an editor note when this word is used (otherwise it only warns)
+																		269 check box Mark the word "misconduct" as high concern
+																		270 text high concern
+																	271 button Remove misconduct
+																	272 edit Add a word... Description: Add a word...
+																	273 button Add
+																	274 button Save guardrail words ID: btn-save-guardrails
+																	275 heading Backups
+																	276 text All your leads, drafts, and sources live in one file on this computer. Back it up somewhere safe.
+																	277 text Backup folder
+																	278 edit Backup folder ID: input-backup-path
+																	279 button Back up now Description: Create a backup at the path above ID: btn-backup-save
+																	280 button Restore from backup Description: Restore from the backup file at the path above ID: btn-backup-restore
+								281 region
+						282 region
+						283 region
+		284 title bar
+			285 menu bar System ID: MenuBar
+				286 menu item System
+			287 button Minimize
+			288 button Maximize
+			289 button Close
+
+Document text: ```
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\backups\civic-desk.db
+```

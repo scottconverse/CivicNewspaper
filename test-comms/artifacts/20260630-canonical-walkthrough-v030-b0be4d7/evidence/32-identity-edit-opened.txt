@@ -1,0 +1,450 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Ethics & Backups
+
+Your publication identity and where your records are kept safe.
+
+Publication identity
+Save now
+Publication name
+Publication tagline
+Publisher type
+Single person
+For-profit publication
+Nonprofit publication
+Private organization
+Community group
+Other
+City
+State
+Site layout
+Classic newspaper
+Compact
+Wide
+Modern
+Accent color
+High-cost contract alert threshold
+Logo image URL
+Choose image
+
+Optional. Choose a local image or paste an HTTPS logo URL. Leave blank for a text-only masthead.
+
+About this site
+Ethics statement
+How we report (published on your site)
+
+This text is published as written. Add AI, ad, ownership, corrections, or sourcing disclosures only if they match your publication.
+
+Footer / legal note
+
+The app will not invent copyright, ownership, ad-policy, or AI-disclosure language.
+
+Show the First Amendment advisor in the Workbench.
+Advisory only. It warns and asks good questions; it does not decide what can be shown to the editor or published.
+Save identity
+Use neutral starter copy
+Story guardrails
+
+Drafts are scanned for these words. By default a match only warns the editor. Tick high concern on a word to ask for an editor note before approval. The app ranks and records concerns; it does not decide what the editor may see or publish. Changes apply to stories checked from now on.
+
+Accusatory terms
+
+Flagged when used in a paragraph with no linked source.
+
+corrupt
+high concern
+×
+stole
+high concern
+×
+illegal
+high concern
+×
+fraud
+high concern
+×
+embezzle
+high concern
+×
+bribe
+high concern
+×
+scam
+high concern
+×
+theft
+high concern
+×
+criminal
+high concern
+×
+guilty
+high concern
+×
+conspiracy
+high concern
+×
+extortion
+high concern
+×
+misconduct
+high concern
+×
+kickback
+high concern
+×
+laundering
+high concern
+×
+arrested
+high concern
+×
+charged
+high concern
+×
+indicted
+high concern
+×
+convicted
+high concern
+×
+prosecuted
+high concern
+×
+Add
+Charge / legal terms
+
+Flagged when used without "alleged" / "allegedly" (presumption of innocence).
+
+arrested
+high concern
+×
+charged
+high concern
+×
+indicted
+high concern
+×
+accused
+high concern
+×
+suspect
+high concern
+×
+theft
+high concern
+×
+embezzle
+high concern
+×
+fraud
+high concern
+×
+misconduct
+high concern
+×
+Add
+Save guardrail words
+Backups
+
+All your leads, drafts, and sources live in one file on this computer. Back it up somewhere safe.
+
+Backup folder
+Back up now
+Restore from backup
+
+FORM_VALUES
+[
+  {
+    "idx": 0,
+    "tag": "INPUT",
+    "label": "input-profile-title",
+    "value": "My Local Publication"
+  },
+  {
+    "idx": 1,
+    "tag": "INPUT",
+    "label": "input-profile-subtitle",
+    "value": "Local news and community information."
+  },
+  {
+    "idx": 2,
+    "tag": "SELECT",
+    "label": "input-profile-organization-type",
+    "value": "single_person"
+  },
+  {
+    "idx": 3,
+    "tag": "INPUT",
+    "label": "input-profile-city",
+    "value": "Longmont"
+  },
+  {
+    "idx": 4,
+    "tag": "INPUT",
+    "label": "input-profile-state",
+    "value": "CO"
+  },
+  {
+    "idx": 5,
+    "tag": "SELECT",
+    "label": "input-profile-layout",
+    "value": "classic"
+  },
+  {
+    "idx": 6,
+    "tag": "INPUT",
+    "label": "input-profile-accent",
+    "value": "#5a1818"
+  },
+  {
+    "idx": 7,
+    "tag": "INPUT",
+    "label": "input-profile-threshold",
+    "value": "250000"
+  },
+  {
+    "idx": 8,
+    "tag": "INPUT",
+    "label": "input-profile-logo",
+    "value": ""
+  },
+  {
+    "idx": 9,
+    "tag": "TEXTAREA",
+    "label": "input-profile-about",
+    "value": "A locally edited publication for this community."
+  },
+  {
+    "idx": 10,
+    "tag": "TEXTAREA",
+    "label": "input-profile-ethics",
+    "value": "Editorial standards are set by the publisher. Corrections are published when needed."
+  },
+  {
+    "idx": 11,
+    "tag": "TEXTAREA",
+    "label": "input-profile-howwereport",
+    "value": "Stories, sources, and publication decisions are reviewed by the editor before publication."
+  },
+  {
+    "idx": 12,
+    "tag": "TEXTAREA",
+    "label": "input-profile-footer",
+    "value": ""
+  },
+  {
+    "idx": 13,
+    "tag": "INPUT",
+    "label": "chk-first-amendment-advisor",
+    "value": "on"
+  },
+  {
+    "idx": 14,
+    "tag": "INPUT",
+    "label": "Mark the word \"corrupt\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 15,
+    "tag": "INPUT",
+    "label": "Mark the word \"stole\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 16,
+    "tag": "INPUT",
+    "label": "Mark the word \"illegal\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 17,
+    "tag": "INPUT",
+    "label": "Mark the word \"fraud\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 18,
+    "tag": "INPUT",
+    "label": "Mark the word \"embezzle\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 19,
+    "tag": "INPUT",
+    "label": "Mark the word \"bribe\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 20,
+    "tag": "INPUT",
+    "label": "Mark the word \"scam\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 21,
+    "tag": "INPUT",
+    "label": "Mark the word \"theft\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 22,
+    "tag": "INPUT",
+    "label": "Mark the word \"criminal\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 23,
+    "tag": "INPUT",
+    "label": "Mark the word \"guilty\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 24,
+    "tag": "INPUT",
+    "label": "Mark the word \"conspiracy\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 25,
+    "tag": "INPUT",
+    "label": "Mark the word \"extortion\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 26,
+    "tag": "INPUT",
+    "label": "Mark the word \"misconduct\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 27,
+    "tag": "INPUT",
+    "label": "Mark the word \"kickback\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 28,
+    "tag": "INPUT",
+    "label": "Mark the word \"laundering\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 29,
+    "tag": "INPUT",
+    "label": "Mark the word \"arrested\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 30,
+    "tag": "INPUT",
+    "label": "Mark the word \"charged\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 31,
+    "tag": "INPUT",
+    "label": "Mark the word \"indicted\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 32,
+    "tag": "INPUT",
+    "label": "Mark the word \"convicted\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 33,
+    "tag": "INPUT",
+    "label": "Mark the word \"prosecuted\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 34,
+    "tag": "INPUT",
+    "label": "",
+    "value": ""
+  },
+  {
+    "idx": 35,
+    "tag": "INPUT",
+    "label": "Mark the word \"arrested\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 36,
+    "tag": "INPUT",
+    "label": "Mark the word \"charged\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 37,
+    "tag": "INPUT",
+    "label": "Mark the word \"indicted\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 38,
+    "tag": "INPUT",
+    "label": "Mark the word \"accused\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 39,
+    "tag": "INPUT",
+    "label": "Mark the word \"suspect\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 40,
+    "tag": "INPUT",
+    "label": "Mark the word \"theft\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 41,
+    "tag": "INPUT",
+    "label": "Mark the word \"embezzle\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 42,
+    "tag": "INPUT",
+    "label": "Mark the word \"fraud\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 43,
+    "tag": "INPUT",
+    "label": "Mark the word \"misconduct\" as high concern",
+    "value": "on"
+  },
+  {
+    "idx": 44,
+    "tag": "INPUT",
+    "label": "",
+    "value": ""
+  },
+  {
+    "idx": 45,
+    "tag": "INPUT",
+    "label": "input-backup-path",
+    "value": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\backups\\civic-desk.db"
+  }
+]

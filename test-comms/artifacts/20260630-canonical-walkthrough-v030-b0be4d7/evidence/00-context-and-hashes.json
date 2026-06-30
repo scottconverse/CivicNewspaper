@@ -1,0 +1,11 @@
+{
+    "branch":  "test-comms/cleanroom-coder-tester",
+    "msiHash":  "AA510FA91B519883190638CBEDB584648B148731DB842371ECB8671D6D7CA154",
+    "exeExpected":  "6C28D0ACEDAA1A367CA8F2EBFFDCB60B2AFC002F123442D1C7FF84EFD1CC95E4",
+    "activeDirective":  "test-comms/directives/20260630-canonical-walkthrough-v030-b0be4d7.md",
+    "utc":  "2026-06-30T06:26:07.6861400Z",
+    "msiExpected":  "AA510FA91B519883190638CBEDB584648B148731DB842371ECB8671D6D7CA154",
+    "exeHash":  "6C28D0ACEDAA1A367CA8F2EBFFDCB60B2AFC002F123442D1C7FF84EFD1CC95E4",
+    "commit":  "ba7b9ab test-comms: v0.3.0 clean-machine gauntlet report [skip ci]",
+    "pwd":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms"
+}

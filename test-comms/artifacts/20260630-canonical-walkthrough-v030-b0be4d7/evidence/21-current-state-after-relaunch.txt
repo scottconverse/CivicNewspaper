@@ -1,0 +1,128 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Story Queue
+
+Civic signals your sources surfaced, ready to verify and turn into plain-language stories.
+
+Refresh
+Daily Scan
+Scrape & Detect
+NEW LEADS
+9
+IN DRAFTING
+0
+HIGH PRIORITY
+0
+SOURCES
+6
+Local-first workflow
+Scan sources, draft from linked evidence, run guardrails, then publish a static paper.
+Leads
+9
+Drafts
+0
+Scan results
+latest
+Filter leads
+Sort by:
+Date Created
+Risk Level
+Confidence
+Risk: low
+Verification
+Needs verification
+daily_scan
+Review new source evidence from source #1: --> Agenda Management Portal - City of Longmont Skip to main content News &#038; Alerts Events Careers Contact Services Accessibility Ensuring accessible government services. Activities Providing community activities. Building Guiding construction and developm... Editor context: The model did not return usable JSON, so this evidence was preserved for editor review instead of being discarded. Suggested next step: Open the source, decide whether it contains a reportable civic action, then save or dismiss it from the queue.
+
+Novelty /5.
+
+Confidence: low
+Draft
+Risk: low
+Editor review
+Decision / Vote
+VOTING SIGNAL: Found vote/decision keywords (["approved", "approved", "Approved", "passed", "Motion", "motion"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.
+
+Novelty /5.
+
+Confidence: medium
+Draft
+Risk: low
+Editor review
+Public Meeting Scheduled
+MEETING SCHEDULED: Meeting notification detected in 'Longmont City Council Meetings' record. Public attendance or comment may be permitted.
+
+Novelty /5.
+
+Confidence: medium
+Draft
+Risk: low
+Editor review
+Decision / Vote
+VOTING SIGNAL: Found vote/decision keywords (["passed"]) in 'Longmont City Council Meetings' record, indicating an official board action has taken place.
+
+Novelty /5.
+
+Confidence: medium
+Draft
+Risk: low
+Editor review
+New Primary Record
+A new official primary document from 'Longmont City Council Meetings' was fetched today (https://longmontcolorado.gov/government/city-council-meetings/).
+
+Novelty /5.
+
+Confidence: high
+Draft
+Risk: low
+Editor review
+New Primary Record
+A new official primary document from 'Public Notice Colorado' was fetched today (https://www.publicnoticecolorado.com/).
+
+Novelty /5.
+
+Confidence: high
+Draft
+Risk: low
+Editor review
+Public Meeting Scheduled
+MEETING SCHEDULED: Meeting notification detected in 'Longmont Agenda Management Portal' record. Public attendance or comment may be permitted.
+
+Novelty /5.
+
+Confidence: medium
+Draft
+Risk: low
+Editor review
+New Primary Record
+A new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).
+
+Novelty /5.
+
+Confidence: high
+Draft
+Risk: low
+Editor review
+New Primary Record
+A new official primary document from 'Longmont Agenda Management Portal' was fetched today (https://longmontcolorado.gov/city-clerk/agenda-management-portal/).
+
+Novelty /5.
+
+Confidence: high
+Draft

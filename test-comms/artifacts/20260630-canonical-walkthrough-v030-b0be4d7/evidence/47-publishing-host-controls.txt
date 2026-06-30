@@ -1,0 +1,251 @@
+Window: "The Civic Desk", App: civicnews.exe.
+	0 window The Civic Desk Secondary Actions: Raise
+		1 pane
+			2 pane CivicNews Dashboard
+				3 pane (disabled)
+				4 region CivicNews Dashboard - Web content
+					5 region
+						6 region
+							7 region
+								8 region
+								9 region
+									10 region
+										11 region
+											12 region
+												13 region
+													14 document CivicNews Dashboard ID: RootWebArea
+														15 group
+															16 group ID: root
+																17 complementary
+																	18 text The Civic Desk
+																	19 text LONGMONT / CO
+																	20 navigation
+																		21 list
+																			22 list item Story Queue
+																				23 button Story Queue Description: Story Queue (Alt+1) ID: nav-tab-queue
+																					24 graphic
+																			25 list item Daily Scan
+																				26 button Daily Scan Description: Daily Scan (Alt+2) ID: nav-tab-dailyScan
+																					27 graphic
+																			28 list item Dark Signals
+																				29 button Dark Signals Description: Dark Signals (Alt+3) ID: nav-tab-darkSignals
+																					30 graphic
+																			31 list item Verification
+																				32 button Verification Description: Verification (Alt+4) ID: nav-tab-verification
+																					33 graphic
+																			34 list item Workbench
+																				35 button Workbench Description: Workbench (Alt+5) ID: nav-tab-workbench
+																					36 graphic
+																		37 list
+																			38 list item Sources
+																				39 button Sources Description: Sources (Alt+6) ID: nav-tab-sources
+																					40 graphic
+																			41 list item AI Model
+																				42 button AI Model Description: AI Model (Alt+7) ID: nav-tab-onboarding
+																					43 graphic
+																			44 list item Publishing
+																				45 button Publishing Description: Publishing (Alt+8) ID: nav-tab-publish
+																					46 graphic
+																		47 list
+																			48 list item Browser Pairing
+																				49 button Browser Pairing Description: Browser Pairing (Alt+9) ID: nav-tab-pairing
+																					50 graphic
+																			51 list item Ethics & Backups
+																				52 button Ethics & Backups Description: Ethics & Backups (Alt+10) ID: nav-tab-settings
+																					53 graphic
+																			54 list item System & Status
+																				55 button System & Status Description: System & Status (Alt+11) ID: nav-tab-system
+																					56 graphic
+																	57 text Local AI ready
+																	58 text qwen2.5:7b
+																59 main
+																	60 alert
+																		61 graphic
+																		62 text You're running an
+																		63 text unsigned public beta
+																		64 text of The Civic Desk. Windows SmartScreen may warn on install; that's expected.
+																		65 text 
+																		66 link Report issues on GitHub
+																		67 text .
+																		68 button Dismiss beta notice
+																			69 graphic
+																	70 heading Publishing
+																	71 text Publish instantly with here.now. Use GitHub Pages if you want a public archive in your own repository.
+																	72 heading Public site identity review
+																	73 text Review this before compile. The app publishes only the identity and policy copy you choose.
+																	74 button Edit identity ID: btn-edit-publish-identity
+																	75 list
+																		76 term Publication
+																			77 text Publication
+																		78 text Longmont Walkthrough Gazette
+																		79 term Tagline
+																			80 text Tagline
+																		81 text Cleanroom walkthrough civic test publication.
+																		82 term Publisher type
+																			83 text Publisher type
+																		84 text Single person
+																		85 term Layout
+																			86 text Layout
+																		87 text classic
+																		88 text /
+																		89 text #5a1818
+																		90 term Logo
+																			91 text Logo
+																		92 text Text masthead
+																		93 term Footer note
+																			94 text Footer note
+																		95 text Blank
+																		96 term Advisor
+																			97 text Advisor
+																		98 text On
+																	99 list
+																		100 list item Footer/legal note is blank; that is allowed, but nothing will be invented for you.
+																	101 heading Compile your gazette
+																	102 text Output folder
+																	103 edit Output folder Description: C:\\CivicDesk\\site ID: input-publish-path
+																	104 button Browse ID: btn-publish-browse
+																		105 graphic
+																	106 graphic
+																	107 text Compile approved stories
+																	108 text HTML
+																	109 graphic
+																	110 text Preview local website
+																	111 text index.html
+																	112 graphic
+																	113 text Export hosting package
+																	114 text ZIP
+																	115 graphic
+																	116 text Publish to a host
+																	117 text next
+																	118 graphic
+																	119 text Share with residents
+																	120 text posts
+																	121 button Compile site ID: btn-publish-compile
+																		122 graphic
+																	123 text Last compiled
+																	124 text Generated locally. Publish instantly with here.now, or use GitHub Pages for a repository-backed archive.
+																	125 button Open folder ID: btn-publish-open-folder
+																	126 button Reset ID: btn-publish-restart
+																	127 group Compile receipt
+																		128 heading Compile receipt
+																		129 text 1
+																		130 text articles
+																		131 text 18
+																		132 text files
+																		133 text 0
+																		134 text skipped
+																		135 button ZIP package
+																			136 graphic
+																		137 button Newsletter
+																			138 graphic
+																		139 button Substack draft
+																			140 graphic
+																		141 button Share package
+																			142 graphic
+																		143 button Facebook copy
+																			144 graphic
+																		145 button Subreddit post
+																			146 graphic
+																		147 button Nextdoor copy
+																			148 graphic
+																		149 button RSS
+																			150 graphic
+																	151 group Newsletter and Substack tools
+																		152 heading Newsletter and Substack
+																		153 text Use the generated draft as the source of truth, then save the public URL after posting.
+																		154 button Open Substack editor
+																			155 graphic
+																		156 button Copy headline
+																			157 graphic
+																		158 button Copy deck
+																			159 graphic
+																		160 button Copy post body
+																			161 graphic
+																		162 button Export issue email
+																			163 graphic
+																	164 group Subscriber list
+																		165 heading Subscriber list
+																		166 text 0
+																		167 text active subscriber
+																		168 text s
+																		169 text stored locally.
+																		170 text Email
+																		171 edit Email Description: reader@example.com ID: input-subscriber-email
+																		172 text Name
+																		173 edit Name Description: optional ID: input-subscriber-name
+																		174 button Add
+																			175 graphic
+																		176 button Import CSV
+																			177 graphic
+																		178 button Export CSV
+																			179 graphic
+																		180 text No subscribers yet.
+																	181 graphic
+																	182 text Next step:
+																	183 text publish instantly with here.now. Use GitHub Pages for a durable public archive, and use the newsletter and share package to tell residents where to read it.
+																	184 heading Publisher connector
+																	185 text Publish instantly with here.now. Use a free API key for permanent civic newspaper sites, or publish a 24-hour preview without an account.
+																	186 group Connector setup guide
+																		187 text Account setup:
+																		188 text 
+																		189 text Optional. Publish a 24-hour preview with no account, or save a here.now API key for permanent sites.
+																		190 text Target:
+																		191 text 
+																		192 text Leave the slug blank to create a new site, or enter an existing here.now slug to update that site.
+																		193 text Required access:
+																		194 text 
+																		195 text An API key owns permanent sites. Anonymous previews are temporary and can be claimed in here.now.
+																		196 text Check:
+																		197 text 
+																		198 text Test connection checks the saved API key when present; otherwise it confirms preview publishing is available.
+																	199 text Provider
+																	200 combo box Provider ID: select-publish-provider
+																	201 text Public URL
+																	202 edit Public URL Description: optional for API connectors; required for manual save ID: input-published-url
+																	203 text Deployment ID or note
+																	204 edit Deployment ID or note Description: optional ID: input-deployment-id
+																	205 button Save public URL
+																		206 graphic
+																	207 button Publish with connector
+																		208 graphic
+																	209 text Saved live URL:
+																	210 link https://russet-clover-e8fz.here.now
+																	211 text Connector name
+																	212 edit Connector name ID: input-publisher-name
+																	213 text Default public URL
+																	214 edit Default public URL Description: https://your-town-news.example.com ID: input-publisher-site-url
+																	215 text here.now slug
+																	216 edit here.now slug Description: blank creates a new site; enter a slug to update ID: input-publisher-site-id
+																	217 text Notes
+																	218 edit Notes Description: optional internal note ID: input-publisher-project
+																	219 text here.now API key
+																	220 edit here.now API key Description: optional for permanent here.now sites ID: input-publisher-credential
+																	221 check box Clear saved credential
+																	222 button Save connector
+																		223 graphic
+																	224 button Test connection
+																		225 graphic
+																	226 text Test passed:
+																	227 text here.now is ready for temporary preview publishing. Save an API key for permanent sites.
+																	228 button Open here.now
+																		229 graphic
+																	230 button Open ZIP
+																		231 graphic
+																	232 heading Publish history
+																	233 table Publish history
+																		234 row
+																		235 row
+																			236 group Description: C:/Users/civic/AppData/Roaming/com.scottconverse.civicdesk/sites/default
+								237 region
+						238 region
+						239 region
+		240 title bar
+			241 menu bar System ID: MenuBar
+				242 menu item System
+			243 button Minimize
+			244 button Maximize
+			245 button Close
+
+Document text: ```
+￼
+```

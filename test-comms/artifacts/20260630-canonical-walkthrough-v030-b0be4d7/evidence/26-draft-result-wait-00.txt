@@ -1,0 +1,222 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Story Workbench
+
+Modify drafted content, review guardrail warnings, and link source material when it helps the editor.
+
+Back to Queue
+Save Draft
+Delete
+Press-freedom / legal-risk advisor
+
+Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.
+
+Run Advisor
+Distinguish verified facts, allegations, opinion, and unanswered questions.
+Use extra care with private individuals, minors, medical details, addresses, and active legal matters.
+Keep notes on source reliability and why publishing serves the community.
+Story Title
+Article Body (Markdown)
+Plain Language Rewrite
+Highlight text and click "Cite" in evidence pane to link.
+Current Status: Drafting
+Send Back for More Work
+Mark Ready for Review
+Hold
+Cut Story
+Approve for Static Publish
+I have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision.
+Social Media Promo Pack
+Generate Posts
+
+Generate optimized posts for Twitter/X, Facebook, and Reddit based on the current draft.
+
+Linked Sources
+Citation ID: #3
+Fetched: 6/30/2026
+"Search tip! The HTML agenda bookmarks the video to the item on the agenda so you don&#8217;t have to search the video on YouTube to find the topic you are looking interested in. HTML agendas with video bookmarks are only published for City Council meetings and Planning &amp; Zoning Commission meetings.
+Did you find this page helpful?
+Welcome
+Longmont is a diverse, multicultural and welcoming city.
+Contact
+Services
+View All Services
+Departments
+View All Departments
+Quick Links
+Agendas and Meetings
+Code Enforcement
+Emergency Notifications
+Employment Opportunities
+Permits and Inspections
+Public Records
+Service Requests
+Email Signup
+Stay up-to-date on news and events in Longmont.
+Sign Up
+For questions or assistance, please contact our help and information line at  303-776-6050 .
+facebook
+instagram
+youtube
+whatsapp
+Accessibility  Land Acknowledgment  InsideLongmont  Employee Login  Terms of Use  Privacy Policy
+© 2026 City of Longmont, Colorado
+search
+Services
+Back to Main
+Accessibility
+Activities
+Building
+Business
+Education
+Government
+Housing
+Human Services
+Information
+Jobs
+Library
+Licensing
+Maintenance
+Museum
+NextLight Fiber Internet
+Public Safety
+Sustainability
+Transportation
+Utilities
+Wellness
+Explore All Services
+Explore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place.
+All Services
+Departments
+Back to Main
+Airport
+Boards, Committees and Commissions
+Building Services
+Children, Youth and Families at the Youth Center
+City Attorney
+City Clerk
+City Council
+City Manager
+Community and Neighborhood Resources
+Enterprise Technology Services
+Environment
+Finance
+Forestry
+Golf Services
+Housing and Community Investment
+Human Resources
+Human Services
+Judicial Department
+Library
+Longmont Housing Authority
+Longmont Museum
+Longmont Power &amp;  Communications
+Municipal Court
+Municipal Probation
+NextLight Fiber Internet
+Parks and Natural Resources
+"
+Link Citation
+Citation ID: #4
+Fetched: 6/30/2026
+"Planning and Development Services
+Public Information
+Public Safety
+Purchasing and Contracts
+Recreation Services
+Risk Management
+Senior Services
+Transportation
+Trash, Recycling, and Composting
+Utilities and Public Works
+Water
+Explore All Departments
+Discover all the departments that make up the City of Longmont&#8217;s government. Get detailed information on their roles, responsibilities, and how they serve the community.
+All Departments
+Government
+News &#038; Alerts
+Events
+Careers
+Contact
+Subscribe to Email Updates
+Email Address
+Stay Connected
+Get the latest updates from the City of Longmont
+This is Longmont
+The official newsletter of the City of Longmont
+Weekly
+Topics of Interest
+Choose specific topics you want to hear about
+Select all in this category
+News &amp; Alerts
+Latest news information, notices and alerts from the city
+Events &amp; Activities
+Community events, programs and activities happening in Longmont
+Weekly
+City Events
+Downtown Events
+Events for Kids
+Job Announcements
+Employment opportunities delivered to your inbox
+Weekly
+Department Newsletters
+Subscribe to updates from specific city departments
+Select all in this category
+Longmont Library
+Updates and registration information about library programs and events
+Adult Programs
+Children Programs (Infant - 5th Grade)
+Technology + Computer Classes
+Teens Program Notices (6th-12th graders)
+This Month @ the Library
+Longmont Museum
+Events, exhibits and more from the museum
+Auditorium Programs
+Discovery Days (Early Childhood)
+Museum Exhibits &amp; Events
+Recreation
+Activities, classes, sports and more
+Sustainability
+Project and program updates, including money-saving rebates and efficiency resources
+Sustainable Business Program
+Promotes environmental stewardship, economic vitality and social equity
+Senior Center
+Senior Center news and updates about upcoming programs and events
+Vision Zero
+Vision Zero projects, activities and how to get involved to improve transportation safety
+Youth Center
+"
+Link Citation
+Citation ID: #5
+Fetched: 6/30/2026
+"Helping families, children and youth in Longmont grow, succeed and reach their best potential
+New
+Language Preference
+English
+Spanish
+Most of our email newsletters are currently published in English only. We&#039;re recording preferences if we add Spanish translations in the future.
+Get City News in Spanish!
+Follow our WhatsApp channel for City of Longmont news and updates in Spanish.
+Join WhatsApp Channel →
+Choose Your Subscriptions
+Select the topics and departments you&#039;d like to hear from.
+Subscribe to Selections
+Skip
+"
+Link Citation

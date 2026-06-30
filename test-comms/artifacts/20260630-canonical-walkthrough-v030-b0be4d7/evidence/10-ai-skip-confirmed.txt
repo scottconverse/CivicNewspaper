@@ -1,0 +1,49 @@
+Window: "The Civic Desk", App: civicnews.exe.
+	0 window The Civic Desk Secondary Actions: Raise
+		1 pane
+			2 pane CivicNews Dashboard
+				3 pane (disabled)
+				4 region CivicNews Dashboard - Web content
+					5 region
+						6 region
+							7 region
+								8 region
+								9 region
+									10 region
+										11 region
+											12 region
+												13 region
+													14 document CivicNews Dashboard ID: RootWebArea
+														15 group
+															16 group ID: root
+																17 status
+																	18 text The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.
+																19 heading AI Setup
+																20 text Step
+																21 text 4
+																22 text of
+																23 text 5
+																24 heading Defaults
+																25 text Configure publication directories and backup database paths.
+																26 text Publish Path
+																27 edit Publish Path ID: onboarding-publish-path
+																28 text Where your static sites will be compiled.
+																29 text Backup Path
+																30 edit Backup Path ID: onboarding-backup-path
+																31 text Where database backups are saved.
+																32 button Back
+																33 button Next ID: btn-wizard-next
+																	34 graphic
+								35 region
+						36 region
+						37 region
+		38 title bar
+			39 menu bar System ID: MenuBar
+				40 menu item System
+			41 button Minimize
+			42 button Maximize
+			43 button Close
+
+Document text: ```
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\backups
+```

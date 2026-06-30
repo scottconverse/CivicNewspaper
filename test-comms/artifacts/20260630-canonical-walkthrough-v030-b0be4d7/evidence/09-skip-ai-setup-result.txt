@@ -1,0 +1,79 @@
+Window: "The Civic Desk", App: civicnews.exe.
+	0 window The Civic Desk Secondary Actions: Raise
+		1 pane
+			2 pane CivicNews Dashboard
+				3 pane (disabled)
+				4 region CivicNews Dashboard - Web content
+					5 region
+						6 region
+							7 region
+								8 region
+								9 region
+									10 region
+										11 region
+											12 region
+												13 region
+													14 document CivicNews Dashboard ID: RootWebArea
+														15 group
+															16 group ID: root
+																17 status
+																	18 text The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.
+																19 heading AI Setup
+																20 text Step
+																21 text 3
+																22 text of
+																23 text 5
+																24 heading Download AI Model
+																25 text Download the local AI model. One-time setup - needs an internet connection.
+																26 text AI Model:
+																27 text qwen2.5:7b
+																28 text (Recommended)
+																29 text CivicNews will download this local AI model now - a one-time download of about
+																30 text ~4.7 GB
+																31 text that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.
+																32 text It is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.
+																33 text Initializing download...
+																34 text 80.2
+																35 text %
+																36 button Cancel Download
+																37 button Back
+																38 button Skip for now
+																39 button (disabled) Next ID: btn-wizard-next
+																	40 graphic
+																41 dialog Skip the model download? Secondary Actions: Raise ID: confirm-modal
+																	42 group
+																		43 heading Skip the model download? ID: confirm-modal-title
+																		44 text You won't be able to use AI features until you download a model from Settings.
+																		45 button Cancel
+																		46 button Skip download
+								47 region
+						48 region
+						49 region
+		50 title bar
+			51 menu bar System ID: MenuBar
+				52 menu item System
+			53 button Minimize
+			54 button Maximize
+			55 button Close
+
+Document text: ```
+The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.
+AI Setup
+Step 3 of 5
+Download AI Model
+Download the local AI model. One-time setup - needs an internet connection.
+AI Model: qwen2.5:7b (Recommended)
+CivicNews will download this local AI model now - a one-time download of about ~4.7 GB that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.
+It is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.
+Initializing download...
+80.2%
+Cancel Download
+Back
+Skip for now
+Next
+￼
+Skip the model download?
+You won't be able to use AI features until you download a model from Settings.
+Cancel
+Skip download
+```

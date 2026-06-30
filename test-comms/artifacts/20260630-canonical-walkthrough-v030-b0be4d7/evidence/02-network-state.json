@@ -1,0 +1,26 @@
+[
+    {
+        "Name":  "Bluetooth Network Connection",
+        "Status":  "Disconnected",
+        "LinkSpeed":  "3 Mbps",
+        "MacAddress":  "30-F6-EF-D9-E0-CB"
+    },
+    {
+        "Name":  "vEthernet (WSL (Hyper-V firewall))",
+        "Status":  "Up",
+        "LinkSpeed":  "10 Gbps",
+        "MacAddress":  "00-15-5D-EF-85-AD"
+    },
+    {
+        "Name":  "Ethernet 2",
+        "Status":  "Disconnected",
+        "LinkSpeed":  "0 bps",
+        "MacAddress":  "D8-43-AE-0E-59-C8"
+    },
+    {
+        "Name":  "Wi-Fi 2",
+        "Status":  "Up",
+        "LinkSpeed":  "2.4 Gbps",
+        "MacAddress":  "30-F6-EF-D9-E0-C7"
+    }
+]

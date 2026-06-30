@@ -1,0 +1,44 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Drafting Article
+
+Lead: Review new source evidence from source #1: --> Agenda Management Portal - City of Longmont Skip to main content News &#038; Alerts Events Careers Contact Services Accessibility Ensuring accessible government services. Activities Providing community activities. Building Guiding construction and developm... Editor context: The model did not return usable JSON, so this evidence was preserved for editor review instead of being discarded. Suggested next step: Open the source, decide whether it contains a reportable civic action, then save or dismiss it from the queue.
+
+Verification
+Needs verification
+Novelty /5
+
+Verification assignment. Use the draft as reporting notes until the missing facts are checked.
+
+Generating Draft...
+Cancel
+Asking the local AI model to write a working draft. Keep this window open.
+Article Format
+Brief (Under 200 words summary)
+Watch Alert (Highlights specific public safety or procurement issues)
+Explainer (Detailed review of a policy or decision background)
+Investigation (Traces spending and connections behind a story)
+Editorial / Opinion Piece (Presents a structured argument)
+Custom Guidelines / Instructions (Optional)
+Linked Sources (3)
+"Search tip! The HTML agenda bookmarks the video to the item on the agenda so you don&#8217;t have to..."
+"Planning and Development Services Public Information Public Safety Purchasing and Contracts Recreati..."
+"Helping families, children and youth in Longmont grow, succeed and reach their best potential New La..."
+Generating Draft...
+Cancel

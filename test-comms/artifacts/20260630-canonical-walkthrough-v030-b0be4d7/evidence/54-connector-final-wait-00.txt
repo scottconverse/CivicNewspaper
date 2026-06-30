@@ -1,0 +1,149 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Publishing
+
+Publish instantly with here.now. Use GitHub Pages if you want a public archive in your own repository.
+
+Public site identity review
+
+Review this before compile. The app publishes only the identity and policy copy you choose.
+
+Edit identity
+Publication
+Longmont Walkthrough Gazette
+Tagline
+Cleanroom walkthrough civic test publication.
+Publisher type
+Single person
+Layout
+classic / #5a1818
+Logo
+Text masthead
+Footer note
+Blank
+Advisor
+On
+Footer/legal note is blank; that is allowed, but nothing will be invented for you.
+Compile your gazette
+Output folder
+Browse
+Compile approved stories
+HTML
+Preview local website
+index.html
+Export hosting package
+ZIP
+Publish to a host
+next
+Share with residents
+posts
+Compile site
+Last compiled
+
+Generated locally. Publish instantly with here.now, or use GitHub Pages for a repository-backed archive.
+
+Open folder
+Reset
+Compile receipt
+1
+articles
+18
+files
+0
+skipped
+ZIP package
+Newsletter
+Substack draft
+Share package
+Facebook copy
+Subreddit post
+Nextdoor copy
+RSS
+Newsletter and Substack
+
+Use the generated draft as the source of truth, then save the public URL after posting.
+
+Open Substack editor
+Copy headline
+Copy deck
+Copy post body
+Export issue email
+Subscriber list
+
+0 active subscribers stored locally.
+
+Email
+Name
+Add
+Import CSV
+Export CSV
+
+No subscribers yet.
+
+Next step: publish instantly with here.now. Use GitHub Pages for a durable public archive, and use the newsletter and share package to tell residents where to read it.
+
+Publisher connector
+
+Publish instantly with here.now. Use a free API key for permanent civic newspaper sites, or publish a 24-hour preview without an account.
+
+Account setup: Optional. Publish a 24-hour preview with no account, or save a here.now API key for permanent sites.
+
+Target: Leave the slug blank to create a new site, or enter an existing here.now slug to update that site.
+
+Required access: An API key owns permanent sites. Anonymous previews are temporary and can be claimed in here.now.
+
+Check: Test connection checks the saved API key when present; otherwise it confirms preview publishing is available.
+
+Provider
+here.now
+GitHub Pages
+Netlify
+Cloudflare Pages
+Substack
+WordPress
+Other host
+Public URL
+Deployment ID or note
+Save public URL
+Publish with connector
+
+Saved live URL: https://russet-clover-e8fz.here.now
+
+Connector name
+Default public URL
+here.now slug
+Notes
+here.now API key
+Clear saved credential
+Save connector
+Test connection
+
+Test passed: here.now is ready for temporary preview publishing. Save an API key for permanent sites.
+
+Open here.now
+Open ZIP
+Publish history
+ISSUE
+PROVIDER
+ARTICLES
+GENERATED
+issue-20260630-064220-181139800
+here now
+1
+6/30/2026, 12:42:20 AM

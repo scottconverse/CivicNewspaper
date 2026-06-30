@@ -1,0 +1,175 @@
+Window: "The Civic Desk", App: civicnews.exe.
+	0 window The Civic Desk Secondary Actions: Raise
+		1 pane
+			2 pane CivicNews Dashboard
+				3 pane (disabled)
+				4 region CivicNews Dashboard - Web content
+					5 region
+						6 region
+							7 region
+								8 region
+								9 region
+									10 region
+										11 region
+											12 region
+												13 region
+													14 document CivicNews Dashboard ID: RootWebArea
+														15 group
+															16 group ID: root
+																17 complementary
+																	18 text The Civic Desk
+																	19 text LONGMONT / CO
+																	20 navigation
+																		21 list
+																			22 list item Story Queue
+																				23 button Story Queue Description: Story Queue (Alt+1) ID: nav-tab-queue
+																					24 graphic
+																			25 list item Daily Scan
+																				26 button Daily Scan Description: Daily Scan (Alt+2) ID: nav-tab-dailyScan
+																					27 graphic
+																			28 list item Dark Signals
+																				29 button Dark Signals Description: Dark Signals (Alt+3) ID: nav-tab-darkSignals
+																					30 graphic
+																			31 list item Verification
+																				32 button Verification Description: Verification (Alt+4) ID: nav-tab-verification
+																					33 graphic
+																			34 list item Workbench
+																				35 button Workbench Description: Workbench (Alt+5) ID: nav-tab-workbench
+																					36 graphic
+																		37 list
+																			38 list item Sources
+																				39 button Sources Description: Sources (Alt+6) ID: nav-tab-sources
+																					40 graphic
+																			41 list item AI Model
+																				42 button AI Model Description: AI Model (Alt+7) ID: nav-tab-onboarding
+																					43 graphic
+																			44 list item Publishing
+																				45 button Publishing Description: Publishing (Alt+8) ID: nav-tab-publish
+																					46 graphic
+																		47 list
+																			48 list item Browser Pairing
+																				49 button Browser Pairing Description: Browser Pairing (Alt+9) ID: nav-tab-pairing
+																					50 graphic
+																			51 list item Ethics & Backups
+																				52 button Ethics & Backups Description: Ethics & Backups (Alt+10) ID: nav-tab-settings
+																					53 graphic
+																			54 list item System & Status
+																				55 button System & Status Description: System & Status (Alt+11) ID: nav-tab-system
+																					56 graphic
+																	57 text Local AI ready
+																	58 text qwen2.5:7b
+																59 main
+																	60 alert
+																		61 graphic
+																		62 text You're running an
+																		63 text unsigned public beta
+																		64 text of The Civic Desk. Windows SmartScreen may warn on install; that's expected.
+																		65 text 
+																		66 link Report issues on GitHub
+																		67 text .
+																		68 button Dismiss beta notice
+																			69 graphic
+																	70 alert
+																		71 text Generating a draft requires the qwen2.5:7b model, which isn't downloaded yet. Redirecting to model download setup...
+																		72 button Dismiss
+																	73 heading Set up your private AI
+																	74 text Everything runs on this computer. No accounts, no cloud, nothing leaves your desk.
+																	75 group AI setup progress
+																		76 graphic
+																		77 text Identity
+																		78 graphic
+																		79 text AI service
+																		80 text 3
+																		81 text Download model
+																		82 text 4
+																		83 text Defaults
+																		84 text 5
+																		85 text Done
+																	86 graphic
+																	87 heading Download your AI model
+																	88 text Step 3 of 5 - one-time download
+																	89 text We picked a model that fits your computer. This downloads once and then works completely offline. Large models can take 10-60+ minutes on slower connections.
+																	90 graphic
+																	91 text 15
+																	92 text GB RAM detected.
+																	93 text Recommended model:
+																	94 text qwen2.5:7b
+																	95 text .
+																	96 combo box AI model
+																	97 text Ready to download
+																	98 text ~4.7 GB - local after setup
+																	99 text You can leave this running, or cancel and resume later. If progress stops for several minutes, check internet access, restart Civic Desk, then retry.
+																	100 text OTHER OPTIONS
+																	101 button llama3.2:3b ~2 GB - lighter laptops
+																	102 button Download qwen2.5:7b
+																		103 graphic
+								104 region
+						105 region
+						106 region
+		107 title bar
+			108 menu bar System ID: MenuBar
+				109 menu item System
+			110 button Minimize
+			111 button Maximize
+			112 button Close
+
+Document text: ```
+The Civic Desk
+LONGMONT / CO
+￼
+Story Queue
+￼
+Daily Scan
+￼
+Dark Signals
+￼
+Verification
+￼
+Workbench
+￼
+Sources
+￼
+AI Model
+￼
+Publishing
+￼
+Browser Pairing
+￼
+Ethics & Backups
+￼
+System & Status
+Local AI ready
+qwen2.5:7b
+￼
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+￼
+Generating a draft requires the qwen2.5:7b model, which isn't downloaded yet. Redirecting to model download setup...
+Dismiss
+Set up your private AI
+Everything runs on this computer. No accounts, no cloud, nothing leaves your desk.
+￼
+Identity
+￼
+AI service
+3
+Download model
+4
+Defaults
+5
+Done
+￼
+Download your AI model
+Step 3 of 5 - one-time download
+We picked a model that fits your computer. This downloads once and then works completely offline. Large models can take 10-60+ minutes on slower connections.
+￼
+15 GB RAM detected. Recommended model: qwen2.5:7b.
+AI model
+Ready to download
+~4.7 GB - local after setup
+You can leave this running, or cancel and resume later. If progress stops for several minutes, check internet access, restart Civic Desk, then retry.
+OTHER OPTIONS
+llama3.2:3b
+~2 GB - lighter laptops
+Download qwen2.5:7b
+￼
+```

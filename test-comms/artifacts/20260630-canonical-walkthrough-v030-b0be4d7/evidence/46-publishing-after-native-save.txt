@@ -1,0 +1,107 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Publishing
+
+Publish instantly with here.now. Use GitHub Pages if you want a public archive in your own repository.
+
+Public site identity review
+
+Review this before compile. The app publishes only the identity and policy copy you choose.
+
+Edit identity
+Publication
+Longmont Walkthrough Gazette
+Tagline
+Cleanroom walkthrough civic test publication.
+Publisher type
+Single person
+Layout
+classic / #5a1818
+Logo
+Text masthead
+Footer note
+Blank
+Advisor
+On
+Footer/legal note is blank; that is allowed, but nothing will be invented for you.
+Compile your gazette
+Output folder
+Browse
+Compile approved stories
+HTML
+Preview local website
+index.html
+Export hosting package
+ZIP
+Publish to a host
+next
+Share with residents
+posts
+Compile site
+Ready for final compile
+
+Click Compile site to write the static website files to the output folder.
+
+Open folder
+Reset
+Subscriber list
+
+0 active subscribers stored locally.
+
+Email
+Name
+Add
+Import CSV
+Export CSV
+
+No subscribers yet.
+
+Next step: publish instantly with here.now. Use GitHub Pages for a durable public archive, and use the newsletter and share package to tell residents where to read it.
+
+Publish history
+
+No publish runs recorded yet.
+
+FORM_VALUES
+[
+  {
+    "idx": 0,
+    "tag": "INPUT",
+    "id": "input-publish-path",
+    "name": "",
+    "aria": "",
+    "value": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default"
+  },
+  {
+    "idx": 1,
+    "tag": "INPUT",
+    "id": "input-subscriber-email",
+    "name": "",
+    "aria": "",
+    "value": ""
+  },
+  {
+    "idx": 2,
+    "tag": "INPUT",
+    "id": "input-subscriber-name",
+    "name": "",
+    "aria": "",
+    "value": ""
+  }
+]

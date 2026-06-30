@@ -1,0 +1,31 @@
+{
+    "auditedFiles":  41,
+    "hits":  [
+                 {
+                     "file":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\watch\\1.html",
+                     "pattern":  "Â"
+                 },
+                 {
+                     "file":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\watch\\1.html",
+                     "pattern":  "â"
+                 },
+                 {
+                     "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260630-canonical-walkthrough-v030-b0be4d7\\evidence\\publication-output\\site\\watch\\1.html",
+                     "pattern":  "Â"
+                 },
+                 {
+                     "file":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260630-canonical-walkthrough-v030-b0be4d7\\evidence\\publication-output\\site\\watch\\1.html",
+                     "pattern":  "â"
+                 },
+                 {
+                     "file":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicnews_zip_audit_1bfe93cc2a5a4531a6a79fb04d47750f\\watch\\1.html",
+                     "pattern":  "Â"
+                 },
+                 {
+                     "file":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicnews_zip_audit_1bfe93cc2a5a4531a6a79fb04d47750f\\watch\\1.html",
+                     "pattern":  "â"
+                 }
+             ],
+    "utc":  "2026-06-30T06:44:15.8049646Z",
+    "hitCount":  6
+}

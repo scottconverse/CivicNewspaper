@@ -1,0 +1,170 @@
+Window: "The Civic Desk", App: civicnews.exe.
+	0 window The Civic Desk Secondary Actions: Raise
+		1 pane
+			2 pane CivicNews Dashboard
+				3 pane (disabled)
+				4 region CivicNews Dashboard - Web content
+					5 region
+						6 region
+							7 region
+								8 region
+								9 region
+									10 region
+										11 region
+											12 region
+												13 region
+													14 document CivicNews Dashboard ID: RootWebArea
+														15 group
+															16 group ID: root
+																17 complementary
+																	18 text The Civic Desk
+																	19 text LONGMONT / CO
+																	20 navigation
+																		21 list
+																			22 list item Story Queue
+																				23 button Story Queue Description: Story Queue (Alt+1) ID: nav-tab-queue
+																					24 graphic
+																			25 list item Daily Scan
+																				26 button Daily Scan Description: Daily Scan (Alt+2) ID: nav-tab-dailyScan
+																					27 graphic
+																			28 list item Dark Signals
+																				29 button Dark Signals Description: Dark Signals (Alt+3) ID: nav-tab-darkSignals
+																					30 graphic
+																			31 list item Verification
+																				32 button Verification Description: Verification (Alt+4) ID: nav-tab-verification
+																					33 graphic
+																			34 list item Workbench
+																				35 button Workbench Description: Workbench (Alt+5) ID: nav-tab-workbench
+																					36 graphic
+																		37 list
+																			38 list item Sources
+																				39 button Sources Description: Sources (Alt+6) ID: nav-tab-sources
+																					40 graphic
+																			41 list item AI Model
+																				42 button AI Model Description: AI Model (Alt+7) ID: nav-tab-onboarding
+																					43 graphic
+																			44 list item Publishing
+																				45 button Publishing Description: Publishing (Alt+8) ID: nav-tab-publish
+																					46 graphic
+																		47 list
+																			48 list item Browser Pairing
+																				49 button Browser Pairing Description: Browser Pairing (Alt+9) ID: nav-tab-pairing
+																					50 graphic
+																			51 list item Ethics & Backups
+																				52 button Ethics & Backups Description: Ethics & Backups (Alt+10) ID: nav-tab-settings
+																					53 graphic
+																			54 list item System & Status
+																				55 button System & Status Description: System & Status (Alt+11) ID: nav-tab-system
+																					56 graphic
+																	57 text Local AI ready
+																	58 text qwen2.5:7b
+																59 main
+																	60 alert
+																		61 graphic
+																		62 text You're running an
+																		63 text unsigned public beta
+																		64 text of The Civic Desk. Windows SmartScreen may warn on install; that's expected.
+																		65 text 
+																		66 link Report issues on GitHub
+																		67 text .
+																		68 button Dismiss beta notice
+																			69 graphic
+																	70 heading Set up your private AI
+																	71 text Everything runs on this computer. No accounts, no cloud, nothing leaves your desk.
+																	72 group AI setup progress
+																		73 graphic
+																		74 text Identity
+																		75 graphic
+																		76 text AI service
+																		77 text 3
+																		78 text Download model
+																		79 text 4
+																		80 text Defaults
+																		81 text 5
+																		82 text Done
+																	83 graphic
+																	84 heading Download your AI model
+																	85 text Step 3 of 5 - one-time download
+																	86 text We picked a model that fits your computer. This downloads once and then works completely offline. Large models can take 10-60+ minutes on slower connections.
+																	87 graphic
+																	88 text 15
+																	89 text GB RAM detected.
+																	90 text Recommended model:
+																	91 text qwen2.5:7b
+																	92 text .
+																	93 combo box AI model
+																	94 text Installed and ready
+																	95 text Available on this computer
+																	96 text You can leave this running, or cancel and resume later. If progress stops for several minutes, check internet access, restart Civic Desk, then retry.
+																	97 text OTHER OPTIONS
+																	98 button llama3.2:3b ~2 GB - lighter laptops
+																	99 button (disabled) Installed
+																		100 graphic
+								101 region
+						102 region
+						103 region
+		104 title bar
+			105 menu bar System ID: MenuBar
+				106 menu item System
+			107 button Minimize
+			108 button Maximize
+			109 button Close
+
+Document text: ```
+The Civic Desk
+LONGMONT / CO
+￼
+Story Queue
+￼
+Daily Scan
+￼
+Dark Signals
+￼
+Verification
+￼
+Workbench
+￼
+Sources
+￼
+AI Model
+￼
+Publishing
+￼
+Browser Pairing
+￼
+Ethics & Backups
+￼
+System & Status
+Local AI ready
+qwen2.5:7b
+￼
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+￼
+Set up your private AI
+Everything runs on this computer. No accounts, no cloud, nothing leaves your desk.
+￼
+Identity
+￼
+AI service
+3
+Download model
+4
+Defaults
+5
+Done
+￼
+Download your AI model
+Step 3 of 5 - one-time download
+We picked a model that fits your computer. This downloads once and then works completely offline. Large models can take 10-60+ minutes on slower connections.
+￼
+15 GB RAM detected. Recommended model: qwen2.5:7b.
+AI model
+Installed and ready
+Available on this computer
+You can leave this running, or cancel and resume later. If progress stops for several minutes, check internet access, restart Civic Desk, then retry.
+OTHER OPTIONS
+llama3.2:3b
+~2 GB - lighter laptops
+Installed
+￼
+```

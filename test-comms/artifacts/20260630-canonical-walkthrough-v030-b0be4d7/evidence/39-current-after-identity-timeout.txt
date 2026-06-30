@@ -1,0 +1,1422 @@
+The Civic Desk
+LONGMONT / CO
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+Sources
+AI Model
+Publishing
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+qwen2.5:7b
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Ethics & Backups
+
+Your publication identity and where your records are kept safe.
+
+Publication identity
+Save now
+Publication name
+Publication tagline
+Publisher type
+Single person
+For-profit publication
+Nonprofit publication
+Private organization
+Community group
+Other
+City
+State
+Site layout
+Classic newspaper
+Compact
+Wide
+Modern
+Accent color
+High-cost contract alert threshold
+Logo image URL
+Choose image
+
+Optional. Choose a local image or paste an HTTPS logo URL. Leave blank for a text-only masthead.
+
+About this site
+Ethics statement
+How we report (published on your site)
+
+This text is published as written. Add AI, ad, ownership, corrections, or sourcing disclosures only if they match your publication.
+
+Footer / legal note
+
+The app will not invent copyright, ownership, ad-policy, or AI-disclosure language.
+
+Show the First Amendment advisor in the Workbench.
+Advisory only. It warns and asks good questions; it does not decide what can be shown to the editor or published.
+Save identity
+Use neutral starter copy
+Story guardrails
+
+Drafts are scanned for these words. By default a match only warns the editor. Tick high concern on a word to ask for an editor note before approval. The app ranks and records concerns; it does not decide what the editor may see or publish. Changes apply to stories checked from now on.
+
+Accusatory terms
+
+Flagged when used in a paragraph with no linked source.
+
+corrupt
+high concern
+×
+stole
+high concern
+×
+illegal
+high concern
+×
+fraud
+high concern
+×
+embezzle
+high concern
+×
+bribe
+high concern
+×
+scam
+high concern
+×
+theft
+high concern
+×
+criminal
+high concern
+×
+guilty
+high concern
+×
+conspiracy
+high concern
+×
+extortion
+high concern
+×
+misconduct
+high concern
+×
+kickback
+high concern
+×
+laundering
+high concern
+×
+arrested
+high concern
+×
+charged
+high concern
+×
+indicted
+high concern
+×
+convicted
+high concern
+×
+prosecuted
+high concern
+×
+Add
+Charge / legal terms
+
+Flagged when used without "alleged" / "allegedly" (presumption of innocence).
+
+arrested
+high concern
+×
+charged
+high concern
+×
+indicted
+high concern
+×
+accused
+high concern
+×
+suspect
+high concern
+×
+theft
+high concern
+×
+embezzle
+high concern
+×
+fraud
+high concern
+×
+misconduct
+high concern
+×
+Add
+Save guardrail words
+Backups
+
+All your leads, drafts, and sources live in one file on this computer. Back it up somewhere safe.
+
+Backup folder
+Back up now
+Restore from backup
+
+CONTROLS
+[
+  {
+    "idx": 0,
+    "tag": "BUTTON",
+    "text": "Story Queue",
+    "label": "nav-tab-queue",
+    "value": "",
+    "rect": {
+      "x": 11.997125625610352,
+      "y": -141.30027770996094,
+      "w": 194.55458068847656,
+      "h": 37.99568557739258
+    }
+  },
+  {
+    "idx": 1,
+    "tag": "BUTTON",
+    "text": "Daily Scan",
+    "label": "nav-tab-dailyScan",
+    "value": "",
+    "rect": {
+      "x": 212.55027770996094,
+      "y": -141.30027770996094,
+      "w": 194.561767578125,
+      "h": 37.99568557739258
+    }
+  },
+  {
+    "idx": 2,
+    "tag": "BUTTON",
+    "text": "Dark Signals",
+    "label": "nav-tab-darkSignals",
+    "value": "",
+    "rect": {
+      "x": 413.110595703125,
+      "y": -141.30027770996094,
+      "w": 194.561767578125,
+      "h": 37.99568557739258
+    }
+  },
+  {
+    "idx": 3,
+    "tag": "BUTTON",
+    "text": "Verification",
+    "label": "nav-tab-verification",
+    "value": "",
+    "rect": {
+      "x": 613.6709594726562,
+      "y": -141.30027770996094,
+      "w": 194.561767578125,
+      "h": 37.99568557739258
+    }
+  },
+  {
+    "idx": 4,
+    "tag": "BUTTON",
+    "text": "Workbench",
+    "label": "nav-tab-workbench",
+    "value": "",
+    "rect": {
+      "x": 11.997125625610352,
+      "y": -97.3060302734375,
+      "w": 194.55458068847656,
+      "h": 37.99568557739258
+    }
+  },
+  {
+    "idx": 5,
+    "tag": "BUTTON",
+    "text": "Sources",
+    "label": "nav-tab-sources",
+    "value": "",
+    "rect": {
+      "x": 212.55027770996094,
+      "y": -97.3060302734375,
+      "w": 194.561767578125,
+      "h": 37.99568557739258
+    }
+  },
+  {
+    "idx": 6,
+    "tag": "BUTTON",
+    "text": "AI Model",
+    "label": "nav-tab-onboarding",
+    "value": "",
+    "rect": {
+      "x": 413.110595703125,
+      "y": -97.3060302734375,
+      "w": 194.561767578125,
+      "h": 37.99568557739258
+    }
+  },
+  {
+    "idx": 7,
+    "tag": "BUTTON",
+    "text": "Publishing",
+    "label": "nav-tab-publish",
+    "value": "",
+    "rect": {
+      "x": 613.6709594726562,
+      "y": -97.3060302734375,
+      "w": 194.561767578125,
+      "h": 37.99568557739258
+    }
+  },
+  {
+    "idx": 8,
+    "tag": "BUTTON",
+    "text": "Browser Pairing",
+    "label": "nav-tab-pairing",
+    "value": "",
+    "rect": {
+      "x": 11.997125625610352,
+      "y": -53.3117790222168,
+      "w": 194.55458068847656,
+      "h": 37.99568557739258
+    }
+  },
+  {
+    "idx": 9,
+    "tag": "BUTTON",
+    "text": "Ethics & Backups",
+    "label": "nav-tab-settings",
+    "value": "",
+    "rect": {
+      "x": 212.55027770996094,
+      "y": -53.3117790222168,
+      "w": 194.561767578125,
+      "h": 37.99568557739258
+    }
+  },
+  {
+    "idx": 10,
+    "tag": "BUTTON",
+    "text": "System & Status",
+    "label": "nav-tab-system",
+    "value": "",
+    "rect": {
+      "x": 413.110595703125,
+      "y": -53.3117790222168,
+      "w": 194.561767578125,
+      "h": 37.99568557739258
+    }
+  },
+  {
+    "idx": 11,
+    "tag": "BUTTON",
+    "text": "",
+    "label": "Dismiss beta notice",
+    "value": "",
+    "rect": {
+      "x": 727.4927368164062,
+      "y": -86.61637115478516,
+      "w": 39.82758331298828,
+      "h": 29.999998092651367
+    }
+  },
+  {
+    "idx": 12,
+    "tag": "BUTTON",
+    "text": "Save now",
+    "label": "",
+    "value": "",
+    "rect": {
+      "x": 639.59765625,
+      "y": 107.77297973632812,
+      "w": 83.48419189453125,
+      "h": 29.999998092651367
+    }
+  },
+  {
+    "idx": 13,
+    "tag": "INPUT",
+    "text": "",
+    "label": "input-profile-title",
+    "value": "My Local Publication",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 177.75860595703125,
+      "w": 670.17236328125,
+      "h": 46.06321334838867
+    }
+  },
+  {
+    "idx": 14,
+    "tag": "INPUT",
+    "text": "",
+    "label": "input-profile-subtitle",
+    "value": "Local news and community information.",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 265.8045654296875,
+      "w": 670.17236328125,
+      "h": 46.06321334838867
+    }
+  },
+  {
+    "idx": 15,
+    "tag": "SELECT",
+    "text": "Single person\nFor-profit publication\nNonprofit publication\nPrivate organization\n",
+    "label": "input-profile-organization-type",
+    "value": "single_person",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 353.8505554199219,
+      "w": 670.17236328125,
+      "h": 47.90229415893555
+    }
+  },
+  {
+    "idx": 16,
+    "tag": "INPUT",
+    "text": "",
+    "label": "input-profile-city",
+    "value": "Longmont",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 443.735595703125,
+      "w": 670.17236328125,
+      "h": 46.06321334838867
+    }
+  },
+  {
+    "idx": 17,
+    "tag": "INPUT",
+    "text": "",
+    "label": "input-profile-state",
+    "value": "CO",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 531.7815551757812,
+      "w": 670.17236328125,
+      "h": 46.06321334838867
+    }
+  },
+  {
+    "idx": 18,
+    "tag": "SELECT",
+    "text": "Classic newspaper\nCompact\nWide\nModern",
+    "label": "input-profile-layout",
+    "value": "classic",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 619.8275146484375,
+      "w": 670.17236328125,
+      "h": 47.90229415893555
+    }
+  },
+  {
+    "idx": 19,
+    "tag": "INPUT",
+    "text": "",
+    "label": "input-profile-accent",
+    "value": "#5a1818",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 709.7125854492188,
+      "w": 49.999996185302734,
+      "h": 26.99712371826172
+    }
+  },
+  {
+    "idx": 20,
+    "tag": "INPUT",
+    "text": "",
+    "label": "input-profile-threshold",
+    "value": "250000",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 779.3821411132812,
+      "w": 670.17236328125,
+      "h": 46.06321334838867
+    }
+  },
+  {
+    "idx": 21,
+    "tag": "INPUT",
+    "text": "",
+    "label": "input-profile-logo",
+    "value": "",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 854.8203735351562,
+      "w": 546.0631713867188,
+      "h": 46.06321334838867
+    }
+  },
+  {
+    "idx": 22,
+    "tag": "BUTTON",
+    "text": "Choose image",
+    "label": "btn-choose-logo",
+    "value": "",
+    "rect": {
+      "x": 606.9683227539062,
+      "y": 853.433837890625,
+      "w": 116.11349487304688,
+      "h": 48.836204528808594
+    }
+  },
+  {
+    "idx": 23,
+    "tag": "TEXTAREA",
+    "text": "",
+    "label": "input-profile-about",
+    "value": "A locally edited publication for this community.",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 954.64794921875,
+      "w": 670.17236328125,
+      "h": 66.29309844970703
+    }
+  },
+  {
+    "idx": 24,
+    "tag": "TEXTAREA",
+    "text": "",
+    "label": "input-profile-ethics",
+    "value": "Editorial standards are set by the publisher. Corrections are published when needed.",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 1054.532958984375,
+      "w": 670.17236328125,
+      "h": 66.29309844970703
+    }
+  },
+  {
+    "idx": 25,
+    "tag": "TEXTAREA",
+    "text": "",
+    "label": "input-profile-howwereport",
+    "value": "Stories, sources, and publication decisions are reviewed by the editor before publication.",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 1154.41796875,
+      "w": 670.17236328125,
+      "h": 69.99999237060547
+    }
+  },
+  {
+    "idx": 26,
+    "tag": "TEXTAREA",
+    "text": "",
+    "label": "input-profile-footer",
+    "value": "",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 1302.79443359375,
+      "w": 670.17236328125,
+      "h": 66.29309844970703
+    }
+  },
+  {
+    "idx": 27,
+    "tag": "INPUT",
+    "text": "",
+    "label": "chk-first-amendment-advisor",
+    "value": "on",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 1401.479736328125,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 28,
+    "tag": "BUTTON",
+    "text": "Save identity",
+    "label": "btn-save-profile",
+    "value": "",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 1471.8604736328125,
+      "w": 125.11493682861328,
+      "h": 37.99568557739258
+    }
+  },
+  {
+    "idx": 29,
+    "tag": "BUTTON",
+    "text": "Use neutral starter copy",
+    "label": "btn-neutral-starter-copy",
+    "value": "",
+    "rect": {
+      "x": 194.02297973632812,
+      "y": 1471.8604736328125,
+      "w": 196.386474609375,
+      "h": 37.99568557739258
+    }
+  },
+  {
+    "idx": 30,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"corrupt\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 113.82901763916016,
+      "y": 1797.054443359375,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 31,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove corrupt",
+    "value": "",
+    "rect": {
+      "x": 214.60487365722656,
+      "y": 1795.552978515625,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 32,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"stole\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 288.1321716308594,
+      "y": 1797.054443359375,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 33,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove stole",
+    "value": "",
+    "rect": {
+      "x": 388.90802001953125,
+      "y": 1795.552978515625,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 34,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"illegal\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 468.8936462402344,
+      "y": 1797.054443359375,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 35,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove illegal",
+    "value": "",
+    "rect": {
+      "x": 569.6694946289062,
+      "y": 1795.552978515625,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 36,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"fraud\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 101.43677520751953,
+      "y": 1833.677978515625,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 37,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove fraud",
+    "value": "",
+    "rect": {
+      "x": 202.21263122558594,
+      "y": 1832.1766357421875,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 38,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"embezzle\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 303.62066650390625,
+      "y": 1833.677978515625,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 39,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove embezzle",
+    "value": "",
+    "rect": {
+      "x": 404.3965148925781,
+      "y": 1832.1766357421875,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 40,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"bribe\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 480.29449462890625,
+      "y": 1833.677978515625,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 41,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove bribe",
+    "value": "",
+    "rect": {
+      "x": 581.0703735351562,
+      "y": 1832.1766357421875,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 42,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"scam\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 100.51004791259766,
+      "y": 1870.3016357421875,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 43,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove scam",
+    "value": "",
+    "rect": {
+      "x": 201.28590393066406,
+      "y": 1868.8001708984375,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 44,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"theft\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 274.33905029296875,
+      "y": 1870.3016357421875,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 45,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove theft",
+    "value": "",
+    "rect": {
+      "x": 375.11492919921875,
+      "y": 1868.8001708984375,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 46,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"criminal\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 467.1120300292969,
+      "y": 1870.3016357421875,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 47,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove criminal",
+    "value": "",
+    "rect": {
+      "x": 567.8878784179688,
+      "y": 1868.8001708984375,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 48,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"guilty\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 103.3045883178711,
+      "y": 1906.9251708984375,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 49,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove guilty",
+    "value": "",
+    "rect": {
+      "x": 204.0804443359375,
+      "y": 1905.4237060546875,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 50,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"conspiracy\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 312.37066650390625,
+      "y": 1906.9251708984375,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 51,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove conspiracy",
+    "value": "",
+    "rect": {
+      "x": 413.1465148925781,
+      "y": 1905.4237060546875,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 52,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"extortion\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 512.14794921875,
+      "y": 1906.9251708984375,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 53,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove extortion",
+    "value": "",
+    "rect": {
+      "x": 612.923828125,
+      "y": 1905.4237060546875,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 54,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"misconduct\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 139.14511108398438,
+      "y": 1943.5487060546875,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 55,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove misconduct",
+    "value": "",
+    "rect": {
+      "x": 239.92095947265625,
+      "y": 1942.0472412109375,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 56,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"kickback\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 335.7471008300781,
+      "y": 1943.5487060546875,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 57,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove kickback",
+    "value": "",
+    "rect": {
+      "x": 436.52294921875,
+      "y": 1942.0472412109375,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 58,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"laundering\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 545.7470703125,
+      "y": 1943.5487060546875,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 59,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove laundering",
+    "value": "",
+    "rect": {
+      "x": 646.52294921875,
+      "y": 1942.0472412109375,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 60,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"arrested\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 118.81464385986328,
+      "y": 1980.1722412109375,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 61,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove arrested",
+    "value": "",
+    "rect": {
+      "x": 219.5904998779297,
+      "y": 1978.6708984375,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 62,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"charged\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 313.1177978515625,
+      "y": 1980.1722412109375,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 63,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove charged",
+    "value": "",
+    "rect": {
+      "x": 413.8936462402344,
+      "y": 1978.6708984375,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 64,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"indicted\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 506.9683532714844,
+      "y": 1980.1722412109375,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 65,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove indicted",
+    "value": "",
+    "rect": {
+      "x": 607.7442016601562,
+      "y": 1978.6708984375,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 66,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"convicted\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 127.5933837890625,
+      "y": 2016.7958984375,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 67,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove convicted",
+    "value": "",
+    "rect": {
+      "x": 228.36923217773438,
+      "y": 2015.29443359375,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 68,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"prosecuted\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 340.423828125,
+      "y": 2016.7958984375,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 69,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove prosecuted",
+    "value": "",
+    "rect": {
+      "x": 441.1996765136719,
+      "y": 2015.29443359375,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 70,
+    "tag": "INPUT",
+    "text": "",
+    "label": "",
+    "value": "",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 2049.604736328125,
+      "w": 612.04736328125,
+      "h": 34.856319427490234
+    }
+  },
+  {
+    "idx": 71,
+    "tag": "BUTTON",
+    "text": "Add",
+    "label": "",
+    "value": "",
+    "rect": {
+      "x": 672.9525146484375,
+      "y": 2049.604736328125,
+      "w": 50.12930679321289,
+      "h": 34.856319427490234
+    }
+  },
+  {
+    "idx": 72,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"arrested\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 118.81464385986328,
+      "y": 2180.653564453125,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 73,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove arrested",
+    "value": "",
+    "rect": {
+      "x": 219.5904998779297,
+      "y": 2179.152099609375,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 74,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"charged\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 313.1177978515625,
+      "y": 2180.653564453125,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 75,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove charged",
+    "value": "",
+    "rect": {
+      "x": 413.8936462402344,
+      "y": 2179.152099609375,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 76,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"indicted\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 506.9683532714844,
+      "y": 2180.653564453125,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 77,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove indicted",
+    "value": "",
+    "rect": {
+      "x": 607.7442016601562,
+      "y": 2179.152099609375,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 78,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"accused\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 117.89510345458984,
+      "y": 2217.277099609375,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 79,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove accused",
+    "value": "",
+    "rect": {
+      "x": 218.67095947265625,
+      "y": 2215.775634765625,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 80,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"suspect\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 308.6781311035156,
+      "y": 2217.277099609375,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 81,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove suspect",
+    "value": "",
+    "rect": {
+      "x": 409.4540100097656,
+      "y": 2215.775634765625,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 82,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"theft\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 482.50714111328125,
+      "y": 2217.277099609375,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 83,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove theft",
+    "value": "",
+    "rect": {
+      "x": 583.2830200195312,
+      "y": 2215.775634765625,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 84,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"embezzle\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 126.45832824707031,
+      "y": 2253.900634765625,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 85,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove embezzle",
+    "value": "",
+    "rect": {
+      "x": 227.2341766357422,
+      "y": 2252.399169921875,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 86,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"fraud\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 303.62066650390625,
+      "y": 2253.900634765625,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 87,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove fraud",
+    "value": "",
+    "rect": {
+      "x": 404.3965148925781,
+      "y": 2252.399169921875,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 88,
+    "tag": "INPUT",
+    "text": "",
+    "label": "Mark the word \"misconduct\" as high concern",
+    "value": "on",
+    "rect": {
+      "x": 518.4913330078125,
+      "y": 2253.900634765625,
+      "w": 12.995688438415527,
+      "h": 12.995688438415527
+    }
+  },
+  {
+    "idx": 89,
+    "tag": "BUTTON",
+    "text": "×",
+    "label": "Remove misconduct",
+    "value": "",
+    "rect": {
+      "x": 619.2672119140625,
+      "y": 2252.399169921875,
+      "w": 9.346263885498047,
+      "h": 15.99856185913086
+    }
+  },
+  {
+    "idx": 90,
+    "tag": "INPUT",
+    "text": "",
+    "label": "",
+    "value": "",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 2286.709716796875,
+      "w": 612.04736328125,
+      "h": 34.856319427490234
+    }
+  },
+  {
+    "idx": 91,
+    "tag": "BUTTON",
+    "text": "Add",
+    "label": "",
+    "value": "",
+    "rect": {
+      "x": 672.9525146484375,
+      "y": 2286.709716796875,
+      "w": 50.12930679321289,
+      "h": 34.856319427490234
+    }
+  },
+  {
+    "idx": 92,
+    "tag": "BUTTON",
+    "text": "Save guardrail words",
+    "label": "btn-save-guardrails",
+    "value": "",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 2341.56591796875,
+      "w": 178.38360595703125,
+      "h": 37.99568557739258
+    }
+  },
+  {
+    "idx": 93,
+    "tag": "INPUT",
+    "text": "",
+    "label": "input-backup-path",
+    "value": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\backups\\civic-desk.db",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 2581.759765625,
+      "w": 670.17236328125,
+      "h": 46.06321334838867
+    }
+  },
+  {
+    "idx": 94,
+    "tag": "BUTTON",
+    "text": "Back up now",
+    "label": "btn-backup-save",
+    "value": "",
+    "rect": {
+      "x": 52.90947723388672,
+      "y": 2643.82177734375,
+      "w": 125.0933837890625,
+      "h": 37.99568557739258
+    }
+  },
+  {
+    "idx": 95,
+    "tag": "BUTTON",
+    "text": "Restore from backup",
+    "label": "btn-backup-restore",
+    "value": "",
+    "rect": {
+      "x": 185.99855041503906,
+      "y": 2643.82177734375,
+      "w": 176.86062622070312,
+      "h": 37.99568557739258
+    }
+  }
+]

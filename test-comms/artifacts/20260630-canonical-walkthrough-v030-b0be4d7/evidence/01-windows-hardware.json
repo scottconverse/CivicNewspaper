@@ -1,0 +1,29 @@
+{
+    "WindowsProductName":  "Windows 10 Home",
+    "WindowsVersion":  "2009",
+    "OsHardwareAbstractionLayer":  "10.0.26100.1",
+    "CsManufacturer":  "Micro-Star International Co., Ltd.",
+    "CsModel":  "Cyborg 15 A13VE",
+    "CsProcessors":  [
+                         {
+                             "Name":  "13th Gen Intel(R) Core(TM) i7-13620H",
+                             "Manufacturer":  "GenuineIntel",
+                             "Description":  "Intel64 Family 6 Model 186 Stepping 2",
+                             "Architecture":  9,
+                             "AddressWidth":  64,
+                             "DataWidth":  64,
+                             "MaxClockSpeed":  2400,
+                             "CurrentClockSpeed":  2400,
+                             "NumberOfCores":  10,
+                             "NumberOfLogicalProcessors":  16,
+                             "ProcessorID":  "BFEBFBFF000B06A2",
+                             "SocketDesignation":  "U3E1",
+                             "ProcessorType":  3,
+                             "Role":  "CPU",
+                             "Status":  "OK",
+                             "CpuStatus":  1,
+                             "Availability":  3
+                         }
+                     ],
+    "CsTotalPhysicalMemory":  16870060032
+}

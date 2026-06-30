@@ -1,0 +1,384 @@
+Window: "The Civic Desk", App: civicnews.exe.
+	0 window The Civic Desk Secondary Actions: Raise
+		1 pane
+			2 pane CivicNews Dashboard
+				3 pane (disabled)
+				4 region CivicNews Dashboard - Web content
+					5 region
+						6 region
+							7 region
+								8 region
+								9 region
+									10 region
+										11 region
+											12 region
+												13 region
+													14 document CivicNews Dashboard ID: RootWebArea
+														15 group
+															16 group ID: root
+																17 complementary
+																	18 text The Civic Desk
+																	19 text LONGMONT / CO
+																	20 navigation
+																		21 list
+																			22 list item Story Queue
+																				23 button Story Queue Description: Story Queue (Alt+1) ID: nav-tab-queue
+																					24 graphic
+																			25 list item Daily Scan
+																				26 button Daily Scan Description: Daily Scan (Alt+2) ID: nav-tab-dailyScan
+																					27 graphic
+																			28 list item Dark Signals
+																				29 button Dark Signals Description: Dark Signals (Alt+3) ID: nav-tab-darkSignals
+																					30 graphic
+																			31 list item Verification
+																				32 button Verification Description: Verification (Alt+4) ID: nav-tab-verification
+																					33 graphic
+																			34 list item Workbench
+																				35 button Workbench Description: Workbench (Alt+5) ID: nav-tab-workbench
+																					36 graphic
+																		37 list
+																			38 list item Sources
+																				39 button Sources Description: Sources (Alt+6) ID: nav-tab-sources
+																					40 graphic
+																			41 list item AI Model
+																				42 button AI Model Description: AI Model (Alt+7) ID: nav-tab-onboarding
+																					43 graphic
+																			44 list item Publishing
+																				45 button Publishing Description: Publishing (Alt+8) ID: nav-tab-publish
+																					46 graphic
+																		47 list
+																			48 list item Browser Pairing
+																				49 button Browser Pairing Description: Browser Pairing (Alt+9) ID: nav-tab-pairing
+																					50 graphic
+																			51 list item Ethics & Backups
+																				52 button Ethics & Backups Description: Ethics & Backups (Alt+10) ID: nav-tab-settings
+																					53 graphic
+																			54 list item System & Status
+																				55 button System & Status Description: System & Status (Alt+11) ID: nav-tab-system
+																					56 graphic
+																	57 text Local AI ready
+																	58 text qwen2.5:7b
+																59 main
+																	60 alert
+																		61 graphic
+																		62 text You're running an
+																		63 text unsigned public beta
+																		64 text of The Civic Desk. Windows SmartScreen may warn on install; that's expected.
+																		65 text 
+																		66 link Report issues on GitHub
+																		67 text .
+																		68 button Dismiss beta notice
+																			69 graphic
+																	70 status
+																		71 text Story approved for publishing; a verification record was saved.
+																		72 button Dismiss
+																	73 group ID: workbench-editor-panel
+																		74 heading Story Workbench
+																		75 text Modify drafted content, review guardrail warnings, and link source material when it helps the editor.
+																		76 button Back to Queue ID: btn-close-workbench
+																		77 button Save Draft ID: btn-save-draft
+																		78 button Delete ID: btn-delete-workbench-draft
+																		79 heading Press-freedom / legal-risk advisor
+																		80 text Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.
+																		81 button Run Advisor Description: Run an optional press-freedom and legal-risk review ID: btn-press-freedom-review
+																		82 list
+																			83 list item Distinguish verified facts, allegations, opinion, and unanswered questions.
+																			84 list item Use extra care with private individuals, minors, medical details, addresses, and active legal matters.
+																			85 list item Keep notes on source reliability and why publishing serves the community.
+																		86 text Story Title
+																		87 edit ID: input-draft-title
+																		88 text Article Body (Markdown)
+																		89 button Plain Language Rewrite Description: Rewrite the draft in plainer language ID: btn-plain-language-rewrite
+																		90 text Highlight text and click "Cite" in evidence pane to link.
+																		91 edit ID: draft-editor-textarea
+																		92 text Current Status:
+																		93 text Approved for publishing
+																		94 button Send Back for More Work ID: btn-status-send-back
+																		95 button Unapprove ID: btn-status-unapprove
+																		96 button Hold ID: btn-status-hold
+																		97 button Cut Story ID: btn-status-kill
+																		98 button Approve for Static Publish Description: Approve this story for publishing ID: btn-status-publish
+																		99 check box I have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision. ID: chk-attest
+																		100 text I have reviewed this story and take responsibility for publishing it.
+																		101 text This reminder is for the editor; the app does not make the publication decision.
+																		102 heading Social Media Promo Pack
+																		103 button Generate Posts ID: btn-generate-social
+																		104 text Generate optimized posts for Twitter/X, Facebook, and Reddit based on the current draft.
+																		105 heading Linked Sources
+																		106 text Citation ID: #
+																		107 text 3
+																		108 text Fetched:
+																		109 text 6/30/2026
+																		110 text "
+																		111 text Search tip! The HTML agenda bookmarks the video to the item on the agenda so you don&#8217;t have to search the video on YouTube to find the topic you are looking interested in. HTML agendas with video bookmarks are only published for City Council meetings and Planning &amp; Zoning Commission meetings. Did you find this page helpful? Welcome Longmont is a diverse, multicultural and welcoming city. Contact Services View All Services Departments View All Departments Quick Links Agendas and Meetings Code Enforcement Emergency Notifications Employment Opportunities Permits and Inspections Public Records Service Requests Email Signup Stay up-to-date on news and events in Longmont. Sign Up For questions or assistance, please contact our help and information line at 303-776-6050 . facebook instagram youtube whatsapp Accessibility Land Acknowledgment InsideLongmont Employee Login Terms of Use Privacy Policy © 2026 City of Longmont, Colorado search Services Back to Main Accessibility Activities Building Business Education Government Housing Human Services Information Jobs Library Licensing Maintenance Museum NextLight Fiber Internet Public Safety Sustainability Transportation Utilities Wellness Explore All Services Explore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place. All Services Departments Back to Main Airport Boards, Committees and Commissions Building Services Children, Youth and Families at the Youth Center City Attorney City Clerk City Council City Manager Community and Neighborhood Resources Enterprise Technology Services Environment Finance Forestry Golf Services Housing and Community Investment Human Resources Human Services Judicial Department Library Longmont Housing Authority Longmont Museum Longmont Power &amp; Communications Municipal Court Municipal Probation NextLight Fiber Internet Parks and Natural Resources
+																		112 text "
+																		113 button Link Citation ID: btn-cite-3
+																		114 text Citation ID: #
+																		115 text 4
+																		116 text Fetched:
+																		117 text 6/30/2026
+																		118 text "
+																		119 text Planning and Development Services Public Information Public Safety Purchasing and Contracts Recreation Services Risk Management Senior Services Transportation Trash, Recycling, and Composting Utilities and Public Works Water Explore All Departments Discover all the departments that make up the City of Longmont&#8217;s government. Get detailed information on their roles, responsibilities, and how they serve the community. All Departments Government News &#038; Alerts Events Careers Contact Subscribe to Email Updates Email Address Stay Connected Get the latest updates from the City of Longmont This is Longmont The official newsletter of the City of Longmont Weekly Topics of Interest Choose specific topics you want to hear about Select all in this category News &amp; Alerts Latest news information, notices and alerts from the city Events &amp; Activities Community events, programs and activities happening in Longmont Weekly City Events Downtown Events Events for Kids Job Announcements Employment opportunities delivered to your inbox Weekly Department Newsletters Subscribe to updates from specific city departments Select all in this category Longmont Library Updates and registration information about library programs and events Adult Programs Children Programs (Infant - 5th Grade) Technology + Computer Classes Teens Program Notices (6th-12th graders) This Month @ the Library Longmont Museum Events, exhibits and more from the museum Auditorium Programs Discovery Days (Early Childhood) Museum Exhibits &amp; Events Recreation Activities, classes, sports and more Sustainability Project and program updates, including money-saving rebates and efficiency resources Sustainable Business Program Promotes environmental stewardship, economic vitality and social equity Senior Center Senior Center news and updates about upcoming programs and events Vision Zero Vision Zero projects, activities and how to get involved to improve transportation safety Youth Center
+																		120 text "
+																		121 button Link Citation ID: btn-cite-4
+																		122 text Citation ID: #
+																		123 text 5
+																		124 text Fetched:
+																		125 text 6/30/2026
+																		126 text "
+																		127 text Helping families, children and youth in Longmont grow, succeed and reach their best potential New Language Preference English Spanish Most of our email newsletters are currently published in English only. We&#039;re recording preferences if we add Spanish translations in the future. Get City News in Spanish! Follow our WhatsApp channel for City of Longmont news and updates in Spanish. Join WhatsApp Channel → Choose Your Subscriptions Select the topics and departments you&#039;d like to hear from. Subscribe to Selections Skip
+																		128 text "
+																		129 button Link Citation ID: btn-cite-5
+								130 region
+						131 region
+						132 region
+		133 title bar
+			134 menu bar System ID: MenuBar
+				135 menu item System
+			136 button Minimize
+			137 button Maximize
+			138 button Close
+
+Document text: ```
+The Civic Desk
+LONGMONT / CO
+￼
+Story Queue
+￼
+Daily Scan
+￼
+Dark Signals
+￼
+Verification
+￼
+Workbench
+￼
+Sources
+￼
+AI Model
+￼
+Publishing
+￼
+Browser Pairing
+￼
+Ethics & Backups
+￼
+System & Status
+Local AI ready
+qwen2.5:7b
+￼
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+￼
+Story approved for publishing; a verification record was saved.
+Dismiss
+Story Workbench
+Modify drafted content, review guardrail warnings, and link source material when it helps the editor.
+Back to Queue
+Save Draft
+Delete
+Press-freedom / legal-risk advisor
+Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.
+Run Advisor
+• Distinguish verified facts, allegations, opinion, and unanswered questions.
+• Use extra care with private individuals, minors, medical details, addresses, and active legal matters.
+• Keep notes on source reliability and why publishing serves the community.
+Story Title
+New Agenda Management Portal Features Video Bookmarks for City Council and Planning & Zoning Commission Meetings
+Article Body (Markdown)
+Plain Language Rewrite
+Highlight text and click "Cite" in evidence pane to link.
+Longmont residents can now more easily access information during city council and planning and zoning commission meetings thanks to an updated agenda management portal. According to [Source](evidence:3), the new feature bookmarks videos directly to specific items on the agenda, eliminating the need to search YouTube for relevant topics.
+
+This improvement was implemented because HTML agendas with video bookmarks are now exclusively published for these two types of meetings. The change aims to enhance transparency and accessibility by making it simpler for citizens to follow discussions related to their interests [Source](evidence:3).
+
+While this development is valuable, the exact impact on public engagement remains unclear. Residents who regularly attend or watch city council and planning and zoning commission meetings may find the new feature particularly useful, but its broader effects are yet to be fully assessed.
+
+EDITOR_NOTE: This looks like background material, not a publishable news story yet. To make it more relevant for Longmont residents, it would need to show a current development such as an increase in public attendance or feedback from community members on the new feature's effectiveness.
+Current Status: Approved for publishing
+Send Back for More Work
+Unapprove
+Hold
+Cut Story
+Approve for Static Publish
+￼
+I have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision.
+Social Media Promo Pack
+Generate Posts
+Generate optimized posts for Twitter/X, Facebook, and Reddit based on the current draft.
+Linked Sources
+Citation ID: #3
+Fetched: 6/30/2026
+"
+Search tip! The HTML agenda bookmarks the video to the item on the agenda so you don&#8217;t have to search the video on YouTube to find the topic you are looking interested in. HTML agendas with video bookmarks are only published for City Council meetings and Planning &amp; Zoning Commission meetings.
+Did you find this page helpful?
+Welcome
+Longmont is a diverse, multicultural and welcoming city.
+Contact
+Services
+View All Services
+Departments
+View All Departments
+Quick Links
+Agendas and Meetings
+Code Enforcement
+Emergency Notifications
+Employment Opportunities
+Permits and Inspections
+Public Records
+Service Requests
+Email Signup
+Stay up-to-date on news and events in Longmont.
+Sign Up
+For questions or assistance, please contact our help and information line at  303-776-6050 .
+facebook
+instagram
+youtube
+whatsapp
+Accessibility  Land Acknowledgment  InsideLongmont  Employee Login  Terms of Use  Privacy Policy
+© 2026 City of Longmont, Colorado
+search
+Services
+Back to Main
+Accessibility
+Activities
+Building
+Business
+Education
+Government
+Housing
+Human Services
+Information
+Jobs
+Library
+Licensing
+Maintenance
+Museum
+NextLight Fiber Internet
+Public Safety
+Sustainability
+Transportation
+Utilities
+Wellness
+Explore All Services
+Explore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place.
+All Services
+Departments
+Back to Main
+Airport
+Boards, Committees and Commissions
+Building Services
+Children, Youth and Families at the Youth Center
+City Attorney
+City Clerk
+City Council
+City Manager
+Community and Neighborhood Resources
+Enterprise Technology Services
+Environment
+Finance
+Forestry
+Golf Services
+Housing and Community Investment
+Human Resources
+Human Services
+Judicial Department
+Library
+Longmont Housing Authority
+Longmont Museum
+Longmont Power &amp;  Communications
+Municipal Court
+Municipal Probation
+NextLight Fiber Internet
+Parks and Natural Resources
+"
+Link Citation
+Citation ID: #4
+Fetched: 6/30/2026
+"
+Planning and Development Services
+Public Information
+Public Safety
+Purchasing and Contracts
+Recreation Services
+Risk Management
+Senior Services
+Transportation
+Trash, Recycling, and Composting
+Utilities and Public Works
+Water
+Explore All Departments
+Discover all the departments that make up the City of Longmont&#8217;s government. Get detailed information on their roles, responsibilities, and how they serve the community.
+All Departments
+Government
+News &#038; Alerts
+Events
+Careers
+Contact
+Subscribe to Email Updates
+Email Address
+Stay Connected
+Get the latest updates from the City of Longmont
+This is Longmont
+The official newsletter of the City of Longmont
+Weekly
+Topics of Interest
+Choose specific topics you want to hear about
+Select all in this category
+News &amp; Alerts
+Latest news information, notices and alerts from the city
+Events &amp; Activities
+Community events, programs and activities happening in Longmont
+Weekly
+City Events
+Downtown Events
+Events for Kids
+Job Announcements
+Employment opportunities delivered to your inbox
+Weekly
+Department Newsletters
+Subscribe to updates from specific city departments
+Select all in this category
+Longmont Library
+Updates and registration information about library programs and events
+Adult Programs
+Children Programs (Infant - 5th Grade)
+Technology + Computer Classes
+Teens Program Notices (6th-12th graders)
+This Month @ the Library
+Longmont Museum
+Events, exhibits and more from the museum
+Auditorium Programs
+Discovery Days (Early Childhood)
+Museum Exhibits &amp; Events
+Recreation
+Activities, classes, sports and more
+Sustainability
+Project and program updates, including money-saving rebates and efficiency resources
+Sustainable Business Program
+Promotes environmental stewardship, economic vitality and social equity
+Senior Center
+Senior Center news and updates about upcoming programs and events
+Vision Zero
+Vision Zero projects, activities and how to get involved to improve transportation safety
+Youth Center
+"
+Link Citation
+Citation ID: #5
+Fetched: 6/30/2026
+"
+Helping families, children and youth in Longmont grow, succeed and reach their best potential
+New
+Language Preference
+English
+Spanish
+Most of our email newsletters are currently published in English only. We&#039;re recording preferences if we add Spanish translations in the future.
+Get City News in Spanish!
+Follow our WhatsApp channel for City of Longmont news and updates in Spanish.
+Join WhatsApp Channel →
+Choose Your Subscriptions
+Select the topics and departments you&#039;d like to hear from.
+Subscribe to Selections
+Skip
+"
+Link Citation
+```

@@ -1,0 +1,171 @@
+Window: "The Civic Desk", App: civicnews.exe.
+	0 window The Civic Desk Secondary Actions: Raise
+		1 pane
+			2 pane CivicNews Dashboard
+				3 pane (disabled)
+				4 region CivicNews Dashboard - Web content
+					5 region
+						6 region
+							7 region
+								8 region
+								9 region
+									10 region
+										11 region
+											12 region
+												13 region
+													14 document CivicNews Dashboard ID: RootWebArea
+														15 group
+															16 group ID: root
+																17 complementary
+																	18 text The Civic Desk
+																	19 text LONGMONT / CO
+																	20 navigation
+																		21 list
+																			22 list item Story Queue
+																				23 button Story Queue Description: Story Queue (Alt+1) ID: nav-tab-queue
+																					24 graphic
+																			25 list item Daily Scan
+																				26 button Daily Scan Description: Daily Scan (Alt+2) ID: nav-tab-dailyScan
+																					27 graphic
+																			28 list item Dark Signals
+																				29 button Dark Signals Description: Dark Signals (Alt+3) ID: nav-tab-darkSignals
+																					30 graphic
+																			31 list item Verification
+																				32 button Verification Description: Verification (Alt+4) ID: nav-tab-verification
+																					33 graphic
+																			34 list item Workbench
+																				35 button Workbench Description: Workbench (Alt+5) ID: nav-tab-workbench
+																					36 graphic
+																		37 list
+																			38 list item Sources
+																				39 button Sources Description: Sources (Alt+6) ID: nav-tab-sources
+																					40 graphic
+																			41 list item AI Model
+																				42 button AI Model Description: AI Model (Alt+7) ID: nav-tab-onboarding
+																					43 graphic
+																			44 list item Publishing
+																				45 button Publishing Description: Publishing (Alt+8) ID: nav-tab-publish
+																					46 graphic
+																		47 list
+																			48 list item Browser Pairing
+																				49 button Browser Pairing Description: Browser Pairing (Alt+9) ID: nav-tab-pairing
+																					50 graphic
+																			51 list item Ethics & Backups
+																				52 button Ethics & Backups Description: Ethics & Backups (Alt+10) ID: nav-tab-settings
+																					53 graphic
+																			54 list item System & Status
+																				55 button System & Status Description: System & Status (Alt+11) ID: nav-tab-system
+																					56 graphic
+																	57 text Local AI ready
+																	58 text qwen2.5:7b
+																59 main
+																	60 alert
+																		61 graphic
+																		62 text You're running an
+																		63 text unsigned public beta
+																		64 text of The Civic Desk. Windows SmartScreen may warn on install; that's expected.
+																		65 text 
+																		66 link Report issues on GitHub
+																		67 text .
+																		68 button Dismiss beta notice
+																			69 graphic
+																	70 status
+																		71 text Asking the local AI model to write a working draft... (this may take a moment)
+																		72 button Dismiss
+																	73 group ID: draft-wizard-panel
+																		74 heading Drafting Article
+																		75 text Lead:
+																		76 text Review new source evidence from source #1: --> Agenda Management Portal - City of Longmont Skip to main content News &#038; Alerts Events Careers Contact Services Accessibility Ensuring accessible government services. Activities Providing community activities. Building Guiding construction and developm... Editor context: The model did not return usable JSON, so this evidence was preserved for editor review instead of being discarded. Suggested next step: Open the source, decide whether it contains a reportable civic action, then save or dismiss it from the queue.
+																		77 text Verification
+																		78 text Needs verification
+																		79 text Novelty
+																		80 text /5
+																		81 text Verification assignment. Use the draft as reporting notes until the missing facts are checked.
+																		82 button (disabled) Generating Draft... ID: btn-generate-draft-top
+																		83 button (disabled) Cancel ID: btn-cancel-draft-top
+																		84 status
+																			85 text Asking the local AI model to write a working draft. Keep this window open.
+																		86 text Article Format
+																		87 combo box Article Format ID: select-draft-format
+																		88 text Custom Guidelines / Instructions (Optional)
+																		89 edit Custom Guidelines / Instructions (Optional) Description: e.g. Focus specifically on the budget numbers, keep tone highly objective... ID: textarea-custom-instructions
+																		90 heading Linked Sources (3)
+																		91 graphic
+																		92 text "
+																		93 text Search tip! The HTML agenda bookmarks the video to the item on the agenda so you don&#8217;t have to
+																		94 text ..."
+																		95 graphic
+																		96 text "
+																		97 text Planning and Development Services Public Information Public Safety Purchasing and Contracts Recreati
+																		98 text ..."
+																		99 graphic
+																		100 text "
+																		101 text Helping families, children and youth in Longmont grow, succeed and reach their best potential New La
+																		102 text ..."
+																		103 button (disabled) Generating Draft... ID: btn-generate-draft-bottom
+																		104 button (disabled) Cancel ID: btn-cancel-draft-bottom
+								105 region
+						106 region
+						107 region
+		108 title bar
+			109 menu bar System ID: MenuBar
+				110 menu item System
+			111 button Minimize
+			112 button Maximize
+			113 button Close
+
+Document text: ```
+The Civic Desk
+LONGMONT / CO
+￼
+Story Queue
+￼
+Daily Scan
+￼
+Dark Signals
+￼
+Verification
+￼
+Workbench
+￼
+Sources
+￼
+AI Model
+￼
+Publishing
+￼
+Browser Pairing
+￼
+Ethics & Backups
+￼
+System & Status
+Local AI ready
+qwen2.5:7b
+￼
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+￼
+Asking the local AI model to write a working draft... (this may take a moment)
+Dismiss
+Drafting Article
+Lead: Review new source evidence from source #1: --> Agenda Management Portal - City of Longmont Skip to main content News &#038; Alerts Events Careers Contact Services Accessibility Ensuring accessible government services. Activities Providing community activities. Building Guiding construction and developm... Editor context: The model did not return usable JSON, so this evidence was preserved for editor review instead of being discarded. Suggested next step: Open the source, decide whether it contains a reportable civic action, then save or dismiss it from the queue.
+Verification
+Needs verification
+Novelty /5
+Verification assignment. Use the draft as reporting notes until the missing facts are checked.
+Generating Draft...
+Cancel
+Asking the local AI model to write a working draft. Keep this window open.
+Article Format
+￼
+Custom Guidelines / Instructions (Optional)
+￼
+Linked Sources (3)
+￼
+"Search tip! The HTML agenda bookmarks the video to the item on the agenda so you don&#8217;t have to..."
+￼
+"Planning and Development Services Public Information Public Safety Purchasing and Contracts Recreati..."
+￼
+"Helping families, children and youth in Longmont grow, succeed and reach their best potential New La..."
+Generating Draft...
+Cancel
+```

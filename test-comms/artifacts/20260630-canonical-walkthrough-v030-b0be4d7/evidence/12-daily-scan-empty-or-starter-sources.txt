@@ -1,0 +1,176 @@
+Window: "The Civic Desk", App: civicnews.exe.
+	0 window The Civic Desk Secondary Actions: Raise
+		1 pane
+			2 pane CivicNews Dashboard
+				3 pane (disabled)
+				4 region CivicNews Dashboard - Web content
+					5 region
+						6 region
+							7 region
+								8 region
+								9 region
+									10 region
+										11 region
+											12 region
+												13 region
+													14 document CivicNews Dashboard ID: RootWebArea
+														15 group
+															16 group ID: root
+																17 complementary
+																	18 text The Civic Desk
+																	19 text LONGMONT / CO
+																	20 navigation
+																		21 list
+																			22 list item Story Queue
+																				23 button Story Queue Description: Story Queue (Alt+1) ID: nav-tab-queue
+																					24 graphic
+																			25 list item Daily Scan
+																				26 button Daily Scan Description: Daily Scan (Alt+2) ID: nav-tab-dailyScan
+																					27 graphic
+																			28 list item Dark Signals
+																				29 button Dark Signals Description: Dark Signals (Alt+3) ID: nav-tab-darkSignals
+																					30 graphic
+																			31 list item Verification
+																				32 button Verification Description: Verification (Alt+4) ID: nav-tab-verification
+																					33 graphic
+																			34 list item Workbench
+																				35 button Workbench Description: Workbench (Alt+5) ID: nav-tab-workbench
+																					36 graphic
+																		37 list
+																			38 list item Sources
+																				39 button Sources Description: Sources (Alt+6) ID: nav-tab-sources
+																					40 graphic
+																			41 list item AI Model
+																				42 button AI Model Description: AI Model (Alt+7) ID: nav-tab-onboarding
+																					43 graphic
+																			44 list item Publishing
+																				45 button Publishing Description: Publishing (Alt+8) ID: nav-tab-publish
+																					46 graphic
+																		47 list
+																			48 list item Browser Pairing
+																				49 button Browser Pairing Description: Browser Pairing (Alt+9) ID: nav-tab-pairing
+																					50 graphic
+																			51 list item Ethics & Backups
+																				52 button Ethics & Backups Description: Ethics & Backups (Alt+10) ID: nav-tab-settings
+																					53 graphic
+																			54 list item System & Status
+																				55 button System & Status Description: System & Status (Alt+11) ID: nav-tab-system
+																					56 graphic
+																	57 text Local AI ready
+																	58 text qwen2.5:7b
+																59 main
+																	60 alert
+																		61 graphic
+																		62 text You're running an
+																		63 text unsigned public beta
+																		64 text of The Civic Desk. Windows SmartScreen may warn on install; that's expected.
+																		65 text 
+																		66 link Report issues on GitHub
+																		67 text .
+																		68 button Dismiss beta notice
+																			69 graphic
+																	70 text MORNING EDITOR PACKET
+																	71 heading Daily Scan
+																	72 text Run deterministic record checks first, then use local AI only to summarize and rank what needs an editor's look.
+																	73 button Refresh
+																		74 graphic
+																	75 button Run Daily Scan ID: btn-daily-scan-route
+																		76 graphic
+																	77 text SOURCES WATCHED
+																	78 text 6
+																	79 text OPEN LEADS
+																	80 text 8
+																	81 text DRAFTS IN DESK
+																	82 text 0
+																	83 text AI STATUS
+																	84 text Ready
+																	85 graphic
+																	86 text AI BRIEF
+																	87 heading No scan has been run yet
+																	88 text Civic Desk keeps this pass local, private, and evidence-first. Use it to find the handful of records worth turning into leads. If local AI is unavailable, deterministic checks still build a review packet.
+																	89 text SCAN PROGRESS
+																	90 heading Checking watched sources for fresh records before analysis.
+																	91 text Evidence:
+																	92 text 0
+																	93 text .
+																	94 text 
+																	95 text Saved leads:
+																	96 text 0
+																	97 text .
+																	98 text Local scans move in stages rather than a fake percent. Deterministic checks run first; AI review can be skipped or slow on CPU-only machines.
+																	99 text Checking sources
+																	100 graphic
+																	101 heading Start today's scan
+																	102 text The results panel will fill with surfaced civic leads after the first run. Daily Scan will check watched sources before analyzing records.
+																	103 button Run Daily Scan
+																		104 graphic
+								105 region
+						106 region
+						107 region
+		108 title bar
+			109 menu bar System ID: MenuBar
+				110 menu item System
+			111 button Minimize
+			112 button Maximize
+			113 button Close
+
+Document text: ```
+The Civic Desk
+LONGMONT / CO
+￼
+Story Queue
+￼
+Daily Scan
+￼
+Dark Signals
+￼
+Verification
+￼
+Workbench
+￼
+Sources
+￼
+AI Model
+￼
+Publishing
+￼
+Browser Pairing
+￼
+Ethics & Backups
+￼
+System & Status
+Local AI ready
+qwen2.5:7b
+￼
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+￼
+MORNING EDITOR PACKET
+Daily Scan
+Run deterministic record checks first, then use local AI only to summarize and rank what needs an editor's look.
+￼
+Refresh
+￼
+Run Daily Scan
+SOURCES WATCHED
+6
+OPEN LEADS
+8
+DRAFTS IN DESK
+0
+AI STATUS
+Ready
+￼
+AI BRIEF
+No scan has been run yet
+Civic Desk keeps this pass local, private, and evidence-first. Use it to find the handful of records worth turning into leads. If local AI is unavailable, deterministic checks still build a review packet.
+SCAN PROGRESS
+Checking watched sources for fresh records before analysis.
+Evidence: 0. Saved leads: 0.
+Local scans move in stages rather than a fake percent. Deterministic checks run first; AI review can be skipped or slow on CPU-only machines.
+Checking sources
+￼
+Start today's scan
+The results panel will fill with surfaced civic leads after the first run. Daily Scan will check watched sources before analyzing records.
+￼
+Run Daily Scan
+```

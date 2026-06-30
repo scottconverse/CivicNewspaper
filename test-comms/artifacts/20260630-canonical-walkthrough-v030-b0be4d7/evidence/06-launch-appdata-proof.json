@@ -1,0 +1,26 @@
+{
+    "utc":  "2026-06-30T06:27:17.0047906Z",
+    "processes":  {
+                      "ProcessName":  "civicnews",
+                      "Id":  10536,
+                      "Path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe"
+                  },
+    "appDataListing":  [
+                           {
+                               "Name":  "civicdesk.db",
+                               "Length":  4096,
+                               "LastWriteTime":  "\/Date(1782800832633)\/"
+                           },
+                           {
+                               "Name":  "civicdesk.db-shm",
+                               "Length":  32768,
+                               "LastWriteTime":  "\/Date(1782800832633)\/"
+                           },
+                           {
+                               "Name":  "civicdesk.db-wal",
+                               "Length":  358472,
+                               "LastWriteTime":  "\/Date(1782800832852)\/"
+                           }
+                       ],
+    "appDataExists":  true
+}

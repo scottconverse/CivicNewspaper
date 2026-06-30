@@ -1,0 +1,54 @@
+﻿{
+  "db": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+  "exists": true,
+  "tables": {
+    "beat_memory": 1,
+    "civic_entities": 32,
+    "civic_observation_entities": 138,
+    "civic_observations": 107,
+    "daily_scan_leads": 1,
+    "daily_scan_runs": 1,
+    "dark_signals": 1,
+    "drafts": 1,
+    "evidence_items": 26,
+    "lead_evidence": 11,
+    "leads": 9,
+    "paired_clients": 0,
+    "publish_runs": 1,
+    "published_posts": 1,
+    "settings": 11,
+    "source_performance_scores": 6,
+    "sources": 6,
+    "sqlite_sequence": 14,
+    "story_templates": 5,
+    "subscribers": 0,
+    "verification_tasks": 3
+  },
+  "settings": {
+    "identity.newsroom_name": "My Local Publication",
+    "identity.editor_name": "Publisher",
+    "identity.organization_type": "single_person",
+    "identity.city": "Longmont",
+    "identity.state": "CO",
+    "model.selected": "qwen2.5:7b",
+    "paths.publish": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default",
+    "paths.backup": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\backups",
+    "onboarding_complete": "1",
+    "scan.latest_id": "1",
+    "setup.recovered_input": "consumed"
+  },
+  "publish_runs": [
+    {
+      "id": 1,
+      "issue_id": "issue-20260630-064220-181139800",
+      "output_path": "C:/Users/civic/AppData/Roaming/com.scottconverse.civicdesk/sites/default",
+      "provider": "here_now",
+      "published_url": "https://chilly-trellis-6rxq.here.now",
+      "deployment_id": "slug=chilly-trellis-6rxq;version=01KWBMC66RG3BH67SX1R56CQH5;created_slug=chilly-trellis-6rxq",
+      "article_count": 1,
+      "skipped_count": 0,
+      "files_written": 18,
+      "generated_at": "2026-06-30T06:42:20.181139800+00:00"
+    }
+  ]
+}

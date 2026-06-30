@@ -1,0 +1,17 @@
+﻿    <title>New Agenda Management Portal Features Video Bookmarks for City Council and Planning &amp; Zoning Commission Meetings - Longmont Walkthrough Gazette</title>
+    <meta name="description" content="New Agenda Management Portal Features Video Bookmarks for City Council and Planning &amp; Zoning Commission Meetings">
+        <h1 class="site-title"><a href="../index.html" style="color: inherit; text-decoration: none;">Longmont Walkthrough Gazette</a></h1>
+        <article style="max-width: 700px; margin: 0 auto;">
+            <h1 style="font-size: 2.5rem; line-height: 1.1; margin-bottom: 0.5rem;">New Agenda Management Portal Features Video Bookmarks for City Council and Planning &amp; Zoning Commission Meetings</h1>
+                <p>Longmont residents can now more easily access information during city council and planning and zoning commission meetings thanks to an updated agenda management portal. According to <a href="#evidence-3">Source</a>, the new feature bookmarks videos directly to specific items on the agenda, eliminating the need to search YouTube for relevant topics.</p>
+<p>This improvement was implemented because HTML agendas with video bookmarks are now exclusively published for these two types of meetings. The change aims to enhance transparency and accessibility by making it simpler for citizens to follow discussions related to their interests <a href="#evidence-3">Source</a>.</p>
+                <h3 style="margin-top: 0; font-family: var(--font-sans); font-size: 0.9rem; text-transform: uppercase; color: var(--accent-color);">Sources & Notes</h3>
+                <p style="margin-bottom: 0.8rem; font-size: 0.85rem; color: var(--muted-color);">Source links attached by the editor:</p>
+                    <li id="evidence-3" style="margin-bottom: 0.5rem;"><strong>[Ref 3]</strong> <a href="https:&#x2F;&#x2F;longmontcolorado.gov&#x2F;city-clerk&#x2F;agenda-management-portal&#x2F;" target="_blank">Original Document Link</a>: <span style="font-style: italic;">"Search tip! The HTML agenda bookmarks the video to the item on the agenda so you don&#x27;t have to search the video on YouTube to find the topic you are looking interested in. HTML agendas with video bookmarks are only published for City Council meetings and Planning &amp;amp; Zoning Commission meetings.
+Explore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place.
+Community and Neighborhood Resources
+Human Resources
+Parks and Natural Resources
+<li id="evidence-4" style="margin-bottom: 0.5rem;"><strong>[Ref 4]</strong> <a href="https:&#x2F;&#x2F;longmontcolorado.gov&#x2F;city-clerk&#x2F;agenda-management-portal&#x2F;" target="_blank">Original Document Link</a>: <span style="font-style: italic;">"Planning and Development Services
+Project and program updates, including money-saving rebates and efficiency resources
+<li id="evidence-5" style="margin-bottom: 0.5rem;"><strong>[Ref 5]</strong> <a href="https:&#x2F;&#x2F;longmontcolorado.gov&#x2F;city-clerk&#x2F;agenda-management-portal&#x2F;" target="_blank">Original Document Link</a>: <span style="font-style: italic;">"Helping families, children and youth in Longmont grow, succeed and reach their best potential

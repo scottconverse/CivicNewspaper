@@ -1,0 +1,74 @@
+﻿[
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\about.html",
+        "Hash":  "91FE52231D097A2AF85081985ECBC8AFA31B0BDC3189EB2FED69116ECEC08D9D"
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\corrections.html",
+        "Hash":  "27970C23DC543AF8AA88DA6EE5C788EBE1CD3283F0B359385DFA938D8541314D"
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\ethics.html",
+        "Hash":  "F4B52CA2472BD20867F453E1AFA301136949471A414C5D818D2C45995E10A1A3"
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\facebook-post.txt",
+        "Hash":  "BE5889708A949F8C6C7BB1567B6515AD2ACFCB261602F382913681DA6B33173D"
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\feed.xml",
+        "Hash":  "35B2977D4DE2A35C574B934929CEFB3216445717CDED4F0E142197BEB330BE68"
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\how-we-report.html",
+        "Hash":  "5398A07D17A922BA25FAFBADAD5730B4CDD0CF540E1A7C65A8DA5ACA650987F6"
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\index.html",
+        "Hash":  "1872FF1CFC1BA7DBF4AE2E91FD5549FF9373DE6BA89EB32B740C46BEEAC27235"
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\newsletter.md",
+        "Hash":  "9CD45EAFB75AC51E367C288214DC64291BB3A876E1E15EDB6DB782D04325C4FD"
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\nextdoor-post.txt",
+        "Hash":  "0579B2A2CFDABB466A48314437D2EF5FC8F8D79C9100AD0B916C9826DD2A3599"
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\print.css",
+        "Hash":  "1F0109475BC5BB23685C9B5AEA43F19FDA57566267E137A09DC48D4BA4AA475D"
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\publish-manifest.json",
+        "Hash":  "07793EF4D374A5D73F93F380127B255BCFC7A94A91E43A9C64544E643C41D17D"
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\share-package.md",
+        "Hash":  "18A451A0892978E921E05A0598E60A9EB89FBC415FB528065BE0C7BA4C00559B"
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\short-link-blurb.txt",
+        "Hash":  "54FB4A102C413D227EE5CCA76B74F56E35BA63AD6A099F31D24FDC0A002663CE"
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\site-package.zip",
+        "Hash":  "3DE9D77AB9FEBB15DDBE41F35E3ADA17D63D3A71B1DDECCD4F54E4B06829FD2E"
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\styles.css",
+        "Hash":  "F2D8596881612E14EC9A8C9700AED5A7F46B964D73BAD7ADADBB078CF1008152"
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\subreddit-post.md",
+        "Hash":  "D1AE23FA4D2CD89864BAF1CB5556CDB43820B50D294A5D5A6BAAAD662A78072B"
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\substack.md",
+        "Hash":  "B8396D1E40B3F295F8EE1ADCAAC20BF6075BB666B807B1273FD9536793539E6D"
+    },
+    {
+        "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\watch\\1.html",
+        "Hash":  "CFB069C43C2A18C7103064A8FB534AA1FED2065341A5E8F77F5B58A9F09D2461"
+    }
+]

@@ -1,0 +1,156 @@
+Window: "The Civic Desk", App: civicnews.exe.
+	0 window The Civic Desk Secondary Actions: Raise
+		1 pane
+			2 pane CivicNews Dashboard
+				3 pane (disabled)
+				4 region CivicNews Dashboard - Web content
+					5 region
+						6 region
+							7 region
+								8 region
+								9 region
+									10 region
+										11 region
+											12 region
+												13 region
+													14 document CivicNews Dashboard ID: RootWebArea
+														15 group
+															16 group ID: root
+																17 complementary
+																	18 text The Civic Desk
+																	19 text LONGMONT / CO
+																	20 navigation
+																		21 list
+																			22 list item Story Queue
+																				23 button Story Queue Description: Story Queue (Alt+1) ID: nav-tab-queue
+																					24 graphic
+																			25 list item Daily Scan
+																				26 button Daily Scan Description: Daily Scan (Alt+2) ID: nav-tab-dailyScan
+																					27 graphic
+																			28 list item Dark Signals
+																				29 button Dark Signals Description: Dark Signals (Alt+3) ID: nav-tab-darkSignals
+																					30 graphic
+																			31 list item Verification
+																				32 button Verification Description: Verification (Alt+4) ID: nav-tab-verification
+																					33 graphic
+																			34 list item Workbench
+																				35 button Workbench Description: Workbench (Alt+5) ID: nav-tab-workbench
+																					36 graphic
+																		37 list
+																			38 list item Sources
+																				39 button Sources Description: Sources (Alt+6) ID: nav-tab-sources
+																					40 graphic
+																			41 list item AI Model
+																				42 button AI Model Description: AI Model (Alt+7) ID: nav-tab-onboarding
+																					43 graphic
+																			44 list item Publishing
+																				45 button Publishing Description: Publishing (Alt+8) ID: nav-tab-publish
+																					46 graphic
+																		47 list
+																			48 list item Browser Pairing
+																				49 button Browser Pairing Description: Browser Pairing (Alt+9) ID: nav-tab-pairing
+																					50 graphic
+																			51 list item Ethics & Backups
+																				52 button Ethics & Backups Description: Ethics & Backups (Alt+10) ID: nav-tab-settings
+																					53 graphic
+																			54 list item System & Status
+																				55 button System & Status Description: System & Status (Alt+11) ID: nav-tab-system
+																					56 graphic
+																	57 text Local AI ready
+																	58 text qwen2.5:7b
+																59 main
+																	60 alert
+																		61 graphic
+																		62 text You're running an
+																		63 text unsigned public beta
+																		64 text of The Civic Desk. Windows SmartScreen may warn on install; that's expected.
+																		65 text 
+																		66 link Report issues on GitHub
+																		67 text .
+																		68 button Dismiss beta notice
+																			69 graphic
+																	70 heading Sources
+																	71 text The municipal feeds and record portals The Civic Desk watches for you.
+																	72 button Discover for my city ID: btn-trigger-discovery
+																		73 graphic
+																	74 button Bulk import ID: btn-trigger-bulk-import
+																		75 graphic
+																	76 table
+																		77 row
+																			78 column header SOURCE
+																			79 column header TIER
+																			80 column header LAST CHECK
+																		81 row
+																			82 item Longmont Agenda Management Portal Primary Online https://longmontcolorado.gov/city-clerk/agenda-management-portal/
+																				83 link https://longmontcolorado.gov/city-clerk/agenda-management-portal/ Description: https://longmontcolorado.gov/city-clerk/agenda-management-portal/
+																			84 item Primary
+																			85 item Never
+																			86 item Delete source
+																				87 button Delete source ID: btn-delete-source-1
+																					88 graphic
+																		89 row
+																			90 item Longmont City Council Meetings Primary Online https://longmontcolorado.gov/government/city-council-meetings/
+																				91 link https://longmontcolorado.gov/government/city-council-meetings/ Description: https://longmontcolorado.gov/government/city-council-meetings/
+																			92 item Primary
+																			93 item Never
+																			94 item Delete source
+																				95 button Delete source ID: btn-delete-source-2
+																					96 graphic
+																		97 row
+																			98 item Longmont Public Information Official Online https://longmontcolorado.gov/public-information/
+																				99 link https://longmontcolorado.gov/public-information/ Description: https://longmontcolorado.gov/public-information/
+																			100 item Primary
+																			101 item Never
+																			102 item Delete source
+																				103 button Delete source ID: btn-delete-source-3
+																					104 graphic
+																		105 row
+																			106 item Public Notice Colorado Primary Online https://www.publicnoticecolorado.com/
+																				107 link https://www.publicnoticecolorado.com/ Description: https://www.publicnoticecolorado.com/
+																			108 item Primary
+																			109 item Never
+																			110 item Delete source
+																				111 button Delete source ID: btn-delete-source-4
+																					112 graphic
+																		113 row
+																			114 item Longmont subreddit Watch Online https://www.reddit.com/r/Longmont/
+																				115 link https://www.reddit.com/r/Longmont/ Description: https://www.reddit.com/r/Longmont/
+																			116 item Watch
+																			117 item Never
+																			118 item Delete source
+																				119 button Delete source ID: btn-delete-source-5
+																					120 graphic
+																		121 row
+																			122 item Longmont Colorado subreddit Watch Online https://www.reddit.com/r/LongmontColorado/
+																				123 link https://www.reddit.com/r/LongmontColorado/ Description: https://www.reddit.com/r/LongmontColorado/
+																			124 item Watch
+																			125 item Never
+																			126 item Delete source
+																				127 button Delete source ID: btn-delete-source-6
+																					128 graphic
+																	129 heading Add a source
+																	130 text Paste a city webpage or RSS feed. The Civic Desk figures out the rest.
+																	131 form ID: form-add-source
+																		132 text Name
+																		133 edit Name Description: e.g. City Council Agendas ID: input-new-source-name
+																		134 text URL
+																		135 edit URL Description: e.g. https://city.gov/agendas/rss ID: input-new-source-url
+																		136 text Type
+																		137 combo box Type ID: select-new-source-type
+																		138 text Tier
+																		139 combo box Tier ID: select-new-source-tier
+																		140 button Add Source ID: btn-submit-add-source
+																			141 graphic
+								142 region
+						143 region
+						144 region
+		145 title bar
+			146 menu bar System ID: MenuBar
+				147 menu item System
+			148 button Minimize
+			149 button Maximize
+			150 button Close
+
+Document text: ```
+￼
+```

@@ -1,0 +1,319 @@
+Window: "The Civic Desk", App: civicnews.exe.
+	0 window The Civic Desk Secondary Actions: Raise
+		1 pane
+			2 pane CivicNews Dashboard
+				3 pane (disabled)
+				4 region CivicNews Dashboard - Web content
+					5 region
+						6 region
+							7 region
+								8 region
+								9 region
+									10 region
+										11 region
+											12 region
+												13 region
+													14 document CivicNews Dashboard ID: RootWebArea
+														15 group
+															16 group ID: root
+																17 complementary
+																	18 text The Civic Desk
+																	19 text LONGMONT / CO
+																	20 navigation
+																		21 list
+																			22 list item Story Queue
+																				23 button Story Queue Description: Story Queue (Alt+1) ID: nav-tab-queue
+																					24 graphic
+																			25 list item Daily Scan
+																				26 button Daily Scan Description: Daily Scan (Alt+2) ID: nav-tab-dailyScan
+																					27 graphic
+																			28 list item Dark Signals
+																				29 button Dark Signals Description: Dark Signals (Alt+3) ID: nav-tab-darkSignals
+																					30 graphic
+																			31 list item Verification
+																				32 button Verification Description: Verification (Alt+4) ID: nav-tab-verification
+																					33 graphic
+																			34 list item Workbench
+																				35 button Workbench Description: Workbench (Alt+5) ID: nav-tab-workbench
+																					36 graphic
+																		37 list
+																			38 list item Sources
+																				39 button Sources Description: Sources (Alt+6) ID: nav-tab-sources
+																					40 graphic
+																			41 list item AI Model
+																				42 button AI Model Description: AI Model (Alt+7) ID: nav-tab-onboarding
+																					43 graphic
+																			44 list item Publishing
+																				45 button Publishing Description: Publishing (Alt+8) ID: nav-tab-publish
+																					46 graphic
+																		47 list
+																			48 list item Browser Pairing
+																				49 button Browser Pairing Description: Browser Pairing (Alt+9) ID: nav-tab-pairing
+																					50 graphic
+																			51 list item Ethics & Backups
+																				52 button Ethics & Backups Description: Ethics & Backups (Alt+10) ID: nav-tab-settings
+																					53 graphic
+																			54 list item System & Status
+																				55 button System & Status Description: System & Status (Alt+11) ID: nav-tab-system
+																					56 graphic
+																	57 text Local AI ready
+																	58 text qwen2.5:7b
+																59 main
+																	60 alert
+																		61 graphic
+																		62 text You're running an
+																		63 text unsigned public beta
+																		64 text of The Civic Desk. Windows SmartScreen may warn on install; that's expected.
+																		65 text 
+																		66 link Report issues on GitHub
+																		67 text .
+																		68 button Dismiss beta notice
+																			69 graphic
+																	70 heading Dark Signal Desk
+																	71 text Community and weak-signal leads ranked for review, never hidden from the editor.
+																	72 button Refresh ID: btn-refresh-dark-signals
+																		73 graphic
+																	74 text HIGH RISK
+																	75 text 0
+																	76 text TOTAL SIGNALS
+																	77 text 1
+																	78 text ENTITIES TRACKED
+																	79 text 32
+																	80 text SOURCES SCORED
+																	81 text 6
+																	82 graphic
+																	83 text Rank, explain, preserve
+																	84 text Tier C and community signals stay visible here for verification, but they are marked editor-review-only until confirmed.
+																	85 article
+																		86 text low
+																		87 text risk
+																		88 text score
+																		89 text 35
+																		90 text editor review only
+																		91 heading Review community signal from Longmont subreddit
+																		92 graphic
+																		93 text Reddit - Please wait for verification
+																		94 text Origin
+																		95 text Longmont subreddit
+																		96 text Status
+																		97 text review
+																		98 text Tier
+																		99 text community signal
+																		100 text Created
+																		101 text 6/30/2026, 12:29:18 AM
+																		102 text Why it matters
+																		103 text Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence.
+																		104 text Verification path
+																		105 text Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting.
+																		106 button Create story lead
+																	107 heading Recent observations
+																	108 text Fetched Longmont Colorado subreddit
+																	109 text source fetched
+																	110 text -
+																	111 text 6/30/2026, 12:29:40 AM
+																	112 text Fetched Longmont subreddit
+																	113 text source fetched
+																	114 text -
+																	115 text 6/30/2026, 12:29:37 AM
+																	116 text Fetched Public Notice Colorado
+																	117 text source fetched
+																	118 text -
+																	119 text 6/30/2026, 12:29:34 AM
+																	120 text Fetched Longmont Public Information
+																	121 text source fetched
+																	122 text -
+																	123 text 6/30/2026, 12:29:30 AM
+																	124 text Fetched Longmont City Council Meetings
+																	125 text source fetched
+																	126 text -
+																	127 text 6/30/2026, 12:29:27 AM
+																	128 text Fetched Longmont Agenda Management Portal
+																	129 text source fetched
+																	130 text -
+																	131 text 6/30/2026, 12:29:24 AM
+																	132 text Fetched Longmont Colorado subreddit
+																	133 text source fetched
+																	134 text -
+																	135 text 6/30/2026, 12:29:21 AM
+																	136 text Fetched Longmont subreddit
+																	137 text source fetched
+																	138 text -
+																	139 text 6/30/2026, 12:29:18 AM
+																	140 heading Source performance
+																	141 text Longmont City Council Meetings
+																	142 text Reliability
+																	143 text 100
+																	144 text - Usefulness
+																	145 text 100
+																	146 text 10
+																	147 text new -
+																	148 text 9
+																	149 text changed -
+																	150 text 0
+																	151 text dark signals
+																	152 text Longmont Agenda Management Portal
+																	153 text Reliability
+																	154 text 100
+																	155 text - Usefulness
+																	156 text 58
+																	157 text 5
+																	158 text new -
+																	159 text 4
+																	160 text changed -
+																	161 text 0
+																	162 text dark signals
+																	163 text Public Notice Colorado
+																	164 text Reliability
+																	165 text 100
+																	166 text - Usefulness
+																	167 text 54
+																	168 text 6
+																	169 text new -
+																	170 text 5
+																	171 text changed -
+																	172 text 0
+																	173 text dark signals
+																	174 text Longmont Public Information
+																	175 text Reliability
+																	176 text 100
+																	177 text - Usefulness
+																	178 text 46
+																	179 text 4
+																	180 text new -
+																	181 text 3
+																	182 text changed -
+																	183 text 0
+																	184 text dark signals
+																	185 text Longmont subreddit
+																	186 text Reliability
+																	187 text 100
+																	188 text - Usefulness
+																	189 text 14
+																	190 text 1
+																	191 text new -
+																	192 text 0
+																	193 text changed -
+																	194 text 1
+																	195 text dark signals
+																	196 text Longmont Colorado subreddit
+																	197 text Reliability
+																	198 text 100
+																	199 text - Usefulness
+																	200 text 0
+																	201 text 0
+																	202 text new -
+																	203 text 0
+																	204 text changed -
+																	205 text 0
+																	206 text dark signals
+								207 region
+						208 region
+						209 region
+		210 title bar
+			211 menu bar System ID: MenuBar
+				212 menu item System
+			213 button Minimize
+			214 button Maximize
+			215 button Close
+
+Document text: ```
+The Civic Desk
+LONGMONT / CO
+￼
+Story Queue
+￼
+Daily Scan
+￼
+Dark Signals
+￼
+Verification
+￼
+Workbench
+￼
+Sources
+￼
+AI Model
+￼
+Publishing
+￼
+Browser Pairing
+￼
+Ethics & Backups
+￼
+System & Status
+Local AI ready
+qwen2.5:7b
+￼
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+￼
+Dark Signal Desk
+Community and weak-signal leads ranked for review, never hidden from the editor.
+￼
+Refresh
+HIGH RISK
+0
+TOTAL SIGNALS
+1
+ENTITIES TRACKED
+32
+SOURCES SCORED
+6
+￼
+Rank, explain, preserve
+Tier C and community signals stay visible here for verification, but they are marked editor-review-only until confirmed.
+low risk
+score 35
+editor review only
+Review community signal from Longmont subreddit
+￼
+Reddit - Please wait for verification
+Origin
+Longmont subreddit
+Status
+review
+Tier
+community signal
+Created
+6/30/2026, 12:29:18 AM
+Why it matters
+Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence.
+Verification path
+Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting.
+Create story lead
+Recent observations
+Fetched Longmont Colorado subreddit
+source fetched - 6/30/2026, 12:29:40 AM
+Fetched Longmont subreddit
+source fetched - 6/30/2026, 12:29:37 AM
+Fetched Public Notice Colorado
+source fetched - 6/30/2026, 12:29:34 AM
+Fetched Longmont Public Information
+source fetched - 6/30/2026, 12:29:30 AM
+Fetched Longmont City Council Meetings
+source fetched - 6/30/2026, 12:29:27 AM
+Fetched Longmont Agenda Management Portal
+source fetched - 6/30/2026, 12:29:24 AM
+Fetched Longmont Colorado subreddit
+source fetched - 6/30/2026, 12:29:21 AM
+Fetched Longmont subreddit
+source fetched - 6/30/2026, 12:29:18 AM
+Source performance
+Longmont City Council Meetings
+Reliability 100 - Usefulness 100
+10 new - 9 changed - 0 dark signals
+Longmont Agenda Management Portal
+Reliability 100 - Usefulness 58
+5 new - 4 changed - 0 dark signals
+Public Notice Colorado
+Reliability 100 - Usefulness 54
+6 new - 5 changed - 0 dark signals
+Longmont Public Information
+Reliability 100 - Usefulness 46
+4 new - 3 changed - 0 dark signals
+Longmont subreddit
+Reliability 100 - Usefulness 14
+1 new - 0 changed - 1 dark signals
+Longmont Colorado subreddit
+Reliability 100 - Usefulness 0
+0 new - 0 changed - 0 dark signals
+```
