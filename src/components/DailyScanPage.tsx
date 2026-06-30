@@ -116,6 +116,9 @@ export const DailyScanPage: React.FC<DailyScanPageProps> = ({
               <p className="help-text" style={{ marginBottom: 0 }}>
                 {dailyScanProgress.model ? `Model: ${dailyScanProgress.model}. ` : ""}
                 Evidence: {dailyScanProgress.evidence_count}.
+                {dailyScanProgress.eligible_evidence_count && dailyScanProgress.eligible_evidence_count !== dailyScanProgress.evidence_count
+                  ? ` Reviewed newest ${dailyScanProgress.evidence_count} of ${dailyScanProgress.eligible_evidence_count}.`
+                  : ""}
                 {" "}Saved leads: {dailyScanProgress.saved_leads}.
                 {dailyScanProgress.batch_index && dailyScanProgress.batch_count
                   ? ` Batch ${dailyScanProgress.batch_index} of ${dailyScanProgress.batch_count}.`
@@ -126,6 +129,11 @@ export const DailyScanPage: React.FC<DailyScanPageProps> = ({
                   Local scans move in stages rather than a fake percent. Deterministic checks run first; AI review can be skipped or slow on CPU-only machines.
                 </p>
               )}
+              {dailyScanProgress.truncated_evidence_count ? (
+                <p className="help-text" style={{ margin: "0.35rem 0 0 0", color: "var(--color-warning)" }}>
+                  {dailyScanProgress.truncated_evidence_count} older evidence item(s) were not included in this pass. Run again or narrow sources if you need a smaller packet.
+                </p>
+              ) : null}
             </div>
             <span className={`badge ${dailyScanProgress.stage === "failed" ? "badge-warning" : dailyScanProgress.stage === "complete" ? "badge-success" : "badge-info"}`}>
               {progressStageLabel(dailyScanProgress.stage)}

@@ -72,6 +72,7 @@ interface WorkbenchProps {
   generatingText: boolean;
   onGenerateText: () => void;
   onCancelDraftWizard: () => void;
+  onOpenAiSetup?: () => void;
   onSaveDraftEditor: () => void;
   onCloseWorkbench: () => void;
   onOpenDraftEditor?: (draft: Draft) => void;
@@ -136,6 +137,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   generatingText,
   onGenerateText,
   onCancelDraftWizard,
+  onOpenAiSetup,
   onSaveDraftEditor,
   onCloseWorkbench,
   onOpenDraftEditor,
@@ -317,7 +319,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   if (selectedLead && !selectedDraft) {
     return (
       <div className="wizard-container card" id="draft-wizard-panel" tabIndex={-1} onKeyDown={handleDraftWizardKeyDown}>
-        <h2>Drafting Article</h2>
+        <h1>Drafting Article</h1>
         <p className="help-text" style={{ marginBottom: "1.5rem" }}>
           Lead: <strong>{selectedLead.why}</strong>
         </p>
@@ -411,8 +413,13 @@ export const Workbench: React.FC<WorkbenchProps> = ({
           </div>
 
           {!ollamaOnline && !manualLlmMode && (
-            <div className="error-text" id="ollama-offline-warning" style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-              <AlertTriangle size={14} /> The local AI service is offline. Open the "AI Model" tab to set it up, or use "Manual Mode" in settings.
+            <div className="error-text" id="ollama-offline-warning" style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+              <AlertTriangle size={14} /> The local AI service is offline. Set up the local AI model, or use Manual Mode in settings.
+              {onOpenAiSetup && (
+                <button type="button" className="btn btn-secondary btn-sm" onClick={onOpenAiSetup} id="btn-open-ai-setup-from-workbench">
+                  Open AI Setup
+                </button>
+              )}
             </div>
           )}
 
@@ -433,8 +440,8 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   if (selectedDraft) {
     const workflowStatus = selectedDraft.status;
     const finalStatus = workflowStatus === "published" || workflowStatus === "corrected";
-    const canResume = workflowStatus === "hold" || workflowStatus === "needs_verification" || workflowStatus === "killed";
-    const canSendBack = !["needs_verification", "killed", "published", "corrected"].includes(workflowStatus);
+    const canResume = workflowStatus === "needs_verification" || workflowStatus === "killed";
+    const canSendBack = !["hold", "needs_verification", "killed", "published", "corrected"].includes(workflowStatus);
     const canHold = workflowStatus !== "hold" && !finalStatus;
     const canCut = workflowStatus !== "killed" && !finalStatus;
     const canMarkReady = !["ready_to_review", "ready_to_publish", "killed", "published", "corrected"].includes(workflowStatus);
@@ -680,7 +687,17 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                     role="status"
                     style={{ background: "rgba(245, 158, 11, 0.08)", borderLeft: "4px solid var(--color-warning)", borderRadius: "4px", color: "var(--text-primary)", padding: "0.75rem" }}
                   >
-                    This draft is on hold. Resume editing when you are ready, or send it back for more reporting and verification.
+                    <p style={{ margin: "0 0 0.5rem 0" }}>
+                      This draft is on hold. Resume editing when you are ready, or send it back for more reporting and verification.
+                    </p>
+                    <div className="btn-group">
+                      <button className="btn btn-secondary btn-sm" type="button" onClick={() => onDecision("draft_generated")} id="btn-hold-resume-inline">
+                        Resume Editing
+                      </button>
+                      <button className="btn btn-secondary btn-sm" type="button" onClick={() => onDecision("needs_verification")} id="btn-hold-send-back-inline">
+                        Send Back for More Work
+                      </button>
+                    </div>
                   </div>
                 )}
                 {selectedDraft.status === "needs_verification" && (

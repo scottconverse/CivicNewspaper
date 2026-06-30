@@ -1,18 +1,19 @@
-// core/auth.rs
 use super::db::{get_paired_client_by_token, record_paired_client_use};
+use super::server::AppState;
 use axum::{
     body::Body,
+    extract::State,
     http::{header, Request, StatusCode},
     middleware::Next,
     response::Response,
 };
 
-// Validate the Host header to defeat DNS rebinding attacks
+// Validate the Host header to defeat DNS rebinding attacks.
 pub fn is_valid_host(host: &str) -> bool {
     host.trim() == "127.0.0.1:12053"
 }
 
-// Validate the Origin header to ensure it matches browser extension origins or is absent (for IDE agents)
+// Validate browser-extension origins. "null" is never trusted.
 pub fn is_valid_origin(origin: &str) -> bool {
     let origin_clean = origin.trim().to_lowercase();
     if origin_clean == "null" {
@@ -21,16 +22,7 @@ pub fn is_valid_origin(origin: &str) -> bool {
     origin_clean.starts_with("chrome-extension://")
 }
 
-use super::server::AppState;
-use axum::extract::State;
-
-// Middleware for Axum HTTP routes
-pub async fn auth_middleware(
-    State(state): State<AppState>,
-    request: Request<Body>,
-    next: Next,
-) -> Result<Response, StatusCode> {
-    // 1. Host Validation
+fn validate_host_and_origin(request: &Request<Body>) -> Result<(), StatusCode> {
     let host = request
         .headers()
         .get(header::HOST)
@@ -44,59 +36,57 @@ pub async fn auth_middleware(
         return Err(StatusCode::FORBIDDEN);
     }
 
-    // 2. Origin Validation
-    //
-    // ENG-M1: a *present* Origin must be on the allowlist (browser-extension
-    // origins). A *missing* Origin is NOT treated as trusted: it is allowed to
-    // proceed past this step ONLY for the explicit no-origin caller classes
-    // below, and every non-pair route still has to pass the mandatory bearer
-    // token check in step 4 — token possession is what authorizes a no-origin
-    // local client. The classic weakening this guards against is "skip the
-    // whole gate when the header is absent"; here the token gate is unconditional
-    // for non-pair routes, so an absent Origin can never bypass authorization.
-    let path = request.uri().path();
-    let is_pair_route = path == "/api/pair";
-    // The pairing route may opt out of the Origin allowlist via an explicit
-    // pairing header (the IDE/extension pairing handshake doesn't carry a
-    // chrome-extension origin yet). This is the only sanctioned no-origin bypass
-    // of the allowlist, and /api/pair has its own per-IP rate limit + PIN check.
-    let skip_origin = is_pair_route && request.headers().contains_key("x-civicnews-pair");
-
-    if !skip_origin {
-        match request.headers().get(header::ORIGIN) {
-            Some(origin_header) => {
-                // A present Origin must parse and be on the allowlist.
-                match origin_header.to_str() {
-                    Ok(origin_str) if is_valid_origin(origin_str) => {}
-                    Ok(origin_str) => {
-                        if cfg!(debug_assertions) {
-                            eprintln!("Auth Block: Untrusted Origin header: '{}'", origin_str);
-                        }
-                        return Err(StatusCode::FORBIDDEN);
-                    }
-                    Err(_) => {
-                        if cfg!(debug_assertions) {
-                            eprintln!("Auth Block: Unparseable Origin header");
-                        }
-                        return Err(StatusCode::FORBIDDEN);
-                    }
+    match request.headers().get(header::ORIGIN) {
+        Some(origin_header) => match origin_header.to_str() {
+            Ok(origin_str) if is_valid_origin(origin_str) => Ok(()),
+            Ok(origin_str) => {
+                if cfg!(debug_assertions) {
+                    eprintln!("Auth Block: Untrusted Origin header: '{}'", origin_str);
                 }
+                Err(StatusCode::FORBIDDEN)
             }
-            None => {
-                // No Origin header. We do NOT short-circuit-allow here; the
-                // request must still satisfy the bearer-token check below
-                // (step 4). Non-browser local callers (curl, IDE agents) are
-                // expected to authenticate by token, not by Origin.
+            Err(_) => {
+                if cfg!(debug_assertions) {
+                    eprintln!("Auth Block: Unparseable Origin header");
+                }
+                Err(StatusCode::FORBIDDEN)
             }
+        },
+        None => {
+            let is_pair_route = request.uri().path().ends_with("/pair");
+            if is_pair_route && !request.headers().contains_key("x-civicnews-pair") {
+                if cfg!(debug_assertions) {
+                    eprintln!("Auth Block: Pair route missing Origin or x-civicnews-pair");
+                }
+                return Err(StatusCode::FORBIDDEN);
+            }
+            Ok(())
         }
     }
+}
 
-    // 3. Skip token check for pairing route
-    if is_pair_route {
-        return Ok(next.run(request).await);
-    }
+// Host/Origin boundary for the pairing route. /api/pair intentionally has no
+// bearer-token check because it is where clients exchange the user-visible PIN.
+pub async fn host_origin_middleware(
+    State(_state): State<AppState>,
+    request: Request<Body>,
+    next: Next,
+) -> Result<Response, StatusCode> {
+    validate_host_and_origin(&request)?;
+    Ok(next.run(request).await)
+}
 
-    // 4. Paired Token Authorization Check
+// Middleware for authenticated API routes.
+pub async fn auth_middleware(
+    State(state): State<AppState>,
+    request: Request<Body>,
+    next: Next,
+) -> Result<Response, StatusCode> {
+    // A present Origin must parse and be on the allowlist. A missing Origin is
+    // allowed for non-browser local callers only because every protected route
+    // still has to pass this bearer-token check.
+    validate_host_and_origin(&request)?;
+
     let auth_header = request
         .headers()
         .get(header::AUTHORIZATION)
@@ -114,7 +104,6 @@ pub async fn auth_middleware(
         }
     };
 
-    // Check token in DB
     let is_valid = {
         let conn = state
             .db
@@ -122,7 +111,6 @@ pub async fn auth_middleware(
             .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
         match get_paired_client_by_token(&conn, token) {
             Ok(Some(_client)) => {
-                // Update last used timestamp
                 let _ = record_paired_client_use(&conn, token);
                 true
             }

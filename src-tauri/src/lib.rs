@@ -17,7 +17,7 @@ pub fn run() {
             app.manage(sidecar.clone());
 
             // Panic Hook
-            if let Ok(app_data) = app.path().app_data_dir() {
+            if let Ok(app_data) = crate::core::app_paths::app_data_dir(app.handle()) {
                 let log_dir = app_data.join("logs");
                 let log_path = log_dir.join("civicnews.log");
                 let sidecar_clone = sidecar.clone();

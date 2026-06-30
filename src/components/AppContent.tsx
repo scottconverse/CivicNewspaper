@@ -108,6 +108,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
               app.setSelectedLead(null);
               app.setActiveTab("queue");
             }}
+            onOpenAiSetup={() => app.setActiveTab("onboarding")}
             onSaveDraftEditor={app.handleSaveDraftEditor}
             onCloseWorkbench={() => {
               app.setActiveTab("queue");
@@ -374,6 +375,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
             app.setSelectedLead(null);
             app.setActiveTab("queue");
           }}
+          onOpenAiSetup={() => app.setActiveTab("onboarding")}
           onSaveDraftEditor={app.handleSaveDraftEditor}
           onCloseWorkbench={() => {
             app.setActiveTab("queue");

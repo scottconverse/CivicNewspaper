@@ -285,6 +285,16 @@ function insertTextIntoChat(text) {
   return true;
 }
 
+function confirmExternalAiTransfer(lead, items, promptText) {
+  const host = window.location.hostname || 'this page';
+  const preview = promptText.replace(/\s+/g, ' ').slice(0, 500);
+  return window.confirm(
+    `Send ${items.length} local source excerpt(s) for lead #${lead.id} to ${host}?\n\n` +
+    `This will paste the evidence packet into the current external AI chat box. ` +
+    `Review the destination tab before continuing.\n\nPreview:\n${preview}`
+  );
+}
+
 // Request source excerpts and insert prompt
 function loadLeadEvidenceAndInsert(lead) {
   appendLog(`Fetching source excerpts for lead #${lead.id}...`);
@@ -299,7 +309,13 @@ function loadLeadEvidenceAndInsert(lead) {
       });
       
       promptText += `\nInstructions:\nPlease draft a balanced, third-person working draft from the source excerpts. Cite facts with standard Markdown links referring to their source IDs, like [Source](evidence:ID), when the source supports them. Flag uncertainty instead of inventing facts.`;
-      
+
+      if (!confirmExternalAiTransfer(lead, items, promptText)) {
+        appendLog('External AI transfer cancelled by editor.');
+        render();
+        return;
+      }
+
       const success = insertTextIntoChat(promptText);
       if (success) {
         appendLog('Source packet inserted into chat prompt box!');

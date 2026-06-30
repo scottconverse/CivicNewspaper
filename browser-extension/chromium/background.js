@@ -21,7 +21,8 @@ function handlePair(pin, sendResponse) {
   fetch(`${API_URL}/api/pair`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'x-civicnews-pair': '1'
     },
     body: JSON.stringify({ pin })
   })

@@ -1287,12 +1287,23 @@ fn remote_path(prefix: &str, relative: &Path) -> String {
     }
 }
 
+const WRANGLER_PACKAGE: &str = "wrangler@4.105.0";
+
+fn redact_publisher_stderr(text: &str) -> String {
+    let token_like = regex::Regex::new(r"(?i)(token|password|secret|key)=([^\s]+)").unwrap();
+    let bearer_like = regex::Regex::new(r"(?i)bearer\s+[A-Za-z0-9._~+/-]+").unwrap();
+    let redacted = token_like.replace_all(text, "$1=[redacted]");
+    bearer_like
+        .replace_all(&redacted, "Bearer [redacted]")
+        .to_string()
+}
+
 async fn test_cloudflare(config: &PublisherConfig) -> Result<String, String> {
     credential(PublisherProvider::CloudflarePages)?;
     required_field("Cloudflare account ID", config.account_id.as_deref())?;
     required_field("Cloudflare Pages project name", config.site_id.as_deref())?;
     let status = Command::new("npx")
-        .args(["--yes", "wrangler@latest", "--version"])
+        .args(["--yes", WRANGLER_PACKAGE, "--version"])
         .status()
         .map_err(|e| format!("Could not run Wrangler through npx: {e}"))?;
     if status.success() {
@@ -1314,7 +1325,7 @@ async fn publish_cloudflare(
     command
         .args([
             "--yes",
-            "wrangler@latest",
+            WRANGLER_PACKAGE,
             "pages",
             "deploy",
             output_dir.to_string_lossy().as_ref(),
@@ -1331,7 +1342,7 @@ async fn publish_cloudflare(
     if !output.status.success() {
         return Err(format!(
             "Cloudflare Pages deployment failed: {}",
-            String::from_utf8_lossy(&output.stderr)
+            redact_publisher_stderr(&String::from_utf8_lossy(&output.stderr))
         ));
     }
     let stdout = String::from_utf8_lossy(&output.stdout);

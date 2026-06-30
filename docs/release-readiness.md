@@ -8,7 +8,6 @@ Run this before tagging a beta or release candidate:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\release-smoke.ps1 `
-  -FixtureDir "C:\Users\instynct\Desktop\CivicNewspaperTestFiles" `
   -Model "qwen2.5:7b"
 ```
 
@@ -24,6 +23,8 @@ The script writes a receipt under `.agent-runs\release-smoke-*` and runs:
 - frontend bulk-import review parsing against the extracted fixture text
 
 Use `-SkipLiveModel` only for local diagnostics. A release candidate or stable gate must record every skipped check as a skip and must not treat a partial receipt as complete release evidence.
+
+By default, the smoke script uses the committed review fixtures under `test-fixtures\source-import-extracted`. Those prove the bulk-import review parser on realistic extracted text. For release-candidate or stable evidence, pass the full source-file fixture folder so the Rust extraction gate also proves CSV, XLSX, TXT, DOCX, and PDF extraction.
 
 For stable release evidence, run:
 
@@ -46,13 +47,19 @@ The stable run fails if the working tree is dirty or if live model, here.now, or
 
 ## Source import fixtures
 
-The local fixture suite expects realistic files in:
+The full local fixture suite expects realistic files in:
 
 ```text
 C:\Users\instynct\Desktop\CivicNewspaperTestFiles
 ```
 
-The expected set includes clean CSV, messy XLSX, human notes TXT, DOCX briefing, text-backed PDF, scanned-style PDF, and XLSX edge cases. The scanned-style PDF should fail with OCR/readable-text guidance until OCR support is added.
+The committed lightweight review fixtures live under:
+
+```text
+test-fixtures\source-import-extracted
+```
+
+The full source-file set includes clean CSV, messy XLSX, human notes TXT, DOCX briefing, text-backed PDF, scanned-style PDF, and XLSX edge cases. The scanned-style PDF should fail with OCR/readable-text guidance until OCR support is added.
 
 ## Model bakeoff
 

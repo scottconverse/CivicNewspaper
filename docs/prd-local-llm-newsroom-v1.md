@@ -1,7 +1,7 @@
 # CivicNewspaper V1 Product Requirements Document
 
-Status: draft for v0.2.9 to v1.0.0 planning
-Current product version: v0.2.9
+Status: draft for v0.3.0 to v1.0.0 planning
+Current product version: v0.3.0
 Product name: CivicNewspaper
 Installed app name: The Civic Desk
 
@@ -81,7 +81,7 @@ The app can warn about weak sourcing, legal risk, privacy risk, redaction risk, 
 
 ## 5. Current Baseline
 
-As of v0.2.9, the app already has:
+As of v0.3.0, the app already has:
 
 - Tauri 2 desktop shell.
 - React/TypeScript frontend.
@@ -857,4 +857,3 @@ Use sidecar scrapers where available, durable task failures, source review, and 
 - Should transcript workflow be required for v1.0.0 or allowed as a post-1.0 feature?
 - Should Datasette-style public evidence archive be included in v1.0.0 or kept as a later transparency feature?
 - What publisher identity defaults should setup provide without making editorial claims for the user?
-

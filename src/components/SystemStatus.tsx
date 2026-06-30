@@ -32,11 +32,11 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
   return (
     <div className="card" id="system-status-panel" style={{ maxWidth: "600px", margin: "2rem auto" }}>
       <div className="flex-between" style={{ borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem", marginBottom: "1rem" }}>
-        <h3 className="card-title" style={{ borderBottom: "none", paddingBottom: 0, marginBottom: 0 }}>
+        <h1 className="card-title" style={{ borderBottom: "none", paddingBottom: 0, marginBottom: 0, fontSize: "1.1rem" }}>
           <Cpu size={20} style={{ marginRight: "0.5rem" }} />
           System Resources & Status
-        </h3>
-        <button className="btn btn-secondary" onClick={handleExportDiagnostics} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        </h1>
+        <button className="btn btn-secondary" onClick={handleExportDiagnostics} aria-label="Export diagnostic report" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Download size={16} />
           Export Diagnostic Report
         </button>

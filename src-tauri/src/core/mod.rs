@@ -1,4 +1,5 @@
 // core/mod.rs
+pub mod app_paths;
 pub mod auth;
 pub mod backups;
 pub mod compiler;

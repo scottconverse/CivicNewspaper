@@ -183,6 +183,18 @@ pub struct PublishRun {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PublishDecisionAudit {
+    pub id: Option<i32>,
+    pub draft_id: i32,
+    pub decision: String,
+    pub attested: bool,
+    pub guardrail_override_reason: Option<String>,
+    pub guardrail_issue_count: i32,
+    pub note: String,
+    pub created_at: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Subscriber {
     pub id: Option<i32>,
     pub email: String,
@@ -232,9 +244,8 @@ pub fn init_db(path: &str) -> Result<Connection, Box<dyn Error + Send + Sync>> {
 // multithreaded callers (and the rest of the core error surface) without
 // fighting auto-trait bounds.
 pub fn get_app_db_path(app: &tauri::AppHandle) -> Result<PathBuf, Box<dyn Error + Send + Sync>> {
-    use tauri::Manager;
-    let app_data = app.path().app_data_dir()?;
-    std::fs::create_dir_all(&app_data)?;
+    let app_data = super::app_paths::app_data_dir(app)
+        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
     let db_path = app_data.join(DB_FILE_NAME);
 
     if !db_path.exists() {
@@ -370,7 +381,8 @@ pub fn get_evidence_by_lead(conn: &Connection, lead_id: i32) -> SqlResult<Vec<Ev
         "SELECT e.id, e.source_id, e.url, e.fetched_at, e.excerpt, e.content_hash, e.entities 
          FROM evidence_items e
          JOIN lead_evidence le ON e.id = le.evidence_id
-         WHERE le.lead_id = ?1",
+         WHERE le.lead_id = ?1
+         ORDER BY e.fetched_at DESC, e.id DESC",
     )?;
     let iter = stmt.query_map(params![lead_id], |row| {
         Ok(EvidenceItem {
@@ -418,7 +430,8 @@ pub fn list_evidence_since(conn: &Connection, since_hours: u32) -> SqlResult<Vec
     let mut stmt = conn.prepare(
         "SELECT id, source_id, url, fetched_at, excerpt, content_hash, entities 
          FROM evidence_items 
-         WHERE fetched_at >= ?1",
+         WHERE fetched_at >= ?1
+         ORDER BY fetched_at DESC, id DESC",
     )?;
     let iter = stmt.query_map(params![cutoff_str], |row| {
         Ok(EvidenceItem {
@@ -689,6 +702,54 @@ pub fn get_draft_publish_gate(
         params![id],
         |row| Ok((row.get(0)?, row.get(1)?)),
     )
+}
+
+pub fn record_publish_decision_audit(
+    conn: &Connection,
+    audit: &PublishDecisionAudit,
+) -> SqlResult<()> {
+    let now = Utc::now().to_rfc3339();
+    conn.execute(
+        "INSERT INTO publish_decision_audits (draft_id, decision, attested, guardrail_override_reason, guardrail_issue_count, note, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+        params![
+            audit.draft_id,
+            audit.decision,
+            if audit.attested { 1 } else { 0 },
+            audit.guardrail_override_reason.as_deref(),
+            audit.guardrail_issue_count,
+            audit.note,
+            now
+        ],
+    )?;
+    Ok(())
+}
+
+#[allow(dead_code)]
+pub fn list_publish_decision_audits(
+    conn: &Connection,
+    draft_id: i32,
+) -> SqlResult<Vec<PublishDecisionAudit>> {
+    let mut stmt = conn.prepare(
+        "SELECT id, draft_id, decision, attested, guardrail_override_reason, guardrail_issue_count, note, created_at FROM publish_decision_audits WHERE draft_id = ?1 ORDER BY id ASC",
+    )?;
+    let iter = stmt.query_map(params![draft_id], |row| {
+        let attested: i32 = row.get(3)?;
+        Ok(PublishDecisionAudit {
+            id: Some(row.get(0)?),
+            draft_id: row.get(1)?,
+            decision: row.get(2)?,
+            attested: attested != 0,
+            guardrail_override_reason: row.get(4)?,
+            guardrail_issue_count: row.get(5)?,
+            note: row.get(6)?,
+            created_at: row.get(7)?,
+        })
+    })?;
+    let mut rows = Vec::new();
+    for row in iter {
+        rows.push(row?);
+    }
+    Ok(rows)
 }
 
 pub fn list_drafts(conn: &Connection) -> SqlResult<Vec<Draft>> {

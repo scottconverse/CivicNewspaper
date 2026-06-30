@@ -57,6 +57,13 @@ mod tests {
         request
     }
 
+    fn mark_valid_pair_request(req: &mut Request<Body>) {
+        req.headers_mut()
+            .insert(header::HOST, "127.0.0.1:12053".parse().unwrap());
+        req.headers_mut()
+            .insert("x-civicnews-pair", "1".parse().unwrap());
+    }
+
     #[tokio::test]
     async fn test_auth_middleware_missing_origin() {
         let (app, _) = setup_app();
@@ -87,11 +94,12 @@ mod tests {
         }
 
         // 2. Call /api/pair to get the token
-        let req = make_req(
+        let mut req = make_req(
             "/api/pair",
             axum::http::Method::POST,
             Some(json!({ "pin": raw_pin })),
         );
+        mark_valid_pair_request(&mut req);
         let res = app.clone().oneshot(req).await.unwrap();
         assert_eq!(res.status(), StatusCode::OK);
 
@@ -145,11 +153,12 @@ mod tests {
         }
 
         // 2. Call /api/pair
-        let req = make_req(
+        let mut req = make_req(
             "/api/pair",
             axum::http::Method::POST,
             Some(json!({ "pin": raw_pin })),
         );
+        mark_valid_pair_request(&mut req);
         let res = app.clone().oneshot(req).await.unwrap();
         assert_eq!(res.status(), StatusCode::OK);
 
@@ -179,23 +188,91 @@ mod tests {
 
         // Try pairing 6 times with bad PINs
         for _ in 0..5 {
-            let req = make_req(
+            let mut req = make_req(
                 "/api/pair",
                 axum::http::Method::POST,
                 Some(json!({ "pin": "bad-pin" })),
             );
+            mark_valid_pair_request(&mut req);
             let res = app.clone().oneshot(req).await.unwrap();
             assert_eq!(res.status(), StatusCode::UNAUTHORIZED);
         }
 
         // 6th time should be rate limited
-        let req = make_req(
+        let mut req = make_req(
             "/api/pair",
             axum::http::Method::POST,
             Some(json!({ "pin": "bad-pin" })),
         );
+        mark_valid_pair_request(&mut req);
         let res = app.clone().oneshot(req).await.unwrap();
         assert_eq!(res.status(), StatusCode::TOO_MANY_REQUESTS);
+    }
+
+    #[tokio::test]
+    async fn test_pair_rejects_invalid_host() {
+        let (app, _) = setup_app();
+        let mut req = make_req(
+            "/api/pair",
+            axum::http::Method::POST,
+            Some(json!({ "pin": "bad-pin" })),
+        );
+        req.headers_mut()
+            .insert(header::HOST, "evil.example:12053".parse().unwrap());
+        req.headers_mut()
+            .insert("x-civicnews-pair", "1".parse().unwrap());
+
+        let res = app.clone().oneshot(req).await.unwrap();
+        assert_eq!(res.status(), StatusCode::FORBIDDEN);
+    }
+
+    #[tokio::test]
+    async fn test_pair_rejects_untrusted_origin() {
+        let (app, _) = setup_app();
+        let mut req = make_req(
+            "/api/pair",
+            axum::http::Method::POST,
+            Some(json!({ "pin": "bad-pin" })),
+        );
+        req.headers_mut()
+            .insert(header::HOST, "127.0.0.1:12053".parse().unwrap());
+        req.headers_mut()
+            .insert(header::ORIGIN, "https://evil.example".parse().unwrap());
+
+        let res = app.clone().oneshot(req).await.unwrap();
+        assert_eq!(res.status(), StatusCode::FORBIDDEN);
+    }
+
+    #[tokio::test]
+    async fn test_pair_rejects_absent_origin_without_pair_header() {
+        let (app, _) = setup_app();
+        let mut req = make_req(
+            "/api/pair",
+            axum::http::Method::POST,
+            Some(json!({ "pin": "bad-pin" })),
+        );
+        req.headers_mut()
+            .insert(header::HOST, "127.0.0.1:12053".parse().unwrap());
+
+        let res = app.clone().oneshot(req).await.unwrap();
+        assert_eq!(res.status(), StatusCode::FORBIDDEN);
+    }
+
+    #[tokio::test]
+    async fn test_pair_allows_trusted_extension_origin() {
+        let (app, _) = setup_app();
+        let mut req = make_req(
+            "/api/pair",
+            axum::http::Method::POST,
+            Some(json!({ "pin": "bad-pin" })),
+        );
+        req.headers_mut()
+            .insert(header::HOST, "127.0.0.1:12053".parse().unwrap());
+        req.headers_mut()
+            .insert(header::ORIGIN, "chrome-extension://someid".parse().unwrap());
+
+        let res = app.clone().oneshot(req).await.unwrap();
+        assert_eq!(res.status(), StatusCode::UNAUTHORIZED);
     }
 
     #[tokio::test]
@@ -215,11 +292,12 @@ mod tests {
         };
 
         // Call /api/pair to pair it
-        let req = make_req(
+        let mut req = make_req(
             "/api/pair",
             axum::http::Method::POST,
             Some(json!({ "pin": raw_pin })),
         );
+        mark_valid_pair_request(&mut req);
         let res = app.clone().oneshot(req).await.unwrap();
         assert_eq!(res.status(), StatusCode::OK);
 
@@ -266,11 +344,12 @@ mod tests {
         }
 
         // Call /api/pair to pair it
-        let req = make_req(
+        let mut req = make_req(
             "/api/pair",
             axum::http::Method::POST,
             Some(json!({ "pin": raw_pin })),
         );
+        mark_valid_pair_request(&mut req);
         let res = app.clone().oneshot(req).await.unwrap();
         // The confirm_pairing query uses pin_expires_at > current time, so it won't find it.
         assert_eq!(res.status(), StatusCode::UNAUTHORIZED);

@@ -789,10 +789,7 @@ pub trait RuntimeInstallSink: Send + Sync + 'static {
 }
 
 fn runtime_base_dir<R: tauri::Runtime>(app: &AppHandle<R>) -> Result<PathBuf, String> {
-    app.path()
-        .app_data_dir()
-        .map_err(|e| e.to_string())
-        .map(|dir| dir.join("ollama-runtime"))
+    super::app_paths::app_data_dir(app).map(|dir| dir.join("ollama-runtime"))
 }
 
 pub fn downloaded_ollama_exe<R: tauri::Runtime>(app: &AppHandle<R>) -> Result<PathBuf, String> {

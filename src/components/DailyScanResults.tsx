@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { DailyScanLead, listDailyScanLeads, openExternalUrl, toUserMessage } from "../ipc";
+import { DailyScanLead, isTauri, listDailyScanLeads, openExternalUrl, toUserMessage } from "../ipc";
 
 interface Props {
   scanId: number;
@@ -58,6 +58,34 @@ function recurrenceLabel(count?: number | null): string | null {
   return count === 1 ? "Seen before" : `Seen ${count} times before`;
 }
 
+function previewLeads(scanId: number): DailyScanLead[] {
+  return [
+    {
+      id: scanId,
+      scan_id: scanId,
+      title: "Preview: Council agenda item needs editor review",
+      summary: "Browser preview mode shows how surfaced leads appear after a Daily Scan. Desktop builds load real scan results from the local database.",
+      source_id: undefined,
+      original_url: "https://longmontcolorado.gov",
+      why_flagged: "The source looked like a civic meeting or public-record item.",
+      source_name: "Browser preview source",
+      source_type: "official_record",
+      priority: "medium",
+      suggested_next_step: "Open the source, confirm what changed, then decide whether this is a story, brief, or watch item.",
+      story_type: "watch",
+      what_changed: "Preview data only.",
+      immediacy: 2,
+      impact: 2,
+      conflict: 0,
+      novelty: 2,
+      publishability_note: "Desktop mode runs the real evidence and AI-assisted review pipeline.",
+      disposition: "needs_verification",
+      recurrence_count: 0,
+      recurrence_note: undefined,
+    },
+  ];
+}
+
 export const DailyScanResults: React.FC<Props> = ({ scanId, onRunScan }) => {
   const [leads, setLeads] = useState<DailyScanLead[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,6 +96,11 @@ export const DailyScanResults: React.FC<Props> = ({ scanId, onRunScan }) => {
     let mounted = true;
     setLoading(true);
     setError(null);
+    if (!isTauri()) {
+      setLeads(previewLeads(scanId));
+      setLoading(false);
+      return () => { mounted = false; };
+    }
     listDailyScanLeads(scanId)
       .then(data => {
         if (mounted) {

@@ -9,26 +9,6 @@
     "opener:allow-open-path",
     "opener:allow-open-url",
     "dialog:allow-open",
-    "dialog:allow-save",
-    {
-      "identifier": "shell:allow-execute",
-      "allow": [
-        {
-          "name": "binaries/ollama",
-          "sidecar": true,
-          "args": ["serve"]
-        }
-      ]
-    },
-    {
-      "identifier": "shell:allow-spawn",
-      "allow": [
-        {
-          "name": "binaries/ollama",
-          "sidecar": true,
-          "args": ["serve"]
-        }
-      ]
-    }
+    "dialog:allow-save"
   ]
 }

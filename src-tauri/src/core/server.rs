@@ -88,8 +88,16 @@ pub fn build_app(app_state: AppState) -> axum::Router {
             super::auth::auth_middleware,
         ));
 
+    let pair_routes =
+        Router::new()
+            .route("/pair", post(pair_handler))
+            .layer(middleware::from_fn_with_state(
+                app_state.clone(),
+                super::auth::host_origin_middleware,
+            ));
+
     Router::new()
-        .route("/api/pair", post(pair_handler))
+        .nest("/api", pair_routes)
         .nest("/api", api_routes)
         .with_state(app_state)
 }

@@ -1,16 +1,22 @@
 // React removed
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { beforeEach, describe, it, expect, vi } from 'vitest';
 import { DailyScanResults } from './DailyScanResults';
 import * as ipc from '../ipc';
 
 vi.mock('../ipc', () => ({
+  isTauri: vi.fn(() => true),
   listDailyScanLeads: vi.fn(),
   openExternalUrl: vi.fn(),
   toUserMessage: (e: unknown) => (e instanceof Error ? e.message : String(e)),
 }));
 
 describe('DailyScanResults', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(ipc.isTauri).mockReturnValue(true);
+  });
+
   it('renders aggregated badge when source_id is missing', async () => {
     vi.mocked(ipc.listDailyScanLeads).mockResolvedValue([
       {
@@ -155,5 +161,14 @@ describe('DailyScanResults', () => {
     await waitFor(() => {
       expect(ipc.openExternalUrl).toHaveBeenCalledWith('https://example.gov/hearing');
     });
+  });
+
+  it('renders sample scan leads in browser preview without desktop IPC', async () => {
+    vi.mocked(ipc.isTauri).mockReturnValue(false);
+
+    render(<DailyScanResults scanId={99} />);
+
+    expect(await screen.findByText(/Preview: Council agenda item needs editor review/i)).toBeInTheDocument();
+    expect(ipc.listDailyScanLeads).not.toHaveBeenCalled();
   });
 });

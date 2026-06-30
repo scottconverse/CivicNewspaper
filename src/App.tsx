@@ -6,17 +6,22 @@ import "./App.css";
 
 function App() {
   const app = useApp();
+  const buildId = import.meta.env.VITE_CIVICNEWS_BUILD_ID || "dev";
 
   // GG-C4: a brand-new user is walked through the guided setup before reaching
   // the workspace. `onboardingDone === null` means we're still checking.
   if (app.onboardingDone === null) {
     return (
-      <div style={{ padding: "2rem", color: "var(--text-secondary)" }}>Loading The Civic Desk...</div>
+      <>
+        <div id="civicnews-build-id" data-build-id={buildId} hidden />
+        <div style={{ padding: "2rem", color: "var(--text-secondary)" }}>Loading The Civic Desk...</div>
+      </>
     );
   }
   if (!app.onboardingDone) {
     return (
       <div className="onboarding-shell">
+        <div id="civicnews-build-id" data-build-id={buildId} hidden />
         <OnboardingWizard
           ollamaOnline={app.ollamaOnline}
           systemRam={app.systemRam}
@@ -34,21 +39,24 @@ function App() {
   const modelLabel = app.selectedModel || "No model selected";
 
   return (
-    <Layout
-      activeTab={app.activeTab}
-      onTabChange={(tab) => {
-        app.setErrorMessage("");
-        app.setStatusMessage("");
-        app.setActiveTab(tab);
-        app.setSelectedLead(null);
-      }}
-      ollamaOnline={app.ollamaOnline}
-      selectedDraft={app.selectedDraft}
-      kicker={kicker}
-      modelLabel={modelLabel}
-    >
-      <AppContent app={app} />
-    </Layout>
+    <>
+      <div id="civicnews-build-id" data-build-id={buildId} hidden />
+      <Layout
+        activeTab={app.activeTab}
+        onTabChange={(tab) => {
+          app.setErrorMessage("");
+          app.setStatusMessage("");
+          app.setActiveTab(tab);
+          app.setSelectedLead(null);
+        }}
+        ollamaOnline={app.ollamaOnline}
+        selectedDraft={app.selectedDraft}
+        kicker={kicker}
+        modelLabel={modelLabel}
+      >
+        <AppContent app={app} />
+      </Layout>
+    </>
   );
 }
 

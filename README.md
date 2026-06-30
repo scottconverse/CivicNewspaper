@@ -12,7 +12,7 @@ The app is built for the reality that many towns no longer have enough reporters
 
 - Runs as a Tauri desktop app with a React frontend and Rust backend.
 - Stores sources, evidence, leads, drafts, settings, subscribers, publish history, civic entities, dark signals, and verification tasks in a local SQLite database.
-- Bundles an Ollama sidecar for local AI. First-run setup selects a model based on machine capability and guides the user through model download.
+- Manages a local Ollama runtime for local AI. First-run setup checks the machine, installs the pinned runtime when needed, selects a model based on machine capability, and guides the user through model download.
 - Watches official records, agenda pages, public notices, local media, and public community/social sources.
 - Imports source lists from CSV, TXT, XLSX, DOCX, and text-backed PDF files. Image-only PDFs currently receive readable-text/OCR guidance rather than silent failure.
 - Runs Daily Scan from watched sources, deterministic detectors, source diffs, civic entities, dark signals, verification tasks, and optional local-model summarization/ranking.
@@ -65,7 +65,7 @@ Sources -> Fetch/Scrape -> Evidence -> Detectors/Entities/Diffs
 README.md
 docs/
   prd-local-llm-newsroom-v1.md
-  implementation-plan-v0.2.9-to-v1.0.0.md
+  implementation-plan-v0.3.0-to-v1.0.0.md
   install.md
   user_manual.md
   architecture.md
@@ -92,13 +92,12 @@ Prerequisites:
 - Node.js 18+
 - Rust stable toolchain
 - Platform prerequisites for Tauri v2
-- Bash for the sidecar-fetch script
+- An internet connection for first-run local AI runtime/model download
 
 ```bash
 git clone https://github.com/scottconverse/CivicNewspaper.git
 cd CivicNewspaper
 npm install
-bash scripts/fetch-ollama-binaries.sh
 npm run tauri dev
 ```
 
@@ -108,12 +107,12 @@ Build installers:
 npm run tauri build
 ```
 
-The sidecar binary is not committed to the repo. The fetch script downloads the pinned Ollama binary and verifies its SHA256 before local builds.
+The Ollama runtime binary is not committed to the repo. The app-managed first-run installer downloads the pinned Windows runtime and verifies its SHA256 before use. The legacy `scripts/fetch-ollama-binaries.sh` helper is not part of the v0.3.x release verifier.
 
 ## Current Documentation
 
 - [V1 PRD: local LLM newsroom](docs/prd-local-llm-newsroom-v1.md) - product requirements for the local-intelligence newsroom roadmap.
-- [Implementation plan: v0.2.9 to v1.0.0](docs/implementation-plan-v0.2.9-to-v1.0.0.md) - phased roadmap with technology integrations and release gates.
+- [Implementation plan: v0.3.0 to v1.0.0](docs/implementation-plan-v0.3.0-to-v1.0.0.md) - phased roadmap with technology integrations and release gates.
 - [User manual](docs/user_manual.md) - plain-English operator guide plus technical appendix.
 - [Architecture](docs/architecture.md) - system design, schema, security, publishing, and AI boundaries.
 - [Install guide](docs/install.md) - unsigned installer and checksum instructions.

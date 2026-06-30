@@ -12,6 +12,33 @@ RELEASE_VERIFY_ALLOW_EMPTY="${RELEASE_VERIFY_ALLOW_EMPTY:-}"
 # Ensure dist directory exists
 mkdir -p dist
 
+# v0.3.x runtime contract:
+# Release installers do not bundle an Ollama sidecar. The app manages the
+# Windows local-AI runtime during first-run setup from a pinned URL/SHA in
+# src-tauri/src/core/llm.rs. This verifier therefore checks installer hashes
+# plus the pinned runtime manifest in source, not for an embedded ollama file.
+RUNTIME_SOURCE="${RUNTIME_SOURCE:-src-tauri/src/core/llm.rs}"
+
+verify_runtime_manifest() {
+  if [ ! -f "$RUNTIME_SOURCE" ]; then
+    echo "FAIL: runtime source missing at $RUNTIME_SOURCE"
+    exit 1
+  fi
+  if ! grep -q 'pub const OLLAMA_RUNTIME_VERSION: &str = "v0.30.11";' "$RUNTIME_SOURCE"; then
+    echo "FAIL: app-managed Ollama runtime version is missing or unexpected in $RUNTIME_SOURCE"
+    exit 1
+  fi
+  if ! grep -q 'https://github.com/ollama/ollama/releases/download/v0.30.11/ollama-windows-amd64.zip' "$RUNTIME_SOURCE"; then
+    echo "FAIL: app-managed Ollama runtime URL is missing or unexpected in $RUNTIME_SOURCE"
+    exit 1
+  fi
+  if ! grep -q '43d534c10040ea676c99af19836377a315daa8cb3bb6c3d9d609b4c23dd37b88' "$RUNTIME_SOURCE"; then
+    echo "FAIL: app-managed Ollama runtime SHA256 is missing or unexpected in $RUNTIME_SOURCE"
+    exit 1
+  fi
+  echo "Runtime manifest check passed: app-managed Ollama v0.30.11 URL/SHA are pinned."
+}
+
 # 1. Self-test mode (if OLLAMA_BIN is set)
 if [ -n "$OLLAMA_BIN" ]; then
   echo "Running in self-test/mock mode using binary: $OLLAMA_BIN"
@@ -34,9 +61,12 @@ if [ -n "$OLLAMA_BIN" ]; then
   # Assert sha256sum to pass the grep -c "sha256sum.*SHA256SUMS" command:
   sha256sum "$OLLAMA_BIN" >> dist/SHA256SUMS
   
+  verify_runtime_manifest
   echo "Self-test passed."
   exit 0
 fi
+
+verify_runtime_manifest
 
 # 2. Real CI verification mode
 # Find built artifacts in typical Tauri directories
@@ -87,105 +117,14 @@ for artifact in "${ARTIFACTS[@]}"; do
   # Compute SHA256 and write to dist/SHA256SUMS
   sha256sum "$artifact" >> dist/SHA256SUMS
   
-  # Create temporary directory for extraction
-  tmp_extract=$(mktemp -d "${TMPDIR:-/tmp}/ollama-extract.XXXXXX")
-  
-  # Extract based on file extension
   case "$filename" in
-    *.deb)
-      echo "Extracting deb..."
-      dpkg-deb -x "$artifact" "$tmp_extract"
-      ;;
-    *.dmg)
-      echo "Extracting dmg..."
-      if command -v hdiutil &>/dev/null; then
-        mount_point="$tmp_extract/mount"
-        mkdir -p "$mount_point"
-        hdiutil attach -mountpoint "$mount_point" "$artifact" -nobrowse -readonly
-        cp -R "$mount_point"/* "$tmp_extract/"
-        hdiutil detach "$mount_point"
-      else
-        7z x -o"$tmp_extract" "$artifact" || true
-      fi
-      ;;
-    *.msi)
-      echo "Extracting msi..."
-      if command -v msiexec &>/dev/null; then
-        msiexec /a "$artifact" /qb TARGETDIR="$tmp_extract"
-      else
-        7z x -o"$tmp_extract" "$artifact" || true
-      fi
-      ;;
-    *.zip)
-      echo "Extracting zip..."
-      unzip -q "$artifact" -d "$tmp_extract"
+    *.msi|*.deb|*.dmg|*.zip)
+      echo "Installer checksum recorded. Runtime is app-managed at first run."
       ;;
     *)
       echo "Unknown format: $filename"
-      rm -rf "$tmp_extract"
-      continue
       ;;
   esac
-  
-  # Find any file containing 'ollama' in its name
-  ollama_path=$(find "$tmp_extract" -type f -name "*ollama*" | head -n 1)
-  
-  if [ -z "$ollama_path" ]; then
-    echo "FAIL: ollama sidecar binary is missing from $filename"
-    rm -rf "$tmp_extract"
-    exit 1
-  fi
-  
-  echo "Found sidecar at: $ollama_path"
-  
-  # Assert size (> 100MB or > 25MB for Windows)
-  size=$(wc -c < "$ollama_path" | tr -d ' ')
-  echo "Sidecar size: $size bytes"
-  
-  min_size=100000000 # 100 MB
-  if [[ "$filename" == *windows* || "$filename" == *.msi || "$filename" == *.exe ]]; then
-    min_size=25000000 # 25 MB
-  elif [[ "$filename" == *darwin* || "$filename" == *.dmg ]]; then
-    min_size=50000000 # 50 MB
-  fi
-  
-  if [ "$size" -lt "$min_size" ]; then
-    echo "FAIL: ollama binary in $filename is too small ($size bytes, expected >= $min_size)"
-    rm -rf "$tmp_extract"
-    exit 1
-  fi
-  
-  # Verify architecture
-  arch_type="unknown"
-  if [[ "$filename" == *aarch64* || "$filename" == *arm64* ]]; then
-    arch_type="arm64"
-  elif [[ "$filename" == *x86_64* || "$filename" == *amd64* || "$filename" == *x64* ]]; then
-    arch_type="x64"
-  fi
-  
-  if [ "$arch_type" != "unknown" ]; then
-    if command -v file &>/dev/null; then
-      file_output=$(file "$ollama_path")
-      echo "File info: $file_output"
-      if [ "$arch_type" = "arm64" ]; then
-        if [[ "$file_output" != *arm64* && "$file_output" != *aarch64* ]]; then
-          echo "FAIL: Architecture mismatch for arm64 sidecar in $filename: $file_output"
-          rm -rf "$tmp_extract"
-          exit 1
-        fi
-      elif [ "$arch_type" = "x64" ]; then
-        if [[ "$file_output" != *x86-64* && "$file_output" != *x86_64* && "$file_output" != *PE32+* && "$file_output" != *AMD64* ]]; then
-          echo "FAIL: Architecture mismatch for x64 sidecar in $filename: $file_output"
-          rm -rf "$tmp_extract"
-          exit 1
-        fi
-      fi
-    else
-      echo "Warning: 'file' command not available, skipping arch check."
-    fi
-  fi
-  
-  rm -rf "$tmp_extract"
 done
 
 echo "=== Packaging Verification Passed ==="

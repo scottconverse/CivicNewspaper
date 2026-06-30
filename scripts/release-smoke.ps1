@@ -1,5 +1,5 @@
 param(
-  [string]$FixtureDir = "C:\Users\instynct\Desktop\CivicNewspaperTestFiles",
+  [string]$FixtureDir = "",
   [string]$Model = "qwen2.5:7b",
   [switch]$SkipLiveModel,
   [switch]$SkipHereNow,
@@ -11,6 +11,10 @@ param(
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
+$RepoImportReviewDir = Join-Path $RepoRoot "test-fixtures\source-import-extracted"
+if ([string]::IsNullOrWhiteSpace($FixtureDir)) {
+  $FixtureDir = $RepoImportReviewDir
+}
 $Stamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $RunDir = Join-Path $RepoRoot ".agent-runs\release-smoke-$Stamp"
 $ExtractedDir = Join-Path $RunDir "import-extracted"
@@ -127,6 +131,15 @@ try {
     }
   }
 
+  Invoke-Check "clean-profile-app-data-override" {
+    Push-Location (Join-Path $RepoRoot "src-tauri")
+    try {
+      cmd /d /c "cargo test app_data_override -- --nocapture 2>&1"
+    } finally {
+      Pop-Location
+    }
+  }
+
   Invoke-Check "static-site-output-gate" {
     Push-Location (Join-Path $RepoRoot "src-tauri")
     try {
@@ -183,21 +196,32 @@ try {
     Add-SkippedCheck "source-import-fixture-extraction" "Skipped by -SkipImportFixtures."
     Add-SkippedCheck "source-import-fixture-review" "Skipped by -SkipImportFixtures."
   } else {
-    Invoke-Check "source-import-fixture-extraction" {
-      Push-Location (Join-Path $RepoRoot "src-tauri")
-      try {
-        $env:CIVICNEWS_IMPORT_FIXTURE_DIR = $FixtureDir
-        $env:CIVICNEWS_IMPORT_EXTRACTED_DIR = $ExtractedDir
-        cmd /d /c "cargo test local_source_import_fixtures_extract_reviewable_text -- --ignored --nocapture 2>&1"
-      } finally {
-        Remove-Item Env:\CIVICNEWS_IMPORT_FIXTURE_DIR -ErrorAction SilentlyContinue
-        Remove-Item Env:\CIVICNEWS_IMPORT_EXTRACTED_DIR -ErrorAction SilentlyContinue
-        Pop-Location
+    $hasOriginalFixtures = Test-Path (Join-Path $FixtureDir "colorado-source-list-clean.csv")
+    $hasReviewFixtures = Test-Path (Join-Path $FixtureDir "colorado-source-list-clean.csv.txt")
+    $reviewDir = $ExtractedDir
+
+    if ($hasOriginalFixtures) {
+      Invoke-Check "source-import-fixture-extraction" {
+        Push-Location (Join-Path $RepoRoot "src-tauri")
+        try {
+          $env:CIVICNEWS_IMPORT_FIXTURE_DIR = $FixtureDir
+          $env:CIVICNEWS_IMPORT_EXTRACTED_DIR = $ExtractedDir
+          cmd /d /c "cargo test local_source_import_fixtures_extract_reviewable_text -- --ignored --nocapture 2>&1"
+        } finally {
+          Remove-Item Env:\CIVICNEWS_IMPORT_FIXTURE_DIR -ErrorAction SilentlyContinue
+          Remove-Item Env:\CIVICNEWS_IMPORT_EXTRACTED_DIR -ErrorAction SilentlyContinue
+          Pop-Location
+        }
       }
+    } elseif ($hasReviewFixtures -and -not $Stable) {
+      $reviewDir = $FixtureDir
+      Add-SkippedCheck "source-import-fixture-extraction" "Using repo-local extracted fixture text; parser extraction is covered by per-format Rust unit tests."
+    } else {
+      throw "Source import fixtures not found in $FixtureDir. Stable runs require the full original fixture folder."
     }
 
     Invoke-Check "source-import-fixture-review" {
-      $env:CIVICNEWS_IMPORT_EXTRACTED_DIR = $ExtractedDir
+      $env:CIVICNEWS_IMPORT_EXTRACTED_DIR = $reviewDir
       try {
         npm test -- --run src/bulkImportFixture.test.ts
       } finally {

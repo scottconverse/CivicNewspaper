@@ -57,6 +57,10 @@ pub struct DailyScanProgress {
     pub run_id: Option<i32>,
     pub model: Option<String>,
     pub evidence_count: usize,
+    #[serde(default)]
+    pub eligible_evidence_count: usize,
+    #[serde(default)]
+    pub truncated_evidence_count: usize,
     pub batch_index: Option<usize>,
     pub batch_count: Option<usize>,
     pub saved_leads: usize,
@@ -325,6 +329,8 @@ fn scan_progress(stage: &str, message: impl Into<String>) -> DailyScanProgress {
         run_id: None,
         model: None,
         evidence_count: 0,
+        eligible_evidence_count: 0,
+        truncated_evidence_count: 0,
         batch_index: None,
         batch_count: None,
         saved_leads: 0,
@@ -654,13 +660,57 @@ fn lead_with_beat_memory(lead: &DailyScanLead, memory: Option<&BeatMemory>) -> D
         }),
         Some("Compare against beat memory before drafting; write a story only if there is a new reportable fact.".to_string()),
     ));
-    if lead.priority.as_deref().unwrap_or("review") != "high"
-        && looks_like_background_or_unchanged(&lead)
-    {
+    if !has_new_reportable_fact(&lead) || looks_like_background_or_unchanged(&lead) {
         lead.priority = Some("low".to_string());
+        lead.story_type = Some("background".to_string());
         lead.disposition = Some("background".to_string());
+        lead.what_changed = Some(
+            "Beat memory found this topic before, and this scan did not identify a concrete new reportable fact."
+                .to_string(),
+        );
     }
     lead
+}
+
+fn has_new_reportable_fact(lead: &DailyScanLead) -> bool {
+    let what_changed = lead
+        .what_changed
+        .as_deref()
+        .unwrap_or_default()
+        .to_lowercase();
+    if what_changed.trim().is_empty()
+        || what_changed.contains("no current change")
+        || what_changed.contains("not found")
+        || what_changed.contains("unchanged")
+        || what_changed.contains("background")
+    {
+        return false;
+    }
+
+    if lead.novelty.unwrap_or(0) >= 4 && lead.immediacy.unwrap_or(0) >= 3 {
+        return true;
+    }
+
+    [
+        "approved",
+        "adopted",
+        "filed",
+        "opened",
+        "closed",
+        "deadline",
+        "vote",
+        "hearing",
+        "outage",
+        "contract",
+        "lawsuit",
+        "permit",
+        "budget",
+        "grant",
+        "meeting item",
+        "public impact",
+    ]
+    .iter()
+    .any(|needle| what_changed.contains(needle))
 }
 
 fn looks_like_background_or_unchanged(lead: &DailyScanLead) -> bool {
@@ -979,6 +1029,7 @@ where
 
     progress(DailyScanProgress {
         evidence_count: evidence_items.len(),
+        eligible_evidence_count: evidence_items.len(),
         ..scan_progress(
             "preparing",
             format!(
@@ -994,15 +1045,29 @@ where
     };
 
     let model = crate::tauri_cmds::get_selected_model_or_fallback(db).await;
+    let eligible_evidence_count = evidence_items.len();
     let scan_items: Vec<EvidenceItem> = evidence_items.into_iter().take(20).collect();
+    let truncated_evidence_count = eligible_evidence_count.saturating_sub(scan_items.len());
     let deterministic_saved = {
         let conn = db.lock().map_err(|_| "Failed to lock db")?;
         progress(DailyScanProgress {
             run_id: Some(run_id),
             evidence_count: scan_items.len(),
+            eligible_evidence_count,
+            truncated_evidence_count,
             ..scan_progress(
                 "deterministic",
-                "Extracting entities, detecting changes, and building verification tasks.",
+                if truncated_evidence_count > 0 {
+                    format!(
+                        "Reviewing the newest {} of {} eligible evidence item(s); {} older item(s) were left for a later scan.",
+                        scan_items.len(),
+                        eligible_evidence_count,
+                        truncated_evidence_count
+                    )
+                } else {
+                    "Extracting entities, detecting changes, and building verification tasks."
+                        .to_string()
+                },
             )
         });
         run_deterministic_intelligence_pass(&conn, run_id, &scan_items)?
@@ -1014,6 +1079,8 @@ where
         run_id: Some(run_id),
         model: Some(model.clone()),
         evidence_count: scan_items.len(),
+        eligible_evidence_count,
+        truncated_evidence_count,
         batch_count: Some(batch_count),
         saved_leads: deterministic_saved,
         ..scan_progress(
@@ -1034,6 +1101,8 @@ where
             run_id: Some(run_id),
             model: Some(model.clone()),
             evidence_count: scan_items.len(),
+            eligible_evidence_count,
+            truncated_evidence_count,
             batch_index: Some(batch_index + 1),
             batch_count: Some(batch_count),
             saved_leads: saved_total,
@@ -1068,6 +1137,8 @@ where
                     run_id: Some(run_id),
                     model: Some(model.clone()),
                     evidence_count: scan_items.len(),
+                    eligible_evidence_count,
+                    truncated_evidence_count,
                     batch_index: Some(batch_index + 1),
                     batch_count: Some(batch_count),
                     saved_leads: saved_total,
@@ -1107,6 +1178,8 @@ where
                     run_id: Some(run_id),
                     model: Some(model.clone()),
                     evidence_count: scan_items.len(),
+                    eligible_evidence_count,
+                    truncated_evidence_count,
                     batch_index: Some(batch_index + 1),
                     batch_count: Some(batch_count),
                     saved_leads: saved_total,
@@ -1137,6 +1210,8 @@ where
             run_id: Some(run_id),
             model: Some(model.clone()),
             evidence_count: scan_items.len(),
+            eligible_evidence_count,
+            truncated_evidence_count,
             batch_count: Some(batch_count),
             saved_leads: saved_total,
             ..scan_progress(
@@ -1166,6 +1241,8 @@ where
             run_id: Some(run_id),
             model: Some(model.clone()),
             evidence_count: scan_items.len(),
+            eligible_evidence_count,
+            truncated_evidence_count,
             batch_count: Some(batch_count),
             saved_leads: saved_total,
             ..scan_progress("complete", complete_message)

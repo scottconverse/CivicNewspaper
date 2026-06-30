@@ -1,0 +1,6 @@
+Name,URL,Notes
+Longmont City News,https://www.longmontcolorado.gov/news,official updates
+Longmont City Council,https://www.longmontcolorado.gov/departments/departments-a-d/city-council,council records
+Longmont Agendas and Minutes,https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk/agendas-and-minutes,meeting packets
+Public Notice Colorado,https://www.publicnoticecolorado.com/,legal notices
+Boulder County,https://bouldercounty.gov/,county records

@@ -160,6 +160,16 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     { title: "Done", desc: "Onboarding completed. Ready to inspect local stories." }
   ];
 
+  const saveSetting = async (key: string, value: string) => {
+    if (!isTauri()) return;
+    await setSetting(key, value);
+  };
+
+  const saveOnboardingDone = async () => {
+    if (!isTauri()) return;
+    await setOnboardingComplete(true);
+  };
+
   const applyIdentityValues = (values: {
     pubName: string;
     editorName: string;
@@ -195,11 +205,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     setCity(identity.city);
     setState(identity.state);
 
-    await setSetting("identity.newsroom_name", identity.pubName);
-    await setSetting("identity.editor_name", identity.editorName);
-    await setSetting("identity.organization_type", identity.organizationType);
-    await setSetting("identity.city", identity.city);
-    await setSetting("identity.state", identity.state);
+    await saveSetting("identity.newsroom_name", identity.pubName);
+    await saveSetting("identity.editor_name", identity.editorName);
+    await saveSetting("identity.organization_type", identity.organizationType);
+    await saveSetting("identity.city", identity.city);
+    await saveSetting("identity.state", identity.state);
 
     try {
       const profile = await getCommunityProfile();
@@ -233,17 +243,21 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
         const ram = systemRam || await getSystemRam();
         setSysRam(ram);
+        const fallback = ram >= 16 ? modelsConfig.high : ram >= 8 ? modelsConfig.medium : modelsConfig.low;
 
         const selected = isTauri() ? await getSetting("model.selected") : null;
         if (selected) {
           setModel(selected);
         } else {
-          const fallback = ram >= 16 ? modelsConfig.high : ram >= 8 ? modelsConfig.medium : modelsConfig.low;
           setModel(fallback);
         }
 
         if (ollamaOnline !== undefined) {
-          setHealth({ reachable: ollamaOnline, models: [], version: null });
+          setHealth({
+            reachable: ollamaOnline || !isTauri(),
+            models: isTauri() ? [] : [fallback],
+            version: null,
+          });
         }
       } catch (e: any) {
         console.error(e);
@@ -260,6 +274,16 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     let isFirst = true;
 
     if (step === 2) {
+      if (!isTauri()) {
+        setHealth({
+          reachable: true,
+          models: [model || modelsConfig.high],
+          version: "browser-preview",
+        });
+        setCheckingHealth(false);
+        setHealthTimeout(false);
+        return;
+      }
       setCheckingHealth(true);
       setHealthTimeout(false);
       
@@ -480,7 +504,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       });
 
       await pullOllamaModel(modelToPull);
-      await setSetting("model.selected", modelToPull);
+      await saveSetting("model.selected", modelToPull);
     } catch (e) {
       console.error(e);
       const reason = (e instanceof Error ? e.message : String(e)).trim();
@@ -512,7 +536,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       setPullPercent(100);
       setPullComplete(true);
       setPulling(false);
-      await setSetting("model.selected", model);
+      await saveSetting("model.selected", model);
       if (cancelled) return;
       if (latestHealth) {
         setHealth(latestHealth);
@@ -555,8 +579,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     const timer = window.setTimeout(() => {
       void (async () => {
         try {
-          await setSetting("paths.publish", publishPath);
-          await setSetting("paths.backup", backupPath);
+          await saveSetting("paths.publish", publishPath);
+          await saveSetting("paths.backup", backupPath);
           setSetupNotice("Default folders were saved automatically because the setup screen is not receiving input events.");
           setStep(5);
         } catch (e) {
@@ -577,8 +601,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     const timer = window.setTimeout(() => {
       void (async () => {
         try {
-          await setOnboardingComplete(true);
-          await setSetting("setup.recovered_input", "true");
+          await saveOnboardingDone();
+          await saveSetting("setup.recovered_input", "true");
           onComplete();
         } catch (e) {
           console.error(e);
@@ -614,7 +638,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       } else if (step === 2) {
         if (health && health.reachable && modelInstalled(model, health.models)) {
           // Model is already installed, skip Step 3 and go directly to Step 4
-          await setSetting("model.selected", model);
+          await saveSetting("model.selected", model);
           setStep(4);
         } else if (!health?.reachable) {
           const ready = await installRuntime();
@@ -633,24 +657,24 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             message: "Daily Scan and AI drafting will run in limited mode until you download a model from AI Model.",
             confirmLabel: "Skip download",
             onConfirm: async () => {
-              await setSetting("model.selected", model);
+              await saveSetting("model.selected", model);
               setStep(4);
             },
           });
           return;
         }
-        await setSetting("model.selected", model);
+        await saveSetting("model.selected", model);
         setStep(4);
       } else if (step === 4) {
         // Persist defaults
-        await setSetting("paths.publish", publishPath);
-        await setSetting("paths.backup", backupPath);
+        await saveSetting("paths.publish", publishPath);
+        await saveSetting("paths.backup", backupPath);
 
         setStep(5);
       } else if (step === 5) {
-        await setOnboardingComplete(true);
+        await saveOnboardingDone();
         if (setupRecoveryActive) {
-          await setSetting("setup.recovered_input", "true");
+          await saveSetting("setup.recovered_input", "true");
         }
         onComplete();
       }
@@ -726,7 +750,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       const profile = starterProfiles[0];
       identityRescueAttemptedRef.current = true;
       setSetupRecoveryActive(true);
-      void setSetting("setup.recovered_input", "true").catch(console.error);
+      void saveSetting("setup.recovered_input", "true").catch(console.error);
       applyIdentityValues(profile);
       setSetupNotice("The setup screen did not receive input events, so The Civic Desk continued with a starter Longmont profile. You can edit identity later in Settings.");
       void persistIdentity(profile)
@@ -1053,7 +1077,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 </button>
                 <div style={{ marginTop: "1rem", background: "rgba(245, 158, 11, 0.05)", borderLeft: "4px solid var(--color-warning)", padding: "0.75rem", borderRadius: "4px" }}>
                   <p style={{ fontSize: "0.85rem", margin: 0, color: "var(--text-primary)" }}>
-                    <strong>Warning:</strong> You can skip this download, but you will be unable to run a Daily Scan until the model is downloaded later.
+                    <strong>Warning:</strong> You can skip this download. Daily Scan can still run deterministic evidence checks, but AI drafting and AI-assisted lead review will stay limited until you download a model.
                   </p>
                 </div>
               </div>
@@ -1141,14 +1165,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               if (step === 2) {
                 setSkipConfirm({
                   title: "Skip AI setup?",
-                  message: "You won't be able to use AI features until you complete setup from Settings.",
+                  message: "AI drafting and AI-assisted review will stay limited until you complete setup from AI Model. Deterministic source checks can still run.",
                   confirmLabel: "Skip setup",
                   onConfirm: () => setStep(4),
                 });
               } else if (step === 3) {
                 setSkipConfirm({
                   title: "Skip the model download?",
-                  message: "You won't be able to use AI features until you download a model from Settings.",
+                  message: "AI drafting and AI-assisted review will stay limited until you download a model from AI Model. Deterministic source checks can still run.",
                   confirmLabel: "Skip download",
                   onConfirm: async () => {
                     await cancelPullModel();

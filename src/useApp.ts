@@ -139,6 +139,8 @@ export interface DailyScanProgress {
   run_id?: number | null;
   model?: string | null;
   evidence_count: number;
+  eligible_evidence_count?: number;
+  truncated_evidence_count?: number;
   batch_index?: number | null;
   batch_count?: number | null;
   saved_leads: number;
@@ -469,7 +471,7 @@ export function useApp() {
 
     const cleanupListeners = setupListeners();
 
-    // QA-R2-M1: the bundled Ollama sidecar takes a moment to bind 127.0.0.1:11434
+    // QA-R2-M1: the app-managed Ollama runtime can take a moment to bind 127.0.0.1:11434
     // after launch, so the single mount poll can lose the cold-start race and
     // leave `ollamaOnline=false` stuck — disabling Generate Draft and showing
     // "AI Offline" on a healthy sidecar. Re-poll on an interval AND whenever the
@@ -661,7 +663,18 @@ export function useApp() {
 
   const handleDailyScan = async () => {
     if (!isTauri()) {
-      setStatusMessage("Daily Scan completed in browser preview.");
+      const previewScanId = Date.now();
+      setDailyScanProgress({
+        stage: "completed",
+        message: "Browser preview generated sample Daily Scan results.",
+        run_id: previewScanId,
+        model: "browser-preview",
+        evidence_count: sources.length,
+        saved_leads: 1,
+        receivedAt: Date.now(),
+      });
+      setLatestScanId(previewScanId);
+      setStatusMessage("Daily Scan preview complete. Sample scan results are visible below.");
       return;
     }
 

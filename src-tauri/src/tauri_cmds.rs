@@ -62,6 +62,29 @@ fn default_first_amendment_advisor_enabled() -> bool {
     true
 }
 
+pub(crate) fn curated_ollama_model_ids() -> Result<HashSet<String>, String> {
+    let config: serde_json::Value = serde_json::from_str(include_str!("../../src/models.json"))
+        .map_err(|e| format!("Could not read bundled model list: {e}"))?;
+    let mut ids = HashSet::new();
+    for key in ["high", "medium", "low"] {
+        if let Some(value) = config.get(key).and_then(|value| value.as_str()) {
+            ids.insert(value.to_string());
+        }
+    }
+    if let Some(sizes) = config.get("sizes").and_then(|value| value.as_object()) {
+        ids.extend(sizes.keys().cloned());
+    }
+    Ok(ids)
+}
+
+pub(crate) fn is_allowed_ollama_pull_model(model_id: &str) -> bool {
+    let model_id = model_id.trim();
+    !model_id.is_empty()
+        && curated_ollama_model_ids()
+            .map(|ids| ids.contains(model_id))
+            .unwrap_or(false)
+}
+
 fn default_community_profile() -> CommunityProfile {
     CommunityProfile {
         site_title: "My Local Publication".to_string(),
@@ -240,8 +263,7 @@ pub struct QueueData {
 }
 
 fn get_config_path(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String> {
-    let app_data = app.path().app_data_dir().map_err(|e| e.to_string())?;
-    std::fs::create_dir_all(&app_data).map_err(|e| e.to_string())?;
+    let app_data = crate::core::app_paths::app_data_dir(app)?;
     Ok(app_data.join("community_profile.json"))
 }
 
@@ -981,6 +1003,52 @@ pub(crate) fn enforce_publish_gate(
     if let Some(reason) = override_reason.map(str::trim).filter(|s| !s.is_empty()) {
         let _ = db::record_guardrail_override(conn, id, reason);
     }
+
+    let (attested_at, stored_override) = db::get_draft_publish_gate(conn, id)
+        .map_err(|e| format!("Could not read publish decision state: {e}"))?;
+    let guardrails = guardrails::run_guardrails_check(conn, id)
+        .map_err(|e| format!("Could not record publish decision audit: {e}"))?;
+    let attested = attested_at
+        .as_deref()
+        .map(|value| !value.trim().is_empty())
+        .unwrap_or(false);
+    let issue_count = guardrails.issues.len() as i32;
+    let supplied_reason = override_reason
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .map(str::to_string)
+        .or(stored_override);
+    let note = match (attested, issue_count, supplied_reason.as_deref()) {
+        (false, 0, _) => "Publish decision recorded without a prior editor attestation.",
+        (false, _, Some(_)) => {
+            "Publish decision recorded without a prior editor attestation; guardrail warnings had an editor note."
+        }
+        (false, _, None) => {
+            "Publish decision recorded without a prior editor attestation and with guardrail warnings."
+        }
+        (true, 0, _) => "Publish decision recorded after editor attestation.",
+        (true, _, Some(_)) => {
+            "Publish decision recorded after editor attestation; guardrail warnings had an editor note."
+        }
+        (true, _, None) => {
+            "Publish decision recorded after editor attestation and with guardrail warnings."
+        }
+    };
+
+    db::record_publish_decision_audit(
+        conn,
+        &db::PublishDecisionAudit {
+            id: None,
+            draft_id: id,
+            decision: decision.to_string(),
+            attested,
+            guardrail_override_reason: supplied_reason,
+            guardrail_issue_count: issue_count,
+            note: note.to_string(),
+            created_at: String::new(),
+        },
+    )
+    .map_err(|e| format!("Could not record publish decision audit: {e}"))?;
     Ok(())
 }
 
@@ -1875,6 +1943,12 @@ pub async fn pull_ollama_model<R: tauri::Runtime>(
     app: tauri::AppHandle<R>,
     model_id: String,
 ) -> Result<(), String> {
+    if !is_allowed_ollama_pull_model(&model_id) {
+        return Err(format!(
+            "Model `{}` is not in this CivicNewspaper release's curated local-AI model list.",
+            model_id.trim()
+        ));
+    }
     let sink = std::sync::Arc::new(AppHandlePullSink { app });
     crate::core::llm::run_ollama_pull(model_id, "http://127.0.0.1:11434", sink).await
 }
@@ -2076,7 +2150,7 @@ pub async fn export_diagnostics(
     app_handle: tauri::AppHandle,
     path: String,
 ) -> Result<(), String> {
-    let app_data = app_handle.path().app_data_dir().unwrap_or_default();
+    let app_data = crate::core::app_paths::app_data_dir(&app_handle).unwrap_or_default();
     let download = app_handle.path().download_dir().unwrap_or_default();
     let validated = validate_export_path(app_data.clone(), download, &path)?;
     export_diagnostics_inner(&db, app_data, validated).await

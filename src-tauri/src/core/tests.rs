@@ -40,6 +40,91 @@ mod tests {
         assert_eq!(version_after, get_expected_version());
     }
 
+    fn seed_pre_0017_database(path: &std::path::Path) -> i32 {
+        let mut conn = Connection::open(path).unwrap();
+        run_migrations(&mut conn).unwrap();
+        let draft_id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "brief".to_string(),
+                title: "Older backup draft".to_string(),
+                content: "This draft existed before publish decision audits.".to_string(),
+                status: "draft_generated".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+        conn.execute_batch("DROP TABLE publish_decision_audits; PRAGMA user_version = 15;")
+            .unwrap();
+        draft_id
+    }
+
+    #[test]
+    fn test_migration_0017_adds_publish_decision_audit_to_existing_db() {
+        let temp_dir = tempdir().unwrap();
+        let db_path = temp_dir.path().join("pre-0017.db");
+        let draft_id = seed_pre_0017_database(&db_path);
+        let mut conn = Connection::open(&db_path).unwrap();
+
+        run_migrations(&mut conn).unwrap();
+        assert_eq!(get_current_version(&conn).unwrap(), get_expected_version());
+        crate::core::db::record_publish_decision_audit(
+            &conn,
+            &crate::core::db::PublishDecisionAudit {
+                id: None,
+                draft_id,
+                decision: "ready_to_publish".to_string(),
+                attested: false,
+                guardrail_override_reason: None,
+                guardrail_issue_count: 0,
+                note: "Migration proof.".to_string(),
+                created_at: String::new(),
+            },
+        )
+        .unwrap();
+        assert_eq!(
+            crate::core::db::list_publish_decision_audits(&conn, draft_id)
+                .unwrap()
+                .len(),
+            1
+        );
+    }
+
+    #[test]
+    fn test_restore_migrates_pre_0017_backup() {
+        let temp_dir = tempdir().unwrap();
+        let live_path = temp_dir.path().join("live.db");
+        let backup_path = temp_dir.path().join("backup-pre-0017.db");
+        let draft_id = seed_pre_0017_database(&backup_path);
+
+        let live_conn = init_db(live_path.to_str().unwrap()).unwrap();
+        let db_conn: DbConn = Arc::new(Mutex::new(live_conn));
+
+        restore_backup(
+            &db_conn,
+            backup_path.to_str().unwrap(),
+            live_path.to_str().unwrap(),
+        )
+        .unwrap();
+
+        let conn = db_conn.lock().unwrap();
+        assert_eq!(get_current_version(&conn).unwrap(), get_expected_version());
+        let draft = get_draft(&conn, draft_id).unwrap().unwrap();
+        assert_eq!(draft.title, "Older backup draft");
+        assert!(
+            crate::core::db::list_publish_decision_audits(&conn, draft_id)
+                .unwrap()
+                .is_empty(),
+            "restored older draft should gain audit table without inventing events"
+        );
+    }
+
     #[test]
     fn test_draft_ipc_payload_defaults_missing_timestamps() {
         let draft: Draft = serde_json::from_value(serde_json::json!({
@@ -915,6 +1000,18 @@ mod tests {
         assert_eq!(diags.leads_count, 0);
         assert_eq!(diags.drafts_count, 0);
         assert_eq!(diags.published_posts_count, 0);
+    }
+
+    #[test]
+    fn test_diagnostics_redacts_log_tail_secrets_and_user_paths() {
+        let line = r#"panic at C:\Users\alice\AppData\Local token=abc123 Authorization: Bearer secret-token password:open-sesame"#;
+        let redacted = crate::core::diagnostics::redact_diagnostic_line(line);
+        assert!(!redacted.contains("alice"));
+        assert!(!redacted.contains("abc123"));
+        assert!(!redacted.contains("secret-token"));
+        assert!(!redacted.contains("open-sesame"));
+        assert!(redacted.contains(r"C:\Users\[redacted]"));
+        assert!(redacted.contains("Bearer [redacted]"));
     }
 
     #[tokio::test]
@@ -2513,6 +2610,20 @@ I should produce JSON only.
         assert!(res.unwrap_err().contains("status 404"));
     }
 
+    #[test]
+    fn test_model_pull_allowlist_uses_bundled_model_config() {
+        assert!(crate::tauri_cmds::is_allowed_ollama_pull_model(
+            "qwen2.5:7b"
+        ));
+        assert!(crate::tauri_cmds::is_allowed_ollama_pull_model(
+            "llama3.2:3b"
+        ));
+        assert!(!crate::tauri_cmds::is_allowed_ollama_pull_model(""));
+        assert!(!crate::tauri_cmds::is_allowed_ollama_pull_model(
+            "unreviewed-community-model:latest"
+        ));
+    }
+
     // MUTATION-RESISTANT (per Amendments 001/002). Runs on every platform,
     // including Windows: exercises the real per-model cancellation map without a
     // Tauri mock_app(); the stub server uses an ephemeral port (P5-003 resolved).
@@ -3534,7 +3645,7 @@ I should produce JSON only.
                 lead_id: None,
                 format: "watch".to_string(),
                 title: "City\u{00e2}\u{20ac}\u{2122}s library plan".to_string(),
-                content: "Copyright \u{00c2}\u{00a9} 2026. Join WhatsApp \u{00e2}\u{2020}\u{2019}. The Youth Center\u{00e2}\u{20ac}\u{2122}s offerings need verification."
+                content: "Copyright \u{00c2}\u{00a9} 2026.\nJoin WhatsApp \u{00e2}\u{2020}\u{2019}.\nThe Youth Center\u{00e2}\u{20ac}\u{2122}s offerings need verification."
                     .to_string(),
                 status: "ready_to_publish".to_string(),
                 verification_checklist: "[]".to_string(),
@@ -3550,8 +3661,8 @@ I should produce JSON only.
 
         let html = fs::read_to_string(temp_dir.path().join(format!("watch/{}.html", id))).unwrap();
         assert!(html.contains("City&#x27;s library plan"));
-        assert!(html.contains("\u{00a9} 2026"));
-        assert!(html.contains("WhatsApp \u{2192}"));
+        assert!(!html.contains("Copyright"));
+        assert!(!html.contains("WhatsApp"));
         assert!(html.contains("Center"));
         assert!(html.contains("offerings"));
         assert!(!html
@@ -3760,10 +3871,10 @@ I should produce JSON only.
                 id: None,
                 source_id,
                 url: Some("https://longmontcolorado.gov/public-information/".to_string()),
-                fetched_at: Utc::now().to_rfc3339(),
-                excerpt: "City of LongmontÂ Seeking Applications. This is Longmont â€“ June 25, 2026. The Cityâ€™s community guide &amp;#8217;s update.".to_string(),
+                excerpt: "City of Longmont\u{00c3}\u{0082}\u{00c2}\u{00a0}Seeking Applications. This is Longmont \u{00c3}\u{00a2}\u{00e2}\u{201a}\u{00ac}\u{00e2}\u{20ac}\u{0153} June 25, 2026. The City\u{00c3}\u{00a2}\u{00e2}\u{201a}\u{00ac}\u{00e2}\u{201e}\u{00a2}s community guide &amp;#8217;s update.".to_string(),
                 content_hash: "mojibake-evidence".to_string(),
                 entities: "[]".to_string(),
+                fetched_at: "2026-06-25T12:00:00Z".to_string(),
             },
         )
         .unwrap();
@@ -3815,8 +3926,8 @@ I should produce JSON only.
         assert!(html.contains("The City"));
         assert!(html.contains("community guide"));
         assert!(html.contains("update"));
-        assert!(!html.contains("Â"));
-        assert!(!html.contains("â"));
+        assert!(!html.contains('\u{00c3}'));
+        assert!(!html.contains('\u{00e2}'));
     }
 
     #[test]
@@ -3888,6 +3999,28 @@ I should produce JSON only.
             "attested_at should be set"
         );
         assert_eq!(ov2.unwrap(), "documented");
+
+        crate::core::db::record_publish_decision_audit(
+            &conn,
+            &crate::core::db::PublishDecisionAudit {
+                id: None,
+                draft_id: id,
+                decision: "ready_to_publish".to_string(),
+                attested: true,
+                guardrail_override_reason: Some("documented".to_string()),
+                guardrail_issue_count: 0,
+                note: "Publish decision recorded after editor attestation.".to_string(),
+                created_at: String::new(),
+            },
+        )
+        .unwrap();
+        let audits = crate::core::db::list_publish_decision_audits(&conn, id).unwrap();
+        assert_eq!(audits.len(), 1);
+        assert!(audits[0].attested);
+        assert_eq!(
+            audits[0].guardrail_override_reason.as_deref(),
+            Some("documented")
+        );
     }
 
     // Editable guardrails: defaults are warn-only, round-trip works, and a blocking
@@ -3948,10 +4081,19 @@ I should produce JSON only.
         // Publish states pass even without attestation; UI/compile surfaces warnings.
         assert!(enforce_publish_gate(&conn, id, "ready_to_publish", None).is_ok());
         assert!(enforce_publish_gate(&conn, id, "corrected", None).is_ok());
+        let audits = crate::core::db::list_publish_decision_audits(&conn, id).unwrap();
+        assert_eq!(audits.len(), 2);
+        assert!(
+            audits.iter().all(|audit| !audit.attested),
+            "unattested publish decisions must be durably recorded"
+        );
 
         // Attest => clean draft passes.
         crate::core::db::attest_draft(&conn, id, "Editor").unwrap();
         assert!(enforce_publish_gate(&conn, id, "ready_to_publish", None).is_ok());
+        let audits = crate::core::db::list_publish_decision_audits(&conn, id).unwrap();
+        assert_eq!(audits.len(), 3);
+        assert!(audits[2].attested);
 
         // Unclean sensitive draft: passes without override, and records a real
         // override if the editor supplies one.
@@ -3981,6 +4123,18 @@ I should produce JSON only.
         assert!(enforce_publish_gate(&conn, bad, "published", Some("Verified.")).is_ok());
         let (_a, ov) = crate::core::db::get_draft_publish_gate(&conn, bad).unwrap();
         assert_eq!(ov.unwrap(), "Verified.");
+        let bad_audits = crate::core::db::list_publish_decision_audits(&conn, bad).unwrap();
+        assert_eq!(bad_audits.len(), 3);
+        assert!(
+            bad_audits
+                .iter()
+                .all(|audit| audit.guardrail_issue_count > 0),
+            "guardrail-warning publish decisions must record warning count"
+        );
+        assert_eq!(
+            bad_audits[2].guardrail_override_reason.as_deref(),
+            Some("Verified.")
+        );
     }
 
     // RE-AUDIT NEW-3: whole-word/inflection matching avoids substring false

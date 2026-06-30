@@ -3,6 +3,7 @@ use super::db::{
     get_evidence_by_lead, insert_publish_run, insert_published_post, list_drafts, PublishRun,
     PublishedPost,
 };
+use super::scraper::strip_public_boilerplate;
 use chrono::{Datelike, Utc};
 use pulldown_cmark::{html, CowStr, Event, Options, Parser, Tag};
 use rusqlite::{params, Connection};
@@ -260,7 +261,7 @@ pub(crate) fn repair_common_mojibake(text: &str) -> String {
         }
         repaired = next;
     }
-    repaired
+    let repaired = repaired
         .replace("&amp;#8217;", "'")
         .replace("&#8217;", "'")
         .replace("&amp;#8216;", "'")
@@ -274,24 +275,43 @@ pub(crate) fn repair_common_mojibake(text: &str) -> String {
         .replace("&amp;#038;", "&")
         .replace("&#038;", "&")
         .replace('\u{00a0}', " ")
-        .replace('–', "-")
-        .replace('—', "-")
-        .replace('’', "'")
-        .replace('‘', "'")
-        .replace('“', "\"")
-        .replace('”', "\"")
-        .replace("Â ", " ")
-        .replace('Â', "")
-        .replace("â€“", "-")
-        .replace("â€”", "-")
-        .replace("â€™", "'")
-        .replace("â€˜", "'")
-        .replace("â€œ", "\"")
-        .replace("â€\u{009d}", "\"")
+        .replace("\u{00e2}\u{20ac}\u{201c}", "-")
+        .replace("\u{00e2}\u{20ac}\u{201d}", "-")
+        .replace("\u{00e2}\u{20ac}\u{2122}", "'")
+        .replace("\u{00e2}\u{20ac}\u{02dc}", "'")
+        .replace("\u{00e2}\u{20ac}\u{0153}", "\"")
+        .replace("\u{00e2}\u{20ac}\u{009d}", "\"")
+        .replace("\u{00c2} ", " ")
+        .replace('\u{00c2}', "")
+        .replace("\u{00e2}\u{0080}\u{0093}", "-")
+        .replace("\u{00e2}\u{0080}\u{0094}", "-")
+        .replace("\u{00e2}\u{0080}\u{0099}", "'")
+        .replace("\u{00e2}\u{0080}\u{0098}", "'")
+        .replace("\u{00e2}\u{0080}\u{009c}", "\"")
+        .replace("\u{00e2}\u{0080}\u{009d}", "\"")
+        .replace('\u{2018}', "'")
+        .replace('\u{2019}', "'")
+        .replace('\u{201c}', "\"")
+        .replace('\u{201d}', "\"")
+        .replace('\u{2013}', "-")
+        .replace('\u{2014}', "-");
+    repaired
+        .chars()
+        .filter(|ch| {
+            !matches!(
+                *ch as u32,
+                0x00c2 | 0x00c3 | 0x00e2 | 0xfffd | 0x0080..=0x009f
+            )
+        })
+        .collect()
+}
+
+fn clean_public_story_text(text: &str) -> String {
+    strip_public_boilerplate(&repair_common_mojibake(text))
 }
 
 fn normalize_public_title(title: &str) -> String {
-    let repaired = repair_common_mojibake(title);
+    let repaired = clean_public_story_text(title);
     repaired
         .trim()
         .strip_prefix("Draft:")
@@ -383,7 +403,7 @@ fn strip_editor_note_marker(line: &str) -> Option<String> {
 
 fn public_title_and_content(draft_title: &str, draft_content: &str) -> (String, String) {
     let fallback_title = normalize_public_title(draft_title);
-    let repaired_content = repair_common_mojibake(draft_content);
+    let repaired_content = clean_public_story_text(draft_content);
     let had_editor_note = repaired_content.to_lowercase().contains("editor_note:");
     let mut derived_title: Option<(usize, String)> = None;
     let lines: Vec<&str> = repaired_content.lines().collect();
@@ -455,6 +475,9 @@ fn public_title_and_content(draft_title: &str, draft_content: &str) -> (String, 
             if lower == "[end of report]" || lower == "end of report" {
                 return None;
             }
+            if lower == "[source needed]" || lower == "[verification needed]" {
+                return None;
+            }
             if lower.starts_with("nut graf:") || lower.starts_with("lede:") {
                 return Some(
                     plain
@@ -495,7 +518,72 @@ fn public_title_and_content(draft_title: &str, draft_content: &str) -> (String, 
         content
     };
 
-    (title, content)
+    (title, clean_public_story_text(&content))
+}
+
+fn public_output_quality_issue(contents: &str) -> Option<String> {
+    let marker = contents
+        .chars()
+        .find(|ch| matches!(*ch as u32, 0x00c2 | 0x00c3 | 0x00e2 | 0xfffd));
+    if let Some(ch) = marker {
+        return Some(format!("contains mojibake marker U+{:04X}", ch as u32));
+    }
+
+    let lower = contents.to_lowercase();
+    let blocked_markers = [
+        "editor_note",
+        "[editor_note",
+        "nut graf:",
+        "reporting steps:",
+        "next reporting steps:",
+        "[source needed]",
+        "[verification needed]",
+        "[end of report]",
+        "join whatsapp channel",
+        "choose your subscriptions",
+        "subscribe to selections",
+        "get city news in spanish",
+        "follow our whatsapp channel",
+        "employee login",
+    ];
+    blocked_markers
+        .iter()
+        .find(|marker| lower.contains(**marker))
+        .map(|marker| format!("contains public-output marker `{}`", marker))
+}
+
+fn assert_public_output_quality(
+    output_dir: &Path,
+    generated_files: &[String],
+) -> Result<(), Box<dyn Error>> {
+    let text_extensions = ["html", "xml", "md", "txt", "json"];
+    let mut issues = Vec::new();
+
+    for relative_path in generated_files {
+        let path = output_dir.join(relative_path);
+        let Some(ext) = path.extension().and_then(|value| value.to_str()) else {
+            continue;
+        };
+        if !text_extensions
+            .iter()
+            .any(|candidate| candidate.eq_ignore_ascii_case(ext))
+        {
+            continue;
+        }
+        if !path.exists() {
+            continue;
+        }
+        let contents = fs::read_to_string(&path)?;
+        if let Some(issue) = public_output_quality_issue(&contents) {
+            issues.push(format!("{} {}", relative_path, issue));
+        }
+    }
+
+    if issues.is_empty() {
+        Ok(())
+    } else {
+        Err(format!("Public output quality gate failed: {}", issues.join("; ")).into())
+    }
 }
 
 fn clean_generated_site_output(output_dir: &Path) -> Result<(), Box<dyn Error>> {
@@ -606,6 +694,7 @@ pub fn record_publish_destination_files(
     }
 
     fs::write(&manifest_path, serde_json::to_string_pretty(&result)?)?;
+    assert_public_output_quality(output_dir, &result.generated_files)?;
     write_zip_package(output_dir, &output_dir.join(&result.zip_path))?;
     Ok(result)
 }
@@ -924,10 +1013,10 @@ pub fn compile_static_site(
                     "#".to_string()
                 };
                 let safe_url = html_escape::encode_safe(&source_url);
-                let excerpt = repair_common_mojibake(&item.excerpt);
+                let excerpt = clean_public_story_text(&item.excerpt);
                 let safe_excerpt = html_escape::encode_safe(&excerpt);
                 evidence_html.push_str(&format!(
-                    "<li id=\"evidence-{}\" style=\"margin-bottom: 0.5rem;\"><strong>[Ref {}]</strong> <a href=\"{}\" target=\"_blank\">Original Document Link</a>: <span style=\"font-style: italic;\">\"{}\"</span></li>\n",
+                    "<li id=\"evidence-{}\" style=\"margin-bottom: 0.5rem;\"><strong>[Ref {}]</strong> <a href=\"{}\" target=\"_blank\" rel=\"noopener noreferrer\">Original Document Link</a>: <span style=\"font-style: italic;\">\"{}\"</span></li>\n",
                     item_id, item_id, safe_url, safe_excerpt
                 ));
             }
@@ -1300,6 +1389,7 @@ pub fn compile_static_site(
     )?;
 
     let zip_path = output_dir.join("site-package.zip");
+    assert_public_output_quality(output_dir, &result.generated_files)?;
     write_zip_package(output_dir, &zip_path)?;
     files_written += 1;
     result.files_written = files_written;

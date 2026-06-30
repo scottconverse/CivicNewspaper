@@ -3,7 +3,16 @@ use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
+use std::sync::LazyLock;
 use sysinfo::System;
+
+static WINDOWS_USER_PATH_RE: LazyLock<regex::Regex> =
+    LazyLock::new(|| regex::Regex::new(r"(?i)C:\\Users\\[^\\\s]+").unwrap());
+static TOKEN_RE: LazyLock<regex::Regex> = LazyLock::new(|| {
+    regex::Regex::new(r"(?i)\b(token|password|secret|api[_-]?key)\s*[:=]\s*[^\s,;]+").unwrap()
+});
+static BEARER_RE: LazyLock<regex::Regex> =
+    LazyLock::new(|| regex::Regex::new(r"(?i)bearer\s+[A-Za-z0-9._~+/-]+").unwrap());
 
 #[derive(Serialize, Deserialize)]
 pub struct Diagnostics {
@@ -19,6 +28,12 @@ pub struct Diagnostics {
     pub drafts_count: i64,
     pub published_posts_count: i64,
     pub panic_log_tail: Vec<String>,
+}
+
+pub(crate) fn redact_diagnostic_line(line: &str) -> String {
+    let redacted = WINDOWS_USER_PATH_RE.replace_all(line, r"C:\Users\[redacted]");
+    let redacted = BEARER_RE.replace_all(&redacted, "Bearer [redacted]");
+    TOKEN_RE.replace_all(&redacted, "$1=[redacted]").to_string()
 }
 
 pub async fn gather_diagnostics(db: &DbConn, app_data_dir: PathBuf) -> Result<Diagnostics, String> {
@@ -67,7 +82,10 @@ pub async fn gather_diagnostics(db: &DbConn, app_data_dir: PathBuf) -> Result<Di
         } else {
             0
         };
-        panic_log_tail = lines[start..].to_vec();
+        panic_log_tail = lines[start..]
+            .iter()
+            .map(|line| redact_diagnostic_line(line))
+            .collect();
     }
 
     Ok(Diagnostics {

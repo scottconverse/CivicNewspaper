@@ -273,6 +273,11 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
             ) : (
               sortedLeads.map((lead) => {
                 const existingDraft = lead.id ? draftByLeadId.get(lead.id) : undefined;
+                const draftLabel = existingDraft
+                  ? "Open draft"
+                  : lead.disposition === "background" || lead.story_type === "background" || (lead.recurrence_count ?? 0) > 0
+                    ? "Draft anyway"
+                    : "Draft";
                 const openLeadOrDraft = () => {
                   if (existingDraft) {
                     onOpenDraftEditor(existingDraft);
@@ -339,13 +344,13 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                       type="button"
                       className="btn btn-secondary btn-sm"
                       data-testid={`btn-draft-lead-${lead.id}`}
-                      aria-label={`${existingDraft ? "Open draft for" : "Draft"} ${lead.why}`}
+                      aria-label={`${draftLabel} ${lead.why}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         openLeadOrDraft();
                       }}
                     >
-                      {existingDraft ? "Open draft" : "Draft"} <ChevronRight size={14} />
+                      {draftLabel} <ChevronRight size={14} />
                     </button>
                   </div>
                 </div>

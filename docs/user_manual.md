@@ -453,12 +453,13 @@ These are for contributors, not normal newsroom use.
 
 ```bash
 npm install
-bash scripts/fetch-ollama-binaries.sh
 npm run tauri dev
 npm run tauri build
 npm test -- --run
 cd src-tauri && cargo test --lib
 ```
+
+The v0.3.x app uses app-managed local AI setup during first run. The legacy sidecar-fetch script is not part of the current release verification path.
 
 ### Data Model Summary
 

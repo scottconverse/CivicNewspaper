@@ -2,34 +2,23 @@
 
 This file credits the third-party dependencies bundled or redistributed with CivicNewspaper.
 
-## Ollama v0.3.14 (MIT License)
+## Ollama v0.30.11 (MIT License)
 
-CivicNewspaper bundles Ollama as a sidecar process under the MIT License.
+CivicNewspaper does not bundle Ollama in the v0.3.x installers. The app-managed first-run local AI setup downloads the pinned Windows Ollama runtime, verifies its SHA256, and runs it as a local-only AI service for CivicNewspaper.
 
 - **Developer**: Ollama authors
 - **Home Page**: [https://ollama.com](https://ollama.com)
 - **Source Code**: [https://github.com/ollama/ollama](https://github.com/ollama/ollama)
-- **Version**: v0.3.14
+- **Version**: v0.30.11
 
 ### Download Specifications
-- **macOS (Intel/Apple Silicon fallback - Mach-O universal containing both x86_64 and arm64)**:
-  - targets: `x86_64-apple-darwin`, `aarch64-apple-darwin`
-  - Source URL: `https://github.com/ollama/ollama/releases/download/v0.3.14/ollama-darwin`
-  - SHA256: `746eeac2a062f76d68e7ed2488d6bb7537610adc13dfcd6c7c12aaf025691f09`
-- **Linux (x86_64)**:
-  - target: `x86_64-unknown-linux-gnu`
-  - Source URL: `https://github.com/ollama/ollama/releases/download/v0.3.14/ollama-linux-amd64.tgz`
-  - SHA256: `8b746572392b6a6912bedfb5ac8115c18b77815ea4614c6cce7ccb6f67b9d929`
 - **Windows (x86_64)**:
   - target: `x86_64-pc-windows-msvc`
-  - Source URL: `https://github.com/ollama/ollama/releases/download/v0.3.14/ollama-windows-amd64.zip`
-  - SHA256: `fc3ec4bb8d7c2dde13fd2f5f0c46f5ac7a3a238039ef9906c01fe548c17e1227`
+  - Source URL: `https://github.com/ollama/ollama/releases/download/v0.30.11/ollama-windows-amd64.zip`
+  - SHA256: `43d534c10040ea676c99af19836377a315daa8cb3bb6c3d9d609b4c23dd37b88`
 
 ### Pinned Binary Hashes
-746eeac2a062f76d68e7ed2488d6bb7537610adc13dfcd6c7c12aaf025691f09 # x86_64-apple-darwin (same universal binary)
-746eeac2a062f76d68e7ed2488d6bb7537610adc13dfcd6c7c12aaf025691f09 # aarch64-apple-darwin (same universal binary)
-8b746572392b6a6912bedfb5ac8115c18b77815ea4614c6cce7ccb6f67b9d929
-fc3ec4bb8d7c2dde13fd2f5f0c46f5ac7a3a238039ef9906c01fe548c17e1227
+43d534c10040ea676c99af19836377a315daa8cb3bb6c3d9d609b4c23dd37b88 # x86_64-pc-windows-msvc app-managed runtime
 
 ### License text (MIT)
 ```

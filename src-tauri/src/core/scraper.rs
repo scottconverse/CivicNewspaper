@@ -180,7 +180,7 @@ pub fn extract_entities(text: &str) -> Vec<String> {
 fn build_scraper_client(pin: Option<(&str, SocketAddr)>) -> Result<Client, Box<dyn Error>> {
     let mut builder = Client::builder()
         .timeout(Duration::from_secs(10))
-        .user_agent("CivicNewsScraper/1.0 (+http://127.0.0.1:12053)")
+        .user_agent("CivicNewsScraper/1.0 (+https://github.com/scottconverse/CivicNewspaper)")
         // Disable reqwest's automatic redirect following. The default policy
         // follows up to 10 redirects, but it would only have validated the
         // *original* URL's resolved IP — a public feed that 302s to
@@ -251,11 +251,121 @@ fn resolve_redirect_target(current: &str, location: &str) -> Result<String, Box<
 // 302-ing to an internal/metadata address).
 const MAX_REDIRECTS: usize = 10;
 
+fn robots_target_path(url: &str) -> Result<String, Box<dyn Error>> {
+    let parsed = reqwest::Url::parse(url)?;
+    let mut path = parsed.path().to_string();
+    if path.is_empty() {
+        path = "/".to_string();
+    }
+    if let Some(query) = parsed.query() {
+        path.push('?');
+        path.push_str(query);
+    }
+    Ok(path)
+}
+
+fn robots_url_for(url: &str) -> Result<String, Box<dyn Error>> {
+    let parsed = reqwest::Url::parse(url)?;
+    let scheme = parsed.scheme();
+    let host = parsed.host_str().ok_or("URL has no host")?;
+    let port = parsed
+        .port()
+        .map(|port| format!(":{port}"))
+        .unwrap_or_default();
+    Ok(format!("{scheme}://{host}{port}/robots.txt"))
+}
+
+pub(crate) fn robots_txt_allows(robots_txt: &str, user_agent: &str, target_path: &str) -> bool {
+    let mut group_applies = false;
+    let mut saw_rule_in_group = false;
+    let mut best_allow_len: Option<usize> = None;
+    let mut best_disallow_len: Option<usize> = None;
+    let normalized_agent = user_agent.to_lowercase();
+
+    for raw_line in robots_txt.lines() {
+        let line = raw_line.split('#').next().unwrap_or("").trim();
+        if line.is_empty() {
+            if saw_rule_in_group {
+                group_applies = false;
+                saw_rule_in_group = false;
+            }
+            continue;
+        }
+        let Some((field, value)) = line.split_once(':') else {
+            continue;
+        };
+        let field = field.trim().to_lowercase();
+        let value = value.trim();
+        if field == "user-agent" {
+            if saw_rule_in_group {
+                group_applies = false;
+                saw_rule_in_group = false;
+            }
+            let agent = value.to_lowercase();
+            if agent == "*" || normalized_agent.contains(&agent) {
+                group_applies = true;
+            }
+            continue;
+        }
+        if !group_applies {
+            continue;
+        }
+        if field == "allow" || field == "disallow" {
+            saw_rule_in_group = true;
+            if value.is_empty() {
+                continue;
+            }
+            if target_path.starts_with(value) {
+                if field == "allow" {
+                    best_allow_len = Some(best_allow_len.unwrap_or(0).max(value.len()));
+                } else {
+                    best_disallow_len = Some(best_disallow_len.unwrap_or(0).max(value.len()));
+                }
+            }
+        }
+    }
+
+    match (best_allow_len, best_disallow_len) {
+        (Some(allow_len), Some(disallow_len)) => allow_len >= disallow_len,
+        (Some(_), None) => true,
+        (None, Some(_)) => false,
+        (None, None) => true,
+    }
+}
+
+async fn robots_allows_source_url(initial_url: &str) -> Result<bool, Box<dyn Error>> {
+    let robots_url = robots_url_for(initial_url)?;
+    let target_path = robots_target_path(initial_url)?;
+    let response = match fetch_validated_with(&robots_url, |url| {
+        let url = url.to_string();
+        Box::pin(async move {
+            tokio::task::spawn_blocking(move || validate_and_pin(&url))
+                .await
+                .map_err(|e| -> Box<dyn Error> { e.to_string().into() })?
+                .map_err(|e| -> Box<dyn Error> { e.into() })
+        })
+    })
+    .await
+    {
+        Ok(response) => response,
+        Err(_) => return Ok(true),
+    };
+
+    if !response.status().is_success() {
+        return Ok(true);
+    }
+    let body = response.text().await.unwrap_or_default();
+    Ok(robots_txt_allows(&body, "CivicNewsScraper", &target_path))
+}
+
 async fn fetch_validated(initial_url: &str) -> Result<reqwest::Response, Box<dyn Error>> {
     // Production path: validate (and DNS-pin) every hop with the real
     // `validate_and_pin` gate. The loop itself lives in `fetch_validated_with` so
     // it can be driven against local axum stubs in tests with an injected
     // validator (the real gate blocks loopback, which is where stubs must live).
+    if !robots_allows_source_url(initial_url).await? {
+        return Err(format!("robots.txt disallows scraping {}", initial_url).into());
+    }
     fetch_validated_with(initial_url, |url| {
         let url = url.to_string();
         Box::pin(async move {
@@ -496,6 +606,87 @@ static RE_SCRIPT_STYLE: LazyLock<regex::Regex> =
     LazyLock::new(|| regex::Regex::new(r"(?s)<(script|style)[^>]*>.*?</(script|style)>").unwrap());
 static RE_TAGS: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r"<[^>]*>").unwrap());
 
+fn is_likely_site_boilerplate_line(line: &str) -> bool {
+    let lower = line.trim().to_lowercase();
+    if lower.is_empty() {
+        return true;
+    }
+    if line.contains('\u{00a9}') && lower.contains("202") {
+        return true;
+    }
+
+    let exact = [
+        "facebook",
+        "instagram",
+        "youtube",
+        "whatsapp",
+        "search",
+        "services",
+        "back to main",
+        "skip",
+        "accessibility",
+        "employee login",
+        "terms of use",
+        "privacy policy",
+        "land acknowledgment",
+        "insidelongmont",
+        "choose your subscriptions",
+        "subscribe to selections",
+    ];
+    if exact.iter().any(|needle| lower == *needle) {
+        return true;
+    }
+
+    let contains = [
+        "join whatsapp channel",
+        "join whatsapp",
+        "get city news in spanish",
+        "select the topics and departments",
+        "follow our whatsapp channel",
+        "copyright ",
+        "all rights reserved",
+        "cookie policy",
+        "site map",
+        "social media",
+        "newsletter signup",
+    ];
+    contains.iter().any(|needle| lower.contains(needle))
+}
+
+pub(crate) fn strip_public_boilerplate(text: &str) -> String {
+    let mut cleaned = Vec::new();
+    let mut skipping_subscription_block = false;
+
+    for line in text.lines() {
+        let trimmed = line.trim();
+        let lower = trimmed.to_lowercase();
+        if lower.contains("choose your subscriptions")
+            || lower.contains("get city news in spanish")
+            || lower.contains("follow our whatsapp channel")
+        {
+            skipping_subscription_block = true;
+            continue;
+        }
+        if skipping_subscription_block {
+            if lower.contains("subscribe")
+                || lower.contains("skip")
+                || lower.contains("select the topics")
+                || lower.contains("join whatsapp")
+                || lower.contains("email")
+            {
+                continue;
+            }
+            skipping_subscription_block = false;
+        }
+        if is_likely_site_boilerplate_line(trimmed) {
+            continue;
+        }
+        cleaned.push(trimmed);
+    }
+
+    cleaned.join("\n")
+}
+
 pub(crate) fn clean_html(html: &str) -> String {
     let step1 = RE_SCRIPT_STYLE.replace_all(html, "");
     let step2 = RE_TAGS.replace_all(&step1, " ");
@@ -509,7 +700,7 @@ pub(crate) fn clean_html(html: &str) -> String {
             cleaned.push('\n');
         }
     }
-    cleaned
+    strip_public_boilerplate(&cleaned)
 }
 
 pub(crate) fn chunk_text(text: &str, chunk_size: usize) -> Vec<String> {
@@ -599,6 +790,38 @@ mod url_validation_tests {
                 url
             );
         }
+    }
+
+    #[test]
+    fn robots_txt_blocks_disallowed_paths_for_civic_scraper() {
+        let robots = r#"
+User-agent: *
+Disallow: /private
+
+User-agent: CivicNewsScraper
+Disallow: /blocked
+Allow: /blocked/public
+"#;
+        assert!(!robots_txt_allows(
+            robots,
+            "CivicNewsScraper",
+            "/private/agenda"
+        ));
+        assert!(!robots_txt_allows(
+            robots,
+            "CivicNewsScraper",
+            "/blocked/minutes"
+        ));
+        assert!(robots_txt_allows(
+            robots,
+            "CivicNewsScraper",
+            "/blocked/public/minutes"
+        ));
+        assert!(robots_txt_allows(
+            robots,
+            "CivicNewsScraper",
+            "/open/minutes"
+        ));
     }
 
     #[test]
