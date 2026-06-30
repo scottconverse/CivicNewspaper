@@ -362,6 +362,8 @@ fn build_batch_prompt(
          Return ONLY valid JSON. No markdown. No prose. No code fence.\n\
          Schema: {{\"leads\":[{{\"title\":\"short civic lead title\",\"summary\":\"1-2 evidence-grounded sentences\",\"original_url\":\"source URL from evidence or empty string\",\"why_flagged\":\"plain-language reason this deserves review\",\"source_name\":\"name or short description of source\",\"source_type\":\"agenda, public notice, budget, official update, community signal, or unknown\",\"priority\":\"high, medium, or low\",\"suggested_next_step\":\"specific editor action before drafting\",\"story_type\":\"story, brief, watch, background, or verification\",\"what_changed\":\"specific current fact that makes this timely, or 'no current change found'\",\"immediacy\":1,\"impact\":1,\"conflict\":1,\"novelty\":1,\"what_would_make_it_publishable\":\"specific missing fact, document, interview, vote, deadline, public effect, or cross-check\"}}]}}\n\
          Score immediacy, impact, conflict, and novelty from 1 to 5. A recurring meeting page, archive page, general service page, or newly fetched but unchanged source should score low on immediacy and novelty and should usually be story_type background or watch, not story.\n\
+         If an excerpt contains a dated Latest News, alert, notice, or events list, split it into separate leads for the specific dated items. Do not summarize the parent page as one generic lead unless the parent page itself changed in a newsworthy way.\n\
+         Prefer distinct topics for an issue. Do not create several separate leads that are only different phrasings of the same meeting-process, public-participation, archive, or general-access information.\n\
          Include at most 3 leads. Use an empty leads array if nothing deserves an editor's look.\n\
          Explain why each lead matters to a local civic reporter. Avoid vague reasons like 'interesting item'. Do not hide weak leads; label them honestly so the editor can decide.",
         city = city,
@@ -1285,4 +1287,29 @@ where
         progress,
     )
     .await
+}
+
+#[cfg(test)]
+mod prompt_tests {
+    use super::*;
+
+    #[test]
+    fn batch_prompt_keeps_latest_news_items_distinct() {
+        let evidence = vec![EvidenceItem {
+            id: Some(1),
+            source_id: 2,
+            url: Some("https://longmontcolorado.gov/public-information/".to_string()),
+            excerpt: "Latest News: June 28 road closure. June 30 human services funding deadline."
+                .to_string(),
+            content_hash: "latest-news-list".to_string(),
+            entities: "[]".to_string(),
+            fetched_at: "2026-06-30T00:00:00Z".to_string(),
+        }];
+
+        let prompt = build_batch_prompt("Longmont", "CO", 0, &evidence);
+
+        assert!(prompt.contains("split it into separate leads"));
+        assert!(prompt.contains("Do not summarize the parent page as one generic lead"));
+        assert!(prompt.contains("Do not create several separate leads"));
+    }
 }

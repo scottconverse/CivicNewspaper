@@ -241,6 +241,7 @@ describe("Workbench Component Tests", () => {
     expect(screen.getByText(/Verification assignment/i)).toBeInTheDocument();
     expect(screen.getByText(/reporting notes/i)).toBeInTheDocument();
     expect(screen.getByText(/Needs a second public source/i)).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /Generate anyway/i })).toHaveLength(2);
   });
 
   test("shows local progress while a draft is generating", () => {

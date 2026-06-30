@@ -263,7 +263,7 @@ describe("OnboardingWizard Component Tests", () => {
     });
   });
 
-  test("identity setup auto-recovers when no input events arrive", async () => {
+  test("identity setup waits for explicit user input instead of auto-continuing", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
 
@@ -283,11 +283,13 @@ describe("OnboardingWizard Component Tests", () => {
 
     render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
 
-    await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
-    expect(screen.getByRole("status")).toHaveTextContent("starter Longmont profile");
-    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
-      key: "identity.newsroom_name",
-      value: "My Local Publication",
+    await new Promise(resolve => window.setTimeout(resolve, 100));
+
+    expect(screen.getByText("Step 1 of 5")).toBeInTheDocument();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(invokeMock).not.toHaveBeenCalledWith("set_setting", {
+      key: "setup.recovered_input",
+      value: "true",
     });
   });
 

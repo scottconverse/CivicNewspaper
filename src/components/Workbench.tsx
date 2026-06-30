@@ -315,8 +315,25 @@ export const Workbench: React.FC<WorkbenchProps> = ({
     return "Use linked evidence and the novelty notes to decide whether this is ready for reader-facing copy.";
   };
 
+  const leadNeedsDraftCaution = (lead: Lead) => {
+    const disposition = (lead.disposition ?? "review").toLowerCase();
+    const storyType = (lead.story_type ?? "").toLowerCase();
+    const novelty = lead.novelty_score ?? 0;
+    return Boolean(
+      (lead.recurrence_count ?? 0) > 0 ||
+      storyType === "background" ||
+      storyType === "watch" ||
+      storyType === "verification" ||
+      disposition === "background" ||
+      disposition === "watch" ||
+      disposition === "needs_verification" ||
+      (novelty > 0 && novelty <= 2)
+    );
+  };
+
   // If drafting from a Lead
   if (selectedLead && !selectedDraft) {
+    const generateDraftLabel = leadNeedsDraftCaution(selectedLead) ? "Generate anyway" : "Generate Draft";
     return (
       <div className="wizard-container card" id="draft-wizard-panel" tabIndex={-1} onKeyDown={handleDraftWizardKeyDown}>
         <h1>Drafting Article</h1>
@@ -356,7 +373,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
 
         <div className="draft-wizard-top-actions">
           <button ref={generateDraftButtonRef} type="button" className="btn btn-primary" onClick={onGenerateText} disabled={generatingText || (!ollamaOnline && !manualLlmMode)} id="btn-generate-draft-top">
-            {generatingText ? "Generating Draft..." : "Generate Draft"}
+            {generatingText ? "Generating Draft..." : generateDraftLabel}
           </button>
           <button type="button" className="btn btn-secondary" onClick={onCancelDraftWizard} disabled={generatingText} id="btn-cancel-draft-top">
             Cancel
@@ -425,7 +442,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
 
           <div className="draft-wizard-bottom-actions">
             <button type="button" className="btn btn-primary" onClick={onGenerateText} disabled={generatingText || (!ollamaOnline && !manualLlmMode)} id="btn-generate-draft-bottom">
-              {generatingText ? "Generating Draft..." : "Generate Draft"}
+              {generatingText ? "Generating Draft..." : generateDraftLabel}
             </button>
             <button type="button" className="btn btn-secondary" onClick={onCancelDraftWizard} disabled={generatingText} id="btn-cancel-draft-bottom">
               Cancel

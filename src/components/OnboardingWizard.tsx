@@ -31,7 +31,6 @@ const LOW_RAM_FLOOR_GB = 8;
 // medium/high tiers too - not just below the low-RAM floor.
 const SLOW_CPU_CAUTION =
   "Heads up: the AI model runs on your CPU, so generating a draft or daily scan can take a minute or more - this is normal.";
-const IDENTITY_INPUT_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 12000;
 const MODEL_DOWNLOAD_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 6000;
 const MODEL_READY_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 5000;
 const FINAL_SETUP_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 3000;
@@ -126,8 +125,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const [runtimePercent, setRuntimePercent] = useState<number | null>(null);
   const [runtimeError, setRuntimeError] = useState("");
   const autoRuntimeInstallAttempted = useRef(false);
-  const userInteractedOnIdentityRef = useRef(false);
-  const identityRescueAttemptedRef = useRef(false);
   const modelDownloadRescueAttemptedRef = useRef(false);
   const pubNameInputRef = useRef<HTMLInputElement | null>(null);
   const editorNameInputRef = useRef<HTMLInputElement | null>(null);
@@ -183,19 +180,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     setCity(values.city);
     setState(values.state);
 
-    if (pubNameInputRef.current) pubNameInputRef.current.value = values.pubName;
-    if (editorNameInputRef.current) editorNameInputRef.current.value = values.editorName;
-    if (organizationTypeSelectRef.current) organizationTypeSelectRef.current.value = values.organizationType;
-    if (cityInputRef.current) cityInputRef.current.value = values.city;
-    if (stateInputRef.current) stateInputRef.current.value = values.state;
   };
 
   const currentIdentityValues = () => ({
-    pubName: pubNameInputRef.current?.value ?? pubName,
-    editorName: editorNameInputRef.current?.value ?? editorName,
-    organizationType: organizationTypeSelectRef.current?.value ?? organizationType,
-    city: cityInputRef.current?.value ?? city,
-    state: stateInputRef.current?.value ?? state,
+    pubName,
+    editorName,
+    organizationType,
+    city,
+    state,
   });
 
   const persistIdentity = async (identity = currentIdentityValues()) => {
@@ -726,50 +718,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     return () => window.removeEventListener("hashchange", handleStarterRoute);
   }, [step]);
 
-  useEffect(() => {
-    if (step !== 1 || identityRescueAttemptedRef.current) return;
-
-    const markInteraction = () => {
-      userInteractedOnIdentityRef.current = true;
-    };
-
-    window.addEventListener("pointerdown", markInteraction, true);
-    window.addEventListener("click", markInteraction, true);
-    window.addEventListener("keydown", markInteraction, true);
-    window.addEventListener("input", markInteraction, true);
-
-    const rescueTimer = window.setTimeout(() => {
-      if (identityRescueAttemptedRef.current || userInteractedOnIdentityRef.current) return;
-
-      const fieldsAreEmpty = !currentIdentityValues().pubName.trim()
-        && !currentIdentityValues().editorName.trim()
-        && !currentIdentityValues().city.trim()
-        && !currentIdentityValues().state.trim();
-      if (!fieldsAreEmpty) return;
-
-      const profile = starterProfiles[0];
-      identityRescueAttemptedRef.current = true;
-      setSetupRecoveryActive(true);
-      void saveSetting("setup.recovered_input", "true").catch(console.error);
-      applyIdentityValues(profile);
-      setSetupNotice("The setup screen did not receive input events, so The Civic Desk continued with a starter Longmont profile. You can edit identity later in Settings.");
-      void persistIdentity(profile)
-        .then(() => setStep(2))
-        .catch(e => {
-          console.error(e);
-          setInitError(toUserMessage(e));
-        });
-    }, IDENTITY_INPUT_RESCUE_MS);
-
-    return () => {
-      window.clearTimeout(rescueTimer);
-      window.removeEventListener("pointerdown", markInteraction, true);
-      window.removeEventListener("click", markInteraction, true);
-      window.removeEventListener("keydown", markInteraction, true);
-      window.removeEventListener("input", markInteraction, true);
-    };
-  }, [step]);
-
   return (
     <div className="wizard-container card" id="onboarding-wizard">
       {initError && (
@@ -831,7 +779,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 autoFocus
                 type="text"
                 placeholder="e.g. The Brighton Gazette"
-                defaultValue={pubName}
+                value={pubName}
                 onInput={e => setPubName(e.currentTarget.value)}
                 onChange={e => setPubName(e.target.value)}
               />
@@ -843,7 +791,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 ref={editorNameInputRef}
                 type="text"
                 placeholder="e.g. Jane Doe"
-                defaultValue={editorName}
+                value={editorName}
                 onInput={e => setEditorName(e.currentTarget.value)}
                 onChange={e => setEditorName(e.target.value)}
               />
@@ -853,7 +801,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               <select
                 id="onboarding-organization-type"
                 ref={organizationTypeSelectRef}
-                defaultValue={organizationType}
+                value={organizationType}
                 onInput={e => setOrganizationType(e.currentTarget.value)}
                 onChange={e => setOrganizationType(e.target.value)}
               >
@@ -873,7 +821,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   ref={cityInputRef}
                   type="text"
                   placeholder="Brighton"
-                  defaultValue={city}
+                  value={city}
                   onInput={e => setCity(e.currentTarget.value)}
                   onChange={e => setCity(e.target.value)}
                 />
@@ -885,7 +833,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   ref={stateInputRef}
                   type="text"
                   placeholder="CO"
-                  defaultValue={state}
+                  value={state}
                   onInput={e => setState(e.currentTarget.value)}
                   onChange={e => setState(e.target.value)}
                 />

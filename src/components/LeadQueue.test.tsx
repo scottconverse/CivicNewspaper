@@ -186,6 +186,45 @@ describe("LeadQueue Component Tests", () => {
     expect(screen.getByText("Background")).toBeInTheDocument();
   });
 
+  test("labels watch and verification leads as draft-anyway choices", () => {
+    render(
+      <LeadQueue
+        leads={[
+          {
+            ...fixtureLeads[0],
+            disposition: "ready_to_draft",
+            story_type: "brief",
+            novelty_score: 4,
+          },
+          {
+            ...fixtureLeads[1],
+            disposition: "watch",
+            story_type: "watch",
+            novelty_score: 2,
+          },
+          {
+            ...fixtureLeads[2],
+            disposition: "needs_verification",
+            story_type: "verification",
+            novelty_score: 2,
+          },
+        ]}
+        drafts={[]}
+        loading={false}
+        onSelect={vi.fn()}
+        onSyncList={vi.fn()}
+        onIngest={vi.fn()}
+        onDailyScan={vi.fn()}
+        onOpenDraftEditor={vi.fn()}
+        onOpenCorrectionModal={vi.fn()}
+        onDeleteDraft={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: /^Draft \$350,000 budget approved/i })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /Draft anyway/i })).toHaveLength(2);
+  });
+
   test("drafts tab filters send-back, held, and cut workflow states", () => {
     const workflowDrafts: Draft[] = [
       ...fixtureDrafts,

@@ -119,6 +119,21 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
     if (count === undefined || count === null || count < 1) return null;
     return count === 1 ? "Seen before" : `Seen ${count} times before`;
   };
+  const leadNeedsDraftCaution = (lead: Lead) => {
+    const disposition = (lead.disposition ?? "review").toLowerCase();
+    const storyType = (lead.story_type ?? "").toLowerCase();
+    const novelty = lead.novelty_score ?? 0;
+    return Boolean(
+      (lead.recurrence_count ?? 0) > 0 ||
+      storyType === "background" ||
+      storyType === "watch" ||
+      storyType === "verification" ||
+      disposition === "background" ||
+      disposition === "watch" ||
+      disposition === "needs_verification" ||
+      (novelty > 0 && novelty <= 2)
+    );
+  };
   const draftByLeadId = new Map<number, Draft>();
   for (const draft of drafts) {
     if (draft.lead_id && !draftByLeadId.has(draft.lead_id)) {
@@ -275,7 +290,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                 const existingDraft = lead.id ? draftByLeadId.get(lead.id) : undefined;
                 const draftLabel = existingDraft
                   ? "Open draft"
-                  : lead.disposition === "background" || lead.story_type === "background" || (lead.recurrence_count ?? 0) > 0
+                  : leadNeedsDraftCaution(lead)
                     ? "Draft anyway"
                     : "Draft";
                 const openLeadOrDraft = () => {
