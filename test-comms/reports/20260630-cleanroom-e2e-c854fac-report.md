@@ -1,7 +1,7 @@
 # CivicNewspaper cleanroom E2E report - c854fac attempt 3
 
 Date: 2026-06-30 UTC
-Tester machine: Windows cleanroom tester, user `MSI\civic`
+Tester machine: Windows cleanroom tester
 Coordination branch: `test-comms/cleanroom-coder-tester`
 Product branch: `main`
 Product commit: `c854fac6924fc1e584bf3eb9b136142fbddd4b13`
