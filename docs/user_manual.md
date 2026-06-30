@@ -12,13 +12,29 @@ The Civic Desk is public-beta software. It is useful, but it is not a signed sta
 
 What that means in practice:
 
-- Windows or macOS may warn you because the installer is unsigned.
+- Windows may warn you because the public-beta installer is unsigned.
 - The latest source code/tag may be newer than the latest published installer release.
-- Platform downloads depend on what assets are attached to the GitHub Release you choose.
-- Cleanroom testing has focused most heavily on Windows.
+- Windows is the tested public-beta installer path for this release line.
+- macOS and Linux installers are backlog/proof-needed until clean-machine proof is recorded.
 - You should verify important output before publishing.
 
 The app is local-first, not internet-free. Your database, drafts, settings, and output files are local by default. The app uses the internet when you fetch sources, run discovery/search, download a local AI model, or publish to an external provider.
+
+## What The App Does Not Do
+
+The Civic Desk is not a substitute for a publisher, reporter, editor, lawyer, or public-records clerk.
+
+It does not:
+
+- Decide what you are allowed to publish.
+- Guarantee that a lead is true, current, fair, or newsworthy.
+- Guarantee that discovery found every useful source in town.
+- Turn rumors, comments, or public social posts into verified stories by itself.
+- Provide legal advice.
+- Replace proofreading, fact-checking, source review, or human judgment.
+- Promise polished professional newspaper quality from every AI draft.
+
+It can warn you, organize evidence, suggest reporting paths, improve drafts, and package an issue. You still decide what to report, what to verify, what to hold, what to cut, and what to publish.
 
 ## 1. Installing The App
 
@@ -26,15 +42,15 @@ Open the GitHub Releases page:
 
 <https://github.com/scottconverse/CivicNewspaper/releases>
 
-Choose the newest release that has the installer for your computer.
+Choose the newest release that has a Windows installer and checksum.
 
-On Windows, use the `.exe` or `.msi` installer if present. Because the app is unsigned, SmartScreen may show a warning. Click **More info**, confirm the filename came from the project release page, and choose **Run anyway** if you are comfortable continuing.
+On Windows, use the `.exe` installer. Because the app is unsigned, SmartScreen may show a warning. Click **More info**, confirm the filename came from the project release page, and choose **Run anyway** if you are comfortable continuing.
 
-On macOS, use the `.dmg` if present. Because notarization/signing is not complete, you may need to right-click the app and choose **Open**, or use **System Settings > Privacy & Security > Open Anyway**.
-
-On Linux, use the `.deb` package if present. Linux packaging is currently Debian/Ubuntu oriented.
+macOS and Linux are planned, but they are not supported public-beta installer paths in this release line yet. The project needs a real artifact, clean-machine install proof, first-run local AI proof, and honest platform-specific warning text before the manual should tell normal users to install those builds.
 
 Before running an installer, you can compare its SHA256 hash with the release checksum. Checksums confirm that your download matches the release artifact. They are not a replacement for code signing. See [install.md](install.md) for exact commands.
+
+If installation, local AI setup, publishing, source import, or output quality goes wrong, use [troubleshooting.md](troubleshooting.md). It has plain-English fixes for SmartScreen warnings, model downloads, local AI runtime states, weak story output, here.now previews, ZIP/static output, and source import problems.
 
 ## 2. First Launch And Setup
 
@@ -53,7 +69,7 @@ Use real names if you intend to publish publicly. The app should not invent your
 
 ### Local AI Setup
 
-The app checks your machine and recommends a local model. On many 8 GB+ machines, `qwen2.5:7b` is the conservative default. On smaller machines, the app may recommend something lighter, such as `llama3.2:3b`.
+The app checks your machine and recommends a local model. For this public-beta line, `phi4-mini:latest` is the conservative default because the latest local bakeoff showed it returned valid structured results for both real civic signals and empty/noise input. You can still choose another installed model from the AI Model screen, but the app should not silently switch models without telling you.
 
 Model downloads can be large and slow. This is normal. The setup screen should tell you what is being downloaded and show progress. If you skip local AI setup, you can still use many parts of the app: source review, manual drafting, editing, backup, export, and publishing. AI-assisted summarization, drafting, ranking, and advisor features will be limited until the model is available.
 
@@ -220,11 +236,27 @@ If the advisor raises a concern, decide what to do:
 - Mark a verification task.
 - Publish anyway with an editor note if you judge that appropriate.
 
+### Step 8A: Use The Workbench Status Controls
+
+The Workbench is where a draft becomes an editorial decision. Think of it like the editor's desk in a small newsroom.
+
+If the draft is close but still reads like notes, use **Improve for Publication**. This asks the local model to clean up headline, structure, and reader-facing wording without adding facts. It loads the revised copy into the editor so you can inspect it. It does not publish the story for you. Review the text, check the sources, and save the draft if you want to keep the change.
+
+If the story is too long or thin for a full article, use **Make this a brief**. This changes the draft format in the editor. Save the draft before moving on so the issue compiler uses the format you actually reviewed.
+
+If a writer needs to do more reporting, click **Send Back for More Work**. Write a clear assignment note, such as "Confirm the dollar amount with the agenda packet" or "Find a second source before naming the contractor." The note stays with the draft so the next person knows what to fix.
+
+If the story is real but not ready today, click **Hold**. Use the hold note to explain what you are waiting for: a meeting packet, a return phone call, an election result, a court filing, or a public document. Held stories are paused. Resume them when the missing piece arrives.
+
+If the story should not be in this issue, click **Cut Story**. Cut does not mean the app censored the story. It means the editor decided not to run it now. You can restore it later if the newsroom changes its mind.
+
+When a sent-back or held story is ready again, use **Resume Editing** or **Mark Ready for Review** first. The app will not let a paused draft jump straight to publication from the paused state; that is workflow discipline, not a content veto.
+
 ### Step 9: Approve For Publishing
 
 Only approve a story when a human editor has reviewed it.
 
-Approving means: this is ready to be part of the public issue. It does not mean the app certified it. It means you did.
+Approving means: this exact saved draft is ready to be part of the public issue. It does not mean the app certified it. It means you did. When you approve, the app saves the visible draft first, checks it again, records the human review, and then marks it ready for the issue.
 
 The app records that a human review happened. It should never silently approve a story for you.
 
@@ -419,7 +451,7 @@ If XLSX, DOCX, or PDF imports flatten many URLs into one candidate, report it as
 - **Daily Scan:** run source checks and AI-assisted summaries.
 - **Dark Signals:** review weak or public social/community signals.
 - **Verification:** manage reporting tasks.
-- **Workbench:** write, edit, advise, approve, hold, kill, or return stories.
+- **Workbench:** write, edit, advise, approve, hold, cut, or return stories.
 - **Sources:** add, discover, import, and review sources.
 - **AI Model:** install/check local model support.
 - **Publishing:** compile, export, publish, and share.
@@ -441,8 +473,8 @@ If XLSX, DOCX, or PDF imports flatten many URLs into one candidate, report it as
 
 - Installers are unsigned.
 - Latest source/tag and latest published installer release may not always be the same.
-- Cleanroom proof has focused most heavily on Windows.
-- macOS signing/notarization is not complete.
+- Windows is the tested public-beta installer path.
+- macOS and Linux installer proof is backlog/proof-needed.
 - OCR for scanned PDFs is not complete.
 - Fully polished newsroom-quality story selection still needs improvement.
 - External provider verification depends on user-owned credentials.

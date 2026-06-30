@@ -208,7 +208,11 @@ Current migration files:
 - `0010_publish_runs.sql`
 - `0011_subscribers.sql`
 - `0012_civic_intelligence.sql`
-- `0013_dark_signals_verification.sql`
+- `0013_verification_queue.sql`
+- `0014_beat_memory.sql`
+- `0015_story_quality_metadata.sql`
+- `0016_recurrence_metadata.sql`
+- `0017_publish_decision_audit.sql`
 
 Current primary tables:
 
@@ -230,6 +234,16 @@ Current primary tables:
 - `source_performance_scores`
 - `dark_signals`
 - `verification_tasks`
+- `verification_task_links`
+- `beat_memory`
+- `story_templates`
+- `publish_decision_audits`
+
+The Stage 3 story-quality layer depends on these newer supporting tables:
+
+- `beat_memory` tracks recurring topics so the app can warn when a lead is background or seen-before material instead of treating every familiar page as fresh news.
+- `story_templates` stores format guidance for briefs, watch items, investigations, and other story types so the local model has newsroom-specific structure without hard-coding every instruction in source.
+- `publish_decision_audits` records the editor-facing reason and gate context around publish decisions. This preserves human judgment and review history without giving software veto power.
 
 ## Security Model
 

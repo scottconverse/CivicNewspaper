@@ -1,4 +1,4 @@
-# CivicNewspaper v0.3.0 Manual Smoke Test
+# CivicNewspaper v0.3.1 Manual Smoke Test
 
 This smoke test verifies the release paths that unit tests and browser component tests cannot prove by themselves.
 

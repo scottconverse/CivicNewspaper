@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>document.documentElement.classList.add('js');</script>
     <title>The Civic Desk | Local newsroom software for small-town reporting</title>
-    <meta name="description" content="The Civic Desk is local-first desktop newsroom software for finding civic leads, drafting and editing stories, and publishing a local paper with here.now, GitHub Pages, or static export.">
+    <meta name="description" content="The Civic Desk is local-first desktop newsroom software for finding civic leads, drafting and editing stories, and publishing a local paper with here.now anonymous preview or static export.">
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/lucide@0.456.0"></script>
 </head>
@@ -48,8 +48,8 @@
                     </a>
                 </div>
                 <div class="hero-proof">
-                    <span><strong>Default publish:</strong> here.now</span>
-                    <span><strong>Archive:</strong> GitHub Pages</span>
+                    <span><strong>Default preview:</strong> here.now</span>
+                    <span><strong>Archive:</strong> static export or credentialed connector</span>
                     <span><strong>AI:</strong> local-first with Ollama</span>
                 </div>
             </div>
@@ -117,7 +117,7 @@
                     <article class="workflow-card">
                         <span>04</span>
                         <h3>Publish and share</h3>
-                        <p>Compile a static issue, export a ZIP, publish with here.now by default, keep a GitHub Pages archive if desired, and generate share copy.</p>
+                        <p>Compile a static issue, export a ZIP, publish with here.now anonymous preview by default, and generate share copy. Durable archives use your own credentialed connector and should be verified for the release.</p>
                     </article>
                 </div>
             </div>
@@ -191,40 +191,42 @@
                 <div class="section-header">
                     <p class="eyebrow">Get the public beta</p>
                     <h2>Download from GitHub Releases.</h2>
-                    <p>Use the newest release that actually includes an installer for your platform. Because the beta is unsigned, verify checksums before installing.</p>
+                    <p>Use the newest release that includes a Windows installer and checksum. Because the beta is unsigned, verify checksums before installing.</p>
                 </div>
                 <div class="download-container">
                     <div class="download-card" id="download-win">
                         <i data-lucide="monitor-down"></i>
                         <h3>Windows</h3>
-                        <p>Use the `.exe` or `.msi` asset when present. SmartScreen warnings are expected for an unsigned beta.</p>
-                        <a href="https://github.com/scottconverse/CivicNewspaper/releases/latest" class="download-btn">
+                        <p>Use the `.exe` installer. SmartScreen warnings are expected for an unsigned beta.</p>
+                        <a href="https://github.com/scottconverse/CivicNewspaper/releases" class="download-btn">
                             <i data-lucide="download"></i>
-                            Download Windows
+                            View Windows Releases
                         </a>
                     </div>
                     <div class="download-card" id="download-mac">
                         <i data-lucide="laptop"></i>
-                        <h3>macOS</h3>
-                        <p>Use a `.dmg` asset only when that release includes one. macOS signing/notarization is not stable-grade yet.</p>
-                        <a href="https://github.com/scottconverse/CivicNewspaper/releases/latest" class="download-btn">
-                            <i data-lucide="download"></i>
-                            View macOS assets
+                        <h3>macOS backlog</h3>
+                        <p>Planned, but not a supported public-beta installer path until clean-machine proof and platform notes are recorded.</p>
+                        <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/README.md#backlog-mac-and-linux-installer-proof" class="download-btn">
+                            <i data-lucide="list-checks"></i>
+                            View backlog
                         </a>
                     </div>
                     <div class="download-card" id="download-linux">
                         <i data-lucide="terminal"></i>
-                        <h3>Linux</h3>
-                        <p>Use the `.deb` package when present. Linux packaging is currently Debian/Ubuntu oriented.</p>
-                        <a href="https://github.com/scottconverse/CivicNewspaper/releases/latest" class="download-btn">
-                            <i data-lucide="download"></i>
-                            View Linux assets
+                        <h3>Linux backlog</h3>
+                        <p>Planned, but not a supported public-beta installer path until a VM or clean-machine proof is recorded.</p>
+                        <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/README.md#backlog-mac-and-linux-installer-proof" class="download-btn">
+                            <i data-lucide="list-checks"></i>
+                            View backlog
                         </a>
                     </div>
                 </div>
                 <div class="download-links">
                     <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/install.md" target="_blank" rel="noopener noreferrer">Install guide and checksums</a>
+                    <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/troubleshooting.md" target="_blank" rel="noopener noreferrer">Troubleshooting</a>
                     <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/release-readiness.md" target="_blank" rel="noopener noreferrer">Release readiness</a>
+                    <a href="https://github.com/scottconverse/CivicNewspaper/issues" target="_blank" rel="noopener noreferrer">Report a bug</a>
                     <a href="https://github.com/scottconverse/CivicNewspaper/discussions" target="_blank" rel="noopener noreferrer">Discussions</a>
                 </div>
             </div>
@@ -242,6 +244,7 @@
             </div>
             <div class="footer-links">
                 <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/user_manual.md" target="_blank" rel="noopener noreferrer">Manual</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/troubleshooting.md" target="_blank" rel="noopener noreferrer">Troubleshooting</a>
                 <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/docs/architecture.md" target="_blank" rel="noopener noreferrer">Architecture</a>
                 <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
             </div>

@@ -92,10 +92,17 @@ export const AiModelPanel: React.FC<AiModelPanelProps> = ({
             </select>
             <span>{pullingModel ? progressLine : isInstalled ? "Installed and ready" : ollamaOnline ? "Ready to download" : "AI service offline"}</span>
           </div>
-          <div className="ai-progress-track">
+          <div
+            className="ai-progress-track"
+            role="progressbar"
+            aria-label="AI model download progress"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.min(100, Math.max(0, Math.round(progressPercent)))}
+          >
             <div style={{ width: `${Math.min(100, Math.max(0, progressPercent))}%` }} />
           </div>
-          <div className="ai-progress-status">
+          <div className="ai-progress-status" role="status" aria-live="polite">
             {pullingModel && <RefreshCcw className="animate-spin" size={15} />}
             <span>{pullingModel ? progressLine : isInstalled ? "Available on this computer" : `${modelSizes[recommended] || "One-time download"} - local after setup`}</span>
           </div>

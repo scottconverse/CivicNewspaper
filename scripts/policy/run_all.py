@@ -102,9 +102,9 @@ def main() -> int:
         "check_decision_ledger": "decision-ledger.ndjson",
     }
 
-    # Find the python scripts under the plugin install directory to execute them
-    # because they are packaged inside the plugin and not copied to the workspace.
-    plugin_scripts_dir = Path("C:/Users/scott/.gemini/config/plugins/agent-pipeline-antigravity/scripts")
+    # Find the policy check scripts. In plugin-driven runs they may live outside
+    # the workspace; local repo runs use the sibling scripts in this folder.
+    plugin_scripts_dir = Path(os.environ.get("AGENT_PIPELINE_POLICY_SCRIPTS", Path(__file__).parent))
 
     def _run(check_name: str, script_args: list[str], extra_args: list[str]) -> tuple[bool, str]:
         script_path = plugin_scripts_dir / script_args[0]

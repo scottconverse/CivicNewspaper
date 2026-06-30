@@ -302,8 +302,10 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
       {app.activeTab === "system" && (
         <SystemStatus
           ollamaOnline={app.ollamaOnline}
+          modelLabel={app.selectedModel || "No model selected"}
           dbVersion=""
           appVersion={app.appVersion}
+          onOpenAiSetup={() => app.setActiveTab("onboarding")}
         />
       )}
 
@@ -394,12 +396,14 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           onDecision={app.handleDecision}
           onApprovePublish={app.handleApprovePublish}
           onKillStory={app.handleKillStory}
+          onImproveForPublication={app.handleImproveForPublication}
           isGeneratingSocial={app.isGeneratingSocial}
           socialPackResult={app.socialPackResult}
           onSocialPackResultChange={app.setSocialPackResult}
           onGenerateSocial={app.handleGenerateSocial}
           onUpdateDraftTitle={(title) => app.selectedDraft && app.setSelectedDraft({ ...app.selectedDraft, title })}
           onUpdateDraftContent={(content) => app.selectedDraft && app.setSelectedDraft({ ...app.selectedDraft, content })}
+          onUpdateDraftFormat={(format) => app.selectedDraft && app.setSelectedDraft({ ...app.selectedDraft, format })}
           firstAmendmentAdvisorEnabled={app.communityProfile?.first_amendment_advisor_enabled !== false}
         />
       )}

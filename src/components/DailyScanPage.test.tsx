@@ -33,7 +33,7 @@ describe("DailyScanPage", () => {
       dailyScanProgress: {
         stage: "generating",
         message: "Scanning batch 2 of 5.",
-        model: "qwen2.5:7b",
+        model: "phi4-mini:latest",
         evidence_count: 17,
         batch_index: 2,
         batch_count: 5,
@@ -43,7 +43,7 @@ describe("DailyScanPage", () => {
 
     expect(screen.getByTestId("daily-scan-progress")).toBeInTheDocument();
     expect(screen.getByText("Scanning batch 2 of 5.")).toBeInTheDocument();
-    expect(screen.getByText(/Model: qwen2.5:7b/)).toBeInTheDocument();
+    expect(screen.getByText(/Model: phi4-mini:latest/)).toBeInTheDocument();
     expect(screen.getByText(/Evidence: 17/)).toBeInTheDocument();
     expect(screen.getByText(/Saved leads: 4/)).toBeInTheDocument();
     expect(screen.getByText(/Batch 2 of 5/)).toBeInTheDocument();

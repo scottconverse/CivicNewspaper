@@ -1,8 +1,9 @@
 param(
   [string]$FixtureDir = "",
-  [string]$Model = "qwen2.5:7b",
+  [string]$Model = "phi4-mini:latest",
   [switch]$SkipLiveModel,
   [switch]$SkipHereNow,
+  [switch]$SkipDesktopSmoke,
   [switch]$SkipImportFixtures,
   [switch]$AllowDirty,
   [switch]$Stable
@@ -137,6 +138,17 @@ try {
       cmd /d /c "cargo test app_data_override -- --nocapture 2>&1"
     } finally {
       Pop-Location
+    }
+  }
+
+  if ($SkipDesktopSmoke) {
+    if ($Stable) {
+      throw "Stable release smoke cannot skip desktop first-run smoke."
+    }
+    Add-SkippedCheck "desktop-first-run-loopback-smoke" "Skipped by -SkipDesktopSmoke."
+  } else {
+    Invoke-Check "desktop-first-run-loopback-smoke" {
+      powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoRoot "scripts\desktop-smoke.ps1") -RunDir (Join-Path $RunDir "desktop-smoke")
     }
   }
 

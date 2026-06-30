@@ -77,15 +77,17 @@ interface WorkbenchProps {
   onCloseWorkbench: () => void;
   onOpenDraftEditor?: (draft: Draft | number) => void;
   onDeleteDraft: (id: number) => void;
-  onDecision: (status: string) => void;
+  onDecision: (status: string, reason?: string) => void;
   onApprovePublish?: (overrideReason?: string) => void;
   onKillStory?: () => void;
+  onImproveForPublication?: () => Promise<void> | void;
   isGeneratingSocial: boolean;
   socialPackResult: string;
   onSocialPackResultChange: (val: string) => void;
   onGenerateSocial: () => void;
   onUpdateDraftTitle: (title: string) => void;
   onUpdateDraftContent: (content: string) => void;
+  onUpdateDraftFormat?: (format: string) => void;
   firstAmendmentAdvisorEnabled?: boolean;
 }
 
@@ -122,6 +124,34 @@ function guardrailInstruction(issue: any): { title: string; action: string } {
   };
 }
 
+function getStoryQualityWarnings(draft: Draft, evidenceCount: number): string[] {
+  const warnings: string[] = [];
+  const title = (draft.title || "").trim();
+  const content = (draft.content || "").trim();
+  const lower = content.toLowerCase();
+  const paragraphCount = content
+    .split(/\n{2,}/)
+    .map((part) => part.trim())
+    .filter(Boolean).length;
+
+  if (!title || title.length < 8 || title.endsWith(".") || title.includes(": ")) {
+    warnings.push("Headline may read like a note or summary. Use a concise reader-facing headline.");
+  }
+  if (/(editor_note|editor note:|reporting steps:|nut graf:|\[source needed\]|\[verification needed\]|body:)/i.test(content)) {
+    warnings.push("Draft still contains reporter scaffolding. Remove newsroom-only labels before publishing.");
+  }
+  if (evidenceCount > 0 && !content.includes("evidence:")) {
+    warnings.push("Linked sources exist, but the body has no inline evidence citations.");
+  }
+  if (paragraphCount < 2 && draft.format !== "brief") {
+    warnings.push("Story body is very short for this format. Consider making it a brief or adding verified reporting.");
+  }
+  if (lower.includes("according to") === false && evidenceCount > 0) {
+    warnings.push("No clear attribution phrase found. Attribute key facts to the source or rewrite more cautiously.");
+  }
+  return warnings;
+}
+
 export const Workbench: React.FC<WorkbenchProps> = ({
   selectedLead,
   selectedDraft,
@@ -145,12 +175,14 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   onDecision,
   onApprovePublish,
   onKillStory,
+  onImproveForPublication,
   isGeneratingSocial,
   socialPackResult,
   onSocialPackResultChange,
   onGenerateSocial,
   onUpdateDraftTitle,
   onUpdateDraftContent,
+  onUpdateDraftFormat,
   firstAmendmentAdvisorEnabled = true
 }) => {
   const generateDraftButtonRef = React.useRef<HTMLButtonElement | null>(null);
@@ -160,8 +192,18 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   const [attested, setAttested] = useState(false);
   const [showOverrideModal, setShowOverrideModal] = useState(false);
   const [overrideReason, setOverrideReason] = useState("");
+  const [decisionModal, setDecisionModal] = useState<null | {
+    status: string;
+    title: string;
+    intro: string;
+    label: string;
+    placeholder: string;
+    defaultReason: string;
+  }>(null);
+  const [decisionReason, setDecisionReason] = useState("");
   const [pressFreedomReview, setPressFreedomReview] = useState("");
   const [isRunningPressFreedomReview, setIsRunningPressFreedomReview] = useState(false);
+  const [isImprovingForPublication, setIsImprovingForPublication] = useState(false);
 
   useEffect(() => {
     setError(null);
@@ -169,6 +211,8 @@ export const Workbench: React.FC<WorkbenchProps> = ({
     setAttested(false);
     setShowOverrideModal(false);
     setOverrideReason("");
+    setDecisionModal(null);
+    setDecisionReason("");
     setPressFreedomReview("");
   }, [selectedDraft?.id]);
 
@@ -198,12 +242,16 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   // editor can still continue; software records the choice instead of vetoing it.
   const guardrailIssues = guardrailsReport?.issues ?? [];
   const severeIssueCount = guardrailIssues.filter((i) => i.severity === "error").length;
+  const qualityWarningsForSelectedDraft = selectedDraft
+    ? getStoryQualityWarnings(selectedDraft, evidenceList.length)
+    : [];
+  const totalReviewWarningCount = guardrailIssues.length + qualityWarningsForSelectedDraft.length;
 
   const handleApproveClick = () => {
     if (selectedDraft?.status === "killed") {
       return;
     }
-    if (guardrailIssues.length > 0) {
+    if (totalReviewWarningCount > 0) {
       setShowOverrideModal(true);
     } else {
       onApprovePublish?.();
@@ -215,11 +263,47 @@ export const Workbench: React.FC<WorkbenchProps> = ({
     setShowOverrideModal(false);
     if (reason) {
       onApprovePublish?.(reason);
-    } else if (guardrailIssues.length > 0) {
+    } else if (totalReviewWarningCount > 0) {
       onApprovePublish?.("Editor reviewed pre-publication warnings and chose to publish.");
     } else {
       onApprovePublish?.();
     }
+  };
+
+  const openDecisionModal = (status: string) => {
+    const presets: Record<string, NonNullable<typeof decisionModal>> = {
+      needs_verification: {
+        status,
+        title: "Send back for more work",
+        intro: "Record why this draft is not ready. This note stays with the draft so a writer knows what to fix next.",
+        label: "Reason / assignment",
+        placeholder: "e.g. Needs a second source, source date is unclear, call city clerk, too generic for publication...",
+        defaultReason: "Needs more reporting or verification before review.",
+      },
+      hold: {
+        status,
+        title: "Put story on hold",
+        intro: "Record why this story is paused so it can be picked up later without losing context.",
+        label: "Hold note",
+        placeholder: "e.g. Waiting for agenda packet, revisit after Thursday meeting, not newsworthy yet...",
+        defaultReason: "Held for later editorial review.",
+      },
+    };
+    const next = presets[status];
+    if (!next) {
+      onDecision(status);
+      return;
+    }
+    setDecisionModal(next);
+    setDecisionReason(next.defaultReason);
+  };
+
+  const confirmDecisionModal = () => {
+    if (!decisionModal) return;
+    const reason = decisionReason.trim() || decisionModal.defaultReason;
+    onDecision(decisionModal.status, reason);
+    setDecisionModal(null);
+    setDecisionReason("");
   };
 
   const handlePressFreedomReview = async () => {
@@ -272,6 +356,20 @@ export const Workbench: React.FC<WorkbenchProps> = ({
       case "killed": return "offline";
       case "corrected": return "info";
       default: return "warning";
+    }
+  };
+
+  const handleImproveForPublication = async () => {
+    if (!onImproveForPublication || !selectedDraft?.content) return;
+    setIsImprovingForPublication(true);
+    setError(null);
+    try {
+      await onImproveForPublication();
+    } catch (error: any) {
+      console.error("Failed to improve draft for publication:", error);
+      setError(error?.message || String(error));
+    } finally {
+      setIsImprovingForPublication(false);
     }
   };
 
@@ -466,6 +564,8 @@ export const Workbench: React.FC<WorkbenchProps> = ({
     const canCut = workflowStatus !== "killed" && !finalStatus;
     const canMarkReady = !["ready_to_review", "ready_to_publish", "killed", "published", "corrected"].includes(workflowStatus);
     const canUnapprove = workflowStatus === "ready_to_publish";
+    const pausedForMoreWork = workflowStatus === "hold" || workflowStatus === "needs_verification";
+    const qualityWarnings = qualityWarningsForSelectedDraft;
 
     return (
       <div id="workbench-editor-panel" tabIndex={-1}>
@@ -586,11 +686,51 @@ export const Workbench: React.FC<WorkbenchProps> = ({
           </div>
         )}
 
+        <div className="card" id="story-quality-preflight-card" style={{ padding: "1rem", marginBottom: "1rem", background: qualityWarnings.length ? "rgba(245, 158, 11, 0.08)" : "var(--accent-light)" }}>
+          <div className="flex-between" style={{ alignItems: "flex-start", gap: "1rem" }}>
+            <div>
+              <h3 className="card-title" style={{ marginBottom: "0.35rem" }}>Story-quality preflight</h3>
+              <p className="help-text" style={{ margin: 0 }}>
+                Advisory only. These checks look for headline, attribution, citation, and reporter-note problems before approval.
+              </p>
+            </div>
+            <div className="btn-group">
+              {onUpdateDraftFormat && selectedDraft.format !== "brief" && (
+                <button type="button" className="btn btn-secondary btn-sm" id="btn-make-brief" onClick={() => onUpdateDraftFormat("brief")}>
+                  Make this a brief
+                </button>
+              )}
+              {onImproveForPublication && (
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  id="btn-improve-publication"
+                  onClick={handleImproveForPublication}
+                  disabled={isImprovingForPublication || (!ollamaOnline && !manualLlmMode) || !selectedDraft.content}
+                >
+                  {isImprovingForPublication ? "Improving..." : "Improve for Publication"}
+                </button>
+              )}
+            </div>
+          </div>
+          {qualityWarnings.length > 0 ? (
+            <ul className="help-text" style={{ margin: "0.65rem 0 0 1.2rem" }}>
+              {qualityWarnings.map((warning) => (
+                <li key={warning}>{warning}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="help-text" style={{ margin: "0.65rem 0 0 0" }}>
+              No obvious story-quality warnings from the local preflight.
+            </p>
+          )}
+        </div>
+
         <div className="workbench-container">
           {/* Editor Pane (Left) */}
           <div className="editor-pane">
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              <label style={{ fontWeight: 600, fontSize: "0.9rem" }}>Story Title</label>
+              <label htmlFor="input-draft-title" style={{ fontWeight: 600, fontSize: "0.9rem" }}>Story Title</label>
               <input
                 type="text"
                 value={selectedDraft.title}
@@ -602,7 +742,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
 
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", flexGrow: 1 }}>
               <div className="flex-between">
-                <label style={{ fontWeight: 600, fontSize: "0.9rem" }}>Article Body (Markdown)</label>
+                <label htmlFor="draft-editor-textarea" style={{ fontWeight: 600, fontSize: "0.9rem" }}>Article Body (Markdown)</label>
                 <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
                   {error && (
                     <span className="error-text" role="alert" style={{ fontSize: "0.85rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
@@ -656,8 +796,8 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                         {workflowStatus === "killed" ? "Restore to Drafting" : "Resume Editing"}
                       </button>
                     )}
-                    {canSendBack && (
-                      <button className="btn btn-secondary btn-sm" onClick={() => onDecision("needs_verification")} id="btn-status-send-back">
+                  {canSendBack && (
+                      <button className="btn btn-secondary btn-sm" onClick={() => openDecisionModal("needs_verification")} id="btn-status-send-back">
                         Send Back for More Work
                       </button>
                     )}
@@ -672,7 +812,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                       </button>
                     )}
                     {canHold && (
-                      <button className="btn btn-secondary btn-sm" onClick={() => onDecision("hold")} id="btn-status-hold">
+                      <button className="btn btn-secondary btn-sm" onClick={() => openDecisionModal("hold")} id="btn-status-hold">
                         Hold
                       </button>
                     )}
@@ -684,15 +824,17 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                     <button
                       className="btn btn-primary btn-sm"
                       onClick={handleApproveClick}
-                      disabled={selectedDraft.status === "killed" || finalStatus}
+                      disabled={selectedDraft.status === "killed" || finalStatus || pausedForMoreWork}
                       title={
                         selectedDraft.status === "killed"
                           ? "Restore this story before approving it for publishing"
                           : finalStatus
                             ? "This story is already in a final publishing state"
+                          : pausedForMoreWork
+                            ? "Resume editing or mark this story ready for review before approving it"
                           : !attested
                           ? "Approve and record editorial responsibility"
-                          : guardrailIssues.length > 0
+                          : totalReviewWarningCount > 0
                             ? "This story has review warnings - you'll be asked to confirm that the editor reviewed them"
                             : "Approve this story for publishing"
                       }
@@ -710,11 +852,16 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                     <p style={{ margin: "0 0 0.5rem 0" }}>
                       This draft is on hold. Resume editing when you are ready, or send it back for more reporting and verification.
                     </p>
+                    {selectedDraft.missing_evidence_notes && (
+                      <p className="help-text" style={{ margin: "0 0 0.5rem 0" }}>
+                        <strong>Hold note:</strong> {selectedDraft.missing_evidence_notes}
+                      </p>
+                    )}
                     <div className="btn-group">
                       <button className="btn btn-secondary btn-sm" type="button" onClick={() => onDecision("draft_generated")} id="btn-hold-resume-inline">
                         Resume Editing
                       </button>
-                      <button className="btn btn-secondary btn-sm" type="button" onClick={() => onDecision("needs_verification")} id="btn-hold-send-back-inline">
+                      <button className="btn btn-secondary btn-sm" type="button" onClick={() => openDecisionModal("needs_verification")} id="btn-hold-send-back-inline">
                         Send Back for More Work
                       </button>
                     </div>
@@ -725,7 +872,14 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                     role="status"
                     style={{ background: "rgba(59, 130, 246, 0.08)", borderLeft: "4px solid var(--color-info)", borderRadius: "4px", color: "var(--text-primary)", padding: "0.75rem" }}
                   >
-                    This draft was sent back for more work. Keep editing, add evidence, then mark it ready for review when it is ready for an editor again.
+                    <p style={{ margin: 0 }}>
+                      This draft was sent back for more work. Keep editing, add evidence, then mark it ready for review when it is ready for an editor again.
+                    </p>
+                    {selectedDraft.missing_evidence_notes && (
+                      <p className="help-text" style={{ margin: "0.5rem 0 0 0" }}>
+                        <strong>Assignment note:</strong> {selectedDraft.missing_evidence_notes}
+                      </p>
+                    )}
                   </div>
                 )}
                 {selectedDraft.status === "killed" && (
@@ -871,7 +1025,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
               Publish with review warnings?
             </h3>
             <p className="help-text" style={{ marginTop: 0 }}>
-              This story has {guardrailIssues.length} review warning(s)
+              This story has {totalReviewWarningCount} review warning(s)
               {severeIssueCount > 0 ? `, including ${severeIssueCount} high-concern issue(s),` : ""}
               {" "}from your newsroom's guardrail and story-quality checks. The app will not veto the editor,
               but this decision is recorded with the story.
@@ -880,6 +1034,11 @@ export const Workbench: React.FC<WorkbenchProps> = ({
               {guardrailIssues.map((iss: any, idx: number) => (
                 <li key={idx}>
                   [{iss.category.replace(/_/g, " ")}] {iss.message}
+                </li>
+              ))}
+              {qualityWarningsForSelectedDraft.map((warning, idx) => (
+                <li key={`quality-${idx}`}>
+                  [story quality] {warning}
                 </li>
               ))}
             </ul>
@@ -903,6 +1062,30 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                 id="btn-override-confirm"
               >
                 Publish anyway (logged)
+              </button>
+            </div>
+          </Modal>
+        )}
+        {decisionModal && (
+          <Modal id="decision-reason-modal" labelledBy="decision-reason-modal-title" onClose={() => setDecisionModal(null)}>
+            <h3 id="decision-reason-modal-title" style={{ marginTop: 0 }}>{decisionModal.title}</h3>
+            <p className="help-text" style={{ marginTop: 0 }}>{decisionModal.intro}</p>
+            <label htmlFor="decision-reason" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>
+              {decisionModal.label}
+            </label>
+            <textarea
+              id="decision-reason"
+              value={decisionReason}
+              onChange={(e) => setDecisionReason(e.target.value)}
+              placeholder={decisionModal.placeholder}
+              style={{ width: "100%", height: "110px" }}
+            />
+            <div className="flex-between" style={{ marginTop: "1rem" }}>
+              <button className="btn btn-secondary" type="button" onClick={() => setDecisionModal(null)} id="btn-decision-reason-cancel">
+                Cancel
+              </button>
+              <button className="btn btn-primary" type="button" onClick={confirmDecisionModal} id="btn-decision-reason-confirm">
+                Save decision note
               </button>
             </div>
           </Modal>

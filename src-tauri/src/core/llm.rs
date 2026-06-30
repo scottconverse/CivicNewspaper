@@ -48,6 +48,9 @@ struct OllamaStreamChunk {
 /// (ENG-M4/QA-M4). Override at runtime with `CIVICNEWS_LLM_TIMEOUT_SECS` (set it
 /// to `0` to disable the timeout entirely in favor of a cancel control).
 const DEFAULT_LLM_TIMEOUT_SECS: u64 = 600;
+const RUNTIME_DOWNLOAD_CONNECT_TIMEOUT_SECS: u64 = 30;
+const RUNTIME_DOWNLOAD_IDLE_TIMEOUT_SECS: u64 = 120;
+const DEFAULT_OLLAMA_BASE_URL: &str = "http://127.0.0.1:11434";
 
 /// Resolve the generation timeout: `CIVICNEWS_LLM_TIMEOUT_SECS` if set and
 /// parseable (`0` => no timeout), otherwise [`DEFAULT_LLM_TIMEOUT_SECS`].
@@ -60,6 +63,18 @@ fn generation_timeout() -> Option<Duration> {
         },
         Err(_) => Some(Duration::from_secs(DEFAULT_LLM_TIMEOUT_SECS)),
     }
+}
+
+pub fn ollama_base_url() -> String {
+    std::env::var("CIVICNEWS_OLLAMA_BASE_URL")
+        .ok()
+        .map(|value| value.trim().trim_end_matches('/').to_string())
+        .filter(|value| {
+            value.starts_with("http://127.0.0.1:")
+                || value.starts_with("http://localhost:")
+                || value.starts_with("http://[::1]:")
+        })
+        .unwrap_or_else(|| DEFAULT_OLLAMA_BASE_URL.to_string())
 }
 
 /// A user-surfaceable error from a local LLM generation. The timeout variant is
@@ -104,7 +119,11 @@ pub async fn check_ollama_status() -> bool {
         .build()
         .unwrap_or_default();
 
-    match client.get("http://127.0.0.1:11434/api/tags").send().await {
+    match client
+        .get(format!("{}/api/tags", ollama_base_url()))
+        .send()
+        .await
+    {
         Ok(resp) => resp.status().is_success(),
         Err(_) => false,
     }
@@ -217,7 +236,7 @@ async fn call_local_ollama_streaming_with_format(
 
     let fut = async {
         let resp = client
-            .post("http://127.0.0.1:11434/api/generate")
+            .post(format!("{}/api/generate", ollama_base_url()))
             .json(&req_payload)
             .send()
             .await
@@ -917,7 +936,10 @@ pub async fn install_windows_ollama_runtime<R: tauri::Runtime>(
         total: None,
     });
 
-    let client = Client::builder().build().map_err(|e| e.to_string())?;
+    let client = Client::builder()
+        .connect_timeout(Duration::from_secs(RUNTIME_DOWNLOAD_CONNECT_TIMEOUT_SECS))
+        .build()
+        .map_err(|e| e.to_string())?;
     let mut response = client
         .get(OLLAMA_WINDOWS_AMD64_URL)
         .send()
@@ -938,11 +960,17 @@ pub async fn install_windows_ollama_runtime<R: tauri::Runtime>(
         )
     })?;
     let mut downloaded = 0u64;
-    while let Some(chunk) = response
-        .chunk()
+    loop {
+        let next_chunk = tokio::time::timeout(
+            Duration::from_secs(RUNTIME_DOWNLOAD_IDLE_TIMEOUT_SECS),
+            response.chunk(),
+        )
         .await
-        .map_err(|e| format!("Runtime download failed: {e}"))?
-    {
+        .map_err(|_| {
+            "Runtime download stalled. Check your internet connection and retry setup.".to_string()
+        })?
+        .map_err(|e| format!("Runtime download failed: {e}"))?;
+        let Some(chunk) = next_chunk else { break };
         file.write_all(&chunk).map_err(|e| {
             format!(
                 "Could not write local AI runtime download file {}: {e}",
@@ -1297,6 +1325,29 @@ mod stream_parser_tests {
             Some(Duration::from_secs(DEFAULT_LLM_TIMEOUT_SECS)),
             "unparseable → default"
         );
+
+        match prev {
+            Some(v) => std::env::set_var(key, v),
+            None => std::env::remove_var(key),
+        }
+    }
+
+    #[test]
+    fn ollama_base_url_accepts_only_loopback_overrides() {
+        let key = "CIVICNEWS_OLLAMA_BASE_URL";
+        let prev = std::env::var(key).ok();
+
+        std::env::remove_var(key);
+        assert_eq!(ollama_base_url(), DEFAULT_OLLAMA_BASE_URL);
+
+        std::env::set_var(key, "http://127.0.0.1:65534/");
+        assert_eq!(ollama_base_url(), "http://127.0.0.1:65534");
+
+        std::env::set_var(key, "http://localhost:11435");
+        assert_eq!(ollama_base_url(), "http://localhost:11435");
+
+        std::env::set_var(key, "https://example.com");
+        assert_eq!(ollama_base_url(), DEFAULT_OLLAMA_BASE_URL);
 
         match prev {
             Some(v) => std::env::set_var(key, v),

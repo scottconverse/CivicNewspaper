@@ -1332,7 +1332,7 @@ mod tests {
         );
         let second_lead = list_daily_scan_leads(&conn, 2).unwrap().pop().unwrap();
         let why = second_lead.why_flagged.unwrap_or_default();
-        assert!(why.contains("Beat memory: similar topic"));
+        assert!(why.contains("Beat memory: structured match"));
         assert!(why.contains("1 previous time"));
         assert_eq!(
             second_lead.priority.as_deref(),
@@ -1352,7 +1352,7 @@ mod tests {
             .into_iter()
             .find(|lead| lead.from_scan_lead_id == second_lead.id)
             .expect("recurring lead should still appear in Story Queue");
-        assert!(queue_lead.why.contains("Beat memory: similar topic"));
+        assert!(queue_lead.why.contains("Beat memory: structured match"));
         assert_eq!(queue_lead.disposition.as_deref(), Some("background"));
         assert_eq!(queue_lead.recurrence_count, Some(1));
         assert!(queue_lead
@@ -1363,12 +1363,168 @@ mod tests {
 
         let seen_count: i32 = conn
             .query_row(
-                "SELECT seen_count FROM beat_memory WHERE topic_key = 'url:https://example.gov/council/videos'",
+                "SELECT seen_count FROM beat_memory WHERE topic_key = 'topic:city-council:archive-access'",
                 [],
                 |row| row.get(0),
             )
             .unwrap();
         assert_eq!(seen_count, 2);
+    }
+
+    #[test]
+    fn test_daily_scan_does_not_mark_different_topics_on_same_source_page_recurring() {
+        let first_response = r#"
+        {
+          "leads": [
+            {
+              "title": "City Council meeting canceled for July 2",
+              "summary": "Longmont City Council canceled its July 2 regular meeting.",
+              "original_url": "https://longmontcolorado.gov/events",
+              "why_flagged": "This affects people following council business.",
+              "priority": "medium",
+              "suggested_next_step": "Confirm whether agenda items moved to another meeting.",
+              "story_type": "brief",
+              "what_changed": "The July 2 council meeting was canceled.",
+              "immediacy": 4,
+              "impact": 3,
+              "conflict": 1,
+              "novelty": 4,
+              "what_would_make_it_publishable": "A confirmation of the moved agenda items or cancellation notice"
+            }
+          ]
+        }
+        "#;
+        let second_response = r#"
+        {
+          "leads": [
+            {
+              "title": "Library hosts open chess night",
+              "summary": "Longmont Public Library is hosting an open chess night for residents on July 3.",
+              "original_url": "https://longmontcolorado.gov/events",
+              "why_flagged": "This is a current public event, not a council meeting update.",
+              "priority": "low",
+              "suggested_next_step": "Confirm the event time and whether registration is required.",
+              "story_type": "brief",
+              "what_changed": "A dated public library event is listed for July 3.",
+              "immediacy": 3,
+              "impact": 2,
+              "conflict": 1,
+              "novelty": 3,
+              "what_would_make_it_publishable": "The event time, audience, and registration details"
+            }
+          ]
+        }
+        "#;
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT INTO daily_scan_runs (started_at, run_status) VALUES ('2026-06-28T00:00:00Z', 'completed')",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO daily_scan_runs (started_at, run_status) VALUES ('2026-06-29T00:00:00Z', 'running')",
+            [],
+        )
+        .unwrap();
+
+        crate::core::daily_scan::parse_and_save_scan_response(&conn, 1, first_response).unwrap();
+        crate::core::daily_scan::parse_and_save_scan_response(&conn, 2, second_response).unwrap();
+
+        let second_lead = list_daily_scan_leads(&conn, 2).unwrap().pop().unwrap();
+        assert_eq!(
+            second_lead.recurrence_count, None,
+            "a library event should not inherit recurrence from a council cancellation just because both came from the events page"
+        );
+        assert!(
+            !second_lead
+                .why_flagged
+                .as_deref()
+                .unwrap_or_default()
+                .contains("Beat memory"),
+            "beat memory should not warn on a structured topic mismatch"
+        );
+        let memory_rows: i32 = conn
+            .query_row("SELECT COUNT(*) FROM beat_memory", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(
+            memory_rows, 2,
+            "different entity/action signatures should remain separate beat-memory rows"
+        );
+    }
+
+    #[test]
+    fn test_daily_scan_does_not_merge_distinct_council_decisions_into_one_beat_memory_topic() {
+        let first_response = r#"
+        {
+          "leads": [
+            {
+              "title": "City Council approves library roof contract",
+              "summary": "Council approved a contract for repairs to the public library roof.",
+              "original_url": "https://longmontcolorado.gov/council/actions",
+              "why_flagged": "A council contract vote affects a public facility.",
+              "priority": "medium",
+              "suggested_next_step": "Confirm the vote and contract amount.",
+              "story_type": "brief",
+              "what_changed": "Council approved the library roof contract.",
+              "immediacy": 4,
+              "impact": 3,
+              "conflict": 1,
+              "novelty": 4,
+              "what_would_make_it_publishable": "The contractor, amount, vote, and schedule"
+            }
+          ]
+        }
+        "#;
+        let second_response = r#"
+        {
+          "leads": [
+            {
+              "title": "City Council approves waterline construction bid",
+              "summary": "Council approved a construction bid for waterline work on a separate infrastructure project.",
+              "original_url": "https://longmontcolorado.gov/council/actions",
+              "why_flagged": "A different council contract vote affects utilities and construction.",
+              "priority": "medium",
+              "suggested_next_step": "Confirm the bid amount, contractor, and construction schedule.",
+              "story_type": "brief",
+              "what_changed": "Council approved the waterline construction bid.",
+              "immediacy": 4,
+              "impact": 4,
+              "conflict": 1,
+              "novelty": 4,
+              "what_would_make_it_publishable": "The contractor, amount, location, vote, and schedule"
+            }
+          ]
+        }
+        "#;
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT INTO daily_scan_runs (started_at, run_status) VALUES ('2026-06-28T00:00:00Z', 'completed')",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO daily_scan_runs (started_at, run_status) VALUES ('2026-06-29T00:00:00Z', 'running')",
+            [],
+        )
+        .unwrap();
+
+        crate::core::daily_scan::parse_and_save_scan_response(&conn, 1, first_response).unwrap();
+        crate::core::daily_scan::parse_and_save_scan_response(&conn, 2, second_response).unwrap();
+
+        let second_lead = list_daily_scan_leads(&conn, 2).unwrap().pop().unwrap();
+        assert_eq!(
+            second_lead.recurrence_count, None,
+            "different council approvals should not merge only because both are council decision-contract items"
+        );
+        let memory_rows: i32 = conn
+            .query_row("SELECT COUNT(*) FROM beat_memory", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(
+            memory_rows, 2,
+            "broad action classes need term discriminators in beat memory"
+        );
     }
 
     #[test]
@@ -1917,6 +2073,116 @@ I should produce JSON only.
             saved, 0,
             "valid empty JSON should not be replaced with fallback leads"
         );
+    }
+
+    #[tokio::test]
+    async fn test_daily_scan_rescues_under_yield_with_actionable_source_leads() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        crate::core::migrations::run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT OR REPLACE INTO settings (key, value) VALUES ('model.selected', 'test-model')",
+            [],
+        )
+        .unwrap();
+
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Longmont source bundle".to_string(),
+                url: "https://longmontcolorado.gov/news".to_string(),
+                r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        let excerpts = [
+            "City Council agenda for July 7 includes a public hearing on utility fees.",
+            "Longmont Public Library will host Open Chess Night on July 3 for residents.",
+            "Building Services says the online permitting portal outage is affecting permit applications.",
+            "Parks and Recreation posted a July trail closure notice for maintenance work.",
+            "Budget office opened public comment on a proposed grant application deadline.",
+            "Downtown construction notice says businesses may see road access changes in July.",
+            "Housing office approved a July application deadline for a new affordable housing grant.",
+        ];
+        for (idx, excerpt) in excerpts.iter().enumerate() {
+            insert_evidence_item(
+                &conn,
+                &EvidenceItem {
+                    id: None,
+                    source_id,
+                    url: Some(format!("https://longmontcolorado.gov/news#{}", idx)),
+                    fetched_at: Utc::now().to_rfc3339(),
+                    excerpt: excerpt.to_string(),
+                    content_hash: format!("quality_rescue_hash_{}", idx),
+                    entities: "[]".to_string(),
+                },
+            )
+            .unwrap();
+        }
+        let db_conn: DbConn = Arc::new(Mutex::new(conn));
+
+        struct EmptyLlmClient;
+        #[async_trait::async_trait]
+        impl crate::core::llm::LlmClient for EmptyLlmClient {
+            async fn call(&self, _m: &str, _p: &str, _s: &str) -> Result<String, String> {
+                Ok("{\"leads\":[]}".to_string())
+            }
+        }
+        let llm_client: Arc<dyn crate::core::llm::LlmClient> = Arc::new(EmptyLlmClient);
+        let progress_events = Arc::new(Mutex::new(Vec::new()));
+        let progress_sink = progress_events.clone();
+
+        let run_id = crate::core::daily_scan::run_daily_scan_with_progress(
+            &db_conn,
+            &llm_client,
+            "aggregator prompt template",
+            "Longmont",
+            "CO",
+            24,
+            move |progress| progress_sink.lock().unwrap().push(progress.stage),
+        )
+        .await
+        .expect("actionable evidence should produce editor leads even when the model under-yields");
+
+        let conn = db_conn.lock().unwrap();
+        let leads = list_daily_scan_leads(&conn, run_id).unwrap();
+        let reader_facing = leads
+            .iter()
+            .filter(|lead| {
+                matches!(lead.story_type.as_deref(), Some("story") | Some("brief"))
+                    && matches!(
+                        lead.disposition.as_deref(),
+                        Some("ready_to_draft") | Some("review")
+                    )
+            })
+            .count();
+        assert!(
+            leads.len() >= 5,
+            "quality rescue should produce enough editor leads to avoid a one- or two-item paper"
+        );
+        assert!(
+            reader_facing >= 5,
+            "watch/editor leads must not satisfy the reader-facing story/brief target"
+        );
+        assert!(
+            leads.iter().all(|lead| lead.recurrence_count.is_none()),
+            "new distinct rescue leads should not be mislabeled recurring"
+        );
+        assert!(
+            leads.iter().any(|lead| lead
+                .why_flagged
+                .as_deref()
+                .unwrap_or_default()
+                .contains("too few draftable leads")),
+            "rescued leads should explain that they came from source evidence after an under-yield scan"
+        );
+        let events = progress_events.lock().unwrap();
+        assert!(events.iter().any(|stage| stage == "quality_rescue"));
     }
 
     // QA-M2: with zero evidence in the window, run_daily_scan must short-circuit
@@ -2625,6 +2891,9 @@ I should produce JSON only.
 
     #[test]
     fn test_model_pull_allowlist_uses_bundled_model_config() {
+        assert!(crate::tauri_cmds::is_allowed_ollama_pull_model(
+            "phi4-mini:latest"
+        ));
         assert!(crate::tauri_cmds::is_allowed_ollama_pull_model(
             "qwen2.5:7b"
         ));
@@ -4142,7 +4411,7 @@ I should produce JSON only.
         assert_eq!(first.article_count, 1);
         assert!(article_path.exists());
 
-        update_draft_status(&conn, id, "killed").unwrap();
+        update_draft_status_with_note(&conn, id, "killed", None).unwrap();
         let second = compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
 
         assert_eq!(second.article_count, 0);
@@ -4364,6 +4633,61 @@ I should produce JSON only.
         );
     }
 
+    #[test]
+    fn test_story_decision_persists_send_back_and_hold_notes_without_veto() {
+        use crate::tauri_cmds::story_decision_with_conn;
+        let conn = init_db("file:test_story_decision_assignment_notes?mode=memory&cache=shared")
+            .unwrap();
+        let id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "story".to_string(),
+                title: "Council packet".to_string(),
+                content: "The packet needs more reporting.".to_string(),
+                status: "ready_to_review".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        story_decision_with_conn(
+            &conn,
+            id,
+            "needs_verification",
+            Some("Needs a second source and current agenda date."),
+        )
+        .unwrap();
+        let sent_back = crate::core::db::get_draft(&conn, id).unwrap().unwrap();
+        assert_eq!(sent_back.status, "needs_verification");
+        assert_eq!(
+            sent_back.missing_evidence_notes.as_deref(),
+            Some("Needs a second source and current agenda date.")
+        );
+
+        story_decision_with_conn(&conn, id, "hold", Some("Wait for Thursday packet.")).unwrap();
+        let held = crate::core::db::get_draft(&conn, id).unwrap().unwrap();
+        assert_eq!(held.status, "hold");
+        assert_eq!(
+            held.missing_evidence_notes.as_deref(),
+            Some("Wait for Thursday packet.")
+        );
+
+        story_decision_with_conn(&conn, id, "ready_to_review", Some("ignored")).unwrap();
+        let reviewed = crate::core::db::get_draft(&conn, id).unwrap().unwrap();
+        assert_eq!(reviewed.status, "ready_to_review");
+        assert_eq!(
+            reviewed.missing_evidence_notes.as_deref(),
+            Some("Wait for Thursday packet."),
+            "non-assignment transitions should not erase the last editor assignment note"
+        );
+    }
+
     // RE-AUDIT NEW-3: whole-word/inflection matching avoids substring false
     // positives but still catches real inflections.
     #[test]
@@ -4489,7 +4813,7 @@ I should produce JSON only.
         let conn = init_db(db_path.to_str().unwrap()).unwrap();
         seed_stage10_colorado_sources(&conn);
         conn.execute(
-            "INSERT OR REPLACE INTO settings (key, value) VALUES ('model.selected', 'qwen2.5:7b')",
+            "INSERT OR REPLACE INTO settings (key, value) VALUES ('model.selected', 'phi4-mini:latest')",
             [],
         )
         .unwrap();
@@ -4559,7 +4883,7 @@ I should produce JSON only.
     #[ignore = "live Ollama validation for the Stage 10 release gate"]
     async fn stage10_live_ollama_daily_scan_completes_with_real_local_model() {
         let model = std::env::var("CIVICNEWS_STAGE10_REAL_MODEL")
-            .unwrap_or_else(|_| "qwen2.5:7b".to_string());
+            .unwrap_or_else(|_| "phi4-mini:latest".to_string());
         let temp = tempdir().unwrap();
         let db_path = temp.path().join("stage10-live-ollama.db");
         let conn = init_db(db_path.to_str().unwrap()).unwrap();

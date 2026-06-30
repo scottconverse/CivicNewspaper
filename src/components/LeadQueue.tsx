@@ -411,7 +411,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                 {drafts.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="text-center" style={{ padding: "3rem" }}>
-                      No drafts generated yet. Select a Lead and click "Draft Article" to begin.
+                      No drafts generated yet. Select a lead and choose Draft or Draft anyway to begin.
                     </td>
                   </tr>
                 ) : filteredDrafts.length === 0 ? (

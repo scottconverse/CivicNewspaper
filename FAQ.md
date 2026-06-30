@@ -34,8 +34,8 @@ The tradeoff is real: local models can be slower and weaker than frontier cloud 
 
 The setup flow should inspect the machine and recommend a model. A rough guide:
 
-- 8 GB RAM or more: `qwen2.5:7b` is the current conservative default.
-- Smaller machines: a lighter model such as `llama3.2:3b` may be suggested.
+- 8 GB RAM or more: `phi4-mini:latest` is the current conservative default because the latest local bakeoff showed valid structured output on both civic-signal and empty/noise cases.
+- Other installed models, including `qwen2.5:7b`, `gemma4:e4b`, and `llama3.2:3b`, remain useful comparison options, but the app should not silently switch you to one without showing the choice.
 
 Model downloads are large. The app should explain size, expected time, and degraded-mode behavior before downloading.
 
@@ -114,15 +114,15 @@ The app compiles a static issue package with:
 
 Supported or assisted paths include:
 
-- here.now for simple temporary publishing
-- GitHub Pages for durable public archive publishing
+- here.now anonymous preview for the live-verified public-beta publishing path
+- GitHub Pages for durable public archive publishing when you connect and verify your own repo
 - Cloudflare Pages
 - Netlify
 - WordPress
 - Substack-assisted copy/paste workflow
 - Other host/manual URL recording
 
-Some providers require user-owned accounts and credentials.
+GitHub Pages, Cloudflare Pages, Netlify, WordPress, and permanent here.now publishing require user-owned accounts/credentials and release-specific live proof before treating them as stable publishing paths.
 
 ### Is Substack automatic?
 

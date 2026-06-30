@@ -37,7 +37,7 @@ describe("OnboardingWizard Component Tests", () => {
 
     // 16 GB RAM maps to the high tier per OnboardingWizard's
     // ram >= 16 ? high : ram >= 8 ? medium : low recommendation logic.
-    const recommendedModel = 'qwen2.5:7b';
+    const recommendedModel = "phi4-mini:latest";
     invokeMock.mockImplementation((cmd: string) => {
       if (cmd === "get_system_ram") return Promise.resolve(16);
       if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: [recommendedModel], version: "0.1.0" });
@@ -119,19 +119,14 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("install_ollama_runtime"));
   });
 
-  test("offline AI setup auto-starts runtime install after health check settles", async () => {
+  test("offline AI setup waits for explicit runtime install consent", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
-    let resolveInstall: () => void = () => {};
 
     invokeMock.mockImplementation((cmd: string) => {
       if (cmd === "get_system_ram") return Promise.resolve(16);
       if (cmd === "get_setting") return Promise.resolve(null);
-      if (cmd === "install_ollama_runtime") {
-        return new Promise<void>((resolve) => {
-          resolveInstall = resolve;
-        });
-      }
+      if (cmd === "install_ollama_runtime") return Promise.resolve();
       if (cmd === "ollama_health") return Promise.resolve({ reachable: false, models: [], version: null });
       return Promise.resolve();
     });
@@ -140,9 +135,12 @@ describe("OnboardingWizard Component Tests", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
+    const installButton = await screen.findByRole("button", { name: /Install local AI runtime/i });
+    expect(invokeMock).not.toHaveBeenCalledWith("install_ollama_runtime");
+
+    fireEvent.click(installButton);
+
     await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("install_ollama_runtime"));
-    expect(await screen.findByText(/Preparing local AI runtime install/i)).toBeInTheDocument();
-    resolveInstall();
   });
 
   test("first-run onboarding uses a scrollable shell body and sticky actions", () => {
@@ -157,6 +155,7 @@ describe("OnboardingWizard Component Tests", () => {
 
     render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} />);
 
+    expect(screen.getByRole("progressbar", { name: /setup progress/i })).toHaveAttribute("aria-valuenow", "20");
     expect(document.querySelector(".onboarding-step-body")).toBeInTheDocument();
     expect(document.querySelector(".onboarding-actions")).toBeInTheDocument();
   });
@@ -377,7 +376,7 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(screen.getByText(/Download a recommended model/i)).toBeInTheDocument());
 
     await waitFor(() => expect(screen.getByText("Step 3 of 5")).toBeInTheDocument());
-    await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("pull_ollama_model", { modelId: "qwen2.5:7b" }));
+    await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("pull_ollama_model", { modelId: "phi4-mini:latest" }));
     await waitFor(() => expect(handleComplete).toHaveBeenCalled());
   });
 
@@ -396,6 +395,10 @@ describe("OnboardingWizard Component Tests", () => {
     render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
 
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
+
+    const installButton = await screen.findByRole("button", { name: /Install local AI runtime/i });
+    expect(screen.getByRole("button", { name: /^next/i })).not.toBeDisabled();
+    fireEvent.click(installButton);
 
     await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("install_ollama_runtime"));
     expect(screen.getByRole("button", { name: /^next/i })).toBeDisabled();
@@ -417,7 +420,7 @@ describe("OnboardingWizard Component Tests", () => {
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
     // Step 2 — service reachable but no models installed shows the ready/download prompt
-    const recommendedModel = 'qwen2.5:7b';
+    const recommendedModel = "phi4-mini:latest";
     await waitFor(() => expect(screen.getByText(/Download a recommended model/i)).toBeInTheDocument());
     expect(screen.getAllByText(new RegExp(recommendedModel)).length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: new RegExp(`Download ${recommendedModel}`, "i") })).toBeInTheDocument();
@@ -426,7 +429,7 @@ describe("OnboardingWizard Component Tests", () => {
   test("Ollama reachable with no models: Next starts the recommended model download", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
-    const recommendedModel = 'qwen2.5:7b';
+    const recommendedModel = "phi4-mini:latest";
 
     invokeMock.mockImplementation((cmd: string) => {
       if (cmd === "get_system_ram") return Promise.resolve(16);
@@ -474,7 +477,7 @@ describe("OnboardingWizard Component Tests", () => {
     expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
     
     // Click pull recommended model button
-    const recommendedModel = 'qwen2.5:7b';
+    const recommendedModel = "phi4-mini:latest";
     const pullBtn = await screen.findByRole("button", { name: new RegExp("Download " + recommendedModel, "i") });
     fireEvent.click(pullBtn);
 
@@ -498,6 +501,8 @@ describe("OnboardingWizard Component Tests", () => {
 
     // Expect to see progress percentage in document
     expect(await screen.findByText("50.0%")).toBeInTheDocument();
+    expect(screen.getByRole("progressbar", { name: /AI model download progress/i })).toHaveAttribute("aria-valuenow", "50");
+    expect(screen.getByRole("status")).toHaveTextContent("50.0%");
 
     // Now simulate success
     act(() => {

@@ -6,16 +6,23 @@ import { downloadDir, join } from "@tauri-apps/api/path";
 
 interface SystemStatusProps {
   ollamaOnline: boolean;
+  modelLabel?: string;
   dbVersion: string;
   appVersion: string;
+  onOpenAiSetup?: () => void;
 }
 
 export const SystemStatus: React.FC<SystemStatusProps> = ({
   ollamaOnline,
+  modelLabel,
   dbVersion,
-  appVersion
+  appVersion,
+  onOpenAiSetup
 }) => {
   const [exportStatus, setExportStatus] = useState<string>("");
+  const hasSelectedModel = Boolean(modelLabel && !/^no model selected$/i.test(modelLabel.trim()));
+  const aiStatusText = !ollamaOnline ? "Offline" : hasSelectedModel ? "Ready" : "Choose model";
+  const aiDotClass = ollamaOnline && hasSelectedModel ? "online" : ollamaOnline ? "warning" : "offline";
 
   const handleExportDiagnostics = async () => {
     try {
@@ -31,12 +38,12 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
 
   return (
     <div className="card" id="system-status-panel" style={{ maxWidth: "600px", margin: "2rem auto" }}>
-      <div className="flex-between" style={{ borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem", marginBottom: "1rem" }}>
+      <div className="flex-between system-status-header" style={{ borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem", marginBottom: "1rem" }}>
         <h1 className="card-title" style={{ borderBottom: "none", paddingBottom: 0, marginBottom: 0, fontSize: "1.1rem" }}>
           <Cpu size={20} style={{ marginRight: "0.5rem" }} />
           System Resources & Status
         </h1>
-        <button className="btn btn-secondary" onClick={handleExportDiagnostics} aria-label="Export diagnostic report" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <button className="btn btn-secondary system-status-export-button" onClick={handleExportDiagnostics} aria-label="Export diagnostic report" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Download size={16} />
           Export Diagnostic Report
         </button>
@@ -56,13 +63,18 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
             <span>Local AI Service</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <span 
-              className={`status-dot ${ollamaOnline ? "online" : "offline"}`} 
+            <span
+              className={`status-dot ${aiDotClass}`}
               data-testid="ollama-status-dot"
             />
             <span style={{ fontWeight: 600 }} data-testid="ollama-status-text">
-              {ollamaOnline ? "Online" : "Offline"}
+              {aiStatusText}
             </span>
+            {!hasSelectedModel && onOpenAiSetup && (
+              <button className="btn btn-secondary btn-sm" type="button" onClick={onOpenAiSetup}>
+                Set up model
+              </button>
+            )}
           </div>
         </div>
 

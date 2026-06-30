@@ -4,6 +4,9 @@ use crate::core::llm::LlmClient;
 use crate::core::{intelligence, verification};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeSet;
+
+const MIN_READER_FACING_SCAN_LEADS: usize = 5;
 
 /// Distinct error signal returned by [`run_daily_scan`] when there is zero
 /// evidence in the requested window, so the scan is reported as a real `Err`
@@ -431,6 +434,304 @@ fn save_fallback_leads(
     saved
 }
 
+fn save_quality_rescue_leads(
+    conn: &rusqlite::Connection,
+    run_id: i32,
+    evidence_items: &[EvidenceItem],
+) -> usize {
+    let existing_reader_facing = count_reader_facing_scan_leads(conn, run_id);
+    if existing_reader_facing >= MIN_READER_FACING_SCAN_LEADS {
+        return 0;
+    }
+
+    let mut saved = 0;
+    let mut reader_facing_saved = 0;
+    let target_reader_facing = MIN_READER_FACING_SCAN_LEADS.saturating_sub(existing_reader_facing);
+    for item in evidence_items {
+        if reader_facing_saved >= target_reader_facing {
+            break;
+        }
+        let Some(lead) = rescue_lead_from_evidence(conn, run_id, item) else {
+            continue;
+        };
+        if scan_lead_url_exists(conn, run_id, &lead.original_url) {
+            continue;
+        }
+        let reader_facing = is_reader_facing_scan_lead(&lead);
+        if save_daily_scan_lead_for_queue(conn, &lead).unwrap_or(0) > 0 {
+            saved += 1;
+            if reader_facing {
+                reader_facing_saved += 1;
+            }
+        }
+    }
+    saved
+}
+
+fn count_reader_facing_scan_leads(conn: &rusqlite::Connection, run_id: i32) -> usize {
+    conn.query_row(
+        "SELECT COUNT(*) FROM daily_scan_leads
+         WHERE scan_id = ?1
+           AND COALESCE(story_type, '') IN ('story', 'brief')
+           AND COALESCE(disposition, '') IN ('ready_to_draft', 'review')",
+        [run_id],
+        |row| row.get::<_, i64>(0),
+    )
+    .unwrap_or(0)
+    .max(0) as usize
+}
+
+fn is_reader_facing_scan_lead(lead: &DailyScanLead) -> bool {
+    matches!(lead.story_type.as_deref(), Some("story") | Some("brief"))
+        && matches!(
+            lead.disposition.as_deref(),
+            Some("ready_to_draft") | Some("review")
+        )
+}
+
+fn scan_lead_url_exists(conn: &rusqlite::Connection, run_id: i32, original_url: &str) -> bool {
+    let original_url = original_url.trim();
+    if original_url.is_empty() {
+        return false;
+    }
+    conn.query_row(
+        "SELECT COUNT(*) FROM daily_scan_leads WHERE scan_id = ?1 AND original_url = ?2",
+        rusqlite::params![run_id, original_url],
+        |row| row.get::<_, i64>(0),
+    )
+    .unwrap_or(0)
+        > 0
+}
+
+fn rescue_lead_from_evidence(
+    conn: &rusqlite::Connection,
+    run_id: i32,
+    item: &EvidenceItem,
+) -> Option<DailyScanLead> {
+    let excerpt = clean_inline(&item.excerpt);
+    if !evidence_looks_actionable(&excerpt) {
+        return None;
+    }
+
+    let source = db::get_source(conn, item.source_id).ok().flatten();
+    let source_name = source
+        .as_ref()
+        .map(|source| source.name.clone())
+        .unwrap_or_else(|| format!("Source #{}", item.source_id));
+    let source_type = source.as_ref().map(|source| source.r#type.clone());
+    let title = rescue_title(&source_name, &excerpt);
+    let summary = truncate_chars(&excerpt, 280);
+    let story_type = if evidence_has_strong_current_action(&excerpt) {
+        "brief"
+    } else {
+        "watch"
+    };
+    let immediacy = if evidence_has_calendar_signal(&excerpt) {
+        4
+    } else {
+        3
+    };
+    let impact = if evidence_has_public_impact_signal(&excerpt) {
+        4
+    } else {
+        3
+    };
+    let novelty = if evidence_has_strong_current_action(&excerpt) {
+        4
+    } else {
+        3
+    };
+    let what_changed = format!(
+        "Recent source evidence contains a dated or actionable civic item: {}",
+        truncate_chars(&first_sentence(&excerpt), 180).trim_end_matches('.')
+    );
+    let disposition = classify_disposition(
+        Some(story_type),
+        Some(&what_changed),
+        Some(immediacy),
+        Some(impact),
+        Some(novelty),
+    );
+
+    Some(DailyScanLead {
+        id: None,
+        scan_id: run_id,
+        title,
+        summary,
+        source_id: Some(item.source_id),
+        original_url: item.url.clone().unwrap_or_default(),
+        why_flagged: Some("The scan found actionable source evidence after the local model produced too few draftable leads. This is an editor lead, not an automatic publication decision.".to_string()),
+        source_name: Some(source_name),
+        source_type,
+        priority: Some(if story_type == "brief" { "medium" } else { "low" }.to_string()),
+        suggested_next_step: Some("Open the source, confirm the date or action, and look for a second public source before approving reader-facing copy.".to_string()),
+        story_type: Some(story_type.to_string()),
+        what_changed: Some(what_changed),
+        immediacy: Some(immediacy),
+        impact: Some(impact),
+        conflict: if evidence_has_conflict_signal(&excerpt) { Some(3) } else { Some(1) },
+        novelty: Some(novelty),
+        publishability_note: Some("Confirm the source date, names, decision point, and at least one corroborating source if available.".to_string()),
+        disposition: Some(disposition),
+        recurrence_count: None,
+        recurrence_note: None,
+    })
+}
+
+fn clean_inline(value: &str) -> String {
+    value
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+        .trim()
+        .to_string()
+}
+
+fn truncate_chars(value: &str, max_chars: usize) -> String {
+    if value.chars().count() <= max_chars {
+        return value.to_string();
+    }
+    format!("{}...", value.chars().take(max_chars).collect::<String>())
+}
+
+fn first_sentence(value: &str) -> String {
+    value
+        .split_terminator(['.', '!', '?'])
+        .next()
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .unwrap_or(value)
+        .to_string()
+}
+
+fn rescue_title(source_name: &str, excerpt: &str) -> String {
+    let sentence = first_sentence(excerpt);
+    let sentence = sentence
+        .strip_prefix("Headline:")
+        .unwrap_or(&sentence)
+        .trim();
+    format!("{}: {}", source_name, truncate_chars(sentence, 86))
+}
+
+fn evidence_looks_actionable(excerpt: &str) -> bool {
+    let text = excerpt.to_lowercase();
+    if looks_static_or_evergreen(&text) && !evidence_has_strong_current_action(excerpt) {
+        return false;
+    }
+    evidence_has_calendar_signal(excerpt)
+        || evidence_has_strong_current_action(excerpt)
+        || evidence_has_public_impact_signal(excerpt)
+}
+
+fn evidence_has_calendar_signal(excerpt: &str) -> bool {
+    let text = excerpt.to_lowercase();
+    const MONTHS: &[&str] = &[
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+    ];
+    MONTHS.iter().any(|month| text.contains(month))
+        || text.contains("tonight")
+        || text.contains("tomorrow")
+        || text.contains("deadline")
+        || text.contains("public hearing")
+        || text.contains("agenda")
+        || text.contains("meeting")
+}
+
+fn evidence_has_strong_current_action(excerpt: &str) -> bool {
+    let text = excerpt.to_lowercase();
+    [
+        "approved",
+        "adopted",
+        "filed",
+        "opened",
+        "closed",
+        "canceled",
+        "cancelled",
+        "rescheduled",
+        "deadline",
+        "vote",
+        "hearing",
+        "outage",
+        "contract",
+        "lawsuit",
+        "permit",
+        "budget",
+        "grant",
+        "bid",
+        "application",
+        "applications",
+        "public comment",
+        "notice",
+    ]
+    .iter()
+    .any(|needle| text.contains(needle))
+}
+
+fn evidence_has_public_impact_signal(excerpt: &str) -> bool {
+    let text = excerpt.to_lowercase();
+    [
+        "residents",
+        "businesses",
+        "tax",
+        "fee",
+        "road",
+        "housing",
+        "water",
+        "police",
+        "fire",
+        "school",
+        "library",
+        "construction",
+        "downtown",
+        "public",
+    ]
+    .iter()
+    .any(|needle| text.contains(needle))
+}
+
+fn evidence_has_conflict_signal(excerpt: &str) -> bool {
+    let text = excerpt.to_lowercase();
+    [
+        "lawsuit",
+        "appeal",
+        "opposition",
+        "controvers",
+        "complaint",
+        "denied",
+        "violation",
+    ]
+    .iter()
+    .any(|needle| text.contains(needle))
+}
+
+fn looks_static_or_evergreen(text: &str) -> bool {
+    [
+        "about us",
+        "contact us",
+        "archive",
+        "video archive",
+        "how to",
+        "available online",
+        "regularly held",
+        "general information",
+        "service page",
+        "department page",
+    ]
+    .iter()
+    .any(|needle| text.contains(needle))
+}
+
 fn run_deterministic_intelligence_pass(
     conn: &rusqlite::Connection,
     run_id: i32,
@@ -633,6 +934,7 @@ struct BeatMemory {
     first_seen_at: String,
     last_seen_at: String,
     seen_count: i32,
+    topic_key: String,
 }
 
 fn lead_with_beat_memory(lead: &DailyScanLead, memory: Option<&BeatMemory>) -> DailyScanLead {
@@ -642,12 +944,12 @@ fn lead_with_beat_memory(lead: &DailyScanLead, memory: Option<&BeatMemory>) -> D
 
     let mut lead = lead.clone();
     let seen_note = format!(
-        "Beat memory: similar topic '{}' was first seen {}, last seen {}, and has appeared {} previous time(s). Treat this as recurring/background unless the source shows a new vote, deadline, dollar amount, filing, outage, meeting item, or public impact.",
-        memory.representative_title, memory.first_seen_at, memory.last_seen_at, memory.seen_count
+        "Beat memory: structured match '{}' for topic '{}' was first seen {}, last seen {}, and has appeared {} previous time(s). Treat this as recurring/background unless the source shows a new vote, deadline, dollar amount, filing, outage, meeting item, or public impact.",
+        memory.topic_key, memory.representative_title, memory.first_seen_at, memory.last_seen_at, memory.seen_count
     );
     let display_note = format!(
-        "Similar topic '{}' was first seen {}, last seen {}, and has appeared {} previous time(s).",
-        memory.representative_title, memory.first_seen_at, memory.last_seen_at, memory.seen_count
+        "Similar topic '{}' was first seen {}, last seen {}, and has appeared {} previous time(s). Match: {}.",
+        memory.representative_title, memory.first_seen_at, memory.last_seen_at, memory.seen_count, memory.topic_key
     );
     lead.recurrence_count = Some(memory.seen_count);
     lead.recurrence_note = Some(display_note);
@@ -740,7 +1042,7 @@ fn find_recurring_memory(
     lead: &DailyScanLead,
 ) -> rusqlite::Result<Option<BeatMemory>> {
     let mut stmt = conn.prepare(
-        "SELECT representative_title, source_url, first_seen_at, last_seen_at, seen_count, last_summary
+        "SELECT topic_key, representative_title, source_url, first_seen_at, last_seen_at, seen_count, last_summary
          FROM beat_memory
          ORDER BY last_seen_at DESC
          LIMIT 200",
@@ -751,13 +1053,15 @@ fn find_recurring_memory(
             row.get::<_, String>(1)?,
             row.get::<_, String>(2)?,
             row.get::<_, String>(3)?,
-            row.get::<_, i32>(4)?,
-            row.get::<_, String>(5)?,
+            row.get::<_, String>(4)?,
+            row.get::<_, i32>(5)?,
+            row.get::<_, String>(6)?,
         ))
     })?;
 
     for row in rows {
         let (
+            topic_key,
             representative_title,
             source_url,
             first_seen_at,
@@ -771,6 +1075,7 @@ fn find_recurring_memory(
                 first_seen_at,
                 last_seen_at,
                 seen_count,
+                topic_key,
             }));
         }
     }
@@ -812,20 +1117,25 @@ fn upsert_beat_memory(
 }
 
 fn memory_topic_key(lead: &DailyScanLead) -> String {
-    let url = lead.original_url.trim().to_lowercase();
-    if !url.is_empty() {
-        return format!("url:{url}");
-    }
-    let topic = normalized_topic(&scan_lead_topic_text(
+    let signature = topic_signature(
         &lead.title,
         &lead.summary,
-        &lead.original_url,
-    ));
-    if topic.is_empty() {
+        lead.original_url.as_str(),
+        lead.source_name.as_deref(),
+    );
+    if signature.key.is_empty() {
         String::new()
     } else {
-        format!("topic:{topic}")
+        format!("topic:{}", signature.key)
     }
+}
+
+#[derive(Debug)]
+struct TopicSignature {
+    key: String,
+    entity: Option<String>,
+    action: Option<String>,
+    terms: BTreeSet<String>,
 }
 
 fn normalized_topic(text: &str) -> String {
@@ -839,10 +1149,40 @@ fn normalized_topic(text: &str) -> String {
         .join(" ")
 }
 
-fn topic_tokens(text: &str) -> std::collections::BTreeSet<String> {
+fn topic_tokens(text: &str) -> BTreeSet<String> {
     const STOPWORDS: &[&str] = &[
-        "a", "an", "and", "are", "as", "at", "be", "by", "can", "for", "from", "in", "into", "is",
-        "it", "its", "of", "on", "or", "that", "the", "their", "this", "to", "with",
+        "a",
+        "an",
+        "and",
+        "are",
+        "as",
+        "at",
+        "be",
+        "by",
+        "can",
+        "for",
+        "from",
+        "in",
+        "into",
+        "is",
+        "it",
+        "its",
+        "of",
+        "on",
+        "or",
+        "that",
+        "the",
+        "their",
+        "this",
+        "to",
+        "with",
+        "city",
+        "civic",
+        "public",
+        "local",
+        "residents",
+        "resident",
+        "longmont",
     ];
 
     text.to_lowercase()
@@ -872,6 +1212,233 @@ fn scan_lead_topic_text(title: &str, summary: &str, original_url: &str) -> Strin
     format!("{title} {summary} {original_url}")
 }
 
+fn topic_signature(
+    title: &str,
+    summary: &str,
+    original_url: &str,
+    source_name: Option<&str>,
+) -> TopicSignature {
+    let topic_text = format!(
+        "{} {} {} {}",
+        source_name.unwrap_or_default(),
+        title,
+        summary,
+        original_url
+    );
+    let text_without_url = format!("{} {} {}", source_name.unwrap_or_default(), title, summary);
+    let combined = topic_text;
+    let lower = combined.to_lowercase();
+    let entity = detect_topic_entity(&lower);
+    let action = detect_topic_action(&lower);
+    let terms = topic_tokens(&text_without_url);
+    let mut key_terms = topic_key_terms(&format!(
+        "{} {} {}",
+        source_name.unwrap_or_default(),
+        title,
+        summary
+    ));
+    if key_terms.is_empty() {
+        key_terms = terms.iter().take(8).cloned().collect();
+    }
+    let term_part = key_terms.into_iter().take(8).collect::<Vec<_>>().join("-");
+    let mut key_parts = Vec::new();
+    if let Some(entity) = entity.as_deref() {
+        key_parts.push(entity.to_string());
+    }
+    if let Some(action) = action.as_deref() {
+        key_parts.push(action.to_string());
+    }
+    if !term_part.is_empty() && topic_key_needs_term_discriminator(action.as_deref()) {
+        key_parts.push(term_part);
+    }
+    TopicSignature {
+        key: key_parts.join(":"),
+        entity,
+        action,
+        terms,
+    }
+}
+
+fn topic_key_needs_term_discriminator(action: Option<&str>) -> bool {
+    !matches!(action, Some("archive-access"))
+}
+
+fn topic_key_terms(text: &str) -> Vec<String> {
+    const KEY_STOPWORDS: &[&str] = &[
+        "action", "actions", "approved", "adopted", "award", "bid", "brief", "city", "contract",
+        "council", "decision", "longmont", "meeting", "public", "regular", "source", "vote",
+        "votes",
+    ];
+    let mut seen = BTreeSet::new();
+    text.to_lowercase()
+        .chars()
+        .map(|ch| {
+            if ch.is_ascii_alphanumeric() || ch.is_whitespace() {
+                ch
+            } else {
+                ' '
+            }
+        })
+        .collect::<String>()
+        .split_whitespace()
+        .filter(|token| token.len() > 2)
+        .map(|token| {
+            token
+                .trim_end_matches('s')
+                .trim_end_matches("ing")
+                .to_string()
+        })
+        .filter(|token| token.len() > 2)
+        .filter(|token| !KEY_STOPWORDS.contains(&token.as_str()))
+        .filter(|token| seen.insert(token.clone()))
+        .collect()
+}
+
+fn detect_topic_entity(text: &str) -> Option<String> {
+    let candidates = [
+        (
+            "city-council",
+            &["city council", "council meeting", "council agenda"][..],
+        ),
+        ("library", &["library", "public library"][..]),
+        (
+            "building-services",
+            &[
+                "building services",
+                "permitting portal",
+                "permit portal",
+                "building permit",
+            ][..],
+        ),
+        (
+            "planning-zoning",
+            &["planning", "zoning", "development review"][..],
+        ),
+        (
+            "parks-recreation",
+            &["parks", "recreation", "trail", "open space"][..],
+        ),
+        ("youth-center", &["youth center", "youth services"][..]),
+        (
+            "public-safety",
+            &["police", "fire rescue", "public safety"][..],
+        ),
+        ("finance-budget", &["budget", "tax", "fee", "bond"][..]),
+        (
+            "utilities",
+            &["water", "electric", "utility", "utilities", "stormwater"][..],
+        ),
+        (
+            "transportation",
+            &["road", "street", "traffic", "transit", "transportation"][..],
+        ),
+        ("housing", &["housing", "apartment", "affordable"][..]),
+        (
+            "community-event",
+            &["event", "workshop", "class", "club"][..],
+        ),
+    ];
+    candidates.iter().find_map(|(entity, needles)| {
+        needles
+            .iter()
+            .any(|needle| text.contains(needle))
+            .then(|| (*entity).to_string())
+    })
+}
+
+fn detect_topic_action(text: &str) -> Option<String> {
+    let candidates = [
+        (
+            "service-outage",
+            &["outage", "down", "technical issues", "unavailable"][..],
+        ),
+        (
+            "schedule-change",
+            &[
+                "canceled",
+                "cancelled",
+                "rescheduled",
+                "postponed",
+                "closed",
+            ][..],
+        ),
+        (
+            "decision-contract",
+            &["approved", "adopted", "contract", "bid", "award"][..],
+        ),
+        (
+            "archive-access",
+            &["archive", "video archive", "livestream", "live stream"][..],
+        ),
+        (
+            "public-hearing",
+            &["public hearing", "public comment", "comment period"][..],
+        ),
+        (
+            "deadline-notice",
+            &["deadline", "notice", "application", "applications due"][..],
+        ),
+        (
+            "meeting-agenda",
+            &["agenda", "meeting item", "meeting", "minutes"][..],
+        ),
+        (
+            "public-event",
+            &[
+                "event",
+                "workshop",
+                "class",
+                "club",
+                "chess",
+                "conversation",
+            ][..],
+        ),
+        ("finance", &["budget", "grant", "tax", "fee", "funding"][..]),
+    ];
+    candidates.iter().find_map(|(action, needles)| {
+        needles
+            .iter()
+            .any(|needle| text.contains(needle))
+            .then(|| (*action).to_string())
+    })
+}
+
+fn signatures_compatible(existing: &TopicSignature, lead: &TopicSignature) -> bool {
+    if !existing.key.is_empty() && existing.key == lead.key {
+        return true;
+    }
+
+    if existing.entity.is_some() && lead.entity.is_some() && existing.entity != lead.entity {
+        return false;
+    }
+    if existing.action.is_some() && lead.action.is_some() && existing.action != lead.action {
+        return false;
+    }
+
+    let common = existing.terms.intersection(&lead.terms).count();
+    let smaller = existing.terms.len().min(lead.terms.len());
+    let overlap = smaller > 0 && common >= 4 && (common as f32 / smaller as f32) >= 0.62;
+    if existing.entity.is_some()
+        && existing.entity == lead.entity
+        && existing.action.is_some()
+        && existing.action == lead.action
+        && topic_key_needs_term_discriminator(existing.action.as_deref())
+    {
+        return overlap && common >= 5;
+    }
+
+    match (
+        existing.entity.as_ref(),
+        lead.entity.as_ref(),
+        existing.action.as_ref(),
+        lead.action.as_ref(),
+    ) {
+        (Some(_), Some(_), Some(_), Some(_)) => overlap || common >= 3,
+        (Some(_), Some(_), _, _) | (_, _, Some(_), Some(_)) => overlap,
+        _ => overlap && common >= 5,
+    }
+}
+
 fn scan_leads_are_similar(
     existing_title: &str,
     existing_summary: &str,
@@ -880,7 +1447,29 @@ fn scan_leads_are_similar(
 ) -> bool {
     let existing_url = existing_url.trim();
     let lead_url = lead.original_url.trim();
-    if !existing_url.is_empty() && existing_url.eq_ignore_ascii_case(lead_url) {
+    let existing_signature = topic_signature(existing_title, existing_summary, existing_url, None);
+    let lead_signature = topic_signature(
+        &lead.title,
+        &lead.summary,
+        &lead.original_url,
+        lead.source_name.as_deref(),
+    );
+    if !existing_url.is_empty()
+        && existing_url.eq_ignore_ascii_case(lead_url)
+        && existing_signature.action.is_some()
+        && existing_signature.action == lead_signature.action
+        && !matches!(
+            existing_signature.action.as_deref(),
+            Some("public-event")
+                | Some("meeting-agenda")
+                | Some("public-hearing")
+                | Some("deadline-notice")
+                | Some("decision-contract")
+                | Some("schedule-change")
+                | Some("service-outage")
+                | Some("finance")
+        )
+    {
         return true;
     }
 
@@ -894,6 +1483,15 @@ fn scan_leads_are_similar(
         &lead.summary,
         &lead.original_url,
     ));
+    if !existing_url.is_empty()
+        && existing_url.eq_ignore_ascii_case(lead_url)
+        && signatures_compatible(&existing_signature, &lead_signature)
+    {
+        return true;
+    }
+    if !signatures_compatible(&existing_signature, &lead_signature) {
+        return false;
+    }
     if existing_tokens.len() < 4 || lead_tokens.len() < 4 {
         return normalized_topic(existing_title) == normalized_topic(&lead.title);
     }
@@ -1195,6 +1793,54 @@ where
         }
     }
 
+    let model_returned_usable_json = parsed_batches > 0;
+    let reader_facing_total = {
+        let conn = db.lock().map_err(|_| "Failed to lock db")?;
+        count_reader_facing_scan_leads(&conn, run_id)
+    };
+    if model_returned_usable_json && reader_facing_total < MIN_READER_FACING_SCAN_LEADS {
+        let conn = match db.lock() {
+            Ok(c) => c,
+            Err(e) => {
+                eprintln!("Failed to lock db for quality rescue pass: {}", e);
+                return Err("Failed to lock db".to_string());
+            }
+        };
+        progress(DailyScanProgress {
+            run_id: Some(run_id),
+            model: Some(model.clone()),
+            evidence_count: scan_items.len(),
+            eligible_evidence_count,
+            truncated_evidence_count,
+            batch_count: Some(batch_count),
+            saved_leads: saved_total,
+            ..scan_progress(
+                "quality_rescue",
+                format!(
+                    "Saved {} reader-facing candidate(s); checking source evidence for additional dated or actionable story/brief leads.",
+                    reader_facing_total
+                ),
+            )
+        });
+        let rescue_saved = save_quality_rescue_leads(&conn, run_id, &scan_items);
+        saved_total += rescue_saved;
+        if rescue_saved > 0 {
+            progress(DailyScanProgress {
+                run_id: Some(run_id),
+                model: Some(model.clone()),
+                evidence_count: scan_items.len(),
+                eligible_evidence_count,
+                truncated_evidence_count,
+                batch_count: Some(batch_count),
+                saved_leads: saved_total,
+                ..scan_progress(
+                    "quality_rescue",
+                    format!("Added {} source-backed editor lead(s).", rescue_saved),
+                )
+            });
+        }
+    }
+
     let conn = match db.lock() {
         Ok(c) => c,
         Err(e) => {
@@ -1206,7 +1852,6 @@ where
     updated_run.id = Some(run_id);
     updated_run.completed_at = Some(Utc::now().to_rfc3339());
 
-    let model_returned_usable_json = parsed_batches > 0;
     if saved_total == 0 && !model_returned_usable_json {
         progress(DailyScanProgress {
             run_id: Some(run_id),

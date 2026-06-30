@@ -1,7 +1,7 @@
 // src/useApp.test.tsx
 import { render, screen, act } from "@testing-library/react";
 import { describe, test, expect, vi } from "vitest";
-import { useApp } from "./useApp";
+import { sanitizeEvidenceCitations, useApp } from "./useApp";
 
 // Mock tauri core invoke to return mock initial data
 import { invoke } from "@tauri-apps/api/core";
@@ -22,6 +22,18 @@ const TestComponent = () => {
 };
 
 describe("useApp Hook Tests", () => {
+  test("sanitizeEvidenceCitations preserves linked evidence and neutralizes unsupported IDs", () => {
+    const text = "Valid [source](evidence:7). Bad [source](evidence:999). Also bad evidence://123. Mixed Evidence:456.";
+    const sanitized = sanitizeEvidenceCitations(text, [7]);
+    expect(sanitized).toContain("evidence:7");
+    expect(sanitized).not.toContain("evidence:999");
+    expect(sanitized).not.toContain("evidence://123");
+    expect(sanitized).not.toContain("Evidence:456");
+    expect(sanitized).toContain("unlinked-evidence-999");
+    expect(sanitized).toContain("unlinked-evidence-123");
+    expect(sanitized).toContain("unlinked-evidence-456");
+  });
+
   test("initializes hook states correctly and handles navigation updates", async () => {
     // Mock invoke implementations
     vi.mocked(invoke).mockImplementation(async (cmd: string, ..._args: any[]) => {
@@ -606,5 +618,183 @@ describe("useApp Hook Tests", () => {
     expect(addSourceCalls.map(call => call.name)).toContain("Longmont city YouTube");
     expect(screen.getByTestId("active-tab")).toHaveTextContent("dailyScan");
     expect(hookResult.statusMessage).toContain("starter Longmont source");
+  });
+
+  test("improve for publication preflights selected model and sanitizes unsupported evidence citations", async () => {
+    const draft = {
+      id: 610,
+      lead_id: 77,
+      format: "watch",
+      title: "Original headline",
+      content: "Original body. [Source](evidence:7)",
+      status: "draft_generated",
+      verification_checklist: "[]",
+    };
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
+      if (cmd === "get_queue") return { leads: [], drafts: [draft] };
+      if (cmd === "get_sources") return [];
+      if (cmd === "get_community_profile") return { city: "Longmont", state: "CO" };
+      if (cmd === "list_paired_clients") return [];
+      if (cmd === "get_system_ram") return 16;
+      if (cmd === "get_evidence") {
+        expect(args).toEqual({ leadId: 77 });
+        return [{ id: 7, source_id: 1, fetched_at: "2026-06-30T00:00:00Z", excerpt: "Agenda", content_hash: "hash", entities: "[]" }];
+      }
+      if (cmd === "guardrails_check") return { is_clean: true, issues: [] };
+      if (cmd === "get_setting" && args?.key === "model.selected") return "qwen2.5:7b";
+      if (cmd === "ollama_health") return { reachable: true, models: ["qwen2.5:7b"], version: "0.6.0" };
+      if (cmd === "llm_task") {
+        return "Headline: Improved headline\n\nValid citation [Source](evidence:7). Unsupported citation [Bad](evidence:999).";
+      }
+      return null;
+    });
+
+    let hookResult: any;
+    const TestComp = () => {
+      hookResult = useApp();
+      return <span data-testid="status">{hookResult.statusMessage}</span>;
+    };
+
+    await act(async () => {
+      render(<TestComp />);
+    });
+    await act(async () => {
+      await hookResult.handleOpenDraftEditor(610);
+    });
+    vi.mocked(invoke).mockClear();
+
+    await act(async () => {
+      await hookResult.handleImproveForPublication();
+    });
+
+    expect(invoke).toHaveBeenCalledWith("get_setting", { key: "model.selected" });
+    expect(invoke).toHaveBeenCalledWith("ollama_health");
+    expect(invoke).toHaveBeenCalledWith("llm_task", expect.any(Object));
+    expect(hookResult.selectedDraft.title).toBe("Improved headline");
+    expect(hookResult.selectedDraft.content).toContain("evidence:7");
+    expect(hookResult.selectedDraft.content).toContain("unlinked-evidence-999");
+    expect(hookResult.selectedDraft.content).not.toContain("evidence:999");
+  });
+
+  test("improve for publication does not call LLM when the selected model is unavailable", async () => {
+    const draft = {
+      id: 611,
+      lead_id: 77,
+      format: "watch",
+      title: "Original headline",
+      content: "Original body.",
+      status: "draft_generated",
+      verification_checklist: "[]",
+    };
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
+      if (cmd === "get_queue") return { leads: [], drafts: [draft] };
+      if (cmd === "get_sources") return [];
+      if (cmd === "get_community_profile") return { city: "Longmont", state: "CO" };
+      if (cmd === "list_paired_clients") return [];
+      if (cmd === "get_system_ram") return 16;
+      if (cmd === "get_evidence") return [];
+      if (cmd === "get_setting" && args?.key === "model.selected") return "qwen2.5:7b";
+      if (cmd === "ollama_health") return { reachable: true, models: ["llama3.2:3b"], version: "0.6.0" };
+      if (cmd === "llm_task") throw new Error("llm_task should not run");
+      return null;
+    });
+
+    let hookResult: any;
+    const TestComp = () => {
+      hookResult = useApp();
+      return <span data-testid="status">{hookResult.statusMessage}</span>;
+    };
+
+    await act(async () => {
+      render(<TestComp />);
+    });
+    await act(async () => {
+      await hookResult.handleOpenDraftEditor(611);
+    });
+    vi.mocked(invoke).mockClear();
+
+    await act(async () => {
+      await hookResult.handleImproveForPublication();
+    });
+
+    expect(invoke).toHaveBeenCalledWith("get_setting", { key: "model.selected" });
+    expect(invoke).toHaveBeenCalledWith("ollama_health");
+    expect(invoke).not.toHaveBeenCalledWith("llm_task", expect.any(Object));
+    expect(hookResult.selectedDraft.title).toBe("Original headline");
+    expect(hookResult.selectedDraft.content).toBe("Original body.");
+    expect(hookResult.errorMessage).toContain("isn't downloaded yet");
+  });
+
+  test("approve publish saves visible edited draft before advancing status", async () => {
+    const savedDrafts: any[] = [];
+    const draft = {
+      id: 620,
+      lead_id: 77,
+      format: "watch",
+      title: "Original headline",
+      content: "Original body.",
+      status: "draft_generated",
+      verification_checklist: "[]",
+    };
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
+      if (cmd === "get_queue") return { leads: [], drafts: savedDrafts.length ? savedDrafts : [draft] };
+      if (cmd === "get_sources") return [];
+      if (cmd === "get_community_profile") return { city: "Longmont", state: "CO" };
+      if (cmd === "list_paired_clients") return [];
+      if (cmd === "get_system_ram") return 16;
+      if (cmd === "get_evidence") return [];
+      if (cmd === "guardrails_check") return { is_clean: true, issues: [] };
+      if (cmd === "get_setting" && args?.key === "identity.editor_name") return "Scott";
+      if (cmd === "save_draft") {
+        savedDrafts.push({ ...args.draft, id: 620 });
+        return 620;
+      }
+      if (cmd === "attest_draft") return null;
+      if (cmd === "story_decision") return null;
+      return null;
+    });
+
+    let hookResult: any;
+    const TestComp = () => {
+      hookResult = useApp();
+      return null;
+    };
+
+    await act(async () => {
+      render(<TestComp />);
+    });
+    await act(async () => {
+      await hookResult.handleOpenDraftEditor(620);
+    });
+    await act(async () => {
+      hookResult.setSelectedDraft({
+        ...hookResult.selectedDraft,
+        title: "Edited headline",
+        content: "Edited body the editor actually reviewed.",
+      });
+    });
+    vi.mocked(invoke).mockClear();
+
+    await act(async () => {
+      await hookResult.handleApprovePublish("Reviewed story-quality warnings.");
+    });
+
+    expect(invoke).toHaveBeenCalledWith("save_draft", {
+      draft: expect.objectContaining({
+        id: 620,
+        title: "Edited headline",
+        content: "Edited body the editor actually reviewed.",
+      }),
+    });
+    expect(invoke).toHaveBeenCalledWith("guardrails_check", { draftId: 620 });
+    expect(invoke).toHaveBeenCalledWith("attest_draft", { id: 620, editor: "Scott" });
+    expect(invoke).toHaveBeenCalledWith("story_decision", {
+      id: 620,
+      decision: "ready_to_publish",
+      overrideReason: "Reviewed story-quality warnings.",
+    });
+    const saveOrder = vi.mocked(invoke).mock.invocationCallOrder.find((_, idx) => vi.mocked(invoke).mock.calls[idx][0] === "save_draft")!;
+    const decisionOrder = vi.mocked(invoke).mock.invocationCallOrder.find((_, idx) => vi.mocked(invoke).mock.calls[idx][0] === "story_decision")!;
+    expect(saveOrder).toBeLessThan(decisionOrder);
   });
 });

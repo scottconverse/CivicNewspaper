@@ -171,6 +171,9 @@ export const DailyScanResults: React.FC<Props> = ({ scanId, onRunScan }) => {
       {leads.length === 0 ? (
         <div data-testid="daily-scan-empty">
           <p>No new leads found in this scan.</p>
+          <p className="help-text">
+            That can mean nothing changed since the last run, the current sources were quiet, or recurring background material did not contain a new fact. Review your source list if this keeps happening.
+          </p>
           {onRunScan && (
             <button className="btn btn-secondary btn-sm" onClick={onRunScan} data-testid="daily-scan-run-again">
               Run scan again

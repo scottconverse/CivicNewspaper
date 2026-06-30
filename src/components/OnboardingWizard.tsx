@@ -128,7 +128,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const [runtimeProgress, setRuntimeProgress] = useState("");
   const [runtimePercent, setRuntimePercent] = useState<number | null>(null);
   const [runtimeError, setRuntimeError] = useState("");
-  const autoRuntimeInstallAttempted = useRef(false);
   const modelDownloadRescueAttemptedRef = useRef(false);
   const pubNameInputRef = useRef<HTMLInputElement | null>(null);
   const editorNameInputRef = useRef<HTMLInputElement | null>(null);
@@ -391,22 +390,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       setRuntimeInstalling(false);
     }
   };
-
-  useEffect(() => {
-    if (
-      step !== 2 ||
-      checkingHealth ||
-      runtimeInstalling ||
-      autoRuntimeInstallAttempted.current ||
-      health?.reachable
-    ) {
-      return;
-    }
-    if (healthTimeout || health?.reachable === false) {
-      autoRuntimeInstallAttempted.current = true;
-      void installRuntime();
-    }
-  }, [step, checkingHealth, runtimeInstalling, healthTimeout, health?.reachable]);
 
   useEffect(() => {
     if (
@@ -751,7 +734,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         </span>
       </div>
 
-      <div className="progress-bar-container">
+      <div
+        className="progress-bar-container"
+        role="progressbar"
+        aria-label="Setup progress"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={(step / 5) * 100}
+      >
         <div 
           className="progress-bar" 
           style={{ width: `${(step / steps.length) * 100}%` }}
@@ -783,10 +773,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 ))}
               </div>
             </div>
+            <p className="help-text" style={{ margin: 0 }}>
+              These identity fields are optional during setup and can be edited later in Settings before you publish.
+            </p>
             <div className="onboarding-field">
-              <label htmlFor="onboarding-publication-name">Publication Name</label>
+              <label htmlFor="onboarding-publication-name">Publication Name <span className="help-text">(optional)</span></label>
               <input
                 id="onboarding-publication-name"
+                aria-label="Publication Name"
                 ref={pubNameInputRef}
                 autoFocus
                 type="text"
@@ -797,9 +791,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               />
             </div>
             <div className="onboarding-field">
-              <label htmlFor="onboarding-editor-name">Editor Name</label>
+              <label htmlFor="onboarding-editor-name">Editor Name <span className="help-text">(optional)</span></label>
               <input
                 id="onboarding-editor-name"
+                aria-label="Editor Name"
                 ref={editorNameInputRef}
                 type="text"
                 placeholder="e.g. Jane Doe"
@@ -891,12 +886,24 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                     )}
                     {runtimeProgress && (
                       <div style={{ marginBottom: "0.75rem" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", marginBottom: "0.35rem" }}>
+                        <div
+                          role="status"
+                          aria-live="polite"
+                          style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", marginBottom: "0.35rem" }}
+                        >
                           <span>{runtimeProgress}</span>
                           {runtimePercent !== null && <span>{runtimePercent.toFixed(1)}%</span>}
                         </div>
                         {runtimePercent !== null && (
-                          <div className="progress-bar-container" style={{ background: "var(--border-color)", height: "8px", borderRadius: "4px" }}>
+                          <div
+                            className="progress-bar-container"
+                            role="progressbar"
+                            aria-label="Local AI runtime install progress"
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                            aria-valuenow={Math.round(runtimePercent)}
+                            style={{ background: "var(--border-color)", height: "8px", borderRadius: "4px" }}
+                          >
                             <div style={{ height: "100%", background: "var(--accent-primary)", width: `${runtimePercent}%`, transition: "width 0.2s" }} />
                           </div>
                         )}
@@ -922,7 +929,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 {!healthTimeout && health && !health.reachable && (
                   <div style={{ background: "rgba(239, 68, 68, 0.05)", padding: "1rem", borderRadius: "8px" }}>
                     <h4 style={{ color: "var(--color-error)" }}>Starting the local AI service</h4>
-                    <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>CivicNews includes a local AI service that runs on your computer. It may take a moment to start up. Once it's running, you'll download a model in the next step.</p>
+                    <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>The Civic Desk includes a local AI service that runs on your computer. It may take a moment to start up. Once it's running, you'll download a model in the next step.</p>
                     <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
                       On a clean machine, use the install button if the service does not become ready.
                     </p>
@@ -930,7 +937,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                       <p style={{ fontSize: "0.85rem", color: "var(--color-error)", marginBottom: "0.5rem" }}>{runtimeError}</p>
                     )}
                     {runtimeProgress && (
-                      <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>{runtimeProgress}</p>
+                      <p role="status" aria-live="polite" style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>{runtimeProgress}</p>
                     )}
                     <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
                       <button type="button" className="btn btn-primary" onClick={() => void installRuntime()} disabled={runtimeInstalling}>
@@ -1014,7 +1021,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             <div style={{ background: "var(--accent-light)", padding: "1rem", borderRadius: "8px", marginBottom: "1rem" }}>
               <strong>AI Model: {model} (Recommended)</strong>
               <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
-                CivicNews will download this local AI model now - a one-time download of about {downloadSizeFor(model)} that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.
+                The Civic Desk will download this local AI model now - a one-time download of about {downloadSizeFor(model)} that needs an internet connection. This may take 10-60+ minutes. After this, the AI runs fully offline on your computer.
               </p>
               <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
                 It is safe to cancel and resume later from AI Model. If the download appears stuck for several minutes, check your internet connection, restart Civic Desk, and retry.
@@ -1047,11 +1054,23 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
             {(pulling || pullComplete) && (
               <div style={{ marginTop: "1rem" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", marginBottom: "0.5rem" }}>
+                <div
+                  role="status"
+                  aria-live="polite"
+                  style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", marginBottom: "0.5rem" }}
+                >
                   <span>{pullProgress}</span>
                   {pullPercent !== null && <span>{pullPercent.toFixed(1)}%</span>}
                 </div>
-                <div className="progress-bar-container" style={{ background: "var(--border-color)", height: "8px", borderRadius: "4px" }}>
+                <div
+                  className="progress-bar-container"
+                  role="progressbar"
+                  aria-label="AI model download progress"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={Math.round(pullPercent || 0)}
+                  style={{ background: "var(--border-color)", height: "8px", borderRadius: "4px" }}
+                >
                   <div 
                     style={{ 
                       height: "100%", 

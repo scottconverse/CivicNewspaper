@@ -8,6 +8,7 @@ echo "=== Verifying Release Packaging ==="
 ARTIFACT_DIR="${ARTIFACT_DIR:-}"
 OLLAMA_BIN="${OLLAMA_BIN:-}"
 RELEASE_VERIFY_ALLOW_EMPTY="${RELEASE_VERIFY_ALLOW_EMPTY:-}"
+RELEASE_VERIFY_REQUIRED_EXTS="${RELEASE_VERIFY_REQUIRED_EXTS:-.exe}"
 
 # Ensure dist directory exists
 mkdir -p dist
@@ -68,6 +69,11 @@ fi
 
 verify_runtime_manifest
 
+APP_VERSION=""
+if command -v node >/dev/null 2>&1 && [ -f "package.json" ]; then
+  APP_VERSION="$(node -p "require('./package.json').version" 2>/dev/null || true)"
+fi
+
 # 2. Real CI verification mode
 # Find built artifacts in typical Tauri directories
 SEARCH_DIRS=()
@@ -88,7 +94,7 @@ for d in "${SEARCH_DIRS[@]}"; do
       if [ -f "$file" ]; then
         ARTIFACTS+=("$file")
       fi
-    done < <(find "$d" -type f -name "*.deb" -o -name "*.dmg" -o -name "*.msi" -o -name "*.zip" 2>/dev/null)
+    done < <(find "$d" -type f \( -name "*.deb" -o -name "*.dmg" -o -name "*.msi" -o -name "*.exe" -o -name "*.zip" \) 2>/dev/null)
   fi
 done
 
@@ -102,6 +108,23 @@ if [ ${#ARTIFACTS[@]} -eq 0 ]; then
   exit 1
 fi
 
+if [ -n "$APP_VERSION" ]; then
+  CURRENT_ARTIFACTS=()
+  for artifact in "${ARTIFACTS[@]}"; do
+    filename=$(basename "$artifact")
+    if [[ "$filename" == *"$APP_VERSION"* ]]; then
+      CURRENT_ARTIFACTS+=("$artifact")
+    else
+      echo "Skipping stale non-current artifact: $filename"
+    fi
+  done
+  ARTIFACTS=("${CURRENT_ARTIFACTS[@]}")
+  if [ ${#ARTIFACTS[@]} -eq 0 ]; then
+    echo "FAIL: no current-version ($APP_VERSION) release artifacts found."
+    exit 1
+  fi
+fi
+
 echo "Found ${#ARTIFACTS[@]} artifacts to verify:"
 for art in "${ARTIFACTS[@]}"; do
   echo " - $art"
@@ -109,6 +132,7 @@ done
 
 # Clear existing SHA256SUMS
 rm -f dist/SHA256SUMS
+declare -A FOUND_REQUIRED=()
 
 for artifact in "${ARTIFACTS[@]}"; do
   filename=$(basename "$artifact")
@@ -118,13 +142,31 @@ for artifact in "${ARTIFACTS[@]}"; do
   sha256sum "$artifact" >> dist/SHA256SUMS
   
   case "$filename" in
-    *.msi|*.deb|*.dmg|*.zip)
+    *.msi|*.exe|*.deb|*.dmg|*.zip)
       echo "Installer checksum recorded. Runtime is app-managed at first run."
       ;;
     *)
       echo "Unknown format: $filename"
       ;;
   esac
+
+  for ext in $RELEASE_VERIFY_REQUIRED_EXTS; do
+    if [[ "$filename" == *"$ext" ]]; then
+      if [ -n "$APP_VERSION" ] && [[ "$filename" != *"$APP_VERSION"* ]]; then
+        echo "FAIL: required release artifact $filename does not include current package version $APP_VERSION"
+        exit 1
+      fi
+      FOUND_REQUIRED["$ext"]=1
+    fi
+  done
+done
+
+for ext in $RELEASE_VERIFY_REQUIRED_EXTS; do
+  if [ -z "${FOUND_REQUIRED[$ext]:-}" ]; then
+    echo "FAIL: required release artifact matching $ext was not found"
+    echo "Set RELEASE_VERIFY_REQUIRED_EXTS only for explicit diagnostics."
+    exit 1
+  fi
 done
 
 echo "=== Packaging Verification Passed ==="

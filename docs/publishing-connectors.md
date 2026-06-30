@@ -7,6 +7,10 @@ The Civic Desk has two publishing modes:
 
 Recommended stack: publish instantly with here.now, use GitHub Pages when the editor wants a durable public archive in their own repository, keep Cloudflare Pages and Netlify for more technical users, and treat Substack/newsletter as distribution rather than the canonical archive.
 
+## Beta Verification Status
+
+For this release line, anonymous here.now preview publishing is the tested default fast path. The other API connectors are implemented, but they require user-owned credentials and real target accounts. Release evidence should state exactly which connector was live-verified for that release. Do not treat GitHub Pages, Cloudflare Pages, Netlify, WordPress, or permanent here.now account publishing as stable-grade verified unless the release notes include a live credentialed connector proof.
+
 ## API Publish Connectors
 
 ### here.now

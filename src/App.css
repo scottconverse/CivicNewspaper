@@ -1258,6 +1258,21 @@ nav {
   padding: 12px 13px;
 }
 
+.sidebar-footer.ai-status-ready {
+  border-color: #dce7cf;
+  background: #f1f5ec;
+}
+
+.sidebar-footer.ai-status-needs-model {
+  border-color: #e1d3aa;
+  background: #fbf7e9;
+}
+
+.sidebar-footer.ai-status-offline {
+  border-color: #ead2d2;
+  background: #fbefef;
+}
+
 .ollama-status-indicator {
   align-items: center;
   font-size: 12.5px;
@@ -1270,6 +1285,14 @@ nav {
 
 .ollama-status-indicator strong {
   color: #3f7350;
+}
+
+.ollama-status-indicator.needs-model strong {
+  color: #765f20;
+}
+
+.ollama-status-indicator.offline strong {
+  color: #8b3f3f;
 }
 
 .ollama-status-indicator span:last-child {
@@ -3009,6 +3032,22 @@ tr:hover td {
 @media (max-width: 560px) {
   .sidebar {
     position: static;
+  }
+
+  .system-status-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .system-status-header .card-title {
+    line-height: 1.25;
+  }
+
+  .system-status-export-button {
+    width: 100%;
+    justify-content: center;
+    white-space: normal;
   }
 
   .workbench-picker-card {

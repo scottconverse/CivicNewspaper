@@ -2,11 +2,11 @@
 
 > **Project name:** CivicNewspaper. **Installed app name:** The Civic Desk.
 >
-> **Current source/tag:** v0.3.0 public beta. Published GitHub Release installers may lag the source tag. Installers are unsigned. This is not a stable production release.
+> **Current source:** v0.3.1 public-beta repair candidate. Published GitHub Release installers may lag the source version. Installers are unsigned. This is not a stable production release.
 
 The Civic Desk is a local-first desktop newsroom tool for small local publishers, civic reporters, and community editors. It helps one person or a small team monitor public local sources, discover story leads, draft articles with a local AI model, review risks and evidence, and publish a static local-news issue.
 
-The app is built for the reality that many towns no longer have enough reporters doing daily civic coverage. It does not replace editorial judgment. It surfaces leads, warnings, verification paths, and publishing packages; the human editor decides what to investigate, edit, hold, kill, approve, or publish.
+The app is built for the reality that many towns no longer have enough reporters doing daily civic coverage. It does not replace editorial judgment. It surfaces leads, warnings, verification paths, and publishing packages; the human editor decides what to investigate, edit, hold, cut, approve, or publish.
 
 ## What It Does Today
 
@@ -20,12 +20,12 @@ The app is built for the reality that many towns no longer have enough reporters
 - Lets editors generate drafts, rewrite in plain language, run an optional press-freedom/legal-risk advisor, apply guardrail warnings, and approve stories for publication.
 - Never uses software guardrails or AI advice as a publish veto. Warnings and advisor notes are for the editor.
 - Compiles approved drafts into a static website with article pages, homepage, RSS, about/ethics/how-we-report/corrections pages, print CSS, newsletter markdown, Substack-ready markdown, social/community post copy, short-link copy, manifest, and ZIP.
-- Publishes through here.now, GitHub Pages, Cloudflare Pages, Netlify, WordPress, or assisted/manual URL recording. Substack is assisted: the app prepares copy, then the editor publishes in Substack and records the URL.
+- Publishes through here.now, GitHub Pages, Cloudflare Pages, Netlify, WordPress, or assisted/manual URL recording. Anonymous here.now preview is the live-verified public-beta path; GitHub Pages, Cloudflare Pages, Netlify, WordPress, permanent here.now publishing, and assisted/manual URL recording require your own accounts/credentials or release-specific proof before treating them as stable publishing paths. Substack is assisted: the app prepares copy, then the editor publishes in Substack and records the URL.
 - Includes a browser-extension pairing workflow for clipping pages into the local desk.
 
 ## What It Is Not Yet
 
-- Not a signed stable release. Windows SmartScreen and macOS Gatekeeper warnings are expected.
+- Not a signed stable release. Windows SmartScreen warnings are expected for the unsigned beta.
 - Not a multi-user newsroom server.
 - Not legal advice. The press-freedom/legal-risk advisor is a risk-spotting tool, not a lawyer.
 - Not a replacement for reporting. Dark signals and community/social leads need verification before publication.
@@ -33,11 +33,10 @@ The app is built for the reality that many towns no longer have enough reporters
 
 ## Download
 
-Download installers from the [GitHub Releases page](https://github.com/scottconverse/CivicNewspaper/releases). Use the newest release that actually includes an installer for your platform.
+Download installers from the [GitHub Releases page](https://github.com/scottconverse/CivicNewspaper/releases). Use the newest release that includes a Windows installer and checksum.
 
-- **Windows:** use the `.exe` or `.msi` installer when present. Because the installer is unsigned, choose **More info** then **Run anyway** when SmartScreen appears.
-- **macOS:** use the `.dmg` release artifact when present. Because signing/notarization is incomplete, right-click the app and choose **Open**, or use **System Settings > Privacy & Security > Open Anyway**.
-- **Linux:** use the `.deb` package when present. Linux packaging is currently Debian/Ubuntu oriented.
+- **Windows:** use the `.exe` installer. Because the installer is unsigned, choose **More info** then **Run anyway** when SmartScreen appears.
+- **macOS and Linux:** backlog/proof-needed for this release line. Do not treat macOS or Linux download cards, package configs, or historical artifacts as supported public-beta installers until a clean-machine proof is recorded.
 
 See [docs/install.md](docs/install.md) for checksum verification and OS-specific details.
 
@@ -45,11 +44,12 @@ See [docs/install.md](docs/install.md) for checksum verification and OS-specific
 
 1. Enter publication identity: publication name, editor name, organization type, city, and state.
 2. Let the app check the machine and local AI runtime.
-3. Download the recommended local model. The current default path favors `qwen2.5:7b` on ordinary 8 GB+ machines, with `llama3.2:3b` as a lighter fallback.
+3. Download the recommended local model. The current default path favors `phi4-mini:latest` because the latest local bakeoff showed it produced valid JSON for both real civic signals and empty/noise input.
 4. Add or discover sources for your city.
 5. Run Daily Scan, review leads, generate drafts, approve stories, compile the issue, and publish.
 
 The app can use the internet for source fetching, model download, and publishing. Drafting and review happen locally once the model and source material are available.
+For the editor desk workflow, see the manual's Workbench section: improve weak drafts, send stories back with assignment notes, hold stories with reasons, cut stories from an issue, then approve only the exact saved draft you reviewed.
 
 ## Core Workflow
 
@@ -67,6 +67,7 @@ docs/
   prd-local-llm-newsroom-v1.md
   implementation-plan-v0.3.0-to-v1.0.0.md
   install.md
+  troubleshooting.md
   user_manual.md
   architecture.md
   publishing-connectors.md
@@ -116,13 +117,18 @@ The Ollama runtime binary is not committed to the repo. The app-managed first-ru
 - [User manual](docs/user_manual.md) - plain-English operator guide plus technical appendix.
 - [Architecture](docs/architecture.md) - system design, schema, security, publishing, and AI boundaries.
 - [Install guide](docs/install.md) - unsigned installer and checksum instructions.
+- [Troubleshooting](docs/troubleshooting.md) - SmartScreen, model download, local AI, weak output, here.now preview, ZIP, and import help.
 - [Publishing connectors](docs/publishing-connectors.md) - supported publishing paths.
 - [Release readiness](docs/release-readiness.md) - beta, release-candidate, and stable gates.
 - [Discussion seeds](docs/discussion_seeds.md) - launch posts for GitHub Discussions or community forums.
 
 ## Release Status
 
-v0.3.0 is public beta source. Cleanroom testing has proven a full Longmont issue can be generated, exported, zipped, and anonymously published to here.now on Windows. This release improves story-quality metadata, recurring-topic memory, lead novelty warnings, and editor workflow controls, but stable release still requires signed installers, cross-platform clean-machine proof, matching published release artifacts, and credentialed live verification for external publishing providers.
+v0.3.1 is public-beta repair-candidate source. Cleanroom testing has proven that the app can generate, export, zip, and anonymously publish a Longmont issue to here.now on Windows, but every new release candidate still needs fresh cleanroom proof from the exact commit and installer. This repair line improves story-quality workflow, docs honesty, Windows-only beta packaging scope, recurring-topic memory, lead novelty warnings, and editor workflow controls. Stable release still requires signed installers, cross-platform clean-machine proof for every advertised platform, matching published release artifacts, and credentialed live verification for external publishing providers.
+
+## Backlog: Mac And Linux Installer Proof
+
+Mac and Linux installer work is intentionally out of the current repair run. Before the public docs can advertise those platforms, the project needs real build artifacts, first-run local-AI setup proof, clean-machine install notes, and signing/notarization or explicit unsigned-platform guidance for each OS.
 
 ## License
 

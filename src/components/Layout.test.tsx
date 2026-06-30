@@ -62,4 +62,23 @@ describe("Layout Component Tests", () => {
     fireEvent.keyDown(document, { key: "8", ctrlKey: true });
     expect(handleTabChange).toHaveBeenCalledWith("publish");
   });
+
+  test("does not claim local AI is ready when no model is selected", () => {
+    render(
+      <Layout
+        activeTab="queue"
+        onTabChange={vi.fn()}
+        ollamaOnline={true}
+        selectedDraft={null}
+        modelLabel="No model selected"
+      >
+        <div>Test Child</div>
+      </Layout>
+    );
+
+    expect(screen.getByText("Choose an AI model")).toBeInTheDocument();
+    expect(screen.getByText("Choose an AI model").closest(".sidebar-footer")).toHaveClass("ai-status-needs-model");
+    expect(screen.getByText("Choose an AI model").closest(".ollama-status-indicator")).toHaveClass("needs-model");
+    expect(screen.queryByText("Local AI ready")).not.toBeInTheDocument();
+  });
 });

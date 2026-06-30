@@ -116,6 +116,8 @@ describe('DailyScanResults', () => {
       expect(screen.getByTestId('daily-scan-empty')).toBeInTheDocument();
     });
     expect(screen.getByText(/No new leads found/i)).toBeInTheDocument();
+    expect(screen.getByText(/nothing changed since the last run/i)).toBeInTheDocument();
+    expect(screen.getByText(/Review your source list/i)).toBeInTheDocument();
     fireEvent.click(screen.getByTestId('daily-scan-run-again'));
     expect(onRunScan).toHaveBeenCalledTimes(1);
   });

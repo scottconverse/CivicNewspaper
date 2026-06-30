@@ -34,6 +34,14 @@ export const Layout: React.FC<LayoutProps> = ({
   children
 }) => {
   const mainRef = React.useRef<HTMLElement | null>(null);
+  const hasSelectedModel = Boolean(modelLabel && !/^no model selected$/i.test(modelLabel.trim()));
+  const aiStatusLabel = !ollamaOnline
+    ? "Local AI offline"
+    : hasSelectedModel
+      ? "Local AI ready"
+      : "Choose an AI model";
+  const aiStatusTone = !ollamaOnline ? "offline" : hasSelectedModel ? "ready" : "needs-model";
+  const aiStatusClass = aiStatusTone === "ready" ? "online" : aiStatusTone === "needs-model" ? "warning" : "offline";
   const navGroups = [
     {
       label: "Newsroom",
@@ -174,11 +182,11 @@ export const Layout: React.FC<LayoutProps> = ({
           ))}
         </nav>
 
-        <div className="sidebar-footer">
-          <div className="ollama-status-indicator">
-            <span className={`status-dot ${ollamaOnline ? "online" : "offline"}`} />
+        <div className={`sidebar-footer ai-status-${aiStatusTone}`}>
+          <div className={`ollama-status-indicator ${aiStatusTone}`}>
+            <span className={`status-dot ${aiStatusClass}`} />
             <div>
-              <strong>{ollamaOnline ? "Local AI ready" : "Local AI offline"}</strong>
+              <strong>{aiStatusLabel}</strong>
               <span>{modelLabel ?? "private"}</span>
             </div>
           </div>

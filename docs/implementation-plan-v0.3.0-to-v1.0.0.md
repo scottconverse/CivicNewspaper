@@ -1,8 +1,8 @@
 # Implementation Plan: v0.3.0 to v1.0.0
 
-This document supersedes the earlier v0.2.9 planning snapshot. The full roadmap remains in `docs/implementation-plan-v0.2.9-to-v1.0.0.md`; this file exists so current release docs point at the public-beta baseline that actually shipped as v0.3.0.
+This document supersedes the earlier v0.2.9 planning snapshot. The older v0.2.9 draft is historical; this file is the maintained roadmap from the public-beta baseline that shipped as v0.3.0 and the current v0.3.1 repair candidate.
 
-Current v0.3.0 focus areas:
+Current v0.3.1 focus areas:
 
 - Improve story quality with stronger freshness, novelty, beat-memory, source-context, and output-quality gates.
 - Keep local LLM assistance optional and editor-controlled; software warnings never veto publication.

@@ -26,7 +26,7 @@ describe("Workbench Component Tests", () => {
     lead_id: 42,
     format: "watch",
     title: "Suspicious Spending",
-    content: "Content with citations",
+    content: "Residents flagged unusual spending in the latest public records.\n\nThe draft attributes the claim carefully and keeps the item in watch format.",
     status: "draft_generated",
     verification_checklist: "[]"
   };
@@ -368,10 +368,10 @@ describe("Workbench Component Tests", () => {
 
     // Modal appears showing both the original and the rewrite; nothing applied yet.
     expect(await screen.findByText(/Review Plain Language Rewrite/i)).toBeInTheDocument();
-    expect(plainLanguageRewrite).toHaveBeenCalledWith("Content with citations", "watch");
+    expect(plainLanguageRewrite).toHaveBeenCalledWith(mockDraft.content, "watch");
     const originalPane = within(document.getElementById("diff-pane-original")!);
     const rewritePane = within(document.getElementById("diff-pane-rewrite")!);
-    expect(originalPane.getByText("Content with citations")).toBeInTheDocument();
+    expect(originalPane.getByText(/Residents flagged unusual spending/i)).toBeInTheDocument();
     expect(rewritePane.getByText("Plain simple text")).toBeInTheDocument();
     expect(onUpdateDraftContent).not.toHaveBeenCalled();
   });
@@ -537,7 +537,101 @@ describe("Workbench Component Tests", () => {
     const sendBackButtons = screen.getAllByRole("button", { name: /Send Back for More Work/i });
     expect(sendBackButtons.length).toBeGreaterThanOrEqual(2);
     fireEvent.click(sendBackButtons[0]);
-    expect(onDecision).toHaveBeenCalledWith("needs_verification");
+    expect(screen.getByRole("heading", { name: /Send back for more work/i })).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText(/Reason \/ assignment/i), {
+      target: { value: "Needs second source and fresh confirmation." },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /Save decision note/i }));
+    expect(onDecision).toHaveBeenCalledWith("needs_verification", "Needs second source and fresh confirmation.");
+  });
+
+  test("hold action records an editor note before changing status", () => {
+    const onDecision = vi.fn();
+    renderEditor({ onDecision });
+
+    fireEvent.click(screen.getByRole("button", { name: /^Hold$/i }));
+    expect(screen.getByText(/Put story on hold/i)).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText(/Hold note/i), {
+      target: { value: "Revisit after Thursday packet posts." },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /Save decision note/i }));
+
+    expect(onDecision).toHaveBeenCalledWith("hold", "Revisit after Thursday packet posts.");
+  });
+
+  test("held drafts show their hold note and require resume before approval", () => {
+    const onApprovePublish = vi.fn();
+    renderEditor({
+      onApprovePublish,
+      selectedDraft: {
+        ...mockDraft,
+        status: "hold",
+        missing_evidence_notes: "Wait for Thursday packet.",
+      },
+    });
+
+    expect(screen.getByText(/Hold note:/i)).toBeInTheDocument();
+    expect(screen.getByText(/Wait for Thursday packet/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Approve for Static Publish/i })).toBeDisabled();
+    expect(onApprovePublish).not.toHaveBeenCalled();
+  });
+
+  test("sent-back drafts require ready-for-review before approval", () => {
+    const onApprovePublish = vi.fn();
+    renderEditor({
+      onApprovePublish,
+      selectedDraft: {
+        ...mockDraft,
+        status: "needs_verification",
+        missing_evidence_notes: "Needs second source.",
+      },
+    });
+
+    expect(screen.getByText(/Assignment note:/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Approve for Static Publish/i })).toBeDisabled();
+  });
+
+  test("primary editor fields have accessible labels", () => {
+    renderEditor();
+    expect(screen.getByLabelText("Story Title")).toBeInTheDocument();
+    expect(screen.getByLabelText("Article Body (Markdown)")).toBeInTheDocument();
+  });
+
+  test("story-quality preflight warns on scaffolding and missing citations without blocking editor tools", () => {
+    const onImproveForPublication = vi.fn();
+    const onUpdateDraftFormat = vi.fn();
+
+    renderEditor({
+      onImproveForPublication,
+      onUpdateDraftFormat,
+      selectedDraft: {
+        ...mockDraft,
+        format: "explainer",
+        title: "City Council Meetings with Video Archive: City Council meetings are held regularly.",
+        content: "Body:\nNut graf: This is a note.\n\nReporting Steps:\n- Call someone.",
+      },
+      evidenceList: [
+        {
+          id: 7,
+          source_id: 1,
+          fetched_at: "2026-06-30T00:00:00Z",
+          excerpt: "Council agenda excerpt.",
+          content_hash: "hash",
+          entities: "[]",
+        },
+      ],
+    });
+
+    expect(screen.getByText(/Story-quality preflight/i)).toBeInTheDocument();
+    expect(screen.getByText(/Headline may read like a note/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/reporter scaffolding/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/no inline evidence citations/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /Make this a brief/i }));
+    expect(onUpdateDraftFormat).toHaveBeenCalledWith("brief");
+
+    fireEvent.click(screen.getByRole("button", { name: /Improve for Publication/i }));
+    expect(onImproveForPublication).toHaveBeenCalledTimes(1);
   });
 
   test("needs-verification drafts explain that more work is required", () => {
@@ -610,18 +704,21 @@ describe("Workbench Component Tests", () => {
 
   test("story-quality warning opens the same review checkpoint", async () => {
     const onApprovePublish = vi.fn();
-    const report: GuardrailsReport = {
-      is_clean: true,
-      issues: [
-        { category: "Lead Readiness", message: "watch item", severity: "warning" },
-      ],
-    };
-    renderEditor({ onApprovePublish, guardrailsReport: report });
+    renderEditor({
+      onApprovePublish,
+      guardrailsReport: null,
+      selectedDraft: {
+        ...mockDraft,
+        title: "Portal Status: City web tools are available.",
+        content: "Body:\nNut graf: Reporter note.\n\nReporting Steps:\n- Check the portal.",
+      },
+    });
 
     fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
 
     expect(await screen.findByText(/Publish with review warnings/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/watch item/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/story quality/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/reporter scaffolding/i).length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: /Publish anyway \(logged\)/i }));
     expect(onApprovePublish).toHaveBeenCalledWith("Editor reviewed pre-publication warnings and chose to publish.");
   });

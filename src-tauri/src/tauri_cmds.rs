@@ -191,7 +191,7 @@ pub(crate) async fn get_selected_model_or_fallback(db: &DbConn) -> String {
 
     // Default to the scan-safe model verified by the local bakeoff. This
     // fallback only runs when no model is saved in settings.
-    let default_m = "qwen2.5:7b".to_string();
+    let default_m = "phi4-mini:latest".to_string();
     let mut model = default_m.clone();
     if let Ok(resp) = reqwest::get("http://127.0.0.1:11434/api/tags").await {
         if resp.status().is_success() {
@@ -208,14 +208,14 @@ pub(crate) async fn get_selected_model_or_fallback(db: &DbConn) -> String {
                     let names: Vec<String> = tags.models.iter().map(|m| m.name.clone()).collect();
                     // QA-mn1: prefer the default model only if it is EXACTLY
                     // installed (with :latest normalization), then fall back to
-                    // a known scan-capable family, then the first model.
+                    // known scan-capable families in bakeoff order, then the first model.
                     if model_is_installed(&default_m, &names) {
                         model = default_m;
                     } else if let Some(m) = tags.models.iter().find(|m| {
                         // Match by model FAMILY on the tag's base name (the part
                         // before ':'), not a loose whole-string contains.
                         let base = m.name.split(':').next().unwrap_or("");
-                        base == "qwen2.5" || base == "llama3.2"
+                        base == "phi4-mini" || base == "gemma4" || base == "llama3.2"
                     }) {
                         model = m.name.clone();
                     } else {
@@ -988,7 +988,7 @@ pub fn delete_draft(db: tauri::State<'_, DbConn>, id: i32) -> Result<(), String>
 
 /// Advisory publish review hook. It records an editor note when one is supplied,
 /// but it must never veto a publish-advancing decision. The editor owns the
-/// publish/hold/kill decision; software only warns and records.
+/// publish/hold/cut decision; software only warns and records.
 pub(crate) fn enforce_publish_gate(
     conn: &rusqlite::Connection,
     id: i32,
@@ -1063,7 +1063,7 @@ pub(crate) fn story_decision_with_conn(
         if let Some(draft) = db::get_draft(conn, id).map_err(|e| e.to_string())? {
             if draft.status == "killed" {
                 return Err(
-                    "This story is killed. Move it back to Hold before approving it for publish."
+                    "This story is cut from the issue. Restore it before approving it for publish."
                         .to_string(),
                 );
             }
@@ -1072,7 +1072,11 @@ pub(crate) fn story_decision_with_conn(
     if let Err(err) = enforce_publish_gate(conn, id, decision, override_reason) {
         eprintln!("Publish decision audit failed without vetoing editor decision: {err}");
     }
-    db::update_draft_status(conn, id, decision).map_err(|e| e.to_string())
+    let workflow_note = match decision {
+        "needs_verification" | "hold" => override_reason,
+        _ => None,
+    };
+    db::update_draft_status_with_note(conn, id, decision, workflow_note).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -1089,43 +1093,23 @@ pub fn story_decision(
 }
 
 fn sanitize_unlinked_evidence_citations(text: &str, allowed_ids: &HashSet<i32>) -> String {
-    if !text.contains("evidence:") {
+    let citation_re = regex::Regex::new("(?i)evidence:(?://)?(\\d+)").expect("valid citation regex");
+    if !citation_re.is_match(text) {
         return text.to_string();
     }
 
-    let mut output = String::with_capacity(text.len());
-    let mut rest = text;
     let mut removed_ids = Vec::new();
-
-    while let Some(pos) = rest.find("evidence:") {
-        output.push_str(&rest[..pos]);
-        let after_prefix = &rest[pos + "evidence:".len()..];
-        let digit_len = after_prefix
-            .chars()
-            .take_while(|ch| ch.is_ascii_digit())
-            .map(char::len_utf8)
-            .sum::<usize>();
-
-        if digit_len == 0 {
-            output.push_str("evidence:");
-            rest = after_prefix;
-            continue;
-        }
-
-        let id_text = &after_prefix[..digit_len];
+    let output = citation_re.replace_all(text, |caps: &regex::Captures<'_>| {
+        let marker = caps.get(0).map(|m| m.as_str()).unwrap_or_default();
+        let id_text = caps.get(1).map(|m| m.as_str()).unwrap_or_default();
         let id = id_text.parse::<i32>().unwrap_or_default();
         if allowed_ids.contains(&id) {
-            output.push_str("evidence:");
-            output.push_str(id_text);
+            marker.to_string()
         } else {
             removed_ids.push(id);
-            output.push_str("unlinked-evidence-");
-            output.push_str(id_text);
+            format!("unlinked-evidence-{id_text}")
         }
-        rest = &after_prefix[digit_len..];
-    }
-
-    output.push_str(rest);
+    }).to_string();
     removed_ids.sort_unstable();
     removed_ids.dedup();
 
@@ -1259,12 +1243,16 @@ mod draft_citation_tests {
     #[test]
     fn disables_all_model_citations_when_no_evidence_is_linked() {
         let allowed = HashSet::new();
-        let draft = "This unlinked draft cites [a source](evidence:12).";
+        let draft = "This unlinked draft cites [a source](evidence:12), [another](Evidence://13), and [one more](EVIDENCE:14).";
 
         let sanitized = sanitize_unlinked_evidence_citations(draft, &allowed);
 
         assert!(!sanitized.contains("](evidence:12)"));
+        assert!(!sanitized.contains("Evidence://13"));
+        assert!(!sanitized.contains("EVIDENCE:14"));
         assert!(sanitized.contains("unlinked-evidence-12"));
+        assert!(sanitized.contains("unlinked-evidence-13"));
+        assert!(sanitized.contains("unlinked-evidence-14"));
         assert!(sanitized.contains("Source check"));
     }
 
@@ -2073,7 +2061,7 @@ pub async fn pull_ollama_model<R: tauri::Runtime>(
         ));
     }
     let sink = std::sync::Arc::new(AppHandlePullSink { app });
-    crate::core::llm::run_ollama_pull(model_id, "http://127.0.0.1:11434", sink).await
+    crate::core::llm::run_ollama_pull(model_id, &crate::core::llm::ollama_base_url(), sink).await
 }
 
 #[tauri::command]

@@ -190,6 +190,15 @@ export function modelInstalled(selected: string, installed: string[]): boolean {
   });
 }
 
+export function sanitizeEvidenceCitations(text: string, allowedEvidenceIds: number[]): string {
+  if (!/evidence:/i.test(text)) return text;
+  const allowed = new Set(allowedEvidenceIds.map((id) => String(id)));
+  return text.replace(/evidence:(?:\/\/)?(\d+)/gi, (match, id) => {
+    if (allowed.has(String(id))) return match;
+    return `unlinked-evidence-${id}`;
+  });
+}
+
 // Formats a structured `ollama-pull-progress` event into a single log line.
 // The pull command (`pull_ollama_model`) emits a structured object payload, not
 // a JSON string — pinning the shape here keeps the listener from regressing to
@@ -1321,6 +1330,32 @@ export function useApp() {
     }
   };
 
+  const ensureSelectedModelReady = async (actionName: string): Promise<boolean> => {
+    if (manualLlmMode) return true;
+    setStatusMessage(`Checking AI model presence before ${actionName}...`);
+    const model = await getSetting("model.selected");
+    if (!model) {
+      setErrorMessage(`${actionName} requires a selected AI model, but none was configured. Redirecting to model download setup...`);
+      setOnboardingStep(3);
+      setActiveTab("onboarding");
+      return false;
+    }
+    const health = await ollamaHealth();
+    if (!health.reachable) {
+      setErrorMessage(`${actionName} couldn't reach the local AI service. Start Ollama or open AI Model to check setup, then try again.`);
+      setOnboardingStep(2);
+      setActiveTab("onboarding");
+      return false;
+    }
+    if (!modelInstalled(model, health.models)) {
+      setErrorMessage(`${actionName} requires the ${model} model, which isn't downloaded yet. Redirecting to model download setup...`);
+      setOnboardingStep(3);
+      setActiveTab("onboarding");
+      return false;
+    }
+    return true;
+  };
+
   const handleSaveDraftEditor = async () => {
     if (!selectedDraft) return;
     try {
@@ -1341,18 +1376,42 @@ export function useApp() {
     }
   };
 
-  const handleDecision = async (status: string, draftId = selectedDraft?.id) => {
+  const handleDecision = async (status: string, reason?: string, draftId = selectedDraft?.id) => {
     if (!draftId) return;
     try {
       setLoading(true);
-      await storyDecision(draftId, status);
+      await storyDecision(draftId, status, reason);
       setSelectedDraft(current =>
-        current?.id === draftId ? { ...current, status } : current
+        current?.id === draftId
+          ? {
+              ...current,
+              status,
+              missing_evidence_notes:
+                status === "needs_verification" || status === "hold"
+                  ? reason || current.missing_evidence_notes
+                  : current.missing_evidence_notes,
+            }
+          : current
       );
       setDrafts(current =>
-        current.map(draft => (draft.id === draftId ? { ...draft, status } : draft))
+        current.map(draft =>
+          draft.id === draftId
+            ? {
+                ...draft,
+                status,
+                missing_evidence_notes:
+                  status === "needs_verification" || status === "hold"
+                    ? reason || draft.missing_evidence_notes
+                    : draft.missing_evidence_notes,
+              }
+            : draft
+        )
       );
-      setStatusMessage(`Story status updated to '${status}'.`);
+      setStatusMessage(
+        reason?.trim()
+          ? `Story status updated to '${status}' with an editor note.`
+          : `Story status updated to '${status}'.`
+      );
       await loadInitialData();
     } catch (e: any) {
       setErrorMessage(toUserMessage(e));
@@ -1369,18 +1428,28 @@ export function useApp() {
     try {
       setLoading(true);
       setErrorMessage("");
+      const savedDraftId = await saveDraft(selectedDraft);
+      const savedVisibleDraft = { ...selectedDraft, id: savedDraftId };
+      setSelectedDraft(savedVisibleDraft);
+      const latestGuardrails = await guardrailsCheck(savedDraftId);
+      setGuardrailsReport(latestGuardrails);
       const editorName = (await getSetting("identity.editor_name"))?.trim() || "Editor";
       try {
-        await attestDraft(selectedDraft.id, editorName);
+        await attestDraft(savedDraftId, editorName);
       } catch (err) {
         console.warn("Could not record review attestation; proceeding with editor decision.", err);
       }
-      await storyDecision(selectedDraft.id, "ready_to_publish", overrideReason);
-      setSelectedDraft({ ...selectedDraft, status: "ready_to_publish" });
+      const auditReason =
+        overrideReason ??
+        (latestGuardrails.issues?.length
+          ? `Editor reviewed ${latestGuardrails.issues.length} saved-draft guardrail warning(s) before approval.`
+          : undefined);
+      await storyDecision(savedDraftId, "ready_to_publish", auditReason);
+      setSelectedDraft({ ...savedVisibleDraft, status: "ready_to_publish" });
       setDrafts(current =>
-        current.map(draft => (draft.id === selectedDraft.id ? { ...draft, status: "ready_to_publish" } : draft))
+        current.map(draft => (draft.id === savedDraftId ? { ...savedVisibleDraft, status: "ready_to_publish" } : draft))
       );
-      setStatusMessage("Story approved for publishing; a verification record was saved.");
+      setStatusMessage("Current draft saved, checked, and approved for publishing; a verification record was saved.");
       await loadInitialData();
     } catch (e: any) {
       setErrorMessage(toUserMessage(e));
@@ -1445,7 +1514,7 @@ export function useApp() {
         "Cutting this story removes it from the publishing pipeline. You can restore it later, but any in-progress review state is cleared.",
       confirmLabel: "Cut story",
       danger: true,
-      onConfirm: () => handleDecision("killed", draftId),
+      onConfirm: () => handleDecision("killed", undefined, draftId),
     });
   };
 
@@ -1946,6 +2015,50 @@ export function useApp() {
     }
   };
 
+  const handleImproveForPublication = async () => {
+    if (!selectedDraft || !selectedDraft.content) return;
+    try {
+      setLoading(true);
+      setErrorMessage("");
+      if (!(await ensureSelectedModelReady("Improving a draft for publication"))) return;
+      const systemPrompt =
+        "You are a careful local newspaper editor. Improve copy for publication without inventing facts. Preserve all evidence:ID citations. Return clean Markdown only.";
+      const promptText = `Improve this draft so it reads like reader-facing local newspaper copy, not reporter notes.
+
+Rules:
+- Keep the editor's facts only; do not invent quotes, dates, dollar amounts, causes, impacts, or source details.
+- First line must be Headline: followed by a concise, specific headline.
+- Remove reporter scaffolding such as EDITOR_NOTE, Body:, Nut graf, Reporting Steps, [Source needed], [Verification needed], and placeholders.
+- Preserve inline evidence citations exactly when present.
+- If the source support is thin, make it a brief or watch item and say what is known, not what is guessed.
+- Neutral tone. No advocacy. No software veto language.
+
+Current format: ${selectedDraft.format}
+Current title: ${selectedDraft.title}
+
+Draft:
+${selectedDraft.content}`;
+
+      const improved = await llmTask(promptText, systemPrompt);
+      const allowedEvidenceIds = evidenceList
+        .map((item) => item.id)
+        .filter((id): id is number => typeof id === "number");
+      const citationSafe = sanitizeEvidenceCitations(improved, allowedEvidenceIds);
+      const normalized = normalizeGeneratedDraft(citationSafe, selectedDraft.title);
+      setSelectedDraft({
+        ...selectedDraft,
+        title: normalized.title,
+        content: normalized.content,
+        updated_at: new Date().toISOString(),
+      });
+      setStatusMessage("Improved draft is loaded in the editor. Review it, then save if you want to keep it.");
+    } catch (e: any) {
+      setErrorMessage(`Failed to improve draft: ${toUserMessage(e)}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleBackupSave = async () => {
     if (!backupPathInput) return;
     try {
@@ -2192,6 +2305,7 @@ export function useApp() {
     handleRegisterCorrection,
     handleDeleteDraft,
     handleGenerateSocial,
+    handleImproveForPublication,
     handleBackupSave,
     handleBackupRestore,
     handlePullModel,

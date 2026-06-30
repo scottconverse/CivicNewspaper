@@ -660,12 +660,27 @@ pub fn update_draft(conn: &Connection, draft: &Draft) -> SqlResult<()> {
     Ok(())
 }
 
-pub fn update_draft_status(conn: &Connection, id: i32, status: &str) -> SqlResult<()> {
+pub fn update_draft_status_with_note(
+    conn: &Connection,
+    id: i32,
+    status: &str,
+    note: Option<&str>,
+) -> SqlResult<()> {
     let now = Utc::now().to_rfc3339();
-    conn.execute(
-        "UPDATE drafts SET status = ?1, updated_at = ?2 WHERE id = ?3",
-        params![status, now, id],
-    )?;
+    match note.map(str::trim).filter(|value| !value.is_empty()) {
+        Some(note) => {
+            conn.execute(
+                "UPDATE drafts SET status = ?1, missing_evidence_notes = ?2, updated_at = ?3 WHERE id = ?4",
+                params![status, note, now, id],
+            )?;
+        }
+        None => {
+            conn.execute(
+                "UPDATE drafts SET status = ?1, updated_at = ?2 WHERE id = ?3",
+                params![status, now, id],
+            )?;
+        }
+    }
     Ok(())
 }
 

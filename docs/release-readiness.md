@@ -8,13 +8,14 @@ Run this before tagging a beta or release candidate:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\release-smoke.ps1 `
-  -Model "qwen2.5:7b"
+  -Model "phi4-mini:latest"
 ```
 
 The script writes a receipt under `.agent-runs\release-smoke-*` and runs:
 
 - frontend tests
 - Rust tests
+- desktop first-run loopback smoke with isolated app data
 - seeded static-site output generation
 - anonymous here.now publish and live URL fetch
 - live Colorado source scan
@@ -31,19 +32,48 @@ For stable release evidence, run:
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\release-smoke.ps1 `
   -FixtureDir "C:\Users\instynct\Desktop\CivicNewspaperTestFiles" `
-  -Model "qwen2.5:7b" `
+  -Model "phi4-mini:latest" `
   -Stable
 ```
 
-The stable run fails if the working tree is dirty or if live model, here.now, or import fixture gates are skipped. Use `-AllowDirty` only for a non-release diagnostic run.
+The stable run fails if the working tree is dirty or if desktop smoke, live model, here.now, or import fixture gates are skipped. Use `-AllowDirty` only for a non-release diagnostic run.
+
+## Release-candidate packaging receipt
+
+After tests and smoke checks pass, generate a local RC evidence receipt before publishing any release asset:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\prepare-rc-evidence.ps1 `
+  -ReleaseSmokeReceipt ".agent-runs\release-smoke-YYYYMMDD-HHMMSS\release-smoke-receipt.json" `
+  -ModelBakeoffReceipt ".agent-runs\model-bakeoff-YYYYMMDD-HHMMSS.json" `
+  -DependencyAuditReceipt ".agent-runs\dependency-audit-YYYYMMDD-HHMMSS.json" `
+  -InstallerSmokeReceipt ".agent-runs\windows-installer-smoke-YYYYMMDD-HHMMSS\windows-installer-smoke-receipt.json"
+```
+
+The receipt records the exact branch, commit, app versions, Tauri bundle targets, artifact paths, SHA256 hashes, smoke-check results, model-bakeoff receipt, dependency-audit receipt, Windows installer-smoke receipt, and `SHA256SUMS` output. It is a local evidence artifact; it does not push, merge, tag, or publish. By default it fails if the smoke receipt is missing, from a different repo or commit, dirty/diagnostic, contains failed/skipped checks, no current-version installer artifacts are present, or the model-bakeoff/dependency-audit/installer-smoke artifacts are missing. Historical bundle files are reported as stale diagnostic context, but they do not count as release-candidate artifacts. Use the diagnostic flags only for local investigation, not release evidence.
+
+The model bakeoff receipt must show that the configured default model in `src\models.json` passed every bakeoff case. The dependency audit receipt must be clean, run npm audit at the documented `moderate` threshold or stricter, and include Rust advisory checking through `cargo-audit`; a receipt that only exists but contains failures is not release evidence. The Windows installer smoke receipt must prove NSIS silent install, installed app start from the packaged installer, first-run screenshot capture, uninstaller presence, and silent uninstall. MSI lifecycle proof is backlog/proof-needed until MSI is reintroduced as a public beta artifact.
+
+For this release line, RC packaging evidence is Windows public beta only. macOS and Linux installer proof is backlog/proof-needed until a real platform artifact and clean-machine first-run proof exist.
+
+## Hosted release workflow
+
+The GitHub release workflow is intentionally conservative during public beta:
+
+- tag pushes build Windows artifacts into a **draft** prerelease;
+- the workflow attaches `SHA256SUMS` and runs release-asset integrity checks;
+- the workflow does not publish a non-draft public release by itself;
+- Scott must review the local RC receipt, cleanroom report, and release notes before undrafting a release.
+
+This prevents a public unsigned installer from appearing before checksum and local release-gate evidence have been reviewed.
 
 ## Evidence levels
 
 | Level | Required evidence | Allowed skips |
 |---|---|---|
-| Public beta | Frontend tests, Rust tests, static-site output gate, release notes, known limitations. | Live provider credentials, signing, true clean-machine proof. Skips must be explicit in the receipt. |
-| Release candidate | Beta evidence plus source-import fixtures, live Colorado scan, model bakeoff, dependency audit, anonymous here.now publish. | External providers without credentials. |
-| Stable | RC evidence plus no skipped release-smoke gates, clean first-run artifact, signed Windows installer, macOS notarization, clean-machine installer proof, and credentialed live connector verification for supported providers. | None for the release-critical gates. |
+| Public beta | Frontend tests, Rust tests, static-site output gate, release notes, known limitations, install guide, user manual, and troubleshooting guide. | Live provider credentials, signing, true clean-machine proof. Skips must be explicit in the receipt. |
+| Release candidate | Beta evidence plus desktop smoke, current-version Windows installer artifacts, source-import fixtures, live Colorado scan, model bakeoff, dependency audit, anonymous here.now publish. | External providers without credentials. |
+| Stable | RC evidence plus no skipped release-smoke gates, clean first-run artifact, signed Windows installer, cross-platform installer proof for every advertised OS, and credentialed live connector verification for supported providers. | None for the release-critical gates. |
 
 ## Source import fixtures
 
@@ -73,7 +103,7 @@ node scripts\model-bakeoff.mjs
 
 The result is written under `.agent-runs\model-bakeoff-*.json`.
 
-For the current Windows 32 GB machine, qwen2.5:7b remains the safer default scan model until a newer model repeatedly proves strict JSON reliability in the bakeoff and live scan gates.
+For the current Windows 32 GB machine, `phi4-mini:latest` is the default public-beta scan model because the latest bakeoff showed valid JSON output on both civic-signal and empty/noise cases. Keep `qwen2.5:7b`, `gpt-oss:20b`, `gemma4:e4b`, and `llama3.2:3b` in the bakeoff comparison until repeated release evidence supports a different default.
 
 ## Security checks
 
@@ -92,8 +122,9 @@ Warnings from transitive desktop framework dependencies should be recorded in th
 These cannot be fully completed from one unsigned Windows development machine:
 
 - Windows code-signing certificate and signed installer verification
-- macOS signing and notarization
-- clean-machine installer proof on Windows, macOS, and Linux
+- Mac installer build, signing/notarization decision, and clean-machine proof
+- Linux installer/package build and clean-machine or VM proof
+- clean-machine installer proof on every OS advertised in public docs
 - permanent here.now API-key publish verification
 - Cloudflare Pages, Netlify, WordPress, and GitHub Pages live connector verification with real target accounts
 

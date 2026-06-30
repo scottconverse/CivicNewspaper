@@ -4,6 +4,22 @@ All notable changes to CivicNewspaper will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-06-30
+
+### Added
+- Added reasoned Workbench send-back and hold decisions so writers can see why a draft needs more reporting, verification, or later review.
+- Added an editor-invoked Improve for Publication tool that asks the local model to turn a draft into reader-facing copy while preserving citations and uncertainty.
+- Added a story-quality preflight panel for headline, reporter-scaffolding, attribution, citation, and format warnings.
+- Added release-candidate evidence receipt generation with exact commit, version, artifact path, and SHA256 reporting.
+
+### Changed
+- Scoped release packaging to Windows public-beta installer targets for this repair line.
+- Updated user-facing docs and landing-page download copy so macOS and Linux installer proof is backlog/proof-needed, not advertised as ready.
+
+### Fixed
+- Preserved editor workflow notes across refresh by storing hold/send-back notes with the draft.
+- Reduced the risk of publishing reporter notes by surfacing preflight warnings before approval while preserving the rule that software never vetoes the editor.
+
 ## [0.3.0] - 2026-06-29
 
 ### Added
@@ -179,7 +195,7 @@ A subsequent balanced five-role audit of the whole repository (0 Blocker / 3 Cri
 - **WD-6**: Clarified updater dormancy in FAQ.md.
 - **WD-7**: Removed stale monolith refactor mentions in CONTRIBUTING.md.
 - **WD-8**: Created postmortems in CHANGELOG.md.
-- **WD-9**: Swept all local author file:// C:/Users/scott/ links from committed docs.
+- **WD-9**: Swept all local author workstation links from committed docs.
 - **WD-10**: Updated README.md project structure tree representation.
 - **WD-11**: Expanded carried-debt.md with Pipeline Integrity Incidents 1-4.
 - **WI-INV-2**: Implemented paragraph-aware check-ollama-install-invariant.sh and hooked to CI.
@@ -192,7 +208,7 @@ A subsequent balanced five-role audit of the whole repository (0 Blocker / 3 Cri
 - **Audit Findings:** The subsequent v0.2.2 audit conducted by the independent audit team revealed a total of 37 findings across five roles (Engineering, UI/UX, Documentation, Test, and QA) detailing functional gaps and testing deficiencies.
 - **Version Drift:** An integrity scan discovered critical version drift between project files: the Rust `Cargo.toml` file still specified version `0.2.1` whereas the JavaScript dependencies and build configuration named it `0.2.2`.
 - **Withheld Tag:** Due to these findings and discrepancies, the repository release tag was withheld, and the branch was never merged into main.
-- **Audit Documentation:** The detailed list of findings and recommendations is preserved in the 37-finding audit report artifact [audit-team-v022-claude/00-executive-audit.md](file:///C:/Users/scott/.gemini/antigravity/brain/0921da25-c18f-4fad-9ee3-f6ced44621f5/audit-team-v022-claude/00-executive-audit.md).
+- **Audit Documentation:** The detailed 37-finding audit report was preserved as an internal release artifact for that remediation cycle; the original local workstation path is intentionally not linked from public documentation.
 
 ## [0.2.1] [SUPERSEDED] - 2026-05-26
 

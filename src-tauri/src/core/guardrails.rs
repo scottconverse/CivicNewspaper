@@ -200,7 +200,9 @@ pub fn run_guardrails_check(
         // 1. Source-link coverage check. This is advisory by default: it helps
         // editors see unsupported factual claims without deciding what they may
         // publish.
-        let has_citation = paragraph.contains("evidence:") || paragraph.contains("evidence://");
+        let lower_paragraph = paragraph.to_lowercase();
+        let has_citation =
+            lower_paragraph.contains("evidence:") || lower_paragraph.contains("evidence://");
 
         // Let's check if the paragraph length is significant enough to count as a factual claim
         if paragraph.len() > 30 && !has_citation {
