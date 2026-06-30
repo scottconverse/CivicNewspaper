@@ -19,15 +19,17 @@ IMPORTANT MACHINE CONTEXT:
 
 Run this directive now:
 
-`test-comms/directives/20260629-gauntlet-all-cleanmachine-v030-b0be4d7.md`
+`test-comms/directives/20260630-canonical-walkthrough-v030-b0be4d7.md`
 
-This is the full clean-machine v0.3.0 GauntletGate test for The Civic Desk. It wipes prior app/Ollama/model state within the approved boundary, installs from the v0.3.0 installer artifact on this coordination branch, proves first-run dependency-absent state, verifies app-guided AI setup, generates and edits a Longmont issue, exports ZIP/static output, publishes anonymously to here.now, and reports human-readable release evidence.
+This is the GauntletGate Walkthrough lane only. Do not run Full.
 
-Supersedes:
+The tester must produce:
 
-`test-comms/directives/20260629-beat-memory-rerun-77ece86.md`
+`test-comms/reports/20260630-canonical-walkthrough-v030-b0be4d7-report.md`
 
-Reason: v0.3.0 source is now on main and must receive a full clean-machine release-gate run before any tag, merge, or GitHub Release work.
+Evidence must be written under:
+
+`test-comms/artifacts/20260630-canonical-walkthrough-v030-b0be4d7/evidence/`
 
 Product branch:
 
@@ -39,22 +41,19 @@ Product commit:
 
 Artifact folder:
 
-`test-comms/artifacts/20260629-gauntlet-all-cleanmachine-v030-b0be4d7/`
+`test-comms/artifacts/20260630-canonical-walkthrough-v030-b0be4d7/`
 
 Expected preferred NSIS SHA256:
 
-`F3256C116F04B734C8C311E5B3EFEB69B24DAF3134C521C986BDF2C45CC1DF7E`
+`6C28D0ACEDAA1A367CA8F2EBFFDCB60B2AFC002F123442D1C7FF84EFD1CC95E4`
 
 Expected fallback MSI SHA256:
 
-`D294096A95FEBF55E0CB30D104ADD8B31BC27981F150BA8B70FEDFD547EC07E1`
-
-Expected report:
-
-`test-comms/reports/20260629-gauntlet-all-cleanmachine-v030-b0be4d7-report.md`
+`AA510FA91B519883190638CBEDB584648B148731DB842371ECB8671D6D7CA154`
 
 ## Current Goal
 
-Run the full clean-machine v0.3.0 release-gate test. Confirm the app installs from the provided installer, guides AI/Ollama/model setup without tester-installed dependencies, scans Longmont official and public/social sources, generates leads and drafts, exercises writer/editor workflow, exports a ZIP/static publication package, publishes anonymously to here.now, and produces a human-readable report with evidence artifacts.
+Run the Walkthrough lane for GauntletGate all. Prove or disprove clean first-run dependency-absent behavior with evidence artifacts. Do not run Full.
 
 Commit reports/artifacts with `[skip ci]`.
+
