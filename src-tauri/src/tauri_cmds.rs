@@ -85,6 +85,16 @@ pub(crate) fn is_allowed_ollama_pull_model(model_id: &str) -> bool {
             .unwrap_or(false)
 }
 
+fn keep_main_window_visible<R: tauri::Runtime>(app: &tauri::AppHandle<R>, focus: bool) {
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.unminimize();
+        let _ = window.show();
+        if focus {
+            let _ = window.set_focus();
+        }
+    }
+}
+
 fn default_community_profile() -> CommunityProfile {
     CommunityProfile {
         site_title: "My Local Publication".to_string(),
@@ -2233,14 +2243,17 @@ struct AppHandlePullSink<R: tauri::Runtime> {
 impl<R: tauri::Runtime> crate::core::llm::PullProgressSink for AppHandlePullSink<R> {
     fn progress(&self, payload: crate::core::llm::PullProgress) {
         use tauri::Emitter;
+        keep_main_window_visible(&self.app, false);
         let _ = self.app.emit("ollama-pull-progress", payload);
     }
     fn complete(&self) {
         use tauri::Emitter;
+        keep_main_window_visible(&self.app, true);
         let _ = self.app.emit("ollama-pull-complete", ());
     }
     fn error(&self, message: String) {
         use tauri::Emitter;
+        keep_main_window_visible(&self.app, true);
         let _ = self.app.emit("ollama-pull-error", message);
     }
 }
@@ -2250,6 +2263,7 @@ pub async fn pull_ollama_model<R: tauri::Runtime>(
     app: tauri::AppHandle<R>,
     model_id: String,
 ) -> Result<(), String> {
+    keep_main_window_visible(&app, true);
     if !is_allowed_ollama_pull_model(&model_id) {
         return Err(format!(
             "Model `{}` is not in this CivicNewspaper release's curated local-AI model list.",

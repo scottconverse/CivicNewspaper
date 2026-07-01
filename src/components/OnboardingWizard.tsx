@@ -141,7 +141,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const organizationTypeSelectRef = useRef<HTMLSelectElement | null>(null);
   const cityInputRef = useRef<HTMLInputElement | null>(null);
   const stateInputRef = useRef<HTMLInputElement | null>(null);
-  const stepOneNextRef = useRef<HTMLButtonElement | null>(null);
+  const primaryActionRef = useRef<HTMLButtonElement | null>(null);
+  const modelDownloadButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // Step 3 State
   const [pullProgress, setPullProgress] = useState<string>("");
@@ -840,23 +841,41 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   }, [step, pubName, editorName, organizationType, city, state]);
 
   useEffect(() => {
-    if (step !== 1 || !stepOneNextRef.current) return;
+    if (!primaryActionRef.current) return;
 
-    const next = stepOneNextRef.current;
+    const button = primaryActionRef.current;
     const nativeAdvance = (event: Event) => {
+      if (button.disabled) return;
       event.preventDefault();
       event.stopPropagation();
-      void advanceIdentityStep();
+      void handleNext();
     };
 
     // Some installed WebView paths have dropped React's delegated click handler
-    // while still delivering native DOM clicks. Keep Step 1 progression
-    // product-owned without relying on anchor navigation.
-    next.addEventListener("click", nativeAdvance);
+    // while still delivering native DOM clicks. Keep the setup primary action
+    // product-owned across every step, including the model-download gate.
+    button.addEventListener("click", nativeAdvance, { capture: true });
     return () => {
-      next.removeEventListener("click", nativeAdvance);
+      button.removeEventListener("click", nativeAdvance, { capture: true });
     };
-  }, [step, pubName, editorName, organizationType, city, state]);
+  }, [step, pubName, editorName, organizationType, city, state, health, pulling, pullComplete, model, runtimeInstalling, publishPath, backupPath]);
+
+  useEffect(() => {
+    if (!modelDownloadButtonRef.current) return;
+
+    const button = modelDownloadButtonRef.current;
+    const nativeStartPull = (event: Event) => {
+      if (button.disabled) return;
+      event.preventDefault();
+      event.stopPropagation();
+      void startPullModel();
+    };
+
+    button.addEventListener("click", nativeStartPull, { capture: true });
+    return () => {
+      button.removeEventListener("click", nativeStartPull, { capture: true });
+    };
+  }, [step, model, pulling, pullComplete]);
 
   return (
     <div className="wizard-container card" id="onboarding-wizard">
@@ -1219,7 +1238,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                     </p>
                   </div>
                 )}
-                <button type="button" className="btn btn-primary" onClick={startPullModel}>
+                <button type="button" ref={modelDownloadButtonRef} className="btn btn-primary" onClick={startPullModel} disabled={pulling}>
                   <Download size={16} style={{ marginRight: "0.5rem" }} /> Download {model}
                 </button>
                 <div style={{ marginTop: "1rem", background: "rgba(245, 158, 11, 0.05)", borderLeft: "4px solid var(--color-warning)", padding: "0.75rem", borderRadius: "4px" }}>
@@ -1347,7 +1366,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           {step === 1 ? (
             <button
               type="button"
-              ref={stepOneNextRef}
+              ref={primaryActionRef}
               className="btn btn-primary"
               id="btn-wizard-next"
               onClick={(event) => {
@@ -1361,6 +1380,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           ) : (
             <button
               type="button"
+              ref={primaryActionRef}
               className="btn btn-primary"
               onClick={handleNext}
               id="btn-wizard-next"
