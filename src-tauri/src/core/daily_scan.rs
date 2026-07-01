@@ -628,6 +628,8 @@ fn evidence_looks_actionable(excerpt: &str) -> bool {
 
 fn looks_like_broad_navigation_or_index(text: &str) -> bool {
     let chrome_markers = [
+        "your browser is not supported",
+        "skip navigation",
         "skip to main content",
         "events search and views navigation",
         "select date",
@@ -641,6 +643,11 @@ fn looks_like_broad_navigation_or_index(text: &str) -> bool {
         "stay connected",
         "view all services",
         "view all departments",
+        "submit your event",
+        "visitors guide",
+        "submit your photos",
+        "getting here",
+        "getting around",
     ];
     let marker_count = chrome_markers
         .iter()
@@ -673,7 +680,44 @@ fn looks_like_broad_navigation_or_index(text: &str) -> bool {
         .iter()
         .filter(|term| text.contains(**term))
         .count();
-    marker_count >= 1 && department_count >= 8
+    if marker_count >= 1 && department_count >= 8 {
+        return true;
+    }
+
+    let tourism_calendar_terms = [
+        "live music & concerts",
+        "annual events & festivals",
+        "this weekend",
+        "sundance film festival",
+        "family fun",
+        "rocky mountain national park",
+        "st. vrain state park",
+        "mcintosh lake nature area",
+        "golden ponds",
+        "dickens farm area",
+        "union reservoir",
+        "arts, culture & history",
+        "art galleries",
+        "art in public places",
+        "performing arts & theatre",
+        "downtown creative district",
+        "consignment, thrift, & antiques",
+        "spas & wellness",
+        "breweries & more",
+        "farms & farmers markets",
+        "coffee & tea shops",
+        "patio dining",
+        "hotels & motels",
+        "hotel offers",
+        "campgrounds",
+        "vacation rentals",
+        "travel information",
+    ];
+    let tourism_count = tourism_calendar_terms
+        .iter()
+        .filter(|term| text.contains(**term))
+        .count();
+    marker_count >= 2 && tourism_count >= 6
 }
 
 fn evidence_has_calendar_signal(excerpt: &str) -> bool {
@@ -1685,6 +1729,81 @@ Purchasing and Contracts
 Recreation Services
 Utilities and Public Works
 Subscribe to Email Updates";
+
+        assert!(!evidence_looks_actionable(excerpt));
+    }
+
+    #[test]
+    fn visit_longmont_event_calendar_chrome_is_not_actionable_rescue_evidence() {
+        let excerpt =
+            "Things to Do in Longmont, Colorado - Event Calendar
+-->
+Your browser is not supported for this experience. We recommend using Chrome, Firefox, Edge, or Safari.
+Skip navigation
+Skip to main content
+Explore
+Events
+Live Music & Concerts
+Annual Events & Festivals
+This Weekend
+Submit Your Event
+Sundance Film Festival
+Things to Do
+Family Fun
+Events
+Parks
+Rocky Mountain National Park
+St. Vrain State Park
+McIntosh Lake Nature Area
+Golden Ponds
+Dickens Farm Area & Tubing
+Union Reservoir
+Outdoors
+Lakes & Rivers
+Birding & Wildlife
+Hiking
+Fishing
+Golf
+Disc Golf
+Water Sports
+Biking
+Sky Diving
+Hot Air Ballooning
+Flightseeing
+Arts, Culture & History
+Art Galleries
+Art in Public Places (AIPP)
+Murals
+Performing Arts & Theatre
+Longmont Museum
+Longmont History
+Downtown Creative District
+Shopping
+Consignment, Thrift, & Antiques
+Spas & Wellness
+Tours
+Nightlife
+Downtown
+Swimming and Splashing
+Food & Drink
+Breweries & More
+Restaurants
+Farms & Farmers Markets
+Coffee & Tea Shops
+Patio Dining
+Your Stay
+Hotels & Motels
+Hotel Offers
+Campgrounds
+Vacation Rentals
+Make a Plan
+Getting Here
+Getting Around
+Travel Information
+Weather & Climate
+eNewsletter
+Visitors Guide
+Submit Your Photos!";
 
         assert!(!evidence_looks_actionable(excerpt));
     }
