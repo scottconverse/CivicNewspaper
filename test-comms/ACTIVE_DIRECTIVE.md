@@ -2,7 +2,7 @@
 
 Active directive path:
 
-test-comms/directives/20260701-source-grounding-rerun-eb0a4ac.md
+test-comms/directives/20260701-source-grounding-rerun-fae9457.md
 
 Tester must use branch test-comms/cleanroom-coder-tester in repo https://github.com/scottconverse/CivicNewspaper.
 
@@ -18,28 +18,28 @@ main
 
 Product commit represented by installer:
 
-eb0a4ac284eedeb281891bb468f06cf9d564b1fe
+fae94570ab75cd3548cf5b8d254aa668ca96fce9
 
 Required first report:
 
-test-comms/reports/20260701-source-grounding-rerun-eb0a4ac-visibility.md
+test-comms/reports/20260701-source-grounding-rerun-fae9457-visibility.md
 
 Required final report:
 
-test-comms/reports/20260701-source-grounding-rerun-eb0a4ac-report.md
+test-comms/reports/20260701-source-grounding-rerun-fae9457-report.md
 
 Tester output artifact folder:
 
-test-comms/evidence/20260701-source-grounding-rerun-eb0a4ac/
+test-comms/evidence/20260701-source-grounding-rerun-fae9457/
 
 NSIS installer:
 
-test-comms/artifacts/20260701-source-grounding-rerun-eb0a4ac/The Civic Desk_0.3.1_x64-setup.exe
+test-comms/artifacts/20260701-source-grounding-rerun-fae9457/The Civic Desk_0.3.1_x64-setup.exe
 
 NSIS SHA256:
 
-3105CAD4EB00D6DDE501679E9C0820721267AC9F106B660735B42C3616734295
+ABA11CFFA0A52E130C2B77C2E20F139C22039DE305CC5C32C62F2C245C83AC45
 
 NSIS size:
 
-5622050
+5650162
