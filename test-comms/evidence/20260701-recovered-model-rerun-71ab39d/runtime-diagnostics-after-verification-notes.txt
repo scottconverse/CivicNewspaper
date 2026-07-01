@@ -1,0 +1,17 @@
+
+
+ProcessName      : civicnews
+Id               : 5408
+MainWindowTitle  : The Civic Desk
+MainWindowHandle : 39060274
+Path             : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+
+ProcessName      : ollama
+Id               : 23236
+MainWindowTitle  : 
+MainWindowHandle : 0
+Path             : C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe
+
+
+
+
