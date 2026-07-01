@@ -138,6 +138,7 @@ describe("OnboardingWizard Component Tests", () => {
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
     const installButton = await screen.findByRole("button", { name: /Install local AI runtime/i });
+    expect(screen.getByRole("button", { name: /^next/i })).toBeDisabled();
     expect(invokeMock).not.toHaveBeenCalledWith("install_ollama_runtime");
 
     fireEvent.click(installButton);
@@ -225,7 +226,7 @@ describe("OnboardingWizard Component Tests", () => {
 
     render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} />);
 
-    expect(screen.getByRole("button", { name: "Longmont" })).toHaveAttribute("href", "#starter=longmont");
+    expect(screen.getByRole("button", { name: "Longmont" }).tagName).toBe("BUTTON");
     expect(screen.getByRole("button", { name: /next/i }).tagName).toBe("BUTTON");
 
     await user.click(screen.getByRole("button", { name: "Longmont" }));
@@ -538,7 +539,7 @@ describe("OnboardingWizard Component Tests", () => {
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
     const installButton = await screen.findByRole("button", { name: /Install local AI runtime/i });
-    expect(screen.getByRole("button", { name: /^next/i })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: /^next/i })).toBeDisabled();
     fireEvent.click(installButton);
 
     await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("install_ollama_runtime"));

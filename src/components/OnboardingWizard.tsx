@@ -538,6 +538,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     void startPullModel();
   }, [step, autoStartPull, pulling, pullComplete, model]);
 
+  const stepTwoNeedsRuntimeInstall = step === 2 && Boolean(health && !health.reachable);
+
   useEffect(() => {
     if (step !== 3 || !setupRecoveryActive || pullError) {
       return;
@@ -652,10 +654,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           await saveSetting("model.selected", model);
           setStep(4);
         } else if (!health?.reachable) {
-          const ready = await installRuntime();
-          if (ready) {
-            setStep(3);
-          }
+          setSetupNotice("Install the local AI runtime or choose Skip for now before continuing.");
+          setHealthTimeout(true);
+          return;
         } else {
           setAutoStartPull(true);
           setStep(3);
@@ -875,10 +876,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               <span>Starter profiles</span>
               <div>
                 {starterProfiles.map(profile => (
-                  <a
+                  <button
                     key={profile.label}
-                    href={`#starter=${profile.label.toLowerCase()}`}
-                    role="button"
+                    type="button"
                     className="btn btn-secondary btn-sm"
                     onClick={() => {
                       markIdentityInteraction();
@@ -886,7 +886,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                     }}
                   >
                     {profile.label}
-                  </a>
+                  </button>
                 ))}
               </div>
             </div>
@@ -1328,7 +1328,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               <ChevronRight size={16} style={{ marginLeft: "0.5rem" }} />
             </button>
           ) : (
-            <button type="button" className="btn btn-primary" onClick={handleNext} id="btn-wizard-next" disabled={runtimeInstalling || pulling}>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handleNext}
+              id="btn-wizard-next"
+              disabled={runtimeInstalling || pulling || stepTwoNeedsRuntimeInstall}
+              title={stepTwoNeedsRuntimeInstall ? "Install the local AI runtime or choose Skip for now before continuing." : undefined}
+            >
               {step === steps.length ? "Finish Onboarding" : "Next"}
               <ChevronRight size={16} style={{ marginLeft: "0.5rem" }} />
             </button>
