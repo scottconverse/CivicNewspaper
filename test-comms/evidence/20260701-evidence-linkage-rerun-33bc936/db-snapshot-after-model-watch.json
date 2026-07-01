@@ -1,0 +1,75 @@
+{
+  "captured_at": "2026-07-01T01:31:09.763260",
+  "db": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+  "exists": true,
+  "tables": {
+    "beat_memory": 0,
+    "civic_entities": 115,
+    "civic_observation_entities": 532,
+    "civic_observations": 357,
+    "daily_scan_leads": 0,
+    "daily_scan_runs": 0,
+    "dark_signals": 17,
+    "drafts": 0,
+    "evidence_items": 65,
+    "lead_evidence": 12,
+    "leads": 12,
+    "paired_clients": 0,
+    "publish_decision_audits": 0,
+    "publish_runs": 0,
+    "published_posts": 0,
+    "settings": 11,
+    "source_performance_scores": 19,
+    "sources": 19,
+    "sqlite_sequence": 9,
+    "story_templates": 5,
+    "subscribers": 0,
+    "verification_tasks": 162
+  },
+  "settings": [
+    {
+      "key": "identity.city",
+      "value": "Longmont"
+    },
+    {
+      "key": "identity.editor_name",
+      "value": "Publisher"
+    },
+    {
+      "key": "identity.newsroom_name",
+      "value": "My Local Publication"
+    },
+    {
+      "key": "identity.organization_type",
+      "value": "single_person"
+    },
+    {
+      "key": "identity.state",
+      "value": "CO"
+    },
+    {
+      "key": "model.selected",
+      "value": "phi4-mini:latest"
+    },
+    {
+      "key": "onboarding_complete",
+      "value": "1"
+    },
+    {
+      "key": "paths.backup",
+      "value": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\backups"
+    },
+    {
+      "key": "paths.publish",
+      "value": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default"
+    },
+    {
+      "key": "setup.first_run_intake",
+      "value": "true"
+    },
+    {
+      "key": "setup.recovered_input",
+      "value": "running_source_intake"
+    }
+  ]
+}
