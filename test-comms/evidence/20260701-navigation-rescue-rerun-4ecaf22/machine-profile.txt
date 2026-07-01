@@ -1,0 +1,30 @@
+﻿Machine profile 2026-07-01T13:26:05.5509045-06:00
+
+
+WindowsProductName         : Windows 10 Home
+WindowsVersion             : 2009
+OsHardwareAbstractionLayer : 10.0.26100.1
+CsManufacturer             : Micro-Star International Co., Ltd.
+CsModel                    : Cyborg 15 A13VE
+CsProcessors               : {13th Gen Intel(R) Core(TM) i7-13620H}
+CsTotalPhysicalMemory      : 16870060032
+
+
+
+
+
+
+Name          : Intel(R) UHD Graphics
+AdapterRAM    : 2147479552
+DriverVersion : 32.0.101.5972
+
+Name          : NVIDIA GeForce RTX 4050 Laptop GPU
+AdapterRAM    : 4293918720
+DriverVersion : 32.0.15.8129
+
+
+
+
+node path: 
+npm path: 
+rustc path: 

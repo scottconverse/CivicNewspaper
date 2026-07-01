@@ -1,0 +1,27 @@
+{
+  "db_path": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+  "counts": {
+    "sources": 19,
+    "daily_scan_runs": 0,
+    "daily_scan_leads": 0,
+    "leads": 0,
+    "evidence_items": 63,
+    "lead_evidence": 0,
+    "drafts": 0,
+    "publish_runs": 0,
+    "published_posts": 0
+  },
+  "settings": {
+    "identity.city": "Longmont",
+    "identity.editor_name": "Publisher",
+    "identity.newsroom_name": "My Local Publication",
+    "identity.organization_type": "single_person",
+    "identity.state": "CO",
+    "model.selected": "phi4-mini:latest",
+    "onboarding_complete": "1",
+    "paths.backup": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\backups",
+    "paths.publish": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default",
+    "setup.first_run_intake": "true",
+    "setup.recovered_input": "running_source_intake"
+  }
+}
