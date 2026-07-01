@@ -484,7 +484,7 @@ fn validate_public_story_for_compile(
         if evidence_items.is_empty() {
             issues.push("lead-based draft has no linked source evidence".to_string());
         } else {
-            let story_topic = format!("{title}\n\n{content}");
+            let story_topic = title.to_string();
             if let Some(issue) =
                 source_grounding::evidence_alignment_issue(&story_topic, evidence_items)
             {
@@ -939,6 +939,31 @@ mod tests {
         assert!(
             err.to_string()
                 .contains("linked source evidence; rewrite or attach the correct source"),
+            "unexpected error: {err}"
+        );
+    }
+
+    #[test]
+    fn compile_preflight_rejects_body_source_overlap_when_title_topic_is_unrelated() {
+        let content = "Longmont Housing Authority Longmont Museum Longmont Power and Communications Municipal Court Municipal Probation NextLight Fiber Internet Parks and Natural Resources Planning and Development Services Public Information Public Safety Purchasing and Contracts [Source](evidence:76).";
+        let draft = draft_with_lead(content);
+        let source = evidence(
+            76,
+            "Longmont Housing Authority Longmont Museum Longmont Power and Communications Municipal Court Municipal Probation NextLight Fiber Internet Parks and Natural Resources Planning and Development Services Public Information Public Safety Purchasing and Contracts.",
+        );
+
+        let err = validate_public_story_for_compile(
+            12,
+            &draft,
+            "Summer Reading Challenge Starts at Longmont Public Library",
+            content,
+            &[source],
+        )
+        .expect_err("body-source overlap must not satisfy an unrelated headline topic");
+
+        assert!(
+            err.to_string()
+                .contains("Linked source documents do not appear to match this lead topic"),
             "unexpected error: {err}"
         );
     }

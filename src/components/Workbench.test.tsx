@@ -36,7 +36,7 @@ describe("Workbench Component Tests", () => {
       id: 7,
       source_id: 1,
       fetched_at: "2026-05-23T00:00:00Z",
-      excerpt: "The latest public records show residents flagged unusual spending.",
+      excerpt: "Public records show suspicious spending after residents flagged unusual spending.",
       content_hash: "hash",
       entities: "[]",
     },
@@ -672,6 +672,39 @@ describe("Workbench Component Tests", () => {
 
     expect(screen.getByText(/linked source documents may not match this story topic/i)).toBeInTheDocument();
     expect(screen.getByText(/linked source documents do not appear to match the story topic/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
+
+    expect(screen.getByText(/Before static publish approval: This scanned-lead draft's linked source documents do not appear to match the story topic./i)).toBeInTheDocument();
+    expect(onApprovePublish).not.toHaveBeenCalled();
+  });
+
+  test("scanned-lead approval blocks broad calendar excerpts that do not support the specific event topic", () => {
+    const onApprovePublish = vi.fn();
+
+    renderEditor({
+      onApprovePublish,
+      selectedDraft: {
+        ...mockDraft,
+        lead_id: 20,
+        title: "Summer Reading Challenge Starts at Longmont Public Library: The 2026 Summer Reading Challenge",
+        content:
+          "The Summer Reading Challenge is listed for Longmont Public Library readers [Source](evidence:76).\n\nThe brief needs specific source support before publication.",
+      },
+      evidenceList: [
+        {
+          id: 76,
+          source_id: 18,
+          fetched_at: "2026-07-01T18:09:46Z",
+          excerpt:
+            "Longmont Housing Authority Longmont Museum Longmont Power and Communications Municipal Court Municipal Probation NextLight Fiber Internet Parks and Natural Resources Planning and Development Services Public Information Public Safety Purchasing and Contracts Recreation Services Senior Center.",
+          content_hash: "hash",
+          entities: "[]",
+        },
+      ],
+    });
+
+    expect(screen.getByText(/linked source documents may not match this story topic/i)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
 

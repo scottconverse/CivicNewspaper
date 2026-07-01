@@ -632,7 +632,9 @@ mod tests {
                 source_id,
                 url: Some("https://planning.gov/minutes_12.html".to_string()),
                 fetched_at: Utc::now().to_rfc3339(),
-                excerpt: "Commission approved zoning change request for building C.".to_string(),
+                excerpt:
+                    "Zoning Board approved a new Building C expansion and zoning change request."
+                        .to_string(),
                 content_hash: "hash_commission".to_string(),
                 entities: "[]".to_string(),
             },
@@ -1848,7 +1850,9 @@ I should produce JSON only.
                 source_id,
                 url: Some("https://example.gov/feed.xml".to_string()),
                 fetched_at: Utc::now().to_rfc3339(),
-                excerpt: "Council discussed a budget overspend anomaly in the latest maintenance report.".to_string(),
+                excerpt:
+                    "Council discussed a budget overspend anomaly in the latest maintenance report."
+                        .to_string(),
                 content_hash: "hash_persist_test".to_string(),
                 entities: "[]".to_string(),
             },
@@ -4683,7 +4687,7 @@ I should produce JSON only.
                 id: None,
                 source_id,
                 url: Some("https://longmontcolorado.gov/public-information/".to_string()),
-                excerpt: "City of Longmont\u{00c3}\u{0082}\u{00c2}\u{00a0}Seeking Applications. This is Longmont \u{00c3}\u{00a2}\u{00e2}\u{201a}\u{00ac}\u{00e2}\u{20ac}\u{0153} June 25, 2026. The City\u{00c3}\u{00a2}\u{00e2}\u{201a}\u{00ac}\u{00e2}\u{201e}\u{00a2}s community guide &amp;#8217;s update.".to_string(),
+                excerpt: "City of Longmont\u{00c3}\u{0082}\u{00c2}\u{00a0}Seeking Funding Applications. This is Longmont \u{00c3}\u{00a2}\u{00e2}\u{201a}\u{00ac}\u{00e2}\u{20ac}\u{0153} June 25, 2026. The City\u{00c3}\u{00a2}\u{00e2}\u{201a}\u{00ac}\u{00e2}\u{201e}\u{00a2}s community guide &amp;#8217;s update.".to_string(),
                 content_hash: "mojibake-evidence".to_string(),
                 entities: "[]".to_string(),
                 fetched_at: "2026-06-25T12:00:00Z".to_string(),
@@ -4733,7 +4737,7 @@ I should produce JSON only.
         compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
 
         let html = fs::read_to_string(temp_dir.path().join(format!("briefs/{}.html", id))).unwrap();
-        assert!(html.contains("City of Longmont Seeking Applications"));
+        assert!(html.contains("City of Longmont Seeking Funding Applications"));
         assert!(html.contains("This is Longmont - June 25, 2026"));
         assert!(html.contains("The City"));
         assert!(html.contains("community guide"));

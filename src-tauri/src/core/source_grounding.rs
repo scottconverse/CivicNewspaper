@@ -8,26 +8,41 @@ const STOPWORDS: &[&str] = &[
     "again",
     "against",
     "also",
+    "alerts",
     "before",
     "being",
     "between",
     "could",
+    "city",
+    "community",
+    "contact",
+    "department",
+    "departments",
     "during",
     "editor",
     "event",
     "events",
+    "explore",
     "first",
     "from",
     "have",
+    "government",
+    "information",
     "into",
+    "latest",
     "local",
     "longmont",
     "more",
+    "news",
+    "newsletter",
+    "program",
+    "programs",
     "original",
     "public",
     "reader",
     "residents",
     "review",
+    "services",
     "should",
     "source",
     "sources",
@@ -40,6 +55,7 @@ const STOPWORDS: &[&str] = &[
     "this",
     "through",
     "under",
+    "updates",
     "were",
     "where",
     "which",
@@ -48,6 +64,33 @@ const STOPWORDS: &[&str] = &[
     "with",
     "would",
 ];
+
+fn specific_topic_text(text: &str) -> String {
+    let first_line = text.lines().next().unwrap_or(text).trim();
+    let before_metadata = first_line
+        .split(" Editor context:")
+        .next()
+        .unwrap_or(first_line)
+        .split(" Suggested treatment:")
+        .next()
+        .unwrap_or(first_line);
+    let before_summary = before_metadata
+        .split(':')
+        .next()
+        .unwrap_or(before_metadata)
+        .trim();
+    if grounding_tokens(before_summary).len() >= 3 {
+        before_summary.to_string()
+    } else if let Some((_, after_summary)) = before_metadata.split_once(':') {
+        let after_summary = after_summary.trim();
+        if grounding_tokens(after_summary).len() >= 3 {
+            return after_summary.to_string();
+        }
+        before_metadata.to_string()
+    } else {
+        before_metadata.to_string()
+    }
+}
 
 pub fn grounding_tokens(text: &str) -> HashSet<String> {
     let stop: HashSet<&str> = STOPWORDS.iter().copied().collect();
@@ -93,19 +136,23 @@ fn light_stem(token: &str) -> String {
 fn required_overlap(lead_token_count: usize) -> usize {
     if lead_token_count <= 3 {
         lead_token_count.min(2).max(1)
+    } else if lead_token_count <= 5 {
+        3
     } else {
-        ((lead_token_count + 2) / 3).clamp(2, 4)
+        ((lead_token_count + 2) / 3).clamp(4, 6)
     }
 }
 
 pub fn evidence_matches_topic(lead_text: &str, evidence_text: &str) -> bool {
-    let lead_tokens = grounding_tokens(lead_text);
+    let topic = specific_topic_text(lead_text);
+    let lead_tokens = grounding_tokens(&topic);
     if lead_tokens.is_empty() {
         return false;
     }
     let evidence_tokens = grounding_tokens(evidence_text);
     let overlap = lead_tokens.intersection(&evidence_tokens).count();
-    overlap >= required_overlap(lead_tokens.len())
+    let required = required_overlap(lead_tokens.len());
+    overlap >= required && (overlap as f32 / lead_tokens.len() as f32) >= 0.45
 }
 
 pub fn filter_topic_matched_evidence(
@@ -165,6 +212,30 @@ mod tests {
     fn library_program_lead_matches_library_program_evidence() {
         let lead = "Teen Temporary Tattoo Studio Launch at Longmont Public Library";
         let evidence = "Teen Temporary Tattoo Studio Wednesday July 1 Longmont Public Library.";
+
+        assert!(evidence_matches_topic(lead, evidence));
+    }
+
+    #[test]
+    fn summer_reading_lead_does_not_match_broad_events_calendar() {
+        let lead = "Summer Reading Challenge Starts at Longmont Public Library: The 2026 Summer Reading Challenge is starting on Wednesday, May 21 with activities running through July 31.";
+        let evidence = "Wednesday, July 1 6 pm - 7 pm Longmont Public Library A free gaming club for 3rd-5th graders. Yoga Storytime. Summer Science Series. Longmont Museum.";
+
+        assert!(!evidence_matches_topic(lead, evidence));
+    }
+
+    #[test]
+    fn summer_reading_lead_matches_specific_challenge_evidence() {
+        let lead = "Summer Reading Challenge Starts at Longmont Public Library: The 2026 Summer Reading Challenge is starting on Wednesday, May 21 with activities running through July 31.";
+        let evidence = "Summer Reading Challenge starts at Longmont Public Library on May 21 and runs through July 31 with prize opportunities.";
+
+        assert!(evidence_matches_topic(lead, evidence));
+    }
+
+    #[test]
+    fn rescue_source_label_lead_matches_its_own_evidence_sentence() {
+        let lead = "Longmont source bundle: Housing office approved a July application deadline for a new affordable housing grant Housing office approved a July application deadline for a new affordable housing grant.";
+        let evidence = "Housing office approved a July application deadline for a new affordable housing grant.";
 
         assert!(evidence_matches_topic(lead, evidence));
     }

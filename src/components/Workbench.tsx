@@ -125,12 +125,26 @@ function guardrailInstruction(issue: any): { title: string; action: string } {
 }
 
 const TOPIC_STOPWORDS = new Set([
-  "about", "after", "again", "against", "also", "before", "being", "between", "could", "during",
-  "editor", "event", "events", "first", "from", "have", "into", "local", "longmont", "more",
-  "original", "public", "reader", "residents", "review", "should", "source", "sources", "story",
-  "suggested", "that", "their", "there", "these", "this", "through", "under", "were", "where",
-  "which", "while", "will", "with", "would"
+  "about", "after", "again", "against", "alerts", "also", "before", "being", "between", "city",
+  "community", "contact", "could", "department", "departments", "during", "editor", "event",
+  "events", "explore", "first", "from", "government", "have", "information", "into", "latest",
+  "local", "longmont", "more", "news", "newsletter", "original", "program", "programs", "public",
+  "reader", "residents", "review", "services", "should", "source", "sources", "story",
+  "suggested", "that", "their", "there", "these", "this", "through", "under", "updates",
+  "were", "where", "which", "while", "will", "with", "would"
 ]);
+
+function topicText(text: string): string {
+  const firstLine = text.split(/\n/)[0]?.trim() || text.trim();
+  const beforeMetadata = firstLine
+    .split(" Editor context:")[0]
+    .split(" Suggested treatment:")[0]
+    .trim();
+  const beforeSummary = beforeMetadata.split(":")[0]?.trim() || beforeMetadata;
+  if (topicTokens(beforeSummary).size >= 3) return beforeSummary;
+  const afterSummary = beforeMetadata.includes(":") ? beforeMetadata.split(":").slice(1).join(":").trim() : "";
+  return afterSummary && topicTokens(afterSummary).size >= 3 ? afterSummary : beforeMetadata;
+}
 
 function topicTokens(text: string): Set<string> {
   const normalized = text
@@ -152,16 +166,16 @@ function topicTokens(text: string): Set<string> {
 
 function evidenceAppearsTopicMatched(draft: Draft, evidenceList: EvidenceItem[]): boolean {
   if (evidenceList.length === 0) return true;
-  const draftTokens = topicTokens(`${draft.title}\n\n${draft.content}`);
+  const draftTokens = topicTokens(topicText(draft.title || ""));
   if (draftTokens.size === 0) return false;
-  const required = Math.min(4, Math.max(2, Math.ceil(draftTokens.size / 3)));
+  const required = draftTokens.size <= 3 ? Math.max(1, Math.min(2, draftTokens.size)) : draftTokens.size <= 5 ? 3 : Math.min(6, Math.max(4, Math.ceil(draftTokens.size / 3)));
   return evidenceList.some((item) => {
     const evidenceTokens = topicTokens(item.excerpt || "");
     let overlap = 0;
     draftTokens.forEach((token) => {
       if (evidenceTokens.has(token)) overlap += 1;
     });
-    return overlap >= required;
+    return overlap >= required && overlap / draftTokens.size >= 0.45;
   });
 }
 

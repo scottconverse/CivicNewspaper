@@ -940,13 +940,7 @@ fn scan_lead_requires_linked_evidence(lead: &DailyScanLead) -> bool {
 }
 
 fn scan_lead_grounding_text(lead: &DailyScanLead) -> String {
-    [
-        lead.title.as_str(),
-        lead.summary.as_str(),
-        lead.what_changed.as_deref().unwrap_or_default(),
-        lead.why_flagged.as_deref().unwrap_or_default(),
-    ]
-    .join(" ")
+    [lead.title.as_str(), lead.summary.as_str()].join(" ")
 }
 
 fn downgrade_scan_lead_without_evidence(mut lead: DailyScanLead) -> DailyScanLead {
