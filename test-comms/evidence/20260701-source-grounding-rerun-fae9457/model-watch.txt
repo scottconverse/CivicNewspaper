@@ -1,0 +1,86 @@
+﻿Model watch start 2026-07-01T12:54:05.5618233-06:00
+--- 10s 2026-07-01T12:54:15.5933197-06:00 ---
+
+
+Id              : 13392
+ProcessName     : civicnews
+MainWindowTitle : The Civic Desk
+Path            : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+
+
+
+
+
+ollama list error: The term 'C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260701-source-grounding-rerun-fae9457\screenshot-model-10s.png (1920, 1080)
+--- 30s 2026-07-01T12:54:35.8379480-06:00 ---
+
+
+Id              : 13392
+ProcessName     : civicnews
+MainWindowTitle : The Civic Desk
+Path            : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+
+
+
+
+
+
+Id          : 25120
+ProcessName : ollama
+Path        : C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe
+
+
+
+
+NAME    ID    SIZE    MODIFIED 
+
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260701-source-grounding-rerun-fae9457\screenshot-model-30s.png (1920, 1080)
+--- 60s 2026-07-01T12:55:06.1303917-06:00 ---
+
+
+Id              : 13392
+ProcessName     : civicnews
+MainWindowTitle : The Civic Desk
+Path            : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+
+
+
+
+
+
+Id          : 25120
+ProcessName : ollama
+Path        : C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe
+
+
+
+
+NAME                ID              SIZE      MODIFIED     
+phi4-mini:latest    78fad5d182a7    2.5 GB    1 second ago    
+
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260701-source-grounding-rerun-fae9457\screenshot-model-60s.png (1920, 1080)
+--- 120s 2026-07-01T12:56:06.4097938-06:00 ---
+
+
+Id              : 13392
+ProcessName     : civicnews
+MainWindowTitle : The Civic Desk
+Path            : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+
+
+
+
+
+
+Id          : 25120
+ProcessName : ollama
+Path        : C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe
+
+
+
+
+NAME                ID              SIZE      MODIFIED           
+phi4-mini:latest    78fad5d182a7    2.5 GB    About a minute ago    
+
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260701-source-grounding-rerun-fae9457\screenshot-model-120s.png (1920, 1080)
