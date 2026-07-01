@@ -335,6 +335,47 @@ describe("OnboardingWizard Component Tests", () => {
     expect(screen.getByText(/Longmont starter profile was filled automatically/i)).toBeInTheDocument();
   });
 
+  test("identity setup continues after no-input recovery and persists Longmont identity", async () => {
+    vi.useFakeTimers();
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      if (cmd === "set_setting") return Promise.resolve();
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: false, models: [], version: null });
+      if (cmd === "get_community_profile") return Promise.resolve({
+        site_title: "My Local Publication",
+        organization_type: "single_person",
+        city: "Brighton",
+        state: "CO",
+      });
+      if (cmd === "save_community_profile") return Promise.resolve();
+      return Promise.resolve();
+    });
+
+    const { act } = await import("@testing-library/react");
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(5000);
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(50);
+    });
+
+    expect(screen.getByText("Step 2 of 5")).toBeInTheDocument();
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "identity.city",
+      value: "Longmont",
+    });
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "identity.state",
+      value: "CO",
+    });
+  });
+
   test("identity setup prefill rescue does not overwrite typed user input", async () => {
     vi.useFakeTimers();
     const handleComplete = vi.fn();
