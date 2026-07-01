@@ -606,8 +606,8 @@ button:disabled {
 #onboarding-wizard {
   width: 100%;
   max-width: 720px;
-  height: calc(100dvh - 1rem);
-  max-height: calc(100dvh - 1rem);
+  height: calc(100dvh - 2rem);
+  max-height: calc(100dvh - 2rem);
   margin: 0 auto;
   padding: 1rem 1.25rem;
   overflow: hidden;
@@ -699,6 +699,7 @@ button:disabled {
   flex: 1 1 auto;
   overflow-y: auto;
   padding-right: 0.35rem;
+  padding-bottom: 0.75rem;
 }
 
 .onboarding-actions {
@@ -715,12 +716,14 @@ button:disabled {
   padding-top: 0.75rem;
   padding-left: 1.25rem;
   padding-right: 1.25rem;
-  padding-bottom: 0.25rem;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
 
 @media (max-height: 760px) {
   #onboarding-wizard {
     padding: 0.85rem 1rem;
+    height: calc(100dvh - 1.5rem);
+    max-height: calc(100dvh - 1.5rem);
   }
 
   #onboarding-wizard .help-text {
@@ -756,6 +759,7 @@ button:disabled {
   .onboarding-actions {
     margin-top: 0.55rem;
     padding-top: 0.55rem;
+    padding-bottom: 0.85rem;
   }
 }
 

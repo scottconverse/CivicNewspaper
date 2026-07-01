@@ -182,7 +182,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     setOrganizationType(values.organizationType);
     setCity(values.city);
     setState(values.state);
-
   };
 
   const currentIdentityValues = () => ({
@@ -698,14 +697,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       applyIdentityValues(profile);
       window.history.replaceState(null, "", window.location.pathname);
 
-      if (params.get("continueSetup") === "1") {
-        void persistIdentity(profile)
-          .then(() => setStep(2))
-          .catch(e => {
-            console.error(e);
-            setInitError(toUserMessage(e));
-          });
-      }
     };
 
     handleStarterRoute();
@@ -762,14 +753,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               <span>Starter profiles</span>
               <div>
                 {starterProfiles.map(profile => (
-                  <a
+                  <button
                     key={profile.label}
                     className="btn btn-secondary btn-sm"
-                    href={`#starter=${encodeURIComponent(profile.label.toLowerCase())}&continueSetup=1`}
+                    type="button"
                     onClick={() => applyIdentityValues(profile)}
                   >
                     {profile.label}
-                  </a>
+                  </button>
                 ))}
               </div>
             </div>

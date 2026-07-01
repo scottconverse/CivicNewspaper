@@ -201,7 +201,7 @@ describe("OnboardingWizard Component Tests", () => {
     expect(publicationInput).toHaveValue("ABC");
   });
 
-  test("identity starter profile advances Longmont setup without keyboard entry", async () => {
+  test("identity starter profile fills Longmont setup and Next advances", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
     const user = userEvent.setup();
@@ -223,7 +223,12 @@ describe("OnboardingWizard Component Tests", () => {
 
     render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} />);
 
-    await user.click(screen.getByRole("link", { name: "Longmont" }));
+    await user.click(screen.getByRole("button", { name: "Longmont" }));
+    expect(screen.getByLabelText("Publication Name")).toHaveValue("My Local Publication");
+    expect(screen.getByLabelText("Editor Name")).toHaveValue("Publisher");
+    expect(screen.getByLabelText("City")).toHaveValue("Longmont");
+
+    await user.click(screen.getByRole("button", { name: /next/i }));
 
     await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
     expect(invokeMock).toHaveBeenCalledWith("set_setting", {
@@ -232,7 +237,7 @@ describe("OnboardingWizard Component Tests", () => {
     });
   });
 
-  test("native starter hash route advances to setup after load", async () => {
+  test("native starter hash route fills identity without auto-advancing", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
 
@@ -255,8 +260,9 @@ describe("OnboardingWizard Component Tests", () => {
     window.location.hash = "starter=longmont&continueSetup=1";
     window.dispatchEvent(new HashChangeEvent("hashchange"));
 
-    await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
-    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+    await waitFor(() => expect(screen.getByLabelText("City")).toHaveValue("Longmont"));
+    expect(screen.getByText("Step 1 of 5")).toBeInTheDocument();
+    expect(invokeMock).not.toHaveBeenCalledWith("set_setting", {
       key: "identity.newsroom_name",
       value: "My Local Publication",
     });
