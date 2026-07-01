@@ -204,7 +204,10 @@ $bundleDir = Join-Path $repo "src-tauri\target\release\bundle"
 $runId = Get-Date -Format "yyyyMMdd-HHmmss"
 if (-not $OutputDir) {
   $OutputDir = Join-Path $repo ".agent-runs\windows-installer-smoke-$runId"
+} elseif (-not [System.IO.Path]::IsPathRooted($OutputDir)) {
+  $OutputDir = Join-Path $repo $OutputDir
 }
+$OutputDir = [System.IO.Path]::GetFullPath($OutputDir)
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 
 $nsisPath = Resolve-Artifact -ExplicitPath $NsisInstaller -SearchRoot $bundleDir -Pattern "*.exe" -Version $appVersion
