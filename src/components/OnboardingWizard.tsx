@@ -36,6 +36,7 @@ const MODEL_READY_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 5000;
 const FINAL_SETUP_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 3000;
 const IDENTITY_PREFILL_RESCUE_MS = import.meta.env.MODE === "test" ? 5000 : 10000;
 const IDENTITY_CONTINUE_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 3000;
+const RUNTIME_INSTALL_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 4000;
 
 // Approximate one-time download sizes, sourced from models.json so the wizard
 // can disclose the size up front (UX-C1) instead of springing a multi-GB
@@ -131,6 +132,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const [runtimePercent, setRuntimePercent] = useState<number | null>(null);
   const [runtimeError, setRuntimeError] = useState("");
   const modelDownloadRescueAttemptedRef = useRef(false);
+  const runtimeInstallRescueAttemptedRef = useRef(false);
   const identityPrefillRescueAttemptedRef = useRef(false);
   const identityUserInteractedRef = useRef(false);
   const identityAdvanceInFlightRef = useRef(false);
@@ -416,6 +418,43 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       setRuntimeInstalling(false);
     }
   };
+
+  useEffect(() => {
+    if (
+      !setupRecoveryActive ||
+      runtimeInstallRescueAttemptedRef.current ||
+      step !== 2 ||
+      checkingHealth ||
+      runtimeInstalling ||
+      !health ||
+      health.reachable
+    ) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      if (
+        !setupRecoveryActive ||
+        runtimeInstallRescueAttemptedRef.current ||
+        step !== 2 ||
+        runtimeInstalling ||
+        !health ||
+        health.reachable
+      ) {
+        return;
+      }
+
+      runtimeInstallRescueAttemptedRef.current = true;
+      setSetupNotice("The setup screen is not receiving input events, so The Civic Desk is installing the local AI runtime automatically.");
+      void installRuntime().then((ready) => {
+        if (ready) {
+          setStep(3);
+        }
+      });
+    }, RUNTIME_INSTALL_RESCUE_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [setupRecoveryActive, step, checkingHealth, runtimeInstalling, health?.reachable]);
 
   useEffect(() => {
     if (
