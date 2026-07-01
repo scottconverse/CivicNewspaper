@@ -770,7 +770,7 @@ mod tests {
         )
         .unwrap();
 
-        let lead_id = crate::core::db::insert_lead(
+        let _lead_id = crate::core::db::insert_lead(
             &conn,
             &crate::core::db::Lead {
                 id: None,
@@ -796,7 +796,7 @@ mod tests {
             &conn,
             &crate::core::db::Draft {
                 id: None,
-                lead_id: Some(lead_id),
+                lead_id: None,
                 format: "story".to_string(),
                 title: "<script>alert(1)</script>".to_string(),
                 content: "Hello <script>alert(1)</script>".to_string(),
@@ -4121,6 +4121,251 @@ I should produce JSON only.
     }
 
     #[test]
+    fn test_compile_blocks_approval_note_body_from_public_issue() {
+        let conn =
+            init_db("file:test_compile_approval_note_body?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "brief".to_string(),
+                title: "Downtown events brief".to_string(),
+                content:
+                    "Approved during cleanroom mechanics test despite quality warnings; see tester report."
+                        .to_string(),
+                status: "ready_to_publish".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        let err = compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}")
+            .expect_err("approval notes are not article copy");
+
+        assert!(err.to_string().contains("editor/test note"));
+        assert!(!temp_dir.path().join("publish-manifest.json").exists());
+        assert!(!temp_dir.path().join("site-package.zip").exists());
+    }
+
+    #[test]
+    fn test_compile_blocks_lead_draft_with_no_source_evidence() {
+        let conn = init_db("file:test_compile_no_source_lead?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        let lead_id = insert_lead(
+            &conn,
+            &Lead {
+                id: None,
+                detector_name: "test".to_string(),
+                why: "Museum film listing needs verification".to_string(),
+                confidence: "low".to_string(),
+                risk_level: "low".to_string(),
+                confirmation_checklist: "[]".to_string(),
+                from_scan_lead_id: None,
+                story_type: Some("watch".to_string()),
+                disposition: Some("needs_verification".to_string()),
+                novelty_score: Some(1),
+                novelty_reason: Some("No attached source evidence.".to_string()),
+                recurrence_count: Some(0),
+                recurrence_note: None,
+                created_at: Utc::now().to_rfc3339(),
+            },
+            &[],
+        )
+        .unwrap();
+        insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: Some(lead_id),
+                format: "brief".to_string(),
+                title: "Museum film listing needs confirmation".to_string(),
+                content: "A Longmont Museum film listing may be worth checking before the weekend. Residents should verify the current schedule before making plans.".to_string(),
+                status: "ready_to_publish".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        let err = compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}")
+            .expect_err("lead-based public drafts need linked source evidence");
+
+        assert!(err.to_string().contains("no linked source evidence"));
+    }
+
+    #[test]
+    fn test_compile_blocks_lead_draft_without_inline_evidence_citation() {
+        let conn =
+            init_db("file:test_compile_linked_source_without_citation?mode=memory&cache=shared")
+                .unwrap();
+        let temp_dir = tempdir().unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Longmont City Clerk".to_string(),
+                url: "https://example.test/agenda".to_string(),
+                r#type: "official_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        let evidence_id = insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://example.test/agenda".to_string()),
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "The City Council agenda lists a public hearing on water rates."
+                    .to_string(),
+                content_hash: "agenda-water-rates".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
+        let lead_id = insert_lead(
+            &conn,
+            &Lead {
+                id: None,
+                detector_name: "test".to_string(),
+                why: "Council water-rate hearing was posted.".to_string(),
+                confidence: "med".to_string(),
+                risk_level: "low".to_string(),
+                confirmation_checklist: "[]".to_string(),
+                from_scan_lead_id: None,
+                story_type: Some("brief".to_string()),
+                disposition: Some("review".to_string()),
+                novelty_score: Some(4),
+                novelty_reason: Some("New agenda posting.".to_string()),
+                recurrence_count: Some(0),
+                recurrence_note: None,
+                created_at: Utc::now().to_rfc3339(),
+            },
+            &[evidence_id],
+        )
+        .unwrap();
+        insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: Some(lead_id),
+                format: "brief".to_string(),
+                title: "Council posts water-rate hearing".to_string(),
+                content:
+                    "The City Council agenda lists a public hearing on water rates for residents."
+                        .to_string(),
+                status: "ready_to_publish".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        let err = compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}")
+            .expect_err("lead-based public drafts need inline citations");
+
+        assert!(err.to_string().contains("no inline evidence citations"));
+    }
+
+    #[test]
+    fn test_compile_blocks_source_mismatch_citations() {
+        let conn = init_db("file:test_compile_source_mismatch?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Downtown Longmont Events".to_string(),
+                url: "https://example.test/downtown-events".to_string(),
+                r#type: "official_comm".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        let evidence_id = insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://example.test/downtown-events".to_string()),
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt:
+                    "Downtown Longmont will host summer music, art walks, and creative district events in July."
+                        .to_string(),
+                content_hash: "downtown-events".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
+        let lead_id = insert_lead(
+            &conn,
+            &Lead {
+                id: None,
+                detector_name: "test".to_string(),
+                why: "Council vote scheduled for library roof contract".to_string(),
+                confidence: "med".to_string(),
+                risk_level: "med".to_string(),
+                confirmation_checklist: "[]".to_string(),
+                from_scan_lead_id: None,
+                story_type: Some("story".to_string()),
+                disposition: Some("review".to_string()),
+                novelty_score: Some(4),
+                novelty_reason: Some("Agenda-like lead.".to_string()),
+                recurrence_count: Some(0),
+                recurrence_note: None,
+                created_at: Utc::now().to_rfc3339(),
+            },
+            &[evidence_id],
+        )
+        .unwrap();
+        insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: Some(lead_id),
+                format: "story".to_string(),
+                title: "Council to vote on library roof contract".to_string(),
+                content: format!("The Longmont City Council is expected to approve Georgia Boys BBQ as the selected vendor for public library roof work [Source](evidence:{evidence_id}).\n\nResidents should watch the contract timeline and cost before construction begins."),
+                status: "ready_to_publish".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        let err = compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}")
+            .expect_err("cited claims must align with the cited evidence excerpt");
+
+        assert!(err
+            .to_string()
+            .contains("little factual vocabulary overlap"));
+    }
+
+    #[test]
     fn test_compile_keeps_story_copy_while_removing_trailing_editor_note() {
         let conn =
             init_db("file:test_compile_trailing_editor_note?mode=memory&cache=shared").unwrap();
@@ -4636,8 +4881,8 @@ I should produce JSON only.
     #[test]
     fn test_story_decision_persists_send_back_and_hold_notes_without_veto() {
         use crate::tauri_cmds::story_decision_with_conn;
-        let conn = init_db("file:test_story_decision_assignment_notes?mode=memory&cache=shared")
-            .unwrap();
+        let conn =
+            init_db("file:test_story_decision_assignment_notes?mode=memory&cache=shared").unwrap();
         let id = insert_draft(
             &conn,
             &Draft {

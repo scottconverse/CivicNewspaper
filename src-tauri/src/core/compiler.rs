@@ -8,6 +8,7 @@ use chrono::{Datelike, Utc};
 use pulldown_cmark::{html, CowStr, Event, Options, Parser, Tag};
 use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
+use std::collections::{HashMap, HashSet};
 use std::error::Error;
 use std::fs::{self, File};
 use std::io::{Read, Write};
@@ -386,6 +387,197 @@ fn is_public_story_line(line: &str) -> bool {
         && !lower.starts_with("this item needs more reporting")
 }
 
+fn public_story_word_count(text: &str) -> usize {
+    text.split_whitespace()
+        .filter(|word| word.chars().any(|ch| ch.is_ascii_alphanumeric()))
+        .count()
+}
+
+fn looks_like_editor_or_test_note(text: &str) -> bool {
+    let lower = text.to_lowercase();
+    [
+        "approved during cleanroom mechanics test",
+        "despite quality warnings",
+        "see tester report",
+        "mechanics test",
+        "tester report",
+        "not enough verified source material",
+        "not ready for publication",
+    ]
+    .iter()
+    .any(|marker| lower.contains(marker))
+}
+
+fn evidence_citation_ids(text: &str) -> HashSet<i32> {
+    let re = regex::Regex::new("(?i)evidence:(?://)?(\\d+)").expect("valid evidence regex");
+    re.captures_iter(text)
+        .filter_map(|caps| caps.get(1))
+        .filter_map(|m| m.as_str().parse::<i32>().ok())
+        .collect()
+}
+
+fn compiler_tokens(text: &str) -> HashSet<String> {
+    const STOPWORDS: &[&str] = &[
+        "about",
+        "after",
+        "again",
+        "against",
+        "also",
+        "because",
+        "before",
+        "being",
+        "between",
+        "could",
+        "during",
+        "first",
+        "from",
+        "have",
+        "into",
+        "local",
+        "longmont",
+        "more",
+        "public",
+        "residents",
+        "said",
+        "should",
+        "source",
+        "sources",
+        "that",
+        "their",
+        "there",
+        "these",
+        "this",
+        "through",
+        "under",
+        "were",
+        "where",
+        "which",
+        "while",
+        "will",
+        "with",
+        "would",
+    ];
+    let stop: HashSet<&str> = STOPWORDS.iter().copied().collect();
+    text.to_lowercase()
+        .chars()
+        .map(|ch| {
+            if ch.is_ascii_alphanumeric() || ch.is_whitespace() {
+                ch
+            } else {
+                ' '
+            }
+        })
+        .collect::<String>()
+        .split_whitespace()
+        .filter(|token| token.len() >= 5 && !stop.contains(*token))
+        .map(str::to_string)
+        .collect()
+}
+
+fn cited_paragraphs_are_source_aligned(
+    content: &str,
+    evidence_by_id: &HashMap<i32, String>,
+) -> Result<(), String> {
+    let citation_re =
+        regex::Regex::new("(?i)evidence:(?://)?(\\d+)").expect("valid evidence regex");
+    for paragraph in content
+        .split("\n\n")
+        .map(str::trim)
+        .filter(|p| !p.is_empty())
+    {
+        let cited_ids: Vec<i32> = citation_re
+            .captures_iter(paragraph)
+            .filter_map(|caps| caps.get(1))
+            .filter_map(|m| m.as_str().parse::<i32>().ok())
+            .collect();
+        if cited_ids.is_empty() {
+            continue;
+        }
+
+        let paragraph_tokens = compiler_tokens(paragraph);
+        if paragraph_tokens.len() < 4 {
+            continue;
+        }
+
+        let mut source_text = String::new();
+        for id in &cited_ids {
+            let Some(excerpt) = evidence_by_id.get(id) else {
+                return Err(format!(
+                    "uses citation evidence:{} but that evidence is not linked to the lead",
+                    id
+                ));
+            };
+            source_text.push_str(excerpt);
+            source_text.push('\n');
+        }
+        let source_tokens = compiler_tokens(&source_text);
+        let overlap = paragraph_tokens.intersection(&source_tokens).count();
+        if overlap == 0 {
+            return Err(format!(
+                "cited paragraph has little factual vocabulary overlap with linked source evidence ({overlap} matching term(s)); rewrite or attach the correct source"
+            ));
+        }
+    }
+    Ok(())
+}
+
+fn validate_public_story_for_compile(
+    draft_id: i32,
+    draft: &super::db::Draft,
+    title: &str,
+    content: &str,
+    evidence_items: &[super::db::EvidenceItem],
+) -> Result<(), Box<dyn Error>> {
+    let mut issues = Vec::new();
+    let word_count = public_story_word_count(content);
+
+    if title.trim().is_empty() {
+        issues.push("missing public headline".to_string());
+    }
+    if content.trim().is_empty() {
+        issues.push(format!(
+            "public body is empty after removing editor-only material ({} word(s))",
+            word_count
+        ));
+    }
+    if looks_like_editor_or_test_note(content) {
+        issues.push("public body appears to be an editor/test note, not article copy".to_string());
+    }
+
+    if draft.lead_id.is_some() {
+        if evidence_items.is_empty() {
+            issues.push("lead-based draft has no linked source evidence".to_string());
+        } else {
+            let cited_ids = evidence_citation_ids(content);
+            if cited_ids.is_empty() {
+                issues.push(
+                    "lead-based draft has linked evidence but no inline evidence citations"
+                        .to_string(),
+                );
+            } else {
+                let evidence_by_id: HashMap<i32, String> = evidence_items
+                    .iter()
+                    .filter_map(|item| item.id.map(|id| (id, item.excerpt.clone())))
+                    .collect();
+                if let Err(issue) = cited_paragraphs_are_source_aligned(content, &evidence_by_id) {
+                    issues.push(issue);
+                }
+            }
+        }
+    }
+
+    if issues.is_empty() {
+        Ok(())
+    } else {
+        Err(format!(
+            "Public output quality gate failed for draft {}: {}",
+            draft_id,
+            issues.join("; ")
+        )
+        .into())
+    }
+}
+
 fn strip_editor_note_marker(line: &str) -> Option<String> {
     let trimmed = line.trim_start();
     let lower = trimmed.to_lowercase();
@@ -554,7 +746,7 @@ fn public_title_and_content(draft_title: &str, draft_content: &str) -> (String, 
         .filter(|line| is_public_story_line(line))
         .count();
     let content = if had_editor_note && public_story_lines == 0 {
-        "This item needs more reporting before it is ready for publication. The editor should add verified source material before treating it as a complete story.".to_string()
+        String::new()
     } else {
         content
     };
@@ -577,6 +769,7 @@ fn public_output_quality_issue(contents: &str) -> Option<String> {
         "editor note:",
         "[editor note:",
         "tester edit:",
+        "source check:",
         "nut graf:",
         "reporting steps:",
         "next reporting steps:",
@@ -592,6 +785,9 @@ fn public_output_quality_issue(contents: &str) -> Option<String> {
         "follow our whatsapp channel",
         "employee login",
         "needs more reporting before it is ready for publication",
+        "approved during cleanroom mechanics test",
+        "despite quality warnings",
+        "see tester report",
     ];
     blocked_markers
         .iter()
@@ -980,6 +1176,12 @@ pub fn compile_static_site(
     for draft in &published_drafts {
         let draft_id = draft.id.unwrap_or(0);
         let (title, content) = public_title_and_content(&draft.title, &draft.content);
+        let evidence_items = if let Some(lid) = draft.lead_id {
+            get_evidence_by_lead(conn, lid)?
+        } else {
+            Vec::new()
+        };
+        validate_public_story_for_compile(draft_id, draft, &title, &content, &evidence_items)?;
 
         // Editorial review is advisory at compile time: do not silently filter a
         // story out of the public package. If a draft reached a publishable
@@ -1038,9 +1240,8 @@ pub fn compile_static_site(
 
         // Format Linked Evidence List
         let mut evidence_html = String::new();
-        if let Some(lid) = draft.lead_id {
-            let items = get_evidence_by_lead(conn, lid)?;
-            for item in items {
+        if draft.lead_id.is_some() {
+            for item in &evidence_items {
                 let item_id = item.id.unwrap_or(0);
                 let raw_url = item.url.clone().unwrap_or_else(|| "#".to_string());
                 // SEC (GG-B1 / QA-Min1): defense-in-depth at the publish sink -

@@ -26,17 +26,28 @@ describe("Workbench Component Tests", () => {
     lead_id: 42,
     format: "watch",
     title: "Suspicious Spending",
-    content: "Residents flagged unusual spending in the latest public records.\n\nThe draft attributes the claim carefully and keeps the item in watch format.",
+    content: "According to the latest public records, residents flagged unusual spending [Source](evidence:7).\n\nThe draft attributes the claim carefully and keeps the item in watch format.",
     status: "draft_generated",
     verification_checklist: "[]"
   };
+
+  const mockEvidence = [
+    {
+      id: 7,
+      source_id: 1,
+      fetched_at: "2026-05-23T00:00:00Z",
+      excerpt: "The latest public records show residents flagged unusual spending.",
+      content_hash: "hash",
+      entities: "[]",
+    },
+  ];
 
   const renderEditor = (overrides: Partial<ComponentProps<typeof Workbench>> = {}) =>
     render(
       <Workbench
         selectedLead={null}
         selectedDraft={mockDraft}
-        evidenceList={[]}
+        evidenceList={mockEvidence}
         guardrailsReport={null}
         ollamaOnline={true}
         manualLlmMode={false}
@@ -241,7 +252,8 @@ describe("Workbench Component Tests", () => {
     expect(screen.getByText(/Verification assignment/i)).toBeInTheDocument();
     expect(screen.getByText(/reporting notes/i)).toBeInTheDocument();
     expect(screen.getByText(/Needs a second public source/i)).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /Generate anyway/i })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: /Generate Verification Notes/i })).toHaveLength(2);
+    expect(screen.getByText(/should not be approved for publication until source material is attached or cited/i)).toBeInTheDocument();
   });
 
   test("shows local progress while a draft is generating", () => {

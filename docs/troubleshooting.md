@@ -119,6 +119,32 @@ Check:
 
 If public output contains editor-only notes such as "Reporting Steps", "EDITOR_NOTE", "Source needed", or "Verification needed", report it as a release-blocking bug.
 
+The app may refuse to compile if an approved item is not actually reader-facing copy. Common causes:
+
+- The article body is only an editor note, tester note, or approval note.
+- A draft from a scanned lead has no linked source evidence.
+- Linked source material exists, but the article body has no inline evidence citation.
+- A paragraph cites evidence that does not appear to support the paragraph.
+
+This does not mean the app is deciding what you are allowed to publish. It means the static-site package would be structurally invalid or misleading. Send the item back, attach the correct source, add citations, rewrite the body as public copy, or cut/hold it.
+
+## Reset Or Cleanroom Test The App On Windows
+
+Uninstalling the app is not always enough to create a clean first-run state. The app stores local data under both the install folder and app-data folders.
+
+For a clean beta test, remove only The Civic Desk/CivicNewspaper data. Do not wipe unrelated Windows user data.
+
+Typical Windows paths:
+
+```text
+%LOCALAPPDATA%\The Civic Desk
+%LOCALAPPDATA%\com.scottconverse.civicdesk
+%APPDATA%\com.scottconverse.civicdesk
+%USERPROFILE%\.ollama
+```
+
+Remove `%USERPROFILE%\.ollama` only when you intentionally want to test local AI setup from scratch and that Ollama/model state was created for this app test.
+
 ## Source Import Misses URLs
 
 CSV, TXT, XLSX, DOCX, and text-backed PDF files should produce reviewable source candidates. Image-only PDFs may need OCR before URLs can be extracted.

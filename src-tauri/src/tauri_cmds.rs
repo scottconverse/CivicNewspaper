@@ -1093,23 +1093,26 @@ pub fn story_decision(
 }
 
 fn sanitize_unlinked_evidence_citations(text: &str, allowed_ids: &HashSet<i32>) -> String {
-    let citation_re = regex::Regex::new("(?i)evidence:(?://)?(\\d+)").expect("valid citation regex");
+    let citation_re =
+        regex::Regex::new("(?i)evidence:(?://)?(\\d+)").expect("valid citation regex");
     if !citation_re.is_match(text) {
         return text.to_string();
     }
 
     let mut removed_ids = Vec::new();
-    let output = citation_re.replace_all(text, |caps: &regex::Captures<'_>| {
-        let marker = caps.get(0).map(|m| m.as_str()).unwrap_or_default();
-        let id_text = caps.get(1).map(|m| m.as_str()).unwrap_or_default();
-        let id = id_text.parse::<i32>().unwrap_or_default();
-        if allowed_ids.contains(&id) {
-            marker.to_string()
-        } else {
-            removed_ids.push(id);
-            format!("unlinked-evidence-{id_text}")
-        }
-    }).to_string();
+    let output = citation_re
+        .replace_all(text, |caps: &regex::Captures<'_>| {
+            let marker = caps.get(0).map(|m| m.as_str()).unwrap_or_default();
+            let id_text = caps.get(1).map(|m| m.as_str()).unwrap_or_default();
+            let id = id_text.parse::<i32>().unwrap_or_default();
+            if allowed_ids.contains(&id) {
+                marker.to_string()
+            } else {
+                removed_ids.push(id);
+                format!("unlinked-evidence-{id_text}")
+            }
+        })
+        .to_string();
     removed_ids.sort_unstable();
     removed_ids.dedup();
 

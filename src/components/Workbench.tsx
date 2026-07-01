@@ -137,8 +137,14 @@ function getStoryQualityWarnings(draft: Draft, evidenceCount: number): string[] 
   if (!title || title.length < 8 || title.endsWith(".") || title.includes(": ")) {
     warnings.push("Headline may read like a note or summary. Use a concise reader-facing headline.");
   }
-  if (/(editor_note|editor note:|reporting steps:|nut graf:|\[source needed\]|\[verification needed\]|body:)/i.test(content)) {
+  if (/(editor_note|editor note:|source check:|reporting steps:|nut graf:|\[source needed\]|\[verification needed\]|body:)/i.test(content)) {
     warnings.push("Draft still contains reporter scaffolding. Remove newsroom-only labels before publishing.");
+  }
+  if (/approved during cleanroom mechanics test|despite quality warnings|see tester report|mechanics test|tester report/i.test(content)) {
+    warnings.push("Draft body appears to be an editor/test note, not reader-facing article copy.");
+  }
+  if (evidenceCount === 0) {
+    warnings.push("No source documents are linked. Treat this as a verification assignment until you attach or cite public source material.");
   }
   if (evidenceCount > 0 && !content.includes("evidence:")) {
     warnings.push("Linked sources exist, but the body has no inline evidence citations.");
@@ -251,6 +257,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
     if (selectedDraft?.status === "killed") {
       return;
     }
+    setDecisionModal(null);
     if (totalReviewWarningCount > 0) {
       setShowOverrideModal(true);
     } else {
@@ -294,6 +301,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
       onDecision(status);
       return;
     }
+    setShowOverrideModal(false);
     setDecisionModal(next);
     setDecisionReason(next.defaultReason);
   };
@@ -434,7 +442,10 @@ export const Workbench: React.FC<WorkbenchProps> = ({
 
   // If drafting from a Lead
   if (selectedLead && !selectedDraft) {
-    const generateDraftLabel = leadNeedsDraftCaution(selectedLead) ? "Generate anyway" : "Generate Draft";
+    const noLinkedEvidence = evidenceList.length === 0;
+    const generateDraftLabel = noLinkedEvidence
+      ? "Generate Verification Notes"
+      : leadNeedsDraftCaution(selectedLead) ? "Generate anyway" : "Generate Draft";
     return (
       <div className="wizard-container card" id="draft-wizard-panel" tabIndex={-1} onKeyDown={handleDraftWizardKeyDown}>
         <h1>Drafting Article</h1>
@@ -518,7 +529,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                 // box with no explanation. Mirror the editor's empty state.
                 <p className="help-text" style={{ display: "flex", alignItems: "flex-start", gap: "0.4rem", margin: 0 }}>
                   <AlertTriangle size={14} style={{ flexShrink: 0, marginTop: "0.15rem", color: "var(--color-warning)" }} />
-                  No source documents are linked to this lead yet. You can still generate a working draft; mark anything that needs verification before publishing.
+                  No source documents are linked to this lead yet. The AI can create verification notes, but this should not be approved for publication until source material is attached or cited.
                 </p>
               ) : (
                 evidenceList.map((item, idx) => (
@@ -824,7 +835,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                     <button
                       className="btn btn-primary btn-sm"
                       onClick={handleApproveClick}
-                      disabled={selectedDraft.status === "killed" || finalStatus || pausedForMoreWork}
+                      disabled={selectedDraft.status === "killed" || finalStatus || pausedForMoreWork || Boolean(decisionModal)}
                       title={
                         selectedDraft.status === "killed"
                           ? "Restore this story before approving it for publishing"
