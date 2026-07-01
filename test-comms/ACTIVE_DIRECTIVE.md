@@ -2,7 +2,7 @@
 
 Active directive path:
 
-test-comms/directives/20260701-navigation-rescue-rerun-4ecaf22.md
+test-comms/directives/20260701-tourism-calendar-rerun-23d8dce.md
 
 Tester must use branch test-comms/cleanroom-coder-tester in repo https://github.com/scottconverse/CivicNewspaper.
 
@@ -18,28 +18,28 @@ main
 
 Product commit represented by installer:
 
-4ecaf22b8c52273ae6ec8bfc143fb7acb32645d1
+23d8dcec12adf5b5dadd4f48dd9906edb1c1aa56
 
 Required first report:
 
-test-comms/reports/20260701-navigation-rescue-rerun-4ecaf22-visibility.md
+test-comms/reports/20260701-tourism-calendar-rerun-23d8dce-visibility.md
 
 Required final report:
 
-test-comms/reports/20260701-navigation-rescue-rerun-4ecaf22-report.md
+test-comms/reports/20260701-tourism-calendar-rerun-23d8dce-report.md
 
 Tester output artifact folder:
 
-test-comms/evidence/20260701-navigation-rescue-rerun-4ecaf22/
+test-comms/evidence/20260701-tourism-calendar-rerun-23d8dce/
 
 NSIS installer:
 
-test-comms/artifacts/20260701-navigation-rescue-rerun-4ecaf22/The Civic Desk_0.3.1_x64-setup.exe
+test-comms/artifacts/20260701-tourism-calendar-rerun-23d8dce/The Civic Desk_0.3.1_x64-setup.exe
 
 NSIS SHA256:
 
-41FE39E228BD943650B94FD8BC056FE4EC84637BA498FC0D8B9F52F30804D8F5
+49372BCF0FB4A6F149E316DDAEC2CC42B48EAB82FC5644AEE164A58D7D8DC6FB
 
 NSIS size:
 
-5640839
+5638803
