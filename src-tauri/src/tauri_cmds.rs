@@ -204,7 +204,7 @@ pub(crate) async fn get_selected_model_or_fallback(db: &DbConn) -> String {
     // fallback only runs when no model is saved in settings.
     let default_m = "phi4-mini:latest".to_string();
     let mut model = default_m.clone();
-    if let Ok(resp) = reqwest::get("http://127.0.0.1:11434/api/tags").await {
+    if let Ok(resp) = reqwest::get(format!("{}/api/tags", llm::ollama_base_url())).await {
         if resp.status().is_success() {
             #[derive(Deserialize)]
             struct ModelItem {
@@ -249,7 +249,11 @@ pub(crate) async fn list_installed_models() -> Vec<String> {
         Ok(c) => c,
         Err(_) => return Vec::new(),
     };
-    if let Ok(resp) = client.get("http://127.0.0.1:11434/api/tags").send().await {
+    if let Ok(resp) = client
+        .get(format!("{}/api/tags", llm::ollama_base_url()))
+        .send()
+        .await
+    {
         if resp.status().is_success() {
             #[derive(Deserialize)]
             struct ModelItem {
@@ -1706,7 +1710,7 @@ pub async fn generate_draft<R: tauri::Runtime>(
     // Fail with a clear, typed remedy instead of an opaque "model not found"
     // surfaced from Ollama mid-call. (The frontend will also pre-flight.)
     let installed = list_installed_models().await;
-    if !installed.is_empty() && !model_is_installed(&model, &installed) {
+    if !model_is_installed(&model, &installed) {
         return Err(format!(
             "MODEL_NOT_INSTALLED: The selected AI model '{}' is not installed. Open Setup and download a model before drafting.",
             model
@@ -1804,7 +1808,27 @@ pub fn publish(
     };
 
     let conn = db.lock().map_err(|_| "Failed to lock database")?;
+    ensure_publishable_story_exists(&conn)?;
     compiler::compile_static_site(&conn, &output_dir, &profile_json).map_err(|e| e.to_string())
+}
+
+fn ensure_publishable_story_exists(conn: &rusqlite::Connection) -> Result<(), String> {
+    let count: i64 = conn
+        .query_row(
+            "SELECT COUNT(*)
+             FROM drafts
+             WHERE status IN ('published', 'corrected', 'ready_to_publish')",
+            [],
+            |row| row.get(0),
+        )
+        .map_err(|e| format!("Could not inspect approved stories before publishing: {e}"))?;
+    if count <= 0 {
+        return Err(
+            "No approved stories are ready to publish. Approve at least one story or brief in Workbench before compiling a public package."
+                .to_string(),
+        );
+    }
+    Ok(())
 }
 
 #[tauri::command]
@@ -2332,7 +2356,8 @@ pub async fn ollama_health() -> Result<OllamaState, String> {
         .build()
         .map_err(|e| e.to_string())?;
 
-    match client.get("http://127.0.0.1:11434/api/tags").send().await {
+    let base_url = llm::ollama_base_url();
+    match client.get(format!("{base_url}/api/tags")).send().await {
         Ok(resp) => {
             if resp.status().is_success() {
                 #[derive(serde::Deserialize)]
@@ -2346,7 +2371,7 @@ pub async fn ollama_health() -> Result<OllamaState, String> {
 
                 let mut version = None;
                 if let Ok(v_resp) = client
-                    .get("http://127.0.0.1:11434/api/version")
+                    .get(format!("{base_url}/api/version"))
                     .send()
                     .await
                 {

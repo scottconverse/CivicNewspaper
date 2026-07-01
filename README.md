@@ -12,7 +12,7 @@ The app is built for the reality that many towns no longer have enough reporters
 
 - Runs as a Tauri desktop app with a React frontend and Rust backend.
 - Stores sources, evidence, leads, drafts, settings, subscribers, publish history, civic entities, dark signals, and verification tasks in a local SQLite database.
-- Manages a local Ollama runtime for local AI. First-run setup checks the machine, installs the pinned runtime when needed, selects a model based on machine capability, and guides the user through model download.
+- Manages a local Ollama runtime for local AI. First-run setup checks the machine, installs the pinned runtime when needed, and currently guides the user toward the public-beta default `phi4-mini:latest` model.
 - Watches official records, agenda pages, public notices, local media, and public community/social sources.
 - Imports source lists from CSV, TXT, XLSX, DOCX, and text-backed PDF files. Image-only PDFs currently receive readable-text/OCR guidance rather than silent failure.
 - Runs Daily Scan from watched sources, deterministic detectors, source diffs, civic entities, dark signals, verification tasks, and optional local-model summarization/ranking.

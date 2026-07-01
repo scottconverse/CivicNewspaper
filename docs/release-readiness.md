@@ -103,7 +103,7 @@ node scripts\model-bakeoff.mjs
 
 The result is written under `.agent-runs\model-bakeoff-*.json`.
 
-For the current Windows 32 GB machine, `phi4-mini:latest` is the default public-beta scan model because the latest bakeoff showed valid JSON output on both civic-signal and empty/noise cases. Keep `qwen2.5:7b`, `gpt-oss:20b`, `gemma4:e4b`, and `llama3.2:3b` in the bakeoff comparison until repeated release evidence supports a different default.
+For this public-beta line, `phi4-mini:latest` is the default scan model because `.agent-runs\model-bakeoff-2026-06-30T20-26-21-425Z.json` recorded valid JSON output for both `civic-signals` and `empty-noise` cases. That receipt compared `qwen2.5:7b`, `gpt-oss:20b`, `gemma4:e4b`, `phi4-mini:latest`, and `llama3.2:3b` with `MODEL_BAKEOFF_TIMEOUT_MS=240000`; `gemma4:e4b` also passed both cases but was slower on the civic-signal case in that run. Keep all comparison models in the bakeoff until repeated release evidence supports a different default.
 
 ## Security checks
 

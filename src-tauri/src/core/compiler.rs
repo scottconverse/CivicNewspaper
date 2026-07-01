@@ -974,7 +974,7 @@ mod tests {
         let draft = draft_with_lead(content);
         let source = evidence(
             58,
-            "City council agenda item: library roof repair contract posted for public review before this week's vote.",
+            "City council members are expected to vote on a library roof repair contract this week after staff posted the contract for public review.",
         );
 
         validate_public_story_for_compile(

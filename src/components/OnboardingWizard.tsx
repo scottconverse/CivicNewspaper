@@ -548,6 +548,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         setPullPercent(100);
         setPullComplete(true);
         setPulling(false);
+        void saveSetting("model.selected", modelToPull);
       });
       await listen<string>("ollama-pull-error", (event) => {
         setPullError(
@@ -559,7 +560,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       });
 
       await pullOllamaModel(modelToPull);
-      await saveSetting("model.selected", modelToPull);
     } catch (e) {
       console.error(e);
       const reason = (e instanceof Error ? e.message : String(e)).trim();

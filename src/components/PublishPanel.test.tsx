@@ -24,6 +24,7 @@ const defaultPublisherProps = {
   onExportIssueEmail: vi.fn(),
   onCopyPublishText: vi.fn(),
   onCopyPublishArtifact: vi.fn(),
+  approvedDraftCount: 1,
   communityProfile: {
     site_title: "Test Publication",
     site_subtitle: "Local news and community information.",
@@ -203,7 +204,7 @@ describe("PublishPanel Component Tests", () => {
     expect(screen.getByLabelText("Compile receipt")).toBeInTheDocument();
     expect(screen.getByText("2")).toBeInTheDocument();
     expect(screen.getByText("12")).toBeInTheDocument();
-    expect(screen.getByText("1")).toBeInTheDocument();
+    expect(screen.getAllByText("1").length).toBeGreaterThanOrEqual(1);
 
     fireEvent.click(screen.getByRole("button", { name: /ZIP package/i }));
     expect(handleOpen).toHaveBeenCalledWith("C:\\my-site\\site-package.zip", "site-package.zip");
@@ -402,6 +403,32 @@ describe("PublishPanel Component Tests", () => {
     fireEvent.change(screen.getByLabelText(/Provider/i), { target: { value: "netlify" } });
     expect(screen.getByRole("button", { name: /Publish with connector/i })).toBeDisabled();
     expect(screen.getByText(/Test the selected connector before publishing/i)).toBeInTheDocument();
+  });
+
+  test("blocks compile when no approved stories are ready", () => {
+    const handlePublish = vi.fn();
+
+    render(
+      <PublishPanel
+        publishPath={"C:\\my-site"}
+        publishResult={null}
+        {...defaultPublisherProps}
+        approvedDraftCount={0}
+        onPublishPathChange={vi.fn()}
+        publishStep={2}
+        onPublishStepChange={vi.fn()}
+        loading={false}
+        onPublish={handlePublish}
+        onOpenLocalPath={vi.fn()}
+        onOpenExternalUrl={vi.fn()}
+        onChoosePublishPath={vi.fn()}
+        onRecordPublishDestination={vi.fn()}
+      />
+    );
+
+    expect(screen.getByLabelText(/Approved story readiness/i)).toHaveTextContent("0 approved stories");
+    expect(screen.getByRole("button", { name: /Compile site/i })).toBeDisabled();
+    expect(handlePublish).not.toHaveBeenCalled();
   });
 
   test("saves connector config and tests connection", () => {

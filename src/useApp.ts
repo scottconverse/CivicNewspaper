@@ -387,13 +387,13 @@ export function useApp() {
     {
       name: "Visit Longmont events",
       url: "https://www.visitlongmont.org/events/",
-      type: "community_signal",
+      type: "community_calendar",
       tier: "community_signal",
     },
     {
       name: "Downtown Longmont events",
       url: "https://www.downtownlongmont.com/events/calendar",
-      type: "community_signal",
+      type: "community_calendar",
       tier: "community_signal",
     },
     {

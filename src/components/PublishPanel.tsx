@@ -37,6 +37,7 @@ interface PublishPanelProps {
   onCopyPublishArtifact: (label: string, relativePath: string) => void | Promise<void>;
   communityProfile?: CommunityProfile | null;
   onOpenSettings?: () => void;
+  approvedDraftCount?: number;
 }
 
 const PROVIDERS = [
@@ -162,7 +163,8 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   onCopyPublishText,
   onCopyPublishArtifact,
   communityProfile,
-  onOpenSettings
+  onOpenSettings,
+  approvedDraftCount = 0
 }) => {
   const [error, setError] = useState<string>("");
   const [provider, setProvider] = useState(publisherProvider || "here_now");
@@ -195,6 +197,9 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
     !publicationName || publicationName.toLowerCase() === "my local publication";
   const publicationNameRequiredMessage =
     "Choose and save a real publication name before compiling or publishing.";
+  const hasApprovedStories = approvedDraftCount > 0;
+  const noApprovedStoriesMessage =
+    "No approved stories are ready to publish. Approve at least one story or brief in Workbench before compiling a public package.";
 
   useEffect(() => {
     setProvider(publisherProvider || "here_now");
@@ -228,6 +233,10 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
       setError(publicationNameRequiredMessage);
       return;
     }
+    if (!hasApprovedStories) {
+      setError(noApprovedStoriesMessage);
+      return;
+    }
     setError("");
     onPublish();
   };
@@ -239,6 +248,10 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
     }
     if (hasStarterPublicationName) {
       setError(publicationNameRequiredMessage);
+      return;
+    }
+    if (!hasApprovedStories) {
+      setError(noApprovedStoriesMessage);
       return;
     }
     setError("");
@@ -258,6 +271,10 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
       setError(publicationNameRequiredMessage);
       return;
     }
+    if (publishResult.article_count === 0) {
+      setError(noApprovedStoriesMessage);
+      return;
+    }
     setError("");
     onRecordPublishDestination(provider, publishedUrl, deploymentId);
   };
@@ -269,6 +286,10 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
     }
     if (hasStarterPublicationName) {
       setError(publicationNameRequiredMessage);
+      return;
+    }
+    if (publishResult.article_count === 0) {
+      setError(noApprovedStoriesMessage);
       return;
     }
     setError("");
@@ -399,6 +420,10 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
             )}
           </div>
           <h3 className="card-title">Compile your gazette</h3>
+          <div className={hasApprovedStories ? "setup-guide" : "error-text"} aria-label="Approved story readiness" style={{ marginBottom: "0.85rem" }}>
+            <strong>{approvedDraftCount}</strong> approved stor{approvedDraftCount === 1 ? "y" : "ies"} ready for the public package.
+            {!hasApprovedStories && " Move at least one draft to approved/ready-to-publish before compiling."}
+          </div>
           <label htmlFor="input-publish-path" style={{ fontWeight: 600, display: "block", marginBottom: "0.35rem" }}>Output folder</label>
           <div className="path-row">
             <input
@@ -420,6 +445,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
 
           <div className="publish-step-list">
             {[
+              { label: "Approve at least one story", meta: `${approvedDraftCount}`, complete: hasApprovedStories },
               { label: "Compile approved stories", meta: "HTML", complete: !!publishResult },
               { label: "Preview local website", meta: "index.html", complete: !!publishResult },
               { label: "Export hosting package", meta: "ZIP", complete: !!publishResult?.zip_path },
@@ -434,7 +460,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
             ))}
           </div>
 
-          <button className="btn btn-primary btn-full" onClick={publishStep === 1 ? handleNextClick : handleCompileClick} disabled={loading} id={publishStep === 1 ? "btn-publish-next" : "btn-publish-compile"}>
+          <button className="btn btn-primary btn-full" onClick={publishStep === 1 ? handleNextClick : handleCompileClick} disabled={loading || !hasApprovedStories} id={publishStep === 1 ? "btn-publish-next" : "btn-publish-compile"}>
             <FileDown size={16} />
             {loading ? "Compiling..." : primaryLabel}
           </button>

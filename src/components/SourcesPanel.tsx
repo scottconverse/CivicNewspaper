@@ -182,7 +182,7 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
               <tbody>
                 {sources.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="text-center">No feeds or portals registered yet. Add one in the right panel.</td>
+                    <td colSpan={4} className="text-center">No feeds or portals registered yet. Use the source form on this screen to add one.</td>
                   </tr>
                 ) : (
                   sources.map((src) => (

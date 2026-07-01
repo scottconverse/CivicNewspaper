@@ -3882,7 +3882,7 @@ I should produce JSON only.
                 source_id,
                 url: Some("https://example.org/longmont/library-roof-contract.pdf".to_string()),
                 fetched_at: Utc::now().to_rfc3339(),
-                excerpt: "Agenda item 8B lists a $482,000 library roof replacement contract and identifies the recommended vendor.".to_string(),
+                excerpt: "Agenda item 8B shows Longmont City Council approved a library roof replacement contract after reviewing the public agenda packet. The packet lists a $482,000 contract amount and identifies the recommended vendor. Staff said residents should watch whether the project timeline changes before winter.".to_string(),
                 content_hash: "seeded-library-roof-contract-v1".to_string(),
                 entities: r#"["Longmont City Council","Library Roof Contract"]"#.to_string(),
             },
@@ -3917,7 +3917,7 @@ I should produce JSON only.
                 format: "watch".to_string(),
                 title: "Council Approves Library Roof Contract".to_string(),
                 content: format!(
-                    "Longmont City Council approved a library roof replacement contract after reviewing the public agenda packet. The contract amount listed in the packet is tied to [the source record](evidence:{evidence_id}).\n\nResidents should watch whether the project timeline changes before winter."
+                    "Longmont City Council approved a $482,000 library roof replacement contract after reviewing the public agenda packet. The contract amount is tied to [the source record](evidence:{evidence_id}).\n\nResidents should watch whether the project timeline changes before winter."
                 ),
                 status: "corrected".to_string(),
                 verification_checklist: r#"["Source link checked","Amount checked","Correction note reviewed"]"#.to_string(),

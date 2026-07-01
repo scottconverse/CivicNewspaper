@@ -16,6 +16,7 @@ $RepoImportReviewDir = Join-Path $RepoRoot "test-fixtures\source-import-extracte
 if ([string]::IsNullOrWhiteSpace($FixtureDir)) {
   $FixtureDir = $RepoImportReviewDir
 }
+$FixtureDir = (Resolve-Path -ErrorAction Stop $FixtureDir).Path
 $Stamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $RunDir = Join-Path $RepoRoot ".agent-runs\release-smoke-$Stamp"
 $ExtractedDir = Join-Path $RunDir "import-extracted"

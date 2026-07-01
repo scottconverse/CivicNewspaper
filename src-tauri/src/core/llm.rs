@@ -1222,7 +1222,7 @@ mod stream_parser_tests {
     /// Drive the same parse/accumulate logic the streaming loop uses, but over an
     /// in-memory buffer fed in arbitrary chunks. This pins the multi-chunk line
     /// buffering (a token split across two pushes) and the `done` terminator
-    /// without needing a live socket (the real call hardcodes 127.0.0.1:11434).
+    /// without needing a live socket.
     fn accumulate_chunks(chunks: &[&str]) -> Result<String, String> {
         let mut buf = String::new();
         let mut accumulated = String::new();

@@ -466,17 +466,17 @@ fn known_city_candidates(
                 (
                     "Visit Longmont events",
                     "https://www.visitlongmont.org/events/",
-                    "community_signal",
+                    "community_calendar",
                 ),
                 (
                     "Downtown Longmont events",
                     "https://www.downtownlongmont.com/events/calendar",
-                    "community_signal",
+                    "community_calendar",
                 ),
                 (
                     "Longmont city events",
                     "https://longmontcolorado.gov/events/",
-                    "official_comm",
+                    "official_calendar",
                 ),
                 (
                     "Longmont city YouTube",

@@ -327,6 +327,13 @@ pub fn validate_publish_artifacts(output_dir: &str) -> Result<PathBuf, String> {
     if !path.join("site-package.zip").exists() {
         return Err("The hosting ZIP package is missing. Compile the site again.".to_string());
     }
+    let manifest = read_publish_manifest(&path)?;
+    if manifest.article_count == 0 {
+        return Err(
+            "This package has zero approved stories. Approve at least one story or brief before publishing to a public host."
+                .to_string(),
+        );
+    }
     Ok(path)
 }
 

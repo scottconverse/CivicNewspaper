@@ -186,14 +186,133 @@ pub fn evidence_alignment_issue(
 }
 
 pub fn paragraph_is_source_aligned(paragraph: &str, source_text: &str) -> bool {
-    let paragraph_tokens = grounding_tokens(paragraph);
+    let paragraph = strip_evidence_citation_syntax(paragraph);
+    let paragraph_tokens = grounding_tokens(&paragraph);
     if paragraph_tokens.len() < 4 {
         return true;
+    }
+    if !specific_factual_anchors_are_supported(&paragraph, source_text) {
+        return false;
     }
     let source_tokens = grounding_tokens(source_text);
     let overlap = paragraph_tokens.intersection(&source_tokens).count();
     let required = ((paragraph_tokens.len() + 3) / 4).clamp(2, 6);
     overlap >= required
+}
+
+fn strip_evidence_citation_syntax(text: &str) -> String {
+    let citation_re =
+        regex::Regex::new(r"(?i)\[[^\]]+\]\(\s*evidence:\s*(?://)?\s*\d+\s*\)|evidence:\s*(?://)?\s*\d+")
+            .expect("valid evidence citation regex");
+    citation_re.replace_all(text, " ").to_string()
+}
+
+fn specific_factual_anchors_are_supported(paragraph: &str, source_text: &str) -> bool {
+    let paragraph_lower = paragraph.to_lowercase();
+    let source_lower = source_text.to_lowercase();
+    factual_anchor_tokens(&paragraph_lower)
+        .into_iter()
+        .all(|anchor| source_lower.contains(&anchor))
+}
+
+fn factual_anchor_tokens(text: &str) -> HashSet<String> {
+    let mut anchors = HashSet::new();
+    collect_numeric_anchors(text, &mut anchors);
+    collect_calendar_anchors(text, &mut anchors);
+    collect_money_word_anchors(text, &mut anchors);
+    collect_high_risk_action_anchors(text, &mut anchors);
+    anchors
+}
+
+fn collect_numeric_anchors(text: &str, anchors: &mut HashSet<String>) {
+    for token in text
+        .split(|ch: char| !(ch.is_ascii_alphanumeric() || ch == '$' || ch == '%' || ch == '.' || ch == ','))
+        .map(str::trim)
+        .filter(|token| token.chars().any(|ch| ch.is_ascii_digit()))
+    {
+        let normalized = token.trim_matches(|ch: char| ch == ',' || ch == '.');
+        if normalized.len() >= 2 || normalized.starts_with('$') || normalized.ends_with('%') {
+            anchors.insert(normalized.to_string());
+        }
+    }
+}
+
+fn collect_calendar_anchors(text: &str, anchors: &mut HashSet<String>) {
+    const TERMS: &[&str] = &[
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday",
+    ];
+    for term in TERMS {
+        if text.contains(term) {
+            anchors.insert((*term).to_string());
+        }
+    }
+}
+
+fn collect_money_word_anchors(text: &str, anchors: &mut HashSet<String>) {
+    const TERMS: &[&str] = &[
+        "dollar",
+        "dollars",
+        "million",
+        "billion",
+        "grant",
+        "budget",
+        "fee",
+        "fees",
+        "tax",
+        "taxes",
+    ];
+    for term in TERMS {
+        if text.contains(term) {
+            anchors.insert((*term).to_string());
+        }
+    }
+}
+
+fn collect_high_risk_action_anchors(text: &str, anchors: &mut HashSet<String>) {
+    const TERMS: &[&str] = &[
+        "approved",
+        "adopted",
+        "rejected",
+        "denied",
+        "voted",
+        "passed",
+        "closed",
+        "closing",
+        "opened",
+        "launched",
+        "awarded",
+        "canceled",
+        "cancelled",
+        "suspended",
+        "delayed",
+        "increased",
+        "decreased",
+        "requires",
+        "required",
+    ];
+    for term in TERMS {
+        if text.contains(term) {
+            anchors.insert((*term).to_string());
+        }
+    }
 }
 
 #[cfg(test)]
@@ -246,5 +365,21 @@ mod tests {
         let source = "Summer Concert Series: Road Pony 7pm - 8:30pm Longmont Museum Creative District Event.";
 
         assert!(!paragraph_is_source_aligned(paragraph, source));
+    }
+
+    #[test]
+    fn cited_paragraph_cannot_claim_approval_when_source_only_says_review() {
+        let paragraph = "Council approved a $10 million library roof contract that will close the building for two years.";
+        let source = "City Council will review a library roof contract at its next public meeting.";
+
+        assert!(!paragraph_is_source_aligned(paragraph, source));
+    }
+
+    #[test]
+    fn cited_paragraph_with_supported_action_and_amount_aligns() {
+        let paragraph = "Council approved a $10 million library roof contract [Source](evidence:1).";
+        let source = "City Council approved a $10 million library roof contract after public discussion.";
+
+        assert!(paragraph_is_source_aligned(paragraph, source));
     }
 }

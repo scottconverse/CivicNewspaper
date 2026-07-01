@@ -365,6 +365,7 @@ fn build_batch_prompt(
          Return ONLY valid JSON. No markdown. No prose. No code fence.\n\
          Schema: {{\"leads\":[{{\"title\":\"short civic lead title\",\"summary\":\"1-2 evidence-grounded sentences\",\"original_url\":\"source URL from evidence or empty string\",\"why_flagged\":\"plain-language reason this deserves review\",\"source_name\":\"name or short description of source\",\"source_type\":\"agenda, public notice, budget, official update, community signal, or unknown\",\"priority\":\"high, medium, or low\",\"suggested_next_step\":\"specific editor action before drafting\",\"story_type\":\"story, brief, watch, background, or verification\",\"what_changed\":\"specific current fact that makes this timely, or 'no current change found'\",\"immediacy\":1,\"impact\":1,\"conflict\":1,\"novelty\":1,\"what_would_make_it_publishable\":\"specific missing fact, document, interview, vote, deadline, public effect, or cross-check\"}}]}}\n\
          Score immediacy, impact, conflict, and novelty from 1 to 5. A recurring meeting page, archive page, general service page, or newly fetched but unchanged source should score low on immediacy and novelty and should usually be story_type background or watch, not story.\n\
+         Event calendar sources can be useful tips, but they are not publishable stories by themselves. Only create story/brief leads from calendars when the excerpt has a concrete dated item with a civic action, deadline, public impact, closure, vote, permit, notice, or official decision; otherwise use watch/background/verification.\n\
          If an excerpt contains a dated Latest News, alert, notice, or events list, split it into separate leads for the specific dated items. Do not summarize the parent page as one generic lead unless the parent page itself changed in a newsworthy way.\n\
          Prefer distinct topics for an issue. Do not create several separate leads that are only different phrasings of the same meeting-process, public-participation, archive, or general-access information.\n\
          Include at most 3 leads. Use an empty leads array if nothing deserves an editor's look.\n\
@@ -508,10 +509,10 @@ fn rescue_lead_from_evidence(
     run_id: i32,
     item: &EvidenceItem,
 ) -> Option<DailyScanLead> {
-    let excerpt = clean_inline(&item.excerpt);
-    if !evidence_looks_actionable(&excerpt) {
+    if !evidence_looks_actionable(&item.excerpt) {
         return None;
     }
+    let excerpt = clean_inline(&item.excerpt);
 
     let source = db::get_source(conn, item.source_id).ok().flatten();
     let source_name = source
@@ -521,7 +522,11 @@ fn rescue_lead_from_evidence(
     let source_type = source.as_ref().map(|source| source.r#type.clone());
     let title = rescue_title(&source_name, &excerpt);
     let summary = truncate_chars(&excerpt, 280);
-    let story_type = if evidence_has_strong_current_action(&excerpt) {
+    let is_calendar_source = source_type
+        .as_deref()
+        .map(is_calendar_or_event_source_type)
+        .unwrap_or(false);
+    let story_type = if evidence_has_strong_current_action(&excerpt) && !is_calendar_source {
         "brief"
     } else {
         "watch"
@@ -536,10 +541,10 @@ fn rescue_lead_from_evidence(
     } else {
         3
     };
-    let novelty = if evidence_has_strong_current_action(&excerpt) {
+    let novelty = if evidence_has_strong_current_action(&excerpt) && !is_calendar_source {
         4
     } else {
-        3
+        2
     };
     let what_changed = format!(
         "Recent source evidence contains a dated or actionable civic item: {}",
@@ -564,18 +569,37 @@ fn rescue_lead_from_evidence(
         source_name: Some(source_name),
         source_type,
         priority: Some(if story_type == "brief" { "medium" } else { "low" }.to_string()),
-        suggested_next_step: Some("Open the source, confirm the date or action, and look for a second public source before approving reader-facing copy.".to_string()),
+        suggested_next_step: Some(if is_calendar_source {
+            "Treat this as a tip. Open the calendar item, confirm the date, organizer, civic relevance, and a second public source before drafting reader-facing copy."
+                .to_string()
+        } else {
+            "Open the source, confirm the date or action, and look for a second public source before approving reader-facing copy."
+                .to_string()
+        }),
         story_type: Some(story_type.to_string()),
         what_changed: Some(what_changed),
         immediacy: Some(immediacy),
         impact: Some(impact),
         conflict: if evidence_has_conflict_signal(&excerpt) { Some(3) } else { Some(1) },
         novelty: Some(novelty),
-        publishability_note: Some("Confirm the source date, names, decision point, and at least one corroborating source if available.".to_string()),
+        publishability_note: Some(if is_calendar_source {
+            "Calendar and tourism/event index sources must produce a concrete dated civic item and at least one corroborating public source before publication."
+                .to_string()
+        } else {
+            "Confirm the source date, names, decision point, and at least one corroborating source if available."
+                .to_string()
+        }),
         disposition: Some(disposition),
         recurrence_count: None,
         recurrence_note: None,
     })
+}
+
+fn is_calendar_or_event_source_type(source_type: &str) -> bool {
+    matches!(
+        source_type,
+        "community_calendar" | "official_calendar" | "event_calendar" | "events"
+    )
 }
 
 fn clean_inline(value: &str) -> String {
@@ -614,11 +638,11 @@ fn rescue_title(source_name: &str, excerpt: &str) -> String {
 }
 
 fn evidence_looks_actionable(excerpt: &str) -> bool {
-    let text = excerpt.to_lowercase();
-    if looks_like_broad_navigation_or_index(&text) {
+    let quality = evidence_quality(excerpt);
+    if quality.looks_like_navigation_or_index() {
         return false;
     }
-    if looks_static_or_evergreen(&text) && !evidence_has_strong_current_action(excerpt) {
+    if looks_static_or_evergreen(&quality.text) && !evidence_has_strong_current_action(excerpt) {
         return false;
     }
     evidence_has_calendar_signal(excerpt)
@@ -626,7 +650,63 @@ fn evidence_looks_actionable(excerpt: &str) -> bool {
         || evidence_has_public_impact_signal(excerpt)
 }
 
-fn looks_like_broad_navigation_or_index(text: &str) -> bool {
+#[derive(Debug, Clone)]
+struct EvidenceQuality {
+    text: String,
+    word_count: usize,
+    sentence_count: usize,
+    line_count: usize,
+    nav_marker_count: usize,
+    department_count: usize,
+    tourism_count: usize,
+    calendar_index_count: usize,
+    news_index_count: usize,
+    link_like_count: usize,
+    date_action_count: usize,
+}
+
+impl EvidenceQuality {
+    fn looks_like_navigation_or_index(&self) -> bool {
+        if self.word_count == 0 {
+            return true;
+        }
+        if self.nav_marker_count >= 3 {
+            return true;
+        }
+        if self.nav_marker_count >= 1 && self.department_count >= 8 {
+            return true;
+        }
+        if self.nav_marker_count >= 2 && self.tourism_count >= 6 {
+            return true;
+        }
+        if self.calendar_index_count >= 4 && self.date_action_count == 0 {
+            return true;
+        }
+        if self.news_index_count >= 3 {
+            return true;
+        }
+        if self.line_count >= 18 && self.sentence_count <= 2 && self.date_action_count == 0 {
+            return true;
+        }
+        let chrome_density = self.nav_marker_count
+            + self.department_count
+            + self.tourism_count
+            + self.calendar_index_count
+            + self.news_index_count
+            + self.link_like_count;
+        (chrome_density >= 10 && self.date_action_count <= 1 && self.sentence_count <= 4)
+            || (chrome_density >= 20 && self.date_action_count <= 4 && self.sentence_count <= 6)
+    }
+}
+
+fn evidence_quality(value: &str) -> EvidenceQuality {
+    let text = value.to_lowercase();
+    let word_count = text.split_whitespace().count();
+    let sentence_count = text
+        .split_terminator(['.', '!', '?'])
+        .filter(|part| part.split_whitespace().count() >= 5)
+        .count();
+    let line_count = value.lines().filter(|line| !line.trim().is_empty()).count();
     let chrome_markers = [
         "your browser is not supported",
         "skip navigation",
@@ -653,9 +733,6 @@ fn looks_like_broad_navigation_or_index(text: &str) -> bool {
         .iter()
         .filter(|marker| text.contains(**marker))
         .count();
-    if marker_count >= 3 {
-        return true;
-    }
 
     let department_terms = [
         "city attorney",
@@ -680,9 +757,6 @@ fn looks_like_broad_navigation_or_index(text: &str) -> bool {
         .iter()
         .filter(|term| text.contains(**term))
         .count();
-    if marker_count >= 1 && department_count >= 8 {
-        return true;
-    }
 
     let tourism_calendar_terms = [
         "live music & concerts",
@@ -717,7 +791,114 @@ fn looks_like_broad_navigation_or_index(text: &str) -> bool {
         .iter()
         .filter(|term| text.contains(**term))
         .count();
-    marker_count >= 2 && tourism_count >= 6
+    let calendar_index_terms = [
+        "event calendar",
+        "events calendar",
+        "things to do",
+        "all events",
+        "search events",
+        "submit event",
+        "submit your event",
+        "view all events",
+        "calendar view",
+        "list view",
+        "upcoming events",
+        "featured events",
+        "filter by",
+        "select date",
+        "next events",
+        "previous events",
+    ];
+    let calendar_index_count = calendar_index_terms
+        .iter()
+        .filter(|term| text.contains(**term))
+        .count();
+    let news_index_terms = [
+        "all categories",
+        "results found",
+        "sort news by",
+        "newest to oldest",
+        "oldest to newest",
+        "email signup",
+        "sign up for our emails",
+        "type all",
+        "all news alerts",
+        "news alerts",
+    ];
+    let news_index_count = news_index_terms
+        .iter()
+        .filter(|term| text.contains(**term))
+        .count();
+    let link_like_count = value
+        .lines()
+        .filter(|line| {
+            let trimmed = line.trim();
+            trimmed.len() <= 48
+                && trimmed.split_whitespace().count() <= 5
+                && !trimmed.ends_with('.')
+                && !trimmed.ends_with('?')
+                && !trimmed.ends_with('!')
+        })
+        .count();
+    let date_action_count = current_action_signal_count(&text);
+    EvidenceQuality {
+        text,
+        word_count,
+        sentence_count,
+        line_count,
+        nav_marker_count: marker_count,
+        department_count,
+        tourism_count,
+        calendar_index_count,
+        news_index_count,
+        link_like_count,
+        date_action_count,
+    }
+}
+
+fn current_action_signal_count(text: &str) -> usize {
+    const ACTIONS: &[&str] = &[
+        "approved",
+        "voted",
+        "will vote",
+        "hearing",
+        "deadline",
+        "closed",
+        "closure",
+        "outage",
+        "contract",
+        "permit",
+        "application",
+        "meeting",
+        "notice",
+        "agenda",
+        "adopted",
+        "awarded",
+        "delayed",
+    ];
+    let action_count = ACTIONS.iter().filter(|term| text.contains(**term)).count();
+    let date_count = [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        "today",
+        "tonight",
+        "tomorrow",
+        "this week",
+    ]
+    .iter()
+    .filter(|term| text.contains(**term))
+    .count();
+    action_count + date_count
 }
 
 fn evidence_has_calendar_signal(excerpt: &str) -> bool {
@@ -1809,6 +1990,104 @@ Submit Your Photos!";
     }
 
     #[test]
+    fn generic_city_calendar_index_is_not_actionable_rescue_evidence() {
+        let excerpt =
+            "Community Event Calendar
+Skip to main content
+Search Events
+Calendar View
+List View
+All Events
+Featured Events
+Filter By
+Select Date
+Previous Events
+Next Events
+Submit Your Event
+Arts and Culture
+Parks
+Libraries
+Recreation
+Business
+Food and Drink
+Things to Do";
+
+        assert!(!evidence_looks_actionable(excerpt));
+    }
+
+    #[test]
+    fn generic_department_directory_is_not_actionable_rescue_evidence() {
+        let excerpt =
+            "City Services
+Explore all services
+Explore all departments
+City Attorney
+City Clerk
+City Council
+City Manager
+Finance
+Forestry
+Housing
+Human Resources
+Judicial Department
+Municipal Court
+Parks and Natural Resources
+Planning and Development Services
+Public Information
+Public Safety
+Purchasing and Contracts
+Recreation Services
+Utilities and Public Works
+Subscribe to email updates";
+
+        assert!(!evidence_looks_actionable(excerpt));
+    }
+
+    #[test]
+    fn generic_city_news_category_index_is_not_actionable_rescue_evidence() {
+        let excerpt =
+            "All Categories
+Adults
+Adults 55+
+Art in Public Places
+Awards
+Board Recruitment
+Children
+City Council
+Classes and Trainings
+Climate
+Community Event
+Concert
+Connect Longmont
+Early Education
+Families
+Fitness
+Jobs
+Library Adults
+Longmont Power and Communications
+Maintenance
+Public Health Updates
+Traffic and Road Closures
+Type
+All
+All News Alerts
+Email Signup
+Sign up for our emails to receive the latest news and alerts.
+2949 results found
+Sort news by
+Newest to Oldest
+Oldest to Newest
+Red Flag Warnings and Fire Code Resources
+July 1, 2026
+Alert
+Safety & Justice Center Parking Limited During Construction
+July 1, 2026
+Alert";
+
+        assert!(!evidence_looks_actionable(excerpt));
+    }
+
+    #[test]
     fn concise_current_action_remains_actionable_rescue_evidence() {
         let excerpt = "Building Services says the online permitting portal outage is affecting permit applications.";
 
@@ -1907,7 +2186,7 @@ where
 
     let model = crate::tauri_cmds::get_selected_model_or_fallback(db).await;
     let eligible_evidence_count = evidence_items.len();
-    let scan_items: Vec<EvidenceItem> = evidence_items.into_iter().take(20).collect();
+    let scan_items: Vec<EvidenceItem> = evidence_items;
     let truncated_evidence_count = eligible_evidence_count.saturating_sub(scan_items.len());
     let deterministic_saved = {
         let conn = db.lock().map_err(|_| "Failed to lock db")?;
@@ -1918,17 +2197,8 @@ where
             truncated_evidence_count,
             ..scan_progress(
                 "deterministic",
-                if truncated_evidence_count > 0 {
-                    format!(
-                        "Reviewing the newest {} of {} eligible evidence item(s); {} older item(s) were left for a later scan.",
-                        scan_items.len(),
-                        eligible_evidence_count,
-                        truncated_evidence_count
-                    )
-                } else {
-                    "Extracting entities, detecting changes, and building verification tasks."
-                        .to_string()
-                },
+                "Extracting entities, detecting changes, and building verification tasks across every eligible evidence item."
+                    .to_string(),
             )
         });
         run_deterministic_intelligence_pass(&conn, run_id, &scan_items)?

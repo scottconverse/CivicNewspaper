@@ -314,6 +314,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           publishPath={app.publishPath}
           publishResult={app.publishResult}
           publishHistory={app.publishHistory}
+          approvedDraftCount={(app.drafts ?? []).filter((draft: { status: string }) => ["published", "corrected", "ready_to_publish"].includes(draft.status)).length}
           communityProfile={app.communityProfile}
           onOpenSettings={() => app.setActiveTab("settings")}
           publisherConfig={app.publisherConfig}

@@ -62,7 +62,7 @@ On first launch, the setup flow asks for:
 - Local AI/model setup.
 - Backup and publishing folders.
 
-The app may recommend and download a local model through Ollama. Model downloads can be large and slow. The app should show progress and allow an explicit skip/degraded path.
+On the Windows public-beta path, the app may recommend and download a local model through its product-owned Ollama runtime. Model downloads can be large and slow. The app should show progress and allow an explicit skip/degraded path. macOS and Linux runtime/installer automation remains backlog until platform clean-machine proof is recorded.
 
 If setup or publishing gets stuck, see [troubleshooting.md](troubleshooting.md) for SmartScreen, model download, local AI runtime, here.now preview, ZIP/static output, weak-story, and source-import guidance.
 
