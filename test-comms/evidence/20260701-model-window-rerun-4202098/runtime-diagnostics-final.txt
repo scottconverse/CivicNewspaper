@@ -1,0 +1,33 @@
+Diagnostics captured 2026-07-01T00:38:52.0884284-06:00
+Processes:
+
+
+ProcessName      : civicnews
+Id               : 11604
+MainWindowTitle  : The Civic Desk
+MainWindowHandle : 1181022
+Path             : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+StartTime        : 7/1/2026 12:29:11 AM
+
+ProcessName      : ollama
+Id               : 23400
+MainWindowTitle  : 
+MainWindowHandle : 0
+Path             : C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe
+StartTime        : 7/1/2026 12:29:58 AM
+
+
+
+
+Ollama list:
+NAME    ID    SIZE    MODIFIED 
+
+Model tree:
+
+FullName                                Length LastWriteTime       
+--------                                ------ -------------       
+C:\Users\civic\.ollama\models\blobs            7/1/2026 12:29:58 AM
+C:\Users\civic\.ollama\models\manifests        7/1/2026 12:29:58 AM
+
+
+

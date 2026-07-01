@@ -1,0 +1,51 @@
+Environment captured 2026-07-01T00:38:52.2096953-06:00
+
+
+Caption        : Microsoft Windows 11 Home
+Version        : 10.0.26200
+BuildNumber    : 26200
+OSArchitecture : 64-bit
+
+
+
+
+
+
+Manufacturer        : Micro-Star International Co., Ltd.
+Model               : Cyborg 15 A13VE
+TotalPhysicalMemory : 16870060032
+
+
+
+
+
+
+Name                      : 13th Gen Intel(R) Core(TM) i7-13620H
+NumberOfCores             : 10
+NumberOfLogicalProcessors : 16
+
+
+
+
+
+
+Name          : Intel(R) UHD Graphics
+AdapterRAM    : 2147479552
+DriverVersion : 32.0.101.5972
+
+Name          : NVIDIA GeForce RTX 4050 Laptop GPU
+AdapterRAM    : 4293918720
+DriverVersion : 32.0.15.8129
+
+
+
+
+
+
+Used : 113290809344
+Free : 374332678144
+Root : C:\
+
+
+
+
