@@ -3,8 +3,32 @@ mod core;
 mod tauri_cmds;
 
 use std::sync::{Arc, Mutex};
+use std::time::Duration;
 use tauri::Manager;
 use tauri_cmds::*;
+
+fn reveal_main_window<R: tauri::Runtime>(app_handle: &tauri::AppHandle<R>) {
+    if let Some(window) = app_handle.get_webview_window("main") {
+        let _ = window.unminimize();
+        let _ = window.center();
+        let _ = window.show();
+        let _ = window.set_focus();
+    }
+}
+
+fn schedule_main_window_reveal<R: tauri::Runtime>(app_handle: tauri::AppHandle<R>) {
+    std::thread::Builder::new()
+        .name("civicdesk-window-reveal".to_string())
+        .spawn(move || {
+            for delay_ms in [0_u64, 500, 1_500, 3_000, 7_000] {
+                if delay_ms > 0 {
+                    std::thread::sleep(Duration::from_millis(delay_ms));
+                }
+                reveal_main_window(&app_handle);
+            }
+        })
+        .ok();
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -108,6 +132,9 @@ pub fn run() {
             app.manage(std::sync::Arc::new(crate::core::llm::OllamaClient)
                 as std::sync::Arc<dyn crate::core::llm::LlmClient>);
 
+            reveal_main_window(app.handle());
+            schedule_main_window_reveal(app.handle().clone());
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -180,6 +207,10 @@ pub fn run() {
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
         .run(|app_handle, event| match event {
+            tauri::RunEvent::Ready => {
+                reveal_main_window(app_handle);
+                schedule_main_window_reveal(app_handle.clone());
+            }
             tauri::RunEvent::Exit
             | tauri::RunEvent::WindowEvent {
                 event: tauri::WindowEvent::CloseRequested { .. },
