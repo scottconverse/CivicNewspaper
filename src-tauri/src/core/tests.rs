@@ -4525,7 +4525,9 @@ I should produce JSON only.
                 lead_id: Some(lead_id),
                 format: "watch".to_string(),
                 title: "Road work notice issued".to_string(),
-                content: "The city issued a road work notice. [Source](evidence:1).".to_string(),
+                content: format!(
+                    "The city issued a road work notice. [Source](evidence: {evidence_id})."
+                ),
                 status: "ready_to_publish".to_string(),
                 verification_checklist: "[]".to_string(),
                 missing_evidence_notes: None,

@@ -409,7 +409,7 @@ fn looks_like_editor_or_test_note(text: &str) -> bool {
 }
 
 fn evidence_citation_ids(text: &str) -> HashSet<i32> {
-    let re = regex::Regex::new("(?i)evidence:(?://)?(\\d+)").expect("valid evidence regex");
+    let re = regex::Regex::new("(?i)evidence:\\s*(?://)?\\s*(\\d+)").expect("valid evidence regex");
     re.captures_iter(text)
         .filter_map(|caps| caps.get(1))
         .filter_map(|m| m.as_str().parse::<i32>().ok())
@@ -479,7 +479,7 @@ fn cited_paragraphs_are_source_aligned(
     evidence_by_id: &HashMap<i32, String>,
 ) -> Result<(), String> {
     let citation_re =
-        regex::Regex::new("(?i)evidence:(?://)?(\\d+)").expect("valid evidence regex");
+        regex::Regex::new("(?i)evidence:\\s*(?://)?\\s*(\\d+)").expect("valid evidence regex");
     for paragraph in content
         .split("\n\n")
         .map(str::trim)

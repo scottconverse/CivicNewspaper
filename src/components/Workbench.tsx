@@ -146,7 +146,7 @@ function getStoryQualityWarnings(draft: Draft, evidenceCount: number): string[] 
   if (evidenceCount === 0) {
     warnings.push("No source documents are linked. Treat this as a verification assignment until you attach or cite public source material.");
   }
-  if (evidenceCount > 0 && !content.includes("evidence:")) {
+  if (evidenceCount > 0 && !/evidence:\s*(?:\/\/)?\s*\d+/i.test(content)) {
     warnings.push("Linked sources exist, but the body has no inline evidence citations.");
   }
   if (paragraphCount < 2 && draft.format !== "brief") {
@@ -156,6 +156,35 @@ function getStoryQualityWarnings(draft: Draft, evidenceCount: number): string[] 
     warnings.push("No clear attribution phrase found. Attribute key facts to the source or rewrite more cautiously.");
   }
   return warnings;
+}
+
+function getStaticPublishBlockers(draft: Draft, evidenceCount: number): string[] {
+  const blockers: string[] = [];
+  const title = (draft.title || "").trim();
+  const content = (draft.content || "").trim();
+  const hasLead = draft.lead_id !== undefined && draft.lead_id !== null;
+  if (!content || content.split(/\s+/).filter(Boolean).length < 15) {
+    blockers.push("The article body is empty or too short for a public page.");
+  }
+  if (content.length > 12000) {
+    blockers.push("The article body is unusually large. Cut repeated/junk text before approval.");
+  }
+  if (/source check:|unlinked-evidence-\d+/i.test(content)) {
+    blockers.push("The draft has disabled or unlinked evidence citations. Link the correct source before approval.");
+  }
+  if (/approved during cleanroom mechanics test|despite quality warnings|see tester report|mechanics test|tester report/i.test(content)) {
+    blockers.push("The body looks like an editor/test note, not public story copy.");
+  }
+  if (/editor context:|suggested treatment:|suggested next step:/i.test(title)) {
+    blockers.push("The headline still contains lead metadata. Rewrite it as a reader-facing headline.");
+  }
+  if (hasLead && evidenceCount === 0) {
+    blockers.push("This scanned-lead draft has no linked source documents.");
+  }
+  if (hasLead && evidenceCount > 0 && !/evidence:\s*(?:\/\/)?\s*\d+/i.test(content)) {
+    blockers.push("This scanned-lead draft needs at least one inline evidence citation before approval.");
+  }
+  return blockers;
 }
 
 export const Workbench: React.FC<WorkbenchProps> = ({
@@ -251,6 +280,9 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   const qualityWarningsForSelectedDraft = selectedDraft
     ? getStoryQualityWarnings(selectedDraft, evidenceList.length)
     : [];
+  const staticPublishBlockers = selectedDraft
+    ? getStaticPublishBlockers(selectedDraft, evidenceList.length)
+    : [];
   const totalReviewWarningCount = guardrailIssues.length + qualityWarningsForSelectedDraft.length;
 
   const handleApproveClick = () => {
@@ -258,6 +290,11 @@ export const Workbench: React.FC<WorkbenchProps> = ({
       return;
     }
     setDecisionModal(null);
+    if (staticPublishBlockers.length > 0) {
+      setShowOverrideModal(false);
+      setError(`Before static publish approval: ${staticPublishBlockers.join(" ")}`);
+      return;
+    }
     if (totalReviewWarningCount > 0) {
       setShowOverrideModal(true);
     } else {
@@ -702,7 +739,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
             <div>
               <h3 className="card-title" style={{ marginBottom: "0.35rem" }}>Story-quality preflight</h3>
               <p className="help-text" style={{ margin: 0 }}>
-                Advisory only. These checks look for headline, attribution, citation, and reporter-note problems before approval.
+                Checks for headline, attribution, citation, and reporter-note problems before approval. Warnings are advisory; package-validity blockers must be fixed before static publish approval.
               </p>
             </div>
             <div className="btn-group">
@@ -724,6 +761,16 @@ export const Workbench: React.FC<WorkbenchProps> = ({
               )}
             </div>
           </div>
+          {staticPublishBlockers.length > 0 && (
+            <div className="error-text" role="alert" style={{ marginTop: "0.65rem" }}>
+              <strong>Fix before static publish approval:</strong>
+              <ul style={{ margin: "0.35rem 0 0 1.2rem" }}>
+                {staticPublishBlockers.map((blocker) => (
+                  <li key={blocker}>{blocker}</li>
+                ))}
+              </ul>
+            </div>
+          )}
           {qualityWarnings.length > 0 ? (
             <ul className="help-text" style={{ margin: "0.65rem 0 0 1.2rem" }}>
               {qualityWarnings.map((warning) => (

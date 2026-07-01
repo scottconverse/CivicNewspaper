@@ -1094,7 +1094,7 @@ pub fn story_decision(
 
 fn sanitize_unlinked_evidence_citations(text: &str, allowed_ids: &HashSet<i32>) -> String {
     let citation_re =
-        regex::Regex::new("(?i)evidence:(?://)?(\\d+)").expect("valid citation regex");
+        regex::Regex::new("(?i)evidence:\\s*(?://)?\\s*(\\d+)").expect("valid citation regex");
     if !citation_re.is_match(text) {
         return text.to_string();
     }
@@ -1128,6 +1128,22 @@ fn sanitize_unlinked_evidence_citations(text: &str, allowed_ids: &HashSet<i32>) 
                 .join(", ")
         )
     }
+}
+
+fn normalize_model_evidence_citations(text: &str) -> String {
+    let bracketed = regex::Regex::new("(?i)\\[\\s*evidence\\s*:\\s*(\\d+)\\s*\\]\\([^)]*\\)")
+        .expect("valid bracketed evidence regex");
+    let normalized = bracketed
+        .replace_all(text, |caps: &regex::Captures<'_>| {
+            format!("[Source](evidence:{})", caps.get(1).unwrap().as_str())
+        })
+        .to_string();
+    let spaced = regex::Regex::new("(?i)evidence:\\s+(\\d+)").expect("valid spaced evidence regex");
+    spaced
+        .replace_all(&normalized, |caps: &regex::Captures<'_>| {
+            format!("evidence:{}", caps.get(1).unwrap().as_str())
+        })
+        .to_string()
 }
 
 fn line_has_forbidden_draft_marker(line: &str) -> bool {
@@ -1225,6 +1241,134 @@ fn clean_generated_draft_for_workbench(text: &str) -> String {
     cleaned.join("\n").trim().to_string()
 }
 
+fn first_public_sentence(text: &str) -> String {
+    let cleaned = compiler::repair_common_mojibake(text)
+        .replace('\n', " ")
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ");
+    let sentence_end = cleaned
+        .char_indices()
+        .find_map(|(idx, ch)| matches!(ch, '.' | '!' | '?').then_some(idx + ch.len_utf8()));
+    let mut sentence = sentence_end
+        .and_then(|idx| cleaned.get(..idx))
+        .unwrap_or(&cleaned)
+        .trim()
+        .to_string();
+    if sentence.len() > 260 {
+        sentence.truncate(260);
+        sentence = sentence
+            .rsplit_once(' ')
+            .map(|(left, _)| left.to_string())
+            .unwrap_or(sentence);
+        sentence.push('.');
+    }
+    if sentence.is_empty() {
+        "The linked source has a civic update that needs editor review.".to_string()
+    } else {
+        sentence
+    }
+}
+
+fn source_bound_headline(lead_why: &str) -> String {
+    let cleaned = lead_why
+        .replace('\n', " ")
+        .split("Editor context:")
+        .next()
+        .unwrap_or(lead_why)
+        .split("Suggested treatment:")
+        .next()
+        .unwrap_or(lead_why)
+        .split("Suggested next step:")
+        .next()
+        .unwrap_or(lead_why)
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ");
+    let mut title = cleaned
+        .trim_matches(|ch: char| ch == '"' || ch == '\'' || ch == ':' || ch.is_whitespace())
+        .to_string();
+    if title.len() > 96 {
+        title.truncate(96);
+        title = title
+            .rsplit_once(' ')
+            .map(|(left, _)| left.to_string())
+            .unwrap_or(title);
+    }
+    if title.is_empty() {
+        "Longmont civic item needs review".to_string()
+    } else {
+        title
+    }
+}
+
+fn source_bound_fallback_draft(lead_why: &str, evidence_items: &[EvidenceItem]) -> String {
+    let headline = source_bound_headline(lead_why);
+    let Some(item) = evidence_items.iter().find(|item| item.id.is_some()) else {
+        return format!(
+            "Headline: {headline}\n\nNo source documents are linked to this lead yet. Treat it as a verification assignment until an editor attaches public source material."
+        );
+    };
+    let id = item.id.unwrap_or(0);
+    let source_sentence = first_public_sentence(&item.excerpt);
+    format!(
+        "Headline: {headline}\n\n{source_sentence} [Source](evidence:{id}).\n\nThis is a watch brief for Longmont readers. The linked source does not, by itself, confirm a broader development; watch for a newly posted date, vote, cost, agency response, or other public update before expanding it into a full story."
+    )
+}
+
+fn repeated_phrase_count(text: &str, phrase: &str) -> usize {
+    text.to_lowercase().matches(phrase).count()
+}
+
+fn generated_draft_quality_issue(
+    draft: &str,
+    evidence_text: &str,
+    evidence_count: usize,
+) -> Option<String> {
+    let lower = draft.to_lowercase();
+    let evidence_lower = evidence_text.to_lowercase();
+    if draft.len() > 8_000 {
+        return Some("model output was far too long for a draft".to_string());
+    }
+    if repeated_phrase_count(draft, "reader-facing watch item") > 2
+        || repeated_phrase_count(draft, "further fact-checking") > 3
+        || lower.contains("proof of research required")
+    {
+        return Some("model output repeated template/junk text".to_string());
+    }
+    if lower.contains("evidence:none") || lower.contains("evidence: none") {
+        return Some("model cited missing evidence".to_string());
+    }
+    if evidence_count > 0
+        && !regex::Regex::new("(?i)evidence:\\s*(?://)?\\s*\\d+")
+            .expect("valid evidence regex")
+            .is_match(draft)
+    {
+        return Some("model output did not include inline evidence citations".to_string());
+    }
+    for term in [
+        "cancel",
+        "canceled",
+        "cancelled",
+        "cancellation",
+        "covid",
+        "pandemic",
+        "funding cut",
+        "funding cuts",
+        "at risk",
+        "selected vendor",
+        "vendor",
+        "contractor",
+    ] {
+        if lower.contains(term) && !evidence_lower.contains(term) {
+            return Some(format!(
+                "model output introduced unsupported high-risk claim term `{term}`"
+            ));
+        }
+    }
+    None
+}
+
 #[cfg(test)]
 mod draft_citation_tests {
     use super::sanitize_unlinked_evidence_citations;
@@ -1241,6 +1385,16 @@ mod draft_citation_tests {
         assert!(sanitized.contains("unlinked-evidence-224"));
         assert!(sanitized.contains("Source check"));
         assert!(sanitized.contains("224"));
+    }
+
+    #[test]
+    fn normalizes_model_evidence_citation_shapes() {
+        let draft = "Claim one [evidence: 67](17). Claim two [Source](evidence: 66).";
+
+        let normalized = super::normalize_model_evidence_citations(draft);
+
+        assert!(normalized.contains("[Source](evidence:67)"));
+        assert!(normalized.contains("[Source](evidence:66)"));
     }
 
     #[test]
@@ -1271,6 +1425,33 @@ mod draft_citation_tests {
         assert!(!cleaned.to_lowercase().contains("end of report"));
         assert!(cleaned.contains("Headline: Council to review traffic safety"));
         assert!(cleaned.contains("Residents can follow the agenda"));
+    }
+
+    #[test]
+    fn falls_back_when_model_output_is_junk_or_unsupported() {
+        let item = crate::core::db::EvidenceItem {
+            id: Some(66),
+            source_id: 1,
+            url: Some("https://example.test/events".to_string()),
+            fetched_at: "2026-06-30T00:00:00Z".to_string(),
+            excerpt: "The city calendar lists snacks and antojitos at the youth center."
+                .to_string(),
+            content_hash: "events".to_string(),
+            entities: "[]".to_string(),
+        };
+        let draft = "The program was canceled because of COVID funding cuts. [Source](evidence:66)";
+        let evidence_text = format!("Evidence Citation ID: 66\nExcerpt: {}\n\n", item.excerpt);
+
+        let issue = super::generated_draft_quality_issue(draft, &evidence_text, 1)
+            .expect("unsupported claims should be rejected");
+        let fallback =
+            super::source_bound_fallback_draft("Snacks and Antojitos (Summer Program)", &[item]);
+
+        assert!(issue.contains("unsupported"));
+        assert!(fallback.contains("Headline: Snacks and Antojitos"));
+        assert!(fallback.contains("[Source](evidence:66)"));
+        assert!(!fallback.to_lowercase().contains("covid"));
+        assert!(!fallback.to_lowercase().contains("funding cut"));
     }
 }
 
@@ -1509,8 +1690,20 @@ pub async fn generate_draft<R: tauri::Runtime>(
         .iter()
         .filter_map(|item| item.id)
         .collect::<HashSet<_>>();
-    let citation_safe = sanitize_unlinked_evidence_citations(&draft, &allowed_ids);
-    Ok(clean_generated_draft_for_workbench(&citation_safe))
+    let normalized_citations = normalize_model_evidence_citations(&draft);
+    let citation_safe = sanitize_unlinked_evidence_citations(&normalized_citations, &allowed_ids);
+    let cleaned = clean_generated_draft_for_workbench(&citation_safe);
+    if let Some(issue) =
+        generated_draft_quality_issue(&cleaned, &evidence_context, evidence_items.len())
+    {
+        eprintln!(
+            "Generated draft for lead {} replaced with source-bound fallback: {}",
+            lead_id, issue
+        );
+        Ok(source_bound_fallback_draft(&lead_why, &evidence_items))
+    } else {
+        Ok(cleaned)
+    }
 }
 
 #[tauri::command]

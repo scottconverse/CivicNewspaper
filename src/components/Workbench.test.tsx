@@ -721,8 +721,9 @@ describe("Workbench Component Tests", () => {
       guardrailsReport: null,
       selectedDraft: {
         ...mockDraft,
+        lead_id: undefined,
         title: "Portal Status: City web tools are available.",
-        content: "Body:\nNut graf: Reporter note.\n\nReporting Steps:\n- Check the portal.",
+        content: "Body:\nNut graf: Reporter note.\n\nThe editor wrote enough reader-facing copy to keep this as an advisory scaffolding warning rather than an empty-body blocker.",
       },
     });
 
@@ -733,5 +734,41 @@ describe("Workbench Component Tests", () => {
     expect(screen.getAllByText(/reporter scaffolding/i).length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: /Publish anyway \(logged\)/i }));
     expect(onApprovePublish).toHaveBeenCalledWith("Editor reviewed pre-publication warnings and chose to publish.");
+  });
+
+  test("lead-based drafts cannot be approved for static publish without inline evidence citations", () => {
+    const onApprovePublish = vi.fn();
+    renderEditor({
+      onApprovePublish,
+      guardrailsReport: null,
+      selectedDraft: {
+        ...mockDraft,
+        content: "According to the city calendar, the program listing needs review before publication.",
+      },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
+
+    expect(screen.getByText(/Fix before static publish approval/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/needs at least one inline evidence citation/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Before static publish approval/i).length).toBeGreaterThan(0);
+    expect(onApprovePublish).not.toHaveBeenCalled();
+  });
+
+  test("oversized draft bodies cannot be approved for static publish", () => {
+    const onApprovePublish = vi.fn();
+    renderEditor({
+      onApprovePublish,
+      guardrailsReport: null,
+      selectedDraft: {
+        ...mockDraft,
+        content: `${"Repeated junk sentence with no public value. ".repeat(360)} [Source](evidence:7)`,
+      },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
+
+    expect(screen.getAllByText(/unusually large/i).length).toBeGreaterThan(0);
+    expect(onApprovePublish).not.toHaveBeenCalled();
   });
 });
