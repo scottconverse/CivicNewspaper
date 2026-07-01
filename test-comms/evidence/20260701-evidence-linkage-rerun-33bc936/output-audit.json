@@ -1,0 +1,208 @@
+{
+  "local_output": "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260701-evidence-linkage-rerun-33bc936\\publish-output",
+  "zip_path": "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260701-evidence-linkage-rerun-33bc936\\publish-output\\site-package.zip",
+  "zip_extract": "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\evidence\\20260701-evidence-linkage-rerun-33bc936\\zip-extract",
+  "site_url": "https://humble-sonnet-9mqm.here.now/",
+  "counts": {
+    "sources": 19,
+    "daily_scan_runs": 1,
+    "daily_scan_leads": 12,
+    "leads": 24,
+    "evidence_items": 65,
+    "lead_evidence": 31,
+    "drafts": 1,
+    "publish_runs": 1,
+    "published_posts": 1
+  },
+  "local_scan_findings": [
+    {
+      "path": "feed.xml",
+      "forbidden": [],
+      "mojibake": [
+        "'?'",
+        "'?'",
+        "'?'",
+        "'?'"
+      ]
+    }
+  ],
+  "zip_scan_findings": [
+    {
+      "path": "feed.xml",
+      "forbidden": [],
+      "mojibake": [
+        "'?'",
+        "'?'",
+        "'?'",
+        "'?'"
+      ]
+    }
+  ],
+  "remote_fetches": [
+    {
+      "url": "https://humble-sonnet-9mqm.here.now/",
+      "error": "<HTTPError 403: 'Forbidden'>"
+    },
+    {
+      "url": "https://humble-sonnet-9mqm.here.now/briefs/1.html",
+      "error": "<HTTPError 403: 'Forbidden'>"
+    },
+    {
+      "url": "https://humble-sonnet-9mqm.here.now/feed.xml",
+      "error": "<HTTPError 403: 'Forbidden'>"
+    },
+    {
+      "url": "https://humble-sonnet-9mqm.here.now/share-package.md",
+      "error": "<HTTPError 403: 'Forbidden'>"
+    },
+    {
+      "url": "https://humble-sonnet-9mqm.here.now/facebook-post.txt",
+      "error": "<HTTPError 403: 'Forbidden'>"
+    },
+    {
+      "url": "https://humble-sonnet-9mqm.here.now/subreddit-post.md",
+      "error": "<HTTPError 403: 'Forbidden'>"
+    },
+    {
+      "url": "https://humble-sonnet-9mqm.here.now/nextdoor-post.txt",
+      "error": "<HTTPError 403: 'Forbidden'>"
+    }
+  ],
+  "reader_facing_story_count": 1,
+  "stories": [
+    {
+      "path": "briefs/1.html",
+      "title": "Downtown Longmont&#x27;s Public Library Votes on Rooftop Repair and Expansion Project - Longmont Civic Desk",
+      "h1_html": "<a href=\"../index.html\" style=\"color: inherit; text-decoration: none;\">Longmont Civic Desk</a>",
+      "text_excerpt": "Downtown Longmont's Public Library Votes on Rooftop Repair and Expansion Project - Longmont Civic Desk :root { --accent-color: #5a1818; } Longmont Civic Desk Local news and community information. Home About Ethics Policy How We Report Corrections Ledger RSS Feed Downtown Longmont's Public Library Votes on Rooftop Repair and Expansion Project Published: 2026-07-01T07:39:20.713624500+00:00 Format: brief Longmont residents will be taking an interest next Tuesday as council members prepare to vote for the $11,000-12,500 rooftop repair project at downtown's public library Source . This expansion includes not only repairs but also plans to increase capacity by 40%, which means patrons can expect larger reading and event spaces once completed. The total cost of this significant initiative is expected to be around $10 million over ten years. Residents should keep in mind that the scheduled vote next Tuesday will directly impact future library operations, with construction potentially leading to some disruptions during peak hours or specific events planned at other downtown venues Source . In anticipation of these changes and new additions aimed specifically for public enjoyment such as summer concert series by Road Pony featuring local talents like Longmont Museum residents. However, the timeline remains uncertain until after Tuesday's council vote. The details surrounding construction schedules post-approval are yet to be finalized in consultation with library officials Source . As a result of this delay and anticipation for future enhancements that promise better services within "
+    }
+  ],
+  "ready_reader_status_linkage": [
+    {
+      "id": 23,
+      "title": "Annual Music Festival in Longmont",
+      "why": "Annual Music Festival in Longmont: Sundance Film Festival is set to take place at Denver Art Museum over Labor Day weekend. Editor context: A significant cultural event that can draw visitors and has an impact on local businesses and tourism in Longmont. Suggested treatment: brief. Newsworthiness: 12/20 (immediacy 2, impact 4, conflict 1, novelty 5). Why now: Festival scheduled for September 1st to 3rd at Denver Art Museum. Suggested next step: Gather information about the festival's schedule, expected attendance numbers or ticket sales figures if available; check previous year's impact on local businesses and tourist influx.",
+      "disposition": "ready_to_draft",
+      "story_type": "brief",
+      "evidence_count": 2
+    },
+    {
+      "id": 22,
+      "title": "Council vote on library roof contract",
+      "why": "Council vote on library roof contract: The council agenda includes voting for an $11,000-12,500 rooftop repair and expansion at Downtown Longmont\u2019s Public Library. Editor context: Current action with significant impact on city spending and public facility timeline. Suggested treatment: story. Newsworthiness: 14/20 (immediacy 5, impact 4, conflict 2, novelty 3). Why now: Council voting on rooftop repair/expansion project for Public Library scheduled next Tuesday. Suggested next step: Confirm the contract details, including vendor name, amount approved by council vote date, scope of work, potential construction disruption to library operations and patrons.",
+      "disposition": "ready_to_draft",
+      "story_type": "story",
+      "evidence_count": 3
+    },
+    {
+      "id": 17,
+      "title": "Teen Temporary Tattoo Studio Launch at Longmont Public Library",
+      "why": "Teen Temporary Tattoo Studio Launch at Longmont Public Library: A free gaming club for teens and a Teen Temporary Tattoo Studio are newly introduced programs aimed to engage young learners through creative activities. Editor context: These new initiatives target youth engagement, promoting creativity while also potentially fostering community interaction among teenagers. Such stories could appeal widely by showing the library's commitment towards enriching children's experiences and can be a significant draw for families with young children. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 4, impact 2, conflict 1, novelty 3). Why now: Launch of Teen Temporary Tattoo Studio at Longmont Public Library. Suggested next step: Interview teens attending to get their insights; collect feedback on the programs' effectiveness in promoting creativity and social interaction among youth.",
+      "disposition": "ready_to_draft",
+      "story_type": "brief",
+      "evidence_count": 3
+    },
+    {
+      "id": 16,
+      "title": "Independence Day Events at City of Longmont",
+      "why": "Independence Day Events at City of Longmont: During Independence Weekend, the city will host free concerts and a temporary closure for residents to enjoy. These activities are expected to bring together various segments of the community. Editor context: Public events related to national holidays often attract significant attention due to their cultural relevance, making them ideal story topics with potential high impact on local residents and tourists alike. An editor should investigate further for a comprehensive report. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 4, impact 3, conflict 1, novelty 2). Why now: Independence Day activities announced for Free Concerts and City closure. Suggested next step: Confirm concert details, expected attendance; interview organizers to gauge anticipated impact on local businesses and overall community engagement during the holiday weekend.",
+      "disposition": "review",
+      "story_type": "brief",
+      "evidence_count": 3
+    },
+    {
+      "id": 15,
+      "title": "New STEM Programs at Longmont Public Library",
+      "why": "New STEM Programs at Longmont Public Library: The library is introducing new educational programs for different age groups, including a Teen Temporary Tattoo Studio and Navigator (Summer Program). These initiatives aim to support creativity in young learners. Editor context: These newly introduced STEM-related activities at the public library could have significant impacts on youth development. This makes it worthy of further investigation for a reporter focused on local education and community programs. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 4, impact 3, conflict 1, novelty 2). Why now: New educational programs launched by the Longmont Public Library. Suggested next step: Confirm dates, registration details if necessary; interview library staff about objectives and expected outcomes of these new STEM-related activities",
+      "disposition": "review",
+      "story_type": "brief",
+      "evidence_count": 3
+    }
+  ],
+  "zero_evidence_story_or_brief_leads": [
+    {
+      "id": 21,
+      "title": "Independence Day Art Events at Downtown Longmont",
+      "why": "Independence Day Art Events at Downtown Longmont: Creative District of downtown will host a series of free arts and crafts workshops for adults on Independence Day. Editor context: Promotes local cultural events, engaging the community in arts activities while celebrating Independence Day. Suggested treatment: brief. Suggested next step: Interview organizers for details on upcoming workshops and gather participant interest data to draft a story about community engagement in arts events. Then attach or cite the source document before drafting.",
+      "disposition": "needs_verification",
+      "story_type": "brief",
+      "evidence_count": 0
+    },
+    {
+      "id": 20,
+      "title": "July Fourth Festival at Downtown Longmont",
+      "why": "July Fourth Festival at Downtown Longmont: Downtown Longmont hosts an Independence Weekend with various free activities including family painting, music performances, and a drop-in mandala session. Editor context: Highlights multiple events happening on July 4th that attract families and art enthusiasts, showing active community engagement. Suggested treatment: story. Newsworthiness: 11/20 (immediacy 5, impact 3, conflict 1, novelty 2). Why now: Newly announced July 4th festival with multiple activities listed on an existing calendar page. Suggested next step: Confirm the specific times for each activity to draft a comprehensive story about Independence Day events in Downtown Longmont. Then attach or cite the source document before drafting.",
+      "disposition": "needs_verification",
+      "story_type": "story",
+      "evidence_count": 0
+    },
+    {
+      "id": 19,
+      "title": "Council Vote on Roof Work at Public Library",
+      "why": "Council Vote on Roof Work at Public Library: The council agenda includes voting for roof work to be carried out in a public facility, impacting city spending and construction timelines. Editor context: Current council action with potential impact on the community through an upcoming public vote affecting a key city facility. Suggested treatment: story. Newsworthiness: 14/20 (immediacy 5, impact 4, conflict 2, novelty 3). Why now: A council vote is imminent regarding a roof contract affecting city spending on public infrastructure maintenance or improvement. Suggested next step: Confirm details of vendor, dollar amount, and voting date before drafting. Verify any potential disruptions to the city's facilities due to construction work scheduled for this summer session. Then attach or cite the source document before drafting.",
+      "disposition": "needs_verification",
+      "story_type": "story",
+      "evidence_count": 0
+    }
+  ],
+  "drafts": [
+    {
+      "id": 1,
+      "lead_id": 22,
+      "format": "watch",
+      "title": "Downtown Longmont's Public Library Votes on Rooftop Repair and Expansion Project",
+      "content": "Longmont residents will be taking an interest next Tuesday as council members prepare to vote for the $11,000-12,500 rooftop repair project at downtown's public library [Source](evidence:59). This expansion includes not only repairs but also plans to increase capacity by 40%, which means patrons can expect larger reading and event spaces once completed. The total cost of this significant initiative is expected to be around $10 million over ten years.\n\nResidents should keep in mind that the scheduled vote next Tuesday will directly impact future library operations, with construction potentially leading to some disruptions during peak hours or specific events planned at other downtown venues [Source](evidence:58). In anticipation of these changes and new additions aimed specifically for public enjoyment such as summer concert series by Road Pony featuring local talents like Longmont Museum residents.\n\nHowever, the timeline remains uncertain until after Tuesday's council vote. The details surrounding construction schedules post-approval are yet to be finalized in consultation with library officials [Source](evidence:59). As a result of this delay and anticipation for future enhancements that promise better services within Downtown Longmont's public spaces such as libraries.\n\nResidents should stay tuned into upcoming updates on the project's status after council members cast their votes. The outcome will likely influence various aspects including operational timelines, temporary inconvenience to library patrons awaiting construction completion [Source](evidence:59).",
+      "status": "ready_to_publish",
+      "verification_checklist": "[]",
+      "missing_evidence_notes": "Held for later editorial review.",
+      "correction_note": null,
+      "created_at": "2026-07-01T07:34:26.554067700+00:00",
+      "updated_at": "2026-07-01T07:39:20.713624500+00:00",
+      "attested_by": "Publisher",
+      "attested_at": "2026-07-01T07:39:20.711115500+00:00",
+      "guardrail_override_reason": "Editor reviewed pre-publication warnings and chose to publish."
+    }
+  ],
+  "publish_runs": [
+    {
+      "id": 1,
+      "issue_id": "issue-20260701-074803-071990900",
+      "output_path": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/evidence/20260701-evidence-linkage-rerun-33bc936/publish-output",
+      "generated_files": "[\"styles.css\",\"print.css\",\"briefs/1.html\",\"index.html\",\"about.html\",\"ethics.html\",\"how-we-report.html\",\"corrections.html\",\"feed.xml\",\"newsletter.md\",\"substack.md\",\"share-package.md\",\"facebook-post.txt\",\"subreddit-post.md\",\"nextdoor-post.txt\",\"short-link-blurb.txt\",\"publish-manifest.json\",\"site-package.zip\"]",
+      "provider": "local_export",
+      "published_url": null,
+      "deployment_id": null,
+      "article_count": 1,
+      "skipped_count": 0,
+      "files_written": 18,
+      "generated_at": "2026-07-01T07:48:03.071990900+00:00"
+    }
+  ],
+  "published_posts": [
+    {
+      "id": 1,
+      "draft_id": 1,
+      "file_path": "briefs/1.html",
+      "url": "briefs/1.html",
+      "published_at": "2026-07-01T07:39:20.713624500+00:00",
+      "correction_history": "[]"
+    }
+  ],
+  "quality_flags": [
+    {
+      "path": "briefs/1.html",
+      "phrase": "increase capacity by 40%",
+      "issue": "published story contains claim not supported by the selected council-roof evidence set or mixed from another lead"
+    },
+    {
+      "path": "briefs/1.html",
+      "phrase": "$10 million over ten years",
+      "issue": "published story contains claim not supported by the selected council-roof evidence set or mixed from another lead"
+    },
+    {
+      "path": "briefs/1.html",
+      "phrase": "Road Pony",
+      "issue": "published story contains claim not supported by the selected council-roof evidence set or mixed from another lead"
+    }
+  ]
+}

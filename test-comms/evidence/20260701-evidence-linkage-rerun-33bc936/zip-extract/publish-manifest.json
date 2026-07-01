@@ -1,0 +1,50 @@
+{
+  "issue_id": "issue-20260701-074803-071990900",
+  "output_dir": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/evidence/20260701-evidence-linkage-rerun-33bc936/publish-output",
+  "generated_at": "2026-07-01T07:48:03.071990900+00:00",
+  "provider": "local_export",
+  "published_url": null,
+  "deployment_id": null,
+  "article_count": 1,
+  "skipped_count": 0,
+  "files_written": 18,
+  "generated_files": [
+    "styles.css",
+    "print.css",
+    "briefs/1.html",
+    "index.html",
+    "about.html",
+    "ethics.html",
+    "how-we-report.html",
+    "corrections.html",
+    "feed.xml",
+    "newsletter.md",
+    "substack.md",
+    "share-package.md",
+    "facebook-post.txt",
+    "subreddit-post.md",
+    "nextdoor-post.txt",
+    "short-link-blurb.txt",
+    "publish-manifest.json",
+    "site-package.zip"
+  ],
+  "index_path": "index.html",
+  "rss_path": "feed.xml",
+  "newsletter_path": "newsletter.md",
+  "substack_path": "substack.md",
+  "share_package_path": "share-package.md",
+  "facebook_post_path": "facebook-post.txt",
+  "subreddit_post_path": "subreddit-post.md",
+  "nextdoor_post_path": "nextdoor-post.txt",
+  "short_link_blurb_path": "short-link-blurb.txt",
+  "manifest_path": "publish-manifest.json",
+  "zip_path": "site-package.zip",
+  "articles": [
+    {
+      "title": "Downtown Longmont's Public Library Votes on Rooftop Repair and Expansion Project",
+      "format": "brief",
+      "relative_path": "briefs/1.html",
+      "updated_at": "2026-07-01T07:39:20.713624500+00:00"
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "sources_count": 19,
+  "daily_scan_runs_count": 1,
+  "daily_scan_leads_count": 12,
+  "leads_count": 24,
+  "evidence_items_count": 65,
+  "lead_evidence_count": 31,
+  "drafts_count": 1,
+  "publish_runs_count": 1,
+  "published_posts_count": 1,
+  "settings_count": 12,
+  "drafts": [
+    {
+      "id": 1,
+      "lead_id": 22,
+      "format": "watch",
+      "title": "Downtown Longmont's Public Library Votes on Rooftop Repair and Expansion Project",
+      "content": "Longmont residents will be taking an interest next Tuesday as council members prepare to vote for the $11,000-12,500 rooftop repair project at downtown's public library [Source](evidence:59). This expansion includes not only repairs but also plans to increase capacity by 40%, which means patrons can expect larger reading and event spaces once completed. The total cost of this significant initiative is expected to be around $10 million over ten years.\n\nResidents should keep in mind that the scheduled vote next Tuesday will directly impact future library operations, with construction potentially leading to some disruptions during peak hours or specific events planned at other downtown venues [Source](evidence:58). In anticipation of these changes and new additions aimed specifically for public enjoyment such as summer concert series by Road Pony featuring local talents like Longmont Museum residents.\n\nHowever, the timeline remains uncertain until after Tuesday's council vote. The details surrounding construction schedules post-approval are yet to be finalized in consultation with library officials [Source](evidence:59). As a result of this delay and anticipation for future enhancements that promise better services within Downtown Longmont's public spaces such as libraries.\n\nResidents should stay tuned into upcoming updates on the project's status after council members cast their votes. The outcome will likely influence various aspects including operational timelines, temporary inconvenience to library patrons awaiting construction completion [Source](evidence:59).",
+      "status": "ready_to_publish",
+      "verification_checklist": "[]",
+      "missing_evidence_notes": "Held for later editorial review.",
+      "correction_note": null,
+      "created_at": "2026-07-01T07:34:26.554067700+00:00",
+      "updated_at": "2026-07-01T07:39:20.713624500+00:00",
+      "attested_by": "Publisher",
+      "attested_at": "2026-07-01T07:39:20.711115500+00:00",
+      "guardrail_override_reason": "Editor reviewed pre-publication warnings and chose to publish."
+    }
+  ],
+  "publish_runs": [
+    {
+      "id": 1,
+      "issue_id": "issue-20260701-074803-071990900",
+      "output_path": "C:/Users/civic/Desktop/CODE/civicnewspaper-test-comms/test-comms/evidence/20260701-evidence-linkage-rerun-33bc936/publish-output",
+      "generated_files": "[\"styles.css\",\"print.css\",\"briefs/1.html\",\"index.html\",\"about.html\",\"ethics.html\",\"how-we-report.html\",\"corrections.html\",\"feed.xml\",\"newsletter.md\",\"substack.md\",\"share-package.md\",\"facebook-post.txt\",\"subreddit-post.md\",\"nextdoor-post.txt\",\"short-link-blurb.txt\",\"publish-manifest.json\",\"site-package.zip\"]",
+      "provider": "local_export",
+      "published_url": null,
+      "deployment_id": null,
+      "article_count": 1,
+      "skipped_count": 0,
+      "files_written": 18,
+      "generated_at": "2026-07-01T07:48:03.071990900+00:00"
+    }
+  ],
+  "published_posts": [
+    {
+      "id": 1,
+      "draft_id": 1,
+      "file_path": "briefs/1.html",
+      "url": "briefs/1.html",
+      "published_at": "2026-07-01T07:39:20.713624500+00:00",
+      "correction_history": "[]"
+    }
+  ],
+  "selected_lead_evidence": [
+    {
+      "id": 57,
+      "source_id": 13,
+      "source_name": "Downtown Longmont events",
+      "url": "https://www.downtownlongmont.com/events/calendar",
+      "fetched_at": "2026-07-01T07:30:26.385054+00:00",
+      "excerpt": "Happy Day Plants\nFri \t\t 24 \t\t Jul\nCreative District\nWatercolors for Beginners\n6pm - 7:30pm\nButterscotch Studios\nCreative District Event\nFri \t\t 24 \t\t Jul\nCreative District\nPoetry Night\n7pm - 9pm\nFirehouse Art Center\nCreative District Event\nFri \t\t 24 \t\t Jul\nEvents\nKokedama Workshop\n10:30am - 12pm\nHappy Day Plants\nSat \t\t 25 \t\t Jul\nCreative District\nTaste the Rainbow\n12pm - 9pm\nButterscotch Studios\nCreative District Event\nSat \t\t 25 \t\t Jul\nEvents\nLongmont Elks Lodge Building 100 year Celebration\n3pm - 5pm\nElks Lodge\nSat \t\t 25 \t\t Jul\nEvents\nWeekly Game Night at Valor Peak\n2pm - 6pm\nValor Peak Distillery\nSun \t\t 26 \t\t Jul\nEvents\nLit Happens Book Club with Lillian\n4pm - 5:30pm\nComposition Shop\nSun \t\t 26 \t\t Jul\nCreative District\nSilly Gooses: Mixed Comedy Mic\n6pm\nPelo's Deli and Provisions\nCreative District Event\nSun \t\t 26 \t\t Jul\nEvents\nMain Street Bubbles!\nTangerine\nMon \t\t 27 \t\t Jul\nCreative District\nSummer Creativity Camp 2026\n9am - 11am\nCrackpots Pottery Studio\nCreative District Event\nMon \t\t 27 \t\t Jul\nCreative District\nMonday Night Life Drawing at the Firehouse\n6pm - 8pm\nFirehouse Art Center\nCreative District Event\nMon \t\t 27 \t\t Jul\nEvents\nNoble Grape Series: Part II \u2014 Sauvignon Blanc\n6pm - 8pm\nKuper Wine Bar\nMon \t\t 27 \t\t Jul\nCreative District\nKaraoke with Nic\n7pm - 10pm\nCreative District Event\nMon \t\t 27 \t\t Jul\nEvents\nBloody Tuesday!\nTangerine\nTue \t\t 28 \t\t Jul\nCreative District\nOpen Mic @ Bricks On Main- Every Tuesday\n5:30pm - 8:30pm\nBricks on Main\nCreative District Event\nTue \t\t 28 \t\t Jul\nEvents\nMidweek Brunch Break!\nTangerine\nWed \t\t 29 \t\t Jul\nEvents\nSummer Lunch Bunch\n12:30am - 1:30am\nHappy Day Plants\nWed \t\t 29 \t\t Jul\nCreative District\nBlues Jam @ Bricks on Main\n6pm - 9pm\nBricks on Main\nCreative District Event\nWed \t\t 29 \t\t Jul\nEvents\nBellinis and Bites!\nTangerine\nThu \t\t 30 \t\t Jul\nEvents\nDinner & Dice\n11am - 8pm\nThe Passenger\nThu \t\t 30 \t\t Jul\nCreative District\nHalf Price Bottle Night & Live Music\n3pm - 9pm\nKuper Wine Bar\nCreative District Event\nThu \t\t 30 \t\t Jul\n",
+      "content_hash": "550268749f957a473525bec17f42f3c00224ed7d2de27030b481bca04cce64ee"
+    },
+    {
+      "id": 58,
+      "source_id": 13,
+      "source_name": "Downtown Longmont events",
+      "url": "https://www.downtownlongmont.com/events/calendar",
+      "fetched_at": "2026-07-01T07:30:26.411774700+00:00",
+      "excerpt": "Creative District\nOpen Mic Night at Valor Peak\n6pm - 8pm\nValor Peak Distillery\nCreative District Event\nThu \t\t 30 \t\t Jul\nCreative District\nMusic at Bricks on Main \"Blue Tongue\"\n6pm - 9pm\nBricks on Main\nCreative District Event\nThu \t\t 30 \t\t Jul\nEvents\nGeeks Who Drink Trivia Night!\n6:30pm\nAbbott & Wallace Distilling\nThu \t\t 30 \t\t Jul\nCreative District\nSummer Concert Series: Road Pony\n7pm - 8:30pm\nLongmont Museum\nCreative District Event\nThu \t\t 30 \t\t Jul\nEvents\nBubbly Flight Friday!\nTangerine\nFri \t\t 31 \t\t Jul\nCreative District\nPaint Me a Story - Summer\n10:15am - 11am\nCrackpots Pottery Studio\nCreative District Event\nFri \t\t 31 \t\t Jul\nCreative District\nPaint Me a Story\n10:15am - 11am\nCrackpots Pottery Studio\nCreative District Event\nFri \t\t 31 \t\t Jul\nEvents\nKids\u2019 Story Time\n10:30am - 11am\nHappy Day Plants\nFri \t\t 31 \t\t Jul\nCreative District\nMusic at Bricks on Main \"Thunder Roads\"\n6pm - 9pm\nBricks on Main\nCreative District Event\nFri \t\t 31 \t\t Jul\nEvents\nBoulder County Fair Parade\n10am\nSat \t\t 1 \t\t Aug\nEvents\nStationery Store Day Celebration at Wolf & Wren\n10am - 6pm\nWolf & Wren\nSat \t\t 1 \t\t Aug\nEvents\nTeacher Appreciation Day\n3pm - 10pm\nKuper Wine Bar\nSat \t\t 1 \t\t Aug\nCreative District\nMusic at Bricks on Main \"Steel Monkey\"\n6pm - 9pm\nBricks on Main\nCreative District Event\nSat \t\t 1 \t\t Aug\nCreative District\nLunch Line Dancing\n1pm - 2pm\nBricks on Main\nCreative District Event\nSun \t\t 2 \t\t Aug\nEvents\nWeekly Game Night at Valor Peak\n2pm - 6pm\nValor Peak Distillery\nSun \t\t 2 \t\t Aug\nEvents\nSquare State Book Club with Marilyn\n4pm - 5pm\nComposition Shop\nSun \t\t 2 \t\t Aug\nCreative District\nSilly Gooses: Mixed Comedy Mic\n6pm\nPelo's Deli and Provisions\nCreative District Event\nSun \t\t 2 \t\t Aug\nEvents\nMain Street Bubbles!\nTangerine\nMon \t\t 3 \t\t Aug\nDiscover More in Downtown Longmont\nPuppies & Pints\nPerk Up\nLongmont Taco Trail\nFollow Us on IG  @OwnDowntownLongmont\nGet in Touch\nSubscribe to Our Newsletter\n320 Main Street Longmont CO 80501\n(303) 651-8484\n/\nContact Us\nConnect With Us\n",
+      "content_hash": "00eec45b3259b1daa7392a6f73c3d1988f893a067fd159c11d75ba1e5acea796"
+    },
+    {
+      "id": 59,
+      "source_id": 13,
+      "source_name": "Downtown Longmont events",
+      "url": "https://www.downtownlongmont.com/events/calendar",
+      "fetched_at": "2026-07-01T07:30:26.438673600+00:00",
+      "excerpt": "Proud to be a Certified Colorado Creative District\n&copy;2026  Downtown Longmont, CO .\nSitemap\n",
+      "content_hash": "b4c2ef8b04189a89353ae99e154967003a3fdf18312bb33ea6bb1fbbc80b3a32"
+    }
+  ],
+  "settings": [
+    {
+      "key": "identity.city",
+      "value": "Longmont"
+    },
+    {
+      "key": "identity.editor_name",
+      "value": "Publisher"
+    },
+    {
+      "key": "identity.newsroom_name",
+      "value": "My Local Publication"
+    },
+    {
+      "key": "identity.organization_type",
+      "value": "single_person"
+    },
+    {
+      "key": "identity.state",
+      "value": "CO"
+    },
+    {
+      "key": "model.selected",
+      "value": "phi4-mini:latest"
+    },
+    {
+      "key": "onboarding_complete",
+      "value": "1"
+    },
+    {
+      "key": "paths.backup",
+      "value": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\backups"
+    },
+    {
+      "key": "paths.publish",
+      "value": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default"
+    },
+    {
+      "key": "scan.latest_id",
+      "value": "1"
+    },
+    {
+      "key": "setup.first_run_intake",
+      "value": "true"
+    },
+    {
+      "key": "setup.recovered_input",
+      "value": "consumed"
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "captured_at": "2026-07-01T01:32:33.137377",
+  "ready_to_draft": [
+    {
+      "id": 17,
+      "detector_name": "daily_scan",
+      "why": "Teen Temporary Tattoo Studio Launch at Longmont Public Library: A free gaming club for teens and a Teen Temporary Tattoo Studio are newly introduced programs aimed to engage young learners through creative activities. Editor context: These new initiatives target youth engagement, promoting creativity while also potentially fostering community interaction among teenagers. Such stories could appeal widely by showing the library's commitment towards enriching children's experiences and can be a significant draw for families with young children. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 4, impact 2, conflict 1, novelty 3). Why now: Launch of Teen Temporary Tattoo Studio at Longmont Public Library. Suggested next step: Interview teens attending to get their insights; collect feedback on the programs' effectiveness in promoting creativity and social interaction among youth.",
+      "disposition": "ready_to_draft",
+      "story_type": "brief",
+      "from_scan_lead_id": 5,
+      "evidence_count": 3
+    },
+    {
+      "id": 16,
+      "detector_name": "daily_scan",
+      "why": "Independence Day Events at City of Longmont: During Independence Weekend, the city will host free concerts and a temporary closure for residents to enjoy. These activities are expected to bring together various segments of the community. Editor context: Public events related to national holidays often attract significant attention due to their cultural relevance, making them ideal story topics with potential high impact on local residents and tourists alike. An editor should investigate further for a comprehensive report. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 4, impact 3, conflict 1, novelty 2). Why now: Independence Day activities announced for Free Concerts and City closure. Suggested next step: Confirm concert details, expected attendance; interview organizers to gauge anticipated impact on local businesses and overall community engagement during the holiday weekend.",
+      "disposition": "review",
+      "story_type": "brief",
+      "from_scan_lead_id": 4,
+      "evidence_count": 3
+    },
+    {
+      "id": 15,
+      "detector_name": "daily_scan",
+      "why": "New STEM Programs at Longmont Public Library: The library is introducing new educational programs for different age groups, including a Teen Temporary Tattoo Studio and Navigator (Summer Program). These initiatives aim to support creativity in young learners. Editor context: These newly introduced STEM-related activities at the public library could have significant impacts on youth development. This makes it worthy of further investigation for a reporter focused on local education and community programs. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 4, impact 3, conflict 1, novelty 2). Why now: New educational programs launched by the Longmont Public Library. Suggested next step: Confirm dates, registration details if necessary; interview library staff about objectives and expected outcomes of these new STEM-related activities",
+      "disposition": "review",
+      "story_type": "brief",
+      "from_scan_lead_id": 3,
+      "evidence_count": 3
+    }
+  ],
+  "all_lead_dispositions": [
+    {
+      "disposition": "needs_verification",
+      "story_type": null,
+      "c": 1
+    },
+    {
+      "disposition": "needs_verification",
+      "story_type": "verification",
+      "c": 4
+    },
+    {
+      "disposition": "ready_to_draft",
+      "story_type": "brief",
+      "c": 1
+    },
+    {
+      "disposition": "review",
+      "story_type": "brief",
+      "c": 2
+    },
+    {
+      "disposition": "watch",
+      "story_type": "watch",
+      "c": 10
+    }
+  ],
+  "scan_leads": [
+    {
+      "id": 1,
+      "title": "Review community signal from Downtown Longmont events",
+      "disposition": "needs_verification",
+      "story_type": "verification",
+      "original_url": "https://www.downtownlongmont.com/events/calendar",
+      "source_name": "Downtown Longmont events",
+      "source_type": "community_signal"
+    },
+    {
+      "id": 2,
+      "title": "Review community signal from Visit Longmont events",
+      "disposition": "needs_verification",
+      "story_type": "verification",
+      "original_url": "https://www.visitlongmont.org/events/",
+      "source_name": "Visit Longmont events",
+      "source_type": "community_signal"
+    },
+    {
+      "id": 3,
+      "title": "New STEM Programs at Longmont Public Library",
+      "disposition": "review",
+      "story_type": "brief",
+      "original_url": "https://longmontcolorado.gov/events/",
+      "source_name": "Longmont Public Library Events",
+      "source_type": "events listing from official website"
+    },
+    {
+      "id": 4,
+      "title": "Independence Day Events at City of Longmont",
+      "disposition": "review",
+      "story_type": "brief",
+      "original_url": "https://longmontcolorado.gov/events/",
+      "source_name": "City Events",
+      "source_type": "city event listing from official website"
+    },
+    {
+      "id": 5,
+      "title": "Teen Temporary Tattoo Studio Launch at Longmont Public Library",
+      "disposition": "ready_to_draft",
+      "story_type": "brief",
+      "original_url": "https://longmontcolorado.gov/events/",
+      "source_name": "Teen Temporary Tattoo Studio",
+      "source_type": "newly added event listing from official website"
+    },
+    {
+      "id": 6,
+      "title": "City Council to vote on library roof contract",
+      "disposition": "needs_verification",
+      "story_type": null,
+      "original_url": "https://example.gov/agenda",
+      "source_name": "City Council Agenda Page",
+      "source_type": "city council agenda page listing upcoming meetings and decisions to be made."
+    }
+  ],
+  "sources_by_type": [
+    {
+      "type": "community_signal",
+      "tier": "community_signal",
+      "status": "offline",
+      "c": 4
+    },
+    {
+      "type": "community_signal",
+      "tier": "community_signal",
+      "status": "online",
+      "c": 3
+    },
+    {
+      "type": "media_lead",
+      "tier": "news_reporting",
+      "status": "online",
+      "c": 2
+    },
+    {
+      "type": "official_comm",
+      "tier": "official_record",
+      "status": "offline",
+      "c": 1
+    },
+    {
+      "type": "official_comm",
+      "tier": "official_record",
+      "status": "online",
+      "c": 4
+    },
+    {
+      "type": "primary_record",
+      "tier": "official_record",
+      "status": "online",
+      "c": 5
+    }
+  ]
+}

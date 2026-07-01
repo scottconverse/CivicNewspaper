@@ -1,0 +1,55 @@
+﻿{
+    "create":  {
+                   "slug":  "humble-sonnet-9mqm",
+                   "siteUrl":  "https://humble-sonnet-9mqm.here.now/",
+                   "status":  "pending",
+                   "isLive":  false,
+                   "requiresFinalize":  true,
+                   "note":  "Site created, but this slug is not live yet. Upload all files to upload.uploads[], then POST upload.finalizeUrl with {\"versionId\":\"...\"}.",
+                   "upload":  {
+                                  "versionId":  "01KWEAJAAGNKVGXZG8RYXZ3RPA",
+                                  "finalizeUrl":  "https://here.now/api/v1/publish/humble-sonnet-9mqm/finalize",
+                                  "expiresInSeconds":  3600,
+                                  "uploadCount":  17
+                              },
+                   "derived":  {
+                                   "rootFileCount":  16,
+                                   "rootSingleFilePath":  null,
+                                   "hasIndexHtml":  true,
+                                   "prefix":  "anon/humble-sonnet-9mqm/v/01KWEAJAAGNKVGXZG8RYXZ3RPA/"
+                               },
+                   "displayName":  "Longmont Civic Desk test issue",
+                   "displayDescription":  "Anonymous 24-hour CivicNewspaper cleanroom tester publish for directive 20260701-evidence-linkage-rerun-33bc936.",
+                   "expiresAt":  "2026-07-02T07:51:16.048Z",
+                   "anonymous":  true
+               },
+    "finalize":  {
+                     "success":  true,
+                     "slug":  "humble-sonnet-9mqm",
+                     "siteUrl":  "https://humble-sonnet-9mqm.here.now/",
+                     "previousVersionId":  null,
+                     "currentVersionId":  "01KWEAJAAGNKVGXZG8RYXZ3RPA",
+                     "addedToProfile":  false,
+                     "thumbnailJobId":  "e59d44ac-4600-4a90-bc0e-fbbf75964396"
+                 },
+    "siteUrl":  "https://humble-sonnet-9mqm.here.now/",
+    "publishedFiles":  [
+                           "about.html",
+                           "briefs/1.html",
+                           "corrections.html",
+                           "ethics.html",
+                           "facebook-post.txt",
+                           "feed.xml",
+                           "how-we-report.html",
+                           "index.html",
+                           "newsletter.md",
+                           "nextdoor-post.txt",
+                           "print.css",
+                           "publish-manifest.json",
+                           "share-package.md",
+                           "short-link-blurb.txt",
+                           "styles.css",
+                           "subreddit-post.md",
+                           "substack.md"
+                       ]
+}

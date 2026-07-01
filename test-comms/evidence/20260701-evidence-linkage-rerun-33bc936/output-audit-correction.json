@@ -1,0 +1,38 @@
+{
+  "local_scan_findings_corrected": [],
+  "zip_scan_findings_corrected": [],
+  "remote_fetches_user_agent": [
+    {
+      "url": "https://humble-sonnet-9mqm.here.now/",
+      "status": 200,
+      "bytes": 2581,
+      "sha256": "b736041c241f95a828a420ac9af3a4fd64874ccbfba996b63be58266ce0802bd",
+      "forbidden": [],
+      "mojibake_codepoints": []
+    },
+    {
+      "url": "https://humble-sonnet-9mqm.here.now/index.html",
+      "status": 200,
+      "bytes": 2581,
+      "sha256": "b736041c241f95a828a420ac9af3a4fd64874ccbfba996b63be58266ce0802bd",
+      "forbidden": [],
+      "mojibake_codepoints": []
+    },
+    {
+      "url": "https://humble-sonnet-9mqm.here.now/briefs/1.html",
+      "status": 200,
+      "bytes": 9590,
+      "sha256": "20331417ed63bf931c3923030f16cced3bb10c2355bea0ecf53e1fb84d77e913",
+      "forbidden": [],
+      "mojibake_codepoints": []
+    },
+    {
+      "url": "https://humble-sonnet-9mqm.here.now/feed.xml",
+      "status": 200,
+      "bytes": 751,
+      "sha256": "90b7d22f8690e79ea12482413fc0f26d48ef38134d7bfb6d5ca8c5c3331f402f",
+      "forbidden": [],
+      "mojibake_codepoints": []
+    }
+  ]
+}
