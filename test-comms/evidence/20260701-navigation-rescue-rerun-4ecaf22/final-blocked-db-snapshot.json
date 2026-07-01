@@ -1,0 +1,499 @@
+{
+  "db_path": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+  "counts": {
+    "sources": 19,
+    "daily_scan_runs": 2,
+    "daily_scan_leads": 21,
+    "leads": 33,
+    "evidence_items": 70,
+    "lead_evidence": 24,
+    "drafts": 0,
+    "publish_runs": 0,
+    "published_posts": 0
+  },
+  "settings": {
+    "identity.city": "Longmont",
+    "identity.editor_name": "Publisher",
+    "identity.newsroom_name": "Longmont Navigation Rescue Desk",
+    "identity.organization_type": "single_person",
+    "identity.state": "CO",
+    "model.selected": "phi4-mini:latest",
+    "onboarding_complete": "1",
+    "paths.backup": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\backups",
+    "paths.publish": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default",
+    "scan.latest_id": "1",
+    "setup.first_run_intake": "true",
+    "setup.recovered_input": "consumed"
+  },
+  "dispositions": {
+    "background": 4,
+    "needs_verification": 13,
+    "ready_to_draft": 1,
+    "review": 2,
+    "watch": 13
+  },
+  "ready_leads": [
+    {
+      "id": 27,
+      "detector_name": "daily_scan",
+      "why": "Longmont Arts Week Festival: Annual events featuring art exhibits, live music performances throughout downtown Longmont. Editor context: An annual cultural event with potential high attendance and significant impact on local businesses. Suggested treatment: brief. Newsworthiness: 12/20 (immediacy 2, impact 4, conflict 1, novelty 5). Why now: Longmont Arts Week Festival with a start date on August 1st through September 30th is scheduled for next year. Suggested next step: Details about this year's festival, including dates of events, list artists or bands performing to check if any are known. What would make this publishable: Details about the festival's events and artists/ bands performing will make this lead publishable.",
+      "confidence": "med",
+      "risk_level": "med",
+      "confirmation_checklist": "[\"Details about this year's festival, including dates of events, list artists or bands performing to check if any are known. What would make this publishable: Details about the festival's events and artists/ bands performing will make this lead publishable.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-01T19:28:30.089510100+00:00",
+      "from_scan_lead_id": 15,
+      "story_type": "brief",
+      "disposition": "ready_to_draft",
+      "novelty_score": 5,
+      "novelty_reason": "Longmont Arts Week Festival with a start date on August 1st through September 30th is scheduled for next year.",
+      "recurrence_count": null,
+      "recurrence_note": null,
+      "linked_evidence": [
+        {
+          "id": 50,
+          "url": "https://www.visitlongmont.org/events/",
+          "source_name": "Visit Longmont events",
+          "source_url": "https://www.visitlongmont.org/events/",
+          "excerpt_truncated": "Things to Do in Longmont, Colorado - Event Calendar\n-->\nYour browser is not supported for this experience. We recommend using Chrome, Firefox, Edge, or Safari.\nSkip navigation\nSkip to main content\nExplore\nEvents\nLive Music & Concerts\nAnnual Events & Festivals\nThis Weekend\nSubmit Your Event\nSundance Film Festival\nThings to Do\nFamily Fun\nEvents\nParks\nRocky Mountain National Park\nSt. Vrain State Park\nMcIntosh Lake Nature Area\nGolden Ponds\nDickens Farm Area & Tubing\nUnion Reservoir\nOutdoors\nLakes & Rivers\nBirding & Wildlife\nHiking\nFishing\nGolf\nDisc Golf\nWater Sports\nBiking\nSky Diving\nHot Air Ballooning\nFlightseeing\nArts, Culture & History\nArt Galleries\nArt in Public Places (AIPP)\nMurals\nPerforming Arts & Theatre\nLongmont Museum\nLongmont History\nDowntown Creative District\nShopping\nConsignment, Thrift, & Antiques\nSpas & Wellness\nTours\nNightlife\nDowntown\nSwimming and Splashing\nFood & Drink\nBreweries & More\nRestaurants\nFarms & Farmers Markets\nCoffee & Tea Shops\nPatio Dining\nYour Stay\nHotels & Motels\nHotel Offers\nCampgrounds\nVacation Rentals\nMake a Plan\nGetting Here\nGetting Around\nTravel Information\nWeather & Climate\neNewsletter\nVisitors Guide\nSubmit Your Photos!\nItineraries\nUntitled Pizza Movie\nMoonstruck\nHow to Draw a Bunny\nSugar\nVisitor Center\nExplore\nEvents\nThings to Do\nFood & Drink\nYour Stay\nMake a Plan\nExplore\nEvents\nThings to Do\nFood & Drink\nYour Stay\nMake a Plan\nFree Visitor Guide\nMeetings & Groups\nMeeting Spaces\nWeddings\nVendors\nIdeas & Inspiration\nHotels\nDining\nRequest Info\nMedia\nLatest News\nFeatured in the News\nIn the News Archive - 2020 - 2022\nIn the News Archive - 2023\nIn the News - 2018 - 2019\nMedia Contact Us\nMedia Contact Thank You\nPhoto Terms & Conditions\nResearch & Reports\nPartners\nBusiness Toolkit\nSubmit Event\nRequest an Account\nSign Up for Updates\nExtranet Lo",
+          "excerpt_len": 1998
+        }
+      ]
+    }
+  ],
+  "generic_hits": [
+    {
+      "id": 2,
+      "detector_name": "New Primary Record",
+      "why": "A new official primary document from 'Longmont city news' was fetched today (https://www.longmontcolorado.gov/news).",
+      "confidence": "high",
+      "risk_level": "low",
+      "confirmation_checklist": "[\"Read the source document thoroughly for hidden agendas\",\"Verify matching records from previous weeks\",\"Cross-reference this record with local news announcements\"]",
+      "created_at": "2026-07-01T19:26:15.766535800+00:00",
+      "from_scan_lead_id": null,
+      "story_type": "watch",
+      "disposition": "watch",
+      "novelty_score": 2,
+      "novelty_reason": "Newly fetched official page; verify a current change before treating it as news.",
+      "recurrence_count": null,
+      "recurrence_note": null,
+      "linked_evidence": [
+        {
+          "id": 8,
+          "url": "https://www.longmontcolorado.gov/news",
+          "excerpt": "Discover all the departments that make up the City of Longmont&#8217;s government. Get detailed information on their roles, responsibilities, and how they serve the community.\nAll Departments\nGovernment\nHome\nNews & Alerts\nNews & Alerts\nFilter\nDepartment\nAll Departments\nAll Departments  Airport  Art in Public Places  Boards Committees and Commissions  Building Inspection  Callahan House  Children Youth and Families  City Attorney  City Clerk  City Council  City Manager  Code Enforcement  Community and Neighborhood Resources  Enterprise Technology Services  Environment  Finance  Forestry  Golf Services  Housing and Community Investment  Human Resources  Human Services  Judicial Department  Library  Longmont Housing Authority  Longmont Power &amp; Communications  LPC  Municipal Court  Municipal Probation  Museum  music  NextLight  Parking Enforcement  Parks and Natural Resources  Planning and Development Services  Probation  Public Information  Public Safety  Public Safety Leadership  Purchasing and Contracts  Recreation Services  Risk Management  Sandstone Ranch  Senior Services  Strategic Integration  Sustainability  Transportation  Trash &amp; Recycling  Utilities and Public Works  Utility Billing  Waste Services  Water\nCategory\nAll Categories\n",
+          "source_name": "Longmont city news",
+          "source_url": "https://www.longmontcolorado.gov/news"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "detector_name": "New Primary Record",
+      "why": "A new official primary document from 'Longmont city events' was fetched today (https://longmontcolorado.gov/events/).",
+      "confidence": "high",
+      "risk_level": "low",
+      "confirmation_checklist": "[\"Read the source document thoroughly for hidden agendas\",\"Verify matching records from previous weeks\",\"Cross-reference this record with local news announcements\"]",
+      "created_at": "2026-07-01T19:26:15.767825600+00:00",
+      "from_scan_lead_id": null,
+      "story_type": "watch",
+      "disposition": "watch",
+      "novelty_score": 2,
+      "novelty_reason": "Newly fetched official page; verify a current change before treating it as news.",
+      "recurrence_count": null,
+      "recurrence_note": null,
+      "linked_evidence": [
+        {
+          "id": 64,
+          "url": "https://longmontcolorado.gov/events/",
+          "source_name": "Longmont city events",
+          "source_url": "https://longmontcolorado.gov/events/",
+          "excerpt_truncated": "-->\nEvents from Wednesday, Nov. 20, 2024 &#8211; Friday, Jan. 3, 2025 &#8211; City of Longmont\nSkip to main content\nNews &#038; Alerts\nEvents\nCareers\nContact\nEnsuring accessible government services.\nActivities\nProviding community activities.\nBuilding\nGuiding construction and development.\nBusiness\nSupporting local businesses.\nEducation\nOffering educational resources.\nGovernment\nFacilitating civic engagement.\nHousing\nProviding housing services.\nHuman Services\nInformation\nDelivering essential community information.\nJobs\nConnecting residents with jobs.\nLibrary\nOffering library services and resources.\nLicensing\nIssuing permits and licenses.\nMaintenance\nMaintaining public infrastructure.\nMuseum\nExhibiting arts, culture and history.\nNextLight Fiber Internet\nPublic Safety\nEnsuring community safety.\nSustainability\nPromoting environmental sustainability.\nTransportation\nUtilities\nManaging utility services.\nWellness\nSupporting community health.\nExplore All Services\nExplore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place.\nAll Services\nDepartments\nAirport\nBoards, Committees and Commissions\nBuilding Services\nChildren, Youth and Families at the Youth Center\nCity Attorney\nCity Clerk\nCity Council\nCity Manager\nCommunity and Neighborhood Resources\nEnterprise Technology Services\nEnvironment\nFinance\nForestry\nGolf Services\nHousing and Community Investment\nHuman Resources\nHuman Services\nJudicial Department\nLibrary\nLongmont Housing Authority\nLongmont Museum\nLongmont Power &amp;  Communications\nMunicipal Court\nMunicipal Probation\nNextLight Fiber Internet\nParks and Natural Resources\nPlanning and Development Services\nPublic Information\nPublic Safety\nPurchasing and Contr",
+          "excerpt_len": 1991
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "detector_name": "New Primary Record",
+      "why": "A new official primary document from 'Longmont Agenda Management Portal' was fetched today (https://longmontcolorado.gov/city-clerk/agenda-management-portal/).",
+      "confidence": "high",
+      "risk_level": "low",
+      "confirmation_checklist": "[\"Read the source document thoroughly for hidden agendas\",\"Verify matching records from previous weeks\",\"Cross-reference this record with local news announcements\"]",
+      "created_at": "2026-07-01T19:26:15.768898300+00:00",
+      "from_scan_lead_id": null,
+      "story_type": "watch",
+      "disposition": "watch",
+      "novelty_score": 2,
+      "novelty_reason": "Newly fetched official page; verify a current change before treating it as news.",
+      "recurrence_count": null,
+      "recurrence_note": null,
+      "linked_evidence": [
+        {
+          "id": 15,
+          "url": "https://longmontcolorado.gov/city-clerk/agenda-management-portal/",
+          "source_name": "Longmont Agenda Management Portal",
+          "source_url": "https://longmontcolorado.gov/city-clerk/agenda-management-portal/",
+          "excerpt_truncated": "Search tip! The HTML agenda bookmarks the video to the item on the agenda so you don&#8217;t have to search the video on YouTube to find the topic you are looking interested in. HTML agendas with video bookmarks are only published for City Council meetings and Planning &amp; Zoning Commission meetings.\nDid you find this page helpful?\nWelcome\nLongmont is a diverse, multicultural and welcoming city.\nContact\nView All Services\nDepartments\nView All Departments\nQuick Links\nAgendas and Meetings\nCode Enforcement\nEmergency Notifications\nEmployment Opportunities\nPermits and Inspections\nPublic Records\nService Requests\nEmail Signup\nStay up-to-date on news and events in Longmont.\nSign Up\nFor questions or assistance, please contact our help and information line at  303-776-6050 .\nActivities\nBuilding\nBusiness\nEducation\nGovernment\nHousing\nHuman Services\nInformation\nJobs\nLibrary\nLicensing\nMaintenance\nMuseum\nNextLight Fiber Internet\nPublic Safety\nSustainability\nTransportation\nUtilities\nWellness\nExplore All Services\nExplore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place.\nAll Services\nDepartments\nAirport\nBoards, Committees and Commissions\nBuilding Services\nChildren, Youth and Families at the Youth Center\nCity Attorney\nCity Clerk\nCity Council\nCity Manager\nCommunity and Neighborhood Resources\nEnterprise Technology Services\nEnvironment\nFinance\nForestry\nGolf Services\nHousing and Community Investment\nHuman Resources\nHuman Services\nJudicial Department\nLibrary\nLongmont Housing Authority\nLongmont Museum\nLongmont Power &amp;  Communications\nMunicipal Court\nMunicipal Probation\nNextLight Fiber Internet\nParks and Natural Resources\nPlanning and Development Services\nPublic I",
+          "excerpt_len": 1983
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "detector_name": "New Primary Record",
+      "why": "A new official primary document from 'Longmont official city website' was fetched today (https://www.longmontcolorado.gov/).",
+      "confidence": "high",
+      "risk_level": "low",
+      "confirmation_checklist": "[\"Read the source document thoroughly for hidden agendas\",\"Verify matching records from previous weeks\",\"Cross-reference this record with local news announcements\"]",
+      "created_at": "2026-07-01T19:26:15.771496300+00:00",
+      "from_scan_lead_id": null,
+      "story_type": "watch",
+      "disposition": "watch",
+      "novelty_score": 2,
+      "novelty_reason": "Newly fetched official page; verify a current change before treating it as news.",
+      "recurrence_count": null,
+      "recurrence_note": null,
+      "linked_evidence": [
+        {
+          "id": 6,
+          "url": "https://www.longmontcolorado.gov/",
+          "excerpt": "Promotes environmental stewardship, economic vitality and social equity\nSenior Center\nSenior Center news and updates about upcoming programs and events\nVision Zero\nVision Zero projects, activities and how to get involved to improve transportation safety\nYouth Center\nHelping families, children and youth in Longmont grow, succeed and reach their best potential\nNew\nLanguage Preference\nEnglish\nSpanish\nMost of our email newsletters are currently published in English only. We&#039;re recording preferences if we add Spanish translations in the future.\n",
+          "source_name": "Longmont official city website",
+          "source_url": "https://www.longmontcolorado.gov/"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "detector_name": "Public Meeting Scheduled",
+      "why": "MEETING SCHEDULED: Meeting notification detected in 'Longmont Agenda Management Portal' record. Public attendance or comment may be permitted.",
+      "confidence": "medium",
+      "risk_level": "low",
+      "confirmation_checklist": "[\"Verify the date, time, and physical/virtual address of the meeting\",\"Download the meeting agenda when it becomes available\",\"Identify the public comment signup rules (e.g. register 24 hours in advance)\"]",
+      "created_at": "2026-07-01T19:26:15.773000700+00:00",
+      "from_scan_lead_id": null,
+      "story_type": "watch",
+      "disposition": "watch",
+      "novelty_score": 2,
+      "novelty_reason": "Meeting language found; verify a specific upcoming agenda, date, or action before drafting as news.",
+      "recurrence_count": null,
+      "recurrence_note": null,
+      "linked_evidence": [
+        {
+          "id": 14,
+          "url": "https://longmontcolorado.gov/city-clerk/agenda-management-portal/",
+          "excerpt": "Discover all the departments that make up the City of Longmont&#8217;s government. Get detailed information on their roles, responsibilities, and how they serve the community.\nAll Departments\nGovernment\nHome\nCity Clerk\nAgenda Management Portal\nAgenda Management Portal\nMore in City Clerk\nAgenda Management Portal    Business License    Colorado Revised Statutes    Election Information    Campaign Finance Reporting Dashboard (Beta)    Candidate Information - How to run for City Council    Fair Campaign Practices and Required Reporting    Initiative, Referendum and Recall    Past Election Results    Voter Registration Information      Licenses and Permits    Animal Licenses    Fishing Permits    Liquor License Application Forms    Liquor Licenses    Marijuana Licenses    Special Events Permit    Specialty Business Licenses      Longmont Municipal Code    Transparency, Public Records and Open Records Requests\nWelcome to the new Public Meeting Portal\nAll agendas and meeting packets of the Longmont City Council and the City&#8217;s advisory boards are published to this portal to make it easier for residents to find information about upcoming meetings and topics.\nNot all meetings listed here are livestreamed. Generally, City Council and Planning &amp; Zoning Commission meetings are livestreamed, but not all of them are.  Look for the words &#8220;(livestreamed)&#8221; after the meeting title.\nMost advisory board meetings are recorded and uploaded to the City&#8217;s YouTube channel a few days after the meeting (youtube.com/@cityoflongmont).\nSearch for past topics by using the Search and Advanced Search functions.\nThe portal page works best in Google Chrome.  Some users may not see the page fully load if using Internet Explorer.   Click to view this page in a separate window .\n",
+          "source_name": "Longmont Agenda Management Portal",
+          "source_url": "https://longmontcolorado.gov/city-clerk/agenda-management-portal/"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "detector_name": "New Primary Record",
+      "why": "A new official primary document from 'Longmont Public Information' was fetched today (https://longmontcolorado.gov/public-information/).",
+      "confidence": "high",
+      "risk_level": "low",
+      "confirmation_checklist": "[\"Read the source document thoroughly for hidden agendas\",\"Verify matching records from previous weeks\",\"Cross-reference this record with local news announcements\"]",
+      "created_at": "2026-07-01T19:26:15.775704900+00:00",
+      "from_scan_lead_id": null,
+      "story_type": "watch",
+      "disposition": "watch",
+      "novelty_score": 2,
+      "novelty_reason": "Newly fetched official page; verify a current change before treating it as news.",
+      "recurrence_count": null,
+      "recurrence_note": null,
+      "linked_evidence": [
+        {
+          "id": 32,
+          "url": "https://longmontcolorado.gov/public-information/",
+          "excerpt": "Youth Center\nHelping families, children and youth in Longmont grow, succeed and reach their best potential\nNew\nLanguage Preference\nEnglish\nSpanish\nMost of our email newsletters are currently published in English only. We&#039;re recording preferences if we add Spanish translations in the future.\n",
+          "source_name": "Longmont Public Information",
+          "source_url": "https://longmontcolorado.gov/public-information/"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "detector_name": "daily_scan",
+      "why": "Review community signal from Visit Longmont events: Things to Do in Longmont, Colorado - Event Calendar Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting.",
+      "confidence": "high",
+      "risk_level": "high",
+      "confirmation_checklist": "[\"Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-01T19:27:17.703642900+00:00",
+      "from_scan_lead_id": 2,
+      "story_type": "verification",
+      "disposition": "needs_verification",
+      "novelty_score": null,
+      "novelty_reason": "Dark-signal pattern detected from recent evidence.",
+      "recurrence_count": null,
+      "recurrence_note": null,
+      "linked_evidence": [
+        {
+          "id": 50,
+          "url": "https://www.visitlongmont.org/events/",
+          "source_name": "Visit Longmont events",
+          "source_url": "https://www.visitlongmont.org/events/",
+          "excerpt_truncated": "Things to Do in Longmont, Colorado - Event Calendar\n-->\nYour browser is not supported for this experience. We recommend using Chrome, Firefox, Edge, or Safari.\nSkip navigation\nSkip to main content\nExplore\nEvents\nLive Music & Concerts\nAnnual Events & Festivals\nThis Weekend\nSubmit Your Event\nSundance Film Festival\nThings to Do\nFamily Fun\nEvents\nParks\nRocky Mountain National Park\nSt. Vrain State Park\nMcIntosh Lake Nature Area\nGolden Ponds\nDickens Farm Area & Tubing\nUnion Reservoir\nOutdoors\nLakes & Rivers\nBirding & Wildlife\nHiking\nFishing\nGolf\nDisc Golf\nWater Sports\nBiking\nSky Diving\nHot Air Ballooning\nFlightseeing\nArts, Culture & History\nArt Galleries\nArt in Public Places (AIPP)\nMurals\nPerforming Arts & Theatre\nLongmont Museum\nLongmont History\nDowntown Creative District\nShopping\nConsignment, Thrift, & Antiques\nSpas & Wellness\nTours\nNightlife\nDowntown\nSwimming and Splashing\nFood & Drink\nBreweries & More\nRestaurants\nFarms & Farmers Markets\nCoffee & Tea Shops\nPatio Dining\nYour Stay\nHotels & Motels\nHotel Offers\nCampgrounds\nVacation Rentals\nMake a Plan\nGetting Here\nGetting Around\nTravel Information\nWeather & Climate\neNewsletter\nVisitors Guide\nSubmit Your Photos!\nItineraries\nUntitled Pizza Movie\nMoonstruck\nHow to Draw a Bunny\nSugar\nVisitor Center\nExplore\nEvents\nThings to Do\nFood & Drink\nYour Stay\nMake a Plan\nExplore\nEvents\nThings to Do\nFood & Drink\nYour Stay\nMake a Plan\nFree Visitor Guide\nMeetings & Groups\nMeeting Spaces\nWeddings\nVendors\nIdeas & Inspiration\nHotels\nDining\nRequest Info\nMedia\nLatest News\nFeatured in the News\nIn the News Archive - 2020 - 2022\nIn the News Archive - 2023\nIn the News - 2018 - 2019\nMedia Contact Us\nMedia Contact Thank You\nPhoto Terms & Conditions\nResearch & Reports\nPartners\nBusiness Toolkit\nSubmit Event\nRequest an Account\nSign Up for Updates\nExtranet Lo",
+          "excerpt_len": 1998
+        },
+        {
+          "id": 51,
+          "url": "https://www.visitlongmont.org/events/",
+          "excerpt": "Events\nNo matter when you&rsquo;re visiting Longmont, there&rsquo;s bound to be an exciting event happening.\nWith long-standing, cherished yearly traditions, live music, art exhibits, festivals, fairs, and so much more, there is always something happening in Longmont. Check out our&#xA0;Events Calendar below to plan your Longmont experience. Need a place to stay after the event?&#xA0;  Click here to learn more!\nSubmit Your Longmont Event Here!\nSponsored\nSponsored\nSponsored\nSponsored\nSponsored\nSponsored\nSponsored\nOrder a Visitors Guide\nSign up here to receive a physical copy of our Visitor's Guide.\nRequest Guide\nSubscribe\nKeep up-to-date with Longmont area happenings, news, events, itineraries, things to do and more.\nSign Up\n#VisitLongmont\nExplore the Possibilities\nFollow Us:\nSign up for Newsletter\nStay in the loop on Longmont-area events & attractions!\nSubscribe\nAbout\nPartners\nPartner Login\nSubmit an Event\nContact Us\nSitemap\nReport an Issue\nNotice at collection\nYour Privacy Choices\n-->\nAccessibility Statement\nReport an Issue\nTerms and Conditions\nCookies are used for measurement, ads and optimization. By continuing to use our site you agree to our&nbsp;privacy policy.\nAccept\n",
+          "source_name": "Visit Longmont events",
+          "source_url": "https://www.visitlongmont.org/events/"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "detector_name": "daily_scan",
+      "why": "Youth Center Summer Programs at Longmont Youth Center: Summer programs such as Make it Better, First Thursdays Book Group Series and Tardigrades (Water Bears) are being offered by various departments including Human Services Department with a potential impact on the local youth. Editor context: Youth services have direct implications for families in Longmont. These events can be an avenue to attract new visitors and increase program participation. Suggested treatment: brief. Suggested next step: Confirm the specific time slots, number of participants allowed per session, any fee required for registration or attendance.",
+      "confidence": "high",
+      "risk_level": "high",
+      "confirmation_checklist": "[\"Confirm the specific time slots, number of participants allowed per session, any fee required for registration or attendance.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-01T19:27:35.710384300+00:00",
+      "from_scan_lead_id": 3,
+      "story_type": "brief",
+      "disposition": "review",
+      "novelty_score": null,
+      "novelty_reason": null,
+      "recurrence_count": null,
+      "recurrence_note": null,
+      "linked_evidence": [
+        {
+          "id": 66,
+          "url": "https://longmontcolorado.gov/events/",
+          "source_name": "Longmont city events",
+          "source_url": "https://longmontcolorado.gov/events/",
+          "excerpt_truncated": "Wednesday, July 1 · 6 pm  -  7 pm\nLongmont Public Library\n355 Emery St., Longmont, CO, United States\nA free gaming club for 3rd-5th graders! Play on the Library's Nintendo Switch or bring your own Switch!\nThu\n2\nYoga Storytime\nThursday, July 2 · 10 am  -  10:30 am\nYoga Storytime Series\nLongmont Public Library\n355 Emery St., Longmont, CO, United States\nEnjoy stories, movement, breathing, and mindfulness while gaining early literacy skills.\nThu\n2\nSpanish-English Conversation Group\nThursday, July 2 · 1 pm  -  2 pm\nSpanish-English Conversation Group Series\nLongmont Public Library\n355 Emery St., Longmont, CO, United States\nGet to know other language learners while practicing conversations in Spanish or English.\nThu\n2\nNavigators (Summer Program)\nThursday, July 2 · 1 pm  -  5:30 pm\nNavigators (Summer Program) Series\nLongmont Youth Center\n1050 Lashley St., Longmont, CO, United States\nThu\n2\nGlam Group (Summer Program)\nThursday, July 2 · 1 pm  -  5:30 pm\nGlam Group (Summer Program) Series\nLongmont Youth Center\n1050 Lashley St., Longmont, CO, United States\nThu\n2\nMake it Better (Summer Program)\nThursday, July 2 · 1 pm  -  5:30 pm\nMake it Better (Summer Program) Series\nLongmont Youth Center\n1050 Lashley St., Longmont, CO, United States\nThu\n2\nYouth Original Recording Studio (Summer Program)\nThursday, July 2 · 1 pm  -  5:30 pm\nYouth Original Recording Studio (Summer Program) Series\nLongmont Youth Center\n1050 Lashley St., Longmont, CO, United States\nThu\n2\nFirst Thursdays Book Group\nThursday, July 2 · 2 pm  -  3 pm\nFirst Thursdays Book Group Series\nLongmont Public Library\n355 Emery St., Longmont, CO, United States\nThu\n2\nSummer Science Series: Tardigrades (Water Bears)\nThursday, July 2 · 4 pm  -  5 pm\nSummer Science Series Series\nLongmont Public Library\n355 Emery St., Longmont, CO, United",
+          "excerpt_len": 1959
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "detector_name": "daily_scan",
+      "why": "Downtown Longmont Summer Concert Series: The Downtown Longmont Creative District is hosting a summer concert series featuring various artists from July 30 to August 2. Editor context: An upcoming cultural event that could influence community engagement and tourism in the downtown area of Townsville, CO. Suggested treatment: verification. Newsworthiness: 10/20 (immediacy 3, impact 2, conflict 1, novelty 4). Why now: A new addition to the cultural events calendar of Downtown Longmont, CO., featuring a series of summer concerts. Suggested next step: Monitor for any significant lineup announcements or notable performers that could increase community interest and attendance.",
+      "confidence": "med",
+      "risk_level": "med",
+      "confirmation_checklist": "[\"Monitor for any significant lineup announcements or notable performers that could increase community interest and attendance.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-01T19:27:49.010902+00:00",
+      "from_scan_lead_id": 7,
+      "story_type": "verification",
+      "disposition": "needs_verification",
+      "novelty_score": 4,
+      "novelty_reason": "A new addition to the cultural events calendar of Downtown Longmont, CO., featuring a series of summer concerts.",
+      "recurrence_count": null,
+      "recurrence_note": null,
+      "linked_evidence": [
+        {
+          "id": 60,
+          "url": "https://www.downtownlongmont.com/events/calendar",
+          "source_name": "Downtown Longmont events",
+          "source_url": "https://www.downtownlongmont.com/events/calendar",
+          "excerpt_truncated": "Tue \t\t 21 \t\t Jul\nCreative District\nThrough the Rift Book Club - with Marin\n4pm - 5:30pm\nComposition Shop\nCreative District Event\nTue \t\t 21 \t\t Jul\nCreative District\nOpen Mic @ Bricks On Main- Every Tuesday\n5:30pm - 8:30pm\nBricks on Main\nCreative District Event\nTue \t\t 21 \t\t Jul\nCreative District\nPen and Power: A Bi-Weekly Queer and Trans Writing Workshop with Aimee Herman\n6:45pm - 8:15pm\nButterscotch Studios\nCreative District Event\nTue \t\t 21 \t\t Jul\nEvents\nMidweek Brunch Break!\nTangerine\nWed \t\t 22 \t\t Jul\nEvents\nSummer Lunch Bunch\n12:30am - 1:30am\nHappy Day Plants\nWed \t\t 22 \t\t Jul\nEvents\nGame Night!\n5pm - 10pm\nAbbott & Wallace Distilling\nWed \t\t 22 \t\t Jul\nCreative District\nBlues Jam @ Bricks on Main\n6pm - 9pm\nBricks on Main\nCreative District Event\nWed \t\t 22 \t\t Jul\nEvents\nQueer Grievers Co. (grieving and chronic illness)\n6:30pm - 7:30pm\nButterscotch Studios\nWed \t\t 22 \t\t Jul\nEvents\nBellinis and Bites!\nTangerine\nThu \t\t 23 \t\t Jul\nEvents\nDinner & Dice\n11am - 8pm\nThe Passenger\nThu \t\t 23 \t\t Jul\nCreative District\nHalf Price Bottle Night & Live Music\n3pm - 9pm\nKuper Wine Bar\nCreative District Event\nThu \t\t 23 \t\t Jul\nCreative District\nCallahan House Art in the Garden - July 2026\n5:30pm - 8pm\nCreative District Event\nThu \t\t 23 \t\t Jul\nEvents\nMusic at Bricks on Main \"Jordan Bass\"\n6pm - 8pm\nBricks on Main\nThu \t\t 23 \t\t Jul\nEvents\nGeeks Who Drink Trivia Night!\n6:30pm\nAbbott & Wallace Distilling\nThu \t\t 23 \t\t Jul\nCreative District\nSummer Concert Series: Blessing Bled Chimanga\n7pm - 8:30pm\nLongmont Museum\nCreative District Event\nThu \t\t 23 \t\t Jul\nEvents\nBubbly Flight Friday!\nTangerine\nFri \t\t 24 \t\t Jul\nCreative District\nPaint Me a Story - Summer\n10:15am - 11am\nCrackpots Pottery Studio\nCreative District Event\nFri \t\t 24 \t\t Jul\nCreative District\nPaint Me a Story\n10:15am - 11am\nCrackpots Pottery Studi",
+          "excerpt_len": 1994
+        },
+        {
+          "id": 62,
+          "url": "https://www.downtownlongmont.com/events/calendar",
+          "source_name": "Downtown Longmont events",
+          "source_url": "https://www.downtownlongmont.com/events/calendar",
+          "excerpt_truncated": "Creative District\nMusic at Bricks on Main \"Blue Tongue\"\n6pm - 9pm\nBricks on Main\nCreative District Event\nThu \t\t 30 \t\t Jul\nEvents\nGeeks Who Drink Trivia Night!\n6:30pm\nAbbott & Wallace Distilling\nThu \t\t 30 \t\t Jul\nCreative District\nSummer Concert Series: Road Pony\n7pm - 8:30pm\nLongmont Museum\nCreative District Event\nThu \t\t 30 \t\t Jul\nEvents\nBubbly Flight Friday!\nTangerine\nFri \t\t 31 \t\t Jul\nCreative District\nPaint Me a Story - Summer\n10:15am - 11am\nCrackpots Pottery Studio\nCreative District Event\nFri \t\t 31 \t\t Jul\nCreative District\nPaint Me a Story\n10:15am - 11am\nCrackpots Pottery Studio\nCreative District Event\nFri \t\t 31 \t\t Jul\nEvents\nKids’ Story Time\n10:30am - 11am\nHappy Day Plants\nFri \t\t 31 \t\t Jul\nCreative District\nMusic at Bricks on Main \"Thunder Roads\"\n6pm - 9pm\nBricks on Main\nCreative District Event\nFri \t\t 31 \t\t Jul\nEvents\nBoulder County Fair Parade\n10am\nSat \t\t 1 \t\t Aug\nEvents\nStationery Store Day Celebration at Wolf & Wren\n10am - 6pm\nWolf & Wren\nSat \t\t 1 \t\t Aug\nEvents\nTeacher Appreciation Day\n3pm - 10pm\nKuper Wine Bar\nSat \t\t 1 \t\t Aug\nCreative District\nMusic at Bricks on Main \"Steel Monkey\"\n6pm - 9pm\nBricks on Main\nCreative District Event\nSat \t\t 1 \t\t Aug\nCreative District\nLunch Line Dancing\n1pm - 2pm\nBricks on Main\nCreative District Event\nSun \t\t 2 \t\t Aug\nEvents\nWeekly Game Night at Valor Peak\n2pm - 6pm\nValor Peak Distillery\nSun \t\t 2 \t\t Aug\nEvents\nSquare State Book Club with Marilyn\n4pm - 5pm\nComposition Shop\nSun \t\t 2 \t\t Aug\nCreative District\nSilly Gooses: Mixed Comedy Mic\n6pm\nPelo's Deli and Provisions\nCreative District Event\nSun \t\t 2 \t\t Aug\nEvents\nMain Street Bubbles!\nTangerine\nMon \t\t 3 \t\t Aug\nCreative District\nSummer Creativity Camp 2026\n9am - 11am\nCrackpots Pottery Studio\nCreative District Event\nMon \t\t 3 \t\t Aug\nDiscover More in Downtown Longmont\nPuppies & Pints\nPerk Up",
+          "excerpt_len": 1978
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "detector_name": "daily_scan",
+      "why": "Longmont Museum's Summer Creative Events: The Longmont Museum will host various creative events, including 'Paint Me a Story' summer camps and mixed comedy mics. Editor context: An upcoming series of educational programs at the museum that may affect community cultural engagement in Townsville, CO. Suggested treatment: verification. Why now: A scheduled addition to the Longmont Museum's calendar, providing creative activities during Summer 2026. Suggested next step: Investigate any new workshop offerings or artist performances planned for this summer. Confirm dates and times.",
+      "confidence": "med",
+      "risk_level": "med",
+      "confirmation_checklist": "[\"Investigate any new workshop offerings or artist performances planned for this summer. Confirm dates and times.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-01T19:27:49.014715100+00:00",
+      "from_scan_lead_id": 8,
+      "story_type": "verification",
+      "disposition": "needs_verification",
+      "novelty_score": null,
+      "novelty_reason": "A scheduled addition to the Longmont Museum's calendar, providing creative activities during Summer 2026.",
+      "recurrence_count": null,
+      "recurrence_note": null,
+      "linked_evidence": [
+        {
+          "id": 57,
+          "url": "https://www.downtownlongmont.com/events/calendar",
+          "source_name": "Downtown Longmont events",
+          "source_url": "https://www.downtownlongmont.com/events/calendar",
+          "excerpt_truncated": "Creative District Event\nSun \t\t 12 \t\t Jul\nCreative District\nSpecial Event: Watercolor Basics Workshop\n2pm - 5pm\nThe Canvas Local Art Bar\nCreative District Event\nSun \t\t 12 \t\t Jul\nCreative District\nMusic at Bricks on Main \"Asteria Jazz Collective\"\n6pm - 9pm\nBricks on Main\nCreative District Event\nSun \t\t 12 \t\t Jul\nCreative District\nSilly Gooses: Mixed Comedy Mic\n6pm\nPelo's Deli and Provisions\nCreative District Event\nSun \t\t 12 \t\t Jul\nCreative District\nSunday Mandala Painting- Pride Art Sampler\n9pm - 12pm\nFirehouse Art Center\nCreative District Event\nSun \t\t 12 \t\t Jul\nEvents\nMain Street Bubbles!\nTangerine\nMon \t\t 13 \t\t Jul\nCreative District\nSummer Creativity Camp 2026\n9am - 11am\nCrackpots Pottery Studio\nCreative District Event\nMon \t\t 13 \t\t Jul\nEvents\nBook Club, Naturally with Abby\n4pm - 5:30pm\nComposition Shop\nMon \t\t 13 \t\t Jul\nCreative District\nLearn to Crochet\n6pm - 8pm\nFirehouse Art Center\nCreative District Event\nMon \t\t 13 \t\t Jul\nCreative District\nMonday Night Life Drawing at the Firehouse\n6pm - 8pm\nFirehouse Art Center\nCreative District Event\nMon \t\t 13 \t\t Jul\nCreative District\nKaraoke with Nic\n7pm - 10pm\nCreative District Event\nMon \t\t 13 \t\t Jul\nEvents\nBloody Tuesday!\nTangerine\nTue \t\t 14 \t\t Jul\nEvents\nKids’ Film Series: “Paddington 2” (2017, PG)\n10am - 12pm\nLongmont Museum\nTue \t\t 14 \t\t Jul\nCreative District\nPaint Me a Story - Summer\n10:15am - 11am\nCrackpots Pottery Studio\nCreative District Event\nTue \t\t 14 \t\t Jul\nEvents\nHappy Day Kids’ Camp\n10:30am - 1pm\nHappy Day Plants\nJul  14  \t\t &mdash; To &mdash; \t\t Jul  15\nCreative District\nOpen Mic @ Bricks On Main- Every Tuesday\n5:30pm - 8:30pm\nBricks on Main\nCreative District Event\nTue \t\t 14 \t\t Jul\nEvents\nMidweek Brunch Break!\nTangerine\nWed \t\t 15 \t\t Jul\nEvents\nSummer Lunch Bunch\n12:30am - 1:30am\nHappy Day Plants\nWed \t\t 15 \t\t Jul\nEvents\n",
+          "excerpt_len": 1980
+        },
+        {
+          "id": 59,
+          "url": "https://www.downtownlongmont.com/events/calendar",
+          "source_name": "Downtown Longmont events",
+          "source_url": "https://www.downtownlongmont.com/events/calendar",
+          "excerpt_truncated": "July Happy Day Hangs\n5:30pm - 7pm\nHappy Day Plants\nSat \t\t 18 \t\t Jul\nCreative District\nMusic at Bricks on Main \"Jay Stott Album Release!\"\n6pm - 9pm\nBricks on Main\nCreative District Event\nSat \t\t 18 \t\t Jul\nEvents\nOpening Reception- Kelly Leslie + Craig Cully, Whitney Sage\n6pm - 8am\nFirehouse Art Center\nSat \t\t 18 \t\t Jul\nEvents\nHaunted History of Longmont\n7pm - 9pm\nSat \t\t 18 \t\t Jul\nCreative District\nOpen Sew Studio with Fashion Rebel-ution\n10am - 12pm\nFirehouse Art Center\nCreative District Event\nSun \t\t 19 \t\t Jul\nEvents\nBooks & Bottles - July Event\n12pm - 2pm\nKuper Wine Bar\nSun \t\t 19 \t\t Jul\nCreative District\nLunch Line Dancing\n1pm - 2pm\nBricks on Main\nCreative District Event\nSun \t\t 19 \t\t Jul\nCreative District\nThe Woodshed: A monthly bluegrass guitar workshop with Bryan Dubrow\n1pm - 2pm\nButterscotch Studios\nCreative District Event\nSun \t\t 19 \t\t Jul\nEvents\nWeekly Game Night at Valor Peak\n2pm - 6pm\nValor Peak Distillery\nSun \t\t 19 \t\t Jul\nCreative District\nSilly Gooses: Mixed Comedy Mic\n6pm\nPelo's Deli and Provisions\nCreative District Event\nSun \t\t 19 \t\t Jul\nCreative District\nMusic at Bricks on Main \"Sonador\"\n6pm - 8pm\nBricks on Main\nCreative District Event\nSun \t\t 19 \t\t Jul\nEvents\nMain Street Bubbles!\nTangerine\nMon \t\t 20 \t\t Jul\nCreative District\nSummer Creativity Camp 2026\n9am - 11am\nCrackpots Pottery Studio\nCreative District Event\nMon \t\t 20 \t\t Jul\nCreative District\nMonday Night Life Drawing at the Firehouse\n6pm - 8pm\nFirehouse Art Center\nCreative District Event\nMon \t\t 20 \t\t Jul\nEvents\nWomen & Wine - featuring Blue Sky Bridge\n6pm - 8pm\nKuper Wine Bar\nMon \t\t 20 \t\t Jul\nEvents\nJudgement of Paris 50th Anniversary\n6pm - 8pm\nKuper Wine Bar\nMon \t\t 20 \t\t Jul\nCreative District\nIrish Jam\n6:30pm\nButterscotch Studios\nCreative District Event\nMon \t\t 20 \t\t Jul\nCreative District\nKaraoke with Nic\n7p",
+          "excerpt_len": 1999
+        },
+        {
+          "id": 62,
+          "url": "https://www.downtownlongmont.com/events/calendar",
+          "source_name": "Downtown Longmont events",
+          "source_url": "https://www.downtownlongmont.com/events/calendar",
+          "excerpt_truncated": "Creative District\nMusic at Bricks on Main \"Blue Tongue\"\n6pm - 9pm\nBricks on Main\nCreative District Event\nThu \t\t 30 \t\t Jul\nEvents\nGeeks Who Drink Trivia Night!\n6:30pm\nAbbott & Wallace Distilling\nThu \t\t 30 \t\t Jul\nCreative District\nSummer Concert Series: Road Pony\n7pm - 8:30pm\nLongmont Museum\nCreative District Event\nThu \t\t 30 \t\t Jul\nEvents\nBubbly Flight Friday!\nTangerine\nFri \t\t 31 \t\t Jul\nCreative District\nPaint Me a Story - Summer\n10:15am - 11am\nCrackpots Pottery Studio\nCreative District Event\nFri \t\t 31 \t\t Jul\nCreative District\nPaint Me a Story\n10:15am - 11am\nCrackpots Pottery Studio\nCreative District Event\nFri \t\t 31 \t\t Jul\nEvents\nKids’ Story Time\n10:30am - 11am\nHappy Day Plants\nFri \t\t 31 \t\t Jul\nCreative District\nMusic at Bricks on Main \"Thunder Roads\"\n6pm - 9pm\nBricks on Main\nCreative District Event\nFri \t\t 31 \t\t Jul\nEvents\nBoulder County Fair Parade\n10am\nSat \t\t 1 \t\t Aug\nEvents\nStationery Store Day Celebration at Wolf & Wren\n10am - 6pm\nWolf & Wren\nSat \t\t 1 \t\t Aug\nEvents\nTeacher Appreciation Day\n3pm - 10pm\nKuper Wine Bar\nSat \t\t 1 \t\t Aug\nCreative District\nMusic at Bricks on Main \"Steel Monkey\"\n6pm - 9pm\nBricks on Main\nCreative District Event\nSat \t\t 1 \t\t Aug\nCreative District\nLunch Line Dancing\n1pm - 2pm\nBricks on Main\nCreative District Event\nSun \t\t 2 \t\t Aug\nEvents\nWeekly Game Night at Valor Peak\n2pm - 6pm\nValor Peak Distillery\nSun \t\t 2 \t\t Aug\nEvents\nSquare State Book Club with Marilyn\n4pm - 5pm\nComposition Shop\nSun \t\t 2 \t\t Aug\nCreative District\nSilly Gooses: Mixed Comedy Mic\n6pm\nPelo's Deli and Provisions\nCreative District Event\nSun \t\t 2 \t\t Aug\nEvents\nMain Street Bubbles!\nTangerine\nMon \t\t 3 \t\t Aug\nCreative District\nSummer Creativity Camp 2026\n9am - 11am\nCrackpots Pottery Studio\nCreative District Event\nMon \t\t 3 \t\t Aug\nDiscover More in Downtown Longmont\nPuppies & Pints\nPerk Up",
+          "excerpt_len": 1978
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "detector_name": "daily_scan",
+      "why": "Council Vote on Roof Contract for Public Library: The council agenda includes an upcoming vote to approve a contract with Silver City Roofing and Construction Co., Inc. This approval affects city spending, construction timeline of the public library, which is crucial as it provides services affecting thousands in Longmont. Editor context: Important decision impacting local government budget allocation for infrastructure projects; high civic interest due to direct community service impact. Suggested next step: Review the agenda packet, confirm vendor details and contract amount, verify vote date on council meeting notes before drafting a story.",
+      "confidence": "high",
+      "risk_level": "high",
+      "confirmation_checklist": "[\"Review the agenda packet, confirm vendor details and contract amount, verify vote date on council meeting notes before drafting a story.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-01T19:27:56.696646200+00:00",
+      "from_scan_lead_id": 9,
+      "story_type": null,
+      "disposition": "needs_verification",
+      "novelty_score": null,
+      "novelty_reason": null,
+      "recurrence_count": null,
+      "recurrence_note": null,
+      "linked_evidence": []
+    },
+    {
+      "id": 27,
+      "detector_name": "daily_scan",
+      "why": "Longmont Arts Week Festival: Annual events featuring art exhibits, live music performances throughout downtown Longmont. Editor context: An annual cultural event with potential high attendance and significant impact on local businesses. Suggested treatment: brief. Newsworthiness: 12/20 (immediacy 2, impact 4, conflict 1, novelty 5). Why now: Longmont Arts Week Festival with a start date on August 1st through September 30th is scheduled for next year. Suggested next step: Details about this year's festival, including dates of events, list artists or bands performing to check if any are known. What would make this publishable: Details about the festival's events and artists/ bands performing will make this lead publishable.",
+      "confidence": "med",
+      "risk_level": "med",
+      "confirmation_checklist": "[\"Details about this year's festival, including dates of events, list artists or bands performing to check if any are known. What would make this publishable: Details about the festival's events and artists/ bands performing will make this lead publishable.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-01T19:28:30.089510100+00:00",
+      "from_scan_lead_id": 15,
+      "story_type": "brief",
+      "disposition": "ready_to_draft",
+      "novelty_score": 5,
+      "novelty_reason": "Longmont Arts Week Festival with a start date on August 1st through September 30th is scheduled for next year.",
+      "recurrence_count": null,
+      "recurrence_note": null,
+      "linked_evidence": [
+        {
+          "id": 50,
+          "url": "https://www.visitlongmont.org/events/",
+          "source_name": "Visit Longmont events",
+          "source_url": "https://www.visitlongmont.org/events/",
+          "excerpt_truncated": "Things to Do in Longmont, Colorado - Event Calendar\n-->\nYour browser is not supported for this experience. We recommend using Chrome, Firefox, Edge, or Safari.\nSkip navigation\nSkip to main content\nExplore\nEvents\nLive Music & Concerts\nAnnual Events & Festivals\nThis Weekend\nSubmit Your Event\nSundance Film Festival\nThings to Do\nFamily Fun\nEvents\nParks\nRocky Mountain National Park\nSt. Vrain State Park\nMcIntosh Lake Nature Area\nGolden Ponds\nDickens Farm Area & Tubing\nUnion Reservoir\nOutdoors\nLakes & Rivers\nBirding & Wildlife\nHiking\nFishing\nGolf\nDisc Golf\nWater Sports\nBiking\nSky Diving\nHot Air Ballooning\nFlightseeing\nArts, Culture & History\nArt Galleries\nArt in Public Places (AIPP)\nMurals\nPerforming Arts & Theatre\nLongmont Museum\nLongmont History\nDowntown Creative District\nShopping\nConsignment, Thrift, & Antiques\nSpas & Wellness\nTours\nNightlife\nDowntown\nSwimming and Splashing\nFood & Drink\nBreweries & More\nRestaurants\nFarms & Farmers Markets\nCoffee & Tea Shops\nPatio Dining\nYour Stay\nHotels & Motels\nHotel Offers\nCampgrounds\nVacation Rentals\nMake a Plan\nGetting Here\nGetting Around\nTravel Information\nWeather & Climate\neNewsletter\nVisitors Guide\nSubmit Your Photos!\nItineraries\nUntitled Pizza Movie\nMoonstruck\nHow to Draw a Bunny\nSugar\nVisitor Center\nExplore\nEvents\nThings to Do\nFood & Drink\nYour Stay\nMake a Plan\nExplore\nEvents\nThings to Do\nFood & Drink\nYour Stay\nMake a Plan\nFree Visitor Guide\nMeetings & Groups\nMeeting Spaces\nWeddings\nVendors\nIdeas & Inspiration\nHotels\nDining\nRequest Info\nMedia\nLatest News\nFeatured in the News\nIn the News Archive - 2020 - 2022\nIn the News Archive - 2023\nIn the News - 2018 - 2019\nMedia Contact Us\nMedia Contact Thank You\nPhoto Terms & Conditions\nResearch & Reports\nPartners\nBusiness Toolkit\nSubmit Event\nRequest an Account\nSign Up for Updates\nExtranet Lo",
+          "excerpt_len": 1998
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "detector_name": "daily_scan",
+      "why": "Review community signal from Visit Longmont events: Events Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Beat memory: structured match 'topic:community-event:public-event:visit-event-review-community-signal-from-colorado-calendar' for topic 'Review community signal from Visit Longmont events' was first seen 2026-07-01T19:27:17.703049600+00:00, last seen 2026-07-01T19:27:17.703049600+00:00, and has appeared 1 previous time(s). Treat this as recurring/background unless the source shows a new vote, deadline, dollar amount, filing, outage, meeting item, or public impact. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Compare against beat memory before drafting; write a story only if there is a new reportable fact.",
+      "confidence": "low",
+      "risk_level": "low",
+      "confirmation_checklist": "[\"Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Compare against beat memory before drafting; write a story only if there is a new reportable fact.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-01T19:29:06.864528400+00:00",
+      "from_scan_lead_id": 17,
+      "story_type": "background",
+      "disposition": "background",
+      "novelty_score": null,
+      "novelty_reason": "Beat memory found this topic before, and this scan did not identify a concrete new reportable fact.",
+      "recurrence_count": 1,
+      "recurrence_note": "Similar topic 'Review community signal from Visit Longmont events' was first seen 2026-07-01T19:27:17.703049600+00:00, last seen 2026-07-01T19:27:17.703049600+00:00, and has appeared 1 previous time(s). Match: topic:community-event:public-event:visit-event-review-community-signal-from-colorado-calendar.",
+      "linked_evidence": []
+    },
+    {
+      "id": 31,
+      "detector_name": "daily_scan",
+      "why": "City of Longmont: Summer Reading Challenge Ends July 31: Longmont Public Library's summer reading challenge runs from May 21 to August 15, with prizes available for completed boards and cards. Editor context: A public event that can influence community participation in library programs. Suggested treatment: brief. Suggested next step: Confirm details and check for any prize announcements or registration requirements.",
+      "confidence": "med",
+      "risk_level": "med",
+      "confirmation_checklist": "[\"Confirm details and check for any prize announcements or registration requirements.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-01T19:29:28.368755800+00:00",
+      "from_scan_lead_id": 19,
+      "story_type": "brief",
+      "disposition": "review",
+      "novelty_score": 1,
+      "novelty_reason": null,
+      "recurrence_count": null,
+      "recurrence_note": null,
+      "linked_evidence": [
+        {
+          "id": 65,
+          "url": "https://longmontcolorado.gov/events/",
+          "source_name": "Longmont city events",
+          "source_url": "https://longmontcolorado.gov/events/",
+          "excerpt_truncated": "Discover all the departments that make up the City of Longmont&#8217;s government. Get detailed information on their roles, responsibilities, and how they serve the community.\nAll Departments\nGovernment\nHome\nEvents\nEvents Calendar\nCity of Longmont events\n20 events found.\nEvents      City of Longmont events\nEvents Search and Views Navigation\nEnter Keyword. Search for Events by Keyword.\nFind Events\nHide filters\nEvent Views Navigation\nList\nList\nMonth\nSummary\nToday\nNow\nNow\n-\n7/4/2026\nSaturday, Jul. 4\nSelect date.\nFilters\nChanging any of the form inputs will cause the list of events to refresh with the filtered results.\nDone\nClear\nEvent Category  :\nOpen filter\nClose filter\nEvent Category\nTags  :\nOpen filter\nClose filter\nTags\nDay  :\nOpen filter\nClose filter\nDay\nSunday\nMonday\nTuesday\nWednesday\nThursday\nFriday\nSaturday\nTime  :\nOpen filter\nClose filter\nTime\nAll Day\nMorning\nAfternoon\nEvening\nNight\nJuly 2026\nWed\n1\n2026 Summer Reading Challenge\nThursday, May 21 · 9 am  -  Friday, July 31 · 5 pm\nLongmont Public Library\n355 Emery St., Longmont, CO, United States\nSummer Reading runs from May 21 - through July 31. Be sure to hand in your boards and cards by July 31 for prizes (while supplies last.)\nWed\n1\nFree Zone Day (Summer Program)\nWednesday, July 1 · 1 pm  -  5:30 pm\nFree Zone Day (Summer Program) Series\nLongmont Youth Center\n1050 Lashley St., Longmont, CO, United States\nWed\n1\nKids Club\nWednesday, July 1 · 4 pm  -  4:45 pm\nKids Club Series\nLongmont Public Library\n355 Emery St., Longmont, CO, United States\nBest for 1st-2nd graders. Practice working with peers, explore your creativity, and exercise critical thinking skills.\nWed\n1\nMis Pininos (My First Steps) at Collyer Park\nWednesday, July 1 · 4 pm  -  5 pm\nMis Pininos (My First Steps) Series\nCollyer Park\n600 Collyer Street, Longmont",
+          "excerpt_len": 1971
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "detector_name": "daily_scan",
+      "why": "Downtown Longmont: Annual Events Calendar Available: An updated events calendar for Downtown Longmont is available, showcasing local cultural and recreational activities. Editor context: Community event listings that may interest residents or visitors to the area. Suggested treatment: watch. Suggested next step: Browse for events of personal relevance.",
+      "confidence": "low",
+      "risk_level": "low",
+      "confirmation_checklist": "[\"Browse for events of personal relevance.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-01T19:29:28.373288+00:00",
+      "from_scan_lead_id": 20,
+      "story_type": "watch",
+      "disposition": "watch",
+      "novelty_score": 2,
+      "novelty_reason": null,
+      "recurrence_count": null,
+      "recurrence_note": null,
+      "linked_evidence": []
+    }
+  ],
+  "summer_hits": [
+    {
+      "id": 31,
+      "detector_name": "daily_scan",
+      "why": "City of Longmont: Summer Reading Challenge Ends July 31: Longmont Public Library's summer reading challenge runs from May 21 to August 15, with prizes available for completed boards and cards. Editor context: A public event that can influence community participation in library programs. Suggested treatment: brief. Suggested next step: Confirm details and check for any prize announcements or registration requirements.",
+      "confidence": "med",
+      "risk_level": "med",
+      "confirmation_checklist": "[\"Confirm details and check for any prize announcements or registration requirements.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-01T19:29:28.368755800+00:00",
+      "from_scan_lead_id": 19,
+      "story_type": "brief",
+      "disposition": "review",
+      "novelty_score": 1,
+      "novelty_reason": null,
+      "recurrence_count": null,
+      "recurrence_note": null,
+      "linked_evidence": [
+        {
+          "id": 65,
+          "url": "https://longmontcolorado.gov/events/",
+          "source_name": "Longmont city events",
+          "source_url": "https://longmontcolorado.gov/events/",
+          "excerpt_truncated": "Discover all the departments that make up the City of Longmont&#8217;s government. Get detailed information on their roles, responsibilities, and how they serve the community.\nAll Departments\nGovernment\nHome\nEvents\nEvents Calendar\nCity of Longmont events\n20 events found.\nEvents      City of Longmont events\nEvents Search and Views Navigation\nEnter Keyword. Search for Events by Keyword.\nFind Events\nHide filters\nEvent Views Navigation\nList\nList\nMonth\nSummary\nToday\nNow\nNow\n-\n7/4/2026\nSaturday, Jul. 4\nSelect date.\nFilters\nChanging any of the form inputs will cause the list of events to refresh with the filtered results.\nDone\nClear\nEvent Category  :\nOpen filter\nClose filter\nEvent Category\nTags  :\nOpen filter\nClose filter\nTags\nDay  :\nOpen filter\nClose filter\nDay\nSunday\nMonday\nTuesday\nWednesday\nThursday\nFriday\nSaturday\nTime  :\nOpen filter\nClose filter\nTime\nAll Day\nMorning\nAfternoon\nEvening\nNight\nJuly 2026\nWed\n1\n2026 Summer Reading Challenge\nThursday, May 21 · 9 am  -  Friday, July 31 · 5 pm\nLongmont Public Library\n355 Emery St., Longmont, CO, United States\nSummer Reading runs from May 21 - through July 31. Be sure to hand in your boards and cards by July 31 for prizes (while supplies last.)\nWed\n1\nFree Zone Day (Summer Program)\nWednesday, July 1 · 1 pm  -  5:30 pm\nFree Zone Day (Summer Program) Series\nLongmont Youth Center\n1050 Lashley St., Longmont, CO, United States\nWed\n1\nKids Club\nWednesday, July 1 · 4 pm  -  4:45 pm\nKids Club Series\nLongmont Public Library\n355 Emery St., Longmont, CO, United States\nBest for 1st-2nd graders. Practice working with peers, explore your creativity, and exercise critical thinking skills.\nWed\n1\nMis Pininos (My First Steps) at Collyer Park\nWednesday, July 1 · 4 pm  -  5 pm\nMis Pininos (My First Steps) Series\nCollyer Park\n600 Collyer Street, Longmont",
+          "excerpt_len": 1971
+        }
+      ]
+    }
+  ],
+  "daily_scan_runs": [
+    {
+      "id": 1,
+      "started_at": "2026-07-01T19:27:17.608676800+00:00",
+      "completed_at": "2026-07-01T19:28:30.092743+00:00",
+      "run_status": "completed"
+    },
+    {
+      "id": 2,
+      "started_at": "2026-07-01T19:29:06.749553200+00:00",
+      "completed_at": null,
+      "run_status": "in_progress"
+    }
+  ],
+  "publish_runs": [],
+  "published_posts": []
+}
