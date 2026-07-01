@@ -7,8 +7,10 @@
 # vulnerabilities are not lost in noise. Re-review this list whenever Tauri,
 # pdf-extract, or lopdf is upgraded.
 #
-# Each entry is a RUSTSEC advisory id. To see why an advisory still applies,
-# run `cargo audit` with this file removed.
+# Each entry is a RUSTSEC advisory id. Machine-readable waiver metadata lives in
+# `../docs/security-advisory-waivers.json` and is validated by
+# `scripts/dependency-audit.ps1`. To see why an advisory still applies, run
+# `cargo audit` with this file removed.
 [advisories]
 ignore = [
     # GTK3 bindings - unmaintained; transitive via tauri on Linux only.

@@ -82,6 +82,9 @@ try {
 
   $modelBakeoffOk = $false
   $dependencyAuditOk = $false
+  $dependencyAuditIgnoredAdvisories = @()
+  $dependencyAuditWaivers = @()
+  $dependencyAuditWaiverPath = $null
   $installerSmokeOk = $false
   if ($resolvedModelBakeoffReceipt) {
     $modelBakeoff = Get-Content -Raw -LiteralPath $resolvedModelBakeoffReceipt.Path | ConvertFrom-Json
@@ -109,6 +112,33 @@ try {
     }
     if ($dependencyAudit.cargo_audit_available -ne $true) {
       throw "Dependency audit receipt did not run cargo-audit. Install cargo-audit or provide a clean receipt that includes Rust advisory checking."
+    }
+    $dependencyAuditIgnoredAdvisories = @($dependencyAudit.cargo_audit_ignored_advisories | Where-Object { $_ } | ForEach-Object { [string]$_ })
+    $dependencyAuditWaivers = @($dependencyAudit.cargo_audit_waivers | Where-Object { $_ })
+    $dependencyAuditWaiverPath = if ($dependencyAudit.cargo_audit_waiver_path) { [string]$dependencyAudit.cargo_audit_waiver_path } else { $null }
+    if ($dependencyAuditIgnoredAdvisories.Count -gt 0) {
+      if (-not $dependencyAuditWaiverPath) {
+        throw "Dependency audit receipt has ignored RustSec advisories but no waiver file path."
+      }
+      if ($dependencyAuditWaivers.Count -ne $dependencyAuditIgnoredAdvisories.Count) {
+        throw "Dependency audit receipt has $($dependencyAuditIgnoredAdvisories.Count) ignored RustSec advisories but $($dependencyAuditWaivers.Count) waiver entries."
+      }
+      $today = (Get-Date).Date
+      foreach ($waiver in $dependencyAuditWaivers) {
+        foreach ($field in @("id", "crate", "source", "rationale", "release_note", "owner", "review_by")) {
+          if ([string]::IsNullOrWhiteSpace([string]$waiver.$field)) {
+            throw "Dependency audit waiver for '$($waiver.id)' is missing required field '$field'."
+          }
+        }
+        try {
+          $reviewBy = Get-Date -Date ([string]$waiver.review_by) -ErrorAction Stop
+        } catch {
+          $reviewBy = $null
+        }
+        if (-not $reviewBy -or $reviewBy.Date -lt $today) {
+          throw "Dependency audit waiver '$($waiver.id)' is expired or has an invalid review_by date: $($waiver.review_by)."
+        }
+      }
     }
     $dependencyAuditOk = $true
   }
@@ -226,6 +256,9 @@ try {
     model_bakeoff_ok = $modelBakeoffOk
     dependency_audit_receipt = if ($resolvedDependencyAuditReceipt) { $resolvedDependencyAuditReceipt.Path } else { $null }
     dependency_audit_ok = $dependencyAuditOk
+    dependency_audit_ignored_advisories = $dependencyAuditIgnoredAdvisories
+    dependency_audit_waiver_path = $dependencyAuditWaiverPath
+    dependency_audit_waivers = $dependencyAuditWaivers
     installer_smoke_receipt = if ($resolvedInstallerSmokeReceipt) { $resolvedInstallerSmokeReceipt.Path } else { $null }
     installer_smoke_ok = $installerSmokeOk
     missing_release_evidence = $missingReleaseEvidence

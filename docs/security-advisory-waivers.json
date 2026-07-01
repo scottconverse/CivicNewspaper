@@ -1,0 +1,169 @@
+{
+  "generated_for": "CivicNewspaper v0.3.x public beta",
+  "review_required": "Every ignored RustSec advisory must have a waiver entry. Release evidence fails if an ignored advisory is missing or expired.",
+  "owner": "release maintainer",
+  "advisories": [
+    {
+      "id": "RUSTSEC-2024-0411",
+      "crate": "atk",
+      "source": "transitive Tauri Linux GTK3 stack",
+      "rationale": "Unmaintained transitive GTK3 binding. Windows public-beta artifact does not ship the Linux WebKit/GTK stack; keep tracked until upstream Tauri/Linux stack moves.",
+      "release_note": "Rust advisory waiver: transitive Linux GTK3 stack warning tracked; Windows public-beta artifact unaffected.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2024-0412",
+      "crate": "atk-sys",
+      "source": "transitive Tauri Linux GTK3 stack",
+      "rationale": "Unmaintained transitive GTK3 binding. Windows public-beta artifact does not ship the Linux WebKit/GTK stack; keep tracked until upstream Tauri/Linux stack moves.",
+      "release_note": "Rust advisory waiver: transitive Linux GTK3 stack warning tracked; Windows public-beta artifact unaffected.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2024-0413",
+      "crate": "gdk",
+      "source": "transitive Tauri Linux GTK3 stack",
+      "rationale": "Unmaintained transitive GTK3 binding. Windows public-beta artifact does not ship the Linux WebKit/GTK stack; keep tracked until upstream Tauri/Linux stack moves.",
+      "release_note": "Rust advisory waiver: transitive Linux GTK3 stack warning tracked; Windows public-beta artifact unaffected.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2024-0414",
+      "crate": "gdk-sys",
+      "source": "transitive Tauri Linux GTK3 stack",
+      "rationale": "Unmaintained transitive GTK3 binding. Windows public-beta artifact does not ship the Linux WebKit/GTK stack; keep tracked until upstream Tauri/Linux stack moves.",
+      "release_note": "Rust advisory waiver: transitive Linux GTK3 stack warning tracked; Windows public-beta artifact unaffected.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2024-0415",
+      "crate": "gdkwayland-sys / gdkx11",
+      "source": "transitive Tauri Linux GTK3 stack",
+      "rationale": "Unmaintained transitive GTK3 binding. Windows public-beta artifact does not ship the Linux WebKit/GTK stack; keep tracked until upstream Tauri/Linux stack moves.",
+      "release_note": "Rust advisory waiver: transitive Linux GTK3 stack warning tracked; Windows public-beta artifact unaffected.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2024-0416",
+      "crate": "gdkx11-sys",
+      "source": "transitive Tauri Linux GTK3 stack",
+      "rationale": "Unmaintained transitive GTK3 binding. Windows public-beta artifact does not ship the Linux WebKit/GTK stack; keep tracked until upstream Tauri/Linux stack moves.",
+      "release_note": "Rust advisory waiver: transitive Linux GTK3 stack warning tracked; Windows public-beta artifact unaffected.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2024-0417",
+      "crate": "gtk",
+      "source": "transitive Tauri Linux GTK3 stack",
+      "rationale": "Unmaintained transitive GTK3 binding. Windows public-beta artifact does not ship the Linux WebKit/GTK stack; keep tracked until upstream Tauri/Linux stack moves.",
+      "release_note": "Rust advisory waiver: transitive Linux GTK3 stack warning tracked; Windows public-beta artifact unaffected.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2024-0418",
+      "crate": "gtk-sys",
+      "source": "transitive Tauri Linux GTK3 stack",
+      "rationale": "Unmaintained transitive GTK3 binding. Windows public-beta artifact does not ship the Linux WebKit/GTK stack; keep tracked until upstream Tauri/Linux stack moves.",
+      "release_note": "Rust advisory waiver: transitive Linux GTK3 stack warning tracked; Windows public-beta artifact unaffected.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2024-0419",
+      "crate": "gtk3-macros",
+      "source": "transitive Tauri Linux GTK3 stack",
+      "rationale": "Unmaintained transitive GTK3 binding. Windows public-beta artifact does not ship the Linux WebKit/GTK stack; keep tracked until upstream Tauri/Linux stack moves.",
+      "release_note": "Rust advisory waiver: transitive Linux GTK3 stack warning tracked; Windows public-beta artifact unaffected.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2024-0420",
+      "crate": "atk / glib family",
+      "source": "transitive Tauri Linux GTK3 stack",
+      "rationale": "Unmaintained transitive GTK3 binding. Windows public-beta artifact does not ship the Linux WebKit/GTK stack; keep tracked until upstream Tauri/Linux stack moves.",
+      "release_note": "Rust advisory waiver: transitive Linux GTK3 stack warning tracked; Windows public-beta artifact unaffected.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2024-0370",
+      "crate": "proc-macro-error",
+      "source": "transitive macro tooling",
+      "rationale": "Unmaintained transitive macro tooling dependency. No direct production use is introduced by CivicNewspaper; keep tracked until upstream dependencies remove it.",
+      "release_note": "Rust advisory waiver: transitive proc-macro-error warning tracked until upstream removal.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2025-0075",
+      "crate": "unic-char-range",
+      "source": "transitive Tauri urlpattern stack",
+      "rationale": "Unmaintained transitive unic crate via Tauri URL-pattern dependencies. No direct CivicNewspaper API consumes it; keep tracked until upstream replacement.",
+      "release_note": "Rust advisory waiver: transitive unic/urlpattern warnings tracked until upstream replacement.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2025-0080",
+      "crate": "unic-common",
+      "source": "transitive Tauri urlpattern stack",
+      "rationale": "Unmaintained transitive unic crate via Tauri URL-pattern dependencies. No direct CivicNewspaper API consumes it; keep tracked until upstream replacement.",
+      "release_note": "Rust advisory waiver: transitive unic/urlpattern warnings tracked until upstream replacement.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2025-0081",
+      "crate": "unic-char-property",
+      "source": "transitive Tauri urlpattern stack",
+      "rationale": "Unmaintained transitive unic crate via Tauri URL-pattern dependencies. No direct CivicNewspaper API consumes it; keep tracked until upstream replacement.",
+      "release_note": "Rust advisory waiver: transitive unic/urlpattern warnings tracked until upstream replacement.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2025-0098",
+      "crate": "unic-ucd-version",
+      "source": "transitive Tauri urlpattern stack",
+      "rationale": "Unmaintained transitive unic crate via Tauri URL-pattern dependencies. No direct CivicNewspaper API consumes it; keep tracked until upstream replacement.",
+      "release_note": "Rust advisory waiver: transitive unic/urlpattern warnings tracked until upstream replacement.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2025-0100",
+      "crate": "unic-ucd-ident",
+      "source": "transitive Tauri urlpattern stack",
+      "rationale": "Unmaintained transitive unic crate via Tauri URL-pattern dependencies. No direct CivicNewspaper API consumes it; keep tracked until upstream replacement.",
+      "release_note": "Rust advisory waiver: transitive unic/urlpattern warnings tracked until upstream replacement.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2026-0192",
+      "crate": "ttf-parser",
+      "source": "transitive PDF extraction stack through pdf-extract/lopdf",
+      "rationale": "Unmaintained transitive PDF parsing dependency. Source import remains editor-reviewed and local; keep tracked until pdf-extract/lopdf stack offers a maintained replacement.",
+      "release_note": "Rust advisory waiver: transitive PDF parsing stack warning tracked until upstream replacement.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2024-0429",
+      "crate": "glib",
+      "source": "target-specific Tauri GTK stack warning",
+      "rationale": "Target-specific transitive Linux GTK stack warning. Windows public-beta artifact does not ship the Linux WebKit/GTK stack; keep tracked until upstream Tauri/Linux stack moves.",
+      "release_note": "Rust advisory waiver: transitive Linux glib warning tracked; Windows public-beta artifact unaffected.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
+    }
+  ]
+}

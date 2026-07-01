@@ -52,7 +52,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\prepare-rc-evidence.
 
 The receipt records the exact branch, commit, app versions, Tauri bundle targets, artifact paths, SHA256 hashes, smoke-check results, model-bakeoff receipt, dependency-audit receipt, Windows installer-smoke receipt, and `SHA256SUMS` output. It is a local evidence artifact; it does not push, merge, tag, or publish. By default it fails if the smoke receipt is missing, from a different repo or commit, dirty/diagnostic, contains failed/skipped checks, no current-version installer artifacts are present, or the model-bakeoff/dependency-audit/installer-smoke artifacts are missing. Historical bundle files are reported as stale diagnostic context, but they do not count as release-candidate artifacts. Use the diagnostic flags only for local investigation, not release evidence.
 
-The model bakeoff receipt must show that the configured default model in `src\models.json` passed every bakeoff case. The dependency audit receipt must be clean, run npm audit at the documented `moderate` threshold or stricter, and include Rust advisory checking through `cargo-audit`; a receipt that only exists but contains failures is not release evidence. The Windows installer smoke receipt must prove NSIS silent install, installed app start from the packaged installer, first-run screenshot capture, uninstaller presence, and silent uninstall. MSI lifecycle proof is backlog/proof-needed until MSI is reintroduced as a public beta artifact.
+The model bakeoff receipt must show that the configured default model in `src\models.json` passed every bakeoff case. The dependency audit receipt must be clean, run npm audit at the documented `moderate` threshold or stricter, and include Rust advisory checking through `cargo-audit`; a receipt that only exists but contains failures is not release evidence. If `cargo-audit` uses ignored RustSec advisories, every ignored ID must have a current machine-readable waiver in `docs/security-advisory-waivers.json`, and the dependency and RC receipts must copy those waiver entries into release evidence. Missing, expired, or incomplete waivers fail RC evidence. The Windows installer smoke receipt must prove NSIS silent install, installed app start from the packaged installer, first-run screenshot capture, uninstaller presence, and silent uninstall. MSI lifecycle proof is backlog/proof-needed until MSI is reintroduced as a public beta artifact.
 
 For this release line, RC packaging evidence is Windows public beta only. macOS and Linux installer proof is backlog/proof-needed until a real platform artifact and clean-machine first-run proof exist.
 
@@ -116,6 +116,8 @@ cargo audit
 ```
 
 Warnings from transitive desktop framework dependencies should be recorded in the release notes if they cannot be upgraded safely before release.
+
+Current Rust advisory exceptions live in `src-tauri\.cargo\audit.toml`; the matching rationale, owner, release-note text, and review date live in `docs\security-advisory-waivers.json`. The release gate should not accept a dependency audit receipt that suppresses advisories without matching current waiver metadata.
 
 ## Stable-release blockers
 
