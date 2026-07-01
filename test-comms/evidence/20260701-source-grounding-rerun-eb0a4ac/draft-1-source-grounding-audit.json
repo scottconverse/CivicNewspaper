@@ -1,0 +1,80 @@
+{
+  "draft": {
+    "id": 1,
+    "lead_id": 20,
+    "format": "watch",
+    "title": "Summer Reading Challenge Starts at Longmont Public Library: The 2026 Summer Reading Challenge",
+    "content": "Longmont Housing Authority Longmont Museum Longmont Power &amp; Communications Municipal Court Municipal Probation NextLight Fiber Internet Parks and Natural Resources Planning and Development Services Public Information Public Safety Purchasing and Contracts. [Source](evidence:76).\n\nThis is a watch brief for Longmont readers. The linked source does not, by itself, confirm a broader development; watch for a newly posted date, vote, cost, agency response, or other public update before expanding it into a full story.",
+    "status": "draft_generated",
+    "verification_checklist": "[]",
+    "missing_evidence_notes": null,
+    "correction_note": null,
+    "created_at": "2026-07-01T18:17:30.037376+00:00",
+    "updated_at": "2026-07-01T18:17:30.037376+00:00",
+    "attested_by": null,
+    "attested_at": null,
+    "guardrail_override_reason": null
+  },
+  "lead": {
+    "id": 20,
+    "detector_name": "daily_scan",
+    "why": "Summer Reading Challenge Starts at Longmont Public Library: The 2026 Summer Reading Challenge is starting on Wednesday, May 21 with activities running through July 31. Editor context: This event series includes prize opportunities and spans an extended period which may interest community members planning to participate or attend. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 3, impact 2, conflict 1, novelty 4). Why now: Starting date, prize opportunities announced. Suggested next step: Verify the list of prizes available for this summer reading challenge and confirm if there are any registration requirements.",
+    "confidence": "med",
+    "risk_level": "med",
+    "confirmation_checklist": "[\"Verify the list of prizes available for this summer reading challenge and confirm if there are any registration requirements.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+    "created_at": "2026-07-01T18:10:57.713973+00:00",
+    "from_scan_lead_id": 8,
+    "story_type": "brief",
+    "disposition": "ready_to_draft",
+    "novelty_score": 4,
+    "novelty_reason": "Starting date, prize opportunities announced",
+    "recurrence_count": null,
+    "recurrence_note": null
+  },
+  "linked_evidence": [
+    {
+      "id": 74,
+      "source_id": 18,
+      "url": "https://longmontcolorado.gov/events/",
+      "fetched_at": "2026-07-01T18:09:46.165296800+00:00",
+      "excerpt": "Wednesday, July 1 · 6 pm  -  7 pm\nLongmont Public Library\n355 Emery St., Longmont, CO, United States\nA free gaming club for 3rd-5th graders! Play on the Library's Nintendo Switch or bring your own Switch!\nThu\n2\nYoga Storytime\nThursday, July 2 · 10 am  -  10:30 am\nYoga Storytime Series\nLongmont Public Library\n355 Emery St., Longmont, CO, United States\nEnjoy stories, movement, breathing, and mindfulness while gaining early literacy skills.\nThu\n2\nSpanish-English Conversation Group\nThursday, July 2 · 1 pm  -  2 pm\nSpanish-English Conversation Group Series\nLongmont Public Library\n355 Emery St., Longmont, CO, United States\nGet to know other language learners while practicing conversations in Spanish or English.\nThu\n2\nNavigators (Summer Program)\nThursday, July 2 · 1 pm  -  5:30 pm\nNavigators (Summer Program) Series\nLongmont Youth Center\n1050 Lashley St., Longmont, CO, United States\nThu\n2\nGlam Group (Summer Program)\nThursday, July 2 · 1 pm  -  5:30 pm\nGlam Group (Summer Program) Series\nLongmont Youth Center\n1050 Lashley St., Longmont, CO, United States\nThu\n2\nMake it Better (Summer Program)\nThursday, July 2 · 1 pm  -  5:30 pm\nMake it Better (Summer Program) Series\nLongmont Youth Center\n1050 Lashley St., Longmont, CO, United States\nThu\n2\nYouth Original Recording Studio (Summer Program)\nThursday, July 2 · 1 pm  -  5:30 pm\nYouth Original Recording Studio (Summer Program) Series\nLongmont Youth Center\n1050 Lashley St., Longmont, CO, United States\nThu\n2\nFirst Thursdays Book Group\nThursday, July 2 · 2 pm  -  3 pm\nFirst Thursdays Book Group Series\nLongmont Public Library\n355 Emery St., Longmont, CO, United States\nThu\n2\nSummer Science Series: Tardigrades (Water Bears)\nThursday, July 2 · 4 pm  -  5 pm\nSummer Science Series Series\nLongmont Public Library\n355 Emery St., Longmont, CO, United States\nParticipants will get an introduction to new scientific concepts and will get to try their own hands-on experiments.\nThu\n2\nSummer Concert Series: 2MX2\n",
+      "content_hash": "a0cefeb4397c0ac9e1a96468735341d565d723c4341fc6017027d55e71546eef",
+      "entities": "[]",
+      "source_name": "Longmont city events",
+      "source_url": "https://longmontcolorado.gov/events/"
+    },
+    {
+      "id": 75,
+      "source_id": 18,
+      "url": "https://longmontcolorado.gov/events/",
+      "fetched_at": "2026-07-01T18:09:46.185922200+00:00",
+      "excerpt": "Thursday, July 2 · 7 pm  -  8:30 pm\nLongmont Museum\n400 Quail Rd., Longmont, CO, United States\nThis Latinx alternative rock and hiphop band from Denver is making waves with their fusion of Latin reggaeton, Spanglish lyrics, rock and hip-hop.\nFri\n3\nLIBRARY CLOSED (7/3/2026)\nFriday, July 3\nFri\n3\nClosed for Independence Day\nFriday, July 3\nLongmont Youth Center\n1050 Lashley St., Longmont, CO, United States\nFri\n3\nMuseum closed for Independence Day\nFriday, July 3 · 9 am  -  Saturday, July 4 · 5 pm\nFri\n3\nIndependence Weekend Free Concert\nFriday, July 3 · 6 pm  -  10 pm\nRoosevelt Park\n700 Longs Peak Ave., Longmont, CO, United States\nSat\n4\nLIBRARY CLOSED (7/4/2026)\nSaturday, July 4\nPrevious  Events\nToday\nNext  Events\nWelcome\nLongmont is a diverse, multicultural and welcoming city.\nContact\nView All Services\nDepartments\nView All Departments\nQuick Links\nAgendas and Meetings\nCode Enforcement\nEmergency Notifications\nEmployment Opportunities\nPermits and Inspections\nPublic Records\nService Requests\nEmail Signup\nStay up-to-date on news and events in Longmont.\nSign Up\nFor questions or assistance, please contact our help and information line at  303-776-6050 .\nActivities\nBuilding\nBusiness\nEducation\nGovernment\nHousing\nHuman Services\nInformation\nJobs\nLibrary\nLicensing\nMaintenance\nMuseum\nNextLight Fiber Internet\nPublic Safety\nSustainability\nTransportation\nUtilities\nWellness\nExplore All Services\nExplore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place.\nAll Services\nDepartments\nAirport\nBoards, Committees and Commissions\nBuilding Services\nChildren, Youth and Families at the Youth Center\nCity Attorney\nCity Clerk\nCity Council\nCity Manager\nCommunity and Neighborhood Resources\nEnterprise Technology Services\nEnvironment\nFinance\nForestry\nGolf Services\nHousing and Community Investment\nHuman Resources\nHuman Services\nJudicial Department\nLibrary\n",
+      "content_hash": "615550d6af79cf94be43f3bcce67196a684297a2a6e5beb64e0b7376b3631b51",
+      "entities": "[\"Community Investment\\nHuman Resources\\nHuman Services\\nJudicial Department\",\"Youth Center\\nCity Attorney\\nCity Clerk\\nCity Council\"]",
+      "source_name": "Longmont city events",
+      "source_url": "https://longmontcolorado.gov/events/"
+    },
+    {
+      "id": 76,
+      "source_id": 18,
+      "url": "https://longmontcolorado.gov/events/",
+      "fetched_at": "2026-07-01T18:09:46.203427300+00:00",
+      "excerpt": "Longmont Housing Authority\nLongmont Museum\nLongmont Power &amp;  Communications\nMunicipal Court\nMunicipal Probation\nNextLight Fiber Internet\nParks and Natural Resources\nPlanning and Development Services\nPublic Information\nPublic Safety\nPurchasing and Contracts\nRecreation Services\nRisk Management\nSenior Services\nTransportation\nTrash, Recycling, and Composting\nUtilities and Public Works\nWater\nExplore All Departments\nDiscover all the departments that make up the City of Longmont&#8217;s government. Get detailed information on their roles, responsibilities, and how they serve the community.\nAll Departments\nGovernment\nNews &#038; Alerts\nEvents\nCareers\nContact\nSubscribe to Email Updates\nEmail Address\nStay Connected\nGet the latest updates from the City of Longmont\nThis is Longmont\nThe official newsletter of the City of Longmont\nWeekly\nTopics of Interest\nChoose specific topics you want to hear about\nSelect all in this category\nNews &amp; Alerts\nLatest news information, notices and alerts from the city\nEvents &amp; Activities\nCommunity events, programs and activities happening in Longmont\nWeekly\nCity Events\nDowntown Events\nEvents for Kids\nJob Announcements\nEmployment opportunities delivered to your inbox\nWeekly\nDepartment Newsletters\nSubscribe to updates from specific city departments\nSelect all in this category\nLongmont Library\nUpdates and registration information about library programs and events\nAdult Programs\nChildren Programs (Infant - 5th Grade)\nTechnology + Computer Classes\nTeens Program Notices (6th-12th graders)\nThis Month @ the Library\nLongmont Museum\nEvents, exhibits and more from the museum\nAuditorium Programs\nDiscovery Days (Early Childhood)\nMuseum Exhibits &amp; Events\nRecreation\nActivities, classes, sports and more\nSustainability\nProject and program updates, including money-saving rebates and efficiency resources\nSustainable Business Program\nPromotes environmental stewardship, economic vitality and social equity\nSenior Center\n",
+      "content_hash": "9b24a6f2d788b0ae3634c34b99f3f228921abbca26e1488a2c14caf199dcc5f1",
+      "entities": "[\"Weekly\\nDepartment\"]",
+      "source_name": "Longmont city events",
+      "source_url": "https://longmontcolorado.gov/events/"
+    }
+  ],
+  "counts": {
+    "sources": 19,
+    "daily_scan_runs": 2,
+    "daily_scan_leads": 25,
+    "leads": 37,
+    "evidence_items": 77,
+    "lead_evidence": 54,
+    "drafts": 1,
+    "publish_runs": 0,
+    "published_posts": 0
+  }
+}

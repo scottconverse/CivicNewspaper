@@ -1,0 +1,55 @@
+{
+  "db_path": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+  "counts": {
+    "sources": 19,
+    "daily_scan_runs": 2,
+    "daily_scan_leads": 25,
+    "leads": 37,
+    "evidence_items": 77,
+    "lead_evidence": 54,
+    "drafts": 1,
+    "publish_decision_audits": 1,
+    "publish_runs": 0,
+    "published_posts": 0
+  },
+  "settings": {
+    "identity.city": "Longmont",
+    "identity.editor_name": "Publisher",
+    "identity.newsroom_name": "Longmont Source Grounding Desk",
+    "identity.organization_type": "single_person",
+    "identity.state": "CO",
+    "model.selected": "phi4-mini:latest",
+    "onboarding_complete": "1",
+    "paths.backup": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\backups",
+    "paths.publish": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default",
+    "scan.latest_id": "2",
+    "setup.first_run_intake": "true",
+    "setup.recovered_input": "consumed"
+  },
+  "drafts": [
+    {
+      "id": 1,
+      "lead_id": 20,
+      "title": "Summer Reading Challenge Starts at Longmont Public Library: The 2026 Summer Reading Challenge",
+      "status": "ready_to_publish",
+      "attested_by": "Publisher",
+      "attested_at": "2026-07-01T18:19:33.736151700+00:00",
+      "guardrail_override_reason": "Editor reviewed pre-publication warnings and chose to publish.",
+      "updated_at": "2026-07-01T18:19:33.739475100+00:00"
+    }
+  ],
+  "publish_decision_audits": [
+    {
+      "id": 1,
+      "draft_id": 1,
+      "decision": "ready_to_publish",
+      "attested": 1,
+      "guardrail_override_reason": "Editor reviewed pre-publication warnings and chose to publish.",
+      "guardrail_issue_count": 3,
+      "note": "Publish decision recorded after editor attestation; guardrail warnings had an editor note.",
+      "created_at": "2026-07-01T18:19:33.738744600+00:00"
+    }
+  ],
+  "publish_runs": [],
+  "published_posts": []
+}
