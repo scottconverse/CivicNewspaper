@@ -1,0 +1,76 @@
+﻿Model watch start 2026-07-01T16:53:55.8443337-06:00
+--- 10s 2026-07-01T16:54:05.8643455-06:00 ---
+
+
+Id              : 22780
+ProcessName     : civicnews
+MainWindowTitle : The Civic Desk
+Path            : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+
+
+
+
+
+ollama list error: The term 'C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260701-tourism-calendar-rerun-23d8dce\screenshot-model-10s.png (1920, 1080)
+--- 30s 2026-07-01T16:54:26.1155839-06:00 ---
+
+
+Id              : 22780
+ProcessName     : civicnews
+MainWindowTitle : The Civic Desk
+Path            : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+
+
+
+
+
+ollama list error: The term 'C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260701-tourism-calendar-rerun-23d8dce\screenshot-model-30s.png (1920, 1080)
+--- 60s 2026-07-01T16:54:56.3471722-06:00 ---
+
+
+Id              : 22780
+ProcessName     : civicnews
+MainWindowTitle : The Civic Desk
+Path            : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+
+
+
+
+
+
+Id          : 24520
+ProcessName : ollama
+Path        : C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe
+
+
+
+
+NAME    ID    SIZE    MODIFIED 
+
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260701-tourism-calendar-rerun-23d8dce\screenshot-model-60s.png (1920, 1080)
+--- 120s 2026-07-01T16:55:56.9641773-06:00 ---
+
+
+Id              : 22780
+ProcessName     : civicnews
+MainWindowTitle : The Civic Desk
+Path            : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+
+
+
+
+
+
+Id          : 24520
+ProcessName : ollama
+Path        : C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe
+
+
+
+
+NAME                ID              SIZE      MODIFIED       
+phi4-mini:latest    78fad5d182a7    2.5 GB    43 seconds ago    
+
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260701-tourism-calendar-rerun-23d8dce\screenshot-model-120s.png (1920, 1080)
