@@ -2,7 +2,7 @@
 
 Active directive path:
 
-test-comms/directives/20260630-draft-safety-rerun-fe19b40.md
+test-comms/directives/20260630-first-run-rerun-2b12163.md
 
 Tester must use branch test-comms/cleanroom-coder-tester in repo https://github.com/scottconverse/CivicNewspaper.
 
@@ -18,28 +18,28 @@ main
 
 Product commit represented by installer:
 
-fe19b407102d90256e14bb80fc63577a6fc16890
+2b12163f9f8791d847fb17ede820a24817896339
 
 Required first report:
 
-test-comms/reports/20260630-draft-safety-rerun-fe19b40-visibility.md
+test-comms/reports/20260630-first-run-rerun-2b12163-visibility.md
 
 Required final report:
 
-test-comms/reports/20260630-draft-safety-rerun-fe19b40-report.md
+test-comms/reports/20260630-first-run-rerun-2b12163-report.md
 
 Tester output artifact folder:
 
-test-comms/evidence/20260630-draft-safety-rerun-fe19b40/
+test-comms/evidence/20260630-first-run-rerun-2b12163/
 
 NSIS installer:
 
-test-comms/artifacts/20260630-draft-safety-rerun-fe19b40/The Civic Desk_0.3.1_x64-setup.exe
+test-comms/artifacts/20260630-first-run-rerun-2b12163/The Civic Desk_0.3.1_x64-setup.exe
 
 NSIS SHA256:
 
-967F12990DC98B2B70498872DBD278E3514509E0A74E8E5B3F5C457B3B5E6D20
+798D5FA706D7EF4A8284ACF0ED7012367D17B1806E32779467C4B1D76B8521A2
 
 NSIS size:
 
-5633326
+5632010
