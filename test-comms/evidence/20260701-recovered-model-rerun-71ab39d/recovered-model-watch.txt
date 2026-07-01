@@ -1,0 +1,162 @@
+Recovered model watch start 2026-07-01T00:54:58.7961447-06:00
+--- after 10s 2026-07-01T00:55:08.8162339-06:00 ---
+
+
+ProcessName      : civicnews
+Id               : 5408
+MainWindowTitle  : The Civic Desk
+MainWindowHandle : 39060274
+Path             : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+
+ProcessName      : ollama
+Id               : 23236
+MainWindowTitle  : 
+MainWindowHandle : 0
+Path             : C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe
+
+
+
+
+NAME    ID    SIZE    MODIFIED 
+
+
+FullName                                                                                                              
+--------                                                                                                              
+C:\Users\civic\.ollama\models\blobs                                                                                   
+C:\Users\civic\.ollama\models\manifests                                                                               
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db-partial   
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db-partial-0 
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db-partial-1 
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db-partial-10
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db-partial-11
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db-partial-12
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db-partial-13
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db-partial-14
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db-partial-15
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db-partial-2 
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db-partial-3 
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db-partial-4 
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db-partial-5 
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db-partial-6 
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db-partial-7 
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db-partial-8 
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db-partial-9 
+
+
+
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260701-recovered-model-rerun-71ab39d\screenshot-recovered-model-10s.png (1920, 1080)
+--- after 30s 2026-07-01T00:55:29.0707049-06:00 ---
+
+
+ProcessName      : civicnews
+Id               : 5408
+MainWindowTitle  : The Civic Desk
+MainWindowHandle : 39060274
+Path             : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+
+ProcessName      : ollama
+Id               : 23236
+MainWindowTitle  : 
+MainWindowHandle : 0
+Path             : C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe
+
+
+
+
+NAME                ID              SIZE      MODIFIED      
+phi4-mini:latest    78fad5d182a7    2.5 GB    7 seconds ago    
+
+
+FullName                                                                                                    Length    
+--------                                                                                                    ------    
+C:\Users\civic\.ollama\models\blobs                                                                                   
+C:\Users\civic\.ollama\models\manifests                                                                               
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db 2491874624
+C:\Users\civic\.ollama\models\blobs\sha256-813f53fdc6e58d35bb1c3853c93266380e9ca918a993e8eab193e8ede5d3a603 655       
+C:\Users\civic\.ollama\models\blobs\sha256-8c2539a423c4df2d9d2609fba56e7bad554696b66ed0e280c56e0ef4a32498fa 411       
+C:\Users\civic\.ollama\models\blobs\sha256-fa8235e5b48faca34e3ca98cf4f694ef08bd216d28b58071a1f85b1d50cb814d 1084      
+C:\Users\civic\.ollama\models\manifests\registry.ollama.ai                                                            
+C:\Users\civic\.ollama\models\manifests\registry.ollama.ai\library                                                    
+C:\Users\civic\.ollama\models\manifests\registry.ollama.ai\library\phi4-mini                                          
+C:\Users\civic\.ollama\models\manifests\registry.ollama.ai\library\phi4-mini\latest                         711       
+
+
+
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260701-recovered-model-rerun-71ab39d\screenshot-recovered-model-30s.png (1920, 1080)
+--- after 60s 2026-07-01T00:55:59.2847461-06:00 ---
+
+
+ProcessName      : civicnews
+Id               : 5408
+MainWindowTitle  : The Civic Desk
+MainWindowHandle : 39060274
+Path             : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+
+ProcessName      : ollama
+Id               : 23236
+MainWindowTitle  : 
+MainWindowHandle : 0
+Path             : C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe
+
+
+
+
+NAME                ID              SIZE      MODIFIED       
+phi4-mini:latest    78fad5d182a7    2.5 GB    37 seconds ago    
+
+
+FullName                                                                                                    Length    
+--------                                                                                                    ------    
+C:\Users\civic\.ollama\models\blobs                                                                                   
+C:\Users\civic\.ollama\models\manifests                                                                               
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db 2491874624
+C:\Users\civic\.ollama\models\blobs\sha256-813f53fdc6e58d35bb1c3853c93266380e9ca918a993e8eab193e8ede5d3a603 655       
+C:\Users\civic\.ollama\models\blobs\sha256-8c2539a423c4df2d9d2609fba56e7bad554696b66ed0e280c56e0ef4a32498fa 411       
+C:\Users\civic\.ollama\models\blobs\sha256-fa8235e5b48faca34e3ca98cf4f694ef08bd216d28b58071a1f85b1d50cb814d 1084      
+C:\Users\civic\.ollama\models\manifests\registry.ollama.ai                                                            
+C:\Users\civic\.ollama\models\manifests\registry.ollama.ai\library                                                    
+C:\Users\civic\.ollama\models\manifests\registry.ollama.ai\library\phi4-mini                                          
+C:\Users\civic\.ollama\models\manifests\registry.ollama.ai\library\phi4-mini\latest                         711       
+
+
+
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260701-recovered-model-rerun-71ab39d\screenshot-recovered-model-60s.png (1920, 1080)
+--- after 120s 2026-07-01T00:56:59.5249433-06:00 ---
+
+
+ProcessName      : civicnews
+Id               : 5408
+MainWindowTitle  : The Civic Desk
+MainWindowHandle : 39060274
+Path             : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+
+ProcessName      : ollama
+Id               : 23236
+MainWindowTitle  : 
+MainWindowHandle : 0
+Path             : C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe
+
+
+
+
+NAME                ID              SIZE      MODIFIED           
+phi4-mini:latest    78fad5d182a7    2.5 GB    About a minute ago    
+
+
+FullName                                                                                                    Length    
+--------                                                                                                    ------    
+C:\Users\civic\.ollama\models\blobs                                                                                   
+C:\Users\civic\.ollama\models\manifests                                                                               
+C:\Users\civic\.ollama\models\blobs\sha256-3c168af1dea0a414299c7d9077e100ac763370e5a98b3c53801a958a47f0a5db 2491874624
+C:\Users\civic\.ollama\models\blobs\sha256-813f53fdc6e58d35bb1c3853c93266380e9ca918a993e8eab193e8ede5d3a603 655       
+C:\Users\civic\.ollama\models\blobs\sha256-8c2539a423c4df2d9d2609fba56e7bad554696b66ed0e280c56e0ef4a32498fa 411       
+C:\Users\civic\.ollama\models\blobs\sha256-fa8235e5b48faca34e3ca98cf4f694ef08bd216d28b58071a1f85b1d50cb814d 1084      
+C:\Users\civic\.ollama\models\manifests\registry.ollama.ai                                                            
+C:\Users\civic\.ollama\models\manifests\registry.ollama.ai\library                                                    
+C:\Users\civic\.ollama\models\manifests\registry.ollama.ai\library\phi4-mini                                          
+C:\Users\civic\.ollama\models\manifests\registry.ollama.ai\library\phi4-mini\latest                         711       
+
+
+
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260701-recovered-model-rerun-71ab39d\screenshot-recovered-model-120s.png (1920, 1080)
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260701-recovered-model-rerun-71ab39d\db-snapshot-after-recovered-model-watch.json
