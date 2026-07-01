@@ -1,0 +1,50 @@
+{
+  "draft": {
+    "id": 1,
+    "lead_id": 34,
+    "format": "watch",
+    "title": "Upcoming City Events in Longmont",
+    "content": "The bustling city of Longmont continues to host an array of diverse events for its residents and visitors alike.\n\nResidents are encouraged to explore the offerings from Wednesday, Nov. 20, 2024 until Friday, Jan. 3, 2025 through various departments such as Arts & Culture at the Longmont Museum [Source](evidence:64), Community Programs including Recreation Services that provide activities for all ages and interests in Parks and Natural Resources Planning (evidence:68).\n\nThe City of Longmont proudly presents opportunities to connect with local businesses via Career announcements, while Citizens can sign up through Adult Programs or Kids Events. Library services are updated regularly [Source](evidence:64), making it essential for residents looking forward to enriching experiences.\n\nLongmont's commitment toward enhancing the quality and sustainability is evident as initiatives like Sustainability projects aim at fostering a greener environment (Evidence ID 68).\n\nResidents should keep an eye out on City Hall's event calendar which promises exciting community activities, job opportunities through employment announcements [Source](evidence:64), educational resources for Children Programs ranging from Infant to Grade 5 classes. With upcoming exhibitions and programs hosted by the Longmont Museum that showcase local arts & culture alongside historical exhibits (Evidence ID 68).\n\nStay connected with City Hall's newsletter updates at longmontal.org/news/, where you will receive timely information on new initiatives, important announcements across all departments including Public Safety measures aimed to ensure community well-being [Source](evidence:64). Longmont residents can also enjoy leisure activities like golfing services offered in the city.\n\nFor those interested and looking forward towards discovering more about what makes this great town tick or simply seeking entertainment options available for kids aged 6th-12th graders, keep a keen eye on Recreation Services announcements. Events such as Discovery Days at museums (Evidence ID:64), are sure to pique interest among young minds eager for learning.\n\nLongmont proudly maintains its dedication toward providing essential community services through diverse departments including Utilities and Public Works [Source](evidence:68). Stay tuned with City Hall's newsletters, or visit longmontal.org/news/ on weekdays from 8am-6pm Eastern Time (Evidence ID 64).\n\nRemember to subscribe for all updates regarding city events so you don't miss out!\n\n[Note: This brief is a compilation of the latest information available as per evidence citations provided. Readers are encouraged to check City Hall's event calendar and website regularly.]",
+    "status": "draft_generated",
+    "verification_checklist": "[]",
+    "missing_evidence_notes": null,
+    "correction_note": null,
+    "created_at": "2026-07-01T19:01:49.356312500+00:00",
+    "updated_at": "2026-07-01T19:01:49.356312500+00:00",
+    "attested_by": null,
+    "attested_at": null,
+    "guardrail_override_reason": null
+  },
+  "lead": {
+    "id": 34,
+    "detector_name": "daily_scan",
+    "why": "Longmont city events: Longmont Housing Authority Longmont Museum Longmont Power &amp; Communications Municip...: Longmont Housing Authority Longmont Museum Longmont Power &amp; Communications Municipal Court Municipal Probation NextLight Fiber Internet Parks and Natural Resources Planning and Development Services Public Information Public Safety Purchasing and Contracts Recreation Services ... Editor context: The scan found actionable source evidence after the local model produced too few draftable leads. This is an editor lead, not an automatic publication decision. Suggested next step: Open the source, confirm the date or action, and look for a second public source before approving reader-facing copy.",
+    "confidence": "med",
+    "risk_level": "med",
+    "confirmation_checklist": "[\"Open the source, confirm the date or action, and look for a second public source before approving reader-facing copy.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+    "created_at": "2026-07-01T19:00:50.177300100+00:00",
+    "from_scan_lead_id": 22,
+    "story_type": "brief",
+    "disposition": "ready_to_draft",
+    "novelty_score": 4,
+    "novelty_reason": "Recent source evidence contains a dated or actionable civic item: Longmont Housing Authority Longmont Museum Longmont Power &amp; Communications Municipal Court Municipal Probation NextLight Fiber Internet Parks and Natural Resources Planning and",
+    "recurrence_count": null,
+    "recurrence_note": null
+  },
+  "linked_evidence": [
+    {
+      "id": 64,
+      "url": "https://longmontcolorado.gov/events/",
+      "excerpt": "-->\nEvents from Wednesday, Nov. 20, 2024 &#8211; Friday, Jan. 3, 2025 &#8211; City of Longmont\nSkip to main content\nNews &#038; Alerts\nEvents\nCareers\nContact\nEnsuring accessible government services.\nActivities\nProviding community activities.\nBuilding\nGuiding construction and development.\nBusiness\nSupporting local businesses.\nEducation\nOffering educational resources.\nGovernment\nFacilitating civic engagement.\nHousing\nProviding housing services.\nHuman Services\nInformation\nDelivering essential community information.\nJobs\nConnecting residents with jobs.\nLibrary\nOffering library services and resources.\nLicensing\nIssuing permits and licenses.\nMaintenance\nMaintaining public infrastructure.\nMuseum\nExhibiting arts, culture and history.\nNextLight Fiber Internet\nPublic Safety\nEnsuring community safety.\nSustainability\nPromoting environmental sustainability.\nTransportation\nUtilities\nManaging utility services.\nWellness\nSupporting community health.\nExplore All Services\nExplore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place.\nAll Services\nDepartments\nAirport\nBoards, Committees and Commissions\nBuilding Services\nChildren, Youth and Families at the Youth Center\nCity Attorney\nCity Clerk\nCity Council\nCity Manager\nCommunity and Neighborhood Resources\nEnterprise Technology Services\nEnvironment\nFinance\nForestry\nGolf Services\nHousing and Community Investment\nHuman Resources\nHuman Services\nJudicial Department\nLibrary\nLongmont Housing Authority\nLongmont Museum\nLongmont Power &amp;  Communications\nMunicipal Court\nMunicipal Probation\nNextLight Fiber Internet\nParks and Natural Resources\nPlanning and Development Services\nPublic Information\nPublic Safety\nPurchasing and Contracts\nRecreation Services\nRisk Management\nSenior Services\nTransportation\nProviding transport options.\nTrash, Recycling, and Composting\nUtilities and Public Works\nWater\nExplore All Departments\n",
+      "source_name": "Longmont city events",
+      "source_url": "https://longmontcolorado.gov/events/"
+    },
+    {
+      "id": 68,
+      "url": "https://longmontcolorado.gov/events/",
+      "excerpt": "Longmont Housing Authority\nLongmont Museum\nLongmont Power &amp;  Communications\nMunicipal Court\nMunicipal Probation\nNextLight Fiber Internet\nParks and Natural Resources\nPlanning and Development Services\nPublic Information\nPublic Safety\nPurchasing and Contracts\nRecreation Services\nRisk Management\nSenior Services\nTransportation\nTrash, Recycling, and Composting\nUtilities and Public Works\nWater\nExplore All Departments\nDiscover all the departments that make up the City of Longmont&#8217;s government. Get detailed information on their roles, responsibilities, and how they serve the community.\nAll Departments\nGovernment\nNews &#038; Alerts\nEvents\nCareers\nContact\nSubscribe to Email Updates\nEmail Address\nStay Connected\nGet the latest updates from the City of Longmont\nThis is Longmont\nThe official newsletter of the City of Longmont\nWeekly\nTopics of Interest\nChoose specific topics you want to hear about\nSelect all in this category\nNews &amp; Alerts\nLatest news information, notices and alerts from the city\nEvents &amp; Activities\nCommunity events, programs and activities happening in Longmont\nWeekly\nCity Events\nDowntown Events\nEvents for Kids\nJob Announcements\nEmployment opportunities delivered to your inbox\nWeekly\nDepartment Newsletters\nSubscribe to updates from specific city departments\nSelect all in this category\nLongmont Library\nUpdates and registration information about library programs and events\nAdult Programs\nChildren Programs (Infant - 5th Grade)\nTechnology + Computer Classes\nTeens Program Notices (6th-12th graders)\nThis Month @ the Library\nLongmont Museum\nEvents, exhibits and more from the museum\nAuditorium Programs\nDiscovery Days (Early Childhood)\nMuseum Exhibits &amp; Events\nRecreation\nActivities, classes, sports and more\nSustainability\nProject and program updates, including money-saving rebates and efficiency resources\nSustainable Business Program\nPromotes environmental stewardship, economic vitality and social equity\nSenior Center\n",
+      "source_name": "Longmont city events",
+      "source_url": "https://longmontcolorado.gov/events/"
+    }
+  ]
+}
