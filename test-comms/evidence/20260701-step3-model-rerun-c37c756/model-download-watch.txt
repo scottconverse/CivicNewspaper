@@ -1,0 +1,117 @@
+Model download watch start 2026-07-01T00:09:28.5343021-06:00
+--- after 10s 2026-07-01T00:09:38.5565716-06:00 ---
+
+
+ProcessName      : civicnews
+Id               : 20732
+MainWindowTitle  : 
+MainWindowHandle : 2688256
+Path             : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+
+ProcessName      : ollama
+Id               : 15752
+MainWindowTitle  : 
+MainWindowHandle : 0
+Path             : C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe
+
+
+
+
+NAME    ID    SIZE    MODIFIED 
+
+
+FullName                                Length LastWriteTime       
+--------                                ------ -------------       
+C:\Users\civic\.ollama\models\blobs            7/1/2026 12:07:23 AM
+C:\Users\civic\.ollama\models\manifests        7/1/2026 12:07:23 AM
+
+
+
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260701-step3-model-rerun-c37c756\screenshot-model-download-10s.png (1920, 1080)
+--- after 30s 2026-07-01T00:09:58.7913614-06:00 ---
+
+
+ProcessName      : civicnews
+Id               : 20732
+MainWindowTitle  : 
+MainWindowHandle : 2688256
+Path             : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+
+ProcessName      : ollama
+Id               : 15752
+MainWindowTitle  : 
+MainWindowHandle : 0
+Path             : C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe
+
+
+
+
+NAME    ID    SIZE    MODIFIED 
+
+
+FullName                                Length LastWriteTime       
+--------                                ------ -------------       
+C:\Users\civic\.ollama\models\blobs            7/1/2026 12:07:23 AM
+C:\Users\civic\.ollama\models\manifests        7/1/2026 12:07:23 AM
+
+
+
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260701-step3-model-rerun-c37c756\screenshot-model-download-30s.png (1920, 1080)
+--- after 60s 2026-07-01T00:10:29.0112464-06:00 ---
+
+
+ProcessName      : civicnews
+Id               : 20732
+MainWindowTitle  : 
+MainWindowHandle : 2688256
+Path             : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+
+ProcessName      : ollama
+Id               : 15752
+MainWindowTitle  : 
+MainWindowHandle : 0
+Path             : C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe
+
+
+
+
+NAME    ID    SIZE    MODIFIED 
+
+
+FullName                                Length LastWriteTime       
+--------                                ------ -------------       
+C:\Users\civic\.ollama\models\blobs            7/1/2026 12:07:23 AM
+C:\Users\civic\.ollama\models\manifests        7/1/2026 12:07:23 AM
+
+
+
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260701-step3-model-rerun-c37c756\screenshot-model-download-60s.png (1920, 1080)
+--- after 120s 2026-07-01T00:11:29.2436654-06:00 ---
+
+
+ProcessName      : civicnews
+Id               : 20732
+MainWindowTitle  : 
+MainWindowHandle : 2688256
+Path             : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+
+ProcessName      : ollama
+Id               : 15752
+MainWindowTitle  : 
+MainWindowHandle : 0
+Path             : C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe
+
+
+
+
+NAME    ID    SIZE    MODIFIED 
+
+
+FullName                                Length LastWriteTime       
+--------                                ------ -------------       
+C:\Users\civic\.ollama\models\blobs            7/1/2026 12:07:23 AM
+C:\Users\civic\.ollama\models\manifests        7/1/2026 12:07:23 AM
+
+
+
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260701-step3-model-rerun-c37c756\screenshot-model-download-120s.png (1920, 1080)

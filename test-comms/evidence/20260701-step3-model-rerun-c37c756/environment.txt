@@ -1,0 +1,62 @@
+Environment captured 2026-07-01T00:12:10.6553635-06:00
+Windows:
+
+
+Caption        : Microsoft Windows 11 Home
+Version        : 10.0.26200
+BuildNumber    : 26200
+OSArchitecture : 64-bit
+
+
+
+
+Computer:
+
+
+Manufacturer        : Micro-Star International Co., Ltd.
+Model               : Cyborg 15 A13VE
+TotalPhysicalMemory : 16870060032
+
+
+
+
+CPU:
+
+
+Name                      : 13th Gen Intel(R) Core(TM) i7-13620H
+NumberOfCores             : 10
+NumberOfLogicalProcessors : 16
+
+
+
+
+GPU:
+
+
+Name          : Intel(R) UHD Graphics
+AdapterRAM    : 2147479552
+DriverVersion : 32.0.101.5972
+
+Name          : NVIDIA GeForce RTX 4050 Laptop GPU
+AdapterRAM    : 4293918720
+DriverVersion : 32.0.15.8129
+
+
+
+
+Disk:
+
+
+Used : 113274417152
+Free : 374349070336
+Root : C:\
+
+
+
+
+Node/npm/rust/ollama:
+node not found
+npm not found
+rustc not found
+cargo not found
+ollama not found
