@@ -615,12 +615,65 @@ fn rescue_title(source_name: &str, excerpt: &str) -> String {
 
 fn evidence_looks_actionable(excerpt: &str) -> bool {
     let text = excerpt.to_lowercase();
+    if looks_like_broad_navigation_or_index(&text) {
+        return false;
+    }
     if looks_static_or_evergreen(&text) && !evidence_has_strong_current_action(excerpt) {
         return false;
     }
     evidence_has_calendar_signal(excerpt)
         || evidence_has_strong_current_action(excerpt)
         || evidence_has_public_impact_signal(excerpt)
+}
+
+fn looks_like_broad_navigation_or_index(text: &str) -> bool {
+    let chrome_markers = [
+        "skip to main content",
+        "events search and views navigation",
+        "select date",
+        "done clear",
+        "explore all services",
+        "explore all departments",
+        "all departments",
+        "all services",
+        "subscribe to email updates",
+        "topics of interest",
+        "stay connected",
+        "view all services",
+        "view all departments",
+    ];
+    let marker_count = chrome_markers
+        .iter()
+        .filter(|marker| text.contains(**marker))
+        .count();
+    if marker_count >= 3 {
+        return true;
+    }
+
+    let department_terms = [
+        "city attorney",
+        "city clerk",
+        "city council",
+        "city manager",
+        "finance",
+        "forestry",
+        "housing",
+        "human resources",
+        "judicial department",
+        "municipal court",
+        "parks and natural resources",
+        "planning and development services",
+        "public information",
+        "public safety",
+        "purchasing and contracts",
+        "recreation services",
+        "utilities and public works",
+    ];
+    let department_count = department_terms
+        .iter()
+        .filter(|term| text.contains(**term))
+        .count();
+    marker_count >= 1 && department_count >= 8
 }
 
 fn evidence_has_calendar_signal(excerpt: &str) -> bool {
@@ -1598,6 +1651,50 @@ fn evidence_ids_for_scan_lead(
     ids.sort_unstable();
     ids.dedup();
     Ok(ids)
+}
+
+#[cfg(test)]
+mod rescue_tests {
+    use super::*;
+
+    #[test]
+    fn broad_events_navigation_shell_is_not_actionable_rescue_evidence() {
+        let excerpt =
+            "--> Events from Wednesday, Nov. 20, 2024 - Friday, Jan. 3, 2025 - City of Longmont
+Skip to main content
+News & Alerts
+Events
+Careers
+Contact
+Explore All Services
+Explore All Departments
+City Attorney
+City Clerk
+City Council
+City Manager
+Finance
+Housing
+Human Resources
+Judicial Department
+Municipal Court
+Parks and Natural Resources
+Planning and Development Services
+Public Information
+Public Safety
+Purchasing and Contracts
+Recreation Services
+Utilities and Public Works
+Subscribe to Email Updates";
+
+        assert!(!evidence_looks_actionable(excerpt));
+    }
+
+    #[test]
+    fn concise_current_action_remains_actionable_rescue_evidence() {
+        let excerpt = "Building Services says the online permitting portal outage is affecting permit applications.";
+
+        assert!(evidence_looks_actionable(excerpt));
+    }
 }
 
 #[cfg(test)]
