@@ -4,6 +4,7 @@ use super::db::{
     PublishedPost,
 };
 use super::scraper::strip_public_boilerplate;
+use super::source_grounding;
 use chrono::{Datelike, Utc};
 use pulldown_cmark::{html, CowStr, Event, Options, Parser, Tag};
 use rusqlite::{params, Connection};
@@ -416,64 +417,6 @@ fn evidence_citation_ids(text: &str) -> HashSet<i32> {
         .collect()
 }
 
-fn compiler_tokens(text: &str) -> HashSet<String> {
-    const STOPWORDS: &[&str] = &[
-        "about",
-        "after",
-        "again",
-        "against",
-        "also",
-        "because",
-        "before",
-        "being",
-        "between",
-        "could",
-        "during",
-        "first",
-        "from",
-        "have",
-        "into",
-        "local",
-        "longmont",
-        "more",
-        "public",
-        "residents",
-        "said",
-        "should",
-        "source",
-        "sources",
-        "that",
-        "their",
-        "there",
-        "these",
-        "this",
-        "through",
-        "under",
-        "were",
-        "where",
-        "which",
-        "while",
-        "will",
-        "with",
-        "would",
-    ];
-    let stop: HashSet<&str> = STOPWORDS.iter().copied().collect();
-    text.to_lowercase()
-        .chars()
-        .map(|ch| {
-            if ch.is_ascii_alphanumeric() || ch.is_whitespace() {
-                ch
-            } else {
-                ' '
-            }
-        })
-        .collect::<String>()
-        .split_whitespace()
-        .filter(|token| token.len() >= 5 && !stop.contains(*token))
-        .map(str::to_string)
-        .collect()
-}
-
 fn cited_paragraphs_are_source_aligned(
     content: &str,
     evidence_by_id: &HashMap<i32, String>,
@@ -494,11 +437,6 @@ fn cited_paragraphs_are_source_aligned(
             continue;
         }
 
-        let paragraph_tokens = compiler_tokens(paragraph);
-        if paragraph_tokens.len() < 4 {
-            continue;
-        }
-
         let mut source_text = String::new();
         for id in &cited_ids {
             let Some(excerpt) = evidence_by_id.get(id) else {
@@ -510,11 +448,9 @@ fn cited_paragraphs_are_source_aligned(
             source_text.push_str(excerpt);
             source_text.push('\n');
         }
-        let source_tokens = compiler_tokens(&source_text);
-        let overlap = paragraph_tokens.intersection(&source_tokens).count();
-        if overlap == 0 {
+        if !source_grounding::paragraph_is_source_aligned(paragraph, &source_text) {
             return Err(format!(
-                "cited paragraph has little factual vocabulary overlap with linked source evidence ({overlap} matching term(s)); rewrite or attach the correct source"
+                "cited paragraph has little factual vocabulary overlap with linked source evidence; rewrite or attach the correct source"
             ));
         }
     }
@@ -548,6 +484,12 @@ fn validate_public_story_for_compile(
         if evidence_items.is_empty() {
             issues.push("lead-based draft has no linked source evidence".to_string());
         } else {
+            let story_topic = format!("{title}\n\n{content}");
+            if let Some(issue) =
+                source_grounding::evidence_alignment_issue(&story_topic, evidence_items)
+            {
+                issues.push(issue);
+            }
             let cited_ids = evidence_citation_ids(content);
             if cited_ids.is_empty() {
                 issues.push(
@@ -940,6 +882,85 @@ pub fn record_publish_destination_files(
     assert_public_output_quality(output_dir, &result.generated_files)?;
     write_zip_package(output_dir, &output_dir.join(&result.zip_path))?;
     Ok(result)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::core::db;
+    use chrono::Utc;
+
+    fn draft_with_lead(content: &str) -> db::Draft {
+        db::Draft {
+            id: Some(12),
+            lead_id: Some(22),
+            format: "watch".to_string(),
+            title: "Council weighs library roof contract".to_string(),
+            content: content.to_string(),
+            status: "ready_to_publish".to_string(),
+            verification_checklist: "[]".to_string(),
+            missing_evidence_notes: None,
+            correction_note: None,
+            created_at: Utc::now().to_rfc3339(),
+            updated_at: Utc::now().to_rfc3339(),
+        }
+    }
+
+    fn evidence(id: i32, excerpt: &str) -> db::EvidenceItem {
+        db::EvidenceItem {
+            id: Some(id),
+            source_id: 9,
+            url: Some("https://example.test/source".to_string()),
+            fetched_at: Utc::now().to_rfc3339(),
+            excerpt: excerpt.to_string(),
+            content_hash: "hash".to_string(),
+            entities: "[]".to_string(),
+        }
+    }
+
+    #[test]
+    fn compile_preflight_rejects_cited_paragraph_with_unrelated_evidence() {
+        let content = "Council members are expected to vote on a library roof repair contract this week, increase capacity by 40 percent, and spend ten million dollars over ten years [Source](evidence:57).";
+        let draft = draft_with_lead(content);
+        let source = evidence(
+            57,
+            "Summer Concert Series: Road Pony performs downtown with food trucks and live music.",
+        );
+
+        let err = validate_public_story_for_compile(
+            12,
+            &draft,
+            "Council weighs library roof contract",
+            content,
+            &[source],
+        )
+        .expect_err("unrelated cited evidence must block compile");
+
+        assert!(
+            err.to_string()
+                .contains("linked source evidence; rewrite or attach the correct source"),
+            "unexpected error: {err}"
+        );
+    }
+
+    #[test]
+    fn compile_preflight_accepts_cited_paragraph_with_matching_evidence() {
+        let content = "Council members are expected to vote on a library roof repair contract this week after staff posted the contract for public review [Source](evidence:58).";
+        let draft = draft_with_lead(content);
+        let source = evidence(
+            58,
+            "City council agenda item: library roof repair contract posted for public review before this week's vote.",
+        );
+
+        validate_public_story_for_compile(
+            12,
+            &draft,
+            "Council weighs library roof contract",
+            content,
+            &[source],
+        )
+        .expect("matching cited evidence should pass compile preflight");
+    }
 }
 
 fn path_for_manifest(path: &Path) -> String {

@@ -18,5 +18,6 @@ pub mod reproduction_tests;
 pub mod scraper;
 pub mod server;
 pub mod server_tests;
+pub mod source_grounding;
 pub mod tests;
 pub mod verification;

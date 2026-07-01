@@ -646,6 +646,39 @@ describe("Workbench Component Tests", () => {
     expect(onImproveForPublication).toHaveBeenCalledTimes(1);
   });
 
+  test("scanned-lead approval blocks when linked evidence is unrelated to the story topic", () => {
+    const onApprovePublish = vi.fn();
+
+    renderEditor({
+      onApprovePublish,
+      selectedDraft: {
+        ...mockDraft,
+        lead_id: 42,
+        title: "Council weighs library roof contract",
+        content:
+          "Council members are expected to vote on a library roof repair contract this week [Source](evidence:57).\n\nThe contract could affect library service planning and public construction spending.",
+      },
+      evidenceList: [
+        {
+          id: 57,
+          source_id: 9,
+          fetched_at: "2026-06-30T00:00:00Z",
+          excerpt: "Summer Concert Series: Road Pony performs downtown with food trucks and live music.",
+          content_hash: "hash",
+          entities: "[]",
+        },
+      ],
+    });
+
+    expect(screen.getByText(/linked source documents may not match this story topic/i)).toBeInTheDocument();
+    expect(screen.getByText(/linked source documents do not appear to match the story topic/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
+
+    expect(screen.getByText(/Before static publish approval: This scanned-lead draft's linked source documents do not appear to match the story topic./i)).toBeInTheDocument();
+    expect(onApprovePublish).not.toHaveBeenCalled();
+  });
+
   test("needs-verification drafts explain that more work is required", () => {
     const onDecision = vi.fn();
     renderEditor({

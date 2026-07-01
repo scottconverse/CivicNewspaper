@@ -1848,7 +1848,7 @@ I should produce JSON only.
                 source_id,
                 url: Some("https://example.gov/feed.xml".to_string()),
                 fetched_at: Utc::now().to_rfc3339(),
-                excerpt: "Council discussed the road maintenance budget.".to_string(),
+                excerpt: "Council discussed a budget overspend anomaly in the latest maintenance report.".to_string(),
                 content_hash: "hash_persist_test".to_string(),
                 entities: "[]".to_string(),
             },

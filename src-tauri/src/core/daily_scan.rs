@@ -1,7 +1,7 @@
 // core/daily_scan.rs
 use crate::core::db::{self, DailyScanLead, DailyScanRun, DbConn, EvidenceItem, Lead};
 use crate::core::llm::LlmClient;
-use crate::core::{intelligence, verification};
+use crate::core::{intelligence, source_grounding, verification};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
@@ -939,6 +939,16 @@ fn scan_lead_requires_linked_evidence(lead: &DailyScanLead) -> bool {
         )
 }
 
+fn scan_lead_grounding_text(lead: &DailyScanLead) -> String {
+    [
+        lead.title.as_str(),
+        lead.summary.as_str(),
+        lead.what_changed.as_deref().unwrap_or_default(),
+        lead.why_flagged.as_deref().unwrap_or_default(),
+    ]
+    .join(" ")
+}
+
 fn downgrade_scan_lead_without_evidence(mut lead: DailyScanLead) -> DailyScanLead {
     lead.disposition = Some("needs_verification".to_string());
     let evidence_note = "No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy.";
@@ -1561,25 +1571,36 @@ fn evidence_ids_for_scan_lead(
     conn: &rusqlite::Connection,
     lead: &DailyScanLead,
 ) -> rusqlite::Result<Vec<i32>> {
-    let mut ids = Vec::new();
+    let mut candidates = Vec::new();
     if let Some(source_id) = lead.source_id {
         let mut stmt = conn.prepare(
-            "SELECT id FROM evidence_items WHERE source_id = ?1 ORDER BY fetched_at DESC LIMIT 3",
+            "SELECT id, excerpt FROM evidence_items WHERE source_id = ?1 ORDER BY fetched_at DESC LIMIT 8",
         )?;
-        let rows = stmt.query_map([source_id], |row| row.get::<_, i32>(0))?;
+        let rows = stmt.query_map([source_id], |row| {
+            Ok((row.get::<_, i32>(0)?, row.get::<_, String>(1)?))
+        })?;
         for row in rows {
-            ids.push(row?);
+            candidates.push(row?);
         }
     }
-    if ids.is_empty() && !lead.original_url.trim().is_empty() {
+    if candidates.is_empty() && !lead.original_url.trim().is_empty() {
         let mut stmt = conn.prepare(
-            "SELECT id FROM evidence_items WHERE url = ?1 ORDER BY fetched_at DESC LIMIT 3",
+            "SELECT id, excerpt FROM evidence_items WHERE url = ?1 ORDER BY fetched_at DESC LIMIT 8",
         )?;
-        let rows = stmt.query_map([lead.original_url.trim()], |row| row.get::<_, i32>(0))?;
+        let rows = stmt.query_map([lead.original_url.trim()], |row| {
+            Ok((row.get::<_, i32>(0)?, row.get::<_, String>(1)?))
+        })?;
         for row in rows {
-            ids.push(row?);
+            candidates.push(row?);
         }
     }
+    let topic = scan_lead_grounding_text(lead);
+    let mut ids: Vec<i32> = candidates
+        .into_iter()
+        .filter(|(_, excerpt)| source_grounding::evidence_matches_topic(&topic, excerpt))
+        .map(|(id, _)| id)
+        .take(3)
+        .collect();
     ids.sort_unstable();
     ids.dedup();
     Ok(ids)

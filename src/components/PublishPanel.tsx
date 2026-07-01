@@ -183,6 +183,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   const selectedProvider = PROVIDERS.find(item => item.id === provider) ?? PROVIDERS[0];
   const setupGuide = SETUP_GUIDES[provider] ?? SETUP_GUIDES.other;
   const connectorTestPassed = publisherTestResult?.provider === provider && publisherTestResult.ok;
+  const connectorPublishAllowed = connectorTestPassed || provider === "here_now";
   const leadArticle = publishResult?.articles?.[0];
   const substackHeadline = leadArticle?.title || publishResult?.issue_id || "The Civic Desk update";
   const substackDeck = publishResult
@@ -642,14 +643,19 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                     <CheckCircle size={16} />
                     Save public URL
                   </button>
-                  <button className="btn btn-secondary" type="button" onClick={handleConnectorPublishClick} disabled={loading || !connectorTestPassed}>
+                  <button className="btn btn-secondary" type="button" onClick={handleConnectorPublishClick} disabled={loading || !connectorPublishAllowed}>
                     <UploadCloud size={16} />
-                    Publish with connector
+                    {provider === "here_now" ? "Publish to here.now" : "Publish with connector"}
                   </button>
                 </div>
-                {!connectorTestPassed && (
+                {!connectorPublishAllowed && (
                   <p className="help-text" style={{ marginTop: "0.35rem" }}>
                     Test the selected connector before publishing. You can still save a public URL manually.
+                  </p>
+                )}
+                {provider === "here_now" && !connectorTestPassed && (
+                  <p className="help-text" style={{ marginTop: "0.35rem" }}>
+                    here.now can publish a temporary anonymous preview without a saved API key. Save and test an API key only for permanent account-owned sites.
                   </p>
                 )}
                 {publishResult.published_url && (

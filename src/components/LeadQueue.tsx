@@ -288,9 +288,12 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
             ) : (
               sortedLeads.map((lead) => {
                 const existingDraft = lead.id ? draftByLeadId.get(lead.id) : undefined;
+                const disposition = (lead.disposition ?? "review").toLowerCase();
                 const draftLabel = existingDraft
                   ? "Open draft"
-                  : leadNeedsDraftCaution(lead)
+                  : disposition === "needs_verification"
+                    ? "Verify first"
+                    : leadNeedsDraftCaution(lead)
                     ? "Draft anyway"
                     : "Draft";
                 const openLeadOrDraft = () => {
@@ -411,7 +414,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                 {drafts.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="text-center" style={{ padding: "3rem" }}>
-                      No drafts generated yet. Select a lead and choose Draft or Draft anyway to begin.
+                      No drafts generated yet. Select a lead and choose Draft, Verify first, or Draft anyway to begin.
                     </td>
                   </tr>
                 ) : filteredDrafts.length === 0 ? (

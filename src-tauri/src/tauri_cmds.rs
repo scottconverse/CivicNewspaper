@@ -9,6 +9,7 @@ use crate::core::intelligence::{self, CivicIntelligenceSnapshot, DarkSignal};
 use crate::core::llm;
 use crate::core::publisher;
 use crate::core::scraper;
+use crate::core::source_grounding;
 use crate::core::verification::{self, VerificationQueueSnapshot};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -851,11 +852,31 @@ pub fn get_community_profile(app: tauri::AppHandle) -> Result<CommunityProfile, 
 #[tauri::command]
 pub fn save_community_profile(
     app: tauri::AppHandle,
+    db: tauri::State<'_, DbConn>,
     profile: CommunityProfile,
 ) -> Result<(), String> {
     let path = get_config_path(&app)?;
     let content = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
-    std::fs::write(path, content).map_err(|e| e.to_string())
+    std::fs::write(path, content).map_err(|e| e.to_string())?;
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
+    for (key, value) in [
+        ("identity.newsroom_name", profile.site_title.as_str()),
+        (
+            "identity.organization_type",
+            profile.organization_type.as_str(),
+        ),
+        ("identity.city", profile.city.as_str()),
+        ("identity.state", profile.state.as_str()),
+    ] {
+        conn.execute(
+            "INSERT OR REPLACE INTO settings (key, value) VALUES (?1, ?2)",
+            rusqlite::params![key, value],
+        )
+        .map_err(|e| e.to_string())?;
+    }
+    Ok(())
 }
 
 #[tauri::command]
@@ -1638,6 +1659,7 @@ pub async fn generate_draft<R: tauri::Runtime>(
             .map_err(|e| e.to_string())?;
         let template_guidance = story_template_guidance(&conn, story_type.as_deref());
         let items = db::get_evidence_by_lead(&conn, lead_id).map_err(|e| e.to_string())?;
+        let topic_matched_items = source_grounding::filter_topic_matched_evidence(&why, &items);
         (
             why,
             story_type,
@@ -1647,7 +1669,7 @@ pub async fn generate_draft<R: tauri::Runtime>(
             recurrence_count,
             recurrence_note,
             template_guidance,
-            items,
+            topic_matched_items,
         )
     };
 

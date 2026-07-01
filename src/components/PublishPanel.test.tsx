@@ -323,7 +323,7 @@ describe("PublishPanel Component Tests", () => {
     expect(handleRecord).not.toHaveBeenCalled();
   });
 
-  test("requires a passed connector test before connector publish", () => {
+  test("allows anonymous here.now publish before connector test but gates credential connectors", () => {
     const handlePublishWithConnector = vi.fn();
     const publishResult = {
       issue_id: "issue-20260627-000000",
@@ -368,8 +368,10 @@ describe("PublishPanel Component Tests", () => {
       />
     );
 
-    expect(screen.getByRole("button", { name: /Publish with connector/i })).toBeDisabled();
-    expect(screen.getByText(/Test the selected connector before publishing/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Publish to here.now/i })).toBeEnabled();
+    expect(screen.getByText(/temporary anonymous preview/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Publish to here.now/i }));
+    expect(handlePublishWithConnector).toHaveBeenCalledWith("here_now", "", "");
 
     rerender(
       <PublishPanel
@@ -395,7 +397,11 @@ describe("PublishPanel Component Tests", () => {
       />
     );
 
-    expect(screen.getByRole("button", { name: /Publish with connector/i })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /Publish to here.now/i })).toBeEnabled();
+
+    fireEvent.change(screen.getByLabelText(/Provider/i), { target: { value: "netlify" } });
+    expect(screen.getByRole("button", { name: /Publish with connector/i })).toBeDisabled();
+    expect(screen.getByText(/Test the selected connector before publishing/i)).toBeInTheDocument();
   });
 
   test("saves connector config and tests connection", () => {

@@ -124,8 +124,50 @@ function guardrailInstruction(issue: any): { title: string; action: string } {
   };
 }
 
-function getStoryQualityWarnings(draft: Draft, evidenceCount: number): string[] {
+const TOPIC_STOPWORDS = new Set([
+  "about", "after", "again", "against", "also", "before", "being", "between", "could", "during",
+  "editor", "event", "events", "first", "from", "have", "into", "local", "longmont", "more",
+  "original", "public", "reader", "residents", "review", "should", "source", "sources", "story",
+  "suggested", "that", "their", "there", "these", "this", "through", "under", "were", "where",
+  "which", "while", "will", "with", "would"
+]);
+
+function topicTokens(text: string): Set<string> {
+  const normalized = text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter(Boolean)
+    .map((token) => {
+      if (token.length > 6 && token.endsWith("ies")) return `${token.slice(0, -3)}y`;
+      if (token.length > 5 && token.endsWith("ing")) return token.slice(0, -3);
+      if (token.length > 5 && token.endsWith("ed")) return token.slice(0, -2);
+      if (token.length > 5 && token.endsWith("s")) return token.slice(0, -1);
+      return token;
+    })
+    .filter((token) => token.length >= 4 && !TOPIC_STOPWORDS.has(token) && !/^\d+$/.test(token));
+  return new Set(normalized);
+}
+
+function evidenceAppearsTopicMatched(draft: Draft, evidenceList: EvidenceItem[]): boolean {
+  if (evidenceList.length === 0) return true;
+  const draftTokens = topicTokens(`${draft.title}\n\n${draft.content}`);
+  if (draftTokens.size === 0) return false;
+  const required = Math.min(4, Math.max(2, Math.ceil(draftTokens.size / 3)));
+  return evidenceList.some((item) => {
+    const evidenceTokens = topicTokens(item.excerpt || "");
+    let overlap = 0;
+    draftTokens.forEach((token) => {
+      if (evidenceTokens.has(token)) overlap += 1;
+    });
+    return overlap >= required;
+  });
+}
+
+function getStoryQualityWarnings(draft: Draft, evidenceList: EvidenceItem[]): string[] {
   const warnings: string[] = [];
+  const evidenceCount = evidenceList.length;
   const title = (draft.title || "").trim();
   const content = (draft.content || "").trim();
   const lower = content.toLowerCase();
@@ -155,11 +197,15 @@ function getStoryQualityWarnings(draft: Draft, evidenceCount: number): string[] 
   if (lower.includes("according to") === false && evidenceCount > 0) {
     warnings.push("No clear attribution phrase found. Attribute key facts to the source or rewrite more cautiously.");
   }
+  if (!evidenceAppearsTopicMatched(draft, evidenceList)) {
+    warnings.push("Linked source documents may not match this story topic. Attach the correct source material or rewrite the story around the linked sources.");
+  }
   return warnings;
 }
 
-function getStaticPublishBlockers(draft: Draft, evidenceCount: number): string[] {
+function getStaticPublishBlockers(draft: Draft, evidenceList: EvidenceItem[]): string[] {
   const blockers: string[] = [];
+  const evidenceCount = evidenceList.length;
   const title = (draft.title || "").trim();
   const content = (draft.content || "").trim();
   const hasLead = draft.lead_id !== undefined && draft.lead_id !== null;
@@ -183,6 +229,9 @@ function getStaticPublishBlockers(draft: Draft, evidenceCount: number): string[]
   }
   if (hasLead && evidenceCount > 0 && !/evidence:\s*(?:\/\/)?\s*\d+/i.test(content)) {
     blockers.push("This scanned-lead draft needs at least one inline evidence citation before approval.");
+  }
+  if (hasLead && evidenceCount > 0 && !evidenceAppearsTopicMatched(draft, evidenceList)) {
+    blockers.push("This scanned-lead draft's linked source documents do not appear to match the story topic.");
   }
   return blockers;
 }
@@ -278,10 +327,10 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   const guardrailIssues = guardrailsReport?.issues ?? [];
   const severeIssueCount = guardrailIssues.filter((i) => i.severity === "error").length;
   const qualityWarningsForSelectedDraft = selectedDraft
-    ? getStoryQualityWarnings(selectedDraft, evidenceList.length)
+    ? getStoryQualityWarnings(selectedDraft, evidenceList)
     : [];
   const staticPublishBlockers = selectedDraft
-    ? getStaticPublishBlockers(selectedDraft, evidenceList.length)
+    ? getStaticPublishBlockers(selectedDraft, evidenceList)
     : [];
   const totalReviewWarningCount = guardrailIssues.length + qualityWarningsForSelectedDraft.length;
 

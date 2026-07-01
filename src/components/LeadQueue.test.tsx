@@ -186,7 +186,7 @@ describe("LeadQueue Component Tests", () => {
     expect(screen.getByText("Background")).toBeInTheDocument();
   });
 
-  test("labels watch and verification leads as draft-anyway choices", () => {
+  test("labels watch leads as draft-anyway and verification leads as verify-first choices", () => {
     render(
       <LeadQueue
         leads={[
@@ -222,7 +222,8 @@ describe("LeadQueue Component Tests", () => {
     );
 
     expect(screen.getByRole("button", { name: /^Draft \$350,000 budget approved/i })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /Draft anyway/i })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: /Draft anyway/i })).toHaveLength(1);
+    expect(screen.getByRole("button", { name: /Verify first/i })).toBeInTheDocument();
   });
 
   test("drafts tab filters send-back, held, and cut workflow states", () => {
