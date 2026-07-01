@@ -309,6 +309,59 @@ describe("OnboardingWizard Component Tests", () => {
     });
   });
 
+  test("identity setup pre-fills Longmont after no input is received", async () => {
+    vi.useFakeTimers();
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      return Promise.resolve();
+    });
+
+    const { act } = await import("@testing-library/react");
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(5000);
+    });
+
+    expect(screen.getByLabelText("Publication Name")).toHaveValue("My Local Publication");
+    expect(screen.getByLabelText("Editor Name")).toHaveValue("Publisher");
+    expect(screen.getByLabelText("City")).toHaveValue("Longmont");
+    expect(screen.getByLabelText("State")).toHaveValue("CO");
+    expect(screen.getByText("Step 1 of 5")).toBeInTheDocument();
+    expect(screen.getByText(/Longmont starter profile was filled automatically/i)).toBeInTheDocument();
+  });
+
+  test("identity setup prefill rescue does not overwrite typed user input", async () => {
+    vi.useFakeTimers();
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      return Promise.resolve();
+    });
+
+    const { act } = await import("@testing-library/react");
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
+
+    fireEvent.change(screen.getByLabelText("Publication Name"), {
+      target: { value: "Boulder Beat" },
+    });
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(5000);
+    });
+
+    expect(screen.getByLabelText("Publication Name")).toHaveValue("Boulder Beat");
+    expect(screen.getByLabelText("City")).toHaveValue("");
+    expect(screen.queryByText(/Longmont starter profile was filled automatically/i)).not.toBeInTheDocument();
+  });
+
   test("identity setup waits for explicit user input instead of auto-continuing", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;

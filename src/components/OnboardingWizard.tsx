@@ -34,6 +34,7 @@ const SLOW_CPU_CAUTION =
 const MODEL_DOWNLOAD_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 6000;
 const MODEL_READY_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 5000;
 const FINAL_SETUP_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 3000;
+const IDENTITY_PREFILL_RESCUE_MS = import.meta.env.MODE === "test" ? 5000 : 10000;
 
 // Approximate one-time download sizes, sourced from models.json so the wizard
 // can disclose the size up front (UX-C1) instead of springing a multi-GB
@@ -129,6 +130,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const [runtimePercent, setRuntimePercent] = useState<number | null>(null);
   const [runtimeError, setRuntimeError] = useState("");
   const modelDownloadRescueAttemptedRef = useRef(false);
+  const identityPrefillRescueAttemptedRef = useRef(false);
+  const identityUserInteractedRef = useRef(false);
   const pubNameInputRef = useRef<HTMLInputElement | null>(null);
   const editorNameInputRef = useRef<HTMLInputElement | null>(null);
   const organizationTypeSelectRef = useRef<HTMLSelectElement | null>(null);
@@ -182,6 +185,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     setOrganizationType(values.organizationType);
     setCity(values.city);
     setState(values.state);
+  };
+
+  const markIdentityInteraction = () => {
+    identityUserInteractedRef.current = true;
   };
 
   const currentIdentityValues = () => ({
@@ -675,6 +682,40 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   };
 
   useEffect(() => {
+    if (
+      step !== 1 ||
+      identityPrefillRescueAttemptedRef.current ||
+      identityUserInteractedRef.current ||
+      pubName.trim() ||
+      editorName.trim() ||
+      city.trim() ||
+      state.trim()
+    ) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      if (
+        step !== 1 ||
+        identityPrefillRescueAttemptedRef.current ||
+        identityUserInteractedRef.current ||
+        pubName.trim() ||
+        editorName.trim() ||
+        city.trim() ||
+        state.trim()
+      ) {
+        return;
+      }
+
+      identityPrefillRescueAttemptedRef.current = true;
+      applyIdentityValues(starterProfiles[0]);
+      setSetupNotice("The Longmont starter profile was filled automatically because setup did not receive input. You can edit these fields before continuing.");
+    }, IDENTITY_PREFILL_RESCUE_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [step, pubName, editorName, city, state]);
+
+  useEffect(() => {
     if (step === 1) {
       window.setTimeout(() => pubNameInputRef.current?.focus(), 0);
     }
@@ -777,7 +818,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                     href={`#starter=${profile.label.toLowerCase()}`}
                     role="button"
                     className="btn btn-secondary btn-sm"
-                    onClick={() => applyIdentityValues(profile)}
+                    onClick={() => {
+                      markIdentityInteraction();
+                      applyIdentityValues(profile);
+                    }}
                   >
                     {profile.label}
                   </a>
@@ -797,8 +841,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 type="text"
                 placeholder="e.g. The Brighton Gazette"
                 value={pubName}
-                onInput={e => setPubName(e.currentTarget.value)}
-                onChange={e => setPubName(e.target.value)}
+                onInput={e => {
+                  markIdentityInteraction();
+                  setPubName(e.currentTarget.value);
+                }}
+                onChange={e => {
+                  markIdentityInteraction();
+                  setPubName(e.target.value);
+                }}
               />
             </div>
             <div className="onboarding-field">
@@ -810,8 +860,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 type="text"
                 placeholder="e.g. Jane Doe"
                 value={editorName}
-                onInput={e => setEditorName(e.currentTarget.value)}
-                onChange={e => setEditorName(e.target.value)}
+                onInput={e => {
+                  markIdentityInteraction();
+                  setEditorName(e.currentTarget.value);
+                }}
+                onChange={e => {
+                  markIdentityInteraction();
+                  setEditorName(e.target.value);
+                }}
               />
             </div>
             <div className="onboarding-field">
@@ -820,8 +876,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 id="onboarding-organization-type"
                 ref={organizationTypeSelectRef}
                 value={organizationType}
-                onInput={e => setOrganizationType(e.currentTarget.value)}
-                onChange={e => setOrganizationType(e.target.value)}
+                  onInput={e => {
+                    markIdentityInteraction();
+                    setOrganizationType(e.currentTarget.value);
+                  }}
+                  onChange={e => {
+                    markIdentityInteraction();
+                    setOrganizationType(e.target.value);
+                  }}
               >
                 <option value="single_person">Single person</option>
                 <option value="for_profit">For-profit publication</option>
@@ -840,8 +902,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   type="text"
                   placeholder="Brighton"
                   value={city}
-                  onInput={e => setCity(e.currentTarget.value)}
-                  onChange={e => setCity(e.target.value)}
+                  onInput={e => {
+                    markIdentityInteraction();
+                    setCity(e.currentTarget.value);
+                  }}
+                  onChange={e => {
+                    markIdentityInteraction();
+                    setCity(e.target.value);
+                  }}
                 />
               </div>
               <div className="onboarding-field">
@@ -854,8 +922,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   value={state}
                   maxLength={2}
                   autoCapitalize="characters"
-                  onInput={e => setState(sanitizeStateCode(e.currentTarget.value))}
-                  onChange={e => setState(sanitizeStateCode(e.target.value))}
+                  onInput={e => {
+                    markIdentityInteraction();
+                    setState(sanitizeStateCode(e.currentTarget.value));
+                  }}
+                  onChange={e => {
+                    markIdentityInteraction();
+                    setState(sanitizeStateCode(e.target.value));
+                  }}
                 />
               </div>
             </div>
