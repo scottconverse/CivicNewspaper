@@ -1936,6 +1936,118 @@ I should produce JSON only.
         );
     }
 
+    #[tokio::test]
+    async fn test_daily_scan_downgrades_draft_ready_model_lead_without_linked_evidence() {
+        let mut conn = rusqlite::Connection::open_in_memory().unwrap();
+        crate::core::migrations::run_migrations(&mut conn).unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "City Council Agenda".to_string(),
+                url: "https://longmontcolorado.gov/agendas".to_string(),
+                r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://longmontcolorado.gov/agendas/library-roof".to_string()),
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "On July 7, City Council will vote on a Longmont Public Library roof contract with construction timeline and public spending impacts.".to_string(),
+                content_hash: "hash_library_roof_contract".to_string(),
+                entities: "[\"City Council\",\"Longmont Public Library\"]".to_string(),
+            },
+        )
+        .unwrap();
+        let db_conn: DbConn = Arc::new(Mutex::new(conn));
+
+        struct FakeLlmClient;
+        #[async_trait::async_trait]
+        impl crate::core::llm::LlmClient for FakeLlmClient {
+            async fn call(
+                &self,
+                _model: &str,
+                _prompt: &str,
+                _system: &str,
+            ) -> Result<String, String> {
+                Ok(r#"{"leads":[{"title":"Council Vote on Library Roof Contract","summary":"The council agenda includes voting for roof work at Downtown Longmont's public library, impacting city spending and construction timeline.","original_url":"https://example.gov/agenda","why_flagged":"Current action with a direct impact on the community facility.","source_name":"City Council Agenda","source_type":"agenda","priority":"high","suggested_next_step":"Confirm details in agenda packet, verify vendor and amount before drafting story.","story_type":"story","what_changed":"Scheduled council vote on the contract.","immediacy":5,"impact":4,"conflict":2,"novelty":3,"what_would_make_it_publishable":"Agenda packet confirmation of vendor, amount, and voting date."}]}"#.to_string())
+            }
+        }
+        let llm_client: Arc<dyn crate::core::llm::LlmClient> = Arc::new(FakeLlmClient);
+
+        let run_id = crate::core::daily_scan::run_daily_scan(
+            &db_conn,
+            &llm_client,
+            "aggregator prompt template",
+            "Longmont",
+            "CO",
+            24,
+        )
+        .await
+        .expect("scan should succeed");
+
+        let conn = db_conn.lock().unwrap();
+        let scan_leads = list_daily_scan_leads(&conn, run_id).unwrap();
+        let unsupported_model_lead = scan_leads
+            .iter()
+            .find(|lead| lead.title == "Council Vote on Library Roof Contract")
+            .expect("model lead should be retained for editor verification");
+        assert_eq!(
+            unsupported_model_lead.disposition.as_deref(),
+            Some("needs_verification"),
+            "a model-suggested story with no matching evidence row must not be draft-ready"
+        );
+        assert!(
+            unsupported_model_lead
+                .publishability_note
+                .as_deref()
+                .unwrap_or_default()
+                .contains("No source documents could be linked"),
+            "the editor should be told exactly why the lead was downgraded"
+        );
+
+        let story_queue_leads = list_leads(&conn).unwrap();
+        let unsupported_queue_lead = story_queue_leads
+            .iter()
+            .find(|lead| {
+                lead.from_scan_lead_id == unsupported_model_lead.id
+                    && lead.why.contains("Council Vote on Library Roof Contract")
+            })
+            .expect("unsupported model lead should still appear as verification work");
+        assert_ne!(
+            unsupported_queue_lead.disposition.as_deref(),
+            Some("ready_to_draft"),
+            "unsupported model lead must not be offered as a normal draft path"
+        );
+
+        let evidence_backed_draftable = story_queue_leads.iter().any(|lead| {
+            matches!(
+                lead.disposition.as_deref(),
+                Some("ready_to_draft") | Some("review")
+            ) && conn
+                .query_row(
+                    "SELECT COUNT(*) FROM lead_evidence WHERE lead_id = ?1",
+                    [lead.id.unwrap()],
+                    |row| row.get::<_, i32>(0),
+                )
+                .unwrap()
+                > 0
+        });
+        assert!(
+            evidence_backed_draftable,
+            "quality rescue should provide an evidence-backed draftable lead instead"
+        );
+    }
+
     #[test]
     fn test_migration_0007_survives_existing_evidence_rows() {
         let conn = Connection::open_in_memory().unwrap();

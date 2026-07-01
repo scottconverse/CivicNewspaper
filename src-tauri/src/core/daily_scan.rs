@@ -863,7 +863,11 @@ fn save_daily_scan_lead_for_queue(
         return Ok(0);
     }
     let recurring_memory = find_recurring_memory(conn, lead)?;
-    let lead = lead_with_beat_memory(lead, recurring_memory.as_ref());
+    let mut lead = lead_with_beat_memory(lead, recurring_memory.as_ref());
+    let evidence_ids = evidence_ids_for_scan_lead(conn, &lead)?;
+    if evidence_ids.is_empty() && scan_lead_requires_linked_evidence(&lead) {
+        lead = downgrade_scan_lead_without_evidence(lead);
+    }
     let scan_lead_id = db::insert_daily_scan_lead(conn, &lead)?;
     upsert_beat_memory(conn, scan_lead_id, &lead)?;
     let title = lead.title.trim();
@@ -923,9 +927,35 @@ fn save_daily_scan_lead_for_queue(
         recurrence_note: lead.recurrence_note.clone(),
         created_at: String::new(),
     };
-    let evidence_ids = evidence_ids_for_scan_lead(conn, &lead)?;
     db::insert_lead(conn, &story_lead, &evidence_ids)?;
     Ok(scan_lead_id)
+}
+
+fn scan_lead_requires_linked_evidence(lead: &DailyScanLead) -> bool {
+    matches!(lead.story_type.as_deref(), Some("story") | Some("brief"))
+        && matches!(
+            lead.disposition.as_deref(),
+            Some("ready_to_draft") | Some("review")
+        )
+}
+
+fn downgrade_scan_lead_without_evidence(mut lead: DailyScanLead) -> DailyScanLead {
+    lead.disposition = Some("needs_verification".to_string());
+    let evidence_note = "No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy.";
+    lead.publishability_note = Some(match lead.publishability_note {
+        Some(note) if !note.trim().is_empty() => {
+            format!("{}. {}", note.trim_end_matches('.'), evidence_note)
+        }
+        _ => evidence_note.to_string(),
+    });
+    lead.suggested_next_step = Some(match lead.suggested_next_step {
+        Some(step) if !step.trim().is_empty() => format!(
+            "{}. Then attach or cite the source document before drafting.",
+            step.trim_end_matches('.')
+        ),
+        _ => "Attach or cite the public source document before drafting.".to_string(),
+    });
+    lead
 }
 
 #[derive(Debug)]
