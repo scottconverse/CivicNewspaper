@@ -1,0 +1,27 @@
+[
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\ollama-runtime",
+        "Length":  null,
+        "LastWriteTime":  "\/Date(1782887397990)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+        "Length":  4096,
+        "LastWriteTime":  "\/Date(1782887351331)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db-shm",
+        "Length":  32768,
+        "LastWriteTime":  "\/Date(1782887351332)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db-wal",
+        "Length":  412032,
+        "LastWriteTime":  "\/Date(1782887364600)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\community_profile.json",
+        "Length":  662,
+        "LastWriteTime":  "\/Date(1782887364601)\/"
+    }
+]

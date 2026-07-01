@@ -1,0 +1,36 @@
+{
+  "db_exists": true,
+  "settings": [
+    {
+      "key": "model.selected",
+      "value": "phi4-mini:latest"
+    },
+    {
+      "key": "identity.newsroom_name",
+      "value": "My Local Publication"
+    },
+    {
+      "key": "identity.editor_name",
+      "value": "Publisher"
+    },
+    {
+      "key": "identity.organization_type",
+      "value": "single_person"
+    },
+    {
+      "key": "identity.city",
+      "value": "Longmont"
+    },
+    {
+      "key": "identity.state",
+      "value": "CO"
+    }
+  ],
+  "settings_count": 6,
+  "sources": [],
+  "sources_count": 0,
+  "leads": [],
+  "leads_count": 0,
+  "drafts": [],
+  "drafts_count": 0
+}
