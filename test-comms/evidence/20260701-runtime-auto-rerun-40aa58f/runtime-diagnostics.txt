@@ -1,0 +1,205 @@
+Diagnostics captured 2026-06-30T23:55:46.5377782-06:00
+Processes:
+
+
+ProcessName      : civicnews
+Id               : 21960
+MainWindowTitle  : 
+MainWindowHandle : 1901542
+Path             : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+StartTime        : 6/30/2026 11:51:20 PM
+
+ProcessName      : ollama
+Id               : 12076
+MainWindowTitle  : 
+MainWindowHandle : 0
+Path             : C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe
+StartTime        : 6/30/2026 11:52:11 PM
+
+
+
+
+Ollama list:
+NAME    ID    SIZE    MODIFIED 
+
+Ollama/runtime paths:
+PRESENT C:\Users\civic\.ollama
+
+FullName                                                Length LastWriteTime        
+--------                                                ------ -------------        
+C:\Users\civic\.ollama\cache                                   6/30/2026 11:52:12 PM
+C:\Users\civic\.ollama\models                                  6/30/2026 11:52:12 PM
+C:\Users\civic\.ollama\id_ed25519                       387    6/30/2026 11:52:12 PM
+C:\Users\civic\.ollama\id_ed25519.pub                   81     6/30/2026 11:52:12 PM
+C:\Users\civic\.ollama\cache\model-recommendations.json 1311   6/30/2026 11:52:12 PM
+C:\Users\civic\.ollama\models\blobs                            6/30/2026 11:52:12 PM
+C:\Users\civic\.ollama\models\manifests                        6/30/2026 11:52:12 PM
+
+
+
+PRESENT C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime
+
+FullName                                                                                                               
+--------                                                                                                               
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11                                     
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib                                 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe                          
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama                          
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12                 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13                 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan                   
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-base.dll            
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-alderlake.dll   
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-cannonlake.dll  
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-cascadelake.dll 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-cooperlake.dll  
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-haswell.dll     
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-icelake.dll     
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-ivybridge.dll   
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-piledriver.dll  
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-sandybridge.dll 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-sapphirerapid...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-skylakex.dll    
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-sse42.dll       
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-x64.dll         
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-zen4.dll        
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml.dll                 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\libc++.dll               
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\libllama-common.dll      
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\libllama-quantize-impl...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\libllama-server-impl.dll 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\libllama.dll             
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\libmtmd.dll              
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\libomp.dll               
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\libunwind.dll            
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\libwinpthread-1.dll      
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\llama-quantize.exe       
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\llama-server.exe         
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\concrt140.dll   
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\cublas64_12.dll 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\cublasLt64_12...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\cudart64_12.dll 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\ggml-cuda.dll   
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\msvcp140.dll    
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\msvcp140_1.dll  
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\msvcp140_2.dll  
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\msvcp140_atom...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\msvcp140_code...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\vccorlib140.dll 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\vcruntime140.dll
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\vcruntime140_...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\vcruntime140_...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\concrt140.dll   
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\cublas64_13.dll 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\cublasLt64_13...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\ggml-cuda.dll   
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\msvcp140.dll    
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\msvcp140_1.dll  
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\msvcp140_2.dll  
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\msvcp140_atom...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\msvcp140_code...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\vccorlib140.dll 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\vcruntime140.dll
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\vcruntime140_...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\vcruntime140_...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\concrt140.dll     
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\ggml-vulkan.dll   
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\msvcp140.dll      
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\msvcp140_1.dll    
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\msvcp140_2.dll    
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\msvcp140_atomic...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\msvcp140_codecv...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\vccorlib140.dll   
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\vcruntime140.dll  
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\vcruntime140_1.dll
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\vcruntime140_th...
+
+
+
+ABSENT C:\Users\civic\AppData\Local\Programs\Ollama
+ABSENT C:\Users\civic\AppData\Local\Ollama
+ABSENT C:\Program Files\Ollama
+App data tree:
+
+FullName                                                                                                               
+--------                                                                                                               
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime                                              
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\civicdesk.db                                                
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\civicdesk.db-shm                                            
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\civicdesk.db-wal                                            
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\community_profile.json                                      
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11                                     
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib                                 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\ollama.exe                          
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama                          
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12                 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13                 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan                   
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-base.dll            
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-alderlake.dll   
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-cannonlake.dll  
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-cascadelake.dll 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-cooperlake.dll  
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-haswell.dll     
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-icelake.dll     
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-ivybridge.dll   
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-piledriver.dll  
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-sandybridge.dll 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-sapphirerapid...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-skylakex.dll    
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-sse42.dll       
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-x64.dll         
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml-cpu-zen4.dll        
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\ggml.dll                 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\libc++.dll               
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\libllama-common.dll      
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\libllama-quantize-impl...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\libllama-server-impl.dll 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\libllama.dll             
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\libmtmd.dll              
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\libomp.dll               
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\libunwind.dll            
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\libwinpthread-1.dll      
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\llama-quantize.exe       
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\llama-server.exe         
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\concrt140.dll   
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\cublas64_12.dll 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\cublasLt64_12...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\cudart64_12.dll 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\ggml-cuda.dll   
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\msvcp140.dll    
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\msvcp140_1.dll  
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\msvcp140_2.dll  
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\msvcp140_atom...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\msvcp140_code...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\vccorlib140.dll 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\vcruntime140.dll
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\vcruntime140_...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v12\vcruntime140_...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\concrt140.dll   
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\cublas64_13.dll 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\cublasLt64_13...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\ggml-cuda.dll   
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\msvcp140.dll    
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\msvcp140_1.dll  
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\msvcp140_2.dll  
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\msvcp140_atom...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\msvcp140_code...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\vccorlib140.dll 
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\vcruntime140.dll
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\vcruntime140_...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\cuda_v13\vcruntime140_...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\concrt140.dll     
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\ggml-vulkan.dll   
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\msvcp140.dll      
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\msvcp140_1.dll    
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\msvcp140_2.dll    
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\msvcp140_atomic...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\msvcp140_codecv...
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\vccorlib140.dll   
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\vcruntime140.dll  
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\vcruntime140_1.dll
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\ollama-runtime\v0.30.11\lib\ollama\vulkan\vcruntime140_th...
+
+
+
