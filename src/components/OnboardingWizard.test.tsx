@@ -704,7 +704,7 @@ describe("OnboardingWizard Component Tests", () => {
     
     // Click pull recommended model button
     const recommendedModel = "phi4-mini:latest";
-    const pullBtn = await screen.findByRole("button", { name: new RegExp("Download " + recommendedModel, "i") });
+    const pullBtn = (await screen.findAllByRole("button", { name: new RegExp("Download " + recommendedModel, "i") }))[0];
     fireEvent.click(pullBtn);
 
     // Verify it called pull_ollama_model command
@@ -821,7 +821,30 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(screen.getByText("Step 3 of 5")).toBeInTheDocument());
   });
 
-  test("requires explicit confirmation before skipping model download from primary Next", async () => {
+  test("primary Step 3 action starts model download instead of opening skip confirmation", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: [], version: "0.1.0" });
+      if (cmd === "get_setting") return Promise.resolve(null);
+      if (cmd === "pull_ollama_model") return new Promise(() => {});
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} initialStep={3} />);
+
+    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("button", { name: /Start download/i })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: /Start download/i }));
+
+    await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("pull_ollama_model", { modelId: "phi4-mini:latest" }));
+    expect(screen.queryByText("Skip the model download?")).not.toBeInTheDocument();
+    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
+  });
+
+  test("Skip for now remains the explicit model-download skip path", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
 
@@ -834,11 +857,10 @@ describe("OnboardingWizard Component Tests", () => {
 
     render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} initialStep={3} />);
 
-    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /^next/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Skip for now/i }));
 
     expect(await screen.findByText("Skip the model download?")).toBeInTheDocument();
-    expect(screen.getByText(/Daily Scan and AI drafting will run in limited mode/i)).toBeInTheDocument();
-    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
+    expect(screen.getByText(/AI drafting and AI-assisted review will stay limited/i)).toBeInTheDocument();
+    expect(invokeMock).not.toHaveBeenCalledWith("pull_ollama_model", expect.anything());
   });
 });

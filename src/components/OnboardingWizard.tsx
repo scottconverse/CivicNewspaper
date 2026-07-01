@@ -703,15 +703,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       } else if (step === 3) {
         const modelReady = pullComplete || Boolean(health && modelInstalled(model, health.models));
         if (!modelReady) {
-          setSkipConfirm({
-            title: "Skip the model download?",
-            message: "Daily Scan and AI drafting will run in limited mode until you download a model from AI Model.",
-            confirmLabel: "Skip download",
-            onConfirm: async () => {
-              await saveSetting("model.selected", model);
-              setStep(4);
-            },
-          });
+          setAutoStartPull(true);
           return;
         }
         await saveSetting("model.selected", model);
@@ -1375,7 +1367,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               disabled={runtimeInstalling || pulling || stepTwoNeedsRuntimeInstall}
               title={stepTwoNeedsRuntimeInstall ? "Install the local AI runtime or choose Skip for now before continuing." : undefined}
             >
-              {step === steps.length ? "Finish Onboarding" : "Next"}
+              {step === 3 && !pulling && !pullComplete && !(health && modelInstalled(model, health.models))
+                ? "Start download"
+                : step === steps.length
+                  ? "Finish Onboarding"
+                  : "Next"}
               <ChevronRight size={16} style={{ marginLeft: "0.5rem" }} />
             </button>
           )}
