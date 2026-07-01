@@ -1,0 +1,64 @@
+{
+  "issue_id": "issue-20260701-011301-717737200",
+  "output_dir": "C:/Users/civic/AppData/Roaming/com.scottconverse.civicdesk/sites/default",
+  "generated_at": "2026-07-01T01:13:01.717737200+00:00",
+  "provider": "here_now",
+  "published_url": "https://serene-aurora-nz5r.here.now",
+  "deployment_id": "slug=serene-aurora-nz5r;version=01KWDKSY4VEFNGWPF99A71HD21;created_slug=serene-aurora-nz5r",
+  "article_count": 3,
+  "skipped_count": 0,
+  "files_written": 20,
+  "generated_files": [
+    "styles.css",
+    "print.css",
+    "briefs/6.html",
+    "briefs/3.html",
+    "briefs/2.html",
+    "index.html",
+    "about.html",
+    "ethics.html",
+    "how-we-report.html",
+    "corrections.html",
+    "feed.xml",
+    "newsletter.md",
+    "substack.md",
+    "share-package.md",
+    "facebook-post.txt",
+    "subreddit-post.md",
+    "nextdoor-post.txt",
+    "short-link-blurb.txt",
+    "publish-manifest.json",
+    "site-package.zip"
+  ],
+  "index_path": "index.html",
+  "rss_path": "feed.xml",
+  "newsletter_path": "newsletter.md",
+  "substack_path": "substack.md",
+  "share_package_path": "share-package.md",
+  "facebook_post_path": "facebook-post.txt",
+  "subreddit_post_path": "subreddit-post.md",
+  "nextdoor_post_path": "nextdoor-post.txt",
+  "short_link_blurb_path": "short-link-blurb.txt",
+  "manifest_path": "publish-manifest.json",
+  "zip_path": "site-package.zip",
+  "articles": [
+    {
+      "title": "July Fourth Film Show at Longmont Museum Features 'Encanto' (2021)",
+      "format": "brief",
+      "relative_path": "briefs/6.html",
+      "updated_at": "2026-07-01T01:11:38.460735900+00:00"
+    },
+    {
+      "title": "City of Longmont Library Announces Summer Reading Challenge Deadline",
+      "format": "brief",
+      "relative_path": "briefs/3.html",
+      "updated_at": "2026-07-01T00:46:00.294150200+00:00"
+    },
+    {
+      "title": "Downtown Longmont's Creative District Announces July Events",
+      "format": "brief",
+      "relative_path": "briefs/2.html",
+      "updated_at": "2026-07-01T00:45:48.689420200+00:00"
+    }
+  ]
+}

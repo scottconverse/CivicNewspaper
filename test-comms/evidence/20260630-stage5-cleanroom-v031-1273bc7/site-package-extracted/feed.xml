@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Longmont Civic Desk Cleanroom</title>
+    <link>index.html</link>
+    <description>Cleanroom test publication for Longmont civic coverage.</description>
+    <language>en-us</language>
+    <pubDate>Wed, 1 Jul 2026 01:13:01 +0000</pubDate>
+    <lastBuildDate>Wed, 1 Jul 2026 01:13:01 +0000</lastBuildDate>
+    <item>
+      <title>July Fourth Film Show at Longmont Museum Features &#x27;Encanto&#x27; (2021)</title>
+      <link>briefs/6.html</link>
+      <guid>briefs/6</guid>
+      <pubDate>2026-07-01T01:11:38.460735900+00:00</pubDate>
+      <description>July Fourth Film Show at Longmont Museum Features &#x27;Encanto&#x27; (2021)</description>
+    </item>
+    <item>
+      <title>City of Longmont Library Announces Summer Reading Challenge Deadline</title>
+      <link>briefs/3.html</link>
+      <guid>briefs/3</guid>
+      <pubDate>2026-07-01T00:46:00.294150200+00:00</pubDate>
+      <description>City of Longmont Library Announces Summer Reading Challenge Deadline</description>
+    </item>
+    <item>
+      <title>Downtown Longmont&#x27;s Creative District Announces July Events</title>
+      <link>briefs/2.html</link>
+      <guid>briefs/2</guid>
+      <pubDate>2026-07-01T00:45:48.689420200+00:00</pubDate>
+      <description>Downtown Longmont&#x27;s Creative District Announces July Events</description>
+    </item>
+
+  </channel>
+</rss>
