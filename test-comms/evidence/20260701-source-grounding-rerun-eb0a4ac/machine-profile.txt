@@ -1,0 +1,32 @@
+﻿Date: 2026-07-01T12:08:50.6067884-06:00
+OS Name:                       Microsoft Windows 11 Home
+OS Version:                    10.0.26200 N/A Build 26200
+OS Build Type:                 Multiprocessor Free
+System Manufacturer:           Micro-Star International Co., Ltd.
+System Model:                  Cyborg 15 A13VE
+Processor(s):                  1 Processor(s) Installed.
+BIOS Version:                  American Megatrends International, LLC. E15K1IMS.10E, 9/4/2023
+Total Physical Memory:         16,089 MB
+Available Physical Memory:     7,574 MB
+
+
+Name          : Intel(R) UHD Graphics
+AdapterRAM    : 2147479552
+DriverVersion : 32.0.101.5972
+
+Name          : NVIDIA GeForce RTX 4050 Laptop GPU
+AdapterRAM    : 4293918720
+DriverVersion : 32.0.15.8129
+
+
+
+
+
+
+Name : C
+Free : 371912298496
+Used : 115711188992
+
+
+
+

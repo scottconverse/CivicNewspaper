@@ -1,0 +1,60 @@
+{
+  "db_path": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+  "db_exists": true,
+  "settings_count": 11,
+  "sources_count": 19,
+  "daily_scan_runs_count": 0,
+  "daily_scan_leads_count": 0,
+  "leads_count": 12,
+  "evidence_items_count": 68,
+  "lead_evidence_count": 12,
+  "drafts_count": 0,
+  "publish_runs_count": 0,
+  "published_posts_count": 0,
+  "settings": [
+    {
+      "key": "identity.city",
+      "value": "Longmont"
+    },
+    {
+      "key": "identity.editor_name",
+      "value": "Publisher"
+    },
+    {
+      "key": "identity.newsroom_name",
+      "value": "My Local Publication"
+    },
+    {
+      "key": "identity.organization_type",
+      "value": "single_person"
+    },
+    {
+      "key": "identity.state",
+      "value": "CO"
+    },
+    {
+      "key": "model.selected",
+      "value": "phi4-mini:latest"
+    },
+    {
+      "key": "onboarding_complete",
+      "value": "1"
+    },
+    {
+      "key": "paths.backup",
+      "value": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\backups"
+    },
+    {
+      "key": "paths.publish",
+      "value": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default"
+    },
+    {
+      "key": "setup.first_run_intake",
+      "value": "true"
+    },
+    {
+      "key": "setup.recovered_input",
+      "value": "running_source_intake"
+    }
+  ]
+}
