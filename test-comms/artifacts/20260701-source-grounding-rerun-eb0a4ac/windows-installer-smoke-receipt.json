@@ -1,0 +1,105 @@
+﻿{
+    "generated_at":  "2026-07-01T11:35:46.3502095-06:00",
+    "repo":  "C:\\Users\\instynct\\Desktop\\CODE\\civicnewspaper",
+    "app_version":  "0.3.1",
+    "nsis_installer":  "C:\\Users\\instynct\\Desktop\\CODE\\civicnewspaper\\src-tauri\\target\\release\\bundle\\nsis\\The Civic Desk_0.3.1_x64-setup.exe",
+    "msi_installer":  null,
+    "output_dir":  "C:\\Users\\instynct\\Desktop\\CODE\\civicnewspaper\\.agent-runs\\windows-installer-smoke-20260701-113544",
+    "forced_ollama_base_url":  "http://127.0.0.1:65200",
+    "checks":  [
+                   {
+                       "name":  "nsis-silent-install-exit",
+                       "ok":  true,
+                       "details":  {
+                                       "exit_code":  0,
+                                       "install_root":  "C:\\Users\\instynct\\Desktop\\CODE\\civicnewspaper\\.agent-runs\\windows-installer-smoke-20260701-113544\\nsis-install"
+                                   }
+                   },
+                   {
+                       "name":  "nsis-installed-exe-present",
+                       "ok":  true,
+                       "details":  {
+                                       "exe":  "C:\\Users\\instynct\\Desktop\\CODE\\civicnewspaper\\.agent-runs\\windows-installer-smoke-20260701-113544\\nsis-install\\civicnews.exe"
+                                   }
+                   },
+                   {
+                       "name":  "nsis-installed-app-starts",
+                       "ok":  true,
+                       "details":  {
+                                       "app_data":  "C:\\Users\\instynct\\Desktop\\CODE\\civicnewspaper\\.agent-runs\\windows-installer-smoke-20260701-113544\\app-data",
+                                       "pid":  13188
+                                   }
+                   },
+                   {
+                       "name":  "nsis-installed-first-run-screenshot",
+                       "ok":  true,
+                       "details":  {
+                                       "render_method":  "PrintWindow",
+                                       "width":  1215,
+                                       "installed_exe":  "C:\\Users\\instynct\\Desktop\\CODE\\civicnewspaper\\.agent-runs\\windows-installer-smoke-20260701-113544\\nsis-install\\civicnews.exe",
+                                       "height":  837,
+                                       "path":  "C:\\Users\\instynct\\Desktop\\CODE\\civicnewspaper\\.agent-runs\\windows-installer-smoke-20260701-113544\\nsis-installed-first-run.png",
+                                       "window_title":  "The Civic Desk",
+                                       "varied_pixels":  143,
+                                       "sampled_pixels":  156
+                                   }
+                   },
+                   {
+                       "name":  "nsis-installed-isolated-db-created",
+                       "ok":  true,
+                       "details":  {
+                                       "db_path":  "C:\\Users\\instynct\\Desktop\\CODE\\civicnewspaper\\.agent-runs\\windows-installer-smoke-20260701-113544\\app-data\\civicdesk.db",
+                                       "app_data":  "C:\\Users\\instynct\\Desktop\\CODE\\civicnewspaper\\.agent-runs\\windows-installer-smoke-20260701-113544\\app-data"
+                                   }
+                   },
+                   {
+                       "name":  "nsis-installed-dependency-absent-profile",
+                       "ok":  true,
+                       "details":  {
+                                       "forced_ollama_base_url":  "http://127.0.0.1:65200",
+                                       "downloaded_runtime_present":  false,
+                                       "downloaded_runtime_path":  "C:\\Users\\instynct\\Desktop\\CODE\\civicnewspaper\\.agent-runs\\windows-installer-smoke-20260701-113544\\app-data\\ollama-runtime"
+                                   }
+                   },
+                   {
+                       "name":  "nsis-uninstaller-present",
+                       "ok":  true,
+                       "details":  {
+                                       "uninstaller":  "C:\\Users\\instynct\\Desktop\\CODE\\civicnewspaper\\.agent-runs\\windows-installer-smoke-20260701-113544\\nsis-install\\uninstall.exe"
+                                   }
+                   },
+                   {
+                       "name":  "nsis-silent-uninstall-exit",
+                       "ok":  true,
+                       "details":  {
+                                       "exit_code":  0
+                                   }
+                   },
+                   {
+                       "name":  "nsis-uninstall-removes-installed-exe",
+                       "ok":  true,
+                       "details":  {
+                                       "exe":  "C:\\Users\\instynct\\Desktop\\CODE\\civicnewspaper\\.agent-runs\\windows-installer-smoke-20260701-113544\\nsis-install\\civicnews.exe"
+                                   }
+                   },
+                   {
+                       "name":  "nsis-uninstall-leaves-no-install-root-files",
+                       "ok":  true,
+                       "details":  {
+                                       "remaining_count":  0,
+                                       "install_root":  "C:\\Users\\instynct\\Desktop\\CODE\\civicnewspaper\\.agent-runs\\windows-installer-smoke-20260701-113544\\nsis-install",
+                                       "remaining":  [
+
+                                                     ]
+                                   }
+                   },
+                   {
+                       "name":  "msi-not-public-beta-target",
+                       "ok":  true,
+                       "details":  {
+                                       "note":  "No current MSI artifact was found. MSI is backlog/proof-needed and not required for this Windows public beta smoke."
+                                   }
+                   }
+               ],
+    "ok":  true
+}
