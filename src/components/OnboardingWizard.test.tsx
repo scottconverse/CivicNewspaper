@@ -146,6 +146,27 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("install_ollama_runtime"));
   });
 
+  test("offline AI setup keeps runtime install action above explanatory copy", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: false, models: [], version: null });
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+
+    const installButton = await screen.findByRole("button", { name: /Install local AI runtime/i });
+    const cleanMachineCopy = await screen.findByText(/On a clean machine/i);
+
+    expect(Boolean(installButton.compareDocumentPosition(cleanMachineCopy) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
+  });
+
   test("first-run onboarding uses a scrollable shell body and sticky actions", () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;

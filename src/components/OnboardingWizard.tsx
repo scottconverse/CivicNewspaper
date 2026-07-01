@@ -1022,6 +1022,17 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 {healthTimeout && (
                   <div style={{ background: "rgba(239, 68, 68, 0.05)", padding: "1rem", borderRadius: "8px" }}>
                     <h4 style={{ color: "var(--color-error)" }}>Couldn't reach the AI service</h4>
+                    <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "1rem" }}>
+                      <button type="button" className="btn btn-primary btn-sm" onClick={() => void installRuntime()} disabled={runtimeInstalling}>
+                        <Download size={14} style={{ marginRight: "0.5rem" }} /> {runtimeInstalling ? "Installing..." : "Install local AI runtime"}
+                      </button>
+                      <button type="button" className="btn btn-primary btn-sm" onClick={() => { setHealthTimeout(false); setCheckingHealth(true); setRetryCount(c => c + 1); }}>
+                        <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} /> Retry
+                      </button>
+                      <button type="button" className="btn btn-secondary btn-sm" onClick={handleExportDiagnostics}>
+                        Save diagnostics file
+                      </button>
+                    </div>
                     <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>
                       The private AI service did not start. First try restarting Civic Desk. If Windows or antivirus asked about this app, allow it, then retry. If it still fails, save a diagnostics file for support.
                     </p>
@@ -1059,23 +1070,22 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                     {exportStatus && (
                       <p style={{ fontSize: "0.85rem", color: "var(--accent-primary)", marginBottom: "0.5rem" }}>{exportStatus}</p>
                     )}
-                    <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-                      <button type="button" className="btn btn-primary btn-sm" onClick={() => void installRuntime()} disabled={runtimeInstalling}>
-                        <Download size={14} style={{ marginRight: "0.5rem" }} /> {runtimeInstalling ? "Installing..." : "Install local AI runtime"}
-                      </button>
-                      <button type="button" className="btn btn-primary btn-sm" onClick={() => { setHealthTimeout(false); setCheckingHealth(true); setRetryCount(c => c + 1); }}>
-                        <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} /> Retry
-                      </button>
-                      <button type="button" className="btn btn-secondary btn-sm" onClick={handleExportDiagnostics}>
-                        Save diagnostics file
-                      </button>
-                    </div>
                   </div>
                 )}
 
                 {!healthTimeout && health && !health.reachable && (
                   <div style={{ background: "rgba(239, 68, 68, 0.05)", padding: "1rem", borderRadius: "8px" }}>
                     <h4 style={{ color: "var(--color-error)" }}>Starting the local AI service</h4>
+                    <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "1rem" }}>
+                      <button type="button" className="btn btn-primary" onClick={() => void installRuntime()} disabled={runtimeInstalling}>
+                        <Download size={14} style={{ marginRight: "0.5rem" }} />
+                        {runtimeInstalling ? "Installing..." : "Install local AI runtime"}
+                      </button>
+                      <button type="button" className="btn btn-secondary" onClick={() => setRetryCount(c => c + 1)} disabled={checkingHealth}>
+                        <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} />
+                        {checkingHealth ? "Checking..." : "Check Initialization Status"}
+                      </button>
+                    </div>
                     <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>The Civic Desk includes a local AI service that runs on your computer. It may take a moment to start up. Once it's running, you'll download a model in the next step.</p>
                     <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
                       On a clean machine, use the install button if the service does not become ready.
@@ -1086,16 +1096,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                     {runtimeProgress && (
                       <p role="status" aria-live="polite" style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>{runtimeProgress}</p>
                     )}
-                    <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-                      <button type="button" className="btn btn-primary" onClick={() => void installRuntime()} disabled={runtimeInstalling}>
-                        <Download size={14} style={{ marginRight: "0.5rem" }} />
-                        {runtimeInstalling ? "Installing..." : "Install local AI runtime"}
-                      </button>
-                      <button type="button" className="btn btn-secondary" onClick={() => setRetryCount(c => c + 1)} disabled={checkingHealth}>
-                        <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} />
-                        {checkingHealth ? "Checking..." : "Check Initialization Status"}
-                      </button>
-                    </div>
                   </div>
                 )}
 
