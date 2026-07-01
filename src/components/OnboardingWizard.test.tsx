@@ -25,10 +25,12 @@ vi.mock("@tauri-apps/plugin-opener", () => ({
 describe("OnboardingWizard Component Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    window.history.replaceState(null, "", "/");
   });
 
   afterEach(() => {
     vi.useRealTimers();
+    window.history.replaceState(null, "", "/");
   });
 
   test("Happy path: completes onboarding and calls onComplete", async () => {
@@ -223,6 +225,9 @@ describe("OnboardingWizard Component Tests", () => {
 
     render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} />);
 
+    expect(screen.getByRole("button", { name: "Longmont" })).toHaveAttribute("href", "#starter=longmont");
+    expect(screen.getByRole("button", { name: /next/i })).toHaveAttribute("href", "#continueSetup=1");
+
     await user.click(screen.getByRole("button", { name: "Longmont" }));
     expect(screen.getByLabelText("Publication Name")).toHaveValue("My Local Publication");
     expect(screen.getByLabelText("Editor Name")).toHaveValue("Publisher");
@@ -257,7 +262,7 @@ describe("OnboardingWizard Component Tests", () => {
 
     render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
 
-    window.location.hash = "starter=longmont&continueSetup=1";
+    window.location.hash = "starter=longmont";
     window.dispatchEvent(new HashChangeEvent("hashchange"));
 
     await waitFor(() => expect(screen.getByLabelText("City")).toHaveValue("Longmont"));
@@ -265,6 +270,42 @@ describe("OnboardingWizard Component Tests", () => {
     expect(invokeMock).not.toHaveBeenCalledWith("set_setting", {
       key: "identity.newsroom_name",
       value: "My Local Publication",
+    });
+  });
+
+  test("native continue hash route advances identity setup if React click is lost", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      if (cmd === "set_setting") return Promise.resolve();
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: false, models: [], version: null });
+      if (cmd === "get_community_profile") return Promise.resolve({
+        site_title: "My Local Publication",
+        organization_type: "single_person",
+        city: "Brighton",
+        state: "CO",
+      });
+      if (cmd === "save_community_profile") return Promise.resolve();
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
+
+    window.location.hash = "starter=longmont";
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+    await waitFor(() => expect(screen.getByLabelText("City")).toHaveValue("Longmont"));
+    expect(screen.getByText("Step 1 of 5")).toBeInTheDocument();
+
+    window.location.hash = "continueSetup=1";
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+
+    await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "identity.city",
+      value: "Longmont",
     });
   });
 

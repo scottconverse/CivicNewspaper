@@ -691,18 +691,37 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         ? new URLSearchParams(window.location.search)
         : hashParams;
       const starter = params.get("starter");
+      const shouldContinue = params.get("continueSetup") === "1";
       const profile = starterProfiles.find(item => item.label.toLowerCase() === starter?.toLowerCase());
-      if (!profile) return;
+      if (!profile && !shouldContinue) return;
 
-      applyIdentityValues(profile);
       window.history.replaceState(null, "", window.location.pathname);
+
+      const identity = profile ?? currentIdentityValues();
+      if (profile) {
+        applyIdentityValues(profile);
+      }
+
+      if (shouldContinue) {
+        void (async () => {
+          try {
+            setInitError(null);
+            setSetupNotice(null);
+            await persistIdentity(identity);
+            setStep(2);
+          } catch (e) {
+            console.error(e);
+            setInitError(toUserMessage(e));
+          }
+        })();
+      }
 
     };
 
     handleStarterRoute();
     window.addEventListener("hashchange", handleStarterRoute);
     return () => window.removeEventListener("hashchange", handleStarterRoute);
-  }, [step]);
+  }, [step, pubName, editorName, organizationType, city, state]);
 
   return (
     <div className="wizard-container card" id="onboarding-wizard">
@@ -753,14 +772,15 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               <span>Starter profiles</span>
               <div>
                 {starterProfiles.map(profile => (
-                  <button
+                  <a
                     key={profile.label}
+                    href={`#starter=${profile.label.toLowerCase()}`}
+                    role="button"
                     className="btn btn-secondary btn-sm"
-                    type="button"
                     onClick={() => applyIdentityValues(profile)}
                   >
                     {profile.label}
-                  </button>
+                  </a>
                 ))}
               </div>
             </div>
@@ -1157,10 +1177,26 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             </button>
           )}
           
-          <button type="button" className="btn btn-primary" onClick={handleNext} id="btn-wizard-next" disabled={runtimeInstalling || pulling}>
-            {step === steps.length ? "Finish Onboarding" : "Next"}
-            <ChevronRight size={16} style={{ marginLeft: "0.5rem" }} />
-          </button>
+          {step === 1 ? (
+            <a
+              href="#continueSetup=1"
+              role="button"
+              className="btn btn-primary"
+              id="btn-wizard-next"
+              onClick={(event) => {
+                event.preventDefault();
+                void handleNext();
+              }}
+            >
+              Next
+              <ChevronRight size={16} style={{ marginLeft: "0.5rem" }} />
+            </a>
+          ) : (
+            <button type="button" className="btn btn-primary" onClick={handleNext} id="btn-wizard-next" disabled={runtimeInstalling || pulling}>
+              {step === steps.length ? "Finish Onboarding" : "Next"}
+              <ChevronRight size={16} style={{ marginLeft: "0.5rem" }} />
+            </button>
+          )}
         </div>
       </div>
 
