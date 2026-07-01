@@ -132,11 +132,13 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const modelDownloadRescueAttemptedRef = useRef(false);
   const identityPrefillRescueAttemptedRef = useRef(false);
   const identityUserInteractedRef = useRef(false);
+  const identityAdvanceInFlightRef = useRef(false);
   const pubNameInputRef = useRef<HTMLInputElement | null>(null);
   const editorNameInputRef = useRef<HTMLInputElement | null>(null);
   const organizationTypeSelectRef = useRef<HTMLSelectElement | null>(null);
   const cityInputRef = useRef<HTMLInputElement | null>(null);
   const stateInputRef = useRef<HTMLInputElement | null>(null);
+  const stepOneNextRef = useRef<HTMLButtonElement | null>(null);
 
   // Step 3 State
   const [pullProgress, setPullProgress] = useState<string>("");
@@ -231,6 +233,21 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       });
     } catch {
       /* non-fatal - identity settings above are still saved */
+    }
+  };
+
+  const advanceIdentityStep = async (identity = currentIdentityValues()) => {
+    if (identityAdvanceInFlightRef.current || step !== 1) return;
+    identityAdvanceInFlightRef.current = true;
+    try {
+      setInitError(null);
+      setSetupNotice(null);
+      await persistIdentity(identity);
+      setStep(2);
+    } catch (e) {
+      console.error(e);
+      setInitError(toUserMessage(e));
+      identityAdvanceInFlightRef.current = false;
     }
   };
 
@@ -625,9 +642,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     try {
       setInitError(null);
       if (step === 1) {
-        setSetupNotice(null);
-        await persistIdentity();
-        setStep(2);
+        await advanceIdentityStep();
       } else if (step === 2) {
         if (health && health.reachable && modelInstalled(model, health.models)) {
           // Model is already installed, skip Step 3 and go directly to Step 4
@@ -717,6 +732,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
   useEffect(() => {
     if (step === 1) {
+      identityAdvanceInFlightRef.current = false;
       window.setTimeout(() => pubNameInputRef.current?.focus(), 0);
     }
   }, [step]);
@@ -748,8 +764,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           try {
             setInitError(null);
             setSetupNotice(null);
-            await persistIdentity(identity);
-            setStep(2);
+            await advanceIdentityStep(identity);
           } catch (e) {
             console.error(e);
             setInitError(toUserMessage(e));
@@ -762,6 +777,25 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     handleStarterRoute();
     window.addEventListener("hashchange", handleStarterRoute);
     return () => window.removeEventListener("hashchange", handleStarterRoute);
+  }, [step, pubName, editorName, organizationType, city, state]);
+
+  useEffect(() => {
+    if (step !== 1 || !stepOneNextRef.current) return;
+
+    const next = stepOneNextRef.current;
+    const nativeAdvance = (event: Event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      void advanceIdentityStep();
+    };
+
+    // Some installed WebView paths have dropped React's delegated click handler
+    // while still delivering native DOM clicks. Keep Step 1 progression
+    // product-owned without relying on anchor navigation.
+    next.addEventListener("click", nativeAdvance);
+    return () => {
+      next.removeEventListener("click", nativeAdvance);
+    };
   }, [step, pubName, editorName, organizationType, city, state]);
 
   return (
@@ -1252,9 +1286,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           )}
           
           {step === 1 ? (
-            <a
-              href="#continueSetup=1"
-              role="button"
+            <button
+              type="button"
+              ref={stepOneNextRef}
               className="btn btn-primary"
               id="btn-wizard-next"
               onClick={(event) => {
@@ -1264,7 +1298,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             >
               Next
               <ChevronRight size={16} style={{ marginLeft: "0.5rem" }} />
-            </a>
+            </button>
           ) : (
             <button type="button" className="btn btn-primary" onClick={handleNext} id="btn-wizard-next" disabled={runtimeInstalling || pulling}>
               {step === steps.length ? "Finish Onboarding" : "Next"}

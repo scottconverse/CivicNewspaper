@@ -226,7 +226,7 @@ describe("OnboardingWizard Component Tests", () => {
     render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} />);
 
     expect(screen.getByRole("button", { name: "Longmont" })).toHaveAttribute("href", "#starter=longmont");
-    expect(screen.getByRole("button", { name: /next/i })).toHaveAttribute("href", "#continueSetup=1");
+    expect(screen.getByRole("button", { name: /next/i }).tagName).toBe("BUTTON");
 
     await user.click(screen.getByRole("button", { name: "Longmont" }));
     expect(screen.getByLabelText("Publication Name")).toHaveValue("My Local Publication");
