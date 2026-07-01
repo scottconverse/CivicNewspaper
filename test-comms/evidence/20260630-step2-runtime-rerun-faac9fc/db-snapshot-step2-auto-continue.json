@@ -1,0 +1,55 @@
+{
+  "captured_at": "2026-06-30T23:22:02.855162",
+  "db": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+  "db_exists": true,
+  "tables": {
+    "beat_memory": 0,
+    "civic_entities": 0,
+    "civic_observation_entities": 0,
+    "civic_observations": 0,
+    "daily_scan_leads": 0,
+    "daily_scan_runs": 0,
+    "dark_signals": 0,
+    "drafts": 0,
+    "evidence_items": 0,
+    "lead_evidence": 0,
+    "leads": 0,
+    "paired_clients": 0,
+    "publish_decision_audits": 0,
+    "publish_runs": 0,
+    "published_posts": 0,
+    "settings": 6,
+    "source_performance_scores": 0,
+    "sources": 0,
+    "sqlite_sequence": 3,
+    "story_templates": 5,
+    "subscribers": 0,
+    "verification_tasks": 0
+  },
+  "settings": [
+    {
+      "key": "identity.city",
+      "value": "Longmont"
+    },
+    {
+      "key": "identity.editor_name",
+      "value": "Publisher"
+    },
+    {
+      "key": "identity.newsroom_name",
+      "value": "My Local Publication"
+    },
+    {
+      "key": "identity.organization_type",
+      "value": "single_person"
+    },
+    {
+      "key": "identity.state",
+      "value": "CO"
+    },
+    {
+      "key": "model.selected",
+      "value": "phi4-mini:latest"
+    }
+  ]
+}

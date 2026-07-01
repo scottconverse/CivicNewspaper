@@ -1,0 +1,48 @@
+Diagnostics captured 2026-06-30T23:23:09.2023214-06:00
+Processes:
+
+
+ProcessName      : civicnews
+Id               : 1856
+MainWindowTitle  : The Civic Desk
+MainWindowHandle : 64685422
+Path             : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+StartTime        : 6/30/2026 11:21:06 PM
+
+
+
+
+App data tree:
+
+FullName                                                                          Length LastWriteTime        
+--------                                                                          ------ -------------        
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\civicdesk.db             4096 6/30/2026 11:21:07 PM
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\civicdesk.db-shm        32768 6/30/2026 11:21:07 PM
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\civicdesk.db-wal       412032 6/30/2026 11:21:20 PM
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\community_profile.json    662 6/30/2026 11:21:20 PM
+
+
+
+Install tree:
+
+FullName                                                                                  Length   LastWriteTime       
+--------                                                                                  ------   -------------       
+C:\Users\civic\AppData\Local\The Civic Desk\prompts                                                6/30/2026 11:20:5...
+C:\Users\civic\AppData\Local\The Civic Desk\_up_                                                   6/30/2026 11:20:5...
+C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe                                 22721536 6/30/2026 11:13:5...
+C:\Users\civic\AppData\Local\The Civic Desk\uninstall.exe                                 79229    6/30/2026 11:20:5...
+C:\Users\civic\AppData\Local\The Civic Desk\prompts\aggregator.md                         3170     6/30/2026 5:40:02 AM
+C:\Users\civic\AppData\Local\The Civic Desk\prompts\README.md                             2599     6/25/2026 7:39:14 AM
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension                                 6/30/2026 11:20:5...
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium                        6/30/2026 11:20:5...
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium\background.js 3858     6/30/2026 2:54:38 AM
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium\content.js    14591    6/30/2026 1:43:14 AM
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium\icon.png      68       6/25/2026 7:39:14 AM
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium\manifest.json 861      6/26/2026 7:34:08 PM
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium\popup.css     1194     6/26/2026 7:34:08 PM
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium\popup.html    1260     6/26/2026 7:34:08 PM
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium\popup.js      2026     6/26/2026 7:34:08 PM
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium\README.md     688      6/26/2026 7:34:08 PM
+
+
+
