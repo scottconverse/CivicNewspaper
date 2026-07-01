@@ -1,0 +1,337 @@
+Diagnostics captured 2026-06-30T22:54:43.9209115-06:00
+Processes:
+
+
+ProcessName      : civicnews
+Id               : 23148
+MainWindowTitle  : 
+MainWindowHandle : 16580956
+Path             : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+StartTime        : 6/30/2026 10:52:48 PM
+
+
+
+
+App data tree:
+
+FullName                                                                    Length LastWriteTime        
+--------                                                                    ------ -------------        
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\civicdesk.db       4096 6/30/2026 10:52:48 PM
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\civicdesk.db-shm  32768 6/30/2026 10:52:48 PM
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\civicdesk.db-wal 370832 6/30/2026 10:52:48 PM
+
+
+
+Local app data tree:
+
+FullName                                                                                                               
+--------                                                                                                               
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView                                                     
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\AutoLaunchProtocolsComponent                        
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\CertificateRevocation                               
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\component_crx_cache                                 
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Crashpad                                            
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default                                             
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\extensions_crx_cache                                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\GPUPersistentCache                                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\GrShaderCache                                       
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\hyphen-data                                         
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\MEIPreload                                          
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\OriginTrials                                        
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\PKIMetadata                                         
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\ShaderCache                                         
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Speech Recognition                                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Subresource Filter                                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Trust Protection Lists                              
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\TrustTokenKeyCommitments                            
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\WidevineCdm                                         
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\BrowserMetrics-spare.pma                            
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Last Version                                        
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Local State                                         
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\lockfile                                            
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Variations                                          
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\AutoLaunchProtocolsComponent\1.0.0.10               
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\AutoLaunchProtocolsComponent\1.0.0.10\manifest.json 
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\AutoLaunchProtocolsComponent\1.0.0.10\protocols.json
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\CertificateRevocation\6498.2025.9.4                 
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\CertificateRevocation\6498.2025.9.4\crl-set         
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\CertificateRevocation\6498.2025.9.4\manifest.json   
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\component_crx_cache\000ac7dc9366969db9d1e41810a3a...
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\component_crx_cache\95fd9d48e4fc245a3f3a99a3a16ec...
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\component_crx_cache\a922b7d113e67ce71528805d3c678...
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\component_crx_cache\fa29a6d5775ff340900a65b39b02f...
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\component_crx_cache\metadata.json                   
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Crashpad\attachments                                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Crashpad\reports                                    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Crashpad\metadata                                   
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Crashpad\settings.dat                               
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Crashpad\throttle_store.dat                         
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\AutofillAiModelCache                        
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\AutofillStrikeDatabase                      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\blob_storage                                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\BudgetDatabase                              
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Cache                                       
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\ClientCertificates                          
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Code Cache                                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\commerce_subscription_db                    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\DawnGraphiteCache                           
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\DawnWebGPUCache                             
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\discounts_db                                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\discount_infos_db                           
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\EdgeJourneys                                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\EdgeSessions                                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension Rules                             
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension Scripts                           
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension State                             
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Feature Engagement Tracker                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\GPUCache                                    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Local Storage                               
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Network                                     
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\optimization_guide_hint_cache_store         
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\parcel_tracking_db                          
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\PersistentOriginTrials                      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Safe Browsing Network                       
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Session Storage                             
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Sessions                                    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Shared Dictionary                           
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\shared_proto_db                             
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Site Characteristics Database               
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Sync Data                                   
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\BookmarkMergedSurfaceOrdering               
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\BrowsingTopicsSiteData                      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\BrowsingTopicsSiteData-journal              
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\BrowsingTopicsState                         
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\DIPS                                        
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\DIPS-wal                                    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\ExtensionActivityComp                       
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\ExtensionActivityEdge                       
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\ExtensionActivityEdge-journal               
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Favicons                                    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Favicons-journal                            
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\favorites_diagnostic.log                    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\heavy_ad_intervention_opt_out.db            
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\heavy_ad_intervention_opt_out.db-journal    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\History                                     
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\History-journal                             
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\LOCK                                        
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\LOG                                         
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Login Data                                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Login Data For Account                      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Login Data For Account-journal              
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Login Data-journal                          
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Network Action Predictor                    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Network Action Predictor-journal            
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Preferences                                 
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\README                                      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Secure Preferences                          
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\ServerCertificate                           
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\ServerCertificate-journal                   
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Top Sites                                   
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Top Sites-journal                           
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Vpn Tokens                                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Vpn Tokens-journal                          
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Web Data                                    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Web Data-journal                            
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\AutofillAiModelCache\LOCK                   
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\AutofillAiModelCache\LOG                    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\AutofillStrikeDatabase\LOCK                 
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\AutofillStrikeDatabase\LOG                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\blob_storage\cf4704f4-9ebd-4b44-9229-8932...
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\BudgetDatabase\LOCK                         
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\BudgetDatabase\LOG                          
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Cache\Cache_Data                            
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Cache\No_Vary_Search                        
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\ClientCertificates\LOCK                     
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\ClientCertificates\LOG                      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Code Cache\js                               
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Code Cache\wasm                             
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Code Cache\js\index-dir                     
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Code Cache\js\ae8f026562736a3e_0            
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Code Cache\js\index                         
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Code Cache\js\index-dir\the-real-index      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Code Cache\wasm\index-dir                   
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Code Cache\wasm\index                       
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Code Cache\wasm\index-dir\the-real-index    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\commerce_subscription_db\LOCK               
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\commerce_subscription_db\LOG                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\DawnGraphiteCache\data_0                    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\DawnGraphiteCache\data_1                    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\DawnGraphiteCache\data_2                    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\DawnGraphiteCache\data_3                    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\DawnGraphiteCache\index                     
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\DawnWebGPUCache\data_0                      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\DawnWebGPUCache\data_1                      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\DawnWebGPUCache\data_2                      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\DawnWebGPUCache\data_3                      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\DawnWebGPUCache\index                       
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\discounts_db\LOCK                           
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\discounts_db\LOG                            
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\discount_infos_db\LOCK                      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\discount_infos_db\LOG                       
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\EdgeJourneys\EdgeJourneys.db                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\EdgeJourneys\EdgeJourneys.db-wal            
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\EdgeSessions\SessionRestoreLog              
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension Rules\000003.log                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension Rules\CURRENT                     
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension Rules\LOCK                        
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension Rules\LOG                         
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension Rules\MANIFEST-000001             
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension Scripts\000003.log                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension Scripts\CURRENT                   
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension Scripts\LOCK                      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension Scripts\LOG                       
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension Scripts\MANIFEST-000001           
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension State\000003.log                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension State\CURRENT                     
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension State\LOCK                        
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension State\LOG                         
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension State\MANIFEST-000001             
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Feature Engagement Tracker\AvailabilityDB   
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Feature Engagement Tracker\EventDB          
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Feature Engagement Tracker\AvailabilityDB...
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Feature Engagement Tracker\AvailabilityDB...
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Feature Engagement Tracker\EventDB\LOCK     
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Feature Engagement Tracker\EventDB\LOG      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\GPUCache\data_0                             
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\GPUCache\data_1                             
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\GPUCache\data_2                             
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\GPUCache\data_3                             
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\GPUCache\index                              
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Local Storage\leveldb                       
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Local Storage\leveldb\000003.log            
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Local Storage\leveldb\CURRENT               
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Local Storage\leveldb\LOCK                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Local Storage\leveldb\LOG                   
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Local Storage\leveldb\MANIFEST-000001       
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Network\Cookies                             
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Network\Cookies-journal                     
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Network\Device Bound Sessions               
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Network\Device Bound Sessions-journal       
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Network\Network Persistent State            
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Network\NetworkDataMigrated                 
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Network\Reporting and NEL                   
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Network\Reporting and NEL-journal           
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Network\SCT Auditing Pending Reports        
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Network\Sdch Dictionaries                   
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Network\Trust Tokens                        
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Network\Trust Tokens-journal                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\optimization_guide_hint_cache_store\LOCK    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\optimization_guide_hint_cache_store\LOG     
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\parcel_tracking_db\LOCK                     
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\parcel_tracking_db\LOG                      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\PersistentOriginTrials\LOCK                 
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\PersistentOriginTrials\LOG                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Safe Browsing Network\NetworkDataMigrated   
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Safe Browsing Network\Safe Browsing Cookies 
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Safe Browsing Network\Safe Browsing Cooki...
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Session Storage\000003.log                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Session Storage\CURRENT                     
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Session Storage\LOCK                        
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Session Storage\LOG                         
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Session Storage\MANIFEST-000001             
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Shared Dictionary\cache                     
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Shared Dictionary\db                        
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Shared Dictionary\db-journal                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Shared Dictionary\cache\index-dir           
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Shared Dictionary\cache\index               
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Shared Dictionary\cache\index-dir\the-rea...
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\shared_proto_db\metadata                    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\shared_proto_db\000003.log                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\shared_proto_db\CURRENT                     
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\shared_proto_db\LOCK                        
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\shared_proto_db\LOG                         
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\shared_proto_db\MANIFEST-000001             
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\shared_proto_db\metadata\000003.log         
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\shared_proto_db\metadata\CURRENT            
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\shared_proto_db\metadata\LOCK               
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\shared_proto_db\metadata\LOG                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\shared_proto_db\metadata\MANIFEST-000001    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Site Characteristics Database\000003.log    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Site Characteristics Database\CURRENT       
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Site Characteristics Database\LOCK          
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Site Characteristics Database\LOG           
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Site Characteristics Database\MANIFEST-00...
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Sync Data\LevelDB                           
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Sync Data\LevelDB\000003.log                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Sync Data\LevelDB\CURRENT                   
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Sync Data\LevelDB\LOCK                      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Sync Data\LevelDB\LOG                       
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Sync Data\LevelDB\MANIFEST-000001           
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\extensions_crx_cache\metadata.json                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\GPUPersistentCache\DawnGraphiteCache                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\GPUPersistentCache\DawnGraphiteCache\4NKVHR4EC6BI...
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\GPUPersistentCache\DawnGraphiteCache\4NKVHR4EC6BI...
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\GPUPersistentCache\DawnGraphiteCache\4NKVHR4EC6BI...
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\GPUPersistentCache\DawnGraphiteCache\4NKVHR4EC6BI...
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\GrShaderCache\data_0                                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\GrShaderCache\data_1                                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\GrShaderCache\data_2                                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\GrShaderCache\data_3                                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\GrShaderCache\index                                 
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\OriginTrials\0.0.1.7                                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\OriginTrials\0.0.1.7\manifest.json                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\ShaderCache\data_0                                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\ShaderCache\data_1                                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\ShaderCache\data_2                                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\ShaderCache\data_3                                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\ShaderCache\index                                   
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Subresource Filter\Unindexed Rules                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\TrustTokenKeyCommitments\2026.3.23.1                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\TrustTokenKeyCommitments\2026.3.23.1\_metadata      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\TrustTokenKeyCommitments\2026.3.23.1\keys.json      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\TrustTokenKeyCommitments\2026.3.23.1\LICENSE        
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\TrustTokenKeyCommitments\2026.3.23.1\manifest.json  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\TrustTokenKeyCommitments\2026.3.23.1\_metadata\ve...
+
+
+
+Install tree first 200:
+
+FullName                                                                                  Length   LastWriteTime       
+--------                                                                                  ------   -------------       
+C:\Users\civic\AppData\Local\The Civic Desk\prompts                                                6/30/2026 10:52:3...
+C:\Users\civic\AppData\Local\The Civic Desk\_up_                                                   6/30/2026 10:52:3...
+C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe                                 22722048 6/30/2026 10:43:0...
+C:\Users\civic\AppData\Local\The Civic Desk\uninstall.exe                                 79229    6/30/2026 10:52:3...
+C:\Users\civic\AppData\Local\The Civic Desk\prompts\aggregator.md                         3170     6/30/2026 5:40:02 AM
+C:\Users\civic\AppData\Local\The Civic Desk\prompts\README.md                             2599     6/25/2026 7:39:14 AM
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension                                 6/30/2026 10:52:3...
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium                        6/30/2026 10:52:3...
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium\background.js 3858     6/30/2026 2:54:38 AM
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium\content.js    14591    6/30/2026 1:43:14 AM
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium\icon.png      68       6/25/2026 7:39:14 AM
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium\manifest.json 861      6/26/2026 7:34:08 PM
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium\popup.css     1194     6/26/2026 7:34:08 PM
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium\popup.html    1260     6/26/2026 7:34:08 PM
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium\popup.js      2026     6/26/2026 7:34:08 PM
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium\README.md     688      6/26/2026 7:34:08 PM
+
+
+
+Recent possible logs:
+
+FullName                                                                                                               
+--------                                                                                                               
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\AutoLaunchProtocolsComponent\1.0.0.10\manifest.json 
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\AutoLaunchProtocolsComponent\1.0.0.10\protocols.json
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\CertificateRevocation\6498.2025.9.4\manifest.json   
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\component_crx_cache\metadata.json                   
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\favorites_diagnostic.log                    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension Rules\000003.log                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension Scripts\000003.log                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Extension State\000003.log                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Local Storage\leveldb\000003.log            
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Session Storage\000003.log                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\shared_proto_db\000003.log                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\shared_proto_db\metadata\000003.log         
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Site Characteristics Database\000003.log    
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\Default\Sync Data\LevelDB\000003.log                
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\extensions_crx_cache\metadata.json                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\OriginTrials\0.0.1.7\manifest.json                  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\TrustTokenKeyCommitments\2026.3.23.1\keys.json      
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\TrustTokenKeyCommitments\2026.3.23.1\manifest.json  
+C:\Users\civic\AppData\Local\com.scottconverse.civicdesk\EBWebView\TrustTokenKeyCommitments\2026.3.23.1\_metadata\ve...
+C:\Users\civic\AppData\Local\The Civic Desk\_up_\browser-extension\chromium\manifest.json                              
+
+
+
