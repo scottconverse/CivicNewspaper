@@ -1,0 +1,20 @@
+[
+  {
+    "i": 0,
+    "tag": "INPUT",
+    "label": "Story Title",
+    "value": "Longmont Library Hosts Free Gaming Club for Kids"
+  },
+  {
+    "i": 1,
+    "tag": "TEXTAREA",
+    "label": "Article Body (Markdown)",
+    "value": "Longmont's Public Library has announced an exciting new event - a free gaming club specifically designed for children in grades three through five! This unique initiative allows young gamers to enjoy playing on Nintendo Switches provided by the library.\n\nResidents who might be interested include parents looking for extracurricular activities, kids eager to try out different games or simply those with limited access. The novelty of this new event adds a fresh angle that captures attention and sparks interest in learning more about it.\nNext steps: Confirm specific dates, details on planned gaming sessions/training resources involved (if any), anticipated participation numbers as well as potential costs for children participating.\n\nEditorial disposition: ready_to_draft"
+  },
+  {
+    "i": 2,
+    "tag": "INPUT",
+    "label": "I have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision.",
+    "value": "on"
+  }
+]

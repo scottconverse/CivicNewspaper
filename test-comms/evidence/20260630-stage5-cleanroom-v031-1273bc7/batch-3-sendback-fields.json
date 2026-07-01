@@ -1,0 +1,20 @@
+[
+  {
+    "i": 0,
+    "tag": "INPUT",
+    "label": "Story Title",
+    "value": "Longmont Youth Center Launches New Summer Programs for Infants and Toddlers"
+  },
+  {
+    "i": 1,
+    "tag": "TEXTAREA",
+    "label": "Article Body (Markdown)",
+    "value": "The Longmont Youth Center is set to enrich summer plans by introducing engaging activities tailored specifically toward infants up until age two years old as well as their caregivers.\n\nResidents interested in family-friendly events may find this an exciting update. The next steps involve confirming the exact dates, outlining detailed descriptions of each activity available under these new programs and estimating expected attendance figures for a comprehensive understanding.\n\nAdditionally, it would be beneficial to investigate if there are any associated costs or fees that families need to bear when registering their children in such youth center summer activities."
+  },
+  {
+    "i": 2,
+    "tag": "INPUT",
+    "label": "I have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision.",
+    "value": "on"
+  }
+]

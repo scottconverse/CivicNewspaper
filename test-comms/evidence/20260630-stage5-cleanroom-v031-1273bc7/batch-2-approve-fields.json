@@ -1,0 +1,20 @@
+[
+  {
+    "i": 0,
+    "tag": "INPUT",
+    "label": "Story Title",
+    "value": "City of Longmont Library Announces Summer Reading Challenge Deadline"
+  },
+  {
+    "i": 1,
+    "tag": "TEXTAREA",
+    "label": "Article Body (Markdown)",
+    "value": "Longtime residents and families interested in participating should be aware that there's a looming deadline for the summer reading challenge at our local library—the final day to submit boards with children’s artwork is July 31st.\n\nFor those who haven't signed up yet or missed previous reminders, this might not affect you. However, if you're involved as either parent/study buddy/teacher/student/caregiver/researcher/etc., you'll want to make sure your child enters the competition before time runs out—this deadline could impact opportunities for kids’ participation and community engagement in children's literacy activities.\n\nA quick check on the library’s website or a phone call can confirm that everything is still running as expected. There are no indications yet of any changes, but keep an eye open just to be sure!"
+  },
+  {
+    "i": 2,
+    "tag": "INPUT",
+    "label": "I have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision.",
+    "value": "on"
+  }
+]

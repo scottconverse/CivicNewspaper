@@ -1,0 +1,23 @@
+[
+  {
+    "i": 0,
+    "tag": "INPUT",
+    "placeholder": null,
+    "label": "Story Title",
+    "value": "City Council Vote Approves Roof Work at Public Library"
+  },
+  {
+    "i": 1,
+    "tag": "TEXTAREA",
+    "placeholder": null,
+    "label": "Article Body (Markdown)",
+    "value": "The Longmont City Council has scheduled an important meeting for Tuesday to discuss and potentially approve significant renovations involving Georgia Boys BBQ as the chosen vendor for roof work on the public library [Source](evidence:62).\n\nResidents are encouraged to attend council meetings or check official documents following this vote, which could affect city planning decisions. The renovation is part of a larger effort aimed at enhancing local services.\n\nDetails about specific timelines and financial impacts have yet to be finalized publicly before drafting further stories on the matter."
+  },
+  {
+    "i": 2,
+    "tag": "INPUT",
+    "placeholder": null,
+    "label": "I have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision.",
+    "value": "on"
+  }
+]

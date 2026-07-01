@@ -1,0 +1,20 @@
+[
+  {
+    "i": 0,
+    "tag": "INPUT",
+    "label": "Story Title",
+    "value": "July Fourth Film Show at Longmont Museum Features 'Encanto' (2021)"
+  },
+  {
+    "i": 1,
+    "tag": "TEXTAREA",
+    "label": "Article Body (Markdown)",
+    "value": "The downtown Longmont area is preparing to host its annual film show on the fourth of July featuring Disney's \"Encanto,\" an animated hit from 2021 directed by Jennifer Lee and Byron Howard, with music scored by Lin-Manuel Miranda. The event aims at engaging families aged five years old plus in learning about Hispanic culture through interactive activities related to Mexican crafts.\n\nResidents may find this information particularly relevant if they are planning a July Fourth celebration or seeking family entertainment options for their children during the holiday weekend.\nNext steps should include verifying details such as exact dates, times of movie screenings and any special events scheduled along with checking whether tickets can be purchased online through Downtown Longmont's official event page. Additionally, confirm that interactive activities related to Hispanic culture are indeed planned.\n\nReaders interested in attending or learning more about this unique cultural celebration will want the most current information readily available."
+  },
+  {
+    "i": 2,
+    "tag": "INPUT",
+    "label": "I have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision.",
+    "value": "on"
+  }
+]

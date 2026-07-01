@@ -1,0 +1,59 @@
+[
+  {
+    "idx": 1,
+    "action": "approve",
+    "label": "Draft Downtown Longmont Creative District Events for July: A series of diverse events are scheduled in Downtown Longmont's creative district during the month, ranging from music ni",
+    "statusLines": [
+      "Current draft saved, checked, and approved for publishing; a verification record was saved.",
+      "Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.",
+      "Current Status: Approved for publishing",
+      "Hold",
+      "Cut Story"
+    ]
+  },
+  {
+    "idx": 2,
+    "action": "approve",
+    "label": "Draft City of Longmont Library Summer Reading Challenge Deadline: The City of Longmont's summer reading challenge at the public library has a closing date on July 31, requiring par",
+    "statusLines": [
+      "Current draft saved, checked, and approved for publishing; a verification record was saved.",
+      "Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.",
+      "Current Status: Approved for publishing",
+      "Hold",
+      "Cut Story"
+    ]
+  },
+  {
+    "idx": 3,
+    "action": "sendback",
+    "label": "Draft Longmont Youth Center Offers Summer Program for Kids: The Longmont Youth Center is offering a range of summer programs including activities like Open Chess Night Series and B",
+    "statusLines": [
+      "Story status updated to 'needs_verification' with an editor note.",
+      "Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.",
+      "Current Status: Sent back / needs work",
+      "Hold",
+      "Cut Story",
+      "This draft was sent back for more work. Keep editing, add evidence, then mark it ready for review when it is ready for an editor again."
+    ]
+  },
+  {
+    "idx": 4,
+    "action": "cut",
+    "label": "Draft Longmont Library Hosts Free Gaming Club for Kids: The Longmont Public Library is hosting a free gaming club specifically tailored for third to fifth graders, where they will ",
+    "statusLines": [
+      "Cut this story?",
+      "Cutting this story removes it from the publishing pipeline. You can restore it later, but any in-progress review state is cleared.",
+      "Cut story",
+      "Draft saved.",
+      "Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.",
+      "Current Status: Drafting",
+      "Hold",
+      "Cut Story"
+    ]
+  },
+  {
+    "idx": 4,
+    "action": "approve",
+    "result": "no draft controls found"
+  }
+]

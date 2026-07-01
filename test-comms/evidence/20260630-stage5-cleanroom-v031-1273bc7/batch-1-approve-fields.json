@@ -1,0 +1,20 @@
+[
+  {
+    "i": 0,
+    "tag": "INPUT",
+    "label": "Story Title",
+    "value": "Downtown Longmont's Creative District Announces July Events"
+  },
+  {
+    "i": 1,
+    "tag": "TEXTAREA",
+    "label": "Article Body (Markdown)",
+    "value": "Residents interested in local arts and culture will find a host of upcoming events at Downtown Longmont’s creative district this month alone! From music nights to art workshops designed for all ages.\n\nThese fresh activities promise unique experiences that celebrate creativity, community spirit, and diverse artistic expression. Make sure you mark your calendars – more details about exact dates, times, locations are forthcoming!\n\nStay tuned as we verify specifics closer to the events' start date."
+  },
+  {
+    "i": 2,
+    "tag": "INPUT",
+    "label": "I have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision.",
+    "value": "on"
+  }
+]
