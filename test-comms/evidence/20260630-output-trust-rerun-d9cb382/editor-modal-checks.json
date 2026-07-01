@@ -1,0 +1,43 @@
+[
+  {
+    "action": "Hold",
+    "modalCount": 1,
+    "excerpt": [
+      "Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.",
+      "Send Back for More Work",
+      "Hold",
+      "Cut Story",
+      "Put story on hold",
+      "Hold note",
+      "Cancel",
+      "Save decision note"
+    ]
+  },
+  {
+    "action": "Send Back for More Work",
+    "modalCount": 1,
+    "excerpt": [
+      "Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.",
+      "Send Back for More Work",
+      "Hold",
+      "Cut Story",
+      "Send back for more work",
+      "Cancel",
+      "Save decision note"
+    ]
+  },
+  {
+    "action": "Cut Story",
+    "modalCount": 1,
+    "excerpt": [
+      "Cut this story?",
+      "Cutting this story removes it from the publishing pipeline. You can restore it later, but any in-progress review state is cleared.",
+      "Cancel",
+      "Cut story",
+      "Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.",
+      "Send Back for More Work",
+      "Hold",
+      "Cut Story"
+    ]
+  }
+]
