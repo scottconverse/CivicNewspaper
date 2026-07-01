@@ -193,15 +193,15 @@ export function modelInstalled(selected: string, installed: string[]): boolean {
 export function sanitizeEvidenceCitations(text: string, allowedEvidenceIds: number[]): string {
   if (!/evidence:/i.test(text)) return text;
   const allowed = new Set(allowedEvidenceIds.map((id) => String(id)));
-  return text.replace(/evidence:(?:\/\/)?(\d+)/gi, (match, id) => {
-    if (allowed.has(String(id))) return match;
+  return text.replace(/evidence:\s*(?:\/\/)?\s*(\d+)/gi, (_match, id) => {
+    if (allowed.has(String(id))) return `evidence:${id}`;
     return `unlinked-evidence-${id}`;
   });
 }
 
 // Formats a structured `ollama-pull-progress` event into a single log line.
 // The pull command (`pull_ollama_model`) emits a structured object payload, not
-// a JSON string — pinning the shape here keeps the listener from regressing to
+// a JSON string -- pinning the shape here keeps the listener from regressing to
 // the old string-parsing path the consolidation removed.
 export function formatPullProgressLine(payload: OllamaPullProgress): string {
   let line = payload.status || "Downloading...";
@@ -600,7 +600,7 @@ export function useApp() {
 
       const completeUnlisten = await listen<void>("ollama-pull-complete", () => {
         setPullingModel(false);
-        setPullProgressText(prev => [...prev, "✓ Model pulled successfully!"]);
+        setPullProgressText(prev => [...prev, "Model pulled successfully."]);
         pollOllamaStatus();
       });
 
@@ -643,7 +643,7 @@ export function useApp() {
 
     // QA-R2-M1: the app-managed Ollama runtime can take a moment to bind 127.0.0.1:11434
     // after launch, so the single mount poll can lose the cold-start race and
-    // leave `ollamaOnline=false` stuck — disabling Generate Draft and showing
+    // leave `ollamaOnline=false` stuck -- disabling Generate Draft and showing
     // "AI Offline" on a healthy sidecar. Re-poll on an interval AND whenever the
     // window regains focus / becomes visible, so a transient offline state
     // self-heals without an app relaunch. Lightweight: pollOllamaStatus is a
@@ -1225,7 +1225,7 @@ export function useApp() {
 
       // QA-C1: mirror handleDailyScan's pre-flight. The Generate Draft button is
       // gated only on the sidecar being reachable, not on the selected model
-      // actually being installed — so a user who skipped the model download could
+      // actually being installed -- so a user who skipped the model download could
       // click it and hit an opaque "model not found." Check model presence first
       // and route to the model-download step instead of failing cryptically.
       if (!manualLlmMode) {
@@ -1466,7 +1466,7 @@ export function useApp() {
         if (done) void routeAfterRecoveredSetup();
       })
       // In a browser preview / no-IPC context, don't trap the user on a blank
-      // wizard — fall through to the app.
+      // wizard -- fall through to the app.
       .catch(() => {
         const forceFirstRun =
           typeof window !== "undefined" &&

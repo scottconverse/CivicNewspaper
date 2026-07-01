@@ -23,9 +23,10 @@ const TestComponent = () => {
 
 describe("useApp Hook Tests", () => {
   test("sanitizeEvidenceCitations preserves linked evidence and neutralizes unsupported IDs", () => {
-    const text = "Valid [source](evidence:7). Bad [source](evidence:999). Also bad evidence://123. Mixed Evidence:456.";
+    const text = "Valid [source](evidence: 7). Bad [source](evidence:999). Also bad evidence://123. Mixed Evidence:456.";
     const sanitized = sanitizeEvidenceCitations(text, [7]);
     expect(sanitized).toContain("evidence:7");
+    expect(sanitized).not.toContain("evidence: 7");
     expect(sanitized).not.toContain("evidence:999");
     expect(sanitized).not.toContain("evidence://123");
     expect(sanitized).not.toContain("Evidence:456");
