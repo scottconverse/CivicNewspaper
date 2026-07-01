@@ -449,6 +449,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       setSetupNotice("The setup screen is not receiving input events, so The Civic Desk is installing the local AI runtime automatically.");
       void installRuntime().then((ready) => {
         if (ready) {
+          setSetupNotice("The local AI runtime is ready. Because setup is not receiving input events, The Civic Desk is starting the recommended model download automatically.");
+          setAutoStartPull(true);
           setStep(3);
         }
       });

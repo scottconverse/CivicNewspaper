@@ -606,6 +606,39 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(handleComplete).toHaveBeenCalled());
   });
 
+  test("recovered runtime install starts model download automatically", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+    let runtimeInstalled = false;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      if (cmd === "set_setting") return Promise.resolve();
+      if (cmd === "save_community_profile") return Promise.resolve();
+      if (cmd === "get_community_profile") return Promise.resolve({});
+      if (cmd === "install_ollama_runtime") {
+        runtimeInstalled = true;
+        return Promise.resolve();
+      }
+      if (cmd === "ollama_health") {
+        return Promise.resolve({
+          reachable: runtimeInstalled,
+          models: [],
+          version: runtimeInstalled ? "0.1.0" : null,
+        });
+      }
+      if (cmd === "pull_ollama_model") return new Promise(() => {});
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
+
+    await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("install_ollama_runtime"), { timeout: 7000 });
+    await waitFor(() => expect(screen.getByText("Step 3 of 5")).toBeInTheDocument(), { timeout: 7000 });
+    await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("pull_ollama_model", { modelId: "phi4-mini:latest" }), { timeout: 7000 });
+  }, 10000);
+
   test("offline AI setup keeps Next disabled while runtime install is running", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
