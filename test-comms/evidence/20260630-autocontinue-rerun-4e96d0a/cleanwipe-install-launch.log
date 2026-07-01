@@ -1,0 +1,25 @@
+Clean wipe start 2026-06-30T23:05:40.3695707-06:00
+Running uninstall C:\Users\civic\AppData\Local\The Civic Desk\uninstall.exe
+Absent C:\Users\civic\AppData\Local\The Civic Desk
+Removing C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk
+Removing C:\Users\civic\AppData\Local\com.scottconverse.civicdesk
+Absent C:\Users\civic\AppData\Roaming\CivicNewspaper
+Absent C:\Users\civic\AppData\Local\CivicNewspaper
+Absent C:\Users\civic\CivicNews
+Absent C:\Users\civic\Documents\CivicNews
+Absent C:\Users\civic\OneDrive\Documents\CivicNews
+Absent C:\Users\civic\.ollama\models
+Installing C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\artifacts\20260630-autocontinue-rerun-4e96d0a\The Civic Desk_0.3.1_x64-setup.exe
+Launching installed exe normally, no handle manipulation
+Started pid=23596 at 2026-06-30T23:06:00.5855339-06:00
+
+
+ProcessName      : civicnews
+Id               : 23596
+MainWindowTitle  : The Civic Desk
+MainWindowHandle : 2295040
+Path             : C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+
+
+
+
