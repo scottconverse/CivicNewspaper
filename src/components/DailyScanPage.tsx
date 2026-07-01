@@ -2,6 +2,7 @@ import React from "react";
 import { Play, RefreshCw, ScanSearch, TrendingUp } from "lucide-react";
 import { DailyScanResults } from "./DailyScanResults";
 import { DailyScanProgress } from "../useApp";
+import type { DailyScanLead } from "../ipc";
 
 interface DailyScanPageProps {
   latestScanId?: number | null;
@@ -14,6 +15,7 @@ interface DailyScanPageProps {
   onRunScan: () => void;
   onRefresh: () => void;
   onGoToSources: () => void;
+  onOpenLead?: (lead: DailyScanLead) => void;
 }
 
 function progressStageLabel(stage: string): string {
@@ -54,6 +56,7 @@ export const DailyScanPage: React.FC<DailyScanPageProps> = ({
   onRunScan,
   onRefresh,
   onGoToSources,
+  onOpenLead,
 }) => {
   const hasSources = sourceCount > 0;
   const cards = [
@@ -143,7 +146,7 @@ export const DailyScanPage: React.FC<DailyScanPageProps> = ({
       )}
 
       {latestScanId ? (
-        <DailyScanResults scanId={latestScanId} onRunScan={onRunScan} />
+        <DailyScanResults scanId={latestScanId} onRunScan={onRunScan} onOpenLead={onOpenLead} />
       ) : (
         <div className="card empty-state">
           <ScanSearch size={36} />

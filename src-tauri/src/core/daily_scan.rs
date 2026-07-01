@@ -1991,8 +1991,7 @@ Submit Your Photos!";
 
     #[test]
     fn generic_city_calendar_index_is_not_actionable_rescue_evidence() {
-        let excerpt =
-            "Community Event Calendar
+        let excerpt = "Community Event Calendar
 Skip to main content
 Search Events
 Calendar View
@@ -2017,8 +2016,7 @@ Things to Do";
 
     #[test]
     fn generic_department_directory_is_not_actionable_rescue_evidence() {
-        let excerpt =
-            "City Services
+        let excerpt = "City Services
 Explore all services
 Explore all departments
 City Attorney
@@ -2045,8 +2043,7 @@ Subscribe to email updates";
 
     #[test]
     fn generic_city_news_category_index_is_not_actionable_rescue_evidence() {
-        let excerpt =
-            "All Categories
+        let excerpt = "All Categories
 Adults
 Adults 55+
 Art in Public Places

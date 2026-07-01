@@ -133,6 +133,15 @@ try {
     }
   }
 
+  Invoke-Check "story-quality-navigation-chrome-gate" {
+    Push-Location (Join-Path $RepoRoot "src-tauri")
+    try {
+      cmd /d /c "cargo test actionable_rescue_evidence -- --nocapture 2>&1"
+    } finally {
+      Pop-Location
+    }
+  }
+
   Invoke-Check "clean-profile-app-data-override" {
     Push-Location (Join-Path $RepoRoot "src-tauri")
     try {

@@ -214,7 +214,7 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                         {src.last_scraped ? new Date(src.last_scraped).toLocaleDateString() : "Never"}
                       </td>
                       <td>
-                        <button className="icon-button danger" onClick={() => onDeleteSource(src.id!)} id={`btn-delete-source-${src.id}`} aria-label="Delete source">
+                        <button className="icon-button danger" onClick={() => onDeleteSource(src.id!)} id={`btn-delete-source-${src.id}`} aria-label={`Delete source ${src.name}`}>
                           <Trash2 size={12} />
                         </button>
                       </td>

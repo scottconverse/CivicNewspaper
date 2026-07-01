@@ -15,6 +15,7 @@ import { ConfirmModal } from "./ConfirmModal";
 import { BetaNotice } from "./BetaNotice";
 import { SystemStatus } from "./SystemStatus";
 import { getBrowserExtensionPath, openExternalUrl, openLocalPath, toUserMessage } from "../ipc";
+import type { DailyScanLead } from "../ipc";
 
 interface AppContentProps {
   app: any;
@@ -23,6 +24,16 @@ interface AppContentProps {
 export const AppContent: React.FC<AppContentProps> = ({ app }) => {
   const [extensionFolderStatus, setExtensionFolderStatus] = React.useState("");
   const [extensionFolderPath, setExtensionFolderPath] = React.useState("");
+
+  const openDailyScanLeadInWorkbench = React.useCallback((scanLead: DailyScanLead) => {
+    const queueLead = (app.leads ?? []).find((lead: any) => lead.from_scan_lead_id === scanLead.id);
+    if (queueLead) {
+      app.handleOpenDraftWizard(queueLead);
+      return;
+    }
+    app.setActiveTab("queue");
+    app.setStatusMessage("Open this scan result from Story Queue after the scan saves the matching lead and evidence.");
+  }, [app.leads, app.handleOpenDraftWizard, app.setActiveTab, app.setStatusMessage]);
 
   // UX-C2: auto-dismiss success banners so a stale "success" message doesn't
   // linger across unrelated navigation. Errors are left until the user dismisses
@@ -169,6 +180,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           onRunScan={app.handleDailyScan}
           onRefresh={app.loadInitialData}
           onGoToSources={() => app.setActiveTab("sources")}
+          onOpenLead={openDailyScanLeadInWorkbench}
         />
       )}
 

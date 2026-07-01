@@ -3,7 +3,6 @@ use base64::Engine;
 use serde::{Deserialize, Serialize};
 use sha2::Digest;
 use std::path::{Path, PathBuf};
-use std::process::Command;
 use std::time::Duration;
 
 const KEYRING_SERVICE: &str = "The Civic Desk Publisher";
@@ -166,8 +165,10 @@ impl Publisher for HttpPublisher {
                 validate_github_pages_path(config.path_prefix.as_deref())?;
             }
             PublisherProvider::CloudflarePages => {
-                required_field("Cloudflare account ID", config.account_id.as_deref())?;
-                required_field("Cloudflare Pages project name", config.site_id.as_deref())?;
+                return Err(
+                    "Cloudflare Pages API publishing is disabled in this public beta because the previous Wrangler/npx path is not release-grade. Export the ZIP or static folder and deploy manually, or use a connector with current release evidence."
+                        .to_string(),
+                );
             }
             PublisherProvider::Wordpress => {
                 required_field("WordPress site URL", config.site_url.as_deref())?;
@@ -202,7 +203,10 @@ impl Publisher for HttpPublisher {
             PublisherProvider::HereNow => test_herenow(config).await,
             PublisherProvider::Netlify => test_netlify(config).await,
             PublisherProvider::GithubPages => test_github(config).await,
-            PublisherProvider::CloudflarePages => test_cloudflare(config).await,
+            PublisherProvider::CloudflarePages => Err(
+                "Cloudflare Pages API publishing is disabled in this public beta. Use manual Cloudflare deployment from the exported folder or ZIP."
+                    .to_string(),
+            ),
             PublisherProvider::Wordpress => test_wordpress(config).await,
             PublisherProvider::Substack | PublisherProvider::Other => {
                 Ok("Connector settings are valid for assisted publishing.".to_string())
@@ -229,7 +233,10 @@ impl Publisher for HttpPublisher {
             PublisherProvider::HereNow => publish_herenow(config, request).await,
             PublisherProvider::Netlify => publish_netlify(config, request).await,
             PublisherProvider::GithubPages => publish_github(config, request).await,
-            PublisherProvider::CloudflarePages => publish_cloudflare(config, request).await,
+            PublisherProvider::CloudflarePages => Err(
+                "Cloudflare Pages API publishing is disabled in this public beta. Export the static folder or ZIP and deploy it manually in Cloudflare Pages."
+                    .to_string(),
+            ),
             PublisherProvider::Wordpress => publish_wordpress(config, request).await,
             PublisherProvider::Substack => Err(
                 "Substack does not provide a supported public publishing API. Open the generated Substack draft and paste it into Substack."
@@ -1292,83 +1299,6 @@ fn remote_path(prefix: &str, relative: &Path) -> String {
     } else {
         format!("{prefix}/{relative}")
     }
-}
-
-const WRANGLER_PACKAGE: &str = "wrangler@4.105.0";
-
-fn redact_publisher_stderr(text: &str) -> String {
-    let token_like = regex::Regex::new(r"(?i)(token|password|secret|key)=([^\s]+)").unwrap();
-    let bearer_like = regex::Regex::new(r"(?i)bearer\s+[A-Za-z0-9._~+/-]+").unwrap();
-    let redacted = token_like.replace_all(text, "$1=[redacted]");
-    bearer_like
-        .replace_all(&redacted, "Bearer [redacted]")
-        .to_string()
-}
-
-async fn test_cloudflare(config: &PublisherConfig) -> Result<String, String> {
-    credential(PublisherProvider::CloudflarePages)?;
-    required_field("Cloudflare account ID", config.account_id.as_deref())?;
-    required_field("Cloudflare Pages project name", config.site_id.as_deref())?;
-    let status = Command::new("npx")
-        .args(["--yes", WRANGLER_PACKAGE, "--version"])
-        .status()
-        .map_err(|e| format!("Could not run Wrangler through npx: {e}"))?;
-    if status.success() {
-        Ok("Wrangler is available for Cloudflare Pages deployments.".to_string())
-    } else {
-        Err("Wrangler did not start successfully through npx.".to_string())
-    }
-}
-
-async fn publish_cloudflare(
-    config: &PublisherConfig,
-    request: &PublisherPublishRequest,
-) -> Result<PublisherPublishResult, String> {
-    let token = credential(PublisherProvider::CloudflarePages)?;
-    let account_id = required_field("Cloudflare account ID", config.account_id.as_deref())?;
-    let project = required_field("Cloudflare Pages project name", config.site_id.as_deref())?;
-    let output_dir = validate_publish_artifacts(&request.output_dir)?;
-    let mut command = Command::new("npx");
-    command
-        .args([
-            "--yes",
-            WRANGLER_PACKAGE,
-            "pages",
-            "deploy",
-            output_dir.to_string_lossy().as_ref(),
-            "--project-name",
-            &project,
-            "--branch",
-            config.branch.as_deref().unwrap_or("main"),
-        ])
-        .env("CLOUDFLARE_API_TOKEN", token)
-        .env("CLOUDFLARE_ACCOUNT_ID", account_id);
-    let output = command
-        .output()
-        .map_err(|e| format!("Cloudflare Pages deployment could not start: {e}"))?;
-    if !output.status.success() {
-        return Err(format!(
-            "Cloudflare Pages deployment failed: {}",
-            redact_publisher_stderr(&String::from_utf8_lossy(&output.stderr))
-        ));
-    }
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    let published_url = find_first_url(&stdout)
-        .or_else(|| request.published_url.clone())
-        .or_else(|| config.site_url.clone())
-        .ok_or_else(|| "Cloudflare deployed, but no public URL was returned.".to_string())?;
-    Ok(PublisherPublishResult {
-        provider: PublisherProvider::CloudflarePages.as_str().to_string(),
-        published_url: validate_public_url(&published_url)?,
-        deployment_id: request.deployment_id.clone(),
-        message: "Published with Wrangler to Cloudflare Pages.".to_string(),
-    })
-}
-
-fn find_first_url(text: &str) -> Option<String> {
-    let re = regex::Regex::new(r"https://[^\s)]+").ok()?;
-    re.find(text)
-        .map(|m| m.as_str().trim_end_matches('.').to_string())
 }
 
 async fn test_wordpress(config: &PublisherConfig) -> Result<String, String> {

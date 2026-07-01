@@ -31,12 +31,12 @@ For stable release evidence, run:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\release-smoke.ps1 `
-  -FixtureDir "C:\Users\instynct\Desktop\CivicNewspaperTestFiles" `
+  -FixtureDir ".agent-runs\source-fixture-artifact" `
   -Model "phi4-mini:latest" `
   -Stable
 ```
 
-The stable run fails if the working tree is dirty or if desktop smoke, live model, here.now, or import fixture gates are skipped. Use `-AllowDirty` only for a non-release diagnostic run.
+The stable run fails if the working tree is dirty or if desktop smoke, live model, here.now, or import fixture gates are skipped. Use `-AllowDirty` only for a non-release diagnostic run. The `-FixtureDir` value must point to a folder available on the machine running the gate. Use `.agent-runs\source-fixture-artifact` when the fixture artifact has been restored into the repo workspace, or pass any equivalent full source-file fixture folder that contains the expected CSV, TXT, XLSX, DOCX, and PDF files.
 
 ## Release-candidate packaging receipt
 
@@ -128,7 +128,8 @@ These cannot be fully completed from one unsigned Windows development machine:
 - Linux installer/package build and clean-machine or VM proof
 - clean-machine installer proof on every OS advertised in public docs
 - permanent here.now API-key publish verification
-- Cloudflare Pages, Netlify, WordPress, and GitHub Pages live connector verification with real target accounts
+- Netlify, WordPress, GitHub Pages, and permanent here.now live connector verification with real target accounts
+- Cloudflare Pages direct API connector work and proof, if it is reintroduced after the public beta assisted/manual workflow
 
 ## Rollback
 

@@ -79,7 +79,7 @@ describe("SourcesPanel Component Tests", () => {
     expect(screen.getByTitle("https://city.gov/rss")).toHaveClass("source-url-link");
 
     // Click delete and verify callback
-    const deleteBtn = screen.getByLabelText("Delete source");
+    const deleteBtn = screen.getByLabelText("Delete source City Council Feed");
     fireEvent.click(deleteBtn);
     expect(handleDeleteSource).toHaveBeenCalledWith(1);
   });

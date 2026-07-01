@@ -352,6 +352,11 @@ export const Workbench: React.FC<WorkbenchProps> = ({
     if (selectedDraft?.status === "killed") {
       return;
     }
+    if (!attested) {
+      setShowOverrideModal(false);
+      setError("Before approval: confirm that an editor has reviewed this story and takes responsibility for publishing it.");
+      return;
+    }
     setDecisionModal(null);
     if (staticPublishBlockers.length > 0) {
       setShowOverrideModal(false);
@@ -945,7 +950,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                     <button
                       className="btn btn-primary btn-sm"
                       onClick={handleApproveClick}
-                      disabled={selectedDraft.status === "killed" || finalStatus || pausedForMoreWork || Boolean(decisionModal)}
+                      disabled={selectedDraft.status === "killed" || finalStatus || pausedForMoreWork || !attested || Boolean(decisionModal)}
                       title={
                         selectedDraft.status === "killed"
                           ? "Restore this story before approving it for publishing"
@@ -954,7 +959,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                           : pausedForMoreWork
                             ? "Resume editing or mark this story ready for review before approving it"
                           : !attested
-                          ? "Approve and record editorial responsibility"
+                          ? "Check editorial responsibility before approving"
                           : totalReviewWarningCount > 0
                             ? "This story has review warnings - you'll be asked to confirm that the editor reviewed them"
                             : "Approve this story for publishing"

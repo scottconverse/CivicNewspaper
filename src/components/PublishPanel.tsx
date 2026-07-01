@@ -63,7 +63,7 @@ const PROVIDERS = [
     id: "cloudflare_pages",
     label: "Cloudflare Pages",
     url: "https://dash.cloudflare.com/",
-    guidance: "Technical option: publishes the generated folder through Cloudflare's official Wrangler Pages deploy path.",
+    guidance: "Assisted beta option: export the generated folder or ZIP, deploy it in Cloudflare Pages yourself, then save the public URL here.",
   },
   {
     id: "substack",
@@ -105,10 +105,10 @@ const SETUP_GUIDES: Record<string, { credential: string; target: string; permiss
     verify: "Test connection checks repository access; publish creates the branch if needed.",
   },
   cloudflare_pages: {
-    credential: "Create a Cloudflare API token for Pages deployments.",
-    target: "Copy the account ID and Pages project name from Cloudflare.",
-    permission: "The token needs Cloudflare Pages edit/deploy access for the account.",
-    verify: "Test connection checks that Wrangler can run; publish uses the official direct-upload path.",
+    credential: "No Cloudflare credential is used by this public beta.",
+    target: "Create or choose a Cloudflare Pages project in Cloudflare, then upload the exported folder or ZIP there.",
+    permission: "Use Cloudflare's own dashboard or CLI outside the app.",
+    verify: "After Cloudflare publishes the site, paste the public URL here and save it.",
   },
   wordpress: {
     credential: "Create a WordPress application password from the editor user's profile.",
@@ -185,7 +185,8 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   const selectedProvider = PROVIDERS.find(item => item.id === provider) ?? PROVIDERS[0];
   const setupGuide = SETUP_GUIDES[provider] ?? SETUP_GUIDES.other;
   const connectorTestPassed = publisherTestResult?.provider === provider && publisherTestResult.ok;
-  const connectorPublishAllowed = connectorTestPassed || provider === "here_now";
+  const connectorDisabled = provider === "cloudflare_pages";
+  const connectorPublishAllowed = !connectorDisabled && (connectorTestPassed || provider === "here_now");
   const leadArticle = publishResult?.articles?.[0];
   const substackHeadline = leadArticle?.title || publishResult?.issue_id || "The Civic Desk update";
   const substackDeck = publishResult
@@ -324,7 +325,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
     if (provider === "here_now") return "here.now API key";
     if (provider === "wordpress") return "WordPress application password";
     if (provider === "github_pages") return "GitHub fine-grained token";
-    if (provider === "cloudflare_pages") return "Cloudflare API token";
+    if (provider === "cloudflare_pages") return "Cloudflare credential";
     if (provider === "netlify") return "Netlify personal access token";
     return "API token or credential";
   };
@@ -333,6 +334,8 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
     ? "credential saved; enter a new one to replace"
     : provider === "here_now"
       ? "optional for permanent here.now sites"
+      : provider === "cloudflare_pages"
+      ? "Cloudflare API publishing is disabled in this beta"
       : provider === "substack"
       ? "Substack has no supported publishing API"
       : "paste the provider credential here";
@@ -449,8 +452,8 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
               { label: "Compile approved stories", meta: "HTML", complete: !!publishResult },
               { label: "Preview local website", meta: "index.html", complete: !!publishResult },
               { label: "Export hosting package", meta: "ZIP", complete: !!publishResult?.zip_path },
-              { label: "Publish to a host", meta: "next", complete: false },
-              { label: "Share with residents", meta: "posts", complete: !!publishResult },
+              { label: "Publish to a host", meta: publishResult?.published_url ? "live URL" : "next", complete: !!publishResult?.published_url },
+              { label: "Share with residents", meta: "posts", complete: !!publishResult?.published_url },
             ].map(({ label, meta, complete }) => (
               <div className="publish-step-row" key={label}>
                 {complete ? <CheckCircle size={19} /> : <AlertTriangle size={19} />}
@@ -674,7 +677,12 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                     {provider === "here_now" ? "Publish to here.now" : "Publish with connector"}
                   </button>
                 </div>
-                {!connectorPublishAllowed && (
+                {connectorDisabled && (
+                  <p className="help-text" style={{ marginTop: "0.35rem" }}>
+                    Cloudflare API publishing is disabled in this public beta. Export the folder or ZIP, deploy through Cloudflare, then save the public URL here.
+                  </p>
+                )}
+                {!connectorDisabled && !connectorPublishAllowed && (
                   <p className="help-text" style={{ marginTop: "0.35rem" }}>
                     Test the selected connector before publishing. You can still save a public URL manually.
                   </p>
@@ -804,14 +812,14 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                 placeholder="optional internal note"
               />
               <label htmlFor="input-publisher-credential" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>{providerCredentialLabel()}</label>
-              <input
-                id="input-publisher-credential"
-                type="password"
-                value={credential}
-                onChange={event => setCredential(event.target.value)}
-                placeholder={providerCredentialPlaceholder}
-                disabled={provider === "substack" || provider === "other"}
-              />
+                <input
+                  id="input-publisher-credential"
+                  type="password"
+                  value={credential}
+                  onChange={event => setCredential(event.target.value)}
+                  placeholder={providerCredentialPlaceholder}
+                  disabled={provider === "substack" || provider === "other" || provider === "cloudflare_pages"}
+                />
               <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.7rem" }}>
                 <input
                   type="checkbox"
@@ -825,7 +833,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                   <CheckCircle size={16} />
                   Save connector
                 </button>
-                <button className="btn btn-secondary" type="button" onClick={() => onTestPublisherConnection(provider)} disabled={loading}>
+                <button className="btn btn-secondary" type="button" onClick={() => onTestPublisherConnection(provider)} disabled={loading || connectorDisabled}>
                   <CheckCircle size={16} />
                   Test connection
                 </button>

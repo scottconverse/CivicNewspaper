@@ -77,6 +77,10 @@ describe("Workbench Component Tests", () => {
     vi.mocked(pressFreedomLegalReview).mockReset();
   });
 
+  const attestEditor = () => {
+    fireEvent.click(screen.getByLabelText(/take responsibility for publishing/i));
+  };
+
   const bodyContainsMojibakeMarkers = () =>
     Array.from(document.body.textContent ?? "").some((ch) =>
       [0x00c2, 0x00c3, 0x00e2].includes(ch.codePointAt(0) ?? 0)
@@ -495,13 +499,14 @@ describe("Workbench Component Tests", () => {
     expect(onOpenDraftEditor).toHaveBeenCalledWith(123);
   });
 
-  test("Approve remains available and records editorial responsibility for a clean draft", () => {
+  test("approval requires and records editorial responsibility for a clean draft", () => {
     const onApprovePublish = vi.fn();
     renderEditor({ onApprovePublish, guardrailsReport: null });
 
     const approve = screen.getByRole("button", { name: /Approve for Static Publish/i });
-    expect(approve).toBeEnabled();
+    expect(approve).toBeDisabled();
 
+    attestEditor();
     fireEvent.click(approve);
     expect(onApprovePublish).toHaveBeenCalledWith();
   });
@@ -673,6 +678,7 @@ describe("Workbench Component Tests", () => {
     expect(screen.getByText(/linked source documents may not match this story topic/i)).toBeInTheDocument();
     expect(screen.getByText(/linked source documents do not appear to match the story topic/i)).toBeInTheDocument();
 
+    attestEditor();
     fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
 
     expect(screen.getByText(/Before static publish approval: This scanned-lead draft's linked source documents do not appear to match the story topic./i)).toBeInTheDocument();
@@ -706,6 +712,7 @@ describe("Workbench Component Tests", () => {
 
     expect(screen.getByText(/linked source documents may not match this story topic/i)).toBeInTheDocument();
 
+    attestEditor();
     fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
 
     expect(screen.getByText(/Before static publish approval: This scanned-lead draft's linked source documents do not appear to match the story topic./i)).toBeInTheDocument();
@@ -758,6 +765,7 @@ describe("Workbench Component Tests", () => {
     };
     renderEditor({ onApprovePublish, guardrailsReport: report });
 
+    attestEditor();
     fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
 
     // Review modal appears; editor can continue without a note.
@@ -793,6 +801,7 @@ describe("Workbench Component Tests", () => {
       },
     });
 
+    attestEditor();
     fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
 
     expect(await screen.findByText(/Publish with review warnings/i)).toBeInTheDocument();
@@ -813,6 +822,7 @@ describe("Workbench Component Tests", () => {
       },
     });
 
+    attestEditor();
     fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
 
     expect(screen.getByText(/Fix before static publish approval/i)).toBeInTheDocument();
@@ -832,6 +842,7 @@ describe("Workbench Component Tests", () => {
       },
     });
 
+    attestEditor();
     fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
 
     expect(screen.getAllByText(/unusually large/i).length).toBeGreaterThan(0);

@@ -272,7 +272,7 @@ The normal sequence is:
 4. **Publish:** send the site to a provider.
 5. **Share:** use the generated newsletter and community posts.
 
-The recommended default publisher is **here.now**. Anonymous here.now publishing can create a temporary preview without an account. Account/API-key publishing can support permanent sites. GitHub Pages is the durable public archive option. Cloudflare Pages and Netlify are for more technical users. WordPress is for users with an existing WordPress site. Substack is assisted: the app prepares the text, you paste it into Substack, publish there, and record the URL.
+The recommended default publisher is **here.now**. Anonymous here.now publishing can create a temporary preview without an account. Account/API-key publishing can support permanent sites. GitHub Pages is the durable public archive option. Netlify is for more technical users with an existing site and token. Cloudflare Pages is assisted/manual in this beta: export the folder or ZIP, deploy it in Cloudflare, then record the public URL in the app. WordPress is for users with an existing WordPress site. Substack is assisted: the app prepares the text, you paste it into Substack, publish there, and record the URL.
 
 Always inspect the output before sharing the link.
 
@@ -463,7 +463,7 @@ If XLSX, DOCX, or PDF imports flatten many URLs into one candidate, report it as
 
 - **here.now:** recommended default. Temporary anonymous previews are useful for testing. API-key/account publishing can support permanent sites.
 - **GitHub Pages:** best for durable public archives in a repository.
-- **Cloudflare Pages:** technical hosting option.
+- **Cloudflare Pages:** assisted/manual hosting option in this public beta.
 - **Netlify:** technical hosting option.
 - **WordPress:** publishes issue/article pages through the WordPress REST API.
 - **Substack:** assisted copy/paste workflow.

@@ -154,8 +154,8 @@ Default publishing order:
 
 1. here.now for simple temporary civic website publishing.
 2. GitHub Pages for a durable public archive.
-3. Cloudflare Pages or Netlify for more technical users.
-4. WordPress for users with an existing site.
+3. Netlify or WordPress for credentialed technical users.
+4. Manual Cloudflare Pages hosting by exporting the folder or ZIP and recording the public URL.
 5. Substack/newsletter as distribution, not the canonical archive.
 
 The app can produce:
@@ -185,7 +185,7 @@ Supported provider families in the current code:
 - `here_now`
 - `github_pages`
 - `netlify`
-- `cloudflare_pages`
+- `cloudflare_pages` assisted/manual beta workflow
 - `substack`
 - `wordpress`
 

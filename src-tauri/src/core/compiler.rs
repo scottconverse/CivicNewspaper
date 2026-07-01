@@ -771,6 +771,32 @@ fn assert_public_output_quality(
     }
 }
 
+const OUTPUT_MARKER_FILE: &str = ".civicdesk-output";
+
+fn ensure_owned_output_directory(output_dir: &Path) -> Result<(), Box<dyn Error>> {
+    fs::create_dir_all(output_dir)?;
+    let marker_path = output_dir.join(OUTPUT_MARKER_FILE);
+    let legacy_manifest_path = output_dir.join("publish-manifest.json");
+
+    if !marker_path.exists() && !legacy_manifest_path.exists() {
+        let has_existing_content = fs::read_dir(output_dir)?.next().transpose()?.is_some();
+        if has_existing_content {
+            return Err(format!(
+                "Refusing to clean `{}` because it is not marked as a Civic Desk output folder. Choose an empty folder or a folder containing `{}` or publish-manifest.json.",
+                output_dir.display(),
+                OUTPUT_MARKER_FILE
+            )
+            .into());
+        }
+    }
+
+    fs::write(
+        marker_path,
+        "This folder is managed by The Civic Desk static-site compiler.\n",
+    )?;
+    Ok(())
+}
+
 fn clean_generated_site_output(output_dir: &Path) -> Result<(), Box<dyn Error>> {
     for subdir in [
         "briefs",
@@ -1154,8 +1180,8 @@ pub fn compile_static_site(
     let skipped_count = 0usize;
     let mut compiled_articles: Vec<CompiledArticle> = Vec::new();
 
-    // 1. Create standard output directories
-    fs::create_dir_all(output_dir)?;
+    // 1. Verify this output folder is ours, then create standard output directories.
+    ensure_owned_output_directory(output_dir)?;
     clean_generated_site_output(output_dir)?;
     let formats = vec![
         "briefs",
@@ -1586,7 +1612,7 @@ pub fn compile_static_site(
             ));
         }
     }
-    share_package.push_str("## Hosting Notes\n\nPublish instantly with here.now. Use GitHub Pages if you want a durable public archive in your own repository. Cloudflare Pages and Netlify remain good technical-hosting options.\n");
+    share_package.push_str("## Hosting Notes\n\nPublish instantly with here.now. Use GitHub Pages if you want a durable public archive in your own repository. Netlify remains a good technical connector. Cloudflare Pages is an assisted/manual beta path: export the folder or ZIP, deploy in Cloudflare, then save the public URL in the app.\n");
     let share_package_path = output_dir.join("share-package.md");
     write_site_file(&share_package_path, share_package, &mut files_written)?;
     generated_files.push("share-package.md".to_string());

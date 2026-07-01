@@ -2370,11 +2370,7 @@ pub async fn ollama_health() -> Result<OllamaState, String> {
                 }
 
                 let mut version = None;
-                if let Ok(v_resp) = client
-                    .get(format!("{base_url}/api/version"))
-                    .send()
-                    .await
-                {
+                if let Ok(v_resp) = client.get(format!("{base_url}/api/version")).send().await {
                     #[derive(serde::Deserialize)]
                     struct VersionResp {
                         version: String,

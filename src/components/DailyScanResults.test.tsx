@@ -165,6 +165,27 @@ describe('DailyScanResults', () => {
     });
   });
 
+  it('hands a scan result back to the workbench flow', async () => {
+    const onOpenLead = vi.fn();
+    vi.mocked(ipc.listDailyScanLeads).mockResolvedValue([
+      {
+        id: 44,
+        scan_id: 3,
+        title: 'Public hearing',
+        summary: 'A hearing was posted.',
+        original_url: 'https://example.gov/hearing',
+        source_id: 1,
+      },
+    ]);
+
+    render(<DailyScanResults scanId={3} onOpenLead={onOpenLead} />);
+
+    const button = await screen.findByRole('button', { name: /Open in Workbench/i });
+    fireEvent.click(button);
+
+    expect(onOpenLead).toHaveBeenCalledWith(expect.objectContaining({ id: 44, title: 'Public hearing' }));
+  });
+
   it('renders sample scan leads in browser preview without desktop IPC', async () => {
     vi.mocked(ipc.isTauri).mockReturnValue(false);
 

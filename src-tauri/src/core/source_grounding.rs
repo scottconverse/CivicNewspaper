@@ -201,9 +201,10 @@ pub fn paragraph_is_source_aligned(paragraph: &str, source_text: &str) -> bool {
 }
 
 fn strip_evidence_citation_syntax(text: &str) -> String {
-    let citation_re =
-        regex::Regex::new(r"(?i)\[[^\]]+\]\(\s*evidence:\s*(?://)?\s*\d+\s*\)|evidence:\s*(?://)?\s*\d+")
-            .expect("valid evidence citation regex");
+    let citation_re = regex::Regex::new(
+        r"(?i)\[[^\]]+\]\(\s*evidence:\s*(?://)?\s*\d+\s*\)|evidence:\s*(?://)?\s*\d+",
+    )
+    .expect("valid evidence citation regex");
     citation_re.replace_all(text, " ").to_string()
 }
 
@@ -226,7 +227,9 @@ fn factual_anchor_tokens(text: &str) -> HashSet<String> {
 
 fn collect_numeric_anchors(text: &str, anchors: &mut HashSet<String>) {
     for token in text
-        .split(|ch: char| !(ch.is_ascii_alphanumeric() || ch == '$' || ch == '%' || ch == '.' || ch == ','))
+        .split(|ch: char| {
+            !(ch.is_ascii_alphanumeric() || ch == '$' || ch == '%' || ch == '.' || ch == ',')
+        })
         .map(str::trim)
         .filter(|token| token.chars().any(|ch| ch.is_ascii_digit()))
     {
@@ -268,16 +271,7 @@ fn collect_calendar_anchors(text: &str, anchors: &mut HashSet<String>) {
 
 fn collect_money_word_anchors(text: &str, anchors: &mut HashSet<String>) {
     const TERMS: &[&str] = &[
-        "dollar",
-        "dollars",
-        "million",
-        "billion",
-        "grant",
-        "budget",
-        "fee",
-        "fees",
-        "tax",
-        "taxes",
+        "dollar", "dollars", "million", "billion", "grant", "budget", "fee", "fees", "tax", "taxes",
     ];
     for term in TERMS {
         if text.contains(term) {
@@ -377,8 +371,10 @@ mod tests {
 
     #[test]
     fn cited_paragraph_with_supported_action_and_amount_aligns() {
-        let paragraph = "Council approved a $10 million library roof contract [Source](evidence:1).";
-        let source = "City Council approved a $10 million library roof contract after public discussion.";
+        let paragraph =
+            "Council approved a $10 million library roof contract [Source](evidence:1).";
+        let source =
+            "City Council approved a $10 million library roof contract after public discussion.";
 
         assert!(paragraph_is_source_aligned(paragraph, source));
     }

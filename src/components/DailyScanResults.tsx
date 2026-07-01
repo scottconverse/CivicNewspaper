@@ -4,6 +4,7 @@ import { DailyScanLead, isTauri, listDailyScanLeads, openExternalUrl, toUserMess
 interface Props {
   scanId: number;
   onRunScan?: () => void;
+  onOpenLead?: (lead: DailyScanLead) => void;
 }
 
 function clean(value?: string | null): string | null {
@@ -86,7 +87,7 @@ function previewLeads(scanId: number): DailyScanLead[] {
   ];
 }
 
-export const DailyScanResults: React.FC<Props> = ({ scanId, onRunScan }) => {
+export const DailyScanResults: React.FC<Props> = ({ scanId, onRunScan, onOpenLead }) => {
   const [leads, setLeads] = useState<DailyScanLead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -247,17 +248,30 @@ export const DailyScanResults: React.FC<Props> = ({ scanId, onRunScan }) => {
                   </div>
                 </div>
 
-                <div className="flex-between">
+                <div className="flex-between" style={{ gap: "0.75rem", alignItems: "center" }}>
                   {lead.original_url ? (
                     <a href={lead.original_url} onClick={(event) => handleOpenOriginalSource(lead.original_url, event)}>Open source and review</a>
                   ) : (
                     <span className="help-text">No original source URL</span>
                   )}
-                  {lead.source_id === undefined || lead.source_id === null ? (
-                    <span className="badge badge-info" data-testid="aggregated-badge">Aggregated across sources</span>
-                  ) : (
-                    <span className="badge badge-neutral">Source #{lead.source_id}</span>
-                  )}
+                  <div className="btn-group" style={{ justifyContent: "flex-end" }}>
+                    {onOpenLead && (
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-sm"
+                        onClick={() => onOpenLead(lead)}
+                        disabled={lead.id === undefined || lead.id === null}
+                        id={lead.id ? `btn-open-daily-scan-lead-${lead.id}` : undefined}
+                      >
+                        Open in Workbench
+                      </button>
+                    )}
+                    {lead.source_id === undefined || lead.source_id === null ? (
+                      <span className="badge badge-info" data-testid="aggregated-badge">Aggregated across sources</span>
+                    ) : (
+                      <span className="badge badge-neutral">Source #{lead.source_id}</span>
+                    )}
+                  </div>
                 </div>
               </article>
             </li>

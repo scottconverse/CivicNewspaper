@@ -4784,6 +4784,54 @@ I should produce JSON only.
         );
     }
 
+    #[test]
+    fn test_compile_refuses_nonempty_unmarked_output_folder() {
+        let conn =
+            init_db("file:test_compile_refuses_unmarked_output?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        let personal_file = temp_dir.path().join("notes.txt");
+        std::fs::write(&personal_file, "do not delete").unwrap();
+
+        let err = compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}")
+            .expect_err("nonempty unmarked folders must not be cleaned");
+
+        assert!(
+            err.to_string()
+                .contains("not marked as a Civic Desk output folder"),
+            "unexpected error: {err}"
+        );
+        assert!(
+            personal_file.exists(),
+            "compiler must leave existing user files alone when refusing the folder"
+        );
+    }
+
+    #[test]
+    fn test_compile_allows_marked_output_folder_cleanup() {
+        let conn =
+            init_db("file:test_compile_allows_marked_output?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        let stale_dir = temp_dir.path().join("watch");
+        std::fs::create_dir_all(&stale_dir).unwrap();
+        let stale_file = stale_dir.join("stale.html");
+        std::fs::write(&stale_file, "old generated article").unwrap();
+        std::fs::write(
+            temp_dir.path().join(".civicdesk-output"),
+            "managed by Civic Desk",
+        )
+        .unwrap();
+
+        let result = compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+
+        assert_eq!(result.article_count, 0);
+        assert!(
+            !stale_file.exists(),
+            "marked generated output should be cleaned"
+        );
+        assert!(temp_dir.path().join(".civicdesk-output").exists());
+        assert!(temp_dir.path().join("publish-manifest.json").exists());
+    }
+
     // GG-C1: attestation/override gate columns round-trip (proves migration 0008).
     #[test]
     fn test_attest_and_override_gate_columns() {

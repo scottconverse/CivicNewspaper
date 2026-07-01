@@ -210,6 +210,73 @@ describe("PublishPanel Component Tests", () => {
     expect(handleOpen).toHaveBeenCalledWith("C:\\my-site\\site-package.zip", "site-package.zip");
   });
 
+  test("does not mark host publish or resident sharing complete until a public URL is saved", () => {
+    const publishResult = {
+      issue_id: "issue-20260627-000000",
+      output_dir: "C:/my-site",
+      generated_at: "2026-06-27T00:00:00Z",
+      provider: "local_export",
+      published_url: null,
+      deployment_id: null,
+      article_count: 1,
+      skipped_count: 0,
+      files_written: 12,
+      generated_files: [],
+      index_path: "index.html",
+      rss_path: "feed.xml",
+      newsletter_path: "newsletter.md",
+      substack_path: "substack.md",
+      share_package_path: "share-package.md",
+      facebook_post_path: "facebook-post.txt",
+      subreddit_post_path: "subreddit-post.md",
+      nextdoor_post_path: "nextdoor-post.txt",
+      short_link_blurb_path: "short-link-blurb.txt",
+      manifest_path: "publish-manifest.json",
+      zip_path: "site-package.zip",
+      articles: [],
+    };
+
+    const { rerender } = render(
+      <PublishPanel
+        publishPath={"C:\\my-site"}
+        publishResult={publishResult}
+        {...defaultPublisherProps}
+        onPublishPathChange={vi.fn()}
+        publishStep={3}
+        onPublishStepChange={vi.fn()}
+        loading={false}
+        onPublish={vi.fn()}
+        onOpenLocalPath={vi.fn()}
+        onOpenExternalUrl={vi.fn()}
+        onChoosePublishPath={vi.fn()}
+        onRecordPublishDestination={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("Publish to a host").parentElement).toHaveTextContent("pending");
+    expect(screen.getByText("Share with residents").parentElement).toHaveTextContent("pending");
+
+    rerender(
+      <PublishPanel
+        publishPath={"C:\\my-site"}
+        publishResult={{ ...publishResult, published_url: "https://example.org/civic" }}
+        {...defaultPublisherProps}
+        onPublishPathChange={vi.fn()}
+        publishStep={3}
+        onPublishStepChange={vi.fn()}
+        loading={false}
+        onPublish={vi.fn()}
+        onOpenLocalPath={vi.fn()}
+        onOpenExternalUrl={vi.fn()}
+        onChoosePublishPath={vi.fn()}
+        onRecordPublishDestination={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("Publish to a host").parentElement).toHaveTextContent("live URL");
+    expect(screen.getByText("Share with residents").parentElement).toHaveTextContent("posts");
+  });
+
   test("records a public publish destination after compile", () => {
     const handleRecord = vi.fn();
 
@@ -403,6 +470,56 @@ describe("PublishPanel Component Tests", () => {
     fireEvent.change(screen.getByLabelText(/Provider/i), { target: { value: "netlify" } });
     expect(screen.getByRole("button", { name: /Publish with connector/i })).toBeDisabled();
     expect(screen.getByText(/Test the selected connector before publishing/i)).toBeInTheDocument();
+  });
+
+  test("Cloudflare is assisted/manual in the beta, not an active API connector", () => {
+    const handlePublishWithConnector = vi.fn();
+
+    render(
+      <PublishPanel
+        publishPath={"C:\\my-site"}
+        publishResult={{
+          issue_id: "issue-20260627-000000",
+          output_dir: "C:/my-site",
+          generated_at: "2026-06-27T00:00:00Z",
+          provider: "local_export",
+          published_url: null,
+          deployment_id: null,
+          article_count: 1,
+          skipped_count: 0,
+          files_written: 12,
+          generated_files: [],
+          index_path: "index.html",
+          rss_path: "feed.xml",
+          newsletter_path: "newsletter.md",
+          substack_path: "substack.md",
+          share_package_path: "share-package.md",
+          facebook_post_path: "facebook-post.txt",
+          subreddit_post_path: "subreddit-post.md",
+          nextdoor_post_path: "nextdoor-post.txt",
+          short_link_blurb_path: "short-link-blurb.txt",
+          manifest_path: "publish-manifest.json",
+          zip_path: "site-package.zip",
+          articles: [],
+        }}
+        {...defaultPublisherProps}
+        publisherProvider="cloudflare_pages"
+        onPublishWithConnector={handlePublishWithConnector}
+        onPublishPathChange={vi.fn()}
+        publishStep={3}
+        onPublishStepChange={vi.fn()}
+        loading={false}
+        onPublish={vi.fn()}
+        onOpenLocalPath={vi.fn()}
+        onOpenExternalUrl={vi.fn()}
+        onChoosePublishPath={vi.fn()}
+        onRecordPublishDestination={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: /Publish with connector/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /Test connection/i })).toBeDisabled();
+    expect(screen.getByText(/Cloudflare API publishing is disabled in this public beta/i)).toBeInTheDocument();
   });
 
   test("blocks compile when no approved stories are ready", () => {
