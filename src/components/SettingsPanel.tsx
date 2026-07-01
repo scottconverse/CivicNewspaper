@@ -33,7 +33,7 @@ const GuardrailWordList: React.FC<{
       <p className="help-text" style={{ marginBottom: "0.75rem" }}>{hint}</p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.75rem" }}>
         {words.length === 0 && (
-          <span className="help-text">No words in this list — nothing will be flagged.</span>
+          <span className="help-text">No words in this list - nothing will be flagged.</span>
         )}
         {words.map((w) => (
           <span
@@ -81,7 +81,7 @@ const GuardrailWordList: React.FC<{
                 lineHeight: 1,
               }}
             >
-              ×
+              x
             </button>
           </span>
         ))}

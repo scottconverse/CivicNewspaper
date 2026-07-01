@@ -70,7 +70,7 @@ export function toUserMessage(e: unknown): string {
     }
     switch (token) {
       case "NO_EVIDENCE":
-        return "There's nothing to scan yet — run Scrape & Detect first to collect evidence, then try again.";
+        return "There's nothing to scan yet - run Scrape & Detect first to collect evidence, then try again.";
       case "MODEL_NOT_INSTALLED":
         return "The selected AI model isn't installed yet. Open AI Model to download it, then try again.";
       default:

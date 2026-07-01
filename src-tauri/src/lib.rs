@@ -72,7 +72,7 @@ pub fn run() {
 
             // 4. Start Axum server in a background tokio task for browser pairing.
             //    ENG-Min5: a bind failure (e.g. port 12053 already in use) must
-            //    not be swallowed to stderr only — emit a Tauri event so the
+            //    not be swallowed to stderr only - emit a Tauri event so the
             //    pairing UI can explain that browser pairing is unavailable.
             let server_app_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
@@ -82,7 +82,7 @@ pub fn run() {
                     let _ = server_app_handle.emit(
                         "http-server-error",
                         format!(
-                            "The local pairing server could not start ({}). Browser pairing will be unavailable — another app may be using port 12053.",
+                            "The local pairing server could not start ({}). Browser pairing will be unavailable - another app may be using port 12053.",
                             e
                         ),
                     );

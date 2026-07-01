@@ -97,7 +97,7 @@ impl std::fmt::Display for LlmError {
         match self {
             LlmError::Timeout(secs) => write!(
                 f,
-                "The AI took longer than {}s to respond. Local generation on CPU can be slow — try a shorter format or a smaller model, or raise CIVICNEWS_LLM_TIMEOUT_SECS.",
+                "The AI took longer than {}s to respond. Local generation on CPU can be slow - try a shorter format or a smaller model, or raise CIVICNEWS_LLM_TIMEOUT_SECS.",
                 secs
             ),
             LlmError::Unreachable(e) => write!(
