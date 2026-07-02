@@ -1,0 +1,104 @@
+{
+  "db_path": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+  "db_exists": true,
+  "installer": "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260702-final-cleanroom-v032-b0f4ce2\\The Civic Desk_0.3.2_x64-setup.exe",
+  "installer_exists": true,
+  "default_site_path": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default",
+  "default_site_exists": false,
+  "installer_size": 5203001,
+  "installer_sha256": "D3C29AB23F740EFED8535320C8CE762E50C3B6131BDD041BCD151AA528D228EE",
+  "counts": {
+    "sources": 9,
+    "daily_scan_runs": 2,
+    "daily_scan_leads": 43,
+    "leads": 46,
+    "evidence_items": 26,
+    "lead_evidence": 18,
+    "drafts": 2,
+    "publish_runs": 0,
+    "published_posts": 0,
+    "settings": 14
+  },
+  "settings": {
+    "ai.setup_skipped": "false",
+    "identity.city": "Longmont",
+    "identity.editor_name": "Cleanroom Tester",
+    "identity.newsroom_name": "Longmont Cleanroom Beta Desk",
+    "identity.organization_type": "single_person",
+    "identity.state": "CO",
+    "model.selected": "phi4-mini:latest",
+    "onboarding.step": "5"
+  },
+  "drafts": [
+    {
+      "id": 1,
+      "lead_id": 38,
+      "format": "watch",
+      "title": "Sign Up for City of Longmont News and Updates",
+      "status": "needs_verification",
+      "missing_evidence_notes": null,
+      "attested_by": null,
+      "attested_at": null,
+      "guardrail_override_reason": null,
+      "content_excerpt": "Residents interested in staying informed about local events can now sign up through the official newsletter page on longmontcolorado.gov/departments/departments-a-d/city-clerk/news-alerts to receive weekly updates directly from their city government.\n\nAs there's no immediate change or urgent news, this item is being monitored for any developments. An editor should periodically check back and expand upon it if new information arises in the future."
+    },
+    {
+      "id": 2,
+      "lead_id": 34,
+      "format": "watch",
+      "title": "New Academic Focus Programs Announced at St. Vrain Valley Schools",
+      "status": "draft_generated",
+      "missing_evidence_notes": null,
+      "attested_by": null,
+      "attested_at": null,
+      "guardrail_override_reason": null,
+      "content_excerpt": "St. Vrain has unveiled over 70 new instructional focus programs aimed to enhance academic excellence and career readiness [Source](evidence:12). These initiatives promise significant educational opportunities, potentially impacting student curriculum alignment with state standards.\n\nResidents should monitor future announcements for details on these specific school-level partnerships or any associated changes in the existing district-wide offerings."
+    }
+  ],
+  "lead_dispositions": [
+    {
+      "disposition": "background",
+      "count": 12
+    },
+    {
+      "disposition": "needs_verification",
+      "count": 23
+    },
+    {
+      "disposition": "ready_to_draft",
+      "count": 2
+    },
+    {
+      "disposition": "review",
+      "count": 2
+    },
+    {
+      "disposition": "watch",
+      "count": 7
+    }
+  ],
+  "ready_to_draft_leads": [
+    {
+      "id": 32,
+      "from_scan_lead_id": 29,
+      "story_type": "brief",
+      "risk_level": "med",
+      "confidence": "med",
+      "why_excerpt": "Longmont official city website: View Events Summer Science Series: Tardigrades (Water Bears) Thursday, July 2 \u2022 4 pm &...: View Events Summer Science Series: Tardigrades (Water Bears) Thursday, July 2 \u2022 4 pm &#8211; 5 pm 355 Emery St. Longmont, CO 80501 United States Library Summer Concert Series: 2MX2 Thursday, July 2 \u2022 7 pm &#8211; 8:30 pm 400 Quail Rd. Longmont, CO 80501 United States Museum LIBRA... Editor context: The scan found actionable source evidence after the local model produced too ",
+      "scan_title": "Longmont official city website: View Events Summer Science Series: Tardigrades (Water Bears) Thursday, July 2 \u2022 4 pm &...",
+      "original_url": "https://www.longmontcolorado.gov/",
+      "source_name": "Longmont official city website"
+    },
+    {
+      "id": 34,
+      "from_scan_lead_id": 31,
+      "story_type": "brief",
+      "risk_level": "high",
+      "confidence": "high",
+      "why_excerpt": "New Academic Focus Programs Announced at St. Vrain Valley Schools: St. Vrain has unveiled a series of new instructional focus programs aimed to enhance academic excellence and career readiness, including 70+ such initiatives. Editor context: The announcement introduces significant educational opportunities for students. Suggested treatment: brief. Newsworthiness: 13/20 (immediacy 4, impact 5, conflict 1, novelty 3). Why now: Introduction of new focus programs to better prepare students for futur",
+      "scan_title": "New Academic Focus Programs Announced at St. Vrain Valley Schools",
+      "original_url": "https://www.svvsd.org/",
+      "source_name": "St. Vrain Valley Schools Website"
+    }
+  ]
+}
