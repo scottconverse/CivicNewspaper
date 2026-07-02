@@ -1,0 +1,18 @@
+{
+  "db_path": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+  "db_exists": true,
+  "settings_count": 1,
+  "settings": [
+    {
+      "key": "model.selected",
+      "value": "phi4-mini:latest"
+    }
+  ],
+  "sources_count": 0,
+  "leads_count": 0,
+  "evidence_items_count": 0,
+  "daily_scan_runs_count": 0,
+  "drafts_count": 0,
+  "publish_runs_count": 0,
+  "published_posts_count": 0
+}
