@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "CivicNews Browser Bridge",
+  "name": "Civic Desk Browser Bridge",
   "version": "1.0.0",
-  "description": "Bridges local CivicNews public records queue and OSINT evidence directly into Claude, ChatGPT, and Gemini.",
+  "description": "Bridges The Civic Desk story queue and source evidence into Claude, ChatGPT, and Gemini after explicit pairing.",
   "permissions": [
     "storage"
   ],

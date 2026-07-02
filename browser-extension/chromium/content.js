@@ -229,7 +229,7 @@ function fetchQueue() {
     } else {
       state.leads = [];
       state.paired = false;
-      appendLog(response ? response.error : 'Connection lost to CivicNews core API.');
+      appendLog(response ? response.error : 'Connection lost to The Civic Desk bridge API.');
     }
     render();
   });
@@ -365,7 +365,7 @@ function captureAssistantResponseAndSubmit(leadId) {
   const title = prompt('Enter a title for this draft:', 'Draft: Captured from Browser Assistant');
   if (!title) return;
 
-  appendLog('Submitting draft to CivicNews workbench...');
+  appendLog('Submitting draft to The Civic Desk workbench...');
   chrome.runtime.sendMessage({
     type: 'CN_SUBMIT_DRAFT',
     draft: {
@@ -392,7 +392,7 @@ function render() {
   const header = document.createElement('div');
   header.className = 'cn-header';
   header.innerHTML = `
-    <span class="cn-title">CivicNews Bridge</span>
+    <span class="cn-title">Civic Desk Bridge</span>
     <button class="cn-close" aria-label="Close">x</button>
   `;
   header.querySelector('.cn-close').addEventListener('click', () => {
@@ -500,4 +500,4 @@ function render() {
 }
 
 render();
-console.log('CivicNews Browser Bridge active.');
+console.log('Civic Desk Browser Bridge active.');

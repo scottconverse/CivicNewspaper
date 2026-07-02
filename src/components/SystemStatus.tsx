@@ -57,12 +57,12 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
 
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         {/* Ollama Connection */}
-        <div className="flex-between" style={{ padding: "0.5rem 0", borderBottom: "1px solid var(--border-color)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <div className="flex-between system-status-row" style={{ padding: "0.5rem 0", borderBottom: "1px solid var(--border-color)" }}>
+          <div className="system-status-row-label" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <Cpu size={16} style={{ color: "var(--text-secondary)" }} />
             <span>Local AI Service</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <div className="system-status-row-value" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <span
               className={`status-dot ${aiDotClass}`}
               data-testid="ollama-status-dot"
@@ -79,33 +79,33 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
         </div>
 
         {/* DB Version */}
-        <div className="flex-between" style={{ padding: "0.5rem 0", borderBottom: "1px solid var(--border-color)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <div className="flex-between system-status-row" style={{ padding: "0.5rem 0", borderBottom: "1px solid var(--border-color)" }}>
+          <div className="system-status-row-label" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <Database size={16} style={{ color: "var(--text-secondary)" }} />
             <span>SQLite Schema Version</span>
           </div>
-          <strong data-testid="db-version-text">{dbVersion || "v1.1.0"}</strong>
+          <strong className="system-status-row-value" data-testid="db-version-text">{dbVersion || "v1.1.0"}</strong>
         </div>
 
         {/* Scraper Status */}
-        <div className="flex-between" style={{ padding: "0.5rem 0", borderBottom: "1px solid var(--border-color)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <div className="flex-between system-status-row" style={{ padding: "0.5rem 0", borderBottom: "1px solid var(--border-color)" }}>
+          <div className="system-status-row-label" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <ScraperIcon size={16} style={{ color: "var(--text-secondary)" }} />
             <span>Source Scanner</span>
           </div>
           {/* UX-n2: there's no live scraper-state signal in the frontend, so a
               hardcoded green "Ready" badge was a false status. State it honestly:
               the scanner runs on demand when you click "Scrape & Detect". */}
-          <span className="badge badge-neutral" data-testid="scraper-status-text">Runs on demand</span>
+          <span className="badge badge-neutral system-status-row-value" data-testid="scraper-status-text">Runs on demand</span>
         </div>
 
         {/* App Version */}
-        <div className="flex-between" style={{ padding: "0.5rem 0" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <div className="flex-between system-status-row" style={{ padding: "0.5rem 0" }}>
+          <div className="system-status-row-label" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <ShieldAlert size={16} style={{ color: "var(--text-secondary)" }} />
             <span>Build Release version</span>
           </div>
-          <strong data-testid="app-version-text">v{appVersion}</strong>
+          <strong className="system-status-row-value" data-testid="app-version-text">v{appVersion}</strong>
         </div>
       </div>
     </div>

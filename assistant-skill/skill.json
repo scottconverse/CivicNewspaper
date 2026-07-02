@@ -1,7 +1,7 @@
 {
   "name": "civicnews",
   "version": "1.0.0",
-  "description": "Assistant skill to connect with CivicNews local-first backend",
+  "description": "Assistant skill to connect with The Civic Desk local-first backend",
   "entrypoint": "client.js",
   "tools": [
     {

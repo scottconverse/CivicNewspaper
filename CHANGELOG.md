@@ -4,6 +4,19 @@ All notable changes to CivicNewspaper will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2026-07-02
+
+### Changed
+- Hardened the Windows public-beta first-run setup path so identity entry, local-AI skip, defaults, and workspace entry can be proven from the packaged installer.
+- Made release smoke reject stable runs that also allow a dirty working tree.
+- Updated release-facing docs to match the v0.3.2 Windows-only public-beta installer scope.
+
+### Fixed
+- Made lead creation atomic with evidence linking so failed evidence references cannot leave orphan draftable leads behind.
+- Improved mobile navigation and system-status layout so grouped controls and AI state remain visible on narrow screens.
+- Made browser-extension API errors status-aware so empty 401, 403, and 429 responses produce useful pairing/auth/rate-limit messages.
+- Corrected first-run completion copy so skipped local AI setup is described honestly.
+
 ## [0.3.1] - 2026-06-30
 
 ### Added

@@ -2,7 +2,7 @@
 
 > **Project name:** CivicNewspaper. **Installed app name:** The Civic Desk.
 >
-> **Current source:** v0.3.1 public-beta repair candidate. Published GitHub Release installers may lag the source version. Installers are unsigned. This is not a stable production release.
+> **Current source:** v0.3.2 public-beta repair candidate. Published GitHub Release installers may lag the source version. Installers are unsigned. This is not a stable production release.
 
 The Civic Desk is a local-first desktop newsroom tool for small local publishers, civic reporters, and community editors. It helps one person or a small team monitor public local sources, discover story leads, draft articles with a local AI model, review risks and evidence, and publish a static local-news issue.
 
@@ -124,7 +124,7 @@ The Ollama runtime binary is not committed to the repo. The app-managed first-ru
 
 ## Release Status
 
-v0.3.1 is public-beta repair-candidate source. Local isolated-profile smoke, packaged Windows installer smoke, live local-model smoke, source-import fixture smoke, and anonymous here.now smoke have proven the current Windows beta path on this workstation. A true clean-machine or remote tester run is still required for each release candidate before calling it cleanroom-proven. This repair line improves story-quality workflow, docs honesty, Windows-only beta packaging scope, recurring-topic memory, lead novelty warnings, and editor workflow controls. Stable release still requires signed installers, cross-platform clean-machine proof for every advertised platform, matching published release artifacts, and credentialed live verification for external publishing providers.
+v0.3.2 is public-beta repair-candidate source. Local isolated-profile smoke, packaged Windows installer smoke, live local-model smoke, source-import fixture smoke, and anonymous here.now smoke must pass at the exact release commit before the Windows beta path is considered locally proven. A true clean-machine or remote tester run is still required for each release candidate before calling it cleanroom-proven. This repair line improves story-quality workflow, docs honesty, Windows-only beta packaging scope, recurring-topic memory, lead novelty warnings, editor workflow controls, first-run setup visibility, and release evidence integrity. Stable release still requires signed installers, cross-platform clean-machine proof for every advertised platform, matching published release artifacts, and credentialed live verification for external publishing providers.
 
 ## Backlog: Mac And Linux Installer Proof
 

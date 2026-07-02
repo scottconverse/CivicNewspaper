@@ -1410,8 +1410,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             <div style={{ display: "inline-flex", background: "rgba(16, 185, 129, 0.1)", padding: "1rem", borderRadius: "50%", marginBottom: "1rem" }}>
               <CheckCircle size={48} color="var(--color-success)" />
             </div>
-            <h3 style={{ color: "var(--color-success)", marginBottom: "0.5rem" }}>You're ready.</h3>
-            <p className="help-text">All setup steps are complete. Click finish to enter the workspace.</p>
+            <h3 style={{ color: "var(--color-success)", marginBottom: "0.5rem" }}>Workspace ready.</h3>
+            <p className="help-text">
+              You can enter the workspace now. If you skipped local AI setup, drafting and AI-assisted review stay limited until you finish AI Model setup.
+            </p>
             
             <div style={{ marginTop: "2rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem", textAlign: "left" }}>
               <h4 style={{ fontSize: "1.05rem", marginBottom: "0.5rem" }}>What's next?</h4>
@@ -1420,6 +1422,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               </p>
               <ul style={{ fontSize: "0.85rem", color: "var(--text-secondary)", paddingLeft: "1.2rem", marginTop: "0.25rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
                 <li>Configure your <strong>first source</strong> under the Sources tab.</li>
+                <li>Finish local AI setup from the <strong>AI Model</strong> tab if you skipped it here.</li>
                 <li>Write or import your first draft articles.</li>
                 <li>Run a daily scan to aggregate recent signals.</li>
               </ul>

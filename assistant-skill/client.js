@@ -84,7 +84,7 @@ function makeRequest(method, urlPath, body = null) {
     });
 
     req.on('error', (err) => {
-      reject(new Error(`Connection failed: ${err.message}. Is CivicNews Tauri app running?`));
+      reject(new Error(`Connection failed: ${err.message}. Is The Civic Desk app running?`));
     });
 
     if (body) {
@@ -100,7 +100,7 @@ async function main() {
 
   if (!command) {
     console.log(`
-CivicNews Coding Assistant CLI Bridge
+The Civic Desk Coding Assistant CLI Bridge
 Usage:
   node client.js pair <pin>                 - Pair with active desktop PIN code
   node client.js queue                      - Fetch today's story queue

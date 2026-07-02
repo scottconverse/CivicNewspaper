@@ -1,7 +1,7 @@
 # CivicNewspaper V1 Product Requirements Document
 
-Status: draft for v0.3.1 to v1.0.0 planning
-Current product version: v0.3.1
+Status: draft for v0.3.2 to v1.0.0 planning
+Current product version: v0.3.2
 Product name: CivicNewspaper
 Installed app name: The Civic Desk
 

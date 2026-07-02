@@ -98,6 +98,10 @@ function Invoke-Check {
 
 Push-Location $RepoRoot
 try {
+  if ($Stable -and $AllowDirty) {
+    throw "Stable release smoke cannot use -AllowDirty. Commit or stash changes, then rerun without -AllowDirty."
+  }
+
   if ($Stable -and ($SkipLiveModel -or $SkipHereNow -or $SkipImportFixtures)) {
     throw "Stable release smoke cannot skip live model, here.now, or import fixture gates."
   }

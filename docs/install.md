@@ -46,7 +46,7 @@ A SHA256 checksum proves that the file you downloaded matches the file listed in
 ### Windows PowerShell
 
 ```powershell
-Get-FileHash -Algorithm SHA256 "C:\Users\YourName\Downloads\The Civic Desk_0.3.1_x64-setup.exe"
+Get-FileHash -Algorithm SHA256 "C:\Users\YourName\Downloads\The Civic Desk_0.3.2_x64-setup.exe"
 ```
 
 If the hash does not match, delete the installer and report it on the project issue tracker: <https://github.com/scottconverse/CivicNewspaper/issues>. Do not run a mismatched installer.

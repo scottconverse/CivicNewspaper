@@ -40,6 +40,52 @@ mod tests {
         assert_eq!(version_after, get_expected_version());
     }
 
+    #[test]
+    fn test_insert_lead_rolls_back_when_evidence_link_fails() {
+        let conn = init_db("file:test_insert_lead_atomic?mode=memory&cache=shared").unwrap();
+        let result = insert_lead(
+            &conn,
+            &Lead {
+                id: None,
+                detector_name: "Atomicity Test".to_string(),
+                why: "This lead should not survive a failed evidence link.".to_string(),
+                confidence: "high".to_string(),
+                risk_level: "low".to_string(),
+                confirmation_checklist: "[]".to_string(),
+                from_scan_lead_id: None,
+                story_type: Some("verification".to_string()),
+                disposition: Some("review".to_string()),
+                novelty_score: None,
+                novelty_reason: None,
+                recurrence_count: None,
+                recurrence_note: None,
+                created_at: Utc::now().to_rfc3339(),
+            },
+            &[999_999],
+        );
+
+        assert!(result.is_err(), "missing evidence must reject the lead");
+        let lead_count: i32 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM leads WHERE detector_name = 'Atomicity Test'",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap();
+        let link_count: i32 = conn
+            .query_row("SELECT COUNT(*) FROM lead_evidence", [], |row| row.get(0))
+            .unwrap();
+
+        assert_eq!(
+            lead_count, 0,
+            "failed evidence linking must roll back lead insert"
+        );
+        assert_eq!(
+            link_count, 0,
+            "failed evidence linking must leave no partial links"
+        );
+    }
+
     fn seed_pre_0017_database(path: &std::path::Path) -> i32 {
         let mut conn = Connection::open(path).unwrap();
         run_migrations(&mut conn).unwrap();
@@ -3899,8 +3945,7 @@ I should produce JSON only.
         });
 
         let result = crate::core::publisher::owned_github_generated_remote_files_from_manifest(
-            &manifest,
-            "docs",
+            &manifest, "docs",
         );
 
         assert!(result.is_err());
@@ -3920,8 +3965,7 @@ I should produce JSON only.
         });
 
         let paths = crate::core::publisher::owned_github_generated_remote_files_from_manifest(
-            &manifest,
-            "docs",
+            &manifest, "docs",
         )
         .unwrap();
 

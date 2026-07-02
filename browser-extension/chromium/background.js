@@ -1,6 +1,23 @@
 // browser-extension/chromium/background.js
 const API_URL = 'http://127.0.0.1:12053';
 
+async function readJsonIfPossible(res) {
+  const text = await res.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch (_err) {
+    return { message: text };
+  }
+}
+
+function statusMessage(status, fallback = 'The desktop app rejected this request.') {
+  if (status === 401) return 'Pairing expired or unauthorized. Pair the extension again.';
+  if (status === 403) return 'The desktop app rejected this request. Check browser pairing and allowed origin.';
+  if (status === 429) return 'Too many attempts. Wait a minute and try again.';
+  return `${fallback} HTTP ${status}.`;
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'CN_PAIR') {
     handlePair(message.pin, sendResponse);
@@ -27,13 +44,13 @@ function handlePair(pin, sendResponse) {
     body: JSON.stringify({ pin })
   })
     .then(async (res) => {
-      const data = await res.json();
-      if (res.ok && data.token) {
+      const data = await readJsonIfPossible(res);
+      if (res.ok && data && data.token) {
         chrome.storage.local.set({ civicnews_token: data.token }, () => {
           sendResponse({ success: true, token: data.token });
         });
       } else {
-        sendResponse({ success: false, error: 'Invalid code or pairing expired.' });
+        sendResponse({ success: false, error: res.status === 429 ? statusMessage(res.status) : 'Invalid code or pairing expired.' });
       }
     })
     .catch((err) => {
@@ -55,11 +72,11 @@ function handleGetQueue(sendResponse) {
       }
     })
       .then(async (res) => {
-        const data = await res.json();
+        const data = await readJsonIfPossible(res);
         if (res.ok) {
           sendResponse({ success: true, data });
         } else {
-          sendResponse({ success: false, error: `Server returned HTTP ${res.status}` });
+          sendResponse({ success: false, error: statusMessage(res.status, 'Could not fetch the story queue.') });
         }
       })
       .catch((err) => {
@@ -82,11 +99,11 @@ function handleGetEvidence(leadId, sendResponse) {
       }
     })
       .then(async (res) => {
-        const data = await res.json();
+        const data = await readJsonIfPossible(res);
         if (res.ok) {
           sendResponse({ success: true, data });
         } else {
-          sendResponse({ success: false, error: `Server returned HTTP ${res.status}` });
+          sendResponse({ success: false, error: statusMessage(res.status, 'Could not fetch evidence.') });
         }
       })
       .catch((err) => {
@@ -112,11 +129,11 @@ function handleSubmitDraft(draft, sendResponse) {
       body: JSON.stringify(draft)
     })
       .then(async (res) => {
-        const data = await res.json();
+        const data = await readJsonIfPossible(res);
         if (res.ok) {
           sendResponse({ success: true, data });
         } else {
-          sendResponse({ success: false, error: `Server returned HTTP ${res.status}` });
+          sendResponse({ success: false, error: statusMessage(res.status, 'Could not submit the draft.') });
         }
       })
       .catch((err) => {

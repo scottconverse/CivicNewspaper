@@ -1,18 +1,19 @@
 ---
-name: civicnews
-description: Interact with the local CivicNews instance. Allows checking the story queue, fetching raw public records evidence packets, pushing draft articles, and running pre-publication guardrails.
+name: civic-desk
+description: Interact with the local The Civic Desk instance. Allows checking the story queue, fetching raw public records evidence packets, pushing draft articles, and running pre-publication guardrails.
 ---
 
-# CivicNews Skill
+# The Civic Desk Bridge Skill
 
-Use this skill to interface directly with the local-first CivicNews application. It allows you (the coding assistant) to help the user manage their civic newsroom.
+Use this skill to interface directly with the local-first The Civic Desk application. It allows you (the coding assistant) to help the user manage their civic newsroom.
 
 ## How it works
 
-The CivicNews application hosts a secure loopback API server on `127.0.0.1:12053`.
+The Civic Desk application hosts a secure loopback API server on `127.0.0.1:12053`.
 Access is authorized via a paired token saved in the user's home configuration directory:
 * Windows: `%APPDATA%\civicnews-token.json`
-* macOS: `~/Library/Application Support/civicnews-token.json` or `~/.config/civicnews-token.json`
+* macOS source/developer builds: `~/Library/Application Support/civicnews-token.json`
+* Linux source/developer builds: `~/civicnews-token.json`
 
 A CLI utility is provided at [client.js](./client.js) to automate these calls.
 
@@ -21,7 +22,7 @@ A CLI utility is provided at [client.js](./client.js) to automate these calls.
 The paired token is the *only* gate on the loopback API, so the token file must be readable only by the owning user.
 
 * **macOS / Linux:** `client.js` writes the file with mode `0600` and runs `chmod 0600` after writing, so only your user account can read or write it. No action needed.
-* **Windows:** Unix file modes are ignored by the filesystem, so `client.js` cannot tighten the ACL programmatically. `%APPDATA%` (`C:\Users\<you>\AppData\Roaming`) already inherits a per-user ACL that excludes other standard users, so the default location is private. If you relocate the token file, confirm its ACL grants access only to your user — for example:
+* **Windows:** Unix file modes are ignored by the filesystem, so `client.js` cannot tighten the ACL programmatically. `%APPDATA%` (`C:\Users\<you>\AppData\Roaming`) already inherits a per-user ACL that excludes other standard users, so the default location is private. If you relocate the token file, confirm its ACL grants access only to your user. For example:
   ```powershell
   icacls "$env:APPDATA\civicnews-token.json" /inheritance:r /grant:r "$($env:USERNAME):(R,W)"
   ```

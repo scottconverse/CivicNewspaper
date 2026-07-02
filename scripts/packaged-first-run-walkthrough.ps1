@@ -240,6 +240,23 @@ function Add-Check {
   }
 }
 
+function Add-ScreenshotCheck {
+  param(
+    [string]$Name,
+    [string]$Path
+  )
+
+  $file = Get-Item -LiteralPath $Path -ErrorAction SilentlyContinue
+  $ok = $null -ne $file -and $file.Length -gt 1024
+  Add-Check $Name $ok @{
+    path = $Path
+    bytes = if ($file) { $file.Length } else { 0 }
+  }
+  if (-not $ok) {
+    throw "Screenshot check failed for $Name at $Path"
+  }
+}
+
 $appProcess = $null
 try {
   $install = Start-Process -FilePath $installer -ArgumentList @("/S", "/D=$installRoot") -Wait -PassThru -WindowStyle Hidden
@@ -294,7 +311,7 @@ try {
 
   $beforeScreenshot = Join-Path $OutputDir "01-before-identity-entry.png"
   Capture-WindowScreenshot -Process $appProcess -Path $beforeScreenshot
-  Add-Check "before-screenshot" (Test-Path $beforeScreenshot) @{ path = $beforeScreenshot }
+  Add-ScreenshotCheck "before-screenshot" $beforeScreenshot
 
   $publication = "Longmont Local Beta Desk"
   $editor = "Local Packaged Walkthrough"
@@ -317,39 +334,39 @@ try {
 
   $afterTypingScreenshot = Join-Path $OutputDir "02-after-identity-entry.png"
   Capture-WindowScreenshot -Process $appProcess -Path $afterTypingScreenshot
-  Add-Check "after-typing-screenshot" (Test-Path $afterTypingScreenshot) @{ path = $afterTypingScreenshot }
+  Add-ScreenshotCheck "after-typing-screenshot" $afterTypingScreenshot
 
   [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
   Start-Sleep -Seconds 5
 
   $afterNextScreenshot = Join-Path $OutputDir "03-after-identity-next.png"
   Capture-WindowScreenshot -Process $appProcess -Path $afterNextScreenshot
-  Add-Check "after-next-screenshot" (Test-Path $afterNextScreenshot) @{ path = $afterNextScreenshot }
+  Add-ScreenshotCheck "after-next-screenshot" $afterNextScreenshot
 
   if ($CompleteOnboarding) {
     Click-WindowPoint -Process $appProcess -X 748 -Y 817
     Start-Sleep -Seconds 1
     $skipConfirmScreenshot = Join-Path $OutputDir "04-skip-confirmation.png"
     Capture-WindowScreenshot -Process $appProcess -Path $skipConfirmScreenshot
-    Add-Check "skip-confirmation-screenshot" (Test-Path $skipConfirmScreenshot) @{ path = $skipConfirmScreenshot }
+    Add-ScreenshotCheck "skip-confirmation-screenshot" $skipConfirmScreenshot
 
     [System.Windows.Forms.SendKeys]::SendWait("{TAB}{ENTER}")
     Start-Sleep -Seconds 2
     $afterSkipScreenshot = Join-Path $OutputDir "05-after-skip-setup.png"
     Capture-WindowScreenshot -Process $appProcess -Path $afterSkipScreenshot
-    Add-Check "after-skip-setup-screenshot" (Test-Path $afterSkipScreenshot) @{ path = $afterSkipScreenshot }
+    Add-ScreenshotCheck "after-skip-setup-screenshot" $afterSkipScreenshot
 
     Click-WindowPoint -Process $appProcess -X 940 -Y 817
     Start-Sleep -Seconds 1
     $doneStepScreenshot = Join-Path $OutputDir "06-done-step.png"
     Capture-WindowScreenshot -Process $appProcess -Path $doneStepScreenshot
-    Add-Check "done-step-screenshot" (Test-Path $doneStepScreenshot) @{ path = $doneStepScreenshot }
+    Add-ScreenshotCheck "done-step-screenshot" $doneStepScreenshot
 
     Click-WindowPoint -Process $appProcess -X 940 -Y 817
     Start-Sleep -Seconds 3
     $workspaceScreenshot = Join-Path $OutputDir "07-workspace-reached.png"
     Capture-WindowScreenshot -Process $appProcess -Path $workspaceScreenshot
-    Add-Check "workspace-reached-screenshot" (Test-Path $workspaceScreenshot) @{ path = $workspaceScreenshot }
+    Add-ScreenshotCheck "workspace-reached-screenshot" $workspaceScreenshot
   }
 
   $dbPath = Join-Path $appDataRoot "civicdesk.db"

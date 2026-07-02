@@ -223,7 +223,7 @@ pub struct PairedClient {
 /// Open a SQLite connection with the invariant pragmas this app relies on: WAL
 /// journaling and foreign-key enforcement. `foreign_keys` is per-connection in
 /// SQLite and does NOT persist, so EVERY connection that becomes a live handle
-/// must be opened through here — otherwise ON DELETE CASCADE / SET NULL silently
+/// must be opened through here; otherwise ON DELETE CASCADE / SET NULL silently
 /// stop firing (notably on the backup-restore rollback paths, which previously
 /// reopened the live DB without re-enabling foreign keys). See finding C-2.
 pub fn open_conn(path: &str) -> Result<Connection, Box<dyn Error + Send + Sync>> {
@@ -455,37 +455,49 @@ pub fn list_evidence_since(conn: &Connection, since_hours: u32) -> SqlResult<Vec
 pub fn insert_lead(conn: &Connection, lead: &Lead, evidence_ids: &[i32]) -> SqlResult<i32> {
     let now = Utc::now().to_rfc3339();
 
-    // We execute the insert and linking inside a transaction
-    // to keep lead integrity.
-    // Note: since rusqlite allows executing on connection directly,
-    // and we want this call to be atomic:
-    // If the connection is already in a transaction, this might fail, so we use execute block
-    conn.execute(
-        "INSERT INTO leads (detector_name, why, confidence, risk_level, confirmation_checklist, from_scan_lead_id, story_type, disposition, novelty_score, novelty_reason, recurrence_count, recurrence_note, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)",
-        params![
-            lead.detector_name,
-            lead.why,
-            lead.confidence,
-            lead.risk_level,
-            lead.confirmation_checklist,
-            lead.from_scan_lead_id,
-            lead.story_type,
-            lead.disposition.as_deref().unwrap_or("review"),
-            lead.novelty_score,
-            lead.novelty_reason,
-            lead.recurrence_count,
-            lead.recurrence_note,
-            now
-        ],
-    )?;
-    let lead_id = conn.last_insert_rowid() as i32;
-    for &eid in evidence_ids {
+    conn.execute_batch("SAVEPOINT insert_lead_atomic")?;
+
+    let result = (|| -> SqlResult<i32> {
         conn.execute(
-            "INSERT INTO lead_evidence (lead_id, evidence_id) VALUES (?1, ?2)",
-            params![lead_id, eid],
+            "INSERT INTO leads (detector_name, why, confidence, risk_level, confirmation_checklist, from_scan_lead_id, story_type, disposition, novelty_score, novelty_reason, recurrence_count, recurrence_note, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)",
+            params![
+                lead.detector_name,
+                lead.why,
+                lead.confidence,
+                lead.risk_level,
+                lead.confirmation_checklist,
+                lead.from_scan_lead_id,
+                lead.story_type,
+                lead.disposition.as_deref().unwrap_or("review"),
+                lead.novelty_score,
+                lead.novelty_reason,
+                lead.recurrence_count,
+                lead.recurrence_note,
+                now
+            ],
         )?;
+        let lead_id = conn.last_insert_rowid() as i32;
+        for &eid in evidence_ids {
+            conn.execute(
+                "INSERT INTO lead_evidence (lead_id, evidence_id) VALUES (?1, ?2)",
+                params![lead_id, eid],
+            )?;
+        }
+        Ok(lead_id)
+    })();
+
+    match result {
+        Ok(lead_id) => {
+            conn.execute_batch("RELEASE SAVEPOINT insert_lead_atomic")?;
+            Ok(lead_id)
+        }
+        Err(err) => {
+            let _ = conn.execute_batch(
+                "ROLLBACK TO SAVEPOINT insert_lead_atomic; RELEASE SAVEPOINT insert_lead_atomic;",
+            );
+            Err(err)
+        }
     }
-    Ok(lead_id)
 }
 
 pub fn list_leads(conn: &Connection) -> SqlResult<Vec<Lead>> {
