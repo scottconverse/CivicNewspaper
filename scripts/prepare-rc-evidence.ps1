@@ -404,10 +404,20 @@ try {
     $destDir = Join-Path $evidenceDir $Name
     New-Item -ItemType Directory -Force -Path $destDir | Out-Null
     $copied = @()
-    Get-ChildItem -LiteralPath $sourceDir -Recurse -File |
+    $agentRunsDir = Join-Path $RepoRoot ".agent-runs"
+    $sourceFiles = if (
+      [System.IO.Path]::GetFullPath($sourceDir).TrimEnd([System.IO.Path]::DirectorySeparatorChar) -eq
+      [System.IO.Path]::GetFullPath($agentRunsDir).TrimEnd([System.IO.Path]::DirectorySeparatorChar)
+    ) {
+      @(Get-Item -LiteralPath $ReceiptPath)
+    } else {
+      @(Get-ChildItem -LiteralPath $sourceDir -Recurse -File)
+    }
+    $sourceFiles |
       Where-Object {
         $_.FullName -notmatch "\\install\\" -and
-        $_.FullName -notmatch "\\app-data\\"
+        $_.FullName -notmatch "\\app-data\\" -and
+        $_.FullName -notlike "$RunDir*"
       } |
       ForEach-Object {
         $relative = Resolve-RelativePath -BaseDir $sourceDir -Path $_.FullName
