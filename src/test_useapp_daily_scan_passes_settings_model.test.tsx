@@ -1,7 +1,7 @@
 // src/useApp.test.tsx
 import { render, screen, act } from "@testing-library/react";
 import { describe, test, expect, vi } from "vitest";
-import { sanitizeEvidenceCitations, useApp } from "./useApp";
+import { ensureAttributionPhrase, sanitizeEvidenceCitations, useApp } from "./useApp";
 
 // Mock tauri core invoke to return mock initial data
 import { invoke } from "@tauri-apps/api/core";
@@ -33,6 +33,21 @@ describe("useApp Hook Tests", () => {
     expect(sanitized).toContain("unlinked-evidence-999");
     expect(sanitized).toContain("unlinked-evidence-123");
     expect(sanitized).toContain("unlinked-evidence-456");
+  });
+
+  test("ensureAttributionPhrase source-binds improved drafts with linked evidence", () => {
+    const attributed = ensureAttributionPhrase(
+      "St. Vrain Valley Schools announced a new academic program. [Source](evidence:12)",
+      [12],
+    );
+
+    expect(attributed).toMatch(/^According to the linked source,/);
+    expect(attributed).toContain("evidence:12");
+  });
+
+  test("ensureAttributionPhrase leaves already attributed drafts alone", () => {
+    const text = "According to district records, the program starts this fall. [Source](evidence:12)";
+    expect(ensureAttributionPhrase(text, [12])).toBe(text);
   });
 
   test("initializes hook states correctly and handles navigation updates", async () => {
@@ -479,7 +494,9 @@ describe("useApp Hook Tests", () => {
     });
 
     expect(savedDrafts[0].status).toBe("needs_verification");
+    expect(savedDrafts[0].missing_evidence_notes).toMatch(/No source documents are linked/i);
     expect(hookResult.selectedDraft?.status).toBe("needs_verification");
+    expect(hookResult.selectedDraft?.missing_evidence_notes).toMatch(/verification assignment/i);
     expect(hookResult.guardrailsReport).toEqual(guardrailsReport);
     expect(hookResult.statusMessage).toContain("marked as needing more work");
   });
@@ -747,6 +764,7 @@ describe("useApp Hook Tests", () => {
     expect(invoke).toHaveBeenCalledWith("ollama_health");
     expect(invoke).toHaveBeenCalledWith("llm_task", expect.any(Object));
     expect(hookResult.selectedDraft.title).toBe("Improved headline");
+    expect(hookResult.selectedDraft.content).toMatch(/^According to the linked source,/);
     expect(hookResult.selectedDraft.content).toContain("evidence:7");
     expect(hookResult.selectedDraft.content).toContain("unlinked-evidence-999");
     expect(hookResult.selectedDraft.content).not.toContain("evidence:999");

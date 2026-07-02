@@ -3699,26 +3699,22 @@ I should produce JSON only.
         insert_evidence_item(&conn, &first).unwrap();
         insert_evidence_item(&conn, &second_source).unwrap();
 
-        assert!(
-            get_evidence_by_source_url_hash(
-                &conn,
-                1,
-                Some("https://shared.example/notice"),
-                &hash,
-            )
-            .unwrap()
-            .is_some()
-        );
-        assert!(
-            get_evidence_by_source_url_hash(
-                &conn,
-                2,
-                Some("https://shared.example/notice"),
-                &hash,
-            )
-            .unwrap()
-            .is_some()
-        );
+        assert!(get_evidence_by_source_url_hash(
+            &conn,
+            1,
+            Some("https://shared.example/notice"),
+            &hash,
+        )
+        .unwrap()
+        .is_some());
+        assert!(get_evidence_by_source_url_hash(
+            &conn,
+            2,
+            Some("https://shared.example/notice"),
+            &hash,
+        )
+        .unwrap()
+        .is_some());
 
         let duplicate_same_source = insert_evidence_item(&conn, &first);
         assert!(

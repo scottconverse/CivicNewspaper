@@ -594,10 +594,21 @@ fn spawn_platform_opener(target: &str) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub fn open_local_path(path: String) -> Result<(), String> {
+pub fn open_local_path<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
+    path: String,
+) -> Result<(), String> {
     let path = std::path::PathBuf::from(path.trim());
     if path.as_os_str().is_empty() {
         return Err("No path was provided".to_string());
+    }
+    if !path.exists() {
+        if let Ok(app_data) = crate::core::app_paths::app_data_dir(&app) {
+            if crate::core::app_paths::is_standard_site_path(&app_data, &path) {
+                std::fs::create_dir_all(&path)
+                    .map_err(|e| format!("Could not create the publish output folder: {}", e))?;
+            }
+        }
     }
     if !path.exists() {
         return Err(format!(

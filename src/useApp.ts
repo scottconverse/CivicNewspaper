@@ -200,6 +200,27 @@ export function sanitizeEvidenceCitations(text: string, allowedEvidenceIds: numb
   });
 }
 
+export function ensureAttributionPhrase(text: string, allowedEvidenceIds: number[]): string {
+  if (allowedEvidenceIds.length === 0 || /according to/i.test(text)) return text;
+  const firstEvidenceId = allowedEvidenceIds[0];
+  const paragraphs = text.replace(/\r\n/g, "\n").split(/\n{2,}/);
+  const firstContentIndex = paragraphs.findIndex((part) => part.trim().length > 0);
+  if (firstContentIndex < 0) return text;
+
+  const paragraph = paragraphs[firstContentIndex].trimStart();
+  if (
+    paragraph.startsWith("#") ||
+    /^[-*]\s/.test(paragraph) ||
+    /^\d+[.)]\s/.test(paragraph)
+  ) {
+    return `According to the linked source [Source](evidence:${firstEvidenceId}), this item needs editor review.\n\n${text}`;
+  }
+
+  const leadingWhitespace = paragraphs[firstContentIndex].match(/^\s*/)?.[0] ?? "";
+  paragraphs[firstContentIndex] = `${leadingWhitespace}According to the linked source, ${paragraph} [Source](evidence:${firstEvidenceId})`;
+  return paragraphs.join("\n\n");
+}
+
 // Formats a structured `ollama-pull-progress` event into a single log line.
 // The pull command (`pull_ollama_model`) emits a structured object payload, not
 // a JSON string -- pinning the shape here keeps the listener from regressing to
@@ -1201,6 +1222,9 @@ export function useApp() {
         content: normalizedDraft.content,
         status: cautiousLead ? "needs_verification" : "draft_generated",
         verification_checklist: "[]",
+        missing_evidence_notes: evidenceList.length === 0
+          ? "No source documents are linked to this lead yet. Treat this as a verification assignment until public source material is attached or cited."
+          : undefined,
         created_at: now,
         updated_at: now,
       };
@@ -1972,6 +1996,7 @@ Rules:
 - First line must be Headline: followed by a concise, specific headline.
 - Remove reporter scaffolding such as EDITOR_NOTE, Body:, Nut graf, Reporting Steps, [Source needed], [Verification needed], and placeholders.
 - Preserve inline evidence citations exactly when present.
+- If linked source evidence exists, include a plain attribution phrase such as "According to..." in the first paragraph.
 - If the source support is thin, make it a brief or watch item and say what is known, not what is guessed.
 - Neutral tone. No advocacy. Do not imply the software makes the editor's decision.
 
@@ -1987,10 +2012,11 @@ ${selectedDraft.content}`;
         .filter((id): id is number => typeof id === "number");
       const citationSafe = sanitizeEvidenceCitations(improved, allowedEvidenceIds);
       const normalized = normalizeGeneratedDraft(citationSafe, selectedDraft.title);
+      const attributedContent = ensureAttributionPhrase(normalized.content, allowedEvidenceIds);
       setSelectedDraft({
         ...selectedDraft,
         title: normalized.title,
-        content: normalized.content,
+        content: attributedContent,
         updated_at: new Date().toISOString(),
       });
       setStatusMessage("Improved draft is loaded in the editor. Review it, then save if you want to keep it.");
