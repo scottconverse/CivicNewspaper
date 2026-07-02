@@ -1,0 +1,39 @@
+date=2026-07-02T00:34:42.3590935-06:00
+computer=MSI user=civic
+
+
+Caption        : Microsoft Windows 11 Home
+Version        : 10.0.26200
+BuildNumber    : 26200
+OSArchitecture : 64-bit
+
+
+
+
+
+
+Name                      : 13th Gen Intel(R) Core(TM) i7-13620H
+NumberOfCores             : 10
+NumberOfLogicalProcessors : 16
+
+
+
+
+ram_bytes=17179869184
+
+Name                               AdapterRAM DriverVersion
+----                               ---------- -------------
+Intel(R) UHD Graphics              2147479552 32.0.101.5972
+NVIDIA GeForce RTX 4050 Laptop GPU 4293918720 32.0.15.8129 
+
+
+
+
+
+Name : C
+Free : 376377896960
+Used : 111245590528
+
+
+
+
