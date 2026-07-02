@@ -125,7 +125,7 @@ try {
     loopback_pair_status = $pairStatus
     process_id = $proc.Id
     downloaded_runtime_in_isolated_profile = (Test-Path (Join-Path $AppDataDir "ollama-runtime"))
-    first_run_coverage_note = "Desktop process launched with isolated app data and no downloaded Ollama runtime in that profile; onboarding UI is covered by browser smoke and remote cleanroom."
+    first_run_coverage_note = "Desktop process launched with isolated app data and no downloaded Ollama runtime in that profile; onboarding UI is covered by browser UI smoke, and packaged dependency-absent proof is covered by windows-installer-smoke."
   }
   $receipt | ConvertTo-Json -Depth 6 | Set-Content -Encoding UTF8 $ReceiptPath
   Write-Log "Desktop smoke receipt: $ReceiptPath"
