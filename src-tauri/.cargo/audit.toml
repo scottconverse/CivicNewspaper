@@ -4,8 +4,8 @@
 # warnings are "unmaintained" / "unsound"-class advisories on transitive crates
 # we do not depend on directly and cannot upgrade independently. Until upstream
 # packages move off them, keep the exceptions explicit so actionable
-# vulnerabilities are not lost in noise. Re-review this list whenever Tauri,
-# pdf-extract, or lopdf is upgraded.
+# vulnerabilities are not lost in noise. Re-review this list whenever Tauri or
+# related packaging/runtime crates are upgraded.
 #
 # Each entry is a RUSTSEC advisory id. Machine-readable waiver metadata lives in
 # `../docs/security-advisory-waivers.json` and is validated by
@@ -32,8 +32,6 @@ ignore = [
     "RUSTSEC-2025-0081", # unic-char-property
     "RUSTSEC-2025-0098", # unic-ucd-version
     "RUSTSEC-2025-0100", # unic-ucd-ident
-    # ttf-parser - unmaintained; transitive via pdf-extract/lopdf.
-    "RUSTSEC-2026-0192",
     # glib - target-specific Tauri stack warning, not reachable in Windows tree.
     "RUSTSEC-2024-0429",
     # quick-xml - remaining vulnerable version is only through Tauri/plist
