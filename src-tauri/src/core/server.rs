@@ -17,6 +17,10 @@ use std::net::SocketAddr;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
+const PAIR_PIN_ATTEMPT_LIMIT: usize = 5;
+const PAIR_GLOBAL_ATTEMPT_LIMIT: usize = 50;
+const PAIR_ATTEMPT_WINDOW_SECONDS: u64 = 1800;
+
 #[derive(Clone)]
 pub struct AppState {
     pub db: DbConn,
@@ -133,13 +137,22 @@ async fn pair_handler(
     Json(payload): Json<PairRequest>,
 ) -> Result<Json<PairResponse>, StatusCode> {
     let ip = addr.ip().to_string();
+    let mut hasher = Sha256::new();
+    hasher.update(payload.pin.as_bytes());
+    let hashed_pin = hex::encode(hasher.finalize());
+    let pin_bucket = format!("pin:{ip}:{}", &hashed_pin[..16]);
+    let global_bucket = format!("global:{ip}");
     {
         let mut attempts = state.pair_attempts.lock().unwrap();
-        if let Some(&(count, time)) = attempts.get(&ip) {
-            if count >= 5 && time.elapsed().as_secs() < 1800 {
+        attempts.retain(|_, (_, time)| time.elapsed().as_secs() < PAIR_ATTEMPT_WINDOW_SECONDS);
+        if let Some(&(count, _)) = attempts.get(&pin_bucket) {
+            if count >= PAIR_PIN_ATTEMPT_LIMIT {
                 return Err(StatusCode::TOO_MANY_REQUESTS);
-            } else if time.elapsed().as_secs() >= 1800 {
-                attempts.remove(&ip);
+            }
+        }
+        if let Some(&(count, _)) = attempts.get(&global_bucket) {
+            if count >= PAIR_GLOBAL_ATTEMPT_LIMIT {
+                return Err(StatusCode::TOO_MANY_REQUESTS);
             }
         }
     }
@@ -149,21 +162,20 @@ async fn pair_handler(
         .lock()
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    let mut hasher = Sha256::new();
-    hasher.update(payload.pin.as_bytes());
-    let hashed_pin = hex::encode(hasher.finalize());
-
     match super::db::confirm_pairing(&conn, &hashed_pin) {
         Ok(Some(token)) => {
             let mut attempts = state.pair_attempts.lock().unwrap();
-            attempts.remove(&ip);
+            attempts.remove(&pin_bucket);
+            attempts.remove(&global_bucket);
             Ok(Json(PairResponse { token }))
         }
         Ok(None) => {
             let mut attempts = state.pair_attempts.lock().unwrap();
-            let entry = attempts.entry(ip).or_insert((0, Instant::now()));
-            entry.0 += 1;
-            entry.1 = Instant::now();
+            for key in [pin_bucket, global_bucket] {
+                let entry = attempts.entry(key).or_insert((0, Instant::now()));
+                entry.0 += 1;
+                entry.1 = Instant::now();
+            }
             Err(StatusCode::UNAUTHORIZED)
         }
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),

@@ -97,14 +97,34 @@ describe("AppContent Component Tests", () => {
     }
   });
 
+  test("setup handoff exposes a visible Run Daily Scan action", async () => {
+    const mockApp = {
+      ...makeMockApp("dailyScan"),
+      statusMessage: "Added 9 starter source(s) for Longmont, CO. Use Run Daily Scan to fetch records and build the first editor packet.",
+      sources: [{ id: 1, name: "Longmont City", url: "https://longmontcolorado.gov" }],
+      handleDailyScan: vi.fn(),
+      setActiveTab: vi.fn(),
+    };
+
+    render(<AppContent app={mockApp} />);
+
+    const runButton = screen.getByRole("button", { name: /^Run Daily Scan$/i });
+    expect(runButton).toBeInTheDocument();
+
+    await userEvent.click(runButton);
+
+    expect(mockApp.setActiveTab).toHaveBeenCalledWith("dailyScan");
+    expect(mockApp.handleDailyScan).toHaveBeenCalledTimes(1);
+  });
+
   test("reveals the draft wizard after a lead is selected", () => {
     vi.useFakeTimers();
     const scrollIntoView = vi.fn();
-    const focus = vi.fn();
     const originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
-    const originalFocus = HTMLElement.prototype.focus;
-    HTMLElement.prototype.scrollIntoView = scrollIntoView;
-    HTMLElement.prototype.focus = focus;
+    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
+    });
 
     const mockApp = {
       ...makeMockApp("queue"),
@@ -127,10 +147,11 @@ describe("AppContent Component Tests", () => {
       });
 
       expect(scrollIntoView).toHaveBeenCalledWith({ block: "start", behavior: "auto" });
-      expect(focus).not.toHaveBeenCalled();
     } finally {
-      HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
-      HTMLElement.prototype.focus = originalFocus;
+      Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+        configurable: true,
+        value: originalScrollIntoView,
+      });
       vi.useRealTimers();
     }
   });

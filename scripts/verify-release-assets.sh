@@ -36,7 +36,8 @@ fi
 # Pull the manifest and confirm each filename it lists is actually published.
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
-gh release download "$TAG" --repo "$REPO" --dir "$tmp" --pattern 'SHA256SUMS' --clobber
+mkdir -p "$tmp/assets"
+gh release download "$TAG" --repo "$REPO" --dir "$tmp/assets" --clobber
 
 missing=0
 while read -r _hash name; do
@@ -45,11 +46,22 @@ while read -r _hash name; do
     echo "FAIL: SHA256SUMS lists '$name' but it is not a published release asset" >&2
     missing=1
   fi
-done < "$tmp/SHA256SUMS"
+done < "$tmp/assets/SHA256SUMS"
 
 if [ "$missing" -ne 0 ]; then
   echo "Release-integrity gate FAILED: manifest references artifacts that would 404." >&2
   exit 1
 fi
 
-echo "=== Release-integrity gate PASSED: SHA256SUMS present and all listed artifacts published ==="
+EVIDENCE_FILE="docs/release-evidence/$TAG.json"
+EVIDENCE_ARGS=()
+if [ -f "$EVIDENCE_FILE" ]; then
+  EVIDENCE_ARGS=(--evidence "$EVIDENCE_FILE")
+fi
+
+node scripts/verify-release-asset-hashes.mjs \
+  --assets-dir "$tmp/assets" \
+  --manifest "$tmp/assets/SHA256SUMS" \
+  "${EVIDENCE_ARGS[@]}"
+
+echo "=== Release-integrity gate PASSED: SHA256SUMS present, assets published, and hashes verified ==="

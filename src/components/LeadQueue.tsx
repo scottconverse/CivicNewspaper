@@ -282,7 +282,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                 <div className="card text-center" style={{ gridColumn: "1 / -1", padding: "3rem" }}>
                   <Info size={36} style={{ color: "var(--text-muted)", marginBottom: "1rem" }} />
                   <h3>No story leads yet</h3>
-                  <p className="help-text">Click "Scrape & Detect" above to scan your sources for new story leads.</p>
+                  <p className="help-text">Run Daily Scan to check your watched sources and build the first editor packet.</p>
                 </div>
               )
             ) : (

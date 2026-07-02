@@ -37,17 +37,18 @@ export const Layout: React.FC<LayoutProps> = ({
 }) => {
   const mainRef = React.useRef<HTMLElement | null>(null);
   const hasSelectedModel = Boolean(modelLabel && !/^no model selected$/i.test(modelLabel.trim()));
-  const aiStatusLabel = aiSetupSkipped && !hasSelectedModel
+  const isAiLimitedMode = aiSetupSkipped && !ollamaOnline;
+  const aiStatusLabel = isAiLimitedMode
     ? "AI limited mode"
     : !ollamaOnline
       ? "Local AI offline"
       : hasSelectedModel
       ? "Local AI ready"
       : "Choose an AI model";
-  const aiStatusTone = aiSetupSkipped && !hasSelectedModel ? "needs-model" : !ollamaOnline ? "offline" : hasSelectedModel ? "ready" : "needs-model";
+  const aiStatusTone = isAiLimitedMode ? "needs-model" : !ollamaOnline ? "offline" : hasSelectedModel ? "ready" : "needs-model";
   const aiStatusClass = aiStatusTone === "ready" ? "online" : aiStatusTone === "needs-model" ? "warning" : "offline";
-  const aiStatusDetail = aiSetupSkipped && !hasSelectedModel
-    ? "Source checks work"
+  const aiStatusDetail = isAiLimitedMode
+    ? "Source checks still work"
     : modelLabel ?? "private";
   const navGroups = [
     {

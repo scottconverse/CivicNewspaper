@@ -41,6 +41,128 @@ mod tests {
     }
 
     #[test]
+    fn test_migration_0018_preserves_evidence_relationships() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        conn.execute_batch(
+            r#"
+            PRAGMA foreign_keys = ON;
+            CREATE TABLE sources (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                url TEXT NOT NULL UNIQUE,
+                type TEXT NOT NULL,
+                status TEXT NOT NULL DEFAULT 'online',
+                last_success_at TEXT,
+                last_failed_at TEXT,
+                last_scraped TEXT
+            );
+            CREATE TABLE evidence_items (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                source_id INTEGER NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
+                url TEXT,
+                fetched_at TEXT NOT NULL,
+                excerpt TEXT NOT NULL,
+                content_hash TEXT NOT NULL UNIQUE,
+                entities TEXT NOT NULL DEFAULT '[]'
+            );
+            CREATE TABLE leads (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                detector_name TEXT NOT NULL,
+                why TEXT NOT NULL,
+                confidence TEXT NOT NULL,
+                risk_level TEXT NOT NULL DEFAULT 'low',
+                confirmation_checklist TEXT NOT NULL DEFAULT '[]',
+                from_scan_lead_id INTEGER,
+                story_type TEXT,
+                disposition TEXT NOT NULL DEFAULT 'review',
+                novelty_score REAL,
+                novelty_reason TEXT,
+                recurrence_count INTEGER,
+                recurrence_note TEXT,
+                created_at TEXT NOT NULL
+            );
+            CREATE TABLE lead_evidence (
+                lead_id INTEGER NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
+                evidence_id INTEGER NOT NULL REFERENCES evidence_items(id) ON DELETE CASCADE,
+                PRIMARY KEY (lead_id, evidence_id)
+            );
+            CREATE TABLE civic_observations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                observation_type TEXT NOT NULL,
+                source_id INTEGER REFERENCES sources(id) ON DELETE SET NULL,
+                evidence_id INTEGER REFERENCES evidence_items(id) ON DELETE SET NULL,
+                title TEXT NOT NULL,
+                summary TEXT NOT NULL,
+                url TEXT,
+                observed_at TEXT NOT NULL,
+                content_hash TEXT,
+                previous_hash TEXT,
+                diff_summary TEXT,
+                metadata_json TEXT NOT NULL DEFAULT '{}',
+                tier TEXT NOT NULL DEFAULT 'official_record'
+            );
+
+            INSERT INTO sources (id, name, url, type)
+            VALUES
+                (1, 'City calendar', 'https://example.test/calendar', 'primary_record'),
+                (2, 'County calendar', 'https://example.test/county-calendar', 'primary_record');
+            INSERT INTO evidence_items (id, source_id, url, fetched_at, excerpt, content_hash, entities)
+            VALUES
+                (1, 1, 'https://example.test/item', '2026-07-02T00:00:00Z', 'Shared public notice text', 'same-text-hash', '[]');
+            INSERT INTO leads (id, detector_name, why, confidence, risk_level, confirmation_checklist, created_at)
+            VALUES
+                (1, 'Calendar item', 'Existing lead before migration 0018.', 'high', 'low', '[]', '2026-07-02T00:00:00Z');
+            INSERT INTO lead_evidence (lead_id, evidence_id)
+            VALUES (1, 1);
+            INSERT INTO civic_observations (
+                id, observation_type, source_id, evidence_id, title, summary, url, observed_at, content_hash
+            )
+            VALUES (
+                1, 'document_changed', 1, 1, 'Calendar changed', 'Existing observation before migration 0018.',
+                'https://example.test/item', '2026-07-02T00:00:00Z', 'same-text-hash'
+            );
+            PRAGMA user_version = 16;
+            "#,
+        )
+        .unwrap();
+
+        run_migrations(&mut conn).unwrap();
+
+        let link_count: i32 = conn
+            .query_row("SELECT COUNT(*) FROM lead_evidence", [], |row| row.get(0))
+            .unwrap();
+        let observation_evidence_id: Option<i32> = conn
+            .query_row(
+                "SELECT evidence_id FROM civic_observations WHERE id = 1",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(link_count, 1, "migration must preserve lead evidence links");
+        assert_eq!(
+            observation_evidence_id,
+            Some(1),
+            "migration must restore civic observation evidence pointers"
+        );
+
+        conn.execute(
+            "INSERT INTO evidence_items (source_id, url, fetched_at, excerpt, content_hash, entities)
+             VALUES (2, 'https://example.test/item', '2026-07-02T00:01:00Z', 'Shared public notice text', 'same-text-hash', '[]')",
+            [],
+        )
+        .unwrap();
+        let same_source_duplicate = conn.execute(
+            "INSERT INTO evidence_items (source_id, url, fetched_at, excerpt, content_hash, entities)
+             VALUES (1, 'https://example.test/item', '2026-07-02T00:02:00Z', 'Shared public notice text', 'same-text-hash', '[]')",
+            [],
+        );
+        assert!(
+            same_source_duplicate.is_err(),
+            "migration should keep duplicate suppression scoped to the same source and URL"
+        );
+    }
+
+    #[test]
     fn test_insert_lead_rolls_back_when_evidence_link_fails() {
         let conn = init_db("file:test_insert_lead_atomic?mode=memory&cache=shared").unwrap();
         let result = insert_lead(
@@ -3539,6 +3661,75 @@ I should produce JSON only.
         assert_ne!(compute_hash("Hello"), compute_hash("hello"));
         assert_ne!(compute_hash("agenda"), compute_hash("agenda "));
         assert_ne!(compute_hash("agenda"), compute_hash(" agenda"));
+    }
+
+    #[test]
+    fn test_evidence_dedupe_preserves_same_text_from_different_sources() {
+        use crate::core::db::{
+            get_evidence_by_source_url_hash, insert_evidence_item, EvidenceItem,
+        };
+        use crate::core::scraper::compute_hash;
+
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT INTO sources (id, name, url, type, status) VALUES
+             (1, 'City notice', 'https://city.example.gov/notices', 'official_comm', 'online'),
+             (2, 'County notice', 'https://county.example.gov/notices', 'official_comm', 'online')",
+            [],
+        )
+        .unwrap();
+
+        let excerpt = "Emergency shelter will open tonight at 6 p.m.";
+        let hash = compute_hash(excerpt);
+        let first = EvidenceItem {
+            id: None,
+            source_id: 1,
+            url: Some("https://shared.example/notice".to_string()),
+            fetched_at: "2026-07-02T12:00:00Z".to_string(),
+            excerpt: excerpt.to_string(),
+            content_hash: hash.clone(),
+            entities: "[]".to_string(),
+        };
+        let second_source = EvidenceItem {
+            source_id: 2,
+            ..first.clone()
+        };
+
+        insert_evidence_item(&conn, &first).unwrap();
+        insert_evidence_item(&conn, &second_source).unwrap();
+
+        assert!(
+            get_evidence_by_source_url_hash(
+                &conn,
+                1,
+                Some("https://shared.example/notice"),
+                &hash,
+            )
+            .unwrap()
+            .is_some()
+        );
+        assert!(
+            get_evidence_by_source_url_hash(
+                &conn,
+                2,
+                Some("https://shared.example/notice"),
+                &hash,
+            )
+            .unwrap()
+            .is_some()
+        );
+
+        let duplicate_same_source = insert_evidence_item(&conn, &first);
+        assert!(
+            duplicate_same_source.is_err(),
+            "same source/url/content hash should still be deduped"
+        );
+
+        let count: i32 = conn
+            .query_row("SELECT COUNT(*) FROM evidence_items", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(count, 2);
     }
 
     // TEST-001: extract_entities feeds the Money-Threshold and Watchlist

@@ -405,7 +405,9 @@ try {
     Capture-WindowScreenshot -Process $appProcess -Path $doneStepScreenshot
     Add-ScreenshotCheck "done-step-screenshot" $doneStepScreenshot
 
-    Click-WindowPoint -Process $appProcess -X 820 -Y 817
+    [void][CivicDeskWalkthroughWin32]::SetForegroundWindow($appProcess.MainWindowHandle)
+    Start-Sleep -Milliseconds 150
+    [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
     Start-Sleep -Seconds 3
     $workspaceScreenshot = Join-Path $OutputDir "07-workspace-reached.png"
     Capture-WindowScreenshot -Process $appProcess -Path $workspaceScreenshot
@@ -437,6 +439,32 @@ with open(out_path, "w", encoding="utf-8") as f:
   $settings = Get-Content -Raw -LiteralPath $settingsJsonPath | ConvertFrom-Json
 
   if ($CompleteOnboarding) {
+    $finishRecoveryNeeded = $false
+    $onboardingComplete = [string]$settings.PSObject.Properties["onboarding_complete"].Value
+    if ($onboardingComplete -ne "1") {
+      $finishRecoveryNeeded = $true
+      [void][CivicDeskWalkthroughWin32]::SetForegroundWindow($appProcess.MainWindowHandle)
+      Start-Sleep -Milliseconds 150
+      Click-WindowPoint -Process $appProcess -X 750 -Y 823
+      Start-Sleep -Milliseconds 350
+      [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+      Start-Sleep -Seconds 3
+      $finishRecoveryScreenshot = Join-Path $OutputDir "07b-finish-onboarding-recovery.png"
+      Capture-WindowScreenshot -Process $appProcess -Path $finishRecoveryScreenshot
+      Add-ScreenshotCheck "finish-onboarding-recovery-screenshot" $finishRecoveryScreenshot
+      & $pythonExe $queryScriptPath $dbPath $settingsJsonPath
+      if ($LASTEXITCODE -ne 0) {
+        throw "SQLite settings read failed with exit code $LASTEXITCODE after finish-onboarding recovery"
+      }
+      $settings = Get-Content -Raw -LiteralPath $settingsJsonPath | ConvertFrom-Json
+      $onboardingComplete = [string]$settings.PSObject.Properties["onboarding_complete"].Value
+    }
+    Add-Check "finish-onboarding-recovery-needed" $true @{ needed = $finishRecoveryNeeded }
+    Add-Check "finish-onboarding-complete" ($onboardingComplete -eq "1") @{ onboarding_complete = $onboardingComplete }
+    if ($onboardingComplete -ne "1") {
+      throw "Finish Onboarding did not persist onboarding_complete=1 after keyboard and click recovery."
+    }
+
     $intakeDeadline = (Get-Date).AddSeconds(180)
     $intakeStatus = ""
     $sourceCount = 0

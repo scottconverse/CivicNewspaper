@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowRight, Check, Download, HardDrive, RefreshCcw } from "lucide-react";
+import { ArrowRight, Download, HardDrive, RefreshCcw } from "lucide-react";
 import modelsConfig from "../models.json";
 
 interface AiModelPanelProps {
@@ -51,28 +51,22 @@ export const AiModelPanel: React.FC<AiModelPanelProps> = ({
   return (
     <div className="ai-model-panel">
       <div className="ai-model-intro">
-        <h1>Set up your private AI</h1>
-        <p>Everything runs on this computer. No accounts, no cloud, nothing leaves your desk.</p>
+        <h1>AI Model Setup</h1>
+        <p>Finish, repair, or change the private AI model used for summaries, ranking, drafting, and review.</p>
       </div>
 
-      <div className="ai-stepper" aria-label="AI setup progress">
-        {["Identity", "AI service", "Download model", "Defaults", "Done"].map((step, index) => (
-          <div className="ai-step" key={step}>
-            <span className={index < 2 ? "done" : index === 2 ? "active" : ""}>
-              {index < 2 ? <Check size={16} /> : index + 1}
-            </span>
-            <strong>{step}</strong>
-            {index < 4 && <i />}
-          </div>
-        ))}
+      <div className="setup-guide" aria-label="AI setup status">
+        <p><strong>AI service:</strong> {ollamaOnline ? "Running on this computer" : "Not running yet"}</p>
+        <p><strong>Selected model:</strong> {recommended}</p>
+        <p><strong>Capability:</strong> {isInstalled && ollamaOnline ? "AI-assisted workflows ready" : "Manual editing, source review, export, and publishing still work while AI is unfinished."}</p>
       </div>
 
       <div className="card ai-download-card">
         <div className="ai-card-heading">
           <div className="ai-card-icon"><Download size={23} /></div>
           <div>
-            <h2>Download your AI model</h2>
-            <p>Step 3 of 5 - one-time download</p>
+            <h2>Download or repair your AI model</h2>
+            <p>One-time download for private AI-assisted work</p>
           </div>
         </div>
 

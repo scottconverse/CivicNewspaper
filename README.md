@@ -44,7 +44,7 @@ See [docs/install.md](docs/install.md) for checksum verification and OS-specific
 
 1. Enter publication identity: publication name, editor name, organization type, city, and state.
 2. Let the app check the machine and local AI runtime.
-3. Download the recommended local model. The current default path favors `phi4-mini:latest` because the latest local bakeoff showed it produced valid JSON for both real civic signals and empty/noise input.
+3. Download the recommended local model, or skip/defer local AI setup and continue with source review, manual editing, static export, ZIP review, and here.now preview publishing. The current default path favors `phi4-mini:latest` because the latest local bakeoff showed it produced valid JSON for both real civic signals and empty/noise input.
 4. Add or discover sources for your city.
 5. Run Daily Scan, review leads, generate drafts, approve stories, compile the issue, and publish.
 

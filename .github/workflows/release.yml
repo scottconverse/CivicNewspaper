@@ -66,8 +66,22 @@ jobs:
       - name: Vitest
         run: npm test
 
-  release:
+  hosted-release-evidence:
     needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js for evidence gate
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Require exact-tag local RC and cleanroom evidence
+        run: node scripts/verify-hosted-release-evidence.mjs "${{ github.ref_name }}"
+
+  release:
+    needs: hosted-release-evidence
     strategy:
       fail-fast: false
       matrix:
@@ -123,7 +137,7 @@ jobs:
   # After the Windows public-beta build has uploaded its installers, aggregate a single
   # SHA256SUMS manifest covering all published assets and attach it to the release.
   # This is the manifest docs/install.md, README.md, and FAQ.md tell users to verify
-  # against — without this job it 404s and the "trust-without-signing" model is unactionable.
+  # against; without this job it 404s and the "trust-without-signing" model is unactionable.
   checksums:
     needs: release
     if: startsWith(github.ref, 'refs/tags/')

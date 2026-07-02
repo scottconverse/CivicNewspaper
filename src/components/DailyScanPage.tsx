@@ -11,6 +11,7 @@ interface DailyScanPageProps {
   sourceCount: number;
   loading: boolean;
   ollamaOnline: boolean;
+  aiSetupSkipped?: boolean;
   dailyScanProgress?: DailyScanProgress | null;
   onRunScan: () => void;
   onRefresh: () => void;
@@ -52,6 +53,7 @@ export const DailyScanPage: React.FC<DailyScanPageProps> = ({
   sourceCount,
   loading,
   ollamaOnline,
+  aiSetupSkipped = false,
   dailyScanProgress,
   onRunScan,
   onRefresh,
@@ -59,11 +61,12 @@ export const DailyScanPage: React.FC<DailyScanPageProps> = ({
   onOpenLead,
 }) => {
   const hasSources = sourceCount > 0;
+  const aiLimitedMode = aiSetupSkipped && !ollamaOnline;
   const cards = [
     { label: "Sources Watched", value: sourceCount, tone: "blue" },
     { label: "Open Leads", value: leadCount, tone: "amber" },
     { label: "Drafts in Desk", value: draftCount, tone: "green" },
-    { label: "AI Status", value: ollamaOnline ? "Ready" : "Offline", tone: ollamaOnline ? "green" : "red" },
+    { label: "AI Status", value: ollamaOnline ? "Ready" : aiLimitedMode ? "Limited" : "Offline", tone: ollamaOnline ? "green" : aiLimitedMode ? "amber" : "red" },
   ];
 
   return (

@@ -29,6 +29,16 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
   const isSetupTaskMessage =
     typeof app.statusMessage === "string" &&
     /starter source|source intake|first daily scan|workspace ready/i.test(app.statusMessage);
+  const setupTaskCanRunDailyScan =
+    isSetupTaskMessage &&
+    typeof app.statusMessage === "string" &&
+    /run daily scan/i.test(app.statusMessage) &&
+    (app.sources?.length ?? 0) > 0;
+
+  const runFirstDailyScanFromSetup = React.useCallback(() => {
+    app.setActiveTab("dailyScan");
+    app.handleDailyScan();
+  }, [app]);
 
   const openDailyScanLeadInWorkbench = React.useCallback((scanLead: DailyScanLead) => {
     const queueLead = (app.leads ?? []).find((lead: any) => lead.from_scan_lead_id === scanLead.id);
@@ -99,13 +109,22 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
       {/* Global Notifications */}
       {app.statusMessage && (
         <div className="card" role="status" aria-live="polite" style={{ borderLeft: `4px solid ${isSetupTaskMessage ? "var(--accent-primary)" : "var(--color-success)"}`, background: isSetupTaskMessage ? "rgba(48, 92, 184, 0.06)" : "rgba(16, 185, 129, 0.05)" }}>
-          <div className="flex-between">
-            <span style={{ fontSize: "0.9rem", color: "var(--text-primary)", display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+          <div className="flex-between" style={{ gap: "1rem", alignItems: "flex-start" }}>
+            <span style={{ fontSize: "0.9rem", color: "var(--text-primary)", display: "inline-flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
               {app.loading && <RefreshCw className="animate-spin" size={15} aria-hidden="true" />}
-              {isSetupTaskMessage && <strong>Setup task:</strong>}
+              {isSetupTaskMessage && <strong style={{ whiteSpace: "nowrap" }}>Setup task:</strong>}
               {app.statusMessage}
             </span>
-            {!app.loading && <button className="btn btn-secondary btn-sm" onClick={() => app.setStatusMessage("")}>Dismiss</button>}
+            {!app.loading && (
+              <span style={{ display: "inline-flex", gap: "0.5rem", flexShrink: 0 }}>
+                {setupTaskCanRunDailyScan && (
+                  <button className="btn btn-primary btn-sm" onClick={runFirstDailyScanFromSetup}>
+                    Run Daily Scan
+                  </button>
+                )}
+                <button className="btn btn-secondary btn-sm" onClick={() => app.setStatusMessage("")}>Dismiss</button>
+              </span>
+            )}
           </div>
         </div>
       )}
@@ -202,6 +221,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           sourceCount={app.sources.length}
           loading={app.loading}
           ollamaOnline={app.ollamaOnline}
+          aiSetupSkipped={app.aiSetupSkipped}
           dailyScanProgress={app.dailyScanProgress}
           onRunScan={app.handleDailyScan}
           onRefresh={app.loadInitialData}

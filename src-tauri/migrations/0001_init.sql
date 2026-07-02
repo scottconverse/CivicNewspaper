@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS evidence_items (
     url TEXT,
     fetched_at TEXT NOT NULL,
     excerpt TEXT NOT NULL,
-    content_hash TEXT NOT NULL UNIQUE,
+    content_hash TEXT NOT NULL,
     entities TEXT NOT NULL DEFAULT '[]' -- JSON array of strings
 );
 

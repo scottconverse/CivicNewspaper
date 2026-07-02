@@ -1,6 +1,7 @@
 // core/scraper.rs
 use super::db::{
-    get_evidence_by_hash, insert_evidence_item, update_source_status, DbConn, EvidenceItem, Source,
+    get_evidence_by_source_url_hash, insert_evidence_item, update_source_status, DbConn,
+    EvidenceItem, Source,
 };
 use super::intelligence;
 use chrono::Utc;
@@ -669,15 +670,17 @@ async fn scrape_source(db: &DbConn, source: &Source) -> Result<(), Box<dyn Error
             }
 
             let hash = compute_hash(&excerpt);
+            let source_id = source.id.unwrap();
 
             // Check for duplicates
             let (is_new, previous_hash) = {
                 let conn = db.lock().map_err(|_| "Failed to lock database")?;
                 (
-                    get_evidence_by_hash(&conn, &hash)?.is_none(),
+                    get_evidence_by_source_url_hash(&conn, source_id, url.as_deref(), &hash)?
+                        .is_none(),
                     intelligence::previous_hash_for_source_url(
                         &conn,
-                        source.id.unwrap(),
+                        source_id,
                         url.as_deref(),
                         &hash,
                     )?,
@@ -691,7 +694,7 @@ async fn scrape_source(db: &DbConn, source: &Source) -> Result<(), Box<dyn Error
 
                 let item = EvidenceItem {
                     id: None,
-                    source_id: source.id.unwrap(),
+                    source_id,
                     url,
                     fetched_at: Utc::now().to_rfc3339(),
                     excerpt,
@@ -729,13 +732,20 @@ async fn scrape_source(db: &DbConn, source: &Source) -> Result<(), Box<dyn Error
             for chunk in chunk_text(&excerpt, 2000) {
                 let hash = compute_hash(&chunk);
                 let item_url = Some(source.url.clone());
+                let source_id = source.id.unwrap();
                 let (is_new, previous_hash) = {
                     let conn = db.lock().map_err(|_| "Failed to lock database")?;
                     (
-                        get_evidence_by_hash(&conn, &hash)?.is_none(),
+                        get_evidence_by_source_url_hash(
+                            &conn,
+                            source_id,
+                            item_url.as_deref(),
+                            &hash,
+                        )?
+                        .is_none(),
                         intelligence::previous_hash_for_source_url(
                             &conn,
-                            source.id.unwrap(),
+                            source_id,
                             item_url.as_deref(),
                             &hash,
                         )?,
@@ -748,7 +758,7 @@ async fn scrape_source(db: &DbConn, source: &Source) -> Result<(), Box<dyn Error
 
                     let item = EvidenceItem {
                         id: None,
-                        source_id: source.id.unwrap(),
+                        source_id,
                         url: item_url,
                         fetched_at: Utc::now().to_rfc3339(),
                         excerpt: chunk,

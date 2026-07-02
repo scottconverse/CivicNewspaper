@@ -186,6 +186,30 @@ describe("LeadQueue Component Tests", () => {
     expect(screen.getByText("Background")).toBeInTheDocument();
   });
 
+  test("empty queue with sources points users to Daily Scan", () => {
+    render(
+      <LeadQueue
+        leads={[]}
+        drafts={[]}
+        loading={false}
+        sourceCount={3}
+        onSelect={vi.fn()}
+        onSyncList={vi.fn()}
+        onIngest={vi.fn()}
+        onDailyScan={vi.fn()}
+        onOpenDraftEditor={vi.fn()}
+        onOpenCorrectionModal={vi.fn()}
+        onDeleteDraft={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("No story leads yet")).toBeInTheDocument();
+    expect(
+      screen.getByText("Run Daily Scan to check your watched sources and build the first editor packet.")
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Scrape & Detect above/i)).not.toBeInTheDocument();
+  });
+
   test("labels watch leads as draft-anyway and verification leads as verify-first choices", () => {
     render(
       <LeadQueue

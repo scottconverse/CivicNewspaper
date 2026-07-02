@@ -214,7 +214,7 @@ async function main() {
       ["verification", "Verification Queue"],
       ["workbench", /Workbench|No draft selected|Select a story/i],
       ["sources", "Sources"],
-      ["onboarding", "Set up your private AI"],
+      ["onboarding", "AI Model Setup"],
       ["publish", "Publishing"],
       ["pairing", "Browser pairing"],
       ["settings", "Ethics & Backups"],

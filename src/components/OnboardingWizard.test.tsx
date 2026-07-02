@@ -228,7 +228,9 @@ describe("OnboardingWizard Component Tests", () => {
     expect(doneStep).toHaveStyle({ paddingBottom: "5.25rem" });
     expect(screen.getByText(/Starter sources may be added automatically/i)).toBeInTheDocument();
     expect(screen.getByText(/Daily Scan is next/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /finish onboarding/i })).toBeInTheDocument();
+    const finishButton = screen.getByRole("button", { name: /finish onboarding/i });
+    expect(finishButton).toBeInTheDocument();
+    await waitFor(() => expect(finishButton).toHaveFocus());
   });
 
   test("identity step focuses publication name first", async () => {

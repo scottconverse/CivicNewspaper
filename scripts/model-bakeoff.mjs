@@ -66,7 +66,7 @@ Evidence Context:
 ${context}
 
 Return ONLY valid JSON. No markdown. No prose. No code fence.
-Schema: {"leads":[{"title":"short civic lead title","summary":"1-2 evidence-grounded sentences","original_url":"source URL from evidence or empty string"}]}
+Schema: {"leads":[{"title":"short civic lead title","summary":"1-2 evidence-grounded sentences","original_url":"source URL from evidence or empty string","why_flagged":"plain-language reason this deserves review","source_name":"name or short description of source","source_type":"agenda, public notice, budget, official update, community signal, or unknown","priority":"high, medium, or low","suggested_next_step":"specific editor action before drafting","story_type":"story, brief, watch, background, or verification","what_changed":"specific current fact that makes this timely, or 'no current change found'","immediacy":1,"impact":1,"conflict":1,"novelty":1,"what_would_make_it_publishable":"specific missing fact, document, interview, vote, deadline, public effect, or cross-check"}]}
 Include at most 3 leads. Use an empty leads array if nothing deserves an editor's look.`;
 }
 
@@ -103,7 +103,7 @@ function buildRepairPrompt(raw) {
   return `The previous local model output was not valid JSON for CivicNewspaper Daily Scan.
 
 Return ONLY valid JSON with this exact shape:
-{"leads":[{"title":"...","summary":"...","original_url":"..."}]}
+{"leads":[{"title":"...","summary":"...","original_url":"...","why_flagged":"...","source_name":"...","source_type":"...","priority":"medium","suggested_next_step":"...","story_type":"brief","what_changed":"...","immediacy":1,"impact":1,"conflict":1,"novelty":1,"what_would_make_it_publishable":"..."}]}
 
 Rules:
 - Keep at most 3 leads.
@@ -156,13 +156,13 @@ async function main() {
   await mkdir(outputDir, { recursive: true });
   const system = await readFile(path.join(root, "src-tauri", "prompts", "aggregator.md"), "utf8");
   const cases = [
-    ["civic-signals", buildPrompt("Brighton", "CO", evidence)],
-    ["empty-noise", buildPrompt("Brighton", "CO", emptyEvidence)],
+    ["civic-signals", buildPrompt("Brighton", "CO", evidence), null],
+    ["empty-noise", buildPrompt("Brighton", "CO", emptyEvidence), 0],
   ];
   const results = [];
 
   for (const model of selectedModels) {
-    for (const [caseName, prompt] of cases) {
+    for (const [caseName, prompt, expectedLeadCount] of cases) {
       const result = {
         model,
         case: caseName,
@@ -191,6 +191,9 @@ async function main() {
           validation = validateResult(repaired.response);
           result.repaired = true;
           result.repairError = firstError instanceof Error ? firstError.message : String(firstError);
+        }
+        if (expectedLeadCount !== null && validation.leadCount !== expectedLeadCount) {
+          throw new Error(`expected ${expectedLeadCount} leads, got ${validation.leadCount}`);
         }
         result.ok = true;
         result.status = result.repaired ? "repaired" : "clean";

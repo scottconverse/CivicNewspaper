@@ -47,7 +47,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\prepare-rc-evidence.
   -ReleaseSmokeReceipt ".agent-runs\release-smoke-YYYYMMDD-HHMMSS\release-smoke-receipt.json" `
   -ModelBakeoffReceipt ".agent-runs\model-bakeoff-YYYYMMDD-HHMMSS.json" `
   -DependencyAuditReceipt ".agent-runs\dependency-audit-YYYYMMDD-HHMMSS.json" `
-  -InstallerSmokeReceipt ".agent-runs\windows-installer-smoke-YYYYMMDD-HHMMSS\windows-installer-smoke-receipt.json"
+  -InstallerSmokeReceipt ".agent-runs\windows-installer-smoke-YYYYMMDD-HHMMSS\windows-installer-smoke-receipt.json" `
+  -PackagedWalkthroughReceipt ".agent-runs\packaged-first-run-walkthrough-YYYYMMDD-HHMMSS\packaged-first-run-walkthrough-receipt.json"
 ```
 
 The receipt records the exact branch, commit, app versions, Tauri bundle targets, artifact paths, SHA256 hashes, smoke-check results, model-bakeoff receipt, dependency-audit receipt, Windows installer-smoke receipt, and `SHA256SUMS` output. It is a local evidence artifact; it does not push, merge, tag, or publish. By default it fails if the smoke receipt is missing, from a different repo or commit, dirty/diagnostic, contains failed/skipped checks, no current-version installer artifacts are present, stale historical installer artifacts are present in the bundle folder, the installer-smoke SHA256 does not match the current release artifact SHA256, or the model-bakeoff/dependency-audit/installer-smoke artifacts are missing. Use the diagnostic flags only for local investigation, not release evidence.
@@ -61,7 +62,9 @@ For this release line, RC packaging evidence is Windows public beta only. macOS 
 The GitHub release workflow is intentionally conservative during public beta:
 
 - tag pushes build Windows artifacts into a **draft** prerelease;
+- the hosted workflow fails unless `docs/release-evidence/<tag>.json` exists at the tagged commit and verifies local RC evidence, Windows installer smoke, packaged first-run proof, final cleanroom proof, and the matching installer SHA256 for that exact tag;
 - the workflow attaches `SHA256SUMS` and runs release-asset integrity checks;
+- release-asset integrity recomputes every downloaded asset hash and requires the published Windows installer hash in `SHA256SUMS` to match the cleanroom-tested installer hash from `docs/release-evidence/<tag>.json`;
 - the workflow does not publish a non-draft public release by itself;
 - Scott must review the local RC receipt, cleanroom report, and release notes before undrafting a release.
 

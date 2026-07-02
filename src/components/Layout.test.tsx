@@ -97,7 +97,27 @@ describe("Layout Component Tests", () => {
     );
 
     expect(screen.getByText("AI limited mode")).toBeInTheDocument();
+    expect(screen.getByText("Source checks still work")).toBeInTheDocument();
     expect(screen.getByText("AI limited mode").closest(".sidebar-footer")).toHaveClass("ai-status-needs-model");
+    expect(screen.queryByText("Local AI offline")).not.toBeInTheDocument();
+  });
+
+  test("keeps skipped AI setup in limited mode even when a model label exists", () => {
+    render(
+      <Layout
+        activeTab="queue"
+        onTabChange={vi.fn()}
+        ollamaOnline={false}
+        selectedDraft={null}
+        modelLabel="phi4-mini:latest"
+        aiSetupSkipped={true}
+      >
+        <div>Test Child</div>
+      </Layout>
+    );
+
+    expect(screen.getByText("AI limited mode")).toBeInTheDocument();
+    expect(screen.getByText("Source checks still work")).toBeInTheDocument();
     expect(screen.queryByText("Local AI offline")).not.toBeInTheDocument();
   });
 });

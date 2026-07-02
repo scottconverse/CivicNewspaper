@@ -83,6 +83,15 @@ describe("DailyScanPage", () => {
     expect(screen.getByText("Checking watched sources for fresh records before analysis.")).toBeInTheDocument();
   });
 
+  it("shows limited AI status when setup was intentionally skipped", () => {
+    renderPage({
+      ollamaOnline: false,
+      aiSetupSkipped: true,
+    });
+
+    expect(screen.getByText("AI Status").parentElement).toHaveTextContent("Limited");
+  });
+
   it("routes zero-source users to Sources instead of running an empty scan", () => {
     const runScan = vi.fn();
     const goToSources = vi.fn();

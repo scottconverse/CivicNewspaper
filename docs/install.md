@@ -27,12 +27,19 @@ Use the newest release that includes a Windows installer and checksum. The lates
 
 macOS and Linux installers are backlog/proof-needed for this release line. Do not assume a historical `.dmg`, `.deb`, package config, or build target is supported until the release notes include a clean-machine proof for that platform.
 
-Planned proof for each platform:
+## Clean-Machine Proof
 
-1. Build the platform artifact from a named commit.
+Every release candidate still needs a clean-machine or remote-tester report before it can be called cleanroom-proven. For v0.3.2, local Windows packaged first-run proof is available, but the final external cleanroom report is still a release gate.
+
+Required proof for a cleanroom-proven release:
+
+1. Build the artifact from a named commit.
 2. Install it on a clean machine or VM.
-3. Verify first-run setup, local AI setup, source intake, draft generation, ZIP export, and here.now publishing.
-4. Record any signing, notarization, permission, or package-manager warnings honestly in the release notes.
+3. Verify first-run setup, local AI setup or the skip/degraded path, source intake, draft generation, ZIP export, and here.now publishing.
+4. Record the report path, report hash, installer hash, tester machine, and any signing, notarization, permission, or package-manager warnings honestly in the release notes.
+5. Verify that hosted release evidence and published asset hashes match the cleanroom-tested installer.
+
+macOS and Linux additionally require real platform artifacts and platform-specific clean-machine proof before public docs advertise them as supported installer paths.
 
 ## Verify The SHA256 Checksum
 

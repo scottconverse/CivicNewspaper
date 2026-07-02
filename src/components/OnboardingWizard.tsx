@@ -964,6 +964,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     };
   }, [step, model, pulling, pullComplete]);
 
+  useEffect(() => {
+    if (step !== steps.length) return;
+    window.setTimeout(() => primaryActionRef.current?.focus(), 0);
+  }, [step]);
+
   return (
     <div className="wizard-container card" id="onboarding-wizard">
       {initError && (

@@ -215,6 +215,51 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_pair_rate_limit_does_not_block_fresh_valid_pin() {
+        let (app, db) = setup_app();
+
+        for _ in 0..5 {
+            let mut req = make_req(
+                "/api/pair",
+                axum::http::Method::POST,
+                Some(json!({ "pin": "same-bad-pin" })),
+            );
+            mark_valid_pair_request(&mut req);
+            let res = app.clone().oneshot(req).await.unwrap();
+            assert_eq!(res.status(), StatusCode::UNAUTHORIZED);
+        }
+
+        let mut blocked_req = make_req(
+            "/api/pair",
+            axum::http::Method::POST,
+            Some(json!({ "pin": "same-bad-pin" })),
+        );
+        mark_valid_pair_request(&mut blocked_req);
+        let blocked = app.clone().oneshot(blocked_req).await.unwrap();
+        assert_eq!(blocked.status(), StatusCode::TOO_MANY_REQUESTS);
+
+        use sha2::{Digest, Sha256};
+        let raw_pin = "fresh-valid-pin";
+        let mut hasher = Sha256::new();
+        hasher.update(raw_pin.as_bytes());
+        let hashed_pin = hex::encode(hasher.finalize());
+        let expires_at = (chrono::Utc::now() + chrono::Duration::minutes(5)).to_rfc3339();
+        {
+            let conn = db.lock().unwrap();
+            create_pairing_pin(&conn, "fresh-client", &hashed_pin, &expires_at).unwrap();
+        }
+
+        let mut valid_req = make_req(
+            "/api/pair",
+            axum::http::Method::POST,
+            Some(json!({ "pin": raw_pin })),
+        );
+        mark_valid_pair_request(&mut valid_req);
+        let valid = app.clone().oneshot(valid_req).await.unwrap();
+        assert_eq!(valid.status(), StatusCode::OK);
+    }
+
+    #[tokio::test]
     async fn test_pair_rejects_invalid_host() {
         let (app, _) = setup_app();
         let mut req = make_req(

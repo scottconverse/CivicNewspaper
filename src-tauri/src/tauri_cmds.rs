@@ -17,6 +17,10 @@ use std::io::Read;
 use tauri::Emitter;
 use tauri::Manager;
 
+const SOURCE_IMPORT_MAX_FILE_BYTES: u64 = 25 * 1024 * 1024;
+const SOURCE_IMPORT_MAX_ZIP_ENTRY_BYTES: u64 = 5 * 1024 * 1024;
+const SOURCE_IMPORT_MAX_ZIP_TOTAL_BYTES: u64 = 12 * 1024 * 1024;
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommunityProfile {
     pub site_title: String,
@@ -688,12 +692,33 @@ fn xml_text_values(xml: &str) -> Vec<String> {
 fn read_zip_entry_text<R: std::io::Read + std::io::Seek>(
     archive: &mut zip::ZipArchive<R>,
     name: &str,
+    total_read: &mut u64,
 ) -> Result<Option<String>, String> {
     match archive.by_name(name) {
         Ok(mut file) => {
+            if file.size() > SOURCE_IMPORT_MAX_ZIP_ENTRY_BYTES {
+                return Err(format!(
+                    "{name} is too large after decompression. Export a smaller source list or paste the URLs directly."
+                ));
+            }
             let mut text = String::new();
-            file.read_to_string(&mut text)
+            let read = file
+                .by_ref()
+                .take(SOURCE_IMPORT_MAX_ZIP_ENTRY_BYTES + 1)
+                .read_to_string(&mut text)
                 .map_err(|e| format!("Could not read {name}: {e}"))?;
+            if read as u64 > SOURCE_IMPORT_MAX_ZIP_ENTRY_BYTES {
+                return Err(format!(
+                    "{name} is too large after decompression. Export a smaller source list or paste the URLs directly."
+                ));
+            }
+            *total_read += read as u64;
+            if *total_read > SOURCE_IMPORT_MAX_ZIP_TOTAL_BYTES {
+                return Err(
+                    "This Office source-list file expands to too much text. Export a smaller list or paste the URLs directly."
+                        .to_string(),
+                );
+            }
             Ok(Some(text))
         }
         Err(zip::result::ZipError::FileNotFound) => Ok(None),
@@ -705,7 +730,8 @@ fn extract_docx_text(path: &std::path::Path) -> Result<String, String> {
     let file = std::fs::File::open(path).map_err(|e| e.to_string())?;
     let mut archive =
         zip::ZipArchive::new(file).map_err(|e| format!("Could not open Word document: {e}"))?;
-    let xml = read_zip_entry_text(&mut archive, "word/document.xml")?
+    let mut total_read = 0;
+    let xml = read_zip_entry_text(&mut archive, "word/document.xml", &mut total_read)?
         .ok_or_else(|| "This Word document does not contain readable document text.".to_string())?;
     let text = xml_text_with_breaks(&xml);
     if text.trim().is_empty() {
@@ -719,9 +745,11 @@ fn extract_xlsx_text(path: &std::path::Path) -> Result<String, String> {
     let file = std::fs::File::open(path).map_err(|e| e.to_string())?;
     let mut archive =
         zip::ZipArchive::new(file).map_err(|e| format!("Could not open spreadsheet: {e}"))?;
-    let shared_strings = read_zip_entry_text(&mut archive, "xl/sharedStrings.xml")?
-        .map(|shared| xml_text_values(&shared))
-        .unwrap_or_default();
+    let mut total_read = 0;
+    let shared_strings =
+        read_zip_entry_text(&mut archive, "xl/sharedStrings.xml", &mut total_read)?
+            .map(|shared| xml_text_values(&shared))
+            .unwrap_or_default();
     let cell_re = regex::Regex::new(
         r#"(?s)<c\b(?P<attrs>[^>]*)>\s*(?:<v>(?P<v>.*?)</v>|<is>(?P<is>.*?)</is>)"#,
     )
@@ -731,7 +759,7 @@ fn extract_xlsx_text(path: &std::path::Path) -> Result<String, String> {
     let mut rows = Vec::new();
     for index in 1..=50 {
         let sheet_name = format!("xl/worksheets/sheet{index}.xml");
-        if let Some(sheet) = read_zip_entry_text(&mut archive, &sheet_name)? {
+        if let Some(sheet) = read_zip_entry_text(&mut archive, &sheet_name, &mut total_read)? {
             for row_cap in row_re.captures_iter(&sheet) {
                 let body = row_cap.name("body").map(|m| m.as_str()).unwrap_or("");
                 let mut cells = Vec::new();
@@ -797,7 +825,7 @@ pub fn extract_source_import_text(path: String) -> Result<String, String> {
         return Err("Choose a source-list file, not a folder.".to_string());
     }
     let metadata = std::fs::metadata(&path).map_err(|e| e.to_string())?;
-    if metadata.len() > 25 * 1024 * 1024 {
+    if metadata.len() > SOURCE_IMPORT_MAX_FILE_BYTES {
         return Err(
             "This source-list file is too large. Export a smaller list or paste the URLs directly."
                 .to_string(),
@@ -2706,7 +2734,7 @@ pub async fn press_freedom_legal_review<R: tauri::Runtime>(
 
 #[cfg(test)]
 mod source_import_extraction_tests {
-    use super::{extract_source_import_text, import_logo_asset};
+    use super::{extract_source_import_text, import_logo_asset, SOURCE_IMPORT_MAX_ZIP_ENTRY_BYTES};
     use std::io::Write;
     use std::path::{Path, PathBuf};
 
@@ -2837,6 +2865,40 @@ mod source_import_extraction_tests {
             "oversized source-list files must fail before extraction, got: {err}"
         );
         let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn oversized_docx_xml_entry_is_rejected_after_decompression() {
+        let dir = temp_dir("docx-zip-bomb");
+        let path = dir.join("sources.docx");
+        let large_xml = format!(
+            "<w:document><w:body><w:t>{}</w:t></w:body></w:document>",
+            "x".repeat(SOURCE_IMPORT_MAX_ZIP_ENTRY_BYTES as usize + 1)
+        );
+        write_zip(&path, &[("word/document.xml", &large_xml)]);
+
+        let err = extract_source_import_text(path.to_string_lossy().to_string()).unwrap_err();
+        assert!(
+            err.contains("too large after decompression"),
+            "oversized DOCX XML entry must be rejected, got: {err}"
+        );
+    }
+
+    #[test]
+    fn oversized_xlsx_xml_entry_is_rejected_after_decompression() {
+        let dir = temp_dir("xlsx-zip-bomb");
+        let path = dir.join("sources.xlsx");
+        let large_xml = format!(
+            "<sst><si><t>{}</t></si></sst>",
+            "x".repeat(SOURCE_IMPORT_MAX_ZIP_ENTRY_BYTES as usize + 1)
+        );
+        write_zip(&path, &[("xl/sharedStrings.xml", &large_xml)]);
+
+        let err = extract_source_import_text(path.to_string_lossy().to_string()).unwrap_err();
+        assert!(
+            err.contains("too large after decompression"),
+            "oversized XLSX XML entry must be rejected, got: {err}"
+        );
     }
 
     #[test]

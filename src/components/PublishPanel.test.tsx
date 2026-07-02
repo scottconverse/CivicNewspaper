@@ -70,6 +70,8 @@ describe("PublishPanel Component Tests", () => {
 
     // Expect validation error to appear and no state change to be triggered
     expect(screen.getByTestId("validation-error")).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveAttribute("aria-live", "assertive");
+    expect(screen.getByLabelText(/Output folder/i)).toHaveAttribute("aria-describedby", "publish-validation-error");
     expect(screen.getByText("Output path cannot be empty.")).toBeInTheDocument();
     expect(handleStepChange).not.toHaveBeenCalled();
   });
@@ -539,6 +541,68 @@ describe("PublishPanel Component Tests", () => {
     expect(screen.getByRole("button", { name: /Publish with connector/i })).toBeDisabled();
     expect(screen.getByRole("button", { name: /Test connection/i })).toBeDisabled();
     expect(screen.getByText(/Cloudflare API publishing is disabled in this public beta/i)).toBeInTheDocument();
+  });
+
+  test("WordPress is assisted/manual in the beta, not an active API connector", () => {
+    const handlePublishWithConnector = vi.fn();
+    const handleSave = vi.fn();
+
+    render(
+      <PublishPanel
+        publishPath={"C:\\my-site"}
+        publishResult={{
+          issue_id: "issue-20260627-000000",
+          output_dir: "C:/my-site",
+          generated_at: "2026-06-27T00:00:00Z",
+          provider: "local_export",
+          published_url: null,
+          deployment_id: null,
+          article_count: 1,
+          skipped_count: 0,
+          files_written: 12,
+          generated_files: [],
+          index_path: "index.html",
+          rss_path: "feed.xml",
+          newsletter_path: "newsletter.md",
+          substack_path: "substack.md",
+          share_package_path: "share-package.md",
+          facebook_post_path: "facebook-post.txt",
+          subreddit_post_path: "subreddit-post.md",
+          nextdoor_post_path: "nextdoor-post.txt",
+          short_link_blurb_path: "short-link-blurb.txt",
+          manifest_path: "publish-manifest.json",
+          zip_path: "site-package.zip",
+          articles: [],
+        }}
+        {...defaultPublisherProps}
+        publisherProvider="wordpress"
+        publisherConfig={{ provider: "wordpress", username: "legacy-user" } as any}
+        onPublishWithConnector={handlePublishWithConnector}
+        onSavePublisherConfig={handleSave}
+        onPublishPathChange={vi.fn()}
+        publishStep={3}
+        onPublishStepChange={vi.fn()}
+        loading={false}
+        onPublish={vi.fn()}
+        onOpenLocalPath={vi.fn()}
+        onOpenExternalUrl={vi.fn()}
+        onChoosePublishPath={vi.fn()}
+        onRecordPublishDestination={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: /Publish with connector/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /Test connection/i })).toBeDisabled();
+    expect(screen.queryByLabelText(/WordPress username/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/No WordPress credential used in this beta/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/WordPress API publishing is disabled in this public beta/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /Save connector/i }));
+    expect(handleSave).toHaveBeenCalledWith(expect.objectContaining({
+      provider: "wordpress",
+      username: null,
+      credential: null,
+    }));
   });
 
   test("blocks compile when no approved stories are ready", () => {

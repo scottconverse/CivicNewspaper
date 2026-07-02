@@ -213,6 +213,9 @@ Current migration files:
 - `0015_story_quality_metadata.sql`
 - `0016_recurrence_metadata.sql`
 - `0017_publish_decision_audit.sql`
+- `0018_evidence_source_identity.sql`
+
+Evidence identity uses `content_hash` as the canonical text hash, but duplicate suppression is scoped to `(source_id, url, content_hash)` so identical notices from different sources remain separate corroborating observations.
 
 Current primary tables:
 

@@ -185,7 +185,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   const selectedProvider = PROVIDERS.find(item => item.id === provider) ?? PROVIDERS[0];
   const setupGuide = SETUP_GUIDES[provider] ?? SETUP_GUIDES.other;
   const connectorTestPassed = publisherTestResult?.provider === provider && publisherTestResult.ok;
-  const connectorDisabled = provider === "cloudflare_pages";
+  const connectorDisabled = provider === "cloudflare_pages" || provider === "wordpress";
   const hereNowSlugRequiresCredential = provider === "here_now" && siteId.trim().length > 0;
   const connectorPublishAllowed =
     !connectorDisabled && (provider === "here_now" ? !hereNowSlugRequiresCredential || connectorTestPassed : connectorTestPassed);
@@ -321,7 +321,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
       repo: repo || null,
       branch: branch || null,
       path_prefix: pathPrefix || null,
-      username: username || null,
+      username: providerUsesCredential ? username || null : null,
       credential: credential || null,
       clear_credential: clearCredential,
     });
@@ -383,6 +383,8 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
           style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.5rem" }} 
           data-testid="validation-error"
           id="publish-validation-error"
+          role="alert"
+          aria-live="assertive"
         >
           <AlertTriangle size={16} />
           {error}
@@ -449,6 +451,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
               placeholder="C:\\CivicDesk\\site"
               required
               id="input-publish-path"
+              aria-describedby={error ? "publish-validation-error" : undefined}
             />
             <button className="btn btn-secondary" type="button" onClick={onChoosePublishPath} id="btn-publish-browse">
               <FolderOpen size={16} />
@@ -682,14 +685,16 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                     <CheckCircle size={16} />
                     Save public URL
                   </button>
-                  <button className="btn btn-secondary" type="button" onClick={handleConnectorPublishClick} disabled={loading || !connectorPublishAllowed}>
+                  <button className="btn btn-secondary" type="button" onClick={handleConnectorPublishClick} disabled={loading || !connectorPublishAllowed} aria-describedby={error ? "publish-validation-error" : undefined}>
                     <UploadCloud size={16} />
                     {provider === "here_now" ? "Publish to here.now" : "Publish with connector"}
                   </button>
                 </div>
                 {connectorDisabled && (
                   <p className="help-text" style={{ marginTop: "0.35rem" }}>
-                    Cloudflare API publishing is disabled in this public beta. Export the folder or ZIP, deploy through Cloudflare, then save the public URL here.
+                    {provider === "wordpress"
+                      ? "WordPress API publishing is disabled in this public beta. Export the folder or ZIP, publish through WordPress manually, then save the public URL here."
+                      : "Cloudflare API publishing is disabled in this public beta. Export the folder or ZIP, deploy through Cloudflare, then save the public URL here."}
                   </p>
                 )}
                 {!connectorDisabled && !connectorPublishAllowed && (
@@ -806,18 +811,6 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                     value={branch}
                     onChange={event => setBranch(event.target.value)}
                     placeholder="main"
-                  />
-                </>
-              )}
-              {provider === "wordpress" && (
-                <>
-                  <label htmlFor="input-publisher-username" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>WordPress username</label>
-                  <input
-                    id="input-publisher-username"
-                    type="text"
-                    value={username}
-                    onChange={event => setUsername(event.target.value)}
-                    placeholder="editor username"
                   />
                 </>
               )}

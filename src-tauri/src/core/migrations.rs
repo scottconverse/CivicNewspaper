@@ -71,6 +71,10 @@ const MIGRATIONS: &[(&str, &str)] = &[
         "0017_publish_decision_audit",
         include_str!("../../migrations/0017_publish_decision_audit.sql"),
     ),
+    (
+        "0018_evidence_source_identity",
+        include_str!("../../migrations/0018_evidence_source_identity.sql"),
+    ),
 ];
 
 pub fn run_migrations(conn: &mut Connection) -> Result<(), Box<dyn Error + Send + Sync>> {

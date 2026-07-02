@@ -182,7 +182,20 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
               <tbody>
                 {sources.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="text-center">No feeds or portals registered yet. Use the source form on this screen to add one.</td>
+                    <td colSpan={4} className="source-empty-state">
+                      <strong>No feeds or portals yet.</strong>
+                      <span>Start with discovery, import a source list, or paste a single source below.</span>
+                      <span className="source-empty-actions">
+                        <button type="button" className="btn btn-secondary btn-sm" onClick={() => onShowDiscoveryModalChange(true)}>
+                          <Search size={14} />
+                          Discover
+                        </button>
+                        <button type="button" className="btn btn-secondary btn-sm" onClick={() => onShowBulkImportModalChange(true)}>
+                          <Upload size={14} />
+                          Import list
+                        </button>
+                      </span>
+                    </td>
                   </tr>
                 ) : (
                   sources.map((src) => (

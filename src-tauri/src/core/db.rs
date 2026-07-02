@@ -358,24 +358,6 @@ pub fn insert_evidence_item(conn: &Connection, item: &EvidenceItem) -> SqlResult
     Ok(conn.last_insert_rowid() as i32)
 }
 
-pub fn get_evidence_by_hash(conn: &Connection, hash: &str) -> SqlResult<Option<EvidenceItem>> {
-    let mut stmt = conn.prepare("SELECT id, source_id, url, fetched_at, excerpt, content_hash, entities FROM evidence_items WHERE content_hash = ?1")?;
-    let mut rows = stmt.query(params![hash])?;
-    if let Some(row) = rows.next()? {
-        Ok(Some(EvidenceItem {
-            id: Some(row.get(0)?),
-            source_id: row.get(1)?,
-            url: row.get(2)?,
-            fetched_at: row.get(3)?,
-            excerpt: row.get(4)?,
-            content_hash: row.get(5)?,
-            entities: row.get(6)?,
-        }))
-    } else {
-        Ok(None)
-    }
-}
-
 pub fn get_evidence_by_lead(conn: &Connection, lead_id: i32) -> SqlResult<Vec<EvidenceItem>> {
     let mut stmt = conn.prepare(
         "SELECT e.id, e.source_id, e.url, e.fetched_at, e.excerpt, e.content_hash, e.entities 
@@ -497,6 +479,37 @@ pub fn insert_lead(conn: &Connection, lead: &Lead, evidence_ids: &[i32]) -> SqlR
             );
             Err(err)
         }
+    }
+}
+
+pub fn get_evidence_by_source_url_hash(
+    conn: &Connection,
+    source_id: i32,
+    url: Option<&str>,
+    hash: &str,
+) -> SqlResult<Option<EvidenceItem>> {
+    let mut stmt = conn.prepare(
+        "SELECT id, source_id, url, fetched_at, excerpt, content_hash, entities
+         FROM evidence_items
+         WHERE source_id = ?1
+           AND COALESCE(url, '') = COALESCE(?2, '')
+           AND content_hash = ?3
+         ORDER BY fetched_at DESC, id DESC
+         LIMIT 1",
+    )?;
+    let mut rows = stmt.query(params![source_id, url, hash])?;
+    if let Some(row) = rows.next()? {
+        Ok(Some(EvidenceItem {
+            id: Some(row.get(0)?),
+            source_id: row.get(1)?,
+            url: row.get(2)?,
+            fetched_at: row.get(3)?,
+            excerpt: row.get(4)?,
+            content_hash: row.get(5)?,
+            entities: row.get(6)?,
+        }))
+    } else {
+        Ok(None)
     }
 }
 
