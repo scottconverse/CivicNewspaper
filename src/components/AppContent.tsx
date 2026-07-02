@@ -332,6 +332,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
         <SystemStatus
           ollamaOnline={app.ollamaOnline}
           modelLabel={app.selectedModel || "No model selected"}
+          aiSetupSkipped={app.aiSetupSkipped}
           dbVersion=""
           appVersion={app.appVersion}
           onOpenAiSetup={() => app.setActiveTab("onboarding")}

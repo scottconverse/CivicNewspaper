@@ -55,6 +55,10 @@ function makeRequest(method, urlPath, body = null) {
       'Content-Type': 'application/json'
     };
 
+    if (urlPath === '/api/pair') {
+      headers['x-civicnews-pair'] = '1';
+    }
+
     if (token && urlPath !== '/api/pair') {
       headers['Authorization'] = `Bearer ${token}`;
     }

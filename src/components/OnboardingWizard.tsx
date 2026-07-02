@@ -58,6 +58,14 @@ function modelInstalled(selected: string, installed: string[]): boolean {
   });
 }
 
+async function markAiSetupSkipped(): Promise<void> {
+  await setSetting("ai.setup_skipped", "true");
+}
+
+async function clearAiSetupSkipped(): Promise<void> {
+  await setSetting("ai.setup_skipped", "false");
+}
+
 const starterProfiles = [
   {
     label: "Longmont",
@@ -459,6 +467,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         setRuntimeProgress("Starting local AI runtime install...");
       }
       await installOllamaRuntime();
+      await clearAiSetupSkipped();
       setRuntimeProgress("Local AI runtime is ready.");
       setRuntimePercent(100);
       setHealthTimeout(false);
@@ -591,6 +600,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           ) {
             setPullComplete(true);
             setPulling(false);
+            void clearAiSetupSkipped();
           }
           if (
             event.payload.status === "cancelled" ||
@@ -607,6 +617,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         setPullComplete(true);
         setPulling(false);
         void saveSetting("model.selected", modelToPull);
+        void clearAiSetupSkipped();
       });
       await listen<string>("ollama-pull-error", (event) => {
         setPullError(
@@ -752,6 +763,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         if (health && health.reachable && modelInstalled(model, health.models)) {
           // Model is already installed, skip Step 3 and go directly to Step 4
           await saveSetting("model.selected", model);
+          await clearAiSetupSkipped();
           await goToStep(4);
         } else if (!health?.reachable) {
           setSetupNotice("Install the local AI runtime or choose Skip for now before continuing.");
@@ -768,6 +780,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           return;
         }
         await saveSetting("model.selected", model);
+        await clearAiSetupSkipped();
         await goToStep(4);
       } else if (step === 4) {
         // Persist defaults
@@ -965,7 +978,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       )}
 
       <div className="flex-between">
-        <h2>AI Setup</h2>
+        <h2>Workspace Setup</h2>
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
           <span style={{ fontWeight: 600, fontSize: "0.9rem", color: "var(--text-secondary)" }}>
             Step {step} of {steps.length}
@@ -1009,6 +1022,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         <p className="help-text" style={{ marginBottom: "0.85rem" }}>
           {steps[step - 1].desc}
         </p>
+        {stepTwoNeedsRuntimeInstall && (
+          <div className="onboarding-notice onboarding-decision-note" id="onboarding-runtime-required-note" role="status">
+            To continue, install the local AI runtime or choose <strong>Skip for now</strong>. Skipping is supported: source checks still work, and you can finish AI setup later from AI Model.
+          </div>
+        )}
 
         {/* STEP 1: IDENTITY */}
         {step === 1 && (
@@ -1444,15 +1462,19 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   setSkipConfirm({
                     title: "Skip AI setup?",
                     message: "AI drafting and AI-assisted review will stay limited until you complete setup from AI Model. Deterministic source checks can still run.",
-                    confirmLabel: "Skip setup",
-                    onConfirm: () => goToStep(4),
+                    confirmLabel: "Continue without AI",
+                    onConfirm: async () => {
+                      await markAiSetupSkipped();
+                      await goToStep(4);
+                    },
                   });
                 } else if (step === 3) {
                   setSkipConfirm({
                     title: "Skip the model download?",
                     message: "AI drafting and AI-assisted review will stay limited until you download a model from AI Model. Deterministic source checks can still run.",
-                    confirmLabel: "Skip download",
+                    confirmLabel: "Continue without model",
                     onConfirm: async () => {
+                      await markAiSetupSkipped();
                       await cancelPullModel();
                       await goToStep(4);
                     },
@@ -1470,6 +1492,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               onClick={handleNext}
               id="btn-wizard-next"
               disabled={runtimeInstalling || pulling || stepTwoNeedsRuntimeInstall}
+              aria-describedby={stepTwoNeedsRuntimeInstall ? "onboarding-runtime-required-note" : undefined}
               title={stepTwoNeedsRuntimeInstall ? "Install the local AI runtime or choose Skip for now before continuing." : undefined}
             >
               {step === 3 && !pulling && !pullComplete && !(health && modelInstalled(model, health.models))
@@ -1488,6 +1511,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           title={skipConfirm.title}
           message={skipConfirm.message}
           confirmLabel={skipConfirm.confirmLabel}
+          cancelLabel="Keep setting up AI"
           onConfirm={async () => {
             const action = skipConfirm.onConfirm;
             setSkipConfirm(null);

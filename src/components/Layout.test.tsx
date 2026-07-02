@@ -81,4 +81,23 @@ describe("Layout Component Tests", () => {
     expect(screen.getByText("Choose an AI model").closest(".ollama-status-indicator")).toHaveClass("needs-model");
     expect(screen.queryByText("Local AI ready")).not.toBeInTheDocument();
   });
+
+  test("shows limited mode after the user intentionally skips AI setup", () => {
+    render(
+      <Layout
+        activeTab="queue"
+        onTabChange={vi.fn()}
+        ollamaOnline={false}
+        selectedDraft={null}
+        modelLabel="No model selected"
+        aiSetupSkipped={true}
+      >
+        <div>Test Child</div>
+      </Layout>
+    );
+
+    expect(screen.getByText("AI limited mode")).toBeInTheDocument();
+    expect(screen.getByText("AI limited mode").closest(".sidebar-footer")).toHaveClass("ai-status-needs-model");
+    expect(screen.queryByText("Local AI offline")).not.toBeInTheDocument();
+  });
 });

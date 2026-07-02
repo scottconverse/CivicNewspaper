@@ -54,6 +54,7 @@ function App() {
         selectedDraft={app.selectedDraft}
         kicker={kicker}
         modelLabel={modelLabel}
+        aiSetupSkipped={app.aiSetupSkipped}
       >
         <AppContent app={app} />
       </Layout>

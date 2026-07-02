@@ -72,4 +72,25 @@ describe("SystemStatus Component Tests", () => {
     expect(statusDot).toHaveClass("offline");
     expect(statusDot).not.toHaveClass("online");
   });
+
+  test("renders limited mode when AI setup was intentionally skipped", () => {
+    render(
+      <SystemStatus
+        ollamaOnline={false}
+        modelLabel="No model selected"
+        dbVersion="1.0"
+        appVersion="0.1.1"
+        aiSetupSkipped={true}
+        onOpenAiSetup={vi.fn()}
+      />
+    );
+
+    const statusText = screen.getByTestId("ollama-status-text");
+    const statusDot = screen.getByTestId("ollama-status-dot");
+
+    expect(statusText.textContent).toBe("Limited mode");
+    expect(statusDot).toHaveClass("warning");
+    expect(screen.getByText("Deterministic checks still work.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Set up model" })).toBeInTheDocument();
+  });
 });

@@ -294,6 +294,7 @@ export function useApp() {
   // GG-C4: gate the first-run guided OnboardingWizard. null = still loading.
   const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
   const [selectedModel, setSelectedModel] = useState<string>("");
+  const [aiSetupSkipped, setAiSetupSkipped] = useState(false);
   const [installedModels, setInstalledModels] = useState<string[]>([]);
   const [wizardModel, setWizardModel] = useState("");
   const [pullingModel, setPullingModel] = useState(false);
@@ -675,6 +676,8 @@ export function useApp() {
       // or settings change, instead of only at app start.
       const selModel = await getSetting("model.selected");
       if (selModel) setSelectedModel(selModel);
+      const skippedAi = await getSetting("ai.setup_skipped");
+      setAiSetupSkipped(skippedAi === "true");
 
       const clients = await listPairedClients();
       setPairedClients(clients);
@@ -1405,6 +1408,11 @@ export function useApp() {
         if (m) setSelectedModel(m);
       })
       .catch(() => {});
+    getSetting("ai.setup_skipped")
+      .then((value) => {
+        setAiSetupSkipped(value === "true");
+      })
+      .catch(() => {});
   }, []);
 
   const completeOnboarding = async () => {
@@ -1423,6 +1431,12 @@ export function useApp() {
     try {
       const m = await getSetting("model.selected");
       if (m) setSelectedModel(m);
+    } catch {
+      /* non-fatal */
+    }
+    try {
+      const skippedAi = await getSetting("ai.setup_skipped");
+      setAiSetupSkipped(skippedAi === "true");
     } catch {
       /* non-fatal */
     }
@@ -2161,6 +2175,7 @@ ${selectedDraft.content}`;
     onboardingDone,
     completeOnboarding,
     selectedModel,
+    aiSetupSkipped,
     installedModels,
     wizardModel,
     setWizardModel,

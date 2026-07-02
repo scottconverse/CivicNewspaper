@@ -10,6 +10,7 @@ interface SystemStatusProps {
   dbVersion: string;
   appVersion: string;
   onOpenAiSetup?: () => void;
+  aiSetupSkipped?: boolean;
 }
 
 export const SystemStatus: React.FC<SystemStatusProps> = ({
@@ -17,12 +18,13 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
   modelLabel,
   dbVersion,
   appVersion,
-  onOpenAiSetup
+  onOpenAiSetup,
+  aiSetupSkipped = false
 }) => {
   const [exportStatus, setExportStatus] = useState<string>("");
   const hasSelectedModel = Boolean(modelLabel && !/^no model selected$/i.test(modelLabel.trim()));
-  const aiStatusText = !ollamaOnline ? "Offline" : hasSelectedModel ? "Ready" : "Choose model";
-  const aiDotClass = ollamaOnline && hasSelectedModel ? "online" : ollamaOnline ? "warning" : "offline";
+  const aiStatusText = aiSetupSkipped && !hasSelectedModel ? "Limited mode" : !ollamaOnline ? "Offline" : hasSelectedModel ? "Ready" : "Choose model";
+  const aiDotClass = ollamaOnline && hasSelectedModel ? "online" : aiSetupSkipped || ollamaOnline ? "warning" : "offline";
 
   const handleExportDiagnostics = async () => {
     try {
@@ -70,6 +72,9 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
             <span style={{ fontWeight: 600 }} data-testid="ollama-status-text">
               {aiStatusText}
             </span>
+            {aiSetupSkipped && !hasSelectedModel && (
+              <span className="help-text">Deterministic checks still work.</span>
+            )}
             {!hasSelectedModel && onOpenAiSetup && (
               <button className="btn btn-secondary btn-sm" type="button" onClick={onOpenAiSetup}>
                 Set up model

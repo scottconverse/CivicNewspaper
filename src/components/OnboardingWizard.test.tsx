@@ -88,15 +88,19 @@ describe("OnboardingWizard Component Tests", () => {
 
     // Step 2 — unreachable AI service shows the "starting" notice
     await waitFor(() => expect(screen.getByText("Starting the local AI service")).toBeInTheDocument());
+    expect(screen.getByText(/To continue, install the local AI runtime/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^Next$/i })).toHaveAccessibleDescription(/Install the local AI runtime/i);
     expect(screen.getByRole("button", { name: /Skip for now/i })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Skip for now/i }));
 
     // Confirm the skip in the styled dialog (replaces native window.confirm)
-    await waitFor(() => expect(screen.getByRole("button", { name: /Skip setup/i })).toBeInTheDocument());
-    fireEvent.click(screen.getByRole("button", { name: /Skip setup/i }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /Continue without AI/i })).toBeInTheDocument());
+    expect(screen.getByRole("button", { name: /Keep setting up AI/i })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Continue without AI/i }));
 
     // Should skip to step 4 because step 3 (pull model) is also skipped
     await waitFor(() => expect(screen.getByText("Step 4 of 5")).toBeInTheDocument());
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", { key: "ai.setup_skipped", value: "true" });
   });
 
   test("offline AI setup install button invokes app-managed runtime install", async () => {
@@ -200,6 +204,7 @@ describe("OnboardingWizard Component Tests", () => {
     });
 
     render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} />);
+    expect(screen.getByRole("heading", { name: /Workspace Setup/i })).toBeInTheDocument();
 
     expect(screen.getByRole("progressbar", { name: /setup progress/i })).toHaveAttribute("aria-valuenow", "20");
     expect(document.querySelector(".onboarding-step-body")).toBeInTheDocument();

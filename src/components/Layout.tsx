@@ -21,6 +21,7 @@ interface LayoutProps {
   selectedDraft: any;
   kicker?: string;
   modelLabel?: string;
+  aiSetupSkipped?: boolean;
   children: React.ReactNode;
 }
 
@@ -31,16 +32,19 @@ export const Layout: React.FC<LayoutProps> = ({
   selectedDraft: _selectedDraft,
   kicker,
   modelLabel,
+  aiSetupSkipped = false,
   children
 }) => {
   const mainRef = React.useRef<HTMLElement | null>(null);
   const hasSelectedModel = Boolean(modelLabel && !/^no model selected$/i.test(modelLabel.trim()));
-  const aiStatusLabel = !ollamaOnline
-    ? "Local AI offline"
-    : hasSelectedModel
+  const aiStatusLabel = aiSetupSkipped && !hasSelectedModel
+    ? "AI limited mode"
+    : !ollamaOnline
+      ? "Local AI offline"
+      : hasSelectedModel
       ? "Local AI ready"
       : "Choose an AI model";
-  const aiStatusTone = !ollamaOnline ? "offline" : hasSelectedModel ? "ready" : "needs-model";
+  const aiStatusTone = aiSetupSkipped && !hasSelectedModel ? "needs-model" : !ollamaOnline ? "offline" : hasSelectedModel ? "ready" : "needs-model";
   const aiStatusClass = aiStatusTone === "ready" ? "online" : aiStatusTone === "needs-model" ? "warning" : "offline";
   const navGroups = [
     {

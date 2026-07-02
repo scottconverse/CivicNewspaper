@@ -225,7 +225,7 @@ The Workbench includes advisory checks. They can flag:
 - Claims that need verification.
 - Excessive copying from source material.
 
-These tools do not block you. They are there to slow you down at the right moments.
+These advisory tools do not make editorial decisions for you. They are there to slow you down at the right moments.
 
 If the advisor raises a concern, decide what to do:
 
@@ -235,6 +235,19 @@ If the advisor raises a concern, decide what to do:
 - Hold the story.
 - Mark a verification task.
 - Publish anyway with an editor note if you judge that appropriate.
+
+There is one important exception: **static package-validity blockers** must be fixed before the app will approve a story for static publishing. These are not editorial vetoes. They are output-integrity checks that prevent a public package from containing broken or unsupported material.
+
+Approval can be blocked when:
+
+- A scanned-source lead has no linked source documents.
+- A lead-based story has no inline evidence citation.
+- A citation points to evidence that is disabled, missing, or not linked to that lead.
+- The article topic does not match the cited evidence.
+- The body is empty, too short, too large, or mostly metadata.
+- Reporter notes, test notes, or editor-only scaffolding would leak into the public story.
+
+If approval is blocked, read the on-screen **Fix before static publish approval** list, repair the draft or evidence, save again, and then approve. The editor still decides what is newsworthy and what to publish; the blocker only protects the exported public package from being structurally invalid.
 
 ### Step 8A: Use The Workbench Status Controls
 
