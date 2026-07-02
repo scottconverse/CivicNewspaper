@@ -75,7 +75,7 @@ const PROVIDERS = [
     id: "wordpress",
     label: "WordPress",
     url: "https://wordpress.com/posts",
-    guidance: "Publishes a WordPress issue page and article pages using the REST API and an application password.",
+    guidance: "Beta hold: direct API publishing is disabled until draft-first publishing, rollback, and live connector proof are complete. Export the ZIP/static folder or record a manually published URL.",
   },
   {
     id: "other",

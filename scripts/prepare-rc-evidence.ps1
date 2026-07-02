@@ -89,6 +89,7 @@ try {
   $modelsConfig = Get-Content -Raw (Join-Path $RepoRoot "src\models.json") | ConvertFrom-Json
 
   $modelBakeoffOk = $false
+  [string[]]$modelBakeoffDefaultRepairedCases = @()
   $dependencyAuditOk = $false
   $dependencyAuditIgnoredAdvisories = @()
   $dependencyAuditWaivers = @()
@@ -108,7 +109,11 @@ try {
       $failedNames = ($failedDefaultCases | ForEach-Object { "$($_.case): $($_.error)" }) -join "; "
       throw "Configured default model '$defaultModel' failed bakeoff case(s): $failedNames"
     }
-    $repairedDefaultCases = @($defaultResults | Where-Object { $_.status -eq "repaired" -or $_.repaired -eq $true })
+    [string[]]$modelBakeoffDefaultRepairedCases = @(
+      $defaultResults |
+        Where-Object { $_.status -eq "repaired" -or $_.repaired -eq $true } |
+        ForEach-Object { [string]$_.case }
+    )
     $modelBakeoffOk = $true
   }
 
@@ -376,7 +381,7 @@ try {
     release_smoke_skipped = $smoke.skipped
     model_bakeoff_receipt = if ($resolvedModelBakeoffReceipt) { $resolvedModelBakeoffReceipt.Path } else { $null }
     model_bakeoff_ok = $modelBakeoffOk
-    model_bakeoff_default_repaired_cases = if ($resolvedModelBakeoffReceipt) { @($repairedDefaultCases | ForEach-Object { $_.case }) } else { @() }
+    model_bakeoff_default_repaired_cases = @($modelBakeoffDefaultRepairedCases)
     dependency_audit_receipt = if ($resolvedDependencyAuditReceipt) { $resolvedDependencyAuditReceipt.Path } else { $null }
     dependency_audit_ok = $dependencyAuditOk
     dependency_audit_ignored_advisories = $dependencyAuditIgnoredAdvisories

@@ -38,9 +38,9 @@ For this release line, anonymous here.now preview publishing is the tested defau
 ### WordPress
 
 - Requires: WordPress site URL, username, application password.
-- Publishes: a WordPress issue page and child article pages from the generated site package.
-- Method: WordPress REST API `wp/v2/pages` with application-password authentication.
-- Output: WordPress issue page ID and public page URL.
+- Public beta status: direct API publishing is disabled until draft-first publishing, rollback, and live connector proof are complete.
+- Current path: export the ZIP/static folder, publish through WordPress manually or through your own workflow, then record the public URL in the app.
+- Output: recorded public URL when the editor uses assisted/manual recording.
 
 ## Assisted Connectors
 

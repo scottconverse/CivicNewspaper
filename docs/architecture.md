@@ -53,10 +53,10 @@ The app must degrade when Ollama is missing, slow, offline, or when a model is n
 Source intake has three main paths:
 
 - Manual source entry.
-- Bulk import from CSV, TXT, XLSX, DOCX, and text-readable PDFs.
+- Bulk import from CSV, TXT, XLSX, and DOCX. PDF import is disabled in the public beta until hardened parsing is available.
 - Discovery adapters for official sites, feeds, agenda portals, document pages, local media, public social/community sources, and search fallback.
 
-Image-only scanned PDFs require OCR support before URLs can be extracted. A normal text PDF can be parsed without OCR.
+PDF source-list import is intentionally disabled in the public beta. Editors should convert PDF source lists to TXT, CSV, DOCX, or XLSX, or paste URLs directly.
 
 ### Browser Extension
 

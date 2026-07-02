@@ -20,12 +20,12 @@ The script writes a receipt under `.agent-runs\release-smoke-*` and runs:
 - anonymous here.now publish and live URL fetch
 - live Colorado source scan
 - real local Ollama Daily Scan with the selected model
-- source import extraction across CSV, TXT, XLSX, DOCX, and PDF fixtures
+- source import extraction across CSV, TXT, XLSX, DOCX, plus PDF-disabled guidance fixtures
 - frontend bulk-import review parsing against the extracted fixture text
 
 Use `-SkipLiveModel` only for local diagnostics. A release candidate or stable gate must record every skipped check as a skip and must not treat a partial receipt as complete release evidence.
 
-By default, the smoke script uses the committed review fixtures under `test-fixtures\source-import-extracted`. Those prove the bulk-import review parser on realistic extracted text. For release-candidate or stable evidence, pass the full source-file fixture folder so the Rust extraction gate also proves CSV, XLSX, TXT, DOCX, and PDF extraction.
+By default, the smoke script uses the committed review fixtures under `test-fixtures\source-import-extracted`. Those prove the bulk-import review parser on realistic extracted text. For release-candidate or stable evidence, pass the full source-file fixture folder so the Rust extraction gate proves CSV, XLSX, TXT, DOCX extraction and public-beta PDF-disabled guidance.
 
 For stable release evidence, run:
 
@@ -36,7 +36,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\release-smoke.ps1 `
   -Stable
 ```
 
-The stable run fails if the working tree is dirty or if desktop smoke, live model, here.now, or import fixture gates are skipped. Use `-AllowDirty` only for a non-release diagnostic run. The `-FixtureDir` value must point to a folder available on the machine running the gate. Use `.agent-runs\source-fixture-artifact` when the fixture artifact has been restored into the repo workspace, or pass any equivalent full source-file fixture folder that contains the expected CSV, TXT, XLSX, DOCX, and PDF files.
+The stable run fails if the working tree is dirty or if desktop smoke, live model, here.now, or import fixture gates are skipped. Use `-AllowDirty` only for a non-release diagnostic run. The `-FixtureDir` value must point to a folder available on the machine running the gate. Use `.agent-runs\source-fixture-artifact` when the fixture artifact has been restored into the repo workspace, or pass any equivalent full source-file fixture folder that contains the expected CSV, TXT, XLSX, DOCX files and PDF-disabled guidance fixtures.
 
 ## Release-candidate packaging receipt
 
@@ -94,7 +94,7 @@ The committed lightweight review fixtures live under:
 test-fixtures\source-import-extracted
 ```
 
-The full source-file set includes clean CSV, messy XLSX, human notes TXT, DOCX briefing, text-backed PDF, scanned-style PDF, and XLSX edge cases. The scanned-style PDF should fail with OCR/readable-text guidance until OCR support is added.
+The full source-file set includes clean CSV, messy XLSX, human notes TXT, DOCX briefing, PDF examples, and XLSX edge cases. PDF examples should fail with public-beta PDF-disabled guidance until hardened PDF parsing is added.
 
 ## Model bakeoff
 

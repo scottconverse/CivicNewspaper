@@ -57,7 +57,7 @@ Please do not paste private sources, credentials, or unpublished sensitive draft
 
 **Body:**
 
-Source intake is one of the most important parts of the product. The app supports manual sources, discovery, and imports from CSV, TXT, XLSX, DOCX, and text-readable PDF files.
+Source intake is one of the most important parts of the product. The app supports manual sources, discovery, and imports from CSV, TXT, XLSX, and DOCX files. PDF import is disabled in the public beta until hardened parsing is available; convert PDF source lists to a supported format or paste the URLs directly.
 
 The sources we especially want to test:
 

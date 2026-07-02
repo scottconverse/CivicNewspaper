@@ -148,15 +148,6 @@
       "review_by": "2026-09-30"
     },
     {
-      "id": "RUSTSEC-2026-0192",
-      "crate": "ttf-parser",
-      "source": "transitive PDF extraction stack through pdf-extract/lopdf",
-      "rationale": "Unmaintained transitive PDF parsing dependency. Source import remains editor-reviewed and local; keep tracked until pdf-extract/lopdf stack offers a maintained replacement.",
-      "release_note": "Rust advisory waiver: transitive PDF parsing stack warning tracked until upstream replacement.",
-      "owner": "release maintainer",
-      "review_by": "2026-09-30"
-    },
-    {
       "id": "RUSTSEC-2024-0429",
       "crate": "glib",
       "source": "target-specific Tauri GTK stack warning",

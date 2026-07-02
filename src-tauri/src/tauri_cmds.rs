@@ -783,20 +783,6 @@ fn extract_xlsx_text(path: &std::path::Path) -> Result<String, String> {
     }
 }
 
-fn extract_pdf_text(path: &std::path::Path) -> Result<String, String> {
-    let text = pdf_extract::extract_text(path)
-        .map_err(|e| format!("Could not extract readable text from this PDF: {e}"))?;
-    let normalized = normalize_extracted_text(&text);
-    if normalized.trim().is_empty() {
-        Err(
-            "No readable text was found in this PDF. It may be scanned image-only and require OCR."
-                .to_string(),
-        )
-    } else {
-        Ok(normalized)
-    }
-}
-
 #[tauri::command]
 pub fn extract_source_import_text(path: String) -> Result<String, String> {
     let trimmed = path.trim();
@@ -830,8 +816,8 @@ pub fn extract_source_import_text(path: String) -> Result<String, String> {
         }
         "docx" => extract_docx_text(&path),
         "xlsx" => extract_xlsx_text(&path),
-        "pdf" => extract_pdf_text(&path),
-        _ => Err("Unsupported source-list file type. Use CSV, TSV, TXT, DOCX, XLSX, PDF, or paste URLs directly.".to_string()),
+        "pdf" => Err("PDF source-list import is disabled in this public beta until hardened PDF parsing is available. Convert the PDF to TXT/CSV/DOCX/XLSX or paste the source URLs directly.".to_string()),
+        _ => Err("Unsupported source-list file type. Use CSV, TSV, TXT, DOCX, XLSX, or paste URLs directly.".to_string()),
     }
 }
 
@@ -1963,20 +1949,27 @@ pub fn save_publisher_config(
     if clear_credential {
         publisher::delete_provider_credential(&provider)?;
     }
-    if let Some(credential) = pending_credential {
+    let wrote_pending_credential = if let Some(credential) = pending_credential {
         publisher::set_provider_credential(&provider, &credential)?;
-    }
+        true
+    } else {
+        false
+    };
     sanitized.has_credential = publisher::has_provider_credential(&sanitized.provider);
     let value = serde_json::to_string(&sanitized).map_err(|e| e.to_string())?;
     let conn = db.lock().map_err(|_| "Failed to lock database")?;
-    conn.execute(
+    if let Err(e) = conn.execute(
         "INSERT OR REPLACE INTO settings (key, value) VALUES (?1, ?2)",
         rusqlite::params![
             publisher::provider_config_setting_key(&sanitized.provider),
             value
         ],
-    )
-    .map_err(|e| e.to_string())?;
+    ) {
+        if wrote_pending_credential {
+            let _ = publisher::delete_provider_credential(&provider);
+        }
+        return Err(e.to_string());
+    }
     Ok(sanitized)
 }
 
@@ -2826,9 +2819,7 @@ mod source_import_extraction_tests {
 
         let err = extract_source_import_text(path.to_string_lossy().to_string()).unwrap_err();
 
-        assert!(
-            err.contains("Could not extract readable text") || err.contains("No readable text")
-        );
+        assert!(err.contains("PDF source-list import is disabled"));
         let _ = std::fs::remove_dir_all(dir);
     }
 
@@ -2845,42 +2836,6 @@ mod source_import_extraction_tests {
             err.contains("too large"),
             "oversized source-list files must fail before extraction, got: {err}"
         );
-        let _ = std::fs::remove_dir_all(dir);
-    }
-
-    #[test]
-    fn extracts_text_based_pdf_source_list() {
-        let dir = temp_dir("pdf-readable");
-        let path = dir.join("sources.pdf");
-        let stream =
-            "BT\n/F1 12 Tf\n72 720 Td\n(Longmont Council https://www.longmontcolorado.gov/city-council) Tj\nET\n";
-        let objects = [
-            "<< /Type /Catalog /Pages 2 0 R >>".to_string(),
-            "<< /Type /Pages /Kids [3 0 R] /Count 1 >>".to_string(),
-            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>".to_string(),
-            "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>".to_string(),
-            format!("<< /Length {} >>\nstream\n{}endstream", stream.len(), stream),
-        ];
-        let mut pdf = String::from("%PDF-1.4\n");
-        let mut offsets = vec![0usize];
-        for (idx, object) in objects.iter().enumerate() {
-            offsets.push(pdf.len());
-            pdf.push_str(&format!("{} 0 obj\n{}\nendobj\n", idx + 1, object));
-        }
-        let xref_start = pdf.len();
-        pdf.push_str("xref\n0 6\n0000000000 65535 f \n");
-        for offset in offsets.iter().skip(1) {
-            pdf.push_str(&format!("{offset:010} 00000 n \n"));
-        }
-        pdf.push_str(&format!(
-            "trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n{xref_start}\n%%EOF"
-        ));
-        std::fs::write(&path, pdf).unwrap();
-
-        let text = extract_source_import_text(path.to_string_lossy().to_string()).unwrap();
-
-        assert!(text.contains("Longmont Council"));
-        assert!(text.contains("https://www.longmontcolorado.gov/city-council"));
         let _ = std::fs::remove_dir_all(dir);
     }
 
@@ -2912,7 +2867,7 @@ mod source_import_extraction_tests {
             ("colorado-source-list-messy.xlsx", 25usize, true),
             ("colorado-source-list-human-notes.txt", 25usize, true),
             ("colorado-source-list-briefing.docx", 35usize, true),
-            ("colorado-source-list-exported.pdf", 30usize, true),
+            ("colorado-source-list-exported.pdf", 0usize, false),
             ("colorado-source-list-edge-cases.xlsx", 15usize, true),
             ("colorado-source-list-scanned-style.pdf", 0usize, false),
         ];
@@ -2938,8 +2893,8 @@ mod source_import_extraction_tests {
                 (Err(err), false) => {
                     report.push(format!("{name}: expected extraction failure: {err}"));
                     assert!(
-                        err.contains("OCR") || err.contains("readable text"),
-                        "{name} should fail with OCR/readable-text guidance, got: {err}"
+                        err.contains("PDF source-list import is disabled"),
+                        "{name} should fail with public-beta PDF-disabled guidance, got: {err}"
                     );
                 }
                 (Ok(text), false) => {

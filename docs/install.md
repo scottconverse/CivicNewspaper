@@ -72,5 +72,5 @@ If setup or publishing gets stuck, see [troubleshooting.md](troubleshooting.md) 
 - Windows is the tested public-beta installer path for this release line.
 - macOS and Linux installer proof is backlog/proof-needed.
 - Some external publishing providers require user-owned credentials.
-- Scanned image-only PDFs require OCR support before URLs can be extracted.
+- PDF source-list import is disabled in the public beta until hardened parsing is available; convert PDFs to TXT/CSV/DOCX/XLSX or paste URLs directly.
 - Clean-machine installer coverage is improving but not yet stable-release grade.

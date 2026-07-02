@@ -69,9 +69,9 @@ Current bulk import targets:
 - TXT
 - XLSX
 - DOCX
-- text-readable PDF
+- PDF files are not imported in this public beta
 
-Image-only scanned PDFs need OCR support before text or URLs can be extracted.
+Convert PDF source lists to TXT, CSV, DOCX, or XLSX, or paste the URLs directly. PDF import is disabled until hardened PDF parsing is available.
 
 ## Dark Signals
 

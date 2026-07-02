@@ -1470,101 +1470,8 @@ async fn publish_wordpress(
     config: &PublisherConfig,
     request: &PublisherPublishRequest,
 ) -> Result<PublisherPublishResult, String> {
-    let password = credential(PublisherProvider::Wordpress)?;
-    let site_url = required_field("WordPress site URL", config.site_url.as_deref())?;
-    let username = required_field("WordPress username", config.username.as_deref())?;
-    let output_dir = validate_publish_artifacts(&request.output_dir)?;
-    let manifest = read_publish_manifest(&output_dir)?;
-    let index_html = std::fs::read_to_string(output_dir.join("index.html"))
-        .map_err(|e| format!("Could not read generated issue homepage: {e}"))?;
-    let index_content = wordpress_content_fragment(&index_html);
-    let issue_title = format!("Civic Desk issue {}", manifest.issue_id);
-    let issue_page = create_wordpress_page(
-        &site_url,
-        &username,
-        &password,
-        &issue_title,
-        &index_content,
-        None,
-    )
-    .await?;
-
-    let mut article_count = 0usize;
-    for article in &manifest.articles {
-        let path = output_dir.join(&article.relative_path);
-        let article_html = std::fs::read_to_string(&path).map_err(|e| {
-            format!(
-                "Could not read generated article page {}: {e}",
-                article.relative_path
-            )
-        })?;
-        let content = wordpress_content_fragment(&article_html);
-        create_wordpress_page(
-            &site_url,
-            &username,
-            &password,
-            &article.title,
-            &content,
-            issue_page.id,
-        )
-        .await?;
-        article_count += 1;
-    }
-
-    Ok(PublisherPublishResult {
-        provider: PublisherProvider::Wordpress.as_str().to_string(),
-        published_url: validate_public_url(&issue_page.link)?,
-        deployment_id: issue_page.id.map(|id| id.to_string()),
-        message: format!("Published one WordPress issue page and {article_count} article page(s)."),
-    })
-}
-
-#[derive(Deserialize)]
-struct WordpressPage {
-    id: Option<u64>,
-    link: String,
-}
-
-async fn create_wordpress_page(
-    site_url: &str,
-    username: &str,
-    password: &str,
-    title: &str,
-    content: &str,
-    parent: Option<u64>,
-) -> Result<WordpressPage, String> {
-    #[derive(Serialize)]
-    struct PagePayload<'a> {
-        title: &'a str,
-        content: &'a str,
-        status: &'static str,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        parent: Option<u64>,
-    }
-    let response = http_client()?
-        .post(format!(
-            "{}/wp-json/wp/v2/pages",
-            site_url.trim_end_matches('/')
-        ))
-        .basic_auth(username, Some(password))
-        .json(&PagePayload {
-            title,
-            content,
-            status: "publish",
-            parent,
-        })
-        .send()
-        .await
-        .map_err(|e| format!("WordPress publish failed: {e}"))?;
-    let status = response.status();
-    let body = response.text().await.unwrap_or_default();
-    if !status.is_success() {
-        return Err(format!(
-            "WordPress publish failed with status {status}: {body}"
-        ));
-    }
-    serde_json::from_str::<WordpressPage>(&body)
-        .map_err(|e| format!("Could not read WordPress response: {e}"))
+    let _ = (config, request);
+    Err("WordPress direct API publishing is disabled in this public beta until draft-first publishing, rollback, and live connector proof are complete. Export the ZIP/static folder or use assisted/manual URL recording for WordPress.".to_string())
 }
 
 fn read_publish_manifest(
@@ -1573,14 +1480,6 @@ fn read_publish_manifest(
     let manifest = std::fs::read_to_string(output_dir.join("publish-manifest.json"))
         .map_err(|e| format!("Could not read publish manifest: {e}"))?;
     serde_json::from_str(&manifest).map_err(|e| format!("Could not parse publish manifest: {e}"))
-}
-
-fn wordpress_content_fragment(html: &str) -> String {
-    let body = html
-        .split_once("<body>")
-        .and_then(|(_, rest)| rest.split_once("</body>").map(|(body, _)| body))
-        .unwrap_or(html);
-    body.replace("<script", "&lt;script")
 }
 
 fn publish_assisted(

@@ -43,11 +43,11 @@ The tester must behave like a normal user. If the app needs a runtime, model, pa
    - TXT
    - XLSX
    - DOCX
-   - text-readable PDF
-   - scanned-style PDF
+   - PDF disabled guidance
+   - scanned-style PDF disabled guidance
 5. Confirm URLs are extracted as separate candidates, not flattened into one long string.
 6. Confirm duplicates are shown or handled clearly.
-7. Confirm image-only scanned PDFs explain the OCR limitation if OCR is unavailable.
+7. Confirm PDF files explain that public-beta PDF import is disabled and tell the user to convert the file or paste URLs directly.
 
 ## 4. Daily Scan And Civic Intelligence
 

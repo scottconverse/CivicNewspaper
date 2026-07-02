@@ -18,7 +18,6 @@ describe("bulk-import fixture review", () => {
     ["colorado-source-list-messy.xlsx.txt", 4],
     ["colorado-source-list-human-notes.txt.txt", 4],
     ["colorado-source-list-briefing.docx.txt", 4],
-    ["colorado-source-list-exported.pdf.txt", 4],
     ["colorado-source-list-edge-cases.xlsx.txt", 3],
   ] as const;
 

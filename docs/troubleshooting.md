@@ -147,12 +147,12 @@ Remove `%USERPROFILE%\.ollama` only when you intentionally want to test local AI
 
 ## Source Import Misses URLs
 
-CSV, TXT, XLSX, DOCX, and text-backed PDF files should produce reviewable source candidates. Image-only PDFs may need OCR before URLs can be extracted.
+CSV, TXT, XLSX, and DOCX files should produce reviewable source candidates. PDF import is disabled in the public beta until hardened parsing is available. Convert PDF source lists to TXT, CSV, DOCX, or XLSX, or paste the URLs directly.
 
 What to do:
 
 1. Try the import again with a small file first.
-2. If a PDF is scanned or image-only, convert it with OCR or enter key URLs manually.
+2. If the source list is a PDF, convert it to TXT, CSV, DOCX, or XLSX with your own trusted tool, or enter key URLs manually.
 3. Review every imported candidate before enabling it.
 4. If a normal text file imports poorly, report the file type and a small example.
 

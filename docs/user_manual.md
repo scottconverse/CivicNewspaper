@@ -342,11 +342,11 @@ You can import source lists from:
 - TXT
 - XLSX
 - DOCX
-- text-readable PDF, treated as a local beta import path because PDF parsing dependencies are still tracked under security-advisory waivers
+- PDF files are not imported in the public beta. Convert PDF source lists to TXT, CSV, DOCX, or XLSX, or paste the URLs directly.
 
 The app should split URLs into separate reviewable candidates. If a spreadsheet or document contains many URLs and the app finds only one, that is a bug.
 
-Scanned image-only PDFs require OCR before URLs can be extracted. If OCR is unavailable, the app should say so plainly rather than pretending the file had no useful sources. For now, import PDFs only from sources you trust enough to open locally; broader hardened/sandboxed PDF parsing is still on the security backlog.
+PDF import is disabled in the public beta, including scanned and text PDFs. Convert PDFs to a supported format with your own trusted tool, or paste the source URLs directly. Hardened/sandboxed PDF parsing remains on the security backlog.
 
 When importing a file, review:
 
@@ -454,7 +454,7 @@ You can still export the ZIP and publish manually.
 
 ### Sources Import Poorly
 
-If XLSX, DOCX, or PDF imports flatten many URLs into one candidate, report it as a bug with the file type and an example. The expected behavior is separate reviewable URL candidates.
+If XLSX or DOCX imports flatten many URLs into one candidate, report it as a bug with the file type and an example. The expected behavior is separate reviewable URL candidates. PDF import is disabled in the public beta until hardened parsing is available.
 
 ## 11. Advanced Reference
 
@@ -478,7 +478,7 @@ If XLSX, DOCX, or PDF imports flatten many URLs into one candidate, report it as
 - **GitHub Pages:** best for durable public archives in a repository.
 - **Cloudflare Pages:** assisted/manual hosting option in this public beta.
 - **Netlify:** technical hosting option.
-- **WordPress:** publishes issue/article pages through the WordPress REST API.
+- **WordPress:** direct API publishing is disabled in the public beta until draft-first publishing, rollback, and live connector proof are complete. Export the ZIP/static folder or record the URL after publishing manually.
 - **Substack:** assisted copy/paste workflow.
 - **Other/manual:** records a public URL after you publish elsewhere.
 
