@@ -1,0 +1,8 @@
+﻿{
+    "Windows":  "Microsoft Windows 11 Home 10.0.26200",
+    "CPU":  "13th Gen Intel(R) Core(TM) i7-13620H",
+    "RAM_GB":  15.7,
+    "GPU":  "Intel(R) UHD Graphics; NVIDIA GeForce RTX 4050 Laptop GPU",
+    "C_Free_GB":  346.4,
+    "OllamaProcess":  "26932"
+}
