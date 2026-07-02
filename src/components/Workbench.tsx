@@ -1,5 +1,5 @@
 ﻿// src/components/Workbench.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { CheckCircle, AlertTriangle, Info, FileText } from "lucide-react";
 import { Lead, Draft, EvidenceItem, GuardrailsReport, plainLanguageRewrite, pressFreedomLegalReview } from "../ipc";
 import { Modal } from "./Modal";
@@ -302,6 +302,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   const [pressFreedomReview, setPressFreedomReview] = useState("");
   const [isRunningPressFreedomReview, setIsRunningPressFreedomReview] = useState(false);
   const [isImprovingForPublication, setIsImprovingForPublication] = useState(false);
+  const editorPanelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setError(null);
@@ -312,6 +313,20 @@ export const Workbench: React.FC<WorkbenchProps> = ({
     setDecisionModal(null);
     setDecisionReason("");
     setPressFreedomReview("");
+  }, [selectedDraft?.id]);
+
+  useEffect(() => {
+    if (!selectedDraft?.id) return;
+    window.requestAnimationFrame(() => {
+      document
+        .querySelectorAll<HTMLElement>(".main-content, .app-main, main")
+        .forEach((container) => {
+          container.scrollTop = 0;
+        });
+      const panel = editorPanelRef.current;
+      panel?.scrollIntoView?.({ block: "start", behavior: "auto" });
+      panel?.focus?.({ preventScroll: true });
+    });
   }, [selectedDraft?.id]);
 
   useEffect(() => {
@@ -684,7 +699,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
     const qualityWarnings = qualityWarningsForSelectedDraft;
 
     return (
-      <div id="workbench-editor-panel" tabIndex={-1}>
+      <div id="workbench-editor-panel" tabIndex={-1} ref={editorPanelRef}>
         <div className="page-header workbench-editor-header" style={{ marginBottom: "1rem" }}>
           <div className="page-title">
             <h1>Story Workbench</h1>
@@ -1237,7 +1252,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
               type="button"
               key={draft.id ?? draft.title}
               className="draft-picker-row"
-              onClick={() => onOpenDraftEditor?.(draft.id ?? draft)}
+              onClick={() => onOpenDraftEditor?.(draft)}
               id={draft.id ? `btn-workbench-picker-open-${draft.id}` : undefined}
             >
               <span>

@@ -369,7 +369,8 @@ describe("useApp Hook Tests", () => {
         draft: expect.objectContaining({
           lead_id: 77,
           content: "The council is reviewing a land purchase tied to a public agenda item.\n\nThe decision could affect nearby residents.",
-          status: "draft_generated",
+          status: "needs_verification",
+          missing_evidence_notes: expect.stringMatching(/No source documents are linked/i),
         }),
       })
     );
@@ -499,6 +500,75 @@ describe("useApp Hook Tests", () => {
     expect(hookResult.selectedDraft?.missing_evidence_notes).toMatch(/verification assignment/i);
     expect(hookResult.guardrailsReport).toEqual(guardrailsReport);
     expect(hookResult.statusMessage).toContain("marked as needing more work");
+  });
+
+  test("source-linked attributed watch briefs stay editable for approval", async () => {
+    const savedDrafts: any[] = [];
+    const linkedEvidence = [
+      {
+        id: 7,
+        source_id: 2,
+        url: "https://longmontcolorado.gov/events/",
+        fetched_at: "2026-07-02T00:00:00Z",
+        excerpt: "Summer Concert Series: 2MX2 Thursday, July 2, 7 pm at Longmont Museum.",
+        content_hash: "concert",
+        entities: "[]",
+      },
+    ];
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
+      if (cmd === "get_queue") return { leads: [], drafts: savedDrafts };
+      if (cmd === "get_sources") return [];
+      if (cmd === "get_community_profile") return { city: "Longmont", state: "CO" };
+      if (cmd === "list_paired_clients") return [];
+      if (cmd === "get_system_ram") return 16;
+      if (cmd === "get_evidence") return linkedEvidence;
+      if (cmd === "get_setting" && args?.key === "model.selected") return "qwen2.5:7b";
+      if (cmd === "ollama_health") return { reachable: true, models: ["qwen2.5:7b"], version: "0.6.0" };
+      if (cmd === "generate_draft") {
+        return "Headline: Summer Concert Series Adds 2MX2 Performance\n\nAccording to the linked source, 2MX2 is scheduled to perform Thursday at 7 pm at Longmont Museum. [Source](evidence:7)\n\nThe listing gives residents the time and location for the concert.";
+      }
+      if (cmd === "save_draft") {
+        const draft = { ...args.draft, id: 504 };
+        savedDrafts.push(draft);
+        return 504;
+      }
+      if (cmd === "guardrails_check") return { is_clean: true, issues: [] };
+      return null;
+    });
+
+    let hookResult: any;
+    const TestComp = () => {
+      hookResult = useApp();
+      return <span data-testid="active-tab">{hookResult.activeTab}</span>;
+    };
+
+    await act(async () => {
+      render(<TestComp />);
+    });
+
+    await act(async () => {
+      hookResult.handleOpenDraftWizard({
+        id: 80,
+        detector_name: "Monitoring Item",
+        why: "Summer concert event listing appeared.",
+        confidence: "medium",
+        risk_level: "low",
+        confirmation_checklist: "[]",
+        story_type: "watch",
+        disposition: "watch",
+        novelty_score: 1,
+        created_at: "2026-06-29T00:00:00Z",
+      });
+    });
+
+    await act(async () => {
+      await hookResult.handleGenerateText();
+    });
+
+    expect(savedDrafts[0].status).toBe("draft_generated");
+    expect(savedDrafts[0].missing_evidence_notes).toBeUndefined();
+    expect(hookResult.selectedDraft?.status).toBe("draft_generated");
+    expect(hookResult.statusMessage).toContain("Draft generated successfully");
   });
 
   test("can draft multiple leads sequentially without losing queue/workbench state", async () => {

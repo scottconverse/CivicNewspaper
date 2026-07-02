@@ -300,8 +300,8 @@ describe("OnboardingWizard Component Tests", () => {
     expect(screen.getByRole("button", { name: /next/i }).tagName).toBe("BUTTON");
 
     await user.click(screen.getByRole("button", { name: "Longmont" }));
-    expect(screen.getByLabelText("Publication Name")).toHaveValue("My Local Publication");
-    expect(screen.getByLabelText("Editor Name")).toHaveValue("Publisher");
+    expect(screen.getByLabelText("Publication Name")).toHaveValue("Longmont Civic Desk");
+    expect(screen.getByLabelText("Editor Name")).toHaveValue("Local Editor");
     expect(screen.getByLabelText("City")).toHaveValue("Longmont");
 
     await user.click(screen.getByRole("button", { name: /next/i }));
@@ -309,7 +309,7 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
     expect(invokeMock).toHaveBeenCalledWith("set_setting", {
       key: "identity.newsroom_name",
-      value: "My Local Publication",
+      value: "Longmont Civic Desk",
     });
   });
 
@@ -489,7 +489,7 @@ describe("OnboardingWizard Component Tests", () => {
     expect(screen.getByText("Step 1 of 5")).toBeInTheDocument();
     expect(invokeMock).not.toHaveBeenCalledWith("set_setting", {
       key: "identity.newsroom_name",
-      value: "My Local Publication",
+      value: "Longmont Civic Desk",
     });
   });
 

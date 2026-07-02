@@ -356,6 +356,14 @@ export function useApp() {
     );
   };
 
+  const draftHasPublishableLinkedSourceShape = (content: string, linkedEvidenceCount: number) => {
+    return (
+      linkedEvidenceCount > 0 &&
+      /evidence:\s*(?:\/\/)?\s*\d+/i.test(content) &&
+      /\baccording to\b/i.test(content)
+    );
+  };
+
   const pickStarterDiscoveryCandidates = (categories: DiscoveredSourceCategory[]) => {
     const picked: DiscoveredSource[] = [];
     const seen = new Set<string>();
@@ -1215,12 +1223,17 @@ export function useApp() {
       const normalizedDraft = normalizeGeneratedDraft(text, leadTitle);
       const now = new Date().toISOString();
       const cautiousLead = leadNeedsDraftCaution(selectedLead);
+      const publishableLinkedSourceShape = draftHasPublishableLinkedSourceShape(
+        normalizedDraft.content,
+        evidenceList.length
+      );
+      const forceVerification = evidenceList.length === 0 || (cautiousLead && !publishableLinkedSourceShape);
       const draftObj: Draft = {
         lead_id: selectedLead.id,
         format: draftFormat,
         title: normalizedDraft.title,
         content: normalizedDraft.content,
-        status: cautiousLead ? "needs_verification" : "draft_generated",
+        status: forceVerification ? "needs_verification" : "draft_generated",
         verification_checklist: "[]",
         missing_evidence_notes: evidenceList.length === 0
           ? "No source documents are linked to this lead yet. Treat this as a verification assignment until public source material is attached or cited."
@@ -1243,7 +1256,7 @@ export function useApp() {
         setGuardrailsReport(null);
       }
       setStatusMessage(
-        cautiousLead
+        forceVerification
           ? "Draft generated and marked as needing more work because the lead has watch, background, verification, recurrence, or low-novelty signals."
           : "Draft generated successfully."
       );
