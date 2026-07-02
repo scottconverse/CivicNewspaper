@@ -317,123 +317,6 @@ export function useApp() {
 
   const pullLogEndRef = useRef<HTMLDivElement>(null);
 
-  const starterLongmontSources = [
-    {
-      name: "Longmont official city website",
-      url: "https://www.longmontcolorado.gov/",
-      type: "primary_record",
-      tier: "official_record",
-    },
-    {
-      name: "Longmont city news",
-      url: "https://www.longmontcolorado.gov/news",
-      type: "official_comm",
-      tier: "official_record",
-    },
-    {
-      name: "Longmont Agenda Management Portal",
-      url: "https://longmontcolorado.gov/city-clerk/agenda-management-portal/",
-      type: "primary_record",
-      tier: "official_record",
-    },
-    {
-      name: "Longmont City Council Meetings",
-      url: "https://longmontcolorado.gov/government/city-council-meetings/",
-      type: "primary_record",
-      tier: "official_record",
-    },
-    {
-      name: "Longmont Public Information",
-      url: "https://longmontcolorado.gov/public-information/",
-      type: "official_comm",
-      tier: "official_record",
-    },
-    {
-      name: "Longmont Public Safety",
-      url: "https://www.longmontcolorado.gov/departments/departments-n-z/public-safety",
-      type: "official_comm",
-      tier: "official_record",
-    },
-    {
-      name: "Public Notice Colorado",
-      url: "https://www.publicnoticecolorado.com/",
-      type: "primary_record",
-      tier: "official_record",
-    },
-    {
-      name: "St. Vrain Valley Schools",
-      url: "https://www.svvsd.org/",
-      type: "primary_record",
-      tier: "official_record",
-    },
-    {
-      name: "Longmont Leader local news",
-      url: "https://www.longmontleader.com/local-news",
-      type: "media_lead",
-      tier: "news_reporting",
-    },
-    {
-      name: "Times-Call Longmont news",
-      url: "https://www.timescall.com/location/colorado/boulder-county/longmont/",
-      type: "media_lead",
-      tier: "news_reporting",
-    },
-    {
-      name: "Longmont Area Chamber of Commerce",
-      url: "https://longmontchamber.org/",
-      type: "community_signal",
-      tier: "community_signal",
-    },
-    {
-      name: "Visit Longmont events",
-      url: "https://www.visitlongmont.org/events/",
-      type: "community_calendar",
-      tier: "community_signal",
-    },
-    {
-      name: "Downtown Longmont events",
-      url: "https://www.downtownlongmont.com/events/calendar",
-      type: "community_calendar",
-      tier: "community_signal",
-    },
-    {
-      name: "City of Longmont Facebook",
-      url: "https://www.facebook.com/cityoflongmontco/",
-      type: "community_signal",
-      tier: "community_signal",
-    },
-    {
-      name: "Longmont Public Safety Facebook",
-      url: "https://www.facebook.com/LongmontFirePoliceOEM/",
-      type: "community_signal",
-      tier: "community_signal",
-    },
-    {
-      name: "Longmont subreddit",
-      url: "https://www.reddit.com/r/Longmont/",
-      type: "community_signal",
-      tier: "community_signal",
-    },
-    {
-      name: "Longmont Colorado subreddit",
-      url: "https://www.reddit.com/r/LongmontColorado/",
-      type: "community_signal",
-      tier: "community_signal",
-    },
-    {
-      name: "Longmont city events",
-      url: "https://longmontcolorado.gov/events/",
-      type: "official_comm",
-      tier: "official_record",
-    },
-    {
-      name: "Longmont city YouTube",
-      url: "https://www.youtube.com/cityoflongmont",
-      type: "official_comm",
-      tier: "official_record",
-    },
-  ];
-
   const leadNeedsDraftCaution = (lead: Lead) => {
     const disposition = (lead.disposition ?? "review").toLowerCase();
     const storyType = (lead.story_type ?? "").toLowerCase();
@@ -450,11 +333,39 @@ export function useApp() {
     );
   };
 
-  const addStarterLongmontSources = async () => {
+  const pickStarterDiscoveryCandidates = (categories: DiscoveredSourceCategory[]) => {
+    const picked: DiscoveredSource[] = [];
+    const seen = new Set<string>();
+    const trustedTypes = new Set(["primary_record", "official_comm", "official_calendar", "media_lead", "community_signal", "community_calendar"]);
+
+    for (const category of categories) {
+      const officialFirst = [...category.candidates].sort((a, b) => {
+        const aOfficial = a.type === "primary_record" || a.type === "official_comm" || a.type === "official_calendar";
+        const bOfficial = b.type === "primary_record" || b.type === "official_comm" || b.type === "official_calendar";
+        return Number(bOfficial) - Number(aOfficial);
+      });
+      for (const candidate of officialFirst) {
+        const urlKey = normalizeImportUrl(candidate.url);
+        if (!urlKey || seen.has(urlKey) || !trustedTypes.has(candidate.type)) continue;
+        picked.push(candidate);
+        seen.add(urlKey);
+        break;
+      }
+    }
+
+    return picked;
+  };
+
+  const addStarterSourcesForCommunity = async (city: string, state: string) => {
     let imported = 0;
-    for (const source of starterLongmontSources) {
+    const categories = await discoverSources(city, state);
+    const candidates = pickStarterDiscoveryCandidates(categories);
+    setDiscoveredCats(categories);
+    setSelectedDiscovered(candidates);
+
+    for (const source of candidates) {
       try {
-        await addSource(source.name, source.url, source.type, source.tier);
+        await addSource(source.name, source.url, source.type, tierForSourceType(source.type));
         imported++;
       } catch (err) {
         console.warn("Starter source import skipped:", source.url, err);
@@ -473,7 +384,17 @@ export function useApp() {
       const city = (profile.city || "").trim();
       const state = (profile.state || "").trim().toUpperCase();
       const isRecovered = recovered === "true";
-      const isLongmont = city.toLowerCase() === "longmont" && state === "CO";
+
+      if (!city || !state) {
+        if (isRecovered) {
+          await setSetting("setup.recovered_input", "consumed");
+        } else {
+          await setSetting("setup.first_run_intake", "consumed");
+        }
+        setStatusMessage("Setup is complete. Add your city and state in Settings, then use Discover for my city on Sources.");
+        setActiveTab("sources");
+        return;
+      }
 
       if (isRecovered) {
         await setSetting("setup.recovered_input", "running_source_intake");
@@ -483,31 +404,31 @@ export function useApp() {
       setActiveTab("sources");
       setStatusMessage(
         isRecovered
-          ? "Setup had to recover from missing input events, so The Civic Desk is adding starter Longmont sources and running the first scan automatically."
-          : "Adding starter Longmont sources for the first run."
+          ? `Setup had to recover from missing input events, so The Civic Desk is discovering starter sources for ${city}, ${state} and running the first scan automatically.`
+          : `Discovering starter sources for ${city}, ${state} for the first run.`
       );
       setLoading(true);
 
-      if (!isLongmont) {
+      const imported = await addStarterSourcesForCommunity(city, state);
+      await loadInitialData();
+      if (imported === 0) {
         if (isRecovered) {
           await setSetting("setup.recovered_input", "consumed");
         } else {
           await setSetting("setup.first_run_intake", "consumed");
         }
-        setStatusMessage("Setup is complete. Use Discover for my city on Sources to add local feeds.");
+        setStatusMessage(`No starter sources could be imported automatically for ${city}, ${state}. Use Discover for my city on Sources or import a source list.`);
         setActiveTab("sources");
         return;
       }
 
-      const imported = await addStarterLongmontSources();
-      await loadInitialData();
       if (isRecovered) {
-        setStatusMessage(`Added ${imported} starter Longmont source(s). Fetching records and community signals...`);
+        setStatusMessage(`Added ${imported} starter source(s) for ${city}, ${state}. Fetching records and community signals...`);
         await ingest();
         await loadInitialData();
         setActiveTab("dailyScan");
-        setStatusMessage("Running the first Longmont Daily Scan automatically...");
-        const scanId = await runDailyScan("Longmont", "CO", 24);
+        setStatusMessage(`Running the first ${city} Daily Scan automatically...`);
+        const scanId = await runDailyScan(city, state, 24);
         setLatestScanId(scanId);
         await setSetting("scan.latest_id", String(scanId));
         await setSetting("setup.recovered_input", "consumed");
@@ -517,7 +438,7 @@ export function useApp() {
       } else {
         await setSetting("setup.first_run_intake", "consumed");
         setActiveTab("dailyScan");
-        setStatusMessage(`Added ${imported} starter Longmont source(s). Run Daily Scan to fetch records and build the first editor packet.`);
+        setStatusMessage(`Added ${imported} starter source(s) for ${city}, ${state}. Run Daily Scan to fetch records and build the first editor packet.`);
       }
     } catch (err) {
       console.error("Failed to consume first-run source intake flag", err);

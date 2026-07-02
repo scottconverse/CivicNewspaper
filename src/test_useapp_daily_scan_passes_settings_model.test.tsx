@@ -570,7 +570,7 @@ describe("useApp Hook Tests", () => {
     expect(hookResult.errorMessage).toContain("evidence unavailable");
   });
 
-  test("complete onboarding seeds Longmont starter sources for first run", async () => {
+  test("complete onboarding imports discovered starter sources for the configured city", async () => {
     const settings = new Map<string, string | null>();
     const addSourceCalls: any[] = [];
 
@@ -578,10 +578,37 @@ describe("useApp Hook Tests", () => {
       if (cmd === "is_onboarding_complete") return false;
       if (cmd === "get_queue") return { leads: [], drafts: [] };
       if (cmd === "get_sources") return [];
-      if (cmd === "get_community_profile") return { city: "Longmont", state: "CO" };
+      if (cmd === "get_community_profile") return { city: "Brighton", state: "CO" };
       if (cmd === "list_paired_clients") return [];
       if (cmd === "get_system_ram") return 16;
       if (cmd === "ollama_health") return { reachable: true, models: ["qwen2.5:7b"], version: "0.6.0" };
+      if (cmd === "discover_sources") {
+        expect(args).toEqual({ city: "Brighton", state: "CO" });
+        return [
+          {
+            category_name: "Municipal Website",
+            type: "primary_record",
+            candidates: [
+              { name: "Brighton official city website", url: "https://www.brightonco.gov/", type: "primary_record" },
+              { name: "Generic search result", url: "https://example.com/search", type: "primary_record" },
+            ],
+          },
+          {
+            category_name: "Local Newspaper Headlines",
+            type: "media_lead",
+            candidates: [
+              { name: "Brighton local newsroom", url: "https://news.example/brighton", type: "media_lead" },
+            ],
+          },
+          {
+            category_name: "Local Reddit Community",
+            type: "community_signal",
+            candidates: [
+              { name: "Brighton forum", url: "https://www.reddit.com/r/brightonco/", type: "community_signal" },
+            ],
+          },
+        ];
+      }
       if (cmd === "get_setting") return settings.get(args.key) ?? null;
       if (cmd === "set_setting") {
         settings.set(args.key, args.value);
@@ -609,16 +636,28 @@ describe("useApp Hook Tests", () => {
     });
 
     expect(settings.get("setup.first_run_intake")).toBe("consumed");
-    expect(addSourceCalls).toHaveLength(19);
-    expect(addSourceCalls.map(call => call.name)).toContain("Longmont Public Information");
-    expect(addSourceCalls.map(call => call.name)).toContain("Longmont Leader local news");
-    expect(addSourceCalls.find(call => call.name === "Longmont Leader local news")?.tier).toBe("news_reporting");
-    expect(addSourceCalls.map(call => call.name)).toContain("Visit Longmont events");
-    expect(addSourceCalls.map(call => call.name)).toContain("Downtown Longmont events");
-    expect(addSourceCalls.map(call => call.name)).toContain("Longmont Public Safety Facebook");
-    expect(addSourceCalls.map(call => call.name)).toContain("Longmont city YouTube");
+    expect(addSourceCalls).toEqual([
+      {
+        name: "Brighton official city website",
+        url: "https://www.brightonco.gov/",
+        type: "primary_record",
+        tier: "official_record",
+      },
+      {
+        name: "Brighton local newsroom",
+        url: "https://news.example/brighton",
+        type: "media_lead",
+        tier: "news_reporting",
+      },
+      {
+        name: "Brighton forum",
+        url: "https://www.reddit.com/r/brightonco/",
+        type: "community_signal",
+        tier: "community_signal",
+      },
+    ]);
     expect(screen.getByTestId("active-tab")).toHaveTextContent("dailyScan");
-    expect(hookResult.statusMessage).toContain("starter Longmont source");
+    expect(hookResult.statusMessage).toContain("starter source(s) for Brighton, CO");
   });
 
   test("improve for publication preflights selected model and sanitizes unsupported evidence citations", async () => {

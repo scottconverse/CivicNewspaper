@@ -27,8 +27,16 @@ export default defineConfig(async () => ({
         }
       : undefined,
     watch: {
-      // 3. tell Vite to ignore watching `src-tauri`
-      ignored: ["**/src-tauri/**"],
+      // 3. tell Vite to ignore generated verifier/audit output and native build
+      // artifacts. Windows file locking can crash the watcher if these are
+      // written while UI smoke is running.
+      ignored: [
+        "**/.agent-runs/**",
+        "**/audit-*/**",
+        "**/src-tauri/**",
+        "**/dist/**",
+        "**/release-artifacts/**",
+      ],
     },
   },
 }));

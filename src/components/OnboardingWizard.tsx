@@ -35,7 +35,6 @@ const MODEL_DOWNLOAD_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 6000;
 const MODEL_READY_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 5000;
 const FINAL_SETUP_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 3000;
 const IDENTITY_PREFILL_RESCUE_MS = import.meta.env.MODE === "test" ? 5000 : 10000;
-const IDENTITY_CONTINUE_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 3000;
 const RUNTIME_INSTALL_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 4000;
 
 // Approximate one-time download sizes, sourced from models.json so the wizard
@@ -160,7 +159,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const [initError, setInitError] = useState<string | null>(null);
   const [setupNotice, setSetupNotice] = useState<string | null>(null);
   const [setupRecoveryActive, setSetupRecoveryActive] = useState(false);
-  const [identityPrefillRecovered, setIdentityPrefillRecovered] = useState(false);
 
   const steps = [
     { title: "Identity", desc: "Define your local news outlet name and mission." },
@@ -196,7 +194,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
   const markIdentityInteraction = () => {
     identityUserInteractedRef.current = true;
-    setIdentityPrefillRecovered(false);
   };
 
   const currentIdentityValues = () => ({
@@ -761,37 +758,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       }
 
       identityPrefillRescueAttemptedRef.current = true;
-      applyIdentityValues(starterProfiles[0]);
-      setSetupRecoveryActive(true);
-      setIdentityPrefillRecovered(true);
-      setSetupNotice("The Longmont starter profile was filled automatically because setup did not receive input. Setup will continue automatically. You can use Back on the next step to edit these fields.");
+      setSetupNotice("Setup is not receiving identity input yet. Choose a starter profile, type your city and state, or use Tab and Enter to continue with fields you control.");
     }, IDENTITY_PREFILL_RESCUE_MS);
 
     return () => window.clearTimeout(timer);
   }, [step, pubName, editorName, city, state]);
-
-  useEffect(() => {
-    if (
-      step !== 1 ||
-      !identityPrefillRecovered ||
-      identityUserInteractedRef.current
-    ) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      if (
-        step !== 1 ||
-        !identityPrefillRecovered ||
-        identityUserInteractedRef.current
-      ) {
-        return;
-      }
-      void advanceIdentityStep(starterProfiles[0]);
-    }, IDENTITY_CONTINUE_RESCUE_MS);
-
-    return () => window.clearTimeout(timer);
-  }, [step, identityPrefillRecovered]);
 
   useEffect(() => {
     if (step === 1) {

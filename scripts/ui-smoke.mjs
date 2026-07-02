@@ -161,6 +161,11 @@ async function main() {
       if (!isVisibleInViewport) {
         throw new Error(`Mobile nav-${navId} content is not visible in the viewport`);
       }
+      const headingTop = await target.evaluate((node) => node.getBoundingClientRect().top);
+      const viewportHeight = page.viewportSize()?.height ?? 844;
+      if (headingTop > viewportHeight * 0.7) {
+        throw new Error(`Mobile nav-${navId} active content starts too low in the first viewport: ${headingTop}px`);
+      }
       results.push({ name: `mobile-nav-${navId}`, ok: true });
     }
     await page.screenshot({ path: path.join(runDir, "mobile-navigation.png"), fullPage: true });

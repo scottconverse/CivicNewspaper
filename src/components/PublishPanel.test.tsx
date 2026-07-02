@@ -441,16 +441,35 @@ describe("PublishPanel Component Tests", () => {
     fireEvent.click(screen.getByRole("button", { name: /Publish to here.now/i }));
     expect(handlePublishWithConnector).toHaveBeenCalledWith("here_now", "", "");
 
+    fireEvent.change(screen.getByLabelText(/here.now slug/i), {
+      target: { value: "town-civic-paper" },
+    });
+    expect(screen.getByRole("button", { name: /Publish to here.now/i })).toBeDisabled();
+    expect(screen.getByText(/account-owned here.now target/i)).toBeInTheDocument();
+
     rerender(
       <PublishPanel
         publishPath={"C:\\my-site"}
         publishResult={publishResult}
         {...defaultPublisherProps}
+        publisherConfig={{
+          provider: "here_now",
+          display_name: "Town here.now",
+          site_url: null,
+          project_hint: null,
+          site_id: "town-civic-paper",
+          account_id: null,
+          repo: null,
+          branch: null,
+          path_prefix: null,
+          username: null,
+          has_credential: true,
+        }}
         publisherTestResult={{
           provider: "here_now",
           ok: true,
-          message: "Preview publishing is available.",
-          credential_checked: false,
+          message: "here.now accepted the saved API key.",
+          credential_checked: true,
         }}
         onPublishWithConnector={handlePublishWithConnector}
         onPublishPathChange={vi.fn()}

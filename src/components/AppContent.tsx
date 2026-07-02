@@ -24,15 +24,19 @@ interface AppContentProps {
 export const AppContent: React.FC<AppContentProps> = ({ app }) => {
   const [extensionFolderStatus, setExtensionFolderStatus] = React.useState("");
   const [extensionFolderPath, setExtensionFolderPath] = React.useState("");
+  const [dailyScanQueueNotice, setDailyScanQueueNotice] = React.useState<string>("");
 
   const openDailyScanLeadInWorkbench = React.useCallback((scanLead: DailyScanLead) => {
     const queueLead = (app.leads ?? []).find((lead: any) => lead.from_scan_lead_id === scanLead.id);
     if (queueLead) {
+      setDailyScanQueueNotice("");
       app.handleOpenDraftWizard(queueLead);
       return;
     }
     app.setActiveTab("queue");
-    app.setStatusMessage("Open this scan result from Story Queue after the scan saves the matching lead and evidence.");
+    setDailyScanQueueNotice(
+      `The scan result "${scanLead.title}" is not linked to a saved Story Queue item yet. Refresh the queue or choose the matching lead manually; no disconnected draft was created.`
+    );
   }, [app.leads, app.handleOpenDraftWizard, app.setActiveTab, app.setStatusMessage]);
 
   // UX-C2: auto-dismiss success banners so a stale "success" message doesn't
@@ -147,24 +151,37 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
             firstAmendmentAdvisorEnabled={app.communityProfile?.first_amendment_advisor_enabled !== false}
           />
         ) : (
-          <LeadQueue
-            leads={app.leads}
-            drafts={app.drafts}
-            loading={app.loading}
-            latestScanId={app.latestScanId}
-            sourceCount={app.sources.length}
-            onGoToSources={() => app.setActiveTab("sources")}
-            onSelect={(id, selectedLead) => {
-              const lead = selectedLead || app.leads.find((item: any) => item.id === id);
-              if (lead) app.handleOpenDraftWizard(lead);
-            }}
-            onSyncList={app.loadInitialData}
-            onIngest={app.handleIngest}
-            onDailyScan={app.handleDailyScan}
-            onOpenDraftEditor={app.handleOpenDraftEditor}
-            onOpenCorrectionModal={app.openCorrectionModal}
-            onDeleteDraft={app.handleDeleteDraft}
-          />
+          <>
+            {dailyScanQueueNotice && (
+              <div className="card" role="status" aria-live="polite" style={{ borderLeft: "4px solid var(--accent-primary)", background: "rgba(48, 92, 184, 0.06)" }}>
+                <div className="flex-between">
+                  <span style={{ fontSize: "0.9rem", color: "var(--text-primary)" }}>{dailyScanQueueNotice}</span>
+                  <button className="btn btn-secondary btn-sm" onClick={() => setDailyScanQueueNotice("")}>Dismiss</button>
+                </div>
+              </div>
+            )}
+            <LeadQueue
+              leads={app.leads}
+              drafts={app.drafts}
+              loading={app.loading}
+              latestScanId={app.latestScanId}
+              sourceCount={app.sources.length}
+              onGoToSources={() => app.setActiveTab("sources")}
+              onSelect={(id, selectedLead) => {
+                const lead = selectedLead || app.leads.find((item: any) => item.id === id);
+                if (lead) {
+                  setDailyScanQueueNotice("");
+                  app.handleOpenDraftWizard(lead);
+                }
+              }}
+              onSyncList={app.loadInitialData}
+              onIngest={app.handleIngest}
+              onDailyScan={app.handleDailyScan}
+              onOpenDraftEditor={app.handleOpenDraftEditor}
+              onOpenCorrectionModal={app.openCorrectionModal}
+              onDeleteDraft={app.handleDeleteDraft}
+            />
+          </>
         )
       )}
 

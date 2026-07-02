@@ -6,7 +6,7 @@ Thanks for considering a contribution. CivicNewspaper is in public beta; the mos
 
 - The project is single-editor, local-first, no-cloud. Contributions that add cloud dependencies, telemetry, or analytics will be rejected.
 - Source links and presumption-of-innocence guardrails should help editors make better decisions, but the software must not replace editor judgment or veto publication.
-- Ollama is bundled as a sidecar binary; contributors should not introduce additional vendored binaries without director approval. No bundled model weights.
+- CivicNewspaper uses app-managed local AI setup. The public-beta build does not require a committed Ollama sidecar binary or bundled model weights. Contributors should not introduce vendored binaries, model weights, telemetry, or cloud dependencies without prior maintainer approval.
 
 ## Development setup
 
@@ -16,29 +16,30 @@ See the "Building from source" section of [README.md](README.md) for prerequisit
 git clone https://github.com/scottconverse/CivicNewspaper.git
 cd CivicNewspaper
 npm install
-bash scripts/fetch-ollama-binaries.sh   # REQUIRED: downloads + SHA-verifies the Ollama sidecar; build fails without it. Bash-only (Git Bash/WSL on Windows).
 npm run tauri dev
 ```
 
-For backend-only work you can run the Rust tests without launching Tauri (no running Ollama is needed) — but you must still have run the `fetch-ollama-binaries.sh` step above first, because Tauri's build script validates the sidecar binary's presence even for `cargo test`:
+For backend-only work you can run the Rust tests without launching Tauri and without a running Ollama service:
 
 ```bash
 cd src-tauri
 cargo test
 ```
 
+`scripts/fetch-ollama-binaries.sh` is a legacy/policy helper retained for pinned runtime metadata checks. It is not a required source-build step for the v0.3.x public-beta path. First-run setup in the app handles local AI runtime/model setup with user-visible progress.
+
 ## Where to start
 
 ### Easy: improve a detector regex
 
-`src-tauri/src/core/detectors.rs` defines eight regex-based detectors. Each one is a single `Regex::new(...)` line. If your local government uses phrasing the current regexes miss, that's a real bug — open a PR that:
+`src-tauri/src/core/detectors.rs` defines eight regex-based detectors. Each one is a single `Regex::new(...)` line. If your local government uses phrasing the current regexes miss, that's a real bug - open a PR that:
 1. Adds your phrase to the regex.
 2. Adds a unit test in `src-tauri/src/core/tests.rs` exercising your phrase.
 3. Includes a one-line note in the PR description naming the municipality (so reviewers can sanity-check that the term is genuinely civic boilerplate, not editorial language).
 
 ### Easy: improve a guardrail keyword
 
-`src-tauri/src/core/guardrails.rs` has a hard-coded `accusatory_words` list. If your editorial judgment says a word belongs in or out, open an issue first to discuss — this list is editorial policy, not just code.
+`src-tauri/src/core/guardrails.rs` has a hard-coded `accusatory_words` list. If your editorial judgment says a word belongs in or out, open an issue first to discuss - this list is editorial policy, not just code.
 
 ### Medium: New LLM-Backed Features and the LlmClient Trait
 
@@ -53,7 +54,7 @@ The frontend utilizes modular components. Pulling out or improving reusable piec
 
 ### Harder: real NLP for detectors
 
-The current detector layer is regex. There is a credible case for layering a small local NER model on top — but the bar is high. A proposal-stage issue should answer:
+The current detector layer is regex. There is a credible case for layering a small local NER model on top - but the bar is high. A proposal-stage issue should answer:
 - What model, what footprint, what latency?
 - How does it degrade on machines that can't run it?
 - How is it kept honest (regression tests against the existing regex outputs)?

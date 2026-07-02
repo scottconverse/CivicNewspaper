@@ -3751,7 +3751,7 @@ I should produce JSON only.
                 display_name: "Town here.now".to_string(),
                 site_url: None,
                 project_hint: Some("Instant civic publishing".to_string()),
-                site_id: Some("town-civic-paper".to_string()),
+                site_id: None,
                 account_id: None,
                 repo: None,
                 branch: None,
@@ -3760,6 +3760,79 @@ I should produce JSON only.
                 has_credential: false,
             })
             .unwrap();
+    }
+
+    #[test]
+    fn test_here_now_slug_requires_saved_credential() {
+        let connector = crate::core::publisher::publisher_for("here_now").unwrap();
+        let result = connector.validate_config(&crate::core::publisher::PublisherConfig {
+            provider: "here_now".to_string(),
+            display_name: "Town here.now".to_string(),
+            site_url: None,
+            project_hint: Some("Permanent civic publishing".to_string()),
+            site_id: Some("town-civic-paper".to_string()),
+            account_id: None,
+            repo: None,
+            branch: None,
+            path_prefix: None,
+            username: None,
+            has_credential: false,
+        });
+
+        assert!(result.is_err());
+        assert!(result
+            .unwrap_err()
+            .contains("Save a here.now API key before publishing to an existing slug"));
+    }
+
+    #[test]
+    fn test_github_manifest_cleanup_rejects_non_generated_paths() {
+        let manifest = serde_json::json!({
+            "generated_files": [
+                "index.html",
+                "stories/1.html",
+                "README.md",
+                "../secret.txt"
+            ]
+        });
+
+        let result = crate::core::publisher::owned_github_generated_remote_files_from_manifest(
+            &manifest,
+            "docs",
+        );
+
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("non-generated path"));
+    }
+
+    #[test]
+    fn test_github_manifest_cleanup_scopes_generated_paths_to_prefix() {
+        let manifest = serde_json::json!({
+            "generated_files": [
+                "index.html",
+                "feed.xml",
+                "watch/1.html",
+                "stories/2.html",
+                "publish-manifest.json"
+            ]
+        });
+
+        let paths = crate::core::publisher::owned_github_generated_remote_files_from_manifest(
+            &manifest,
+            "docs",
+        )
+        .unwrap();
+
+        assert_eq!(
+            paths,
+            vec![
+                "docs/index.html",
+                "docs/feed.xml",
+                "docs/watch/1.html",
+                "docs/stories/2.html",
+                "docs/publish-manifest.json"
+            ]
+        );
     }
 
     #[tokio::test]

@@ -155,6 +155,12 @@ impl Publisher for HttpPublisher {
                 if let Some(slug) = config.site_id.as_deref() {
                     validate_herenow_slug(slug)?;
                 }
+                if herenow_slug(config).is_some() && !config.has_credential {
+                    return Err(
+                        "Save a here.now API key before publishing to an existing slug. Leave the slug blank for an anonymous preview."
+                            .to_string(),
+                    );
+                }
             }
             PublisherProvider::Netlify => {
                 required_field("Netlify site ID", config.site_id.as_deref())?;
@@ -186,7 +192,7 @@ impl Publisher for HttpPublisher {
     }
 
     async fn test_connection(&self, config: &PublisherConfig) -> PublisherTestResult {
-        let credential_checked = self.provider.requires_credential();
+        let credential_checked = requires_credential_for_config(&self.provider, config);
         if let Err(message) = self.validate_config(config) {
             return test_result(self.provider.as_str(), false, message, credential_checked);
         }
@@ -228,6 +234,14 @@ impl Publisher for HttpPublisher {
             return Err("Publisher request provider does not match connector.".to_string());
         }
         self.validate_config(config)?;
+        if requires_credential_for_config(&self.provider, config)
+            && !has_provider_credential(self.provider.as_str())
+        {
+            return Err(
+                "Save the required provider credential before publishing with this connector."
+                    .to_string(),
+            );
+        }
         validate_publish_artifacts(&request.output_dir)?;
         match self.provider {
             PublisherProvider::HereNow => publish_herenow(config, request).await,
@@ -297,6 +311,23 @@ fn validate_common_config(
         validate_public_url(url)?;
     }
     Ok(())
+}
+
+fn herenow_slug(config: &PublisherConfig) -> Option<String> {
+    config
+        .site_id
+        .as_deref()
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .map(str::to_string)
+}
+
+fn requires_credential_for_config(
+    provider: &PublisherProvider,
+    config: &PublisherConfig,
+) -> bool {
+    provider.requires_credential()
+        || (matches!(provider, PublisherProvider::HereNow) && herenow_slug(config).is_some())
 }
 
 fn validate_repo(value: Option<&str>) -> Result<String, String> {
@@ -506,7 +537,7 @@ fn validate_herenow_slug(value: &str) -> Result<String, String> {
     }
 }
 
-async fn test_herenow(_config: &PublisherConfig) -> Result<String, String> {
+async fn test_herenow(config: &PublisherConfig) -> Result<String, String> {
     if let Some(token) = get_provider_credential(PublisherProvider::HereNow.as_str())? {
         let response = http_client()?
             .get(format!("{HERENOW_API_BASE}/api/v1/publishes"))
@@ -522,6 +553,8 @@ async fn test_herenow(_config: &PublisherConfig) -> Result<String, String> {
                 response.status()
             ))
         }
+    } else if herenow_slug(config).is_some() {
+        Err("Save a here.now API key before testing or publishing to an existing slug.".to_string())
     } else {
         Ok("here.now is ready for temporary preview publishing. Save an API key for permanent sites.".to_string())
     }
@@ -632,13 +665,15 @@ async fn publish_herenow(
     };
     let client = http_client()?;
     let token = get_provider_credential(PublisherProvider::HereNow.as_str())?;
-    let slug = config
-        .site_id
-        .as_deref()
-        .map(str::trim)
-        .filter(|v| !v.is_empty());
-    if let Some(slug) = slug {
+    let slug = herenow_slug(config);
+    if let Some(slug) = slug.as_deref() {
         validate_herenow_slug(slug)?;
+        if token.is_none() {
+            return Err(
+                "Save a here.now API key before publishing to an existing slug. Leave the slug blank for an anonymous preview."
+                    .to_string(),
+            );
+        }
     }
     let mut create_request = if let Some(slug) = slug {
         client.put(format!("{HERENOW_API_BASE}/api/v1/publish/{slug}"))
@@ -988,15 +1023,72 @@ async fn previous_github_generated_files(
     };
     let manifest: serde_json::Value = serde_json::from_slice(&contents)
         .map_err(|e| format!("Could not read previous publish manifest: {e}"))?;
+    owned_github_generated_remote_files_from_manifest(&manifest, prefix)
+}
+
+fn github_generated_path_allowed(relative_path: &str) -> bool {
+    let normalized = relative_path.replace('\\', "/");
+    if normalized.is_empty()
+        || normalized.starts_with('/')
+        || normalized.contains("//")
+        || normalized
+            .split('/')
+            .any(|segment| segment.is_empty() || segment == "." || segment == "..")
+    {
+        return false;
+    }
+
+    let mut parts = normalized.split('/');
+    let first = parts.next().unwrap_or_default();
+    let rest: Vec<&str> = parts.collect();
+    if rest.is_empty() {
+        return matches!(
+            first,
+            ".civicdesk-output"
+                | "index.html"
+                | "styles.css"
+                | "print.css"
+                | "corrections.html"
+                | "feed.xml"
+                | "newsletter.md"
+                | "substack.md"
+                | "share-package.md"
+                | "facebook-post.txt"
+                | "subreddit-post.md"
+                | "nextdoor-post.txt"
+                | "short-link-blurb.txt"
+                | "publish-manifest.json"
+                | "site-package.zip"
+        );
+    }
+
+    matches!(
+        first,
+        "briefs" | "stories" | "watch" | "explainers" | "opinions" | "corrections"
+    ) && rest.iter().all(|segment| segment.ends_with(".html"))
+}
+
+pub(crate) fn owned_github_generated_remote_files_from_manifest(
+    manifest: &serde_json::Value,
+    prefix: &str,
+) -> Result<Vec<String>, String> {
     let generated = manifest
         .get("generated_files")
         .and_then(|value| value.as_array())
         .ok_or_else(|| "Previous publish manifest does not list generated files.".to_string())?;
-    Ok(generated
-        .iter()
-        .filter_map(|value| value.as_str())
-        .map(|path| remote_path(prefix, Path::new(path)))
-        .collect())
+    let mut safe_paths = Vec::new();
+    for value in generated {
+        let path = value.as_str().ok_or_else(|| {
+            "Previous publish manifest contains a non-string file path.".to_string()
+        })?;
+        if !github_generated_path_allowed(path) {
+            return Err(format!(
+                "Previous publish manifest contains unsafe or non-generated path `{path}`; stale cleanup was skipped."
+            ));
+        }
+        safe_paths.push(remote_path(prefix, Path::new(path)));
+    }
+    Ok(safe_paths)
 }
 
 async fn get_github_file(

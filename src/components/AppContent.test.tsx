@@ -1,5 +1,6 @@
 // src/components/AppContent.test.tsx
 import { act, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, test, expect, vi } from "vitest";
 import { AppContent } from "./AppContent";
 
@@ -12,6 +13,16 @@ vi.mock("./PublishPanel", () => ({
 }));
 vi.mock("./LeadQueue", () => ({
   LeadQueue: () => <div data-testid="lead-queue">Lead Queue Mock</div>
+}));
+vi.mock("./DailyScanPage", () => ({
+  DailyScanPage: ({ onOpenLead }: { onOpenLead: (lead: any) => void }) => (
+    <button
+      type="button"
+      onClick={() => onOpenLead({ id: 44, title: "Public hearing" })}
+    >
+      Mock open scan lead
+    </button>
+  )
 }));
 vi.mock("./Workbench", () => ({
   Workbench: ({ selectedLead }: { selectedLead: any }) => (
@@ -35,6 +46,13 @@ describe("AppContent Component Tests", () => {
     handleBackupSave: vi.fn(),
     handleBackupRestore: vi.fn(),
     handlePublish: vi.fn(),
+    setActiveTab: vi.fn(),
+    handleOpenDraftWizard: vi.fn(),
+    setStatusMessage: vi.fn(),
+    setErrorMessage: vi.fn(),
+    leads: [],
+    drafts: [],
+    sources: [],
   });
 
   test("renders settings panel when activeTab is settings", () => {
@@ -89,5 +107,26 @@ describe("AppContent Component Tests", () => {
       HTMLElement.prototype.focus = originalFocus;
       vi.useRealTimers();
     }
+  });
+
+  test("keeps Daily Scan fallback guidance visible in Story Queue when no matching lead exists", async () => {
+    const mockApp = {
+      ...makeMockApp("dailyScan"),
+      latestScanId: 3,
+      setActiveTab: vi.fn((tab: string) => {
+        mockApp.activeTab = tab;
+      }),
+    };
+
+    const { rerender } = render(<AppContent app={mockApp} />);
+    await userEvent.click(screen.getByRole("button", { name: /Mock open scan lead/i }));
+
+    expect(mockApp.setActiveTab).toHaveBeenCalledWith("queue");
+    mockApp.activeTab = "queue";
+    rerender(<AppContent app={mockApp} />);
+
+    expect(screen.getByText(/Public hearing/)).toBeInTheDocument();
+    expect(screen.getByText(/no disconnected draft was created/i)).toBeInTheDocument();
+    expect(screen.getByTestId("lead-queue")).toBeInTheDocument();
   });
 });

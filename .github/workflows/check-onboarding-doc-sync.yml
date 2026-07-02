@@ -7,16 +7,8 @@ concurrency:
 on:
   push:
     branches: [ "main", "v*" ]
-    paths-ignore:
-      - "**/*.md"
-      - "docs/**"
-      - "audit-*/**"
   pull_request:
     branches: [ "main", "v*" ]
-    paths-ignore:
-      - "**/*.md"
-      - "docs/**"
-      - "audit-*/**"
 
 jobs:
   check-sync:
@@ -50,3 +42,6 @@ jobs:
           done
 
           echo "OK: Onboarding Wizard code and docs are fully synchronized!"
+
+      - name: Verify release documentation consistency
+        run: python scripts/policy/check_release_docs_consistency.py

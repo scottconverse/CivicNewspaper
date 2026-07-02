@@ -157,12 +157,12 @@ describe("OnboardingWizard Component Tests", () => {
       return Promise.resolve();
     });
 
-    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} initialStep={2} />);
 
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
     const installButton = await screen.findByRole("button", { name: /Install local AI runtime/i });
-    const cleanMachineCopy = await screen.findByText(/On a clean machine/i);
+    const cleanMachineCopy = await screen.findByText(/clean machine/i);
 
     expect(Boolean(installButton.compareDocumentPosition(cleanMachineCopy) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
   });
@@ -179,7 +179,7 @@ describe("OnboardingWizard Component Tests", () => {
       return Promise.resolve();
     });
 
-    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} initialStep={2} />);
 
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
     await screen.findByRole("button", { name: /Install local AI runtime/i });
@@ -353,7 +353,7 @@ describe("OnboardingWizard Component Tests", () => {
     });
   });
 
-  test("identity setup pre-fills Longmont after no input is received", async () => {
+  test("identity setup warns after no input without choosing a city for the user", async () => {
     vi.useFakeTimers();
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
@@ -371,15 +371,18 @@ describe("OnboardingWizard Component Tests", () => {
       await vi.advanceTimersByTimeAsync(5000);
     });
 
-    expect(screen.getByLabelText("Publication Name")).toHaveValue("My Local Publication");
-    expect(screen.getByLabelText("Editor Name")).toHaveValue("Publisher");
-    expect(screen.getByLabelText("City")).toHaveValue("Longmont");
-    expect(screen.getByLabelText("State")).toHaveValue("CO");
+    expect(screen.getByLabelText("Publication Name")).toHaveValue("");
+    expect(screen.getByLabelText("Editor Name")).toHaveValue("");
+    expect(screen.getByLabelText("City")).toHaveValue("");
+    expect(screen.getByLabelText("State")).toHaveValue("");
     expect(screen.getByText("Step 1 of 5")).toBeInTheDocument();
-    expect(screen.getByText(/Longmont starter profile was filled automatically/i)).toBeInTheDocument();
+    expect(screen.getByText(/choose a starter profile, type your city and state/i)).toBeInTheDocument();
+    expect(invokeMock).not.toHaveBeenCalledWith("set_setting", expect.objectContaining({
+      key: "identity.city",
+    }));
   });
 
-  test("identity setup continues after no-input recovery and persists Longmont identity", async () => {
+  test("identity setup does not continue after no-input warning without an explicit identity", async () => {
     vi.useFakeTimers();
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
@@ -409,18 +412,14 @@ describe("OnboardingWizard Component Tests", () => {
       await vi.advanceTimersByTimeAsync(50);
     });
 
-    expect(screen.getByText("Step 2 of 5")).toBeInTheDocument();
-    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+    expect(screen.getByText("Step 1 of 5")).toBeInTheDocument();
+    expect(invokeMock).not.toHaveBeenCalledWith("set_setting", expect.objectContaining({
       key: "identity.city",
-      value: "Longmont",
-    });
-    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
-      key: "identity.state",
-      value: "CO",
-    });
+    }));
+    expect(handleComplete).not.toHaveBeenCalled();
   });
 
-  test("no-input recovery starts product-owned runtime install on offline Step 2", async () => {
+  test("no-input warning does not start product-owned runtime install before identity is explicit", async () => {
     vi.useFakeTimers();
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
@@ -450,14 +449,9 @@ describe("OnboardingWizard Component Tests", () => {
     await act(async () => {
       await vi.advanceTimersByTimeAsync(50);
     });
-    expect(screen.getByText("Step 2 of 5")).toBeInTheDocument();
-
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(50);
-    });
-
-    expect(invokeMock).toHaveBeenCalledWith("install_ollama_runtime");
-    expect(screen.getByText(/installing the local AI runtime automatically/i)).toBeInTheDocument();
+    expect(screen.getByText("Step 1 of 5")).toBeInTheDocument();
+    expect(invokeMock).not.toHaveBeenCalledWith("install_ollama_runtime");
+    expect(screen.getByText(/choose a starter profile, type your city and state/i)).toBeInTheDocument();
     vi.useRealTimers();
   });
 
@@ -485,7 +479,7 @@ describe("OnboardingWizard Component Tests", () => {
 
     expect(screen.getByLabelText("Publication Name")).toHaveValue("Boulder Beat");
     expect(screen.getByLabelText("City")).toHaveValue("");
-    expect(screen.queryByText(/Longmont starter profile was filled automatically/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/choose a starter profile, type your city and state/i)).not.toBeInTheDocument();
   });
 
   test("identity setup waits for explicit user input instead of auto-continuing", async () => {
@@ -606,9 +600,10 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(handleComplete).toHaveBeenCalled());
   });
 
-  test("recovered runtime install starts model download automatically", async () => {
+  test("manual runtime install starts model download after app-managed setup", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
+    const user = userEvent.setup();
     let runtimeInstalled = false;
 
     invokeMock.mockImplementation((cmd: string) => {
@@ -632,8 +627,9 @@ describe("OnboardingWizard Component Tests", () => {
       return Promise.resolve();
     });
 
-    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} initialStep={2} />);
 
+    await user.click(await screen.findByRole("button", { name: /Install local AI runtime/i }));
     await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("install_ollama_runtime"), { timeout: 7000 });
     await waitFor(() => expect(screen.getByText("Step 3 of 5")).toBeInTheDocument(), { timeout: 7000 });
     await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("pull_ollama_model", { modelId: "phi4-mini:latest" }), { timeout: 7000 });

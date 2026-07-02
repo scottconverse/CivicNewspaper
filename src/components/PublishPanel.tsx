@@ -186,7 +186,9 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   const setupGuide = SETUP_GUIDES[provider] ?? SETUP_GUIDES.other;
   const connectorTestPassed = publisherTestResult?.provider === provider && publisherTestResult.ok;
   const connectorDisabled = provider === "cloudflare_pages";
-  const connectorPublishAllowed = !connectorDisabled && (connectorTestPassed || provider === "here_now");
+  const hereNowSlugRequiresCredential = provider === "here_now" && siteId.trim().length > 0;
+  const connectorPublishAllowed =
+    !connectorDisabled && (provider === "here_now" ? !hereNowSlugRequiresCredential || connectorTestPassed : connectorTestPassed);
   const leadArticle = publishResult?.articles?.[0];
   const substackHeadline = leadArticle?.title || publishResult?.issue_id || "The Civic Desk update";
   const substackDeck = publishResult
@@ -293,6 +295,10 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
       setError(noApprovedStoriesMessage);
       return;
     }
+    if (hereNowSlugRequiresCredential && !connectorTestPassed) {
+      setError("Save and test a here.now API key before publishing to an existing slug. Leave the slug blank for an anonymous preview.");
+      return;
+    }
     setError("");
     onPublishWithConnector(provider, publishedUrl, deploymentId);
   };
@@ -333,7 +339,9 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
   const providerCredentialPlaceholder = publisherConfig?.has_credential
     ? "credential saved; enter a new one to replace"
     : provider === "here_now"
-      ? "optional for permanent here.now sites"
+      ? siteId.trim()
+        ? "required for an existing here.now slug"
+        : "optional; leave blank for anonymous preview"
       : provider === "cloudflare_pages"
       ? "Cloudflare API publishing is disabled in this beta"
       : provider === "substack"
@@ -689,7 +697,9 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                 )}
                 {provider === "here_now" && !connectorTestPassed && (
                   <p className="help-text" style={{ marginTop: "0.35rem" }}>
-                    here.now can publish a temporary anonymous preview without a saved API key. Save and test an API key only for permanent account-owned sites.
+                    {hereNowSlugRequiresCredential
+                      ? "This slug is an account-owned here.now target. Save and test an API key before publishing to it, or clear the slug for a temporary anonymous preview."
+                      : "here.now can publish a temporary anonymous preview without a saved API key. Save and test an API key only for permanent account-owned sites."}
                   </p>
                 )}
                 {publishResult.published_url && (
@@ -718,9 +728,15 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                     id="input-publisher-site-id"
                     type="text"
                     value={siteId}
-                    onChange={event => setSiteId(event.target.value)}
+                    onChange={event => {
+                      setError("");
+                      setSiteId(event.target.value);
+                    }}
                     placeholder="blank creates a new site; enter a slug to update"
                   />
+                  <p className="help-text" style={{ marginTop: "0.35rem" }}>
+                    Leave the slug blank for the live-tested anonymous preview path. Entering a slug means you are updating an account-owned site and must save/test an API key first.
+                  </p>
                 </>
               )}
               {provider === "netlify" && (

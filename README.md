@@ -124,7 +124,7 @@ The Ollama runtime binary is not committed to the repo. The app-managed first-ru
 
 ## Release Status
 
-v0.3.1 is public-beta repair-candidate source. Cleanroom testing has proven that the app can generate, export, zip, and anonymously publish a Longmont issue to here.now on Windows, but every new release candidate still needs fresh cleanroom proof from the exact commit and installer. This repair line improves story-quality workflow, docs honesty, Windows-only beta packaging scope, recurring-topic memory, lead novelty warnings, and editor workflow controls. Stable release still requires signed installers, cross-platform clean-machine proof for every advertised platform, matching published release artifacts, and credentialed live verification for external publishing providers.
+v0.3.1 is public-beta repair-candidate source. Local isolated-profile smoke, packaged Windows installer smoke, live local-model smoke, source-import fixture smoke, and anonymous here.now smoke have proven the current Windows beta path on this workstation. A true clean-machine or remote tester run is still required for each release candidate before calling it cleanroom-proven. This repair line improves story-quality workflow, docs honesty, Windows-only beta packaging scope, recurring-topic memory, lead novelty warnings, and editor workflow controls. Stable release still requires signed installers, cross-platform clean-machine proof for every advertised platform, matching published release artifacts, and credentialed live verification for external publishing providers.
 
 ## Backlog: Mac And Linux Installer Proof
 
