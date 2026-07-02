@@ -322,10 +322,7 @@ fn herenow_slug(config: &PublisherConfig) -> Option<String> {
         .map(str::to_string)
 }
 
-fn requires_credential_for_config(
-    provider: &PublisherProvider,
-    config: &PublisherConfig,
-) -> bool {
+fn requires_credential_for_config(provider: &PublisherProvider, config: &PublisherConfig) -> bool {
     provider.requires_credential()
         || (matches!(provider, PublisherProvider::HereNow) && herenow_slug(config).is_some())
 }
@@ -560,7 +557,7 @@ async fn test_herenow(config: &PublisherConfig) -> Result<String, String> {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct HereNowFileSpec {
     path: String,
@@ -569,7 +566,7 @@ struct HereNowFileSpec {
     hash: String,
 }
 
-#[derive(Serialize)]
+#[derive(Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct HereNowPublishRequest {
     files: Vec<HereNowFileSpec>,
@@ -581,7 +578,7 @@ struct HereNowPublishRequest {
     viewer: Option<HereNowViewer>,
 }
 
-#[derive(Serialize)]
+#[derive(Clone, Serialize)]
 struct HereNowViewer {
     title: String,
     description: String,
@@ -675,94 +672,133 @@ async fn publish_herenow(
             );
         }
     }
-    let mut create_request = if let Some(slug) = slug {
-        client.put(format!("{HERENOW_API_BASE}/api/v1/publish/{slug}"))
-    } else {
-        client.post(format!("{HERENOW_API_BASE}/api/v1/publish"))
-    }
-    .header("X-HereNow-Client", "civicnewspaper/publisher")
-    .json(&payload);
-    if let Some(token) = token.as_deref() {
-        create_request = create_request.bearer_auth(token);
-    }
-    let create_response = create_request
-        .send()
-        .await
-        .map_err(|e| format!("here.now publish could not start: {e}"))?;
-    let created: HereNowCreateResponse =
-        json_response(create_response, "here.now publish create").await?;
-
-    for upload in &created.upload.uploads {
-        let bytes = file_bytes
-            .get(&upload.path)
-            .ok_or_else(|| format!("here.now requested unknown file upload: {}", upload.path))?;
-        let method = upload.method.parse::<reqwest::Method>().map_err(|e| {
-            format!(
-                "here.now returned unsupported upload method {}: {e}",
-                upload.method
-            )
-        })?;
-        let mut upload_request = client.request(method, &upload.url);
-        for (key, value) in &upload.headers {
-            upload_request = upload_request.header(key, value);
-        }
-        let upload_response = upload_request
-            .body(bytes.clone())
-            .send()
-            .await
-            .map_err(|e| format!("here.now upload failed for {}: {e}", upload.path))?;
-        if !upload_response.status().is_success() {
-            let status = upload_response.status();
-            let body = upload_response.text().await.unwrap_or_default();
-            return Err(format!(
-                "here.now upload failed for {} with status {status}: {body}",
-                upload.path
-            ));
-        }
-    }
-
     #[derive(Serialize)]
     #[serde(rename_all = "camelCase")]
     struct FinalizePayload<'a> {
         version_id: &'a str,
     }
-    let mut finalize_request = client
-        .post(&created.upload.finalize_url)
+
+    let mut last_error = String::new();
+    for attempt in 1..=3 {
+        let mut create_request = if let Some(slug) = slug.as_deref() {
+            client.put(format!("{HERENOW_API_BASE}/api/v1/publish/{slug}"))
+        } else {
+            client.post(format!("{HERENOW_API_BASE}/api/v1/publish"))
+        }
         .header("X-HereNow-Client", "civicnewspaper/publisher")
-        .json(&FinalizePayload {
-            version_id: &created.upload.version_id,
-        });
-    if let Some(token) = token.as_deref() {
-        finalize_request = finalize_request.bearer_auth(token);
-    }
-    let finalized: HereNowFinalizeResponse = json_response(
-        finalize_request
-            .send()
-            .await
-            .map_err(|e| format!("here.now publish could not finalize: {e}"))?,
-        "here.now publish finalize",
-    )
-    .await?;
+        .json(&payload);
+        if let Some(token) = token.as_deref() {
+            create_request = create_request.bearer_auth(token);
+        }
 
-    let mut message = if created.anonymous.unwrap_or(false) {
-        "Published a temporary here.now preview. Save an API key for permanent sites.".to_string()
-    } else {
-        "Published a permanent here.now site.".to_string()
-    };
-    if let Some(expires_at) = created.expires_at {
-        message.push_str(&format!(" Expires at {expires_at}."));
+        let publish_result = async {
+            let create_response = create_request
+                .send()
+                .await
+                .map_err(|e| format!("here.now publish could not start: {e}"))?;
+            let created: HereNowCreateResponse =
+                json_response(create_response, "here.now publish create").await?;
+
+            for upload in &created.upload.uploads {
+                let bytes = file_bytes.get(&upload.path).ok_or_else(|| {
+                    format!("here.now requested unknown file upload: {}", upload.path)
+                })?;
+                let method = upload.method.parse::<reqwest::Method>().map_err(|e| {
+                    format!(
+                        "here.now returned unsupported upload method {}: {e}",
+                        upload.method
+                    )
+                })?;
+                let mut upload_request = client.request(method, &upload.url);
+                for (key, value) in &upload.headers {
+                    upload_request = upload_request.header(key, value);
+                }
+                let upload_response = upload_request
+                    .body(bytes.clone())
+                    .send()
+                    .await
+                    .map_err(|e| format!("here.now upload failed for {}: {e}", upload.path))?;
+                if !upload_response.status().is_success() {
+                    let status = upload_response.status();
+                    let body = upload_response.text().await.unwrap_or_default();
+                    return Err(format!(
+                        "here.now upload failed for {} with status {status}: {body}",
+                        upload.path
+                    ));
+                }
+            }
+
+            let mut finalize_request = client
+                .post(&created.upload.finalize_url)
+                .header("X-HereNow-Client", "civicnewspaper/publisher")
+                .json(&FinalizePayload {
+                    version_id: &created.upload.version_id,
+                });
+            if let Some(token) = token.as_deref() {
+                finalize_request = finalize_request.bearer_auth(token);
+            }
+            let finalized: HereNowFinalizeResponse = json_response(
+                finalize_request
+                    .send()
+                    .await
+                    .map_err(|e| format!("here.now publish could not finalize: {e}"))?,
+                "here.now publish finalize",
+            )
+            .await?;
+
+            Ok::<_, String>((created, finalized))
+        }
+        .await;
+
+        match publish_result {
+            Ok((created, finalized)) => {
+                let mut message = if created.anonymous.unwrap_or(false) {
+                    "Published a temporary here.now preview. Save an API key for permanent sites."
+                        .to_string()
+                } else {
+                    "Published a permanent here.now site.".to_string()
+                };
+                if let Some(expires_at) = created.expires_at {
+                    message.push_str(&format!(" Expires at {expires_at}."));
+                }
+
+                return Ok(PublisherPublishResult {
+                    provider: PublisherProvider::HereNow.as_str().to_string(),
+                    published_url: validate_public_url(&finalized.site_url)
+                        .or_else(|_| validate_public_url(&created.site_url))?,
+                    deployment_id: Some(format!(
+                        "slug={};version={};created_slug={}",
+                        finalized.slug, finalized.current_version_id, created.slug
+                    )),
+                    message,
+                });
+            }
+            Err(error) if attempt < 3 && is_retryable_herenow_publish_error(&error) => {
+                last_error = error;
+                tokio::time::sleep(Duration::from_millis(500 * attempt as u64)).await;
+            }
+            Err(error) => return Err(error),
+        }
     }
 
-    Ok(PublisherPublishResult {
-        provider: PublisherProvider::HereNow.as_str().to_string(),
-        published_url: validate_public_url(&finalized.site_url)
-            .or_else(|_| validate_public_url(&created.site_url))?,
-        deployment_id: Some(format!(
-            "slug={};version={};created_slug={}",
-            finalized.slug, finalized.current_version_id, created.slug
-        )),
-        message,
-    })
+    Err(format!(
+        "here.now publish failed after retrying transient provider errors: {last_error}"
+    ))
+}
+
+fn is_retryable_herenow_publish_error(error: &str) -> bool {
+    error.contains("EOF while parsing a value")
+        || error.contains("No pending version to finalize")
+        || error.contains("here.now publish could not start")
+        || error.contains("here.now publish could not finalize")
+        || error.contains("status 408")
+        || error.contains("status 409")
+        || error.contains("status 425")
+        || error.contains("status 429")
+        || error.contains("status 500")
+        || error.contains("status 502")
+        || error.contains("status 503")
+        || error.contains("status 504")
 }
 
 async fn json_response<T: for<'de> Deserialize<'de>>(
