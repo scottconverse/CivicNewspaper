@@ -966,9 +966,27 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
       <div className="flex-between">
         <h2>AI Setup</h2>
-        <span style={{ fontWeight: 600, fontSize: "0.9rem", color: "var(--text-secondary)" }}>
-          Step {step} of {steps.length}
-        </span>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
+          <span style={{ fontWeight: 600, fontSize: "0.9rem", color: "var(--text-secondary)" }}>
+            Step {step} of {steps.length}
+          </span>
+          {step === 1 && (
+            <button
+              type="button"
+              ref={primaryActionRef}
+              className="btn btn-primary btn-sm"
+              id="btn-wizard-next"
+              onPointerDown={prePersistIdentityOnPress}
+              onClick={(event) => {
+                event.preventDefault();
+                void handleNext();
+              }}
+            >
+              Next
+              <ChevronRight size={14} style={{ marginLeft: "0.35rem" }} />
+            </button>
+          )}
+        </div>
       </div>
 
       <div
@@ -988,7 +1006,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
       <div className="onboarding-step-body">
         <h3>{steps[step - 1].title}</h3>
-        <p className="help-text" style={{ marginBottom: "1.5rem" }}>
+        <p className="help-text" style={{ marginBottom: "0.85rem" }}>
           {steps[step - 1].desc}
         </p>
 
@@ -1410,53 +1428,38 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         )}
       </div>
 
-      <div className="flex-between onboarding-actions">
-        <button type="button" className="btn btn-secondary" onClick={handleBack} disabled={step === 1}>
-          Back
-        </button>
-        
-        <div style={{ display: "flex", gap: "1rem" }}>
-          {(step === 2 || step === 3) && (
-            <button type="button" className="btn btn-secondary" onClick={() => {
-              if (step === 2) {
-                setSkipConfirm({
-                  title: "Skip AI setup?",
-                  message: "AI drafting and AI-assisted review will stay limited until you complete setup from AI Model. Deterministic source checks can still run.",
-                  confirmLabel: "Skip setup",
-                  onConfirm: () => goToStep(4),
-                });
-              } else if (step === 3) {
-                setSkipConfirm({
-                  title: "Skip the model download?",
-                  message: "AI drafting and AI-assisted review will stay limited until you download a model from AI Model. Deterministic source checks can still run.",
-                  confirmLabel: "Skip download",
-                  onConfirm: async () => {
-                    await cancelPullModel();
-                    await goToStep(4);
-                  },
-                });
-              }
-            }}>
-              Skip for now
-            </button>
-          )}
-          
-          {step === 1 ? (
-            <button
-              type="button"
-              ref={primaryActionRef}
-              className="btn btn-primary"
-              id="btn-wizard-next"
-              onPointerDown={prePersistIdentityOnPress}
-              onClick={(event) => {
-                event.preventDefault();
-                void handleNext();
-              }}
-            >
-              Next
-              <ChevronRight size={16} style={{ marginLeft: "0.5rem" }} />
-            </button>
-          ) : (
+      {step !== 1 && (
+        <div className="flex-between onboarding-actions">
+          <button type="button" className="btn btn-secondary" onClick={handleBack} disabled={step === 1}>
+            Back
+          </button>
+
+          <div style={{ display: "flex", gap: "1rem" }}>
+            {(step === 2 || step === 3) && (
+              <button type="button" className="btn btn-secondary" onClick={() => {
+                if (step === 2) {
+                  setSkipConfirm({
+                    title: "Skip AI setup?",
+                    message: "AI drafting and AI-assisted review will stay limited until you complete setup from AI Model. Deterministic source checks can still run.",
+                    confirmLabel: "Skip setup",
+                    onConfirm: () => goToStep(4),
+                  });
+                } else if (step === 3) {
+                  setSkipConfirm({
+                    title: "Skip the model download?",
+                    message: "AI drafting and AI-assisted review will stay limited until you download a model from AI Model. Deterministic source checks can still run.",
+                    confirmLabel: "Skip download",
+                    onConfirm: async () => {
+                      await cancelPullModel();
+                      await goToStep(4);
+                    },
+                  });
+                }
+              }}>
+                Skip for now
+              </button>
+            )}
+
             <button
               type="button"
               ref={primaryActionRef}
@@ -1473,9 +1476,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   : "Next"}
               <ChevronRight size={16} style={{ marginLeft: "0.5rem" }} />
             </button>
-          )}
+          </div>
         </div>
-      </div>
+      )}
 
       {skipConfirm && (
         <ConfirmModal

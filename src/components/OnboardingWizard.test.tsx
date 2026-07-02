@@ -189,7 +189,7 @@ describe("OnboardingWizard Component Tests", () => {
     expect(invokeMock).not.toHaveBeenCalledWith("install_ollama_runtime");
   });
 
-  test("first-run onboarding uses a scrollable shell body and sticky actions", () => {
+  test("first-run onboarding uses a scrollable shell body with a visible first-step action", () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
 
@@ -203,7 +203,8 @@ describe("OnboardingWizard Component Tests", () => {
 
     expect(screen.getByRole("progressbar", { name: /setup progress/i })).toHaveAttribute("aria-valuenow", "20");
     expect(document.querySelector(".onboarding-step-body")).toBeInTheDocument();
-    expect(document.querySelector(".onboarding-actions")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /next/i })).toBeInTheDocument();
+    expect(document.querySelector(".onboarding-actions")).not.toBeInTheDocument();
   });
 
   test("identity step focuses publication name first", async () => {
@@ -870,6 +871,7 @@ describe("OnboardingWizard Component Tests", () => {
 
     invokeMock.mockImplementation((cmd: string) => {
       if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
       if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: [], version: "0.1.0" });
       if (cmd === "pull_ollama_model") return Promise.resolve();
       return Promise.resolve();
@@ -883,6 +885,7 @@ describe("OnboardingWizard Component Tests", () => {
     // Click pull recommended model button
     const recommendedModel = "phi4-mini:latest";
     const pullBtn = (await screen.findAllByRole("button", { name: new RegExp("Download " + recommendedModel, "i") }))[0];
+    await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("get_setting", { key: "identity.state" }));
     fireEvent.click(pullBtn);
 
     // Verify it called pull_ollama_model command
