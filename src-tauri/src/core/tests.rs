@@ -2052,6 +2052,108 @@ I should produce JSON only.
         );
     }
 
+    #[tokio::test]
+    async fn test_daily_scan_downgrades_draft_ready_model_lead_with_only_news_index_chrome() {
+        let mut conn = rusqlite::Connection::open_in_memory().unwrap();
+        crate::core::migrations::run_migrations(&mut conn).unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Longmont city news".to_string(),
+                url: "https://www.longmontcolorado.gov/news".to_string(),
+                r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://www.longmontcolorado.gov/news".to_string()),
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "All Categories Adults Adults 55+ Art in Public Places Awards BIFF Film Board Recruitment Button Rock Children City Council Classes and Trainings Climate Coffman Street Community Event Concert Connect Longmont Early Education Families Fitness Jobs Library Adults Longmont Power and Communications Maintenance Parks and Natural Resources Planning and Development Services Public Health Updates Recreation Services Sustainability Traffic and Road Closures Type All All News Alerts Email Signup Sign up for our emails to receive the latest news and alerts. 2949 results found Sort news by Newest to Oldest Oldest to Newest".to_string(),
+                content_hash: "hash_longmont_city_news_category_chrome".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
+        let db_conn: DbConn = Arc::new(Mutex::new(conn));
+
+        struct FakeLlmClient;
+        #[async_trait::async_trait]
+        impl crate::core::llm::LlmClient for FakeLlmClient {
+            async fn call(
+                &self,
+                _model: &str,
+                _prompt: &str,
+                _system: &str,
+            ) -> Result<String, String> {
+                Ok(r#"{"leads":[{"title":"Longmont city news","summary":"All Categories Adults Adults 55+ Art in Public Places Awards BIFF Film Board Recruitment Button Rock Children City Council Classes and Trainings Climate Coffman Street Community Event Concert Connect Longmont","original_url":"https://www.longmontcolorado.gov/news","why_flagged":"Broad city news page may contain civic updates.","source_name":"Longmont city news","source_type":"primary_record","priority":"high","suggested_next_step":"Review the city news page and draft a story if relevant.","story_type":"story","what_changed":"New city news item appeared in a watched official source.","immediacy":5,"impact":4,"conflict":1,"novelty":4,"what_would_make_it_publishable":"Confirm the city item and public impact."}]}"#.to_string())
+            }
+        }
+        let llm_client: Arc<dyn crate::core::llm::LlmClient> = Arc::new(FakeLlmClient);
+
+        let run_id = crate::core::daily_scan::run_daily_scan(
+            &db_conn,
+            &llm_client,
+            "aggregator prompt template",
+            "Longmont",
+            "CO",
+            24,
+        )
+        .await
+        .expect("scan should retain the model lead for verification");
+
+        let conn = db_conn.lock().unwrap();
+        let scan_leads = list_daily_scan_leads(&conn, run_id).unwrap();
+        let chrome_lead = scan_leads
+            .iter()
+            .find(|lead| lead.title == "Longmont city news")
+            .expect("model lead should still be visible to editors");
+        assert_eq!(
+            chrome_lead.disposition.as_deref(),
+            Some("needs_verification"),
+            "news/category index chrome must not create a draft-ready lead"
+        );
+        assert!(
+            chrome_lead
+                .publishability_note
+                .as_deref()
+                .unwrap_or_default()
+                .contains("No source documents could be linked"),
+            "the downgrade should explain that no usable source document was linked"
+        );
+
+        let story_queue_leads = list_leads(&conn).unwrap();
+        let queue_lead = story_queue_leads
+            .iter()
+            .find(|lead| lead.from_scan_lead_id == chrome_lead.id)
+            .expect("downgraded lead should remain in the queue for verification");
+        assert_ne!(
+            queue_lead.disposition.as_deref(),
+            Some("ready_to_draft"),
+            "the Story Queue must not offer a Draft path for category/navigation chrome"
+        );
+        let linked_evidence_count: i32 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM lead_evidence WHERE lead_id = ?1",
+                [queue_lead.id.unwrap()],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(
+            linked_evidence_count, 0,
+            "navigation/index chrome must not be attached as grounding evidence"
+        );
+    }
+
     #[test]
     fn test_migration_0007_survives_existing_evidence_rows() {
         let conn = Connection::open_in_memory().unwrap();

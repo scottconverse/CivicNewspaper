@@ -1869,6 +1869,7 @@ fn evidence_ids_for_scan_lead(
     let topic = scan_lead_grounding_text(lead);
     let mut ids: Vec<i32> = candidates
         .into_iter()
+        .filter(|(_, excerpt)| !evidence_quality(excerpt).looks_like_navigation_or_index())
         .filter(|(_, excerpt)| source_grounding::evidence_matches_topic(&topic, excerpt))
         .map(|(id, _)| id)
         .take(3)
