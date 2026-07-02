@@ -20,7 +20,9 @@ The software should not invent your business model, claim you run no ads, claim 
 
 ### Can the app block a story?
 
-No. The app can warn, rank, label, suggest verification tasks, and show advisor output. It must not veto the editor.
+It cannot veto your editorial judgment. The app can warn, rank, label, suggest verification tasks, and show advisor output, but the editor decides what is newsworthy.
+
+It can block static publish approval when the public package would be structurally invalid or misleading, such as an empty story body, broken or unsupported citations, missing linked evidence, or editor/test notes leaking into public copy. Those are output-integrity blockers, not editorial vetoes.
 
 ## Local AI
 

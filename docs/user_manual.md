@@ -342,11 +342,11 @@ You can import source lists from:
 - TXT
 - XLSX
 - DOCX
-- text-readable PDF
+- text-readable PDF, treated as a local beta import path because PDF parsing dependencies are still tracked under security-advisory waivers
 
 The app should split URLs into separate reviewable candidates. If a spreadsheet or document contains many URLs and the app finds only one, that is a bug.
 
-Scanned image-only PDFs require OCR before URLs can be extracted. If OCR is unavailable, the app should say so plainly rather than pretending the file had no useful sources.
+Scanned image-only PDFs require OCR before URLs can be extracted. If OCR is unavailable, the app should say so plainly rather than pretending the file had no useful sources. For now, import PDFs only from sources you trust enough to open locally; broader hardened/sandboxed PDF parsing is still on the security backlog.
 
 When importing a file, review:
 
@@ -488,7 +488,7 @@ If XLSX, DOCX, or PDF imports flatten many URLs into one candidate, report it as
 - Latest source/tag and latest published installer release may not always be the same.
 - Windows is the tested public-beta installer path.
 - macOS and Linux installer proof is backlog/proof-needed.
-- OCR for scanned PDFs is not complete.
+- OCR for scanned PDFs and hardened/sandboxed PDF parsing are not complete.
 - Fully polished newsroom-quality story selection still needs improvement.
 - External provider verification depends on user-owned credentials.
 

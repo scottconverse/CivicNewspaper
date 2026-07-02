@@ -647,7 +647,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
           </div>
 
           {!ollamaOnline && !manualLlmMode && (
-            <div className="error-text" id="ollama-offline-warning" style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+            <div className="error-text" id="ollama-offline-warning" role="status" aria-live="polite" style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
               <AlertTriangle size={14} /> The local AI service is offline. Set up the local AI model, or use Manual Mode in settings.
               {onOpenAiSetup && (
                 <button type="button" className="btn btn-secondary btn-sm" onClick={onOpenAiSetup} id="btn-open-ai-setup-from-workbench">

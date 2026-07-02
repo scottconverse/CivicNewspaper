@@ -1,7 +1,7 @@
 // STEPS DEFINED HERE ARE DOCUMENTED IN docs/user_manual.md PART 1. Update both together.
 import React, { useState, useEffect, useRef } from "react";
 import { listen } from "@tauri-apps/api/event";
-import { appDataDir, join } from "@tauri-apps/api/path";
+import { join } from "@tauri-apps/api/path";
 import { ChevronRight, Download, CheckCircle, RefreshCcw, AlertCircle } from "lucide-react";
 import { save } from "@tauri-apps/plugin-dialog";
 import {
@@ -17,6 +17,7 @@ import {
   exportDiagnostics,
   setOnboardingComplete,
   revealMainWindowForSetup,
+  getResolvedAppDataDir,
   isTauri,
   toUserMessage,
 } from "../ipc";
@@ -302,7 +303,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     async function init() {
       try {
         if (isTauri()) {
-          const appData = await appDataDir();
+          const appData = await getResolvedAppDataDir();
           const pPath = await join(appData, "sites", "default");
           setPublishPath(pPath);
 
@@ -1436,8 +1437,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             <div style={{ marginTop: "0.75rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.75rem", textAlign: "left" }}>
               <h4 style={{ fontSize: "1rem", marginBottom: "0.375rem" }}>What's next?</h4>
               <ul style={{ fontSize: "0.86rem", color: "var(--text-secondary)", paddingLeft: "1.2rem", marginTop: 0, display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                <li><strong>Configure your first source</strong> under Sources.</li>
-                <li><strong>Run a daily scan</strong> to gather recent signals.</li>
+                <li><strong>Starter sources may be added automatically</strong> when you enter the workspace.</li>
+                <li><strong>Daily Scan is next</strong> once the starter-source step finishes, or you can add sources manually.</li>
                 <li><strong>Review leads in Story Queue</strong>, then draft and edit in Workbench.</li>
                 <li><strong>Finish AI Model setup</strong> later if you skipped it here.</li>
               </ul>

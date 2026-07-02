@@ -108,6 +108,7 @@ try {
       $failedNames = ($failedDefaultCases | ForEach-Object { "$($_.case): $($_.error)" }) -join "; "
       throw "Configured default model '$defaultModel' failed bakeoff case(s): $failedNames"
     }
+    $repairedDefaultCases = @($defaultResults | Where-Object { $_.status -eq "repaired" -or $_.repaired -eq $true })
     $modelBakeoffOk = $true
   }
 
@@ -214,6 +215,7 @@ try {
       throw "Packaged first-run walkthrough receipt contains failed checks: $($failedWalkthroughChecks.name -join ', ')"
     }
     $requiredWalkthroughChecks = @(
+      "forced-ollama-base-url-absent",
       "nsis-silent-install",
       "installed-exe-present",
       "window-handle-present",
@@ -225,7 +227,10 @@ try {
       "done-step-screenshot",
       "workspace-reached-screenshot",
       "sqlite-db-present",
+      "setting-paths.publish-isolated",
+      "setting-paths.backup-isolated",
       "setting-onboarding_complete",
+      "downloaded-runtime-absent",
       "nsis-silent-uninstall"
     )
     $presentWalkthroughChecks = @($packagedWalkthrough.checks | ForEach-Object { $_.name })
@@ -236,6 +241,9 @@ try {
     $workspaceCheck = @($packagedWalkthrough.checks | Where-Object { $_.name -eq "workspace-reached-screenshot" } | Select-Object -First 1)
     if ($workspaceCheck.Count -eq 0 -or -not (Test-Path -LiteralPath ([string]$workspaceCheck[0].details.path))) {
       throw "Packaged first-run walkthrough workspace screenshot is missing on disk."
+    }
+    if ([string]::IsNullOrWhiteSpace([string]$packagedWalkthrough.forced_ollama_base_url)) {
+      throw "Packaged first-run walkthrough receipt is missing forced_ollama_base_url."
     }
     $packagedWalkthroughOk = $true
   }
@@ -368,6 +376,7 @@ try {
     release_smoke_skipped = $smoke.skipped
     model_bakeoff_receipt = if ($resolvedModelBakeoffReceipt) { $resolvedModelBakeoffReceipt.Path } else { $null }
     model_bakeoff_ok = $modelBakeoffOk
+    model_bakeoff_default_repaired_cases = if ($resolvedModelBakeoffReceipt) { @($repairedDefaultCases | ForEach-Object { $_.case }) } else { @() }
     dependency_audit_receipt = if ($resolvedDependencyAuditReceipt) { $resolvedDependencyAuditReceipt.Path } else { $null }
     dependency_audit_ok = $dependencyAuditOk
     dependency_audit_ignored_advisories = $dependencyAuditIgnoredAdvisories

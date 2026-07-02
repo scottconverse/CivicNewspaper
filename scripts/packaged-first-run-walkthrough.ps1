@@ -88,6 +88,32 @@ function Resolve-UnusedLoopbackUrl {
   throw "Could not find an unused loopback port."
 }
 
+function Test-LoopbackAbsent {
+  param([string]$Url)
+  try {
+    Invoke-WebRequest -Uri "$Url/api/tags" -UseBasicParsing -TimeoutSec 2 | Out-Null
+    return $false
+  } catch {
+    return $true
+  }
+}
+
+function Test-PathUnderRoot {
+  param(
+    [string]$Path,
+    [string]$Root
+  )
+  if ([string]::IsNullOrWhiteSpace($Path)) {
+    return $false
+  }
+  $fullPath = [System.IO.Path]::GetFullPath($Path)
+  $fullRoot = [System.IO.Path]::GetFullPath($Root)
+  if (-not $fullRoot.EndsWith([System.IO.Path]::DirectorySeparatorChar)) {
+    $fullRoot += [System.IO.Path]::DirectorySeparatorChar
+  }
+  return $fullPath.StartsWith($fullRoot, [System.StringComparison]::OrdinalIgnoreCase)
+}
+
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
@@ -224,6 +250,7 @@ $receipt = [ordered]@{
   install_root = $installRoot
   app_data_dir = $appDataRoot
   python = $pythonExe
+  forced_ollama_base_url = $null
   checks = @()
 }
 
@@ -275,6 +302,12 @@ try {
   }
 
   $absentOllamaBaseUrl = Resolve-UnusedLoopbackUrl
+  $receipt.forced_ollama_base_url = $absentOllamaBaseUrl
+  $ollamaAbsent = Test-LoopbackAbsent -Url $absentOllamaBaseUrl
+  Add-Check "forced-ollama-base-url-absent" $ollamaAbsent @{ forced_ollama_base_url = $absentOllamaBaseUrl }
+  if (-not $ollamaAbsent) {
+    throw "Expected no Ollama service at $absentOllamaBaseUrl"
+  }
   $psi = New-Object System.Diagnostics.ProcessStartInfo
   $psi.FileName = $installedExe.FullName
   $psi.WorkingDirectory = Split-Path $installedExe.FullName
@@ -420,6 +453,23 @@ with open(out_path, "w", encoding="utf-8") as f:
     if (-not $isOnboardingComplete) {
       throw "Expected onboarding_complete true/1, got '$onboardingComplete'"
     }
+  }
+
+  $publishPath = [string]$settings.PSObject.Properties["paths.publish"].Value
+  $backupPath = [string]$settings.PSObject.Properties["paths.backup"].Value
+  $publishIsolated = Test-PathUnderRoot -Path $publishPath -Root $appDataRoot
+  $backupIsolated = Test-PathUnderRoot -Path $backupPath -Root $appDataRoot
+  Add-Check "setting-paths.publish-isolated" $publishIsolated @{ actual = $publishPath; expected_root = $appDataRoot }
+  Add-Check "setting-paths.backup-isolated" $backupIsolated @{ actual = $backupPath; expected_root = $appDataRoot }
+  if (-not $publishIsolated -or -not $backupIsolated) {
+    throw "Expected publish/backup settings under isolated app data root $appDataRoot. publish='$publishPath' backup='$backupPath'"
+  }
+
+  $downloadedRuntimePath = Join-Path $appDataRoot "ollama-runtime"
+  $runtimeAbsent = -not (Test-Path -LiteralPath $downloadedRuntimePath)
+  Add-Check "downloaded-runtime-absent" $runtimeAbsent @{ downloaded_runtime_path = $downloadedRuntimePath }
+  if (-not $runtimeAbsent) {
+    throw "Expected no downloaded Ollama runtime at $downloadedRuntimePath"
   }
 } finally {
   Stop-WalkthroughProcess -Process $appProcess

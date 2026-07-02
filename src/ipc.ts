@@ -32,6 +32,10 @@ async function invokeGuarded<T>(command: string, args?: Record<string, unknown>)
   return args === undefined ? invoke<T>(command) : invoke<T>(command, args);
 }
 
+export async function getResolvedAppDataDir(): Promise<string> {
+  return invokeGuarded<string>("get_resolved_app_data_dir");
+}
+
 // UX-2: one place that turns any thrown value into plain-language, action-oriented
 // copy. Components surface toUserMessage(e) instead of e.toString(), which used to
 // leak Rust Debug strings and "[object Object]" to end users.

@@ -226,7 +226,8 @@ describe("OnboardingWizard Component Tests", () => {
 
     const doneStep = await screen.findByTestId("onboarding-done-step");
     expect(doneStep).toHaveStyle({ paddingBottom: "5.25rem" });
-    expect(screen.getByText(/Configure your first source/i)).toBeInTheDocument();
+    expect(screen.getByText(/Starter sources may be added automatically/i)).toBeInTheDocument();
+    expect(screen.getByText(/Daily Scan is next/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /finish onboarding/i })).toBeInTheDocument();
   });
 

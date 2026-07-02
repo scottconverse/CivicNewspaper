@@ -1,7 +1,7 @@
 // src/useApp.ts
 import { useState, useEffect, useRef } from "react";
 import { listen } from "@tauri-apps/api/event";
-import { appDataDir, join } from "@tauri-apps/api/path";
+import { join } from "@tauri-apps/api/path";
 import { open, save } from "@tauri-apps/plugin-dialog";
 import {
   getSources,
@@ -72,6 +72,7 @@ import {
   isOnboardingComplete,
   getSetting,
   setSetting,
+  getResolvedAppDataDir,
   toUserMessage,
   extractSourceImportText
 } from "./ipc";
@@ -459,7 +460,7 @@ export function useApp() {
 
     async function loadDefaultPaths() {
       try {
-        const appData = await appDataDir();
+        const appData = await getResolvedAppDataDir();
         setPublishPath(await join(appData, "sites", "default"));
         setBackupPathInput(await join(appData, "backups", "civic-desk.db"));
       } catch (err) {

@@ -105,6 +105,13 @@ pub fn reveal_main_window_for_setup<R: tauri::Runtime>(
     Ok(())
 }
 
+#[tauri::command]
+pub fn get_resolved_app_data_dir<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
+) -> Result<String, String> {
+    crate::core::app_paths::app_data_dir(&app).map(|path| path.to_string_lossy().to_string())
+}
+
 fn default_community_profile() -> CommunityProfile {
     CommunityProfile {
         site_title: "My Local Publication".to_string(),
@@ -1935,15 +1942,30 @@ pub fn save_publisher_config(
     let provider = publisher::PublisherProvider::from_str(config.provider.trim())
         .ok_or_else(|| "Unsupported publishing provider.".to_string())?;
     let provider = provider.as_str().to_string();
-    if config.clear_credential {
+    let clear_credential = config.clear_credential;
+    let pending_credential = config
+        .credential
+        .as_deref()
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .map(str::to_string);
+    let mut sanitized = publisher::sanitize_config(config)?;
+    if pending_credential.is_some() {
+        sanitized.has_credential = true;
+    } else if clear_credential {
+        sanitized.has_credential = false;
+    } else {
+        sanitized.has_credential = publisher::has_provider_credential(&sanitized.provider);
+    }
+    let connector = publisher::publisher_for(&sanitized.provider)?;
+    connector.validate_config(&sanitized)?;
+
+    if clear_credential {
         publisher::delete_provider_credential(&provider)?;
     }
-    if let Some(credential) = config.credential.as_deref() {
-        if !credential.trim().is_empty() {
-            publisher::set_provider_credential(&provider, credential.trim())?;
-        }
+    if let Some(credential) = pending_credential {
+        publisher::set_provider_credential(&provider, &credential)?;
     }
-    let mut sanitized = publisher::sanitize_config(config)?;
     sanitized.has_credential = publisher::has_provider_credential(&sanitized.provider);
     let value = serde_json::to_string(&sanitized).map_err(|e| e.to_string())?;
     let conn = db.lock().map_err(|_| "Failed to lock database")?;

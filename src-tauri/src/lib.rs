@@ -198,6 +198,7 @@ pub fn run() {
             set_setting,
             get_setting,
             reveal_main_window_for_setup,
+            get_resolved_app_data_dir,
             export_diagnostics,
             list_prompts,
             get_prompt,

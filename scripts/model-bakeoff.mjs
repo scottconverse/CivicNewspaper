@@ -174,6 +174,7 @@ async function main() {
         repairAttempted: false,
         repaired: false,
         responsePreview: "",
+        status: "failed",
       };
       try {
         const generated = await generate(model, prompt, system);
@@ -192,6 +193,7 @@ async function main() {
           result.repairError = firstError instanceof Error ? firstError.message : String(firstError);
         }
         result.ok = true;
+        result.status = result.repaired ? "repaired" : "clean";
         result.leadCount = validation.leadCount;
         result.hasThinkTag = validation.hasThinkTag;
       } catch (error) {
@@ -199,7 +201,7 @@ async function main() {
       }
       results.push(result);
       console.log(
-        `${result.ok ? "PASS" : "FAIL"} ${model} ${caseName} ${result.elapsedMs ?? "-"}ms leads=${result.leadCount ?? "-"} think=${result.hasThinkTag ?? "-"} ${result.error ?? ""}`
+        `${result.ok ? (result.repaired ? "PASS-REPAIRED" : "PASS") : "FAIL"} ${model} ${caseName} ${result.elapsedMs ?? "-"}ms leads=${result.leadCount ?? "-"} think=${result.hasThinkTag ?? "-"} ${result.error ?? ""}`
       );
     }
   }

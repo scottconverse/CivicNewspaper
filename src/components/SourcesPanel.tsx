@@ -342,7 +342,7 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
                   Source list
                 </label>
                 <p className="help-text" style={{ margin: "0 0 0.5rem 0", fontSize: "0.8rem" }}>
-                  Paste a list or load CSV, TSV, TXT, DOCX, XLSX, or text-based PDF files. You can optionally prefix with a name, e.g.,<br />
+                  Paste a list or load CSV, TSV, TXT, DOCX, XLSX, or text-based PDF files. PDF import is local beta support; use source-list PDFs you trust enough to open locally. You can optionally prefix with a name, e.g.,<br />
                   <code>Brighton Council, https://brightonco.gov/agenda</code><br />
                   Image-only scanned PDFs may need OCR before URLs can be read.
                 </p>
