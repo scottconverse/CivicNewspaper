@@ -77,11 +77,16 @@ This prevents a public unsigned installer from appearing before checksum and loc
 
 ## Source import fixtures
 
-The full local fixture suite expects realistic files in:
+The full local fixture suite expects realistic files in a machine-available fixture
+folder. For repo-local release evidence, restore or copy the fixture artifact to:
 
 ```text
-C:\Users\instynct\Desktop\CivicNewspaperTestFiles
+.agent-runs\source-fixture-artifact
 ```
+
+If a tester machine uses a different workspace path, pass that machine's equivalent
+full source-file fixture folder with `-FixtureDir`. Do not hard-code another user's
+Windows profile path in release directives.
 
 The committed lightweight review fixtures live under:
 
