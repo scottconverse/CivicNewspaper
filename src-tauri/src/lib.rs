@@ -197,6 +197,7 @@ pub fn run() {
             set_onboarding_complete,
             set_setting,
             get_setting,
+            reveal_main_window_for_setup,
             export_diagnostics,
             list_prompts,
             get_prompt,

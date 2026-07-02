@@ -89,11 +89,20 @@ pub(crate) fn is_allowed_ollama_pull_model(model_id: &str) -> bool {
 fn keep_main_window_visible<R: tauri::Runtime>(app: &tauri::AppHandle<R>, focus: bool) {
     if let Some(window) = app.get_webview_window("main") {
         let _ = window.unminimize();
+        let _ = window.center();
         let _ = window.show();
         if focus {
             let _ = window.set_focus();
         }
     }
+}
+
+#[tauri::command]
+pub fn reveal_main_window_for_setup<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
+) -> Result<(), String> {
+    keep_main_window_visible(&app, true);
+    Ok(())
 }
 
 fn default_community_profile() -> CommunityProfile {

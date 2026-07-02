@@ -16,6 +16,7 @@ import {
   cancelOllamaPull,
   exportDiagnostics,
   setOnboardingComplete,
+  revealMainWindowForSetup,
   isTauri,
   toUserMessage,
 } from "../ipc";
@@ -178,6 +179,21 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     await setOnboardingComplete(true);
   };
 
+  const revealSetupWindow = async () => {
+    if (!isTauri()) return;
+    try {
+      await revealMainWindowForSetup();
+    } catch {
+      /* non-fatal - setup can continue if the shell reveal command is unavailable */
+    }
+  };
+
+  const goToStep = async (nextStep: number) => {
+    await saveSetting("onboarding.step", String(nextStep));
+    setStep(nextStep);
+    void revealSetupWindow();
+  };
+
   const applyIdentityValues = (values: {
     pubName: string;
     editorName: string;
@@ -246,12 +262,26 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       setInitError(null);
       setSetupNotice(null);
       await persistIdentity(identity);
-      setStep(2);
+      await goToStep(2);
     } catch (e) {
       console.error(e);
       setInitError(toUserMessage(e));
       identityAdvanceInFlightRef.current = false;
     }
+  };
+
+  const prePersistIdentityOnPress = () => {
+    if (step !== 1) return;
+    const identity = currentIdentityValues();
+    void (async () => {
+      try {
+        await persistIdentity(identity);
+        await revealSetupWindow();
+      } catch (e) {
+        console.error(e);
+        setInitError(toUserMessage(e));
+      }
+    })();
   };
 
   // Initialize paths and ram
@@ -279,6 +309,32 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           setModel(selected);
         } else {
           setModel(fallback);
+        }
+
+        if (isTauri()) {
+          const savedPubName = await getSetting("identity.newsroom_name");
+          const savedEditorName = await getSetting("identity.editor_name");
+          const savedOrganizationType = await getSetting("identity.organization_type");
+          const savedCity = await getSetting("identity.city");
+          const savedState = await getSetting("identity.state");
+          if (savedPubName || savedEditorName || savedCity || savedState) {
+            applyIdentityValues({
+              pubName: savedPubName || "",
+              editorName: savedEditorName || "",
+              organizationType: savedOrganizationType || "single_person",
+              city: savedCity || "",
+              state: savedState || "",
+            });
+          }
+
+          if (initialStep === undefined) {
+            const savedStep = await getSetting("onboarding.step");
+            const restoredStep = Number.parseInt(savedStep || "", 10);
+            if (Number.isInteger(restoredStep) && restoredStep >= 2 && restoredStep <= steps.length) {
+              setStep(restoredStep);
+              void revealSetupWindow();
+            }
+          }
         }
 
         if (ollamaOnline !== undefined) {
@@ -448,7 +504,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         if (ready) {
           setSetupNotice("The local AI runtime is ready. Because setup is not receiving input events, The Civic Desk is starting the recommended model download automatically.");
           setAutoStartPull(true);
-          setStep(3);
+          void goToStep(3);
         }
       });
     }, RUNTIME_INSTALL_RESCUE_MS);
@@ -482,7 +538,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       setSetupRecoveryActive(true);
       setSetupNotice("The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.");
       setAutoStartPull(true);
-      setStep(3);
+      void goToStep(3);
     }, MODEL_DOWNLOAD_RESCUE_MS);
 
     return () => window.clearTimeout(rescueTimer);
@@ -596,7 +652,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         setHealth(latestHealth);
       }
       setSetupNotice("The recommended model is installed. Setup is continuing automatically because the setup screen is not receiving input events.");
-      setStep(4);
+      await goToStep(4);
     };
 
     const checkModelReady = async () => {
@@ -636,7 +692,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           await saveSetting("paths.publish", publishPath);
           await saveSetting("paths.backup", backupPath);
           setSetupNotice("Default folders were saved automatically because the setup screen is not receiving input events.");
-          setStep(5);
+          await goToStep(5);
         } catch (e) {
           console.error(e);
           setInitError(toUserMessage(e));
@@ -691,14 +747,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         if (health && health.reachable && modelInstalled(model, health.models)) {
           // Model is already installed, skip Step 3 and go directly to Step 4
           await saveSetting("model.selected", model);
-          setStep(4);
+          await goToStep(4);
         } else if (!health?.reachable) {
           setSetupNotice("Install the local AI runtime or choose Skip for now before continuing.");
           setHealthTimeout(true);
           return;
         } else {
           setAutoStartPull(true);
-          setStep(3);
+          await goToStep(3);
         }
       } else if (step === 3) {
         const modelReady = pullComplete || Boolean(health && modelInstalled(model, health.models));
@@ -707,13 +763,13 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           return;
         }
         await saveSetting("model.selected", model);
-        setStep(4);
+        await goToStep(4);
       } else if (step === 4) {
         // Persist defaults
         await saveSetting("paths.publish", publishPath);
         await saveSetting("paths.backup", backupPath);
 
-        setStep(5);
+        await goToStep(5);
       } else if (step === 5) {
         await saveOnboardingDone();
         if (setupRecoveryActive) {
@@ -728,7 +784,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   };
 
   const handleBack = () => {
-    if (step > 1) setStep(prev => prev - 1);
+    if (step > 1) void goToStep(step - 1);
   };
 
   useEffect(() => {
@@ -1151,7 +1207,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                       className="btn btn-primary"
                       onClick={() => {
                         setAutoStartPull(true);
-                        setStep(3);
+                        void goToStep(3);
                       }}
                       disabled={pulling}
                       style={{ marginTop: "1rem" }}
@@ -1318,7 +1374,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   title: "Skip AI setup?",
                   message: "AI drafting and AI-assisted review will stay limited until you complete setup from AI Model. Deterministic source checks can still run.",
                   confirmLabel: "Skip setup",
-                  onConfirm: () => setStep(4),
+                  onConfirm: () => goToStep(4),
                 });
               } else if (step === 3) {
                 setSkipConfirm({
@@ -1327,7 +1383,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   confirmLabel: "Skip download",
                   onConfirm: async () => {
                     await cancelPullModel();
-                    setStep(4);
+                    await goToStep(4);
                   },
                 });
               }
@@ -1342,6 +1398,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               ref={primaryActionRef}
               className="btn btn-primary"
               id="btn-wizard-next"
+              onPointerDown={prePersistIdentityOnPress}
               onClick={(event) => {
                 event.preventDefault();
                 void handleNext();

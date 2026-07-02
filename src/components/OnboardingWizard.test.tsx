@@ -286,6 +286,91 @@ describe("OnboardingWizard Component Tests", () => {
     });
   });
 
+  test("identity Next pre-saves values on pointer down before step transition", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+    const user = userEvent.setup();
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      if (cmd === "set_setting") return Promise.resolve();
+      if (cmd === "reveal_main_window_for_setup") return Promise.resolve();
+      if (cmd === "get_community_profile") return Promise.resolve({
+        site_title: "My Local Publication",
+        organization_type: "single_person",
+        city: "",
+        state: "",
+      });
+      if (cmd === "save_community_profile") return Promise.resolve();
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
+
+    await user.type(screen.getByLabelText("Publication Name"), "Longmont Chrome Gate Desk");
+    await user.type(screen.getByLabelText("Editor Name"), "Cleanroom Tester");
+    await user.type(screen.getByLabelText("City"), "Longmont");
+    await user.type(screen.getByLabelText("State"), "CO");
+
+    fireEvent.pointerDown(screen.getByRole("button", { name: /next/i }));
+
+    await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "identity.newsroom_name",
+      value: "Longmont Chrome Gate Desk",
+    }));
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "identity.editor_name",
+      value: "Cleanroom Tester",
+    });
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "identity.city",
+      value: "Longmont",
+    });
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "identity.state",
+      value: "CO",
+    });
+    expect(invokeMock).toHaveBeenCalledWith("reveal_main_window_for_setup");
+  });
+
+  test("first-run setup restores saved identity step after relaunch", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    const settings: Record<string, string> = {
+      "onboarding.step": "2",
+      "identity.newsroom_name": "Longmont Chrome Gate Desk",
+      "identity.editor_name": "Cleanroom Tester",
+      "identity.organization_type": "single_person",
+      "identity.city": "Longmont",
+      "identity.state": "CO",
+      "model.selected": "phi4-mini:latest",
+    };
+
+    invokeMock.mockImplementation((cmd: string, args?: { key?: string }) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(args?.key ? settings[args.key] ?? null : null);
+      if (cmd === "set_setting") return Promise.resolve();
+      if (cmd === "reveal_main_window_for_setup") return Promise.resolve();
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: false, models: [], version: null });
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
+
+    await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
+    expect(invokeMock).toHaveBeenCalledWith("get_setting", { key: "onboarding.step" });
+    expect(invokeMock).toHaveBeenCalledWith("reveal_main_window_for_setup");
+
+    fireEvent.click(screen.getByRole("button", { name: /Back/i }));
+    await waitFor(() => expect(screen.getByText("Step 1 of 5")).toBeInTheDocument());
+    expect(screen.getByLabelText("Publication Name")).toHaveValue("Longmont Chrome Gate Desk");
+    expect(screen.getByLabelText("Editor Name")).toHaveValue("Cleanroom Tester");
+    expect(screen.getByLabelText("City")).toHaveValue("Longmont");
+    expect(screen.getByLabelText("State")).toHaveValue("CO");
+  });
+
   test("native starter hash route fills identity without auto-advancing", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;

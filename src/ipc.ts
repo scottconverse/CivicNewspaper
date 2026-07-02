@@ -735,6 +735,10 @@ export async function setOnboardingComplete(value: boolean): Promise<void> {
   return invokeGuarded<void>("set_onboarding_complete", { value });
 }
 
+export async function revealMainWindowForSetup(): Promise<void> {
+  return invokeGuarded<void>("reveal_main_window_for_setup");
+}
+
 export async function exportDiagnostics(path: string): Promise<void> {
   return invokeGuarded<void>("export_diagnostics", { path });
 }
