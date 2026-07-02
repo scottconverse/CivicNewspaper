@@ -29,6 +29,7 @@ $receipt = [ordered]@{
   fixture_dir = $FixtureDir
   model = $Model
   static_site_dir = $StaticSiteDir
+  source_fixture_snapshot_dir = $null
   stable_mode = [bool]$Stable
   allow_dirty = [bool]$AllowDirty
   ui_smoke_receipt = $null
@@ -249,10 +250,16 @@ try {
     $reviewDir = $ExtractedDir
 
     if ($hasOriginalFixtures) {
+      $fixtureSnapshotDir = Join-Path $RunDir "source-fixtures"
+      New-Item -ItemType Directory -Force -Path $fixtureSnapshotDir | Out-Null
+      Get-ChildItem -LiteralPath $FixtureDir -File |
+        Where-Object { $_.Name -match "^colorado-source-list-" } |
+        Copy-Item -Destination $fixtureSnapshotDir -Force
+      $receipt.source_fixture_snapshot_dir = $fixtureSnapshotDir
       Invoke-Check "source-import-fixture-extraction" {
         Push-Location (Join-Path $RepoRoot "src-tauri")
         try {
-          $env:CIVICNEWS_IMPORT_FIXTURE_DIR = $FixtureDir
+          $env:CIVICNEWS_IMPORT_FIXTURE_DIR = $fixtureSnapshotDir
           $env:CIVICNEWS_IMPORT_EXTRACTED_DIR = $ExtractedDir
           cmd /d /c "cargo test local_source_import_fixtures_extract_reviewable_text -- --nocapture 2>&1"
         } finally {
