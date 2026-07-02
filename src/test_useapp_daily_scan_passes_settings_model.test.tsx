@@ -166,6 +166,42 @@ describe("useApp Hook Tests", () => {
     expect(hookResult.statusMessage).toContain("Daily Scan complete");
   });
 
+  test("daily scan requires an explicit configured community instead of using a sample city", async () => {
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
+      if (cmd === "get_queue") return { leads: [], drafts: [] };
+      if (cmd === "get_sources") return [];
+      if (cmd === "get_community_profile") return { city: "", state: "" };
+      if (cmd === "list_paired_clients") return [];
+      if (cmd === "get_system_ram") return 16;
+      if (cmd === "get_setting" && args?.key === "model.selected") return "qwen2.5:7b";
+      if (cmd === "ollama_health") return { reachable: true, models: ["qwen2.5:7b"], version: "0.1.0" };
+      if (cmd === "run_daily_scan") return 1;
+      return null;
+    });
+
+    let hookResult: any;
+    const TestComp = () => {
+      hookResult = useApp();
+      return <span data-testid="active-tab">{hookResult.activeTab}</span>;
+    };
+
+    await act(async () => {
+      render(<TestComp />);
+    });
+
+    vi.mocked(invoke).mockClear();
+
+    await act(async () => {
+      await hookResult.handleDailyScan();
+    });
+
+    expect(invoke).toHaveBeenCalledWith("get_setting", { key: "model.selected" });
+    expect(invoke).toHaveBeenCalledWith("ollama_health");
+    expect(invoke).not.toHaveBeenCalledWith("run_daily_scan", expect.anything());
+    expect(screen.getByTestId("active-tab")).toHaveTextContent("settings");
+    expect(hookResult.errorMessage).toContain("Choose your publication city and state");
+  });
+
   test("imports discovered official sources with official tier", async () => {
     const calls: Array<{ cmd: string; args: any }> = [];
     vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {

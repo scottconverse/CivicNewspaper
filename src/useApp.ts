@@ -792,9 +792,15 @@ export function useApp() {
         setStatusMessage(`The selected model ${model} is not installed. Running deterministic evidence checks and fallback review packet.`);
       }
 
+      const city = (communityProfile?.city || "").trim();
+      const state = (communityProfile?.state || "").trim().toUpperCase();
+      if (!city || !state) {
+        setActiveTab("settings");
+        setErrorMessage("Choose your publication city and state in Settings before running Daily Scan.");
+        return;
+      }
+
       setStatusMessage("Running the daily scan across your collected evidence...");
-      const city = communityProfile?.city || "Brighton";
-      const state = communityProfile?.state || "CO";
       const scanId = await runDailyScan(city, state, 24);
       setLatestScanId(scanId);
       // QA-mn3: persist the latest scan id so the results view survives a

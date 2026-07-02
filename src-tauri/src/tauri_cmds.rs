@@ -45,10 +45,10 @@ pub struct CommunityProfile {
 }
 
 fn default_city() -> String {
-    "Brighton".to_string()
+    String::new()
 }
 fn default_state() -> String {
-    "CO".to_string()
+    String::new()
 }
 fn default_organization_type() -> String {
     "single_person".to_string()
@@ -115,8 +115,8 @@ fn default_community_profile() -> CommunityProfile {
         first_amendment_advisor_enabled: default_first_amendment_advisor_enabled(),
         money_threshold: 250000.0,
         watchlist: Vec::new(),
-        city: "Brighton".to_string(),
-        state: "CO".to_string(),
+        city: String::new(),
+        state: String::new(),
     }
 }
 
@@ -277,7 +277,9 @@ pub struct QueueData {
     pub drafts: Vec<Draft>,
 }
 
-fn get_config_path(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String> {
+fn get_config_path<R: tauri::Runtime>(
+    app: &tauri::AppHandle<R>,
+) -> Result<std::path::PathBuf, String> {
     let app_data = crate::core::app_paths::app_data_dir(app)?;
     Ok(app_data.join("community_profile.json"))
 }
@@ -838,7 +840,9 @@ pub fn list_daily_scan_leads(
 }
 
 #[tauri::command]
-pub fn get_community_profile(app: tauri::AppHandle) -> Result<CommunityProfile, String> {
+pub fn get_community_profile<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
+) -> Result<CommunityProfile, String> {
     let path = get_config_path(&app)?;
     if !path.exists() {
         return Ok(default_community_profile());
@@ -1331,13 +1335,26 @@ fn source_bound_headline(lead_why: &str) -> String {
             .unwrap_or(title);
     }
     if title.is_empty() {
-        "Longmont civic item needs review".to_string()
+        "Civic item needs review".to_string()
     } else {
         title
     }
 }
 
-fn source_bound_fallback_draft(lead_why: &str, evidence_items: &[EvidenceItem]) -> String {
+fn audience_from_profile(profile: &CommunityProfile) -> String {
+    let city = profile.city.trim();
+    if city.is_empty() {
+        "local readers".to_string()
+    } else {
+        format!("{city} readers")
+    }
+}
+
+fn source_bound_fallback_draft(
+    lead_why: &str,
+    evidence_items: &[EvidenceItem],
+    audience: &str,
+) -> String {
     let headline = source_bound_headline(lead_why);
     let Some(item) = evidence_items.iter().find(|item| item.id.is_some()) else {
         return format!(
@@ -1347,7 +1364,7 @@ fn source_bound_fallback_draft(lead_why: &str, evidence_items: &[EvidenceItem]) 
     let id = item.id.unwrap_or(0);
     let source_sentence = first_public_sentence(&item.excerpt);
     format!(
-        "Headline: {headline}\n\n{source_sentence} [Source](evidence:{id}).\n\nThis is a watch brief for Longmont readers. The linked source does not, by itself, confirm a broader development; watch for a newly posted date, vote, cost, agency response, or other public update before expanding it into a full story."
+        "Headline: {headline}\n\n{source_sentence} [Source](evidence:{id}).\n\nThis is a watch brief for {audience}. The linked source does not, by itself, confirm a broader development; watch for a newly posted date, vote, cost, agency response, or other public update before expanding it into a full story."
     )
 }
 
@@ -1479,14 +1496,19 @@ mod draft_citation_tests {
 
         let issue = super::generated_draft_quality_issue(draft, &evidence_text, 1)
             .expect("unsupported claims should be rejected");
-        let fallback =
-            super::source_bound_fallback_draft("Snacks and Antojitos (Summer Program)", &[item]);
+        let fallback = super::source_bound_fallback_draft(
+            "Snacks and Antojitos (Summer Program)",
+            &[item],
+            "local readers",
+        );
 
         assert!(issue.contains("unsupported"));
         assert!(fallback.contains("Headline: Snacks and Antojitos"));
         assert!(fallback.contains("[Source](evidence:66)"));
+        assert!(fallback.contains("local readers"));
         assert!(!fallback.to_lowercase().contains("covid"));
         assert!(!fallback.to_lowercase().contains("funding cut"));
+        assert!(!fallback.contains("Longmont readers"));
     }
 }
 
@@ -1518,6 +1540,7 @@ fn build_draft_prompt(
     evidence_context: &str,
     evidence_count: usize,
     format: &str,
+    audience: &str,
 ) -> String {
     let lead_quality_context = format!(
         "Story type: {}\nEditorial disposition: {}\nNovelty score: {}\nNovelty reason: {}\nBeat recurrence: {}\nBeat recurrence note: {}\nStory template guidance: {}\n",
@@ -1549,8 +1572,8 @@ fn build_draft_prompt(
         )
     } else {
         format!(
-            "Lead topic: {}\n\n{}\nHere is the attached source material:\n{}\nPlease draft a '{}' item.\n\n{}\n\nWrite for Longmont residents in clean Markdown. First line must be `Headline: ...`. After the headline, write reader-facing article copy only: a clear lede, 3-5 factual paragraphs or short sections, and a concise explanation of what remains uncertain when needed. If the excerpts include dated current items, choose the strongest dated/current item rather than describing the source page itself. Use only the listed Evidence Citation IDs in citations like [Source](evidence:ID). Do not cite any other evidence ID. Use a citation for every factual claim drawn from the source material. {} Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, impacts, community reaction, or technical details. If the evidence is evergreen/background material or does not show a current development, write a reader-facing watch/background brief rather than a full news story.",
-            lead_why, lead_quality_context, evidence_context, format, advisory, forbidden_output
+            "Lead topic: {}\n\n{}\nHere is the attached source material:\n{}\nPlease draft a '{}' item.\n\n{}\n\nWrite for {} in clean Markdown. First line must be `Headline: ...`. After the headline, write reader-facing article copy only: a clear lede, 3-5 factual paragraphs or short sections, and a concise explanation of what remains uncertain when needed. If the excerpts include dated current items, choose the strongest dated/current item rather than describing the source page itself. Use only the listed Evidence Citation IDs in citations like [Source](evidence:ID). Do not cite any other evidence ID. Use a citation for every factual claim drawn from the source material. {} Do not invent dates, durations, dollar amounts, causes, officials, quotes, project history, impacts, community reaction, or technical details. If the evidence is evergreen/background material or does not show a current development, write a reader-facing watch/background brief rather than a full news story.",
+            lead_why, lead_quality_context, evidence_context, format, advisory, audience, forbidden_output
         )
     }
 }
@@ -1573,6 +1596,7 @@ mod draft_prompt_tests {
             "Evidence Citation ID: 7\nExcerpt: Archived council meetings are available.\n\n",
             1,
             "story",
+            "local readers",
         );
 
         assert!(prompt.contains("Story type: background"));
@@ -1595,6 +1619,28 @@ mod draft_prompt_tests {
 
         assert!(guidance.contains("reader-facing background brief"));
         assert!(guidance.contains("private editor-note labels"));
+    }
+
+    #[test]
+    fn multi_source_prompt_uses_configured_audience_without_hardcoded_city() {
+        let prompt = build_draft_prompt(
+            "Council vote on library roof contract.",
+            Some("story"),
+            Some("ready_to_draft"),
+            Some(4),
+            Some("new agenda item"),
+            Some(0),
+            Some("none"),
+            Some("Write a short civic news story."),
+            "Evidence Citation ID: 7\nExcerpt: Agenda item.\n\nEvidence Citation ID: 8\nExcerpt: Staff memo.\n\n",
+            2,
+            "story",
+            "Pueblo readers",
+        );
+
+        assert!(prompt.contains("Write for Pueblo readers"));
+        assert!(!prompt.contains("Longmont residents"));
+        assert!(!prompt.contains("Brighton"));
     }
 }
 
@@ -1686,6 +1732,9 @@ pub async fn generate_draft<R: tauri::Runtime>(
         ));
     }
 
+    let profile = get_community_profile(app.clone())?;
+    let audience = audience_from_profile(&profile);
+
     let prompt = build_draft_prompt(
         &lead_why,
         story_type.as_deref(),
@@ -1698,6 +1747,7 @@ pub async fn generate_draft<R: tauri::Runtime>(
         &evidence_context,
         evidence_items.len(),
         &format,
+        &audience,
     );
 
     let sys = system_prompt.unwrap_or_else(|| "You are an assistant for a local publication editor. You help prepare careful working drafts. Do not decide what is publishable; warn about uncertainty and leave final judgment to the human editor.".to_string());
@@ -1736,7 +1786,11 @@ pub async fn generate_draft<R: tauri::Runtime>(
             "Generated draft for lead {} replaced with source-bound fallback: {}",
             lead_id, issue
         );
-        Ok(source_bound_fallback_draft(&lead_why, &evidence_items))
+        Ok(source_bound_fallback_draft(
+            &lead_why,
+            &evidence_items,
+            &audience,
+        ))
     } else {
         Ok(cleaned)
     }
