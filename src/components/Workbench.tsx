@@ -697,6 +697,19 @@ export const Workbench: React.FC<WorkbenchProps> = ({
     const canUnapprove = workflowStatus === "ready_to_publish";
     const pausedForMoreWork = workflowStatus === "hold" || workflowStatus === "needs_verification";
     const qualityWarnings = qualityWarningsForSelectedDraft;
+    const approveDisabled = selectedDraft.status === "killed" || finalStatus || pausedForMoreWork || !attested || Boolean(decisionModal);
+    const approveTitle =
+      selectedDraft.status === "killed"
+        ? "Restore this story before approving it for publishing"
+        : finalStatus
+          ? "This story is already in a final publishing state"
+        : pausedForMoreWork
+          ? "Resume editing or mark this story ready for review before approving it"
+        : !attested
+          ? "Check editorial responsibility before approving"
+        : totalReviewWarningCount > 0
+          ? "This story has review warnings - you'll be asked to confirm that the editor reviewed them"
+        : "Approve this story for publishing";
 
     return (
       <div id="workbench-editor-panel" tabIndex={-1} ref={editorPanelRef}>
@@ -714,6 +727,56 @@ export const Workbench: React.FC<WorkbenchProps> = ({
             </button>
             <button className="btn btn-danger" onClick={() => onDeleteDraft(selectedDraft.id!)} id="btn-delete-workbench-draft">
               Delete
+            </button>
+          </div>
+        </div>
+
+        <div className="card workbench-priority-strip" id="workbench-priority-strip">
+          <div className="workbench-priority-summary">
+            <span className={`badge badge-${getStatusColor(selectedDraft.status)}`}>
+              {getStatusLabel(selectedDraft.status)}
+            </span>
+            <strong>{selectedDraft.title || "Untitled draft"}</strong>
+          </div>
+          <div className="workbench-priority-actions">
+            {onImproveForPublication && (
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                id="btn-improve-publication-top"
+                onClick={handleImproveForPublication}
+                disabled={isImprovingForPublication || (!ollamaOnline && !manualLlmMode) || !selectedDraft.content}
+              >
+                {isImprovingForPublication ? "Improving..." : "Improve for Publication"}
+              </button>
+            )}
+            {canSendBack && (
+              <button className="btn btn-secondary btn-sm" onClick={() => openDecisionModal("needs_verification")} id="btn-status-send-back-top">
+                Send Back
+              </button>
+            )}
+            {canMarkReady && (
+              <button className="btn btn-secondary btn-sm" onClick={() => onDecision("ready_to_review")} id="btn-status-ready-review-top">
+                Ready
+              </button>
+            )}
+            <label htmlFor="chk-attest-top" className="workbench-priority-attest">
+              <input
+                id="chk-attest-top"
+                type="checkbox"
+                checked={attested}
+                onChange={(e) => setAttested(e.target.checked)}
+              />
+              <span>I reviewed this story.</span>
+            </label>
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={handleApproveClick}
+              disabled={approveDisabled}
+              title={approveTitle}
+              id="btn-status-publish-top"
+            >
+              Approve
             </button>
           </div>
         </div>
@@ -965,20 +1028,8 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                     <button
                       className="btn btn-primary btn-sm"
                       onClick={handleApproveClick}
-                      disabled={selectedDraft.status === "killed" || finalStatus || pausedForMoreWork || !attested || Boolean(decisionModal)}
-                      title={
-                        selectedDraft.status === "killed"
-                          ? "Restore this story before approving it for publishing"
-                          : finalStatus
-                            ? "This story is already in a final publishing state"
-                          : pausedForMoreWork
-                            ? "Resume editing or mark this story ready for review before approving it"
-                          : !attested
-                          ? "Check editorial responsibility before approving"
-                          : totalReviewWarningCount > 0
-                            ? "This story has review warnings - you'll be asked to confirm that the editor reviewed them"
-                            : "Approve this story for publishing"
-                      }
+                      disabled={approveDisabled}
+                      title={approveTitle}
                       id="btn-status-publish"
                     >
                       Approve for Static Publish

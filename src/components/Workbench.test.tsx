@@ -356,6 +356,25 @@ describe("Workbench Component Tests", () => {
     expect(onCloseWorkbench).toHaveBeenCalledTimes(1);
   });
 
+  test("keeps Workbench improve and approval controls visible near the top of an opened draft", () => {
+    const onImproveForPublication = vi.fn();
+    const onApprovePublish = vi.fn();
+
+    renderEditor({ onImproveForPublication, onApprovePublish });
+
+    const strip = document.getElementById("workbench-priority-strip");
+    expect(strip).toBeInTheDocument();
+    expect(within(strip!).getByRole("button", { name: /Improve for Publication/i })).toBeInTheDocument();
+    expect(within(strip!).getByLabelText(/reviewed this story/i)).toBeInTheDocument();
+
+    fireEvent.click(within(strip!).getByRole("button", { name: /Improve for Publication/i }));
+    expect(onImproveForPublication).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(within(strip!).getByLabelText(/reviewed this story/i));
+    fireEvent.click(within(strip!).getByRole("button", { name: /^Approve$/i }));
+    expect(onApprovePublish).toHaveBeenCalledTimes(1);
+  });
+
   test("renders advisory warning copy without mojibake", () => {
     const mockReport: GuardrailsReport = {
       is_clean: true,
@@ -647,7 +666,7 @@ describe("Workbench Component Tests", () => {
     fireEvent.click(screen.getByRole("button", { name: /Make this a brief/i }));
     expect(onUpdateDraftFormat).toHaveBeenCalledWith("brief");
 
-    fireEvent.click(screen.getByRole("button", { name: /Improve for Publication/i }));
+    fireEvent.click(document.getElementById("btn-improve-publication")!);
     expect(onImproveForPublication).toHaveBeenCalledTimes(1);
   });
 

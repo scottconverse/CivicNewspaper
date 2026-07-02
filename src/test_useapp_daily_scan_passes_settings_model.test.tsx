@@ -525,7 +525,7 @@ describe("useApp Hook Tests", () => {
       if (cmd === "get_setting" && args?.key === "model.selected") return "qwen2.5:7b";
       if (cmd === "ollama_health") return { reachable: true, models: ["qwen2.5:7b"], version: "0.6.0" };
       if (cmd === "generate_draft") {
-        return "Headline: Summer Concert Series Adds 2MX2 Performance\n\nAccording to the linked source, 2MX2 is scheduled to perform Thursday at 7 pm at Longmont Museum. [Source](evidence:7)\n\nThe listing gives residents the time and location for the concert.";
+        return "Headline: Summer Concert Series Adds 2MX2 Performance \u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a2 7 pm\n\nAccording to the linked source, 2MX2 is scheduled to perform Thursday \u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a2 7 pm at Longmont Museum. [Source](evidence:7)\n\nThe listing gives residents the time and location for the concert.";
       }
       if (cmd === "save_draft") {
         const draft = { ...args.draft, id: 504 };
@@ -567,6 +567,9 @@ describe("useApp Hook Tests", () => {
 
     expect(savedDrafts[0].status).toBe("draft_generated");
     expect(savedDrafts[0].missing_evidence_notes).toBeUndefined();
+    expect(savedDrafts[0].title).not.toMatch(/[\u00c2\u00c3\u00e2\ufffd]/);
+    expect(savedDrafts[0].content).not.toMatch(/[\u00c2\u00c3\u00e2\ufffd]/);
+    expect(savedDrafts[0].content).toContain("Thursday - 7 pm");
     expect(hookResult.selectedDraft?.status).toBe("draft_generated");
     expect(hookResult.statusMessage).toContain("Draft generated successfully");
   });

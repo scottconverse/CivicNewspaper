@@ -79,8 +79,23 @@ import {
 import modelsConfig from "./models.json";
 import { buildBulkImportReview, BulkImportReview, normalizeImportUrl, tierForSourceType } from "./bulkImportParser";
 
+function repairCommonMojibake(text: string): string {
+  return text
+    .replace(/\u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a2/g, "-")
+    .replace(/\u00e2\u20ac\u00a2/g, "-")
+    .replace(/\u00e2\u20ac\u201c|\u00e2\u20ac\u009c|\u00e2\u0080\u0093/g, "-")
+    .replace(/\u00e2\u20ac\u201d|\u00e2\u0080\u0094/g, "-")
+    .replace(/\u00e2\u20ac\u2122|\u00e2\u20ac\u02dc|\u00e2\u0080\u0099|\u00e2\u0080\u0098/g, "'")
+    .replace(/\u00e2\u20ac\u0153|\u00e2\u20ac\u009d|\u00e2\u0080\u009c|\u00e2\u0080\u009d/g, "\"")
+    .replace(/[\u00c2\u00c3\u00e2\ufffd]/g, "")
+    .replace(/\u00a0/g, " ")
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201c\u201d]/g, "\"")
+    .replace(/[\u2013\u2014\u2022\u00b7]/g, "-");
+}
+
 function normalizeGeneratedDraft(raw: string, fallbackTitle: string): { title: string; content: string } {
-  const repaired = raw.replace(/\r\n/g, "\n").trim();
+  const repaired = repairCommonMojibake(raw).replace(/\r\n/g, "\n").trim();
   const lines = repaired.split("\n");
   let title = fallbackTitle.replace(/\s+/g, " ").trim();
   let titleLineIndex = -1;
@@ -144,8 +159,8 @@ function normalizeGeneratedDraft(raw: string, fallbackTitle: string): { title: s
     .trim();
 
   return {
-    title: title || "Untitled draft",
-    content: content || repaired,
+    title: repairCommonMojibake(title || "Untitled draft"),
+    content: repairCommonMojibake(content || repaired),
   };
 }
 

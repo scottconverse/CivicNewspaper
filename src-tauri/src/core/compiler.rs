@@ -275,6 +275,8 @@ pub(crate) fn repair_common_mojibake(text: &str) -> String {
         repaired = next;
     }
     let repaired = repaired
+        .replace("\u{00c3}\u{00a2}\u{00e2}\u{201a}\u{00ac}\u{00c2}\u{00a2}", "-")
+        .replace("\u{00e2}\u{20ac}\u{00a2}", "-")
         .replace("&amp;#8217;", "'")
         .replace("&#8217;", "'")
         .replace("&amp;#8216;", "'")
@@ -308,6 +310,7 @@ pub(crate) fn repair_common_mojibake(text: &str) -> String {
         .replace('\u{201d}', "\"")
         .replace('\u{2013}', "-")
         .replace('\u{2014}', "-")
+        .replace('\u{2022}', "-")
         .replace('\u{00b7}', "-");
     repaired
         .chars()
@@ -946,6 +949,14 @@ mod tests {
             content_hash: "hash".to_string(),
             entities: "[]".to_string(),
         }
+    }
+
+    #[test]
+    fn repair_common_mojibake_handles_triple_encoded_bullet() {
+        let raw = "Thursday \u{00c3}\u{00a2}\u{00e2}\u{201a}\u{00ac}\u{00c2}\u{00a2} 7 pm";
+        let repaired = repair_common_mojibake(raw);
+        assert_eq!(repaired, "Thursday - 7 pm");
+        assert!(public_output_quality_issue(&repaired).is_none());
     }
 
     #[test]
