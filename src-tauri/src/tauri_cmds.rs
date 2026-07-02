@@ -1014,9 +1014,22 @@ pub fn get_queue(db: tauri::State<'_, DbConn>) -> Result<QueueData, String> {
     let conn = db
         .lock()
         .map_err(|_| "Failed to lock database".to_string())?;
+    recover_in_progress_scans_with_saved_leads(&conn).map_err(|e| e.to_string())?;
     let leads = db::list_leads(&conn).map_err(|e| e.to_string())?;
     let drafts = db::list_drafts(&conn).map_err(|e| e.to_string())?;
     Ok(QueueData { leads, drafts })
+}
+
+fn recover_in_progress_scans_with_saved_leads(
+    conn: &rusqlite::Connection,
+) -> rusqlite::Result<usize> {
+    conn.execute(
+        "UPDATE daily_scan_runs
+         SET completed_at = COALESCE(completed_at, ?1), run_status = 'completed'
+         WHERE run_status = 'in_progress'
+           AND id IN (SELECT DISTINCT scan_id FROM daily_scan_leads)",
+        [chrono::Utc::now().to_rfc3339()],
+    )
 }
 
 #[tauri::command]
@@ -1211,10 +1224,18 @@ fn sanitize_unlinked_evidence_citations(text: &str, allowed_ids: &HashSet<i32>) 
 }
 
 fn normalize_model_evidence_citations(text: &str) -> String {
+    let malformed_source =
+        regex::Regex::new("(?i)\\[\\s*source\\s*\\(\\s*evidence\\s*:\\s*(\\d+)\\s*\\)\\s*\\]")
+            .expect("valid malformed source evidence regex");
+    let repaired = malformed_source
+        .replace_all(text, |caps: &regex::Captures<'_>| {
+            format!("[Source](evidence:{})", caps.get(1).unwrap().as_str())
+        })
+        .to_string();
     let bracketed = regex::Regex::new("(?i)\\[\\s*evidence\\s*:\\s*(\\d+)\\s*\\]\\([^)]*\\)")
         .expect("valid bracketed evidence regex");
     let normalized = bracketed
-        .replace_all(text, |caps: &regex::Captures<'_>| {
+        .replace_all(&repaired, |caps: &regex::Captures<'_>| {
             format!("[Source](evidence:{})", caps.get(1).unwrap().as_str())
         })
         .to_string();
@@ -1405,7 +1426,7 @@ fn source_bound_fallback_draft(
     let id = item.id.unwrap_or(0);
     let source_sentence = first_public_sentence(&item.excerpt);
     format!(
-        "Headline: {headline}\n\n{source_sentence} [Source](evidence:{id}).\n\nThis is a watch brief for {audience}. The linked source does not, by itself, confirm a broader development; watch for a newly posted date, vote, cost, agency response, or other public update before expanding it into a full story."
+        "Headline: {headline}\n\nAccording to the linked source, {source_sentence} [Source](evidence:{id}).\n\nThis is a watch brief for {audience}. The linked source does not, by itself, confirm a broader development; watch for a newly posted date, vote, cost, agency response, or other public update before expanding it into a full story."
     )
 }
 
@@ -1432,12 +1453,21 @@ fn generated_draft_quality_issue(
     if lower.contains("evidence:none") || lower.contains("evidence: none") {
         return Some("model cited missing evidence".to_string());
     }
+    if regex::Regex::new("(?i)\\[\\s*source\\s*\\(\\s*evidence\\s*:\\s*\\d+\\s*\\)\\s*\\]")
+        .expect("valid malformed source evidence regex")
+        .is_match(draft)
+    {
+        return Some("model output used malformed evidence citation syntax".to_string());
+    }
     if evidence_count > 0
         && !regex::Regex::new("(?i)evidence:\\s*(?://)?\\s*\\d+")
             .expect("valid evidence regex")
             .is_match(draft)
     {
         return Some("model output did not include inline evidence citations".to_string());
+    }
+    if evidence_count > 0 && !lower.contains("according to") {
+        return Some("model output did not clearly attribute sourced claims".to_string());
     }
     for term in [
         "cancel",
@@ -1456,6 +1486,20 @@ fn generated_draft_quality_issue(
         if lower.contains(term) && !evidence_lower.contains(term) {
             return Some(format!(
                 "model output introduced unsupported high-risk claim term `{term}`"
+            ));
+        }
+    }
+    for term in [
+        "school district 2",
+        "burlington public schools",
+        "senior volunteers",
+        "abc news",
+        "kmgh",
+        "sam mims",
+    ] {
+        if lower.contains(term) && !evidence_lower.contains(term) {
+            return Some(format!(
+                "model output introduced unsupported named source or entity `{term}`"
             ));
         }
     }
@@ -1482,12 +1526,14 @@ mod draft_citation_tests {
 
     #[test]
     fn normalizes_model_evidence_citation_shapes() {
-        let draft = "Claim one [evidence: 67](17). Claim two [Source](evidence: 66).";
+        let draft =
+            "Claim one [evidence: 67](17). Claim two [Source](evidence: 66). Claim three [Source(evidence:15)].";
 
         let normalized = super::normalize_model_evidence_citations(draft);
 
         assert!(normalized.contains("[Source](evidence:67)"));
         assert!(normalized.contains("[Source](evidence:66)"));
+        assert!(normalized.contains("[Source](evidence:15)"));
     }
 
     #[test]
@@ -1532,7 +1578,7 @@ mod draft_citation_tests {
             content_hash: "events".to_string(),
             entities: "[]".to_string(),
         };
-        let draft = "The program was canceled because of COVID funding cuts. [Source](evidence:66)";
+        let draft = "According to the source, the program was canceled because of COVID funding cuts. [Source](evidence:66)";
         let evidence_text = format!("Evidence Citation ID: 66\nExcerpt: {}\n\n", item.excerpt);
 
         let issue = super::generated_draft_quality_issue(draft, &evidence_text, 1)
@@ -1550,6 +1596,103 @@ mod draft_citation_tests {
         assert!(!fallback.to_lowercase().contains("covid"));
         assert!(!fallback.to_lowercase().contains("funding cut"));
         assert!(!fallback.contains("Longmont readers"));
+    }
+
+    #[test]
+    fn falls_back_when_model_output_lacks_attribution_or_adds_named_claims() {
+        let evidence_text = "Evidence Citation ID: 15\nExcerpt: St. Vrain Valley Schools announced direct admission offers through CU Denver.\n\n";
+        let unattributed = "Students have a direct admission opportunity [Source](evidence:15).";
+        let named_drift = "School District 2 and Burlington Public Schools will hold meetings according to the source [Source](evidence:15).";
+
+        assert!(
+            super::generated_draft_quality_issue(unattributed, evidence_text, 1)
+                .unwrap()
+                .contains("attribute")
+        );
+        assert!(
+            super::generated_draft_quality_issue(named_drift, evidence_text, 1)
+                .unwrap()
+                .contains("unsupported")
+        );
+    }
+
+    #[test]
+    fn source_bound_fallback_is_attributed_and_reader_facing() {
+        let item = crate::core::db::EvidenceItem {
+            id: Some(15),
+            source_id: 1,
+            url: Some("https://example.test/schools".to_string()),
+            fetched_at: "2026-07-02T00:00:00Z".to_string(),
+            excerpt:
+                "St. Vrain Valley Schools announced direct admission offers through CU Denver."
+                    .to_string(),
+            content_hash: "schools".to_string(),
+            entities: "[]".to_string(),
+        };
+
+        let fallback = super::source_bound_fallback_draft(
+            "St. Vrain direct admission offer",
+            &[item],
+            "local readers",
+        );
+
+        assert!(fallback.contains("According to the linked source"));
+        assert!(fallback.contains("[Source](evidence:15)"));
+        assert!(!fallback.contains("Burlington Public Schools"));
+    }
+
+    #[test]
+    fn no_evidence_fallback_stays_a_verification_assignment() {
+        let fallback = super::source_bound_fallback_draft(
+            "City of Longmont to Perform Chip Seal on Francis Street July 6-15",
+            &[],
+            "Longmont readers",
+        );
+        let lower = fallback.to_lowercase();
+
+        assert!(fallback.contains("No source documents are linked"));
+        assert!(fallback.contains("verification assignment"));
+        assert!(!lower.contains("abc news"));
+        assert!(!lower.contains("kmgh"));
+        assert!(!lower.contains("sam mims"));
+    }
+}
+
+#[cfg(test)]
+mod queue_recovery_tests {
+    use chrono::Utc;
+    use rusqlite::Connection;
+
+    #[test]
+    fn recovers_in_progress_scan_when_saved_leads_exist() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        crate::core::migrations::run_migrations(&mut conn).unwrap();
+
+        conn.execute(
+            "INSERT INTO daily_scan_runs (started_at, run_status) VALUES (?1, 'in_progress')",
+            [Utc::now().to_rfc3339()],
+        )
+        .unwrap();
+        let scan_id = conn.last_insert_rowid();
+        conn.execute(
+            "INSERT INTO daily_scan_leads (scan_id, title, summary, original_url)
+             VALUES (?1, 'Saved lead', 'Saved summary', 'https://example.gov/notice')",
+            [scan_id],
+        )
+        .unwrap();
+
+        let changed = super::recover_in_progress_scans_with_saved_leads(&conn).unwrap();
+        assert_eq!(changed, 1);
+
+        let (status, completed_at): (String, Option<String>) = conn
+            .query_row(
+                "SELECT run_status, completed_at FROM daily_scan_runs WHERE id = ?1",
+                [scan_id],
+                |row| Ok((row.get(0)?, row.get(1)?)),
+            )
+            .unwrap();
+        assert_eq!(status, "completed");
+        assert!(completed_at.is_some());
     }
 }
 
@@ -1790,6 +1933,14 @@ pub async fn generate_draft<R: tauri::Runtime>(
         &format,
         &audience,
     );
+
+    if evidence_items.is_empty() {
+        return Ok(source_bound_fallback_draft(
+            &lead_why,
+            &evidence_items,
+            &audience,
+        ));
+    }
 
     let sys = system_prompt.unwrap_or_else(|| "You are an assistant for a local publication editor. You help prepare careful working drafts. Do not decide what is publishable; warn about uncertainty and leave final judgment to the human editor.".to_string());
 
