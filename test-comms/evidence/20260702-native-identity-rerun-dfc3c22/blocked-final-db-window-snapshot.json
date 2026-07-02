@@ -1,0 +1,75 @@
+{
+  "time_utc": "2026-07-02T05:53:20Z",
+  "db": {
+    "path": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+    "exists": true,
+    "sources": 0,
+    "daily_scan_runs": 0,
+    "daily_scan_leads": 0,
+    "leads": 0,
+    "evidence_items": 0,
+    "lead_evidence": 0,
+    "drafts": 0,
+    "publish_runs": 0,
+    "published_posts": 0,
+    "settings": {
+      "model.selected": "phi4-mini:latest"
+    }
+  },
+  "processes_raw": "",
+  "windows": [
+    {
+      "hwnd": 2623136,
+      "pid": 10888,
+      "visible": true,
+      "iconic": false,
+      "rect": [
+        60,
+        -260,
+        1860,
+        1060
+      ],
+      "title": "The Civic Desk"
+    },
+    {
+      "hwnd": 17892306,
+      "pid": 10888,
+      "visible": true,
+      "iconic": false,
+      "rect": [
+        0,
+        0,
+        15,
+        15
+      ],
+      "title": ""
+    },
+    {
+      "hwnd": 3016118,
+      "pid": 10888,
+      "visible": false,
+      "iconic": false,
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "title": "MSCTFIME UI"
+    },
+    {
+      "hwnd": 40894756,
+      "pid": 10888,
+      "visible": false,
+      "iconic": false,
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "title": "Default IME"
+    }
+  ],
+  "processes_raw_error": "Command '['powershell', '-NoProfile', '-Command', 'Get-Process civicnews,ollama -ErrorAction SilentlyContinue | Select-Object ProcessName,Id,Path,MainWindowTitle,MainWindowHandle | ConvertTo-Json -Depth 3']' returned non-zero exit status 1."
+}
