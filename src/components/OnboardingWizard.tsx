@@ -201,6 +201,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     city: string;
     state: string;
   }) => {
+    if (pubNameInputRef.current) pubNameInputRef.current.value = values.pubName;
+    if (editorNameInputRef.current) editorNameInputRef.current.value = values.editorName;
+    if (organizationTypeSelectRef.current) organizationTypeSelectRef.current.value = values.organizationType;
+    if (cityInputRef.current) cityInputRef.current.value = values.city;
+    if (stateInputRef.current) stateInputRef.current.value = values.state;
     setPubName(values.pubName);
     setEditorName(values.editorName);
     setOrganizationType(values.organizationType);
@@ -903,6 +908,32 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   }, [step, pubName, editorName, organizationType, city, state, health, pulling, pullComplete, model, runtimeInstalling, publishPath, backupPath]);
 
   useEffect(() => {
+    if (step !== 1) return;
+
+    const handleNativeStarter = (event: Event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const button = target.closest<HTMLButtonElement>("[data-starter-profile]");
+      if (!button) return;
+      const profile = starterProfiles.find(item => item.label === button.dataset.starterProfile);
+      if (!profile) return;
+      event.preventDefault();
+      event.stopPropagation();
+      markIdentityInteraction();
+      applyIdentityValues(profile);
+    };
+
+    document.addEventListener("pointerdown", handleNativeStarter, { capture: true });
+    document.addEventListener("mousedown", handleNativeStarter, { capture: true });
+    document.addEventListener("click", handleNativeStarter, { capture: true });
+    return () => {
+      document.removeEventListener("pointerdown", handleNativeStarter, { capture: true });
+      document.removeEventListener("mousedown", handleNativeStarter, { capture: true });
+      document.removeEventListener("click", handleNativeStarter, { capture: true });
+    };
+  }, [step]);
+
+  useEffect(() => {
     if (!modelDownloadButtonRef.current) return;
 
     const button = modelDownloadButtonRef.current;
@@ -972,6 +1003,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                     key={profile.label}
                     type="button"
                     className="btn btn-secondary btn-sm"
+                    data-starter-profile={profile.label}
                     onClick={() => {
                       markIdentityInteraction();
                       applyIdentityValues(profile);
@@ -994,7 +1026,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 autoFocus
                 type="text"
                 placeholder="e.g. The Brighton Gazette"
-                value={pubName}
+                defaultValue={pubName}
                 onInput={e => {
                   markIdentityInteraction();
                   setPubName(e.currentTarget.value);
@@ -1013,7 +1045,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 ref={editorNameInputRef}
                 type="text"
                 placeholder="e.g. Jane Doe"
-                value={editorName}
+                defaultValue={editorName}
                 onInput={e => {
                   markIdentityInteraction();
                   setEditorName(e.currentTarget.value);
@@ -1029,7 +1061,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               <select
                 id="onboarding-organization-type"
                 ref={organizationTypeSelectRef}
-                value={organizationType}
+                defaultValue={organizationType}
                   onInput={e => {
                     markIdentityInteraction();
                     setOrganizationType(e.currentTarget.value);
@@ -1055,7 +1087,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   ref={cityInputRef}
                   type="text"
                   placeholder="Brighton"
-                  value={city}
+                  defaultValue={city}
                   onInput={e => {
                     markIdentityInteraction();
                     setCity(e.currentTarget.value);
@@ -1073,16 +1105,20 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   ref={stateInputRef}
                   type="text"
                   placeholder="CO"
-                  value={state}
+                  defaultValue={state}
                   maxLength={2}
                   autoCapitalize="characters"
                   onInput={e => {
                     markIdentityInteraction();
-                    setState(sanitizeStateCode(e.currentTarget.value));
+                    const nextState = sanitizeStateCode(e.currentTarget.value);
+                    e.currentTarget.value = nextState;
+                    setState(nextState);
                   }}
                   onChange={e => {
                     markIdentityInteraction();
-                    setState(sanitizeStateCode(e.target.value));
+                    const nextState = sanitizeStateCode(e.target.value);
+                    e.target.value = nextState;
+                    setState(nextState);
                   }}
                 />
               </div>
