@@ -154,8 +154,8 @@ Default publishing order:
 
 1. here.now for simple temporary civic website publishing.
 2. GitHub Pages for a durable public archive.
-3. Netlify or WordPress for credentialed technical users.
-4. Manual Cloudflare Pages hosting by exporting the folder or ZIP and recording the public URL.
+3. Netlify for credentialed technical users.
+4. Assisted/manual WordPress and Cloudflare Pages hosting by exporting the folder or ZIP and recording the public URL.
 5. Substack/newsletter as distribution, not the canonical archive.
 
 The app can produce:
@@ -187,9 +187,9 @@ Supported provider families in the current code:
 - `netlify`
 - `cloudflare_pages` assisted/manual beta workflow
 - `substack`
-- `wordpress`
+- `wordpress` assisted/manual beta workflow
 
-Substack is currently an assisted workflow: generate the post body, open the editor, copy title/deck/body, and allow the user to store the final Substack URL after posting.
+WordPress and Substack are currently assisted workflows: generate or export the publishable package, publish in the outside service, and allow the user to store the final public URL after posting.
 
 ## Data Storage
 

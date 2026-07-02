@@ -71,6 +71,92 @@ async function assertNav(page, navId, expected) {
   }
 }
 
+async function assertKeyboardAndAccessibility(page, results) {
+  await page.keyboard.press("Tab");
+  const focusInfo = await page.evaluate(() => {
+    const element = document.activeElement;
+    if (!element || element === document.body) return null;
+    const rect = element.getBoundingClientRect();
+    const style = window.getComputedStyle(element);
+    return {
+      tag: element.tagName.toLowerCase(),
+      id: element.id || "",
+      text: (element.textContent || "").trim().slice(0, 80),
+      visible: rect.width > 0 && rect.height > 0 && style.visibility !== "hidden" && style.display !== "none",
+    };
+  });
+  if (!focusInfo?.visible) {
+    throw new Error(`Keyboard Tab did not land on a visible control: ${JSON.stringify(focusInfo)}`);
+  }
+  results.push({ name: "keyboard-tab-focus-visible", ok: true, details: focusInfo });
+
+  const unnamedControls = await page.evaluate(() => {
+    const labelText = (node) => {
+      if (node.id) {
+        const label = document.querySelector(`label[for="${CSS.escape(node.id)}"]`);
+        if (label?.textContent?.trim()) return label.textContent.trim();
+      }
+      return "";
+    };
+    return Array.from(document.querySelectorAll("button, input, select, textarea, a[href]"))
+      .filter((node) => {
+        const rect = node.getBoundingClientRect();
+        const style = window.getComputedStyle(node);
+        return rect.width > 0 && rect.height > 0 && style.visibility !== "hidden" && style.display !== "none";
+      })
+      .map((node) => ({
+        tag: node.tagName.toLowerCase(),
+        id: node.id || "",
+        text: (node.textContent || "").trim(),
+        aria: node.getAttribute("aria-label") || "",
+        title: node.getAttribute("title") || "",
+        placeholder: node.getAttribute("placeholder") || "",
+        label: labelText(node),
+      }))
+      .filter((item) => ![item.text, item.aria, item.title, item.placeholder, item.label].some((value) => value.trim().length > 0))
+      .slice(0, 10);
+  });
+  if (unnamedControls.length) {
+    throw new Error(`Visible controls without accessible names: ${JSON.stringify(unnamedControls)}`);
+  }
+  results.push({ name: "visible-controls-have-accessible-names", ok: true });
+
+  const contrastInfo = await page.evaluate(() => {
+    const parseRgb = (value) => {
+      const trimmed = value.trim();
+      const rgbMatch = trimmed.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+      if (rgbMatch) return [Number(rgbMatch[1]), Number(rgbMatch[2]), Number(rgbMatch[3])];
+      const hexMatch = trimmed.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+      if (!hexMatch) return null;
+      const hex = hexMatch[1].length === 3
+        ? hexMatch[1].split("").map((ch) => ch + ch).join("")
+        : hexMatch[1];
+      return [0, 2, 4].map((offset) => parseInt(hex.slice(offset, offset + 2), 16));
+    };
+    const luminance = ([r, g, b]) => {
+      const convert = (channel) => {
+        const srgb = channel / 255;
+        return srgb <= 0.03928 ? srgb / 12.92 : Math.pow((srgb + 0.055) / 1.055, 2.4);
+      };
+      return 0.2126 * convert(r) + 0.7152 * convert(g) + 0.0722 * convert(b);
+    };
+    const ratio = (a, b) => {
+      const l1 = luminance(a);
+      const l2 = luminance(b);
+      return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+    };
+    const root = window.getComputedStyle(document.documentElement);
+    const text = parseRgb(root.getPropertyValue("--text-primary"));
+    const background = parseRgb(root.getPropertyValue("--bg-app"));
+    if (!text || !background) return { ratio: 0, text: null, background: null };
+    return { ratio: ratio(text, background), text, background };
+  });
+  if (contrastInfo.ratio < 4.5) {
+    throw new Error(`Primary text contrast is below 4.5:1: ${JSON.stringify(contrastInfo)}`);
+  }
+  results.push({ name: "primary-text-contrast-aa", ok: true, details: contrastInfo });
+}
+
 async function main() {
   await mkdir(runDir, { recursive: true });
   const attachMode = Boolean(attachUrl);
@@ -138,6 +224,7 @@ async function main() {
       await assertNav(page, navId, expected);
       results.push({ name: `nav-${navId}`, ok: true });
     }
+    await assertKeyboardAndAccessibility(page, results);
     await page.screenshot({ path: path.join(runDir, "main-navigation.png"), fullPage: true });
 
     await page.setViewportSize({ width: 390, height: 844 });

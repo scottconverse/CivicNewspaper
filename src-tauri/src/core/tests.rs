@@ -9,7 +9,7 @@ mod tests {
     use std::sync::{Arc, Mutex};
     use tempfile::tempdir;
 
-    use crate::core::auth::{is_valid_host, is_valid_origin};
+    use crate::core::auth::{is_valid_host, is_valid_origin, BUNDLED_CHROMIUM_EXTENSION_ID};
     use crate::core::backups::{restore_backup, save_backup};
     use crate::core::compiler::compile_static_site;
     use crate::core::db::*;
@@ -198,7 +198,11 @@ mod tests {
         assert!(!is_valid_host("127.0.0.1:8080"));
 
         // Origin checks
-        assert!(is_valid_origin("chrome-extension://someuniqueextensionid"));
+        assert!(is_valid_origin(&format!(
+            "chrome-extension://{}",
+            BUNDLED_CHROMIUM_EXTENSION_ID
+        )));
+        assert!(!is_valid_origin("chrome-extension://someuniqueextensionid"));
         assert!(!is_valid_origin("null"));
         assert!(!is_valid_origin("http://evilwebsite.com"));
         assert!(!is_valid_origin("https://localhost:12053"));
@@ -5133,6 +5137,47 @@ I should produce JSON only.
         );
         assert!(temp_dir.path().join(".civicdesk-output").exists());
         assert!(temp_dir.path().join("publish-manifest.json").exists());
+    }
+
+    #[test]
+    fn test_compile_zip_excludes_unknown_files_in_marked_output_folder() {
+        let conn =
+            init_db("file:test_compile_zip_excludes_unknown?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+        std::fs::write(
+            temp_dir.path().join(".civicdesk-output"),
+            "managed by Civic Desk",
+        )
+        .unwrap();
+        std::fs::write(temp_dir.path().join("secret.txt"), "private note").unwrap();
+
+        let result = compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+
+        assert!(
+            temp_dir.path().join("secret.txt").exists(),
+            "the compiler should not delete unrelated files while compiling"
+        );
+        assert!(
+            !result.generated_files.contains(&"secret.txt".to_string()),
+            "secret.txt must never be listed as generated output"
+        );
+
+        let zip_file = std::fs::File::open(temp_dir.path().join("site-package.zip")).unwrap();
+        let mut zip = zip::ZipArchive::new(zip_file).unwrap();
+        let mut names = Vec::new();
+        for index in 0..zip.len() {
+            names.push(zip.by_index(index).unwrap().name().to_string());
+        }
+
+        assert!(
+            !names.iter().any(|name| name == "secret.txt"),
+            "site-package.zip must package only generated files, got: {:?}",
+            names
+        );
+        assert!(
+            names.iter().any(|name| name == "publish-manifest.json"),
+            "manifest should remain packaged"
+        );
     }
 
     // GG-C1: attestation/override gate columns round-trip (proves migration 0008).

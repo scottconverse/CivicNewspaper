@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod tests {
+    use crate::core::auth::BUNDLED_CHROMIUM_EXTENSION_ID;
     use crate::core::db::{create_pairing_pin, DbConn};
     use crate::core::migrations::run_migrations;
     use crate::core::server::{build_app, AppState};
@@ -62,6 +63,10 @@ mod tests {
             .insert(header::HOST, "127.0.0.1:12053".parse().unwrap());
         req.headers_mut()
             .insert("x-civicnews-pair", "1".parse().unwrap());
+    }
+
+    fn bundled_extension_origin() -> String {
+        format!("chrome-extension://{}", BUNDLED_CHROMIUM_EXTENSION_ID)
     }
 
     #[tokio::test]
@@ -172,7 +177,7 @@ mod tests {
         req2.headers_mut()
             .insert(header::HOST, "127.0.0.1:12053".parse().unwrap());
         req2.headers_mut()
-            .insert(header::ORIGIN, "chrome-extension://someid".parse().unwrap());
+            .insert(header::ORIGIN, bundled_extension_origin().parse().unwrap());
         req2.headers_mut().insert(
             header::AUTHORIZATION,
             format!("Bearer {}", token).parse().unwrap(),
@@ -259,7 +264,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_pair_allows_trusted_extension_origin() {
+    async fn test_pair_rejects_arbitrary_extension_origin() {
         let (app, _) = setup_app();
         let mut req = make_req(
             "/api/pair",
@@ -270,6 +275,23 @@ mod tests {
             .insert(header::HOST, "127.0.0.1:12053".parse().unwrap());
         req.headers_mut()
             .insert(header::ORIGIN, "chrome-extension://someid".parse().unwrap());
+
+        let res = app.clone().oneshot(req).await.unwrap();
+        assert_eq!(res.status(), StatusCode::FORBIDDEN);
+    }
+
+    #[tokio::test]
+    async fn test_pair_allows_bundled_extension_origin() {
+        let (app, _) = setup_app();
+        let mut req = make_req(
+            "/api/pair",
+            axum::http::Method::POST,
+            Some(json!({ "pin": "bad-pin" })),
+        );
+        req.headers_mut()
+            .insert(header::HOST, "127.0.0.1:12053".parse().unwrap());
+        req.headers_mut()
+            .insert(header::ORIGIN, bundled_extension_origin().parse().unwrap());
 
         let res = app.clone().oneshot(req).await.unwrap();
         assert_eq!(res.status(), StatusCode::UNAUTHORIZED);
@@ -317,7 +339,7 @@ mod tests {
         req2.headers_mut()
             .insert(header::HOST, "127.0.0.1:12053".parse().unwrap());
         req2.headers_mut()
-            .insert(header::ORIGIN, "chrome-extension://someid".parse().unwrap());
+            .insert(header::ORIGIN, bundled_extension_origin().parse().unwrap());
         req2.headers_mut().insert(
             header::AUTHORIZATION,
             format!("Bearer {}", token).parse().unwrap(),

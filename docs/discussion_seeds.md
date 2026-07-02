@@ -97,7 +97,7 @@ Low-confidence material should not become published evidence automatically. It s
 
 **Category:** Q&A
 
-**Title:** Publishing stack: here.now, GitHub Pages, Netlify, WordPress, manual Cloudflare, Substack
+**Title:** Publishing stack: here.now, GitHub Pages, Netlify, assisted WordPress, manual Cloudflare, Substack
 
 **Body:**
 
@@ -109,7 +109,7 @@ Recommended publishing paths:
 - GitHub Pages for a durable public archive.
 - Netlify for technical users with an existing site/token.
 - Cloudflare Pages as an assisted/manual hosting path: export the folder or ZIP, deploy in Cloudflare, then save the public URL.
-- WordPress for users with an existing site.
+- WordPress as an assisted/manual path for users with an existing site.
 - Substack and newsletters as distribution channels, not the only canonical archive.
 
 If you test a provider, please share:

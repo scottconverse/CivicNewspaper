@@ -687,8 +687,8 @@ describe("PublishPanel Component Tests", () => {
 
     fireEvent.change(screen.getByLabelText(/Provider/i), { target: { value: "wordpress" } });
 
-    expect(screen.getByLabelText(/Connector setup guide/i)).toHaveTextContent("WordPress application password");
-    expect(screen.getByLabelText(/Connector setup guide/i)).toHaveTextContent("publish pages");
+    expect(screen.getByLabelText(/Connector setup guide/i)).toHaveTextContent("No WordPress credential is used");
+    expect(screen.getByLabelText(/Connector setup guide/i)).toHaveTextContent("Direct WordPress API publishing is disabled");
   });
 
   test("renders publish history", () => {

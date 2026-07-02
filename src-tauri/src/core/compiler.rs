@@ -906,7 +906,11 @@ pub fn record_publish_destination_files(
 
     fs::write(&manifest_path, serde_json::to_string_pretty(&result)?)?;
     assert_public_output_quality(output_dir, &result.generated_files)?;
-    write_zip_package(output_dir, &output_dir.join(&result.zip_path))?;
+    write_zip_package(
+        output_dir,
+        &output_dir.join(&result.zip_path),
+        &result.generated_files,
+    )?;
     Ok(result)
 }
 
@@ -1020,15 +1024,22 @@ fn path_for_manifest(path: &Path) -> String {
 
 fn add_zip_file(
     zip: &mut zip::ZipWriter<File>,
-    base_dir: &Path,
-    path: &Path,
+    output_dir: &Path,
+    relative_path: &str,
     zip_path: &Path,
 ) -> Result<(), Box<dyn Error>> {
+    let path = output_dir.join(relative_path);
     if path == zip_path {
         return Ok(());
     }
-    let relative = path.strip_prefix(base_dir)?;
-    let name = path_for_manifest(relative);
+    if !path.is_file() {
+        return Err(format!(
+            "Generated file `{}` is missing or is not a file; refusing to package an incomplete site.",
+            relative_path
+        )
+        .into());
+    }
+    let name = path_for_manifest(Path::new(relative_path));
     zip.start_file(name, zip::write::SimpleFileOptions::default())?;
     let mut file = File::open(path)?;
     let mut buffer = Vec::new();
@@ -1037,28 +1048,19 @@ fn add_zip_file(
     Ok(())
 }
 
-fn add_zip_dir(
-    zip: &mut zip::ZipWriter<File>,
-    base_dir: &Path,
-    current_dir: &Path,
+fn write_zip_package(
+    output_dir: &Path,
     zip_path: &Path,
+    generated_files: &[String],
 ) -> Result<(), Box<dyn Error>> {
-    for entry in fs::read_dir(current_dir)? {
-        let entry = entry?;
-        let path = entry.path();
-        if path.is_dir() {
-            add_zip_dir(zip, base_dir, &path, zip_path)?;
-        } else {
-            add_zip_file(zip, base_dir, &path, zip_path)?;
-        }
-    }
-    Ok(())
-}
-
-fn write_zip_package(output_dir: &Path, zip_path: &Path) -> Result<(), Box<dyn Error>> {
     let file = File::create(zip_path)?;
     let mut zip = zip::ZipWriter::new(file);
-    add_zip_dir(&mut zip, output_dir, output_dir, zip_path)?;
+    for relative_path in generated_files {
+        if relative_path == "site-package.zip" {
+            continue;
+        }
+        add_zip_file(&mut zip, output_dir, relative_path, zip_path)?;
+    }
     zip.finish()?;
     Ok(())
 }
@@ -1703,7 +1705,7 @@ pub fn compile_static_site(
     )?;
 
     let zip_path = output_dir.join("site-package.zip");
-    write_zip_package(output_dir, &zip_path)?;
+    write_zip_package(output_dir, &zip_path, &result.generated_files)?;
     files_written += 1;
     result.files_written = files_written;
 

@@ -5,11 +5,11 @@ The Civic Desk has two publishing modes:
 - **API publish**: the app uploads the generated issue through an official provider path.
 - **Assisted publish**: the app generates the package and share copy, then records the public URL after the editor publishes elsewhere.
 
-Recommended stack: publish instantly with here.now, use GitHub Pages when the editor wants a durable public archive in their own repository, keep Netlify and WordPress for credentialed technical users, and treat Cloudflare Pages, Substack, and newsletter distribution as assisted workflows unless a later release records connector proof.
+Recommended stack: publish instantly with here.now, use GitHub Pages when the editor wants a durable public archive in their own repository, keep Netlify for credentialed technical users, and treat WordPress, Cloudflare Pages, Substack, and newsletter distribution as assisted workflows unless a later release records connector proof.
 
 ## Beta Verification Status
 
-For this release line, anonymous here.now preview publishing is the tested default fast path. GitHub Pages, Netlify, WordPress, and permanent here.now account publishing require user-owned credentials and real target accounts. Cloudflare Pages API publishing is disabled in this public beta because the old Wrangler/npx path was not release-grade. Release evidence should state exactly which connector was live-verified for that release. Do not treat GitHub Pages, Netlify, WordPress, or permanent here.now account publishing as stable-grade verified unless the release notes include release-specific live proof and a live credentialed connector proof.
+For this release line, anonymous here.now preview publishing is the tested default fast path. GitHub Pages, Netlify, and permanent here.now account publishing require user-owned credentials and real target accounts. WordPress and Cloudflare Pages API publishing are disabled in this public beta. Release evidence should state exactly which connector was live-verified for that release. Do not treat GitHub Pages, Netlify, WordPress, or permanent here.now account publishing as stable-grade verified unless the release notes include release-specific live proof and a live credentialed connector proof.
 
 ## API Publish Connectors
 
@@ -35,14 +35,11 @@ For this release line, anonymous here.now preview publishing is the tested defau
 - Method: GitHub REST Contents API writes each generated file to the configured branch/path. The connector creates the publish branch from the default branch when needed, configures GitHub Pages from root or `/docs`, and removes stale generated files listed in the previous Civic Desk manifest while preserving files such as `CNAME`.
 - Output: configured public URL, or a derived `https://owner.github.io/repo/` URL. Best fit: durable/open repository-backed archive.
 
+## Assisted Connectors
+
 ### WordPress
 
-- Requires: WordPress site URL, username, application password.
-- Public beta status: direct API publishing is disabled until draft-first publishing, rollback, and live connector proof are complete.
-- Current path: export the ZIP/static folder, publish through WordPress manually or through your own workflow, then record the public URL in the app.
-- Output: recorded public URL when the editor uses assisted/manual recording.
-
-## Assisted Connectors
+Direct WordPress API publishing is disabled in this public beta until draft-first publishing, rollback, and live connector proof are complete. Export the generated folder or `site-package.zip`, publish through WordPress manually or through your own workflow, then paste the public URL into The Civic Desk.
 
 ### Substack
 

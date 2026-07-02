@@ -111,10 +111,10 @@ const SETUP_GUIDES: Record<string, { credential: string; target: string; permiss
     verify: "After Cloudflare publishes the site, paste the public URL here and save it.",
   },
   wordpress: {
-    credential: "Create a WordPress application password from the editor user's profile.",
-    target: "Use the public WordPress site URL and the matching username.",
-    permission: "The user must be allowed to publish pages.",
-    verify: "Test connection checks /wp-json/wp/v2/users/me before creating issue pages.",
+    credential: "No WordPress credential is used by this public beta.",
+    target: "Export the folder or ZIP, publish through WordPress manually or your own workflow, then paste the public URL here.",
+    permission: "Direct WordPress API publishing is disabled until draft-first publishing, rollback, and live connector proof are complete.",
+    verify: "Saving the public URL records where readers can find the manually published issue.",
   },
   substack: {
     credential: "No supported public publishing API is available.",
@@ -329,12 +329,14 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
 
   const providerCredentialLabel = () => {
     if (provider === "here_now") return "here.now API key";
-    if (provider === "wordpress") return "WordPress application password";
+    if (provider === "wordpress") return "No WordPress credential used in this beta";
     if (provider === "github_pages") return "GitHub fine-grained token";
-    if (provider === "cloudflare_pages") return "Cloudflare credential";
+    if (provider === "cloudflare_pages") return "No Cloudflare credential used in this beta";
     if (provider === "netlify") return "Netlify personal access token";
     return "API token or credential";
   };
+
+  const providerUsesCredential = !["wordpress", "cloudflare_pages", "substack", "other"].includes(provider);
 
   const providerCredentialPlaceholder = publisherConfig?.has_credential
     ? "credential saved; enter a new one to replace"
@@ -827,23 +829,26 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                 onChange={event => setProjectHint(event.target.value)}
                 placeholder="optional internal note"
               />
-              <label htmlFor="input-publisher-credential" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>{providerCredentialLabel()}</label>
-                <input
-                  id="input-publisher-credential"
-                  type="password"
-                  value={credential}
-                  onChange={event => setCredential(event.target.value)}
-                  placeholder={providerCredentialPlaceholder}
-                  disabled={provider === "substack" || provider === "other" || provider === "cloudflare_pages"}
-                />
-              <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.7rem" }}>
-                <input
-                  type="checkbox"
-                  checked={clearCredential}
-                  onChange={event => setClearCredential(event.target.checked)}
-                />
-                Clear saved credential
-              </label>
+              {providerUsesCredential && (
+                <>
+                  <label htmlFor="input-publisher-credential" style={{ fontWeight: 600, display: "block", marginTop: "0.9rem", marginBottom: "0.35rem" }}>{providerCredentialLabel()}</label>
+                  <input
+                    id="input-publisher-credential"
+                    type="password"
+                    value={credential}
+                    onChange={event => setCredential(event.target.value)}
+                    placeholder={providerCredentialPlaceholder}
+                  />
+                  <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.7rem" }}>
+                    <input
+                      type="checkbox"
+                      checked={clearCredential}
+                      onChange={event => setClearCredential(event.target.checked)}
+                    />
+                    Clear saved credential
+                  </label>
+                </>
+              )}
               <div className="btn-group" style={{ marginTop: "0.75rem" }}>
                 <button className="btn btn-secondary" type="button" onClick={handleSaveConnectorClick} disabled={loading}>
                   <CheckCircle size={16} />

@@ -21,7 +21,7 @@ The server binds `127.0.0.1` only. It is not intended to be reachable from anoth
 All API routes are Host/Origin-gated.
 
 1. **Host header:** must be exactly `127.0.0.1:12053`. Other values return `403 Forbidden`.
-2. **Origin header:** if present, must start with `chrome-extension://`. `Origin: null` and untrusted web origins return `403 Forbidden`.
+2. **Origin header:** if present, must be the bundled Civic Desk Browser Bridge origin `chrome-extension://fobahchhglbihbjfldjlnbbaoagbmjif` or an explicitly configured development origin. `Origin: null`, arbitrary Chrome extensions, and untrusted web origins return `403 Forbidden`.
 3. **No-Origin callers:** protected routes may omit `Origin` only because they still need `Authorization: Bearer <token>`. The pairing route may omit `Origin` only when the request includes `x-civicnews-pair: 1`.
 4. **Bearer token:** every route except `POST /api/pair` requires `Authorization: Bearer <token>`. Missing, malformed, revoked, or unknown tokens return `401 Unauthorized`.
 
@@ -49,7 +49,7 @@ x-civicnews-pair: 1
 Host: 127.0.0.1:12053
 ```
 
-Browser-extension clients may instead use a trusted `chrome-extension://` Origin.
+Browser-extension clients may instead use the bundled Civic Desk Browser Bridge Origin `chrome-extension://fobahchhglbihbjfldjlnbbaoagbmjif`. Developer builds may allow extra origins only through `CIVICNEWS_ALLOWED_EXTENSION_ORIGINS`.
 
 Rate limit: 5 failed attempts per client IP per 1800 seconds. A successful pair resets the counter.
 

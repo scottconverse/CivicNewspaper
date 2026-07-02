@@ -31,6 +31,8 @@ $receipt = [ordered]@{
   static_site_dir = $StaticSiteDir
   stable_mode = [bool]$Stable
   allow_dirty = [bool]$AllowDirty
+  ui_smoke_receipt = $null
+  ui_smoke_results = @()
   branch = $null
   commit = $null
   dirty = $null
@@ -126,6 +128,26 @@ try {
 
   Invoke-Check "browser-ui-smoke" {
     npm run test:ui-smoke
+    $uiReceipt = Get-ChildItem -LiteralPath (Join-Path $RepoRoot ".agent-runs") -Directory -Filter "ui-smoke-*" |
+      Sort-Object LastWriteTime -Descending |
+      Select-Object -First 1 |
+      ForEach-Object { Join-Path $_.FullName "ui-smoke-receipt.json" }
+    if (-not $uiReceipt -or -not (Test-Path -LiteralPath $uiReceipt)) {
+      throw "UI smoke did not write a ui-smoke-receipt.json file."
+    }
+    $uiSmoke = Get-Content -Raw -LiteralPath $uiReceipt | ConvertFrom-Json
+    $requiredUiResults = @(
+      "keyboard-tab-focus-visible",
+      "visible-controls-have-accessible-names",
+      "primary-text-contrast-aa"
+    )
+    $presentUiResults = @($uiSmoke.results | ForEach-Object { $_.name })
+    $missingUiResults = @($requiredUiResults | Where-Object { $_ -notin $presentUiResults })
+    if ($missingUiResults.Count -gt 0) {
+      throw "UI smoke receipt is missing required accessibility checks: $($missingUiResults -join ', ')"
+    }
+    $receipt.ui_smoke_receipt = $uiReceipt
+    $receipt.ui_smoke_results = $uiSmoke.results
   }
 
   Invoke-Check "rust-tests" {

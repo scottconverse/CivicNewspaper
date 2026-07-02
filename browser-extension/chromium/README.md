@@ -8,8 +8,9 @@ This unpacked Chromium extension connects ChatGPT, Claude, and Gemini pages to t
 2. Turn on Developer mode.
 3. Choose Load unpacked.
 4. Select this folder: `browser-extension/chromium`.
-5. Open The Civic Desk > Browser Pairing and generate a pairing code.
-6. Click the Civic Desk Bridge toolbar icon and paste the code.
+5. Confirm Chrome shows extension ID `fobahchhglbihbjfldjlnbbaoagbmjif`.
+6. Open The Civic Desk > Browser Pairing and generate a pairing code.
+7. Click the Civic Desk Bridge toolbar icon and paste the code.
 
 ## Use
 

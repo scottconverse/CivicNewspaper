@@ -98,6 +98,16 @@ function Test-LoopbackAbsent {
   }
 }
 
+function Test-CivicApiReady {
+  try {
+    Invoke-WebRequest -Uri "http://127.0.0.1:12053/api/queue" -Headers @{ Host = "127.0.0.1:12053" } -UseBasicParsing -TimeoutSec 2 | Out-Null
+    return $true
+  } catch {
+    $statusCode = if ($_.Exception.Response) { $_.Exception.Response.StatusCode.value__ } else { 0 }
+    return $statusCode -eq 401
+  }
+}
+
 function Test-PathUnderRoot {
   param(
     [string]$Path,
@@ -414,6 +424,7 @@ import json, sqlite3, sys
 db_path, out_path = sys.argv[1], sys.argv[2]
 conn = sqlite3.connect(db_path)
 rows = dict(conn.execute("select key, value from settings"))
+rows["__source_count"] = str(conn.execute("select count(*) from sources").fetchone()[0])
 with open(out_path, "w", encoding="utf-8") as f:
     json.dump(rows, f, indent=2, sort_keys=True)
 "@
@@ -424,6 +435,39 @@ with open(out_path, "w", encoding="utf-8") as f:
     throw "SQLite settings read failed with exit code $LASTEXITCODE"
   }
   $settings = Get-Content -Raw -LiteralPath $settingsJsonPath | ConvertFrom-Json
+
+  if ($CompleteOnboarding) {
+    $intakeDeadline = (Get-Date).AddSeconds(180)
+    $intakeStatus = ""
+    $sourceCount = 0
+    while ((Get-Date) -lt $intakeDeadline) {
+      & $pythonExe $queryScriptPath $dbPath $settingsJsonPath
+      if ($LASTEXITCODE -ne 0) {
+        throw "SQLite settings read failed with exit code $LASTEXITCODE while waiting for starter-source completion"
+      }
+      $settings = Get-Content -Raw -LiteralPath $settingsJsonPath | ConvertFrom-Json
+      $firstRunStatus = [string]$settings.PSObject.Properties["setup.first_run_intake"].Value
+      $recoveredStatus = [string]$settings.PSObject.Properties["setup.recovered_input"].Value
+      $intakeStatus = if ($firstRunStatus) { $firstRunStatus } else { $recoveredStatus }
+      $sourceCount = [int]([string]$settings.PSObject.Properties["__source_count"].Value)
+      if ($intakeStatus -eq "consumed" -and $sourceCount -gt 0) {
+        break
+      }
+      Start-Sleep -Seconds 2
+    }
+    $starterSourceTerminal = $intakeStatus -eq "consumed"
+    Add-Check "starter-source-intake-terminal" $starterSourceTerminal @{ status = $intakeStatus; source_count = $sourceCount }
+    if (-not $starterSourceTerminal) {
+      throw "Starter-source intake did not reach consumed state. status='$intakeStatus' source_count=$sourceCount"
+    }
+    Add-Check "starter-source-count-positive" ($sourceCount -gt 0) @{ source_count = $sourceCount }
+    if ($sourceCount -le 0) {
+      throw "Starter-source intake completed without importing any source."
+    }
+    $starterSourceScreenshot = Join-Path $OutputDir "08-after-starter-source-resolution.png"
+    Capture-WindowScreenshot -Process $appProcess -Path $starterSourceScreenshot
+    Add-ScreenshotCheck "starter-source-resolution-screenshot" $starterSourceScreenshot
+  }
 
   $identityChecks = @{
     "identity.newsroom_name" = $publication
@@ -470,6 +514,55 @@ with open(out_path, "w", encoding="utf-8") as f:
   Add-Check "downloaded-runtime-absent" $runtimeAbsent @{ downloaded_runtime_path = $downloadedRuntimePath }
   if (-not $runtimeAbsent) {
     throw "Expected no downloaded Ollama runtime at $downloadedRuntimePath"
+  }
+
+  $apiDeadline = (Get-Date).AddSeconds(30)
+  while ((Get-Date) -lt $apiDeadline) {
+    if (Test-CivicApiReady) { break }
+    Start-Sleep -Seconds 1
+  }
+  $apiReady = Test-CivicApiReady
+  Add-Check "packaged-local-api-ready" $apiReady @{ url = "http://127.0.0.1:12053/api/queue" }
+  if (-not $apiReady) {
+    throw "Packaged local API did not become ready on 127.0.0.1:12053"
+  }
+
+  $pairPin = "packaged-walkthrough-pin"
+  $pairScript = @"
+import datetime, hashlib, sqlite3, sys, uuid
+db_path, pin = sys.argv[1], sys.argv[2]
+conn = sqlite3.connect(db_path)
+hashed = hashlib.sha256(pin.encode("utf-8")).hexdigest()
+token = str(uuid.uuid4())
+now = datetime.datetime.now(datetime.timezone.utc)
+expires = (now + datetime.timedelta(minutes=10)).isoformat().replace("+00:00", "Z")
+conn.execute(
+    "insert into paired_clients (token, label, pairing_pin, pin_expires_at, created_at, revoked) values (?, ?, ?, ?, ?, 0)",
+    (token, "packaged-walkthrough", hashed, expires, now.isoformat().replace("+00:00", "Z")),
+)
+conn.commit()
+print(token)
+"@
+  $pairScriptPath = Join-Path $OutputDir "seed-pairing-pin.py"
+  Set-Content -LiteralPath $pairScriptPath -Value $pairScript -Encoding UTF8
+  & $pythonExe $pairScriptPath $dbPath $pairPin | Out-Null
+  if ($LASTEXITCODE -ne 0) {
+    throw "Seeding packaged pairing pin failed with exit code $LASTEXITCODE"
+  }
+
+  $pairResponse = Invoke-RestMethod -Method Post -Uri "http://127.0.0.1:12053/api/pair" -Headers @{ Host = "127.0.0.1:12053"; "x-civicnews-pair" = "1" } -ContentType "application/json" -Body (@{ pin = $pairPin } | ConvertTo-Json -Compress) -TimeoutSec 10
+  $pairedToken = [string]$pairResponse.token
+  $pairOk = -not [string]::IsNullOrWhiteSpace($pairedToken)
+  Add-Check "packaged-live-pairing-positive" $pairOk @{ token_present = $pairOk }
+  if (-not $pairOk) {
+    throw "Packaged live pairing did not return a token."
+  }
+
+  $queueResponse = Invoke-RestMethod -Method Get -Uri "http://127.0.0.1:12053/api/queue" -Headers @{ Host = "127.0.0.1:12053"; Authorization = "Bearer $pairedToken" } -TimeoutSec 10
+  $queueOk = $null -ne $queueResponse
+  Add-Check "packaged-live-protected-queue" $queueOk @{ response_type = if ($queueResponse) { $queueResponse.GetType().FullName } else { "" } }
+  if (-not $queueOk) {
+    throw "Packaged live protected queue request did not return a response."
   }
 } finally {
   Stop-WalkthroughProcess -Process $appProcess

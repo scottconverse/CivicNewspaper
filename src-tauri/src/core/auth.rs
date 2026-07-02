@@ -8,6 +8,8 @@ use axum::{
     response::Response,
 };
 
+pub const BUNDLED_CHROMIUM_EXTENSION_ID: &str = "fobahchhglbihbjfldjlnbbaoagbmjif";
+
 // Validate the Host header to defeat DNS rebinding attacks.
 pub fn is_valid_host(host: &str) -> bool {
     host.trim() == "127.0.0.1:12053"
@@ -19,7 +21,20 @@ pub fn is_valid_origin(origin: &str) -> bool {
     if origin_clean == "null" {
         return false;
     }
-    origin_clean.starts_with("chrome-extension://")
+    let bundled_origin = format!("chrome-extension://{}", BUNDLED_CHROMIUM_EXTENSION_ID);
+    if origin_clean == bundled_origin {
+        return true;
+    }
+
+    std::env::var("CIVICNEWS_ALLOWED_EXTENSION_ORIGINS")
+        .ok()
+        .map(|value| {
+            value
+                .split(',')
+                .map(|candidate| candidate.trim().to_lowercase())
+                .any(|candidate| !candidate.is_empty() && candidate == origin_clean)
+        })
+        .unwrap_or(false)
 }
 
 fn validate_host_and_origin(request: &Request<Body>) -> Result<(), StatusCode> {

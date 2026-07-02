@@ -10,10 +10,11 @@ use quick_xml::XmlVersion;
 use reqwest::Client;
 use serde_json;
 use sha2::{Digest, Sha256};
+use std::collections::HashMap;
 use std::error::Error;
 use std::net::{IpAddr, SocketAddr, ToSocketAddrs};
 use std::sync::LazyLock;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 use tokio::time::sleep;
 
 // SSRF defense-in-depth: a source URL can arrive from manual entry OR from the
@@ -207,9 +208,20 @@ pub async fn scrape_all_sources(db: &DbConn) -> Result<(), Box<dyn Error>> {
         super::db::list_sources(&conn)?
     };
 
+    let mut last_fetch_by_host: HashMap<String, Instant> = HashMap::new();
     for source in sources {
-        // Enforce 3-second politeness delay between source scraping
-        sleep(Duration::from_secs(3)).await;
+        if let Ok(parsed) = validate_source_url(&source.url) {
+            if let Some(host) = parsed.host_str().map(|value| value.to_ascii_lowercase()) {
+                if let Some(last_fetch) = last_fetch_by_host.get(&host) {
+                    let elapsed = last_fetch.elapsed();
+                    let politeness_delay = Duration::from_secs(3);
+                    if elapsed < politeness_delay {
+                        sleep(politeness_delay - elapsed).await;
+                    }
+                }
+                last_fetch_by_host.insert(host, Instant::now());
+            }
+        }
 
         let source_id = source.id.unwrap_or(0);
         println!("Scraping source: {} ({})", source.name, source.url);

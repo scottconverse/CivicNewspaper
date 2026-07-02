@@ -26,6 +26,9 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
   const [extensionFolderStatus, setExtensionFolderStatus] = React.useState("");
   const [extensionFolderPath, setExtensionFolderPath] = React.useState("");
   const [dailyScanQueueNotice, setDailyScanQueueNotice] = React.useState<string>("");
+  const isSetupTaskMessage =
+    typeof app.statusMessage === "string" &&
+    /starter source|source intake|first daily scan|workspace ready/i.test(app.statusMessage);
 
   const openDailyScanLeadInWorkbench = React.useCallback((scanLead: DailyScanLead) => {
     const queueLead = (app.leads ?? []).find((lead: any) => lead.from_scan_lead_id === scanLead.id);
@@ -44,11 +47,11 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
   // linger across unrelated navigation. Errors are left until the user dismisses
   // them (or the next action clears errorMessage) so failures aren't missed.
   React.useEffect(() => {
-    if (!app.statusMessage) return;
+    if (!app.statusMessage || isSetupTaskMessage) return;
     if (app.loading) return;
     const t = setTimeout(() => app.setStatusMessage(""), 6000);
     return () => clearTimeout(t);
-  }, [app.loading, app.statusMessage]);
+  }, [app.loading, app.statusMessage, isSetupTaskMessage]);
 
   React.useEffect(() => {
     if (!app.selectedLead?.id) return;
@@ -95,13 +98,14 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
 
       {/* Global Notifications */}
       {app.statusMessage && (
-        <div className="card" role="status" aria-live="polite" style={{ borderLeft: "4px solid var(--color-success)", background: "rgba(16, 185, 129, 0.05)" }}>
+        <div className="card" role="status" aria-live="polite" style={{ borderLeft: `4px solid ${isSetupTaskMessage ? "var(--accent-primary)" : "var(--color-success)"}`, background: isSetupTaskMessage ? "rgba(48, 92, 184, 0.06)" : "rgba(16, 185, 129, 0.05)" }}>
           <div className="flex-between">
             <span style={{ fontSize: "0.9rem", color: "var(--text-primary)", display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
               {app.loading && <RefreshCw className="animate-spin" size={15} aria-hidden="true" />}
+              {isSetupTaskMessage && <strong>Setup task:</strong>}
               {app.statusMessage}
             </span>
-            <button className="btn btn-secondary btn-sm" onClick={() => app.setStatusMessage("")}>Dismiss</button>
+            {!app.loading && <button className="btn btn-secondary btn-sm" onClick={() => app.setStatusMessage("")}>Dismiss</button>}
           </div>
         </div>
       )}

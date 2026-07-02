@@ -54,6 +54,16 @@ try {
   if ($skippedSmoke.Count -gt 0 -and -not $AllowSkippedSmoke) {
     throw "Release smoke receipt contains skipped checks: $($skippedSmoke.name -join ', '). Rerun smoke without skips or use -AllowSkippedSmoke for a diagnostic receipt."
   }
+  $requiredUiResults = @(
+    "keyboard-tab-focus-visible",
+    "visible-controls-have-accessible-names",
+    "primary-text-contrast-aa"
+  )
+  $uiSmokeResults = @($smoke.ui_smoke_results | Where-Object { $_ } | ForEach-Object { $_.name })
+  $missingUiResults = @($requiredUiResults | Where-Object { $_ -notin $uiSmokeResults })
+  if ($missingUiResults.Count -gt 0) {
+    throw "Release smoke receipt is missing required UI accessibility evidence: $($missingUiResults -join ', '). Rerun scripts\release-smoke.ps1 with the current UI smoke."
+  }
 
   $missingReleaseEvidence = @()
   $resolvedModelBakeoffReceipt = $null
@@ -114,6 +124,9 @@ try {
         Where-Object { $_.status -eq "repaired" -or $_.repaired -eq $true } |
         ForEach-Object { [string]$_.case }
     )
+    if ($modelBakeoffDefaultRepairedCases.Count -gt 0) {
+      throw "Configured default model '$defaultModel' required JSON repair for bakeoff case(s): $($modelBakeoffDefaultRepairedCases -join ', '). Release evidence requires clean first-pass structured output."
+    }
     $modelBakeoffOk = $true
   }
 
@@ -232,9 +245,15 @@ try {
       "done-step-screenshot",
       "workspace-reached-screenshot",
       "sqlite-db-present",
+      "starter-source-intake-terminal",
+      "starter-source-count-positive",
+      "starter-source-resolution-screenshot",
       "setting-paths.publish-isolated",
       "setting-paths.backup-isolated",
       "setting-onboarding_complete",
+      "packaged-local-api-ready",
+      "packaged-live-pairing-positive",
+      "packaged-live-protected-queue",
       "downloaded-runtime-absent",
       "nsis-silent-uninstall"
     )
@@ -357,6 +376,53 @@ try {
     "$($artifact.sha256.ToLowerInvariant())  $($artifact.name)" | Add-Content -Encoding ASCII $shaFile
   }
 
+  $evidenceDir = Join-Path $RunDir "evidence"
+  New-Item -ItemType Directory -Force -Path $evidenceDir | Out-Null
+  $evidenceBundles = [System.Collections.Generic.List[object]]::new()
+  function Copy-EvidenceBundle {
+    param(
+      [string]$ReceiptPath,
+      [string]$Name
+    )
+    if ([string]::IsNullOrWhiteSpace($ReceiptPath) -or -not (Test-Path -LiteralPath $ReceiptPath)) {
+      return
+    }
+    $sourceDir = Split-Path -Parent $ReceiptPath
+    $destDir = Join-Path $evidenceDir $Name
+    New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+    $copied = @()
+    Get-ChildItem -LiteralPath $sourceDir -Recurse -File |
+      Where-Object {
+        $_.FullName -notmatch "\\install\\" -and
+        $_.FullName -notmatch "\\app-data\\"
+      } |
+      ForEach-Object {
+        $relative = [System.IO.Path]::GetRelativePath($sourceDir, $_.FullName)
+        $target = Join-Path $destDir $relative
+        New-Item -ItemType Directory -Force -Path (Split-Path -Parent $target) | Out-Null
+        Copy-Item -LiteralPath $_.FullName -Destination $target -Force
+        $copied += [ordered]@{
+          source = $_.FullName
+          copied_to = $target
+          bytes = $_.Length
+          sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $target).Hash
+        }
+      }
+    $evidenceBundles.Add([ordered]@{
+      name = $Name
+      source_dir = $sourceDir
+      copied_file_count = $copied.Count
+      files = $copied
+    }) | Out-Null
+  }
+
+  Copy-EvidenceBundle -ReceiptPath $resolvedSmokeReceipt.Path -Name "release-smoke"
+  if ($smoke.ui_smoke_receipt) { Copy-EvidenceBundle -ReceiptPath ([string]$smoke.ui_smoke_receipt) -Name "ui-smoke" }
+  if ($resolvedModelBakeoffReceipt) { Copy-EvidenceBundle -ReceiptPath $resolvedModelBakeoffReceipt.Path -Name "model-bakeoff" }
+  if ($resolvedDependencyAuditReceipt) { Copy-EvidenceBundle -ReceiptPath $resolvedDependencyAuditReceipt.Path -Name "dependency-audit" }
+  if ($resolvedInstallerSmokeReceipt) { Copy-EvidenceBundle -ReceiptPath $resolvedInstallerSmokeReceipt.Path -Name "windows-installer-smoke" }
+  if ($resolvedPackagedWalkthroughReceipt) { Copy-EvidenceBundle -ReceiptPath $resolvedPackagedWalkthroughReceipt.Path -Name "packaged-first-run-walkthrough" }
+
   $receipt = [ordered]@{
     generated_at = (Get-Date).ToString("o")
     repo = $RepoRoot.Path
@@ -372,6 +438,8 @@ try {
     artifacts_dir = if ($artifactRoot) { $artifactRoot.Path } else { $ArtifactsDir }
     artifact_count = $artifacts.Count
     artifacts = $artifacts
+    evidence_dir = $evidenceDir
+    evidence_bundles = @($evidenceBundles)
     stale_artifact_count = $staleArtifacts.Count
     stale_artifacts = $staleArtifacts
     missing_current_targets = $missingCurrentTargets

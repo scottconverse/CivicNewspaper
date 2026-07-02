@@ -2,6 +2,7 @@
   "manifest_version": 3,
   "name": "Civic Desk Browser Bridge",
   "version": "1.0.0",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3vSlpE9c2L7lLu2Xln5S/2p1z3wAaqhgrw6i7a/bVOgfW/XQNpmG3L9tgT8VM3ju+CiAR8GI2FDbZQSxQQGPpggPs2olYJVGys+keFk9wawhUvCaCglSppYJCjnK5PdUqbCuRVKqTZsPAtLzf0enl1c14wliVKQTf5PEiBJoeraeJgN0wyG8/U0Ny1KdNwLzY2ILKz2PGJWNmDr3sOoaqHFAszm7UlK6fHb08KKq8J8BAF1x8tkraiBYbX9/Gij10Uc1YGlM7LY87pjaU81VmQzm0utM86kNzulRw9LwAp3FHbfzOljijBdM+hQ3eAd9d4IWjYv6lMu4js9rIdFQZwIDAQAB",
   "description": "Bridges The Civic Desk story queue and source evidence into Claude, ChatGPT, and Gemini after explicit pairing.",
   "permissions": [
     "storage"

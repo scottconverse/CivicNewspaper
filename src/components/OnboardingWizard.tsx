@@ -1410,16 +1410,28 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         {/* STEP 4: DEFAULTS */}
         {step === 4 && (
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <div>
-              <label htmlFor="onboarding-publish-path" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Publish Path</label>
-              <input id="onboarding-publish-path" type="text" value={publishPath} onChange={e => setPublishPath(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
-              <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>Where your static sites will be compiled.</p>
+            <div className="card" style={{ margin: 0 }}>
+              <h3 style={{ marginTop: 0, marginBottom: "0.4rem" }}>Use the recommended local folders</h3>
+              <p className="help-text" style={{ marginBottom: 0 }}>
+                The Civic Desk will save finished publication files and backups in your Windows user profile.
+                You can change these later in Settings.
+              </p>
             </div>
-            <div>
-              <label htmlFor="onboarding-backup-path" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Backup Path</label>
-              <input id="onboarding-backup-path" type="text" value={backupPath} onChange={e => setBackupPath(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
-              <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>Where database backups are saved.</p>
-            </div>
+            <details>
+              <summary style={{ cursor: "pointer", fontWeight: 700 }}>Advanced: choose exact folders</summary>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "1rem" }}>
+                <div>
+                  <label htmlFor="onboarding-publish-path" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Publication folder</label>
+                  <input id="onboarding-publish-path" type="text" value={publishPath} onChange={e => setPublishPath(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
+                  <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>Finished HTML sites and ZIP review packages are saved here.</p>
+                </div>
+                <div>
+                  <label htmlFor="onboarding-backup-path" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Backup folder</label>
+                  <input id="onboarding-backup-path" type="text" value={backupPath} onChange={e => setBackupPath(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
+                  <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>Database backup copies are saved here.</p>
+                </div>
+              </div>
+            </details>
           </div>
         )}
 
