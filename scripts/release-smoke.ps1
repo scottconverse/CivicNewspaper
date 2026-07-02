@@ -181,7 +181,7 @@ try {
       try {
         $env:CIVIC_DESK_HERENOW_OUTPUT_DIR = $StaticSiteDir
         $env:CIVIC_DESK_HERENOW_RECEIPT = (Join-Path $RunDir "here-now-receipt.json")
-        cmd /d /c "cargo test local_herenow_anonymous_publishes_compiled_site -- --ignored --nocapture 2>&1"
+        cmd /d /c "cargo test local_herenow_anonymous_publishes_compiled_site -- --nocapture 2>&1"
       } finally {
         Remove-Item Env:\CIVIC_DESK_HERENOW_OUTPUT_DIR -ErrorAction SilentlyContinue
         Remove-Item Env:\CIVIC_DESK_HERENOW_RECEIPT -ErrorAction SilentlyContinue
@@ -193,7 +193,7 @@ try {
   Invoke-Check "live-colorado-source-scan" {
     Push-Location (Join-Path $RepoRoot "src-tauri")
     try {
-      cmd /d /c "cargo test stage10_live_colorado_daily_scan_fetches_sources_first -- --ignored --nocapture 2>&1"
+      cmd /d /c "cargo test stage10_live_colorado_daily_scan_fetches_sources_first -- --nocapture 2>&1"
     } finally {
       Pop-Location
     }
@@ -206,7 +206,7 @@ try {
       Push-Location (Join-Path $RepoRoot "src-tauri")
       try {
         $env:CIVICNEWS_STAGE10_REAL_MODEL = $Model
-        cmd /d /c "cargo test stage10_live_ollama_daily_scan_completes_with_real_local_model -- --ignored --nocapture 2>&1"
+        cmd /d /c "cargo test stage10_live_ollama_daily_scan_completes_with_real_local_model -- --nocapture 2>&1"
       } finally {
         Remove-Item Env:\CIVICNEWS_STAGE10_REAL_MODEL -ErrorAction SilentlyContinue
         Pop-Location
@@ -228,7 +228,7 @@ try {
         try {
           $env:CIVICNEWS_IMPORT_FIXTURE_DIR = $FixtureDir
           $env:CIVICNEWS_IMPORT_EXTRACTED_DIR = $ExtractedDir
-          cmd /d /c "cargo test local_source_import_fixtures_extract_reviewable_text -- --ignored --nocapture 2>&1"
+          cmd /d /c "cargo test local_source_import_fixtures_extract_reviewable_text -- --nocapture 2>&1"
         } finally {
           Remove-Item Env:\CIVICNEWS_IMPORT_FIXTURE_DIR -ErrorAction SilentlyContinue
           Remove-Item Env:\CIVICNEWS_IMPORT_EXTRACTED_DIR -ErrorAction SilentlyContinue

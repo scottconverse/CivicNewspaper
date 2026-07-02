@@ -3963,10 +3963,59 @@ I should produce JSON only.
     }
 
     #[tokio::test]
-    #[ignore = "live here.now publish gate; set CIVIC_DESK_HERENOW_OUTPUT_DIR"]
     async fn local_herenow_anonymous_publishes_compiled_site() {
-        let output_dir = std::env::var("CIVIC_DESK_HERENOW_OUTPUT_DIR")
-            .expect("set CIVIC_DESK_HERENOW_OUTPUT_DIR to a compiled static site folder");
+        let temp_site = tempdir().unwrap();
+        let output_dir = match std::env::var("CIVIC_DESK_HERENOW_OUTPUT_DIR") {
+            Ok(output_dir) => output_dir,
+            Err(_) => {
+                let output_dir = temp_site.path().to_string_lossy().to_string();
+                std::fs::write(
+                    temp_site.path().join("index.html"),
+                    "<!doctype html><html><head><title>Civic Desk Test</title></head><body><h1>Civic Desk Test</h1></body></html>",
+                )
+                .unwrap();
+                std::fs::write(temp_site.path().join("site-package.zip"), []).unwrap();
+                std::fs::write(
+                    temp_site.path().join("publish-manifest.json"),
+                    serde_json::to_string_pretty(&serde_json::json!({
+                        "issue_id": "here-now-live-test",
+                        "output_dir": output_dir,
+                        "generated_at": Utc::now().to_rfc3339(),
+                        "provider": "local_export",
+                        "published_url": null,
+                        "deployment_id": null,
+                        "article_count": 1,
+                        "skipped_count": 0,
+                        "files_written": 3,
+                        "generated_files": [
+                            "index.html",
+                            "publish-manifest.json",
+                            "site-package.zip"
+                        ],
+                        "index_path": "index.html",
+                        "rss_path": "",
+                        "newsletter_path": "",
+                        "substack_path": "",
+                        "share_package_path": "",
+                        "facebook_post_path": "",
+                        "subreddit_post_path": "",
+                        "nextdoor_post_path": "",
+                        "short_link_blurb_path": "",
+                        "manifest_path": "publish-manifest.json",
+                        "zip_path": "site-package.zip",
+                        "articles": [{
+                            "title": "Civic Desk Test",
+                            "format": "brief",
+                            "relative_path": "index.html",
+                            "updated_at": Utc::now().to_rfc3339()
+                        }]
+                    }))
+                    .unwrap(),
+                )
+                .unwrap();
+                output_dir
+            }
+        };
         let connector = crate::core::publisher::publisher_for("here_now").unwrap();
         let config = crate::core::publisher::PublisherConfig {
             provider: "here_now".to_string(),
@@ -5392,7 +5441,6 @@ I should produce JSON only.
     }
 
     #[tokio::test]
-    #[ignore = "live network validation for the Stage 10 release gate"]
     async fn stage10_live_colorado_daily_scan_fetches_sources_first() {
         let temp = tempdir().unwrap();
         let db_path = temp.path().join("stage10-live-colorado.db");
@@ -5466,7 +5514,6 @@ I should produce JSON only.
     }
 
     #[tokio::test]
-    #[ignore = "live Ollama validation for the Stage 10 release gate"]
     async fn stage10_live_ollama_daily_scan_completes_with_real_local_model() {
         let model = std::env::var("CIVICNEWS_STAGE10_REAL_MODEL")
             .unwrap_or_else(|_| "phi4-mini:latest".to_string());

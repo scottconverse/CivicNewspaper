@@ -2838,11 +2838,21 @@ mod source_import_extraction_tests {
     }
 
     #[test]
-    #[ignore = "local release-smoke fixture gate; set CIVICNEWS_IMPORT_FIXTURE_DIR"]
     fn local_source_import_fixtures_extract_reviewable_text() {
         let fixture_dir = std::env::var("CIVICNEWS_IMPORT_FIXTURE_DIR")
-            .expect("set CIVICNEWS_IMPORT_FIXTURE_DIR to the fixture folder");
-        let fixture_dir = PathBuf::from(fixture_dir);
+            .map(PathBuf::from)
+            .unwrap_or_else(|_| {
+                PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+                    .parent()
+                    .expect("src-tauri should have a repo parent")
+                    .join(".agent-runs")
+                    .join("source-fixture-artifact")
+            });
+        assert!(
+            fixture_dir.join("colorado-source-list-clean.csv").is_file(),
+            "source import fixture folder not found at {}; set CIVICNEWS_IMPORT_FIXTURE_DIR to the fixture folder",
+            fixture_dir.display()
+        );
         let output_dir = std::env::var("CIVICNEWS_IMPORT_EXTRACTED_DIR")
             .ok()
             .map(PathBuf::from);
