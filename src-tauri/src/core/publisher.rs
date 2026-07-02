@@ -177,7 +177,8 @@ impl Publisher for HttpPublisher {
                 );
             }
             PublisherProvider::Wordpress => {
-                required_field("WordPress site URL", config.site_url.as_deref())?;
+                let site_url = required_field("WordPress site URL", config.site_url.as_deref())?;
+                validate_credentialed_public_url(&site_url)?;
                 required_field("WordPress username", config.username.as_deref())?;
             }
             PublisherProvider::Substack => {
@@ -352,6 +353,19 @@ pub fn validate_public_url(url: &str) -> Result<String, String> {
         return Err("Public URL must start with http:// or https://.".to_string());
     }
     Ok(parsed.as_str().trim_end_matches('/').to_string())
+}
+
+pub fn validate_credentialed_public_url(url: &str) -> Result<String, String> {
+    let normalized = validate_public_url(url)?;
+    let parsed =
+        reqwest::Url::parse(&normalized).map_err(|e| format!("Invalid public URL: {}", e))?;
+    if parsed.scheme() != "https" {
+        return Err(
+            "Credentialed publishing connectors require an https:// site URL so credentials are not sent over plaintext HTTP."
+                .to_string(),
+        );
+    }
+    Ok(normalized)
 }
 
 pub fn validate_publish_artifacts(output_dir: &str) -> Result<PathBuf, String> {

@@ -4,6 +4,7 @@ param(
   [string]$ModelBakeoffReceipt = "",
   [string]$DependencyAuditReceipt = "",
   [string]$InstallerSmokeReceipt = "",
+  [string]$PackagedWalkthroughReceipt = "",
   [switch]$AllowDirty,
   [switch]$AllowMissingArtifacts,
   [switch]$AllowMissingReleaseEvidence,
@@ -58,6 +59,7 @@ try {
   $resolvedModelBakeoffReceipt = $null
   $resolvedDependencyAuditReceipt = $null
   $resolvedInstallerSmokeReceipt = $null
+  $resolvedPackagedWalkthroughReceipt = $null
   if ([string]::IsNullOrWhiteSpace($ModelBakeoffReceipt)) {
     $missingReleaseEvidence += "model bakeoff receipt"
   } else {
@@ -73,8 +75,13 @@ try {
   } else {
     $resolvedInstallerSmokeReceipt = Resolve-Path -ErrorAction Stop $InstallerSmokeReceipt
   }
+  if ([string]::IsNullOrWhiteSpace($PackagedWalkthroughReceipt)) {
+    $missingReleaseEvidence += "packaged first-run walkthrough receipt"
+  } else {
+    $resolvedPackagedWalkthroughReceipt = Resolve-Path -ErrorAction Stop $PackagedWalkthroughReceipt
+  }
   if ($missingReleaseEvidence.Count -gt 0 -and -not $AllowMissingReleaseEvidence) {
-    throw "Missing required RC evidence: $($missingReleaseEvidence -join ', '). Pass -ModelBakeoffReceipt, -DependencyAuditReceipt, and -InstallerSmokeReceipt, or use -AllowMissingReleaseEvidence for a diagnostic receipt."
+    throw "Missing required RC evidence: $($missingReleaseEvidence -join ', '). Pass -ModelBakeoffReceipt, -DependencyAuditReceipt, -InstallerSmokeReceipt, and -PackagedWalkthroughReceipt, or use -AllowMissingReleaseEvidence for a diagnostic receipt."
   }
 
   $package = Get-Content -Raw (Join-Path $RepoRoot "package.json") | ConvertFrom-Json
@@ -189,9 +196,63 @@ try {
     $installerSmokeOk = $true
   }
 
+  $packagedWalkthroughOk = $false
+  $packagedWalkthrough = $null
+  if ($resolvedPackagedWalkthroughReceipt) {
+    $packagedWalkthrough = Get-Content -Raw -LiteralPath $resolvedPackagedWalkthroughReceipt.Path | ConvertFrom-Json
+    if (-not $packagedWalkthrough.ok) {
+      throw "Packaged first-run walkthrough receipt is not clean."
+    }
+    if ($packagedWalkthrough.commit -ne $headCommit) {
+      throw "Packaged first-run walkthrough receipt commit $($packagedWalkthrough.commit) does not match current HEAD $headCommit."
+    }
+    if (($packagedWalkthrough.dirty -eq $true) -and -not $AllowDirty) {
+      throw "Packaged first-run walkthrough receipt was produced from a dirty checkout. Rerun from a clean checkout or use -AllowDirty for a diagnostic RC receipt."
+    }
+    $failedWalkthroughChecks = @($packagedWalkthrough.checks | Where-Object { $_ -and -not $_.ok })
+    if ($failedWalkthroughChecks.Count -gt 0) {
+      throw "Packaged first-run walkthrough receipt contains failed checks: $($failedWalkthroughChecks.name -join ', ')"
+    }
+    $requiredWalkthroughChecks = @(
+      "nsis-silent-install",
+      "installed-exe-present",
+      "window-handle-present",
+      "before-screenshot",
+      "after-typing-screenshot",
+      "after-next-screenshot",
+      "skip-confirmation-screenshot",
+      "after-skip-setup-screenshot",
+      "done-step-screenshot",
+      "workspace-reached-screenshot",
+      "sqlite-db-present",
+      "setting-onboarding_complete",
+      "nsis-silent-uninstall"
+    )
+    $presentWalkthroughChecks = @($packagedWalkthrough.checks | ForEach-Object { $_.name })
+    $missingWalkthroughChecks = @($requiredWalkthroughChecks | Where-Object { $_ -notin $presentWalkthroughChecks })
+    if ($missingWalkthroughChecks.Count -gt 0) {
+      throw "Packaged first-run walkthrough receipt is missing required completion checks: $($missingWalkthroughChecks -join ', ')"
+    }
+    $workspaceCheck = @($packagedWalkthrough.checks | Where-Object { $_.name -eq "workspace-reached-screenshot" } | Select-Object -First 1)
+    if ($workspaceCheck.Count -eq 0 -or -not (Test-Path -LiteralPath ([string]$workspaceCheck[0].details.path))) {
+      throw "Packaged first-run walkthrough workspace screenshot is missing on disk."
+    }
+    $packagedWalkthroughOk = $true
+  }
+
   if ($package.version -ne $tauri.version) {
     throw "package.json version $($package.version) does not match Tauri version $($tauri.version)."
   }
+  $frontendBuildIdPath = Join-Path $RepoRoot "dist\build-id.txt"
+  if (-not (Test-Path -LiteralPath $frontendBuildIdPath)) {
+    throw "Missing dist\build-id.txt. Run npm run build before bundling release artifacts."
+  }
+  $frontendBuildId = (Get-Content -Raw -LiteralPath $frontendBuildIdPath).Trim()
+  if ($frontendBuildId -ne $headCommit) {
+    throw "dist\build-id.txt contains '$frontendBuildId' but current HEAD is $headCommit. Rebuild with npm run build before bundling."
+  }
+  $frontendBuildIdTimeUtc = (Get-Item -LiteralPath $frontendBuildIdPath).LastWriteTimeUtc
+  $headCommitTimeUtc = [DateTime]::Parse((git show -s --format=%cI HEAD)).ToUniversalTime()
   $artifactRoot = Resolve-Path -ErrorAction SilentlyContinue $ArtifactsDir
   $allArtifacts = @()
   if ($artifactRoot) {
@@ -204,6 +265,7 @@ try {
           path = $_.FullName
           bytes = $_.Length
           sha256 = $hash.Hash
+          last_write_time_utc = $_.LastWriteTimeUtc.ToString("o")
         }
       }
   }
@@ -242,6 +304,14 @@ try {
   }
   if ($staleArtifacts.Count -gt 0 -and -not $AllowStaleArtifacts) {
     throw "Stale installer artifact(s) found under ${ArtifactsDir}: $($staleArtifacts.name -join ', '). Remove old bundle artifacts before creating release evidence, or use -AllowStaleArtifacts for a diagnostic receipt."
+  }
+  $preBuildIdArtifacts = @($artifacts | Where-Object { [DateTime]::Parse([string]$_.last_write_time_utc).ToUniversalTime() -lt $frontendBuildIdTimeUtc })
+  if ($preBuildIdArtifacts.Count -gt 0 -and -not $AllowStaleArtifacts) {
+    throw "Installer artifact(s) are older than dist\build-id.txt for current HEAD: $($preBuildIdArtifacts.name -join ', '). Rebuild the installer after npm run build."
+  }
+  $preCommitArtifacts = @($artifacts | Where-Object { [DateTime]::Parse([string]$_.last_write_time_utc).ToUniversalTime() -lt $headCommitTimeUtc })
+  if ($preCommitArtifacts.Count -gt 0 -and -not $AllowStaleArtifacts) {
+    throw "Installer artifact(s) predate current HEAD commit time: $($preCommitArtifacts.name -join ', '). Rebuild the installer from the audited commit."
   }
 
   if ($installerSmokeOk -and $artifacts.Count -gt 0) {
@@ -283,6 +353,9 @@ try {
     package_version = $package.version
     tauri_version = $tauri.version
     tauri_bundle_targets = $tauri.bundle.targets
+    frontend_build_id_path = $frontendBuildIdPath
+    frontend_build_id = $frontendBuildId
+    frontend_build_id_time_utc = $frontendBuildIdTimeUtc.ToString("o")
     artifacts_dir = if ($artifactRoot) { $artifactRoot.Path } else { $ArtifactsDir }
     artifact_count = $artifacts.Count
     artifacts = $artifacts
@@ -307,6 +380,8 @@ try {
     installer_smoke_nsis_sha256 = if ($installerSmoke) { $installerSmoke.nsis_installer_sha256 } else { $null }
     installer_smoke_msi_sha256 = if ($installerSmoke) { $installerSmoke.msi_installer_sha256 } else { $null }
     installer_smoke_matched_artifacts = $installerSmokeMatchedArtifacts
+    packaged_walkthrough_receipt = if ($resolvedPackagedWalkthroughReceipt) { $resolvedPackagedWalkthroughReceipt.Path } else { $null }
+    packaged_walkthrough_ok = $packagedWalkthroughOk
     missing_release_evidence = $missingReleaseEvidence
     diagnostic = [bool]($AllowDirty -or $AllowMissingArtifacts -or $AllowMissingReleaseEvidence -or $AllowSkippedSmoke -or $AllowStaleArtifacts -or $status -or $smoke.dirty -or $smoke.allow_dirty -or -not $smoke.stable_mode -or $missingCurrentTargets.Count -gt 0 -or $missingReleaseEvidence.Count -gt 0 -or $staleArtifacts.Count -gt 0)
     notes = @(

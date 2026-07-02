@@ -1352,7 +1352,7 @@ export function useApp() {
 
   // GG-B2 / GG-C1: approving for publish records a human attestation, then asks
   // the backend to advance the status. Guardrails are advisory and logged; the
-  // software never vetoes the editor's publish/hold/cut decision.
+  // Advisory warnings do not decide publish/hold/cut for the editor; static package-integrity blockers are handled in Workbench.
   const handleApprovePublish = async (overrideReason?: string) => {
     if (!selectedDraft || !selectedDraft.id) return;
     try {
@@ -1972,7 +1972,7 @@ Rules:
 - Remove reporter scaffolding such as EDITOR_NOTE, Body:, Nut graf, Reporting Steps, [Source needed], [Verification needed], and placeholders.
 - Preserve inline evidence citations exactly when present.
 - If the source support is thin, make it a brief or watch item and say what is known, not what is guessed.
-- Neutral tone. No advocacy. No software veto language.
+- Neutral tone. No advocacy. Do not imply the software makes the editor's decision.
 
 Current format: ${selectedDraft.format}
 Current title: ${selectedDraft.title}

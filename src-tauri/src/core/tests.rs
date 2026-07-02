@@ -3926,6 +3926,49 @@ I should produce JSON only.
     }
 
     #[test]
+    fn test_wordpress_connector_rejects_plaintext_credential_endpoint() {
+        let connector = crate::core::publisher::publisher_for("wordpress").unwrap();
+        let result = connector.validate_config(&crate::core::publisher::PublisherConfig {
+            provider: "wordpress".to_string(),
+            display_name: "Town WordPress".to_string(),
+            site_url: Some("http://example.org".to_string()),
+            project_hint: None,
+            site_id: None,
+            account_id: None,
+            repo: None,
+            branch: None,
+            path_prefix: None,
+            username: Some("editor".to_string()),
+            has_credential: true,
+        });
+
+        assert!(result.is_err());
+        assert!(result
+            .unwrap_err()
+            .contains("Credentialed publishing connectors require an https:// site URL"));
+    }
+
+    #[test]
+    fn test_wordpress_connector_accepts_https_credential_endpoint() {
+        let connector = crate::core::publisher::publisher_for("wordpress").unwrap();
+        connector
+            .validate_config(&crate::core::publisher::PublisherConfig {
+                provider: "wordpress".to_string(),
+                display_name: "Town WordPress".to_string(),
+                site_url: Some("https://example.org".to_string()),
+                project_hint: None,
+                site_id: None,
+                account_id: None,
+                repo: None,
+                branch: None,
+                path_prefix: None,
+                username: Some("editor".to_string()),
+                has_credential: true,
+            })
+            .unwrap();
+    }
+
+    #[test]
     fn test_github_manifest_cleanup_rejects_non_generated_paths() {
         let manifest = serde_json::json!({
             "generated_files": [

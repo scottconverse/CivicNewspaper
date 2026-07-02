@@ -5,7 +5,7 @@ This document supersedes the earlier v0.2.9 planning snapshot. The older v0.2.9 
 Current v0.3.2 focus areas:
 
 - Improve story quality with stronger freshness, novelty, beat-memory, source-context, and output-quality gates.
-- Keep local LLM assistance optional and editor-controlled; software warnings never veto publication.
+- Keep local LLM assistance optional and editor-controlled; software warnings never make the editor's news judgment, while deterministic static-package integrity checks can block export until broken public output is repaired.
 - Harden source intake, source compliance, and browser-bridge consent.
 - Prove release candidates through repeatable smoke tests, clean-machine installs, live local AI, source import fixtures, ZIP export, and here.now publishing.
 - Move toward v1.0 only after signed installers, cross-platform proof, upgrade/recovery evidence, and stable external-provider verification are complete.

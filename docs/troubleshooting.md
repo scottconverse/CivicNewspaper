@@ -69,7 +69,7 @@ If the app says there are no useful leads, treat that as an assignment-desk sign
 
 ## The App Suggests Weak Or Generic Stories
 
-The app can surface weak leads. It should warn you, but it should never veto your editorial decision.
+The app can surface weak leads. It should warn you, but it should not make your editorial decision. If a static package-integrity blocker appears, fix the cited evidence, copy, or unsupported citation before export.
 
 Before drafting or approving, ask:
 

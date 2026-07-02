@@ -11,7 +11,7 @@ CivicNewspaper should become a local-first desktop newsroom for small towns, com
 
 The product's unique advantage is not that it can ask an AI to write an article. Cloud products can already do that. CivicNewspaper's advantage is that it can run a persistent, private, town-specific local intelligence layer across the entire newsroom workflow without sending unfinished reporting, sensitive leads, local source lists, editorial notes, unpublished drafts, or verification concerns to a cloud model.
 
-The local LLM should act as a private newsroom brain: classifying sources, recognizing repeated background material, spotting novelty, suggesting story forms, creating reporter notebooks, extracting claims, suggesting verification tasks, coaching editors, and helping line up an issue. It must never replace the editor and must never veto publication.
+The local LLM should act as a private newsroom brain: classifying sources, recognizing repeated background material, spotting novelty, suggesting story forms, creating reporter notebooks, extracting claims, suggesting verification tasks, coaching editors, and helping line up an issue. It must not replace the editor or make the editor's news judgment. Deterministic package-integrity checks may still block export until broken public output is repaired.
 
 ## 2. Problem Statement
 
@@ -56,7 +56,7 @@ Reviews evidence, source snapshots, issue output, and how a story was produced.
 ## 4. Product Principles
 
 Human editor always decides.
-The app may warn, suggest, coach, classify, and rank. It must never silently veto or prevent publication.
+The app may warn, suggest, coach, classify, and rank. It must never silently veto the editor's judgment; visible static-package integrity checks may prevent approval/export until broken evidence, empty copy, reporter notes, or unsupported citations are fixed.
 
 Local-first by default.
 Unpublished drafts, notes, local source lists, and verification concerns should stay on the user's machine unless the user explicitly publishes or exports them.
@@ -802,7 +802,7 @@ Technical quality:
 
 Trust quality:
 
-- No software vetoes publication.
+- No AI or advisory warning vetoes publication; visible deterministic package-integrity blockers can stop export until broken public output is repaired.
 - AI/editorial warnings are advisory.
 - Publisher identity and disclosure language are configurable.
 - Docs are honest about limitations.

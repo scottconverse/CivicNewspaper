@@ -4,7 +4,7 @@ CivicNewspaper is the repository name. The installed desktop app is The Civic De
 
 The product is a local-first newsroom desktop app for small local publishers. It watches civic sources, imports source lists, finds leads, stores evidence, helps an editor draft and verify stories, and exports or publishes a static local paper.
 
-The system is advisory. It can rank, warn, summarize, and suggest verification work. It must never veto the editor.
+The system is advisory about editorial judgment. It can rank, warn, summarize, and suggest verification work. It must not make the editor's news judgment for them, but deterministic package-integrity checks can block static approval/export until broken evidence, empty copy, reporter-note scaffolding, or unsupported citations are fixed.
 
 ## System Overview
 
@@ -142,7 +142,7 @@ Tasks can link back to stories, signals, sources, entities, and evidence.
 
 The Workbench is where writers and editors draft, revise, hold, approve, or return stories for more work.
 
-Guardrails and the press-freedom/legal-risk advisor are advisory only. They can warn about sourcing, attribution, defamation risk, privacy risk, public/private figure questions, and verification gaps. They cannot block publication.
+Guardrails and the press-freedom/legal-risk advisor are advisory only. They can warn about sourcing, attribution, defamation risk, privacy risk, public/private figure questions, and verification gaps. They do not make the editor's decision. Separately, deterministic static-package checks can visibly block approval/export until the public package is valid.
 
 Publisher identity, organization type, tone, copyright/footer text, and public site language are configurable so the app does not invent the publisher's business model or editorial policy.
 

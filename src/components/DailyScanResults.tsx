@@ -156,7 +156,7 @@ export const DailyScanResults: React.FC<Props> = ({ scanId, onRunScan, onOpenLea
 
   if (error) {
     return (
-      <div className="card mt-4" data-testid="daily-scan-results-error" style={{ marginTop: '1rem', padding: '1rem' }}>
+      <div className="card mt-4" data-testid="daily-scan-results-error" role="alert" aria-live="assertive" style={{ marginTop: '1rem', padding: '1rem' }}>
         <h3>Scan Results for Scan #{scanId}</h3>
         <p className="error-text">Couldn't load scan results: {error}</p>
         <button className="btn btn-secondary btn-sm" onClick={load} data-testid="daily-scan-retry">
@@ -183,7 +183,7 @@ export const DailyScanResults: React.FC<Props> = ({ scanId, onRunScan, onOpenLea
         </div>
       ) : (
         <>
-        {linkError && <p className="error-text">Couldn't open original source: {linkError}</p>}
+        {linkError && <p className="error-text" role="alert" aria-live="assertive">Couldn't open original source: {linkError}</p>}
         <ul style={{ listStyleType: 'none', padding: 0 }}>
           {leads.map((lead, idx) => (
             <li key={idx} style={{ marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid var(--border-color)' }}>
