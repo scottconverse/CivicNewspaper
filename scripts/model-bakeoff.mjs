@@ -99,6 +99,21 @@ function validateResult(text) {
   return { hasThinkTag, leadCount: parsed.leads.length, parsed };
 }
 
+function buildRepairPrompt(raw) {
+  return `The previous local model output was not valid JSON for CivicNewspaper Daily Scan.
+
+Return ONLY valid JSON with this exact shape:
+{"leads":[{"title":"...","summary":"...","original_url":"..."}]}
+
+Rules:
+- Keep at most 3 leads.
+- Use {"leads":[]} if the output contains no real civic lead.
+- Do not add markdown, explanations, code fences, comments, or trailing text.
+
+Output to repair:
+${raw}`;
+}
+
 async function generate(model, prompt, system) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -156,13 +171,26 @@ async function main() {
         leadCount: null,
         hasThinkTag: null,
         error: null,
+        repairAttempted: false,
+        repaired: false,
         responsePreview: "",
       };
       try {
         const generated = await generate(model, prompt, system);
         result.elapsedMs = generated.elapsedMs;
         result.responsePreview = generated.response.slice(0, 500);
-        const validation = validateResult(generated.response);
+        let validation;
+        try {
+          validation = validateResult(generated.response);
+        } catch (firstError) {
+          result.repairAttempted = true;
+          const repaired = await generate(model, buildRepairPrompt(generated.response), system);
+          result.elapsedMs += repaired.elapsedMs;
+          result.responsePreview = repaired.response.slice(0, 500);
+          validation = validateResult(repaired.response);
+          result.repaired = true;
+          result.repairError = firstError instanceof Error ? firstError.message : String(firstError);
+        }
         result.ok = true;
         result.leadCount = validation.leadCount;
         result.hasThinkTag = validation.hasThinkTag;
