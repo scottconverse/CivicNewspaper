@@ -334,6 +334,70 @@ describe("OnboardingWizard Component Tests", () => {
     expect(invokeMock).toHaveBeenCalledWith("reveal_main_window_for_setup");
   });
 
+  test("identity Next reads DOM field values when React input events are dropped", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      if (cmd === "set_setting") return Promise.resolve();
+      if (cmd === "reveal_main_window_for_setup") return Promise.resolve();
+      if (cmd === "get_community_profile") return Promise.resolve({
+        site_title: "My Local Publication",
+        organization_type: "single_person",
+        city: "",
+        state: "",
+      });
+      if (cmd === "save_community_profile") return Promise.resolve();
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: false, models: [], version: null });
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
+
+    Object.defineProperty(screen.getByLabelText("Publication Name"), "value", {
+      value: "Longmont Chrome Gate Desk",
+      configurable: true,
+    });
+    Object.defineProperty(screen.getByLabelText("Editor Name"), "value", {
+      value: "Cleanroom Tester",
+      configurable: true,
+    });
+    Object.defineProperty(screen.getByLabelText("City"), "value", {
+      value: "Longmont",
+      configurable: true,
+    });
+    Object.defineProperty(screen.getByLabelText("State"), "value", {
+      value: "CO",
+      configurable: true,
+    });
+
+    fireEvent.pointerDown(screen.getByRole("button", { name: /next/i }));
+
+    await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "identity.newsroom_name",
+      value: "Longmont Chrome Gate Desk",
+    });
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "identity.editor_name",
+      value: "Cleanroom Tester",
+    });
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "identity.city",
+      value: "Longmont",
+    });
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "identity.state",
+      value: "CO",
+    });
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "onboarding.step",
+      value: "2",
+    });
+  });
+
   test("first-run setup restores saved identity step after relaunch", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;

@@ -213,11 +213,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   };
 
   const currentIdentityValues = () => ({
-    pubName,
-    editorName,
-    organizationType,
-    city,
-    state,
+    pubName: pubNameInputRef.current?.value ?? pubName,
+    editorName: editorNameInputRef.current?.value ?? editorName,
+    organizationType: organizationTypeSelectRef.current?.value ?? organizationType,
+    city: cityInputRef.current?.value ?? city,
+    state: stateInputRef.current?.value ?? state,
   });
 
   const persistIdentity = async (identity = currentIdentityValues()) => {
@@ -873,19 +873,32 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     if (!primaryActionRef.current) return;
 
     const button = primaryActionRef.current;
-    const nativeAdvance = (event: Event) => {
-      if (button.disabled) return;
+    const nativeIdentityAdvance = (event: Event) => {
+      if (step !== 1 || button.disabled) return;
       event.preventDefault();
       event.stopPropagation();
-      void handleNext();
+      void advanceIdentityStep(currentIdentityValues());
+    };
+    const nativeIdentityEnterAdvance = (event: KeyboardEvent) => {
+      if (step !== 1 || event.key !== "Enter" || button.disabled) return;
+      event.preventDefault();
+      event.stopPropagation();
+      void advanceIdentityStep(currentIdentityValues());
     };
 
-    // Some installed WebView paths have dropped React's delegated click handler
-    // while still delivering native DOM clicks. Keep the setup primary action
-    // product-owned across every step, including the model-download gate.
-    button.addEventListener("click", nativeAdvance, { capture: true });
+    // Some installed WebView paths have accepted native field edits while
+    // dropping React's delegated identity-step handlers. Keep only the first
+    // setup handoff native-owned; later setup steps use their normal React
+    // handlers to avoid stale-step native listeners blocking Finish.
+    button.addEventListener("pointerdown", nativeIdentityAdvance, { capture: true });
+    button.addEventListener("mousedown", nativeIdentityAdvance, { capture: true });
+    button.addEventListener("click", nativeIdentityAdvance, { capture: true });
+    document.addEventListener("keydown", nativeIdentityEnterAdvance, { capture: true });
     return () => {
-      button.removeEventListener("click", nativeAdvance, { capture: true });
+      button.removeEventListener("pointerdown", nativeIdentityAdvance, { capture: true });
+      button.removeEventListener("mousedown", nativeIdentityAdvance, { capture: true });
+      button.removeEventListener("click", nativeIdentityAdvance, { capture: true });
+      document.removeEventListener("keydown", nativeIdentityEnterAdvance, { capture: true });
     };
   }, [step, pubName, editorName, organizationType, city, state, health, pulling, pullComplete, model, runtimeInstalling, publishPath, backupPath]);
 
