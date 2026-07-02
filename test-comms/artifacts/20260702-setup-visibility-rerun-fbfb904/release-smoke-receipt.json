@@ -1,0 +1,82 @@
+﻿{
+    "generated_at":  "2026-07-01T22:49:33.5237181-06:00",
+    "repo":  "C:\\Users\\instynct\\Desktop\\CODE\\civicnewspaper",
+    "fixture_dir":  "C:\\Users\\instynct\\Desktop\\CODE\\civicnewspaper\\.agent-runs\\source-fixture-artifact",
+    "model":  "phi4-mini:latest",
+    "static_site_dir":  "C:\\Users\\instynct\\Desktop\\CODE\\civicnewspaper\\.agent-runs\\release-smoke-20260701-224933\\static-site",
+    "stable_mode":  true,
+    "allow_dirty":  false,
+    "branch":  "main",
+    "commit":  "fbfb90464590d0f643cdb8189ee0a44ef5597a5b",
+    "dirty":  false,
+    "skipped":  [
+
+                ],
+    "checks":  [
+                   {
+                       "name":  "git-status",
+                       "ok":  true,
+                       "seconds":  0.96
+                   },
+                   {
+                       "name":  "frontend-tests",
+                       "ok":  true,
+                       "seconds":  6.62
+                   },
+                   {
+                       "name":  "browser-ui-smoke",
+                       "ok":  true,
+                       "seconds":  8.23
+                   },
+                   {
+                       "name":  "rust-tests",
+                       "ok":  true,
+                       "seconds":  150.89
+                   },
+                   {
+                       "name":  "story-quality-navigation-chrome-gate",
+                       "ok":  true,
+                       "seconds":  0.61
+                   },
+                   {
+                       "name":  "clean-profile-app-data-override",
+                       "ok":  true,
+                       "seconds":  0.5
+                   },
+                   {
+                       "name":  "desktop-first-run-loopback-smoke",
+                       "ok":  true,
+                       "seconds":  46.63
+                   },
+                   {
+                       "name":  "static-site-output-gate",
+                       "ok":  true,
+                       "seconds":  1.12
+                   },
+                   {
+                       "name":  "here-now-anonymous-live-publish",
+                       "ok":  true,
+                       "seconds":  8.25
+                   },
+                   {
+                       "name":  "live-colorado-source-scan",
+                       "ok":  true,
+                       "seconds":  10.65
+                   },
+                   {
+                       "name":  "live-local-model-scan",
+                       "ok":  true,
+                       "seconds":  45.93
+                   },
+                   {
+                       "name":  "source-import-fixture-extraction",
+                       "ok":  true,
+                       "seconds":  2.06
+                   },
+                   {
+                       "name":  "source-import-fixture-review",
+                       "ok":  true,
+                       "seconds":  1.49
+                   }
+               ]
+}
