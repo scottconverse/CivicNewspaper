@@ -379,6 +379,19 @@ try {
   $evidenceDir = Join-Path $RunDir "evidence"
   New-Item -ItemType Directory -Force -Path $evidenceDir | Out-Null
   $evidenceBundles = [System.Collections.Generic.List[object]]::new()
+  function Resolve-RelativePath {
+    param(
+      [string]$BaseDir,
+      [string]$Path
+    )
+    $baseFull = [System.IO.Path]::GetFullPath($BaseDir)
+    if (-not $baseFull.EndsWith([System.IO.Path]::DirectorySeparatorChar)) {
+      $baseFull += [System.IO.Path]::DirectorySeparatorChar
+    }
+    $baseUri = [System.Uri]::new($baseFull)
+    $pathUri = [System.Uri]::new([System.IO.Path]::GetFullPath($Path))
+    return [System.Uri]::UnescapeDataString($baseUri.MakeRelativeUri($pathUri).ToString()).Replace('/', [System.IO.Path]::DirectorySeparatorChar)
+  }
   function Copy-EvidenceBundle {
     param(
       [string]$ReceiptPath,
@@ -397,7 +410,7 @@ try {
         $_.FullName -notmatch "\\app-data\\"
       } |
       ForEach-Object {
-        $relative = [System.IO.Path]::GetRelativePath($sourceDir, $_.FullName)
+        $relative = Resolve-RelativePath -BaseDir $sourceDir -Path $_.FullName
         $target = Join-Path $destDir $relative
         New-Item -ItemType Directory -Force -Path (Split-Path -Parent $target) | Out-Null
         Copy-Item -LiteralPath $_.FullName -Destination $target -Force
