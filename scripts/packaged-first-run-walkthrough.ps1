@@ -344,7 +344,7 @@ try {
   Add-ScreenshotCheck "after-next-screenshot" $afterNextScreenshot
 
   if ($CompleteOnboarding) {
-    Click-WindowPoint -Process $appProcess -X 748 -Y 817
+    Click-WindowPoint -Process $appProcess -X 625 -Y 817
     Start-Sleep -Seconds 1
     $skipConfirmScreenshot = Join-Path $OutputDir "04-skip-confirmation.png"
     Capture-WindowScreenshot -Process $appProcess -Path $skipConfirmScreenshot
@@ -356,13 +356,13 @@ try {
     Capture-WindowScreenshot -Process $appProcess -Path $afterSkipScreenshot
     Add-ScreenshotCheck "after-skip-setup-screenshot" $afterSkipScreenshot
 
-    Click-WindowPoint -Process $appProcess -X 940 -Y 817
+    Click-WindowPoint -Process $appProcess -X 820 -Y 817
     Start-Sleep -Seconds 1
     $doneStepScreenshot = Join-Path $OutputDir "06-done-step.png"
     Capture-WindowScreenshot -Process $appProcess -Path $doneStepScreenshot
     Add-ScreenshotCheck "done-step-screenshot" $doneStepScreenshot
 
-    Click-WindowPoint -Process $appProcess -X 940 -Y 817
+    Click-WindowPoint -Process $appProcess -X 820 -Y 817
     Start-Sleep -Seconds 3
     $workspaceScreenshot = Join-Path $OutputDir "07-workspace-reached.png"
     Capture-WindowScreenshot -Process $appProcess -Path $workspaceScreenshot
