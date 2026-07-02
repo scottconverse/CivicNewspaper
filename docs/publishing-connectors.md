@@ -9,7 +9,7 @@ Recommended stack: publish instantly with here.now, use GitHub Pages when the ed
 
 ## Beta Verification Status
 
-For this release line, anonymous here.now preview publishing is the tested default fast path. GitHub Pages, Netlify, and permanent here.now account publishing require user-owned credentials and real target accounts. WordPress and Cloudflare Pages API publishing are disabled in this public beta. Release evidence should state exactly which connector was live-verified for that release. Do not treat GitHub Pages, Netlify, WordPress, or permanent here.now account publishing as stable-grade verified unless the release notes include release-specific live proof and a live credentialed connector proof.
+For this release line, anonymous here.now preview publishing is the tested default fast path. GitHub Pages, Netlify, and permanent here.now account publishing require user-owned credentials and real target accounts. WordPress API publishing is disabled in this public beta. Cloudflare Pages API publishing is disabled in this public beta. Release evidence should state exactly which connector was live-verified for that release. Do not treat GitHub Pages, Netlify, WordPress, or permanent here.now account publishing as stable-grade verified unless the release notes include release-specific live proof and a live credentialed connector proof.
 
 ## API Publish Connectors
 
