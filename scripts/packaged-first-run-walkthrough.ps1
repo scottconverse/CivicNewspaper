@@ -1,7 +1,8 @@
 param(
   [string]$NsisInstaller = "",
   [string]$OutputDir = "",
-  [string]$Python = ""
+  [string]$Python = "",
+  [switch]$CompleteOnboarding
 )
 
 $ErrorActionPreference = "Stop"
@@ -112,6 +113,10 @@ public class CivicDeskWalkthroughWin32 {
   public static extern bool PrintWindow(IntPtr hWnd, IntPtr hdcBlt, int nFlags);
   [DllImport("user32.dll")]
   public static extern bool SetProcessDPIAware();
+  [DllImport("user32.dll")]
+  public static extern bool SetCursorPos(int X, int Y);
+  [DllImport("user32.dll")]
+  public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, UIntPtr dwExtraInfo);
 }
 "@
 
@@ -148,6 +153,26 @@ function Capture-WindowScreenshot {
     $graphics.Dispose()
     $bitmap.Dispose()
   }
+}
+
+function Click-WindowPoint {
+  param(
+    [System.Diagnostics.Process]$Process,
+    [int]$X,
+    [int]$Y
+  )
+
+  $rect = New-Object CivicDeskWalkthroughWin32+RECT
+  if (-not [CivicDeskWalkthroughWin32]::GetWindowRect($Process.MainWindowHandle, [ref]$rect)) {
+    throw "Could not read app window bounds for click."
+  }
+  [void][CivicDeskWalkthroughWin32]::SetForegroundWindow($Process.MainWindowHandle)
+  Start-Sleep -Milliseconds 150
+  [void][CivicDeskWalkthroughWin32]::SetCursorPos($rect.Left + $X, $rect.Top + $Y)
+  Start-Sleep -Milliseconds 100
+  [CivicDeskWalkthroughWin32]::mouse_event(0x0002, 0, 0, 0, [UIntPtr]::Zero)
+  Start-Sleep -Milliseconds 75
+  [CivicDeskWalkthroughWin32]::mouse_event(0x0004, 0, 0, 0, [UIntPtr]::Zero)
 }
 
 function Stop-WalkthroughProcess {
@@ -301,6 +326,32 @@ try {
   Capture-WindowScreenshot -Process $appProcess -Path $afterNextScreenshot
   Add-Check "after-next-screenshot" (Test-Path $afterNextScreenshot) @{ path = $afterNextScreenshot }
 
+  if ($CompleteOnboarding) {
+    Click-WindowPoint -Process $appProcess -X 748 -Y 817
+    Start-Sleep -Seconds 1
+    $skipConfirmScreenshot = Join-Path $OutputDir "04-skip-confirmation.png"
+    Capture-WindowScreenshot -Process $appProcess -Path $skipConfirmScreenshot
+    Add-Check "skip-confirmation-screenshot" (Test-Path $skipConfirmScreenshot) @{ path = $skipConfirmScreenshot }
+
+    [System.Windows.Forms.SendKeys]::SendWait("{TAB}{ENTER}")
+    Start-Sleep -Seconds 2
+    $afterSkipScreenshot = Join-Path $OutputDir "05-after-skip-setup.png"
+    Capture-WindowScreenshot -Process $appProcess -Path $afterSkipScreenshot
+    Add-Check "after-skip-setup-screenshot" (Test-Path $afterSkipScreenshot) @{ path = $afterSkipScreenshot }
+
+    Click-WindowPoint -Process $appProcess -X 940 -Y 817
+    Start-Sleep -Seconds 1
+    $doneStepScreenshot = Join-Path $OutputDir "06-done-step.png"
+    Capture-WindowScreenshot -Process $appProcess -Path $doneStepScreenshot
+    Add-Check "done-step-screenshot" (Test-Path $doneStepScreenshot) @{ path = $doneStepScreenshot }
+
+    Click-WindowPoint -Process $appProcess -X 940 -Y 817
+    Start-Sleep -Seconds 3
+    $workspaceScreenshot = Join-Path $OutputDir "07-workspace-reached.png"
+    Capture-WindowScreenshot -Process $appProcess -Path $workspaceScreenshot
+    Add-Check "workspace-reached-screenshot" (Test-Path $workspaceScreenshot) @{ path = $workspaceScreenshot }
+  }
+
   $dbPath = Join-Path $appDataRoot "civicdesk.db"
   Add-Check "sqlite-db-present" (Test-Path $dbPath) @{ db_path = $dbPath }
   if (-not (Test-Path $dbPath)) {
@@ -343,6 +394,15 @@ with open(out_path, "w", encoding="utf-8") as f:
   Add-Check "setting-onboarding.step-advanced" ($onboardingStep -ne "" -and [int]$onboardingStep -ge 2) @{ actual = $onboardingStep }
   if ($onboardingStep -eq "" -or [int]$onboardingStep -lt 2) {
     throw "Expected onboarding.step >= 2 after Identity Next, got '$onboardingStep'"
+  }
+
+  if ($CompleteOnboarding) {
+    $onboardingComplete = [string]$settings.PSObject.Properties["onboarding_complete"].Value
+    $isOnboardingComplete = $onboardingComplete -eq "true" -or $onboardingComplete -eq "1"
+    Add-Check "setting-onboarding_complete" $isOnboardingComplete @{ actual = $onboardingComplete }
+    if (-not $isOnboardingComplete) {
+      throw "Expected onboarding_complete true/1, got '$onboardingComplete'"
+    }
   }
 } finally {
   Stop-WalkthroughProcess -Process $appProcess
