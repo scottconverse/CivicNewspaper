@@ -1,0 +1,57 @@
+{
+  "sources": 18,
+  "daily_scan_runs": 1,
+  "daily_scan_leads": 20,
+  "leads": 23,
+  "evidence_items": 31,
+  "lead_evidence": 22,
+  "drafts": 3,
+  "publish_runs": 0,
+  "published_posts": 0,
+  "verification_tasks": 94,
+  "approved_drafts": 0,
+  "newest_daily_scan_run": {
+    "id": 1,
+    "started_at": "2026-07-02T22:21:37.923226200+00:00",
+    "completed_at": "2026-07-02T22:23:41.863269200+00:00",
+    "run_status": "completed"
+  },
+  "draft_statuses": [
+    {
+      "id": 1,
+      "lead_id": 23,
+      "format": "watch",
+      "title": "Longmont Summer Concert Series: 2MX2 on Independence Day Weekend: The City of Longmont's summer",
+      "status": "needs_verification",
+      "missing_evidence_notes": null,
+      "attested_by": null,
+      "attested_at": null
+    },
+    {
+      "id": 2,
+      "lead_id": 21,
+      "format": "watch",
+      "title": "Multilingual service announcements: The City Clerk announced that English-only email",
+      "status": "needs_verification",
+      "missing_evidence_notes": "No source documents are linked to this lead yet. Treat this as a verification assignment until public source material is attached or cited.",
+      "attested_by": null,
+      "attested_at": null
+    },
+    {
+      "id": 3,
+      "lead_id": 22,
+      "format": "watch",
+      "title": "Independence Day Festival and Concerts in Longmont: The City of Longmont will host its",
+      "status": "needs_verification",
+      "missing_evidence_notes": null,
+      "attested_by": null,
+      "attested_at": null
+    }
+  ],
+  "default_site_path": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default",
+  "default_site_exists": true,
+  "db_path": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+  "app_path": "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+  "app_path_exists": true,
+  "observed_at_utc": "2026-07-02T22:40:36.118857+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "windows": "Windows-11-10.0.26200-SP0",
+  "machine": "MSI",
+  "python": "3.12.13",
+  "installer_path": "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\artifacts\\20260702-final-cleanroom-v032-916653b\\The Civic Desk_0.3.2_x64-setup.exe",
+  "installer_sha256": "F1DD475B97F497241DEDF00F48EBCC7A59318A7FFE3994E0030183072026DE54",
+  "installer_size": 5200358,
+  "app_path": "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+  "db_path": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+  "default_site_path": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default"
+}

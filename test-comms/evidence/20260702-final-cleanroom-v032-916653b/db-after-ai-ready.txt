@@ -1,0 +1,26 @@
+db_exists True C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\civicdesk.db
+default_site_exists True
+sources_count 9
+daily_scan_runs_count 1
+daily_scan_leads_count 6
+leads_count 9
+evidence_items_count 31
+lead_evidence_count 8
+drafts_count 0
+publish_runs_count 0
+published_posts_count 0
+settings_count 13
+scan {"id": 1, "started_at": "2026-07-02T22:21:37.923226200+00:00", "completed_at": null, "run_status": "in_progress"}
+setting ai.setup_skipped=false
+setting identity.city=Longmont
+setting identity.editor_name=Publisher
+setting identity.newsroom_name=My Local Publication
+setting identity.organization_type=single_person
+setting identity.state=CO
+setting model.selected=phi4-mini:latest
+setting onboarding.step=5
+setting onboarding_complete=1
+setting paths.backup=C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\backups
+setting paths.publish=C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\sites\default
+setting setup.first_run_intake=true
+setting setup.recovered_input=running_source_intake
