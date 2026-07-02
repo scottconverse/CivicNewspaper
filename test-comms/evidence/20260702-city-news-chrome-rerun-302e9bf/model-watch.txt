@@ -1,0 +1,38 @@
+model watch start 2026-07-01T22:24:49.3845720-06:00
+--- t=10s 2026-07-01T22:24:59.4085685-06:00 ---
+
+ProcessName    Id Path                                                      MainWindowTitle
+-----------    -- ----                                                      ---------------
+civicnews   24880 C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe The Civic Desk 
+
+
+
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260702-city-news-chrome-rerun-302e9bf\screenshot-model-10s.png (1920, 1080)
+--- t=30s 2026-07-01T22:25:19.8608514-06:00 ---
+
+ProcessName    Id Path                                                      MainWindowTitle
+-----------    -- ----                                                      ---------------
+civicnews   24880 C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe The Civic Desk 
+
+
+
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260702-city-news-chrome-rerun-302e9bf\screenshot-model-30s.png (1920, 1080)
+--- t=60s 2026-07-01T22:25:49.0289394-06:00 ---
+
+ProcessName    Id Path                                                      MainWindowTitle
+-----------    -- ----                                                      ---------------
+civicnews   24880 C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe The Civic Desk 
+
+
+
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260702-city-news-chrome-rerun-302e9bf\screenshot-model-60s.png (1920, 1080)
+--- t=120s 2026-07-01T22:26:49.2347446-06:00 ---
+
+ProcessName    Id Path                                                      MainWindowTitle
+-----------    -- ----                                                      ---------------
+civicnews   24880 C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe The Civic Desk 
+
+
+
+C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260702-city-news-chrome-rerun-302e9bf\screenshot-model-120s.png (1920, 1080)
+model watch end 2026-07-01T22:26:49.4295825-06:00

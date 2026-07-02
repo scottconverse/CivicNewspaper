@@ -1,0 +1,71 @@
+{
+  "time": "2026-07-02T04:32:27Z",
+  "processes": [],
+  "windows": [
+    {
+      "hwnd": 1181190,
+      "visible": true,
+      "iconic": false,
+      "rect": [
+        60,
+        20,
+        1860,
+        1010
+      ],
+      "title": "The Civic Desk"
+    },
+    {
+      "hwnd": 2753974,
+      "visible": true,
+      "iconic": false,
+      "rect": [
+        0,
+        0,
+        15,
+        15
+      ],
+      "title": ""
+    },
+    {
+      "hwnd": 2622880,
+      "visible": false,
+      "iconic": false,
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "title": "MSCTFIME UI"
+    },
+    {
+      "hwnd": 656848,
+      "visible": false,
+      "iconic": false,
+      "rect": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "title": "Default IME"
+    }
+  ],
+  "db": {
+    "path": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\civicdesk.db",
+    "exists": true,
+    "sources": 0,
+    "daily_scan_runs": 0,
+    "daily_scan_leads": 0,
+    "leads": 0,
+    "evidence_items": 0,
+    "lead_evidence": 0,
+    "drafts": 0,
+    "publish_runs": 0,
+    "published_posts": 0,
+    "settings": {
+      "model.selected": "phi4-mini:latest"
+    }
+  },
+  "process_error": "Command '['powershell', '-NoProfile', '-Command', 'Get-Process civicnews,ollama -ErrorAction SilentlyContinue | Select-Object ProcessName,Id,Path,MainWindowTitle,MainWindowHandle | ConvertTo-Json -Depth 3']' returned non-zero exit status 1."
+}
