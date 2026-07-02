@@ -17,6 +17,34 @@ function Resolve-AppVersion {
   return [string]$package.version
 }
 
+function Get-GitHead {
+  param([string]$Repo)
+  Push-Location $Repo
+  try {
+    return (git rev-parse HEAD).Trim()
+  } finally {
+    Pop-Location
+  }
+}
+
+function Test-GitDirty {
+  param([string]$Repo)
+  Push-Location $Repo
+  try {
+    return [bool](git status --porcelain)
+  } finally {
+    Pop-Location
+  }
+}
+
+function Get-ArtifactSha256 {
+  param([string]$Path)
+  if ([string]::IsNullOrWhiteSpace($Path)) {
+    return $null
+  }
+  return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash
+}
+
 function Resolve-Artifact {
   param(
     [string]$ExplicitPath,
@@ -222,9 +250,13 @@ $absentOllamaBaseUrl = Resolve-UnusedLoopbackUrl
 $receipt = [ordered]@{
   generated_at = (Get-Date).ToString("o")
   repo = $repo
+  commit = Get-GitHead -Repo $repo
+  dirty = Test-GitDirty -Repo $repo
   app_version = $appVersion
   nsis_installer = $nsisPath
+  nsis_installer_sha256 = Get-ArtifactSha256 -Path $nsisPath
   msi_installer = $msiPath
+  msi_installer_sha256 = Get-ArtifactSha256 -Path $msiPath
   output_dir = $OutputDir
   forced_ollama_base_url = $absentOllamaBaseUrl
   checks = @()

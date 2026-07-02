@@ -45,9 +45,10 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
   // them (or the next action clears errorMessage) so failures aren't missed.
   React.useEffect(() => {
     if (!app.statusMessage) return;
+    if (app.loading) return;
     const t = setTimeout(() => app.setStatusMessage(""), 6000);
     return () => clearTimeout(t);
-  }, [app.statusMessage]);
+  }, [app.loading, app.statusMessage]);
 
   React.useEffect(() => {
     if (!app.selectedLead?.id) return;

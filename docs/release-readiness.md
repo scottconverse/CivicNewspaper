@@ -50,9 +50,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\prepare-rc-evidence.
   -InstallerSmokeReceipt ".agent-runs\windows-installer-smoke-YYYYMMDD-HHMMSS\windows-installer-smoke-receipt.json"
 ```
 
-The receipt records the exact branch, commit, app versions, Tauri bundle targets, artifact paths, SHA256 hashes, smoke-check results, model-bakeoff receipt, dependency-audit receipt, Windows installer-smoke receipt, and `SHA256SUMS` output. It is a local evidence artifact; it does not push, merge, tag, or publish. By default it fails if the smoke receipt is missing, from a different repo or commit, dirty/diagnostic, contains failed/skipped checks, no current-version installer artifacts are present, stale historical installer artifacts are present in the bundle folder, or the model-bakeoff/dependency-audit/installer-smoke artifacts are missing. Use the diagnostic flags only for local investigation, not release evidence.
+The receipt records the exact branch, commit, app versions, Tauri bundle targets, artifact paths, SHA256 hashes, smoke-check results, model-bakeoff receipt, dependency-audit receipt, Windows installer-smoke receipt, and `SHA256SUMS` output. It is a local evidence artifact; it does not push, merge, tag, or publish. By default it fails if the smoke receipt is missing, from a different repo or commit, dirty/diagnostic, contains failed/skipped checks, no current-version installer artifacts are present, stale historical installer artifacts are present in the bundle folder, the installer-smoke SHA256 does not match the current release artifact SHA256, or the model-bakeoff/dependency-audit/installer-smoke artifacts are missing. Use the diagnostic flags only for local investigation, not release evidence.
 
-The model bakeoff receipt must show that the configured default model in `src\models.json` passed every bakeoff case. The dependency audit receipt must be clean, run npm audit at the documented `moderate` threshold or stricter, and include Rust advisory checking through `cargo-audit`; a receipt that only exists but contains failures is not release evidence. If `cargo-audit` uses ignored RustSec advisories, every ignored ID must have a current machine-readable waiver in `docs/security-advisory-waivers.json`, and the dependency and RC receipts must copy those waiver entries into release evidence. Missing, expired, or incomplete waivers fail RC evidence. The Windows installer smoke receipt must prove NSIS silent install, installed app start from the packaged installer, first-run screenshot capture, uninstaller presence, and silent uninstall. MSI lifecycle proof is backlog/proof-needed until MSI is reintroduced as a public beta artifact.
+The model bakeoff receipt must show that the configured default model in `src\models.json` passed every bakeoff case. The dependency audit receipt must be clean, run npm audit at the documented `moderate` threshold or stricter, and include Rust advisory checking through `cargo-audit`; a receipt that only exists but contains failures is not release evidence. If `cargo-audit` uses ignored RustSec advisories, every ignored ID must have a current machine-readable waiver in `docs/security-advisory-waivers.json`, and the dependency and RC receipts must copy exactly matching waiver entries into release evidence. Missing, extra, duplicated, expired, or incomplete waivers fail RC evidence. The Windows installer smoke receipt must prove NSIS silent install, installed app start from the packaged installer, first-run screenshot capture, uninstaller presence, and silent uninstall, and its recorded installer SHA256 must match the current RC artifact SHA256. MSI lifecycle proof is backlog/proof-needed until MSI is reintroduced as a public beta artifact.
 
 For this release line, RC packaging evidence is Windows public beta only. macOS and Linux installer proof is backlog/proof-needed until a real platform artifact and clean-machine first-run proof exist.
 
@@ -98,7 +98,12 @@ The full source-file set includes clean CSV, messy XLSX, human notes TXT, DOCX b
 
 ## Model bakeoff
 
-Run this to record local JSON reliability and timing:
+There are two model checks:
+
+- The release-candidate gate is the configured-default check: the model named in `src\models.json` must pass every bakeoff case in the receipt used by `prepare-rc-evidence.ps1`.
+- The comparison bakeoff is model-selection evidence. Run it before changing the default model, after meaningful prompt/model changes, or when deciding whether the public-beta default should change.
+
+Run this to record comparison reliability and timing:
 
 ```powershell
 $env:MODEL_BAKEOFF_MODELS="qwen2.5:7b,gpt-oss:20b,gemma4:e4b,phi4-mini:latest,llama3.2:3b"
@@ -106,9 +111,9 @@ $env:MODEL_BAKEOFF_TIMEOUT_MS="240000"
 node scripts\model-bakeoff.mjs
 ```
 
-The result is written under `.agent-runs\model-bakeoff-*.json`.
+The result is written under `.agent-runs\model-bakeoff-*.json`. A release candidate may use a narrower default-model receipt when the purpose is to prove the current configured default; do not describe that receipt as a full comparison bakeoff.
 
-For this public-beta line, `phi4-mini:latest` is the default scan model because `.agent-runs\model-bakeoff-2026-06-30T20-26-21-425Z.json` recorded valid JSON output for both `civic-signals` and `empty-noise` cases. That receipt compared `qwen2.5:7b`, `gpt-oss:20b`, `gemma4:e4b`, `phi4-mini:latest`, and `llama3.2:3b` with `MODEL_BAKEOFF_TIMEOUT_MS=240000`; `gemma4:e4b` also passed both cases but was slower on the civic-signal case in that run. Keep all comparison models in the bakeoff until repeated release evidence supports a different default.
+For this public-beta line, `phi4-mini:latest` is the default scan model because `.agent-runs\model-bakeoff-2026-06-30T20-26-21-425Z.json` recorded valid JSON output for both `civic-signals` and `empty-noise` cases. That comparison receipt included `qwen2.5:7b`, `gpt-oss:20b`, `gemma4:e4b`, `phi4-mini:latest`, and `llama3.2:3b` with `MODEL_BAKEOFF_TIMEOUT_MS=240000`; `gemma4:e4b` also passed both cases but was slower on the civic-signal case in that run. Keep using the comparison set for model-selection decisions until repeated evidence supports a different default.
 
 ## Security checks
 

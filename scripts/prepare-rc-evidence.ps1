@@ -87,6 +87,8 @@ try {
   $dependencyAuditWaivers = @()
   $dependencyAuditWaiverPath = $null
   $installerSmokeOk = $false
+  $installerSmoke = $null
+  $installerSmokeMatchedArtifacts = @()
   if ($resolvedModelBakeoffReceipt) {
     $modelBakeoff = Get-Content -Raw -LiteralPath $resolvedModelBakeoffReceipt.Path | ConvertFrom-Json
     $defaultModel = [string]$modelsConfig.high
@@ -123,6 +125,14 @@ try {
       }
       if ($dependencyAuditWaivers.Count -ne $dependencyAuditIgnoredAdvisories.Count) {
         throw "Dependency audit receipt has $($dependencyAuditIgnoredAdvisories.Count) ignored RustSec advisories but $($dependencyAuditWaivers.Count) waiver entries."
+      }
+      $ignoredIds = @($dependencyAuditIgnoredAdvisories | ForEach-Object { ([string]$_).Trim() } | Where-Object { $_ })
+      $waiverIds = @($dependencyAuditWaivers | ForEach-Object { ([string]$_.id).Trim() } | Where-Object { $_ })
+      $duplicateWaiverIds = @($waiverIds | Group-Object | Where-Object { $_.Count -gt 1 } | ForEach-Object { $_.Name })
+      $missingWaiverIds = @($ignoredIds | Where-Object { $_ -notin $waiverIds })
+      $extraWaiverIds = @($waiverIds | Where-Object { $_ -notin $ignoredIds })
+      if ($duplicateWaiverIds.Count -gt 0 -or $missingWaiverIds.Count -gt 0 -or $extraWaiverIds.Count -gt 0) {
+        throw "Dependency audit waiver IDs do not exactly match ignored RustSec advisory IDs. Missing: $($missingWaiverIds -join ', '); extra: $($extraWaiverIds -join ', '); duplicate: $($duplicateWaiverIds -join ', ')."
       }
       $today = (Get-Date).Date
       foreach ($waiver in $dependencyAuditWaivers) {
@@ -169,6 +179,12 @@ try {
     $missingInstallerChecks = @($requiredInstallerChecks | Where-Object { $_ -notin $presentInstallerChecks })
     if ($missingInstallerChecks.Count -gt 0) {
       throw "Windows installer smoke receipt is missing required checks: $($missingInstallerChecks -join ', ')"
+    }
+    if ($installerSmoke.commit -ne $headCommit) {
+      throw "Windows installer smoke receipt commit $($installerSmoke.commit) does not match current HEAD $headCommit."
+    }
+    if (($installerSmoke.dirty -eq $true) -and -not $AllowDirty) {
+      throw "Windows installer smoke receipt was produced from a dirty checkout. Rerun installer smoke from a clean checkout or use -AllowDirty for a diagnostic RC receipt."
     }
     $installerSmokeOk = $true
   }
@@ -228,6 +244,27 @@ try {
     throw "Stale installer artifact(s) found under ${ArtifactsDir}: $($staleArtifacts.name -join ', '). Remove old bundle artifacts before creating release evidence, or use -AllowStaleArtifacts for a diagnostic receipt."
   }
 
+  if ($installerSmokeOk -and $artifacts.Count -gt 0) {
+    $smokedHashes = @()
+    if ($installerSmoke.nsis_installer_sha256) {
+      $smokedHashes += [string]$installerSmoke.nsis_installer_sha256
+    }
+    if ($installerSmoke.msi_installer_sha256) {
+      $smokedHashes += [string]$installerSmoke.msi_installer_sha256
+    }
+    $smokedHashes = @($smokedHashes | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | ForEach-Object { $_.Trim().ToUpperInvariant() })
+    if ($smokedHashes.Count -eq 0) {
+      throw "Windows installer smoke receipt does not include installer SHA256 digest(s). Rerun scripts\windows-installer-smoke.ps1 with the current release scripts."
+    }
+    foreach ($smokedHash in $smokedHashes) {
+      $matched = @($artifacts | Where-Object { ([string]$_.sha256).ToUpperInvariant() -eq $smokedHash })
+      if ($matched.Count -eq 0) {
+        throw "Windows installer smoke receipt hash $smokedHash does not match any current release artifact hash."
+      }
+      $installerSmokeMatchedArtifacts += $matched
+    }
+  }
+
   $shaFile = Join-Path $RunDir "SHA256SUMS"
   "# SHA256 checksums for CivicNewspaper RC evidence" | Set-Content -Encoding ASCII $shaFile
   if ($artifacts.Count -eq 0) {
@@ -265,6 +302,11 @@ try {
     dependency_audit_waivers = $dependencyAuditWaivers
     installer_smoke_receipt = if ($resolvedInstallerSmokeReceipt) { $resolvedInstallerSmokeReceipt.Path } else { $null }
     installer_smoke_ok = $installerSmokeOk
+    installer_smoke_commit = if ($installerSmoke) { $installerSmoke.commit } else { $null }
+    installer_smoke_dirty = if ($installerSmoke) { $installerSmoke.dirty } else { $null }
+    installer_smoke_nsis_sha256 = if ($installerSmoke) { $installerSmoke.nsis_installer_sha256 } else { $null }
+    installer_smoke_msi_sha256 = if ($installerSmoke) { $installerSmoke.msi_installer_sha256 } else { $null }
+    installer_smoke_matched_artifacts = $installerSmokeMatchedArtifacts
     missing_release_evidence = $missingReleaseEvidence
     diagnostic = [bool]($AllowDirty -or $AllowMissingArtifacts -or $AllowMissingReleaseEvidence -or $AllowSkippedSmoke -or $AllowStaleArtifacts -or $status -or $smoke.dirty -or $smoke.allow_dirty -or -not $smoke.stable_mode -or $missingCurrentTargets.Count -gt 0 -or $missingReleaseEvidence.Count -gt 0 -or $staleArtifacts.Count -gt 0)
     notes = @(

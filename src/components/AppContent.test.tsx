@@ -53,6 +53,9 @@ describe("AppContent Component Tests", () => {
     leads: [],
     drafts: [],
     sources: [],
+    bulkImportReview: { accepted: [], duplicates: [], rejected: [] },
+    discoveredCats: [],
+    selectedDiscovered: [],
   });
 
   test("renders settings panel when activeTab is settings", () => {
@@ -69,6 +72,29 @@ describe("AppContent Component Tests", () => {
     render(<AppContent app={mockApp} />);
 
     expect(screen.getByTestId("publish-panel")).toBeInTheDocument();
+  });
+
+  test("keeps setup progress status visible while a long-running action is loading", () => {
+    vi.useFakeTimers();
+    const mockApp = {
+      ...makeMockApp("sources"),
+      loading: true,
+      statusMessage: "Adding starter sources for Longmont, CO. When this finishes, you will move to Daily Scan.",
+      setStatusMessage: vi.fn(),
+    };
+
+    try {
+      render(<AppContent app={mockApp} />);
+
+      act(() => {
+        vi.advanceTimersByTime(7000);
+      });
+
+      expect(mockApp.setStatusMessage).not.toHaveBeenCalledWith("");
+      expect(screen.getByText(/Adding starter sources for Longmont/i)).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   test("reveals the draft wizard after a lead is selected", () => {
