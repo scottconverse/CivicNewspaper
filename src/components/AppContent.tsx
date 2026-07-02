@@ -14,6 +14,7 @@ import { Modal } from "./Modal";
 import { ConfirmModal } from "./ConfirmModal";
 import { BetaNotice } from "./BetaNotice";
 import { SystemStatus } from "./SystemStatus";
+import { RefreshCw } from "lucide-react";
 import { getBrowserExtensionPath, openExternalUrl, openLocalPath, toUserMessage } from "../ipc";
 import type { DailyScanLead } from "../ipc";
 
@@ -95,7 +96,10 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
       {app.statusMessage && (
         <div className="card" role="status" aria-live="polite" style={{ borderLeft: "4px solid var(--color-success)", background: "rgba(16, 185, 129, 0.05)" }}>
           <div className="flex-between">
-            <span style={{ fontSize: "0.9rem", color: "var(--text-primary)" }}>{app.statusMessage}</span>
+            <span style={{ fontSize: "0.9rem", color: "var(--text-primary)", display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+              {app.loading && <RefreshCw className="animate-spin" size={15} aria-hidden="true" />}
+              {app.statusMessage}
+            </span>
             <button className="btn btn-secondary btn-sm" onClick={() => app.setStatusMessage("")}>Dismiss</button>
           </div>
         </div>

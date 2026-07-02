@@ -64,7 +64,7 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
             <Cpu size={16} style={{ color: "var(--text-secondary)" }} />
             <span>Local AI Service</span>
           </div>
-          <div className="system-status-row-value" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <div className="system-status-row-value" role="status" aria-live="polite" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <span
               className={`status-dot ${aiDotClass}`}
               data-testid="ollama-status-dot"
@@ -108,7 +108,7 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
         <div className="flex-between system-status-row" style={{ padding: "0.5rem 0" }}>
           <div className="system-status-row-label" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <ShieldAlert size={16} style={{ color: "var(--text-secondary)" }} />
-            <span>Build Release version</span>
+            <span>Build version</span>
           </div>
           <strong className="system-status-row-value" data-testid="app-version-text">v{appVersion}</strong>
         </div>

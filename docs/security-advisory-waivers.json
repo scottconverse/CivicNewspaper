@@ -164,6 +164,15 @@
       "release_note": "Rust advisory waiver: transitive Linux glib warning tracked; Windows public-beta artifact unaffected.",
       "owner": "release maintainer",
       "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2026-0194",
+      "crate": "quick-xml",
+      "source": "transitive Tauri plist metadata stack",
+      "rationale": "The reachable CivicNewspaper source-ingestion feed parser was moved off feed-rs and now uses direct quick-xml >=0.41 with a source response byte cap. The remaining vulnerable quick-xml 0.39.4 path is through Tauri/plist metadata tooling, not untrusted civic source parsing in the Windows public-beta artifact.",
+      "release_note": "Rust advisory waiver: transitive Tauri/plist quick-xml warning tracked; source ingestion uses patched quick-xml.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
     }
   ]
 }

@@ -3062,7 +3062,7 @@ I should produce JSON only.
 
     #[test]
     fn test_feed_media_lead_excerpt_is_headline_only() {
-        // Parse a real RSS feed via feed_rs and assert that the per-entry excerpt
+        // Parse a real RSS feed via the scraper's patched XML parser and assert that the per-entry excerpt
         // built for a media_lead source carries the HEADLINE ONLY (never the body),
         // while a primary_record source keeps the description. This exercises the
         // same build_excerpt path scrape_source uses, against parsed feed entries.
@@ -3075,18 +3075,10 @@ I should produce JSON only.
             <link>https://news.example.com/park</link>
           </item>
         </channel></rss>"#;
-        let feed = feed_rs::parser::parse(rss.as_bytes()).unwrap();
-        let entry = &feed.entries[0];
-        let title = entry
-            .title
-            .as_ref()
-            .map(|t| t.content.clone())
-            .unwrap_or_default();
-        let description = entry
-            .summary
-            .as_ref()
-            .map(|s| s.content.clone())
-            .unwrap_or_default();
+        let entries = crate::core::scraper::parse_feed_entries(rss.as_bytes()).unwrap();
+        let entry = &entries[0];
+        let title = entry.title.clone();
+        let description = entry.description.clone();
 
         let media = crate::core::scraper::build_excerpt("media_lead", &title, &description);
         assert_eq!(media, "Headline: Mayor announces new park");

@@ -30,8 +30,8 @@ rusqlite = { version = "0.31", features = ["bundled", "backup"] }
 # Constant-time comparison for auth secrets (pairing PIN hash / bearer token) so
 # equality checks don't leak length/prefix via a timing side channel. See ENG-M2.
 subtle = "2"
-reqwest = { version = "0.12", features = ["json"] }
-feed-rs = "2"
+reqwest = { version = "0.12", features = ["json", "stream"] }
+quick-xml = "0.41"
 sysinfo = "0.30"
 chrono = { version = "0.4", features = ["serde"] }
 regex = "1"

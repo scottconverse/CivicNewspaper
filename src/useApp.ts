@@ -405,8 +405,8 @@ export function useApp() {
       setActiveTab("sources");
       setStatusMessage(
         isRecovered
-          ? `Setup had to recover from missing input events, so The Civic Desk is discovering starter sources for ${city}, ${state} and running the first scan automatically.`
-          : `Discovering starter sources for ${city}, ${state} for the first run.`
+          ? `Adding starter sources for ${city}, ${state}. When this finishes, The Civic Desk will run the first Daily Scan automatically.`
+          : `Adding starter sources for ${city}, ${state}. When this finishes, you will move to Daily Scan.`
       );
       setLoading(true);
 
@@ -439,7 +439,7 @@ export function useApp() {
       } else {
         await setSetting("setup.first_run_intake", "consumed");
         setActiveTab("dailyScan");
-        setStatusMessage(`Added ${imported} starter source(s) for ${city}, ${state}. Run Daily Scan to fetch records and build the first editor packet.`);
+        setStatusMessage(`Added ${imported} starter source(s) for ${city}, ${state}. Use Run Daily Scan to fetch records and build the first editor packet.`);
       }
     } catch (err) {
       console.error("Failed to consume first-run source intake flag", err);

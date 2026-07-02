@@ -4,7 +4,9 @@ use super::db::{
 };
 use super::intelligence;
 use chrono::Utc;
-use feed_rs::parser;
+use quick_xml::events::Event;
+use quick_xml::Reader;
+use quick_xml::XmlVersion;
 use reqwest::Client;
 use serde_json;
 use sha2::{Digest, Sha256};
@@ -250,6 +252,7 @@ fn resolve_redirect_target(current: &str, location: &str) -> Result<String, Box<
 // having validated only the original URL — a redirect-SSRF gap (a public feed
 // 302-ing to an internal/metadata address).
 const MAX_REDIRECTS: usize = 10;
+const MAX_SOURCE_BODY_BYTES: usize = 5 * 1024 * 1024;
 
 fn robots_target_path(url: &str) -> Result<String, Box<dyn Error>> {
     let parsed = reqwest::Url::parse(url)?;
@@ -378,6 +381,178 @@ async fn fetch_validated(initial_url: &str) -> Result<reqwest::Response, Box<dyn
     .await
 }
 
+async fn read_limited_response(mut response: reqwest::Response) -> Result<Vec<u8>, Box<dyn Error>> {
+    if let Some(length) = response.content_length() {
+        if length > MAX_SOURCE_BODY_BYTES as u64 {
+            return Err(format!(
+                "Source response is too large: {} bytes exceeds {} byte limit",
+                length, MAX_SOURCE_BODY_BYTES
+            )
+            .into());
+        }
+    }
+
+    let mut body = Vec::new();
+    while let Some(chunk) = response.chunk().await? {
+        if body.len() + chunk.len() > MAX_SOURCE_BODY_BYTES {
+            return Err(format!(
+                "Source response exceeded {} byte limit while downloading",
+                MAX_SOURCE_BODY_BYTES
+            )
+            .into());
+        }
+        body.extend_from_slice(&chunk);
+    }
+    Ok(body)
+}
+
+#[derive(Debug, Default)]
+pub(crate) struct FeedEntry {
+    pub(crate) title: String,
+    pub(crate) description: String,
+    pub(crate) url: Option<String>,
+}
+
+fn xml_local_name(name: &[u8]) -> &[u8] {
+    name.rsplit(|b| *b == b':').next().unwrap_or(name)
+}
+
+fn decode_xml_text(text: quick_xml::events::BytesText<'_>) -> Result<String, Box<dyn Error>> {
+    let decoded = text.decode()?;
+    Ok(quick_xml::escape::unescape(&decoded)?.into_owned())
+}
+
+pub(crate) fn parse_feed_entries(body: &[u8]) -> Result<Vec<FeedEntry>, Box<dyn Error>> {
+    let mut reader = Reader::from_reader(body);
+    reader.config_mut().trim_text(true);
+
+    let mut buf = Vec::new();
+    let mut entries = Vec::new();
+    let mut current = FeedEntry::default();
+    let mut in_entry = false;
+    let mut current_field: Option<Vec<u8>> = None;
+
+    loop {
+        match reader.read_event_into(&mut buf)? {
+            Event::Start(start) => {
+                let name = xml_local_name(start.name().as_ref()).to_vec();
+                if name == b"item" || name == b"entry" {
+                    in_entry = true;
+                    current = FeedEntry::default();
+                    current_field = None;
+                } else if in_entry {
+                    if name == b"link" {
+                        for attr in start.attributes().with_checks(false) {
+                            let attr = attr?;
+                            if xml_local_name(attr.key.as_ref()) == b"href" && current.url.is_none()
+                            {
+                                current.url = Some(
+                                    attr.decoded_and_normalized_value(
+                                        XmlVersion::Implicit1_0,
+                                        reader.decoder(),
+                                    )?
+                                    .into_owned(),
+                                );
+                            }
+                        }
+                    }
+                    if matches!(
+                        name.as_slice(),
+                        b"title" | b"description" | b"summary" | b"content" | b"link"
+                    ) {
+                        current_field = Some(name);
+                    }
+                }
+            }
+            Event::Empty(empty) => {
+                if in_entry
+                    && xml_local_name(empty.name().as_ref()) == b"link"
+                    && current.url.is_none()
+                {
+                    for attr in empty.attributes().with_checks(false) {
+                        let attr = attr?;
+                        if xml_local_name(attr.key.as_ref()) == b"href" {
+                            current.url = Some(
+                                attr.decoded_and_normalized_value(
+                                    XmlVersion::Implicit1_0,
+                                    reader.decoder(),
+                                )?
+                                .into_owned(),
+                            );
+                            break;
+                        }
+                    }
+                }
+            }
+            Event::Text(text) => {
+                if let (true, Some(field)) = (in_entry, current_field.as_deref()) {
+                    let value = decode_xml_text(text)?;
+                    match field {
+                        b"title" => append_text(&mut current.title, &value),
+                        b"description" | b"summary" => {
+                            append_text(&mut current.description, &value)
+                        }
+                        b"content" if current.description.trim().is_empty() => {
+                            append_text(&mut current.description, &value)
+                        }
+                        b"link" if current.url.is_none() => {
+                            let value = value.trim();
+                            if !value.is_empty() {
+                                current.url = Some(value.to_string());
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
+            Event::CData(data) => {
+                if let (true, Some(field)) = (in_entry, current_field.as_deref()) {
+                    let value = data.decode()?.into_owned();
+                    match field {
+                        b"title" => append_text(&mut current.title, &value),
+                        b"description" | b"summary" => {
+                            append_text(&mut current.description, &value)
+                        }
+                        b"content" if current.description.trim().is_empty() => {
+                            append_text(&mut current.description, &value)
+                        }
+                        _ => {}
+                    }
+                }
+            }
+            Event::End(end) => {
+                let name = xml_local_name(end.name().as_ref()).to_vec();
+                if name == b"item" || name == b"entry" {
+                    if !current.title.trim().is_empty() || !current.description.trim().is_empty() {
+                        entries.push(current);
+                    }
+                    current = FeedEntry::default();
+                    in_entry = false;
+                    current_field = None;
+                } else if current_field.as_deref() == Some(name.as_slice()) {
+                    current_field = None;
+                }
+            }
+            Event::Eof => break,
+            _ => {}
+        }
+        buf.clear();
+    }
+
+    Ok(entries)
+}
+
+fn append_text(target: &mut String, value: &str) {
+    let value = value.trim();
+    if value.is_empty() {
+        return;
+    }
+    if !target.is_empty() {
+        target.push(' ');
+    }
+    target.push_str(value);
+}
+
 /// The redirect-following loop, generic over the per-hop validator so the
 /// security-critical control flow (re-validate-then-connect on EVERY hop, the
 /// max-redirect cap, the missing-Location branch) is testable end-to-end against
@@ -456,7 +631,7 @@ async fn scrape_source(db: &DbConn, source: &Source) -> Result<(), Box<dyn Error
         .unwrap_or("")
         .to_string();
 
-    let body_bytes = response.bytes().await?;
+    let body_bytes = read_limited_response(response).await?;
 
     // Detect if RSS feed or raw HTML
     let is_feed = content_type.contains("xml")
@@ -467,11 +642,10 @@ async fn scrape_source(db: &DbConn, source: &Source) -> Result<(), Box<dyn Error
         || body_bytes.starts_with(b"<feed");
 
     if is_feed {
-        let feed = parser::parse(&body_bytes[..])?;
-        for entry in feed.entries {
-            let title = entry.title.map(|t| t.content).unwrap_or_default();
-            let description = entry.summary.map(|s| s.content).unwrap_or_default();
-            let url = entry.links.first().map(|l| l.href.clone());
+        for entry in parse_feed_entries(&body_bytes)? {
+            let title = entry.title;
+            let description = entry.description;
+            let url = entry.url;
 
             // Build excerpt based on source type constraints (pure fn so the
             // media_lead headline-only privacy rule is unit-testable — TEST-M1).
@@ -954,6 +1128,46 @@ Allow: /blocked/public
     }
 
     #[test]
+    fn parse_feed_entries_reads_rss_and_atom_fields() {
+        let rss = br#"<?xml version="1.0"?>
+        <rss version="2.0"><channel>
+          <item>
+            <title>Budget hearing scheduled</title>
+            <description>Residents can comment Tuesday.</description>
+            <link>https://city.example/hearing</link>
+          </item>
+        </channel></rss>"#;
+        let rss_entries = parse_feed_entries(rss).unwrap();
+        assert_eq!(rss_entries.len(), 1);
+        assert_eq!(rss_entries[0].title, "Budget hearing scheduled");
+        assert_eq!(rss_entries[0].description, "Residents can comment Tuesday.");
+        assert_eq!(
+            rss_entries[0].url.as_deref(),
+            Some("https://city.example/hearing")
+        );
+
+        let atom = br#"<?xml version="1.0"?>
+        <feed xmlns="http://www.w3.org/2005/Atom">
+          <entry>
+            <title>Planning packet posted</title>
+            <summary>New packet includes public hearing materials.</summary>
+            <link href="https://city.example/packet"/>
+          </entry>
+        </feed>"#;
+        let atom_entries = parse_feed_entries(atom).unwrap();
+        assert_eq!(atom_entries.len(), 1);
+        assert_eq!(atom_entries[0].title, "Planning packet posted");
+        assert_eq!(
+            atom_entries[0].description,
+            "New packet includes public hearing materials."
+        );
+        assert_eq!(
+            atom_entries[0].url.as_deref(),
+            Some("https://city.example/packet")
+        );
+    }
+
+    #[test]
     fn clean_html_strips_scripts_styles_and_tags() {
         let html = "<html><head><style>body{color:red}</style></head>\
             <body><script>alert('x')</script><h1>Headline</h1><p>Body paragraph.</p></body></html>";
@@ -1230,6 +1444,72 @@ Allow: /blocked/public
                 .to_string()
                 .contains("missing a valid Location"),
             "the error should explain the missing Location header"
+        );
+    }
+
+    #[tokio::test]
+    async fn read_limited_response_rejects_oversized_content_length_before_body_read() {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+        let app = axum::Router::new().route(
+            "/huge",
+            axum::routing::get(|| async {
+                axum::response::Response::builder()
+                    .status(200)
+                    .body(axum::body::Body::from(vec![
+                        b'x';
+                        MAX_SOURCE_BODY_BYTES + 1
+                    ]))
+                    .unwrap()
+            }),
+        );
+        tokio::spawn(async move {
+            axum::serve(listener, app).await.unwrap();
+        });
+
+        let auth = format!("{}:{}", addr.ip(), addr.port());
+        let url = format!("http://{}/huge", auth);
+        let response = fetch_validated_with(&url, allow_only_validator(auth, addr))
+            .await
+            .unwrap();
+        let err = read_limited_response(response).await.unwrap_err();
+        assert!(
+            err.to_string().contains("too large"),
+            "oversized Content-Length must be rejected before buffering: {}",
+            err
+        );
+    }
+
+    #[tokio::test]
+    async fn read_limited_response_aborts_chunked_body_over_limit() {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+        let app = axum::Router::new().route(
+            "/chunked",
+            axum::routing::get(|| async {
+                let chunks = futures_util::stream::iter((0..6).map(|_| {
+                    Ok::<_, std::convert::Infallible>(bytes::Bytes::from(vec![b'x'; 1024 * 1024]))
+                }));
+                axum::response::Response::builder()
+                    .status(200)
+                    .body(axum::body::Body::from_stream(chunks))
+                    .unwrap()
+            }),
+        );
+        tokio::spawn(async move {
+            axum::serve(listener, app).await.unwrap();
+        });
+
+        let auth = format!("{}:{}", addr.ip(), addr.port());
+        let url = format!("http://{}/chunked", auth);
+        let response = fetch_validated_with(&url, allow_only_validator(auth, addr))
+            .await
+            .unwrap();
+        let err = read_limited_response(response).await.unwrap_err();
+        assert!(
+            err.to_string().contains("exceeded"),
+            "streaming body must abort once it crosses the cap: {}",
+            err
         );
     }
 }

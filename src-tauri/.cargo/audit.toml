@@ -36,4 +36,7 @@ ignore = [
     "RUSTSEC-2026-0192",
     # glib - target-specific Tauri stack warning, not reachable in Windows tree.
     "RUSTSEC-2024-0429",
+    # quick-xml - remaining vulnerable version is only through Tauri/plist
+    # metadata tooling. Civic source ingestion uses direct quick-xml >=0.41.
+    "RUSTSEC-2026-0194",
 ]

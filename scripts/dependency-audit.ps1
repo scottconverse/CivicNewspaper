@@ -10,7 +10,10 @@ $RepoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 $Stamp = Get-Date -Format "yyyyMMdd-HHmmss"
 if (-not $OutputDir) {
   $OutputDir = Join-Path $RepoRoot ".agent-runs"
+} elseif (-not [System.IO.Path]::IsPathRooted($OutputDir)) {
+  $OutputDir = Join-Path $RepoRoot $OutputDir
 }
+$OutputDir = [System.IO.Path]::GetFullPath($OutputDir)
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 
 $npmAuditPath = Join-Path $OutputDir "npm-audit-$Stamp.json"

@@ -46,6 +46,9 @@ export const Layout: React.FC<LayoutProps> = ({
       : "Choose an AI model";
   const aiStatusTone = aiSetupSkipped && !hasSelectedModel ? "needs-model" : !ollamaOnline ? "offline" : hasSelectedModel ? "ready" : "needs-model";
   const aiStatusClass = aiStatusTone === "ready" ? "online" : aiStatusTone === "needs-model" ? "warning" : "offline";
+  const aiStatusDetail = aiSetupSkipped && !hasSelectedModel
+    ? "Source checks work"
+    : modelLabel ?? "private";
   const navGroups = [
     {
       label: "Newsroom",
@@ -188,10 +191,10 @@ export const Layout: React.FC<LayoutProps> = ({
 
         <div className={`sidebar-footer ai-status-${aiStatusTone}`}>
           <div className={`ollama-status-indicator ${aiStatusTone}`}>
-            <span className={`status-dot ${aiStatusClass}`} />
+              <span className={`status-dot ${aiStatusClass}`} />
             <div>
               <strong>{aiStatusLabel}</strong>
-              <span>{modelLabel ?? "private"}</span>
+              <span>{aiStatusDetail}</span>
             </div>
           </div>
         </div>

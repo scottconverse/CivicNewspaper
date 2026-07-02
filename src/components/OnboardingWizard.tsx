@@ -1176,7 +1176,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   <div className="flex-between" style={{ marginBottom: "1rem" }}>
                     <div>
                       <strong>Local AI Service Connection</strong>
-                      <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>Local Ram: {sysRam} GB</p>
+                      <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>Local RAM: {sysRam} GB</p>
                     </div>
                     <span className={`status-dot ${health.reachable ? "online" : "offline"}`} />
                   </div>
@@ -1424,8 +1424,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
         {/* STEP 5: DONE */}
         {step === 5 && (
-          <div style={{ textAlign: "center", padding: "3rem 0" }}>
-            <div style={{ display: "inline-flex", background: "rgba(16, 185, 129, 0.1)", padding: "1rem", borderRadius: "50%", marginBottom: "1rem" }}>
+          <div style={{ textAlign: "center", padding: "1.25rem 0 0.5rem" }}>
+            <div style={{ display: "inline-flex", background: "rgba(16, 185, 129, 0.1)", padding: "0.75rem", borderRadius: "50%", marginBottom: "0.75rem" }}>
               <CheckCircle size={48} color="var(--color-success)" />
             </div>
             <h3 style={{ color: "var(--color-success)", marginBottom: "0.5rem" }}>Workspace ready.</h3>
@@ -1433,16 +1433,13 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               You can enter the workspace now. If you skipped local AI setup, drafting and AI-assisted review stay limited until you finish AI Model setup.
             </p>
             
-            <div style={{ marginTop: "2rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem", textAlign: "left" }}>
+            <div style={{ marginTop: "1rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.875rem", textAlign: "left" }}>
               <h4 style={{ fontSize: "1.05rem", marginBottom: "0.5rem" }}>What's next?</h4>
-              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                Once you finish onboarding, you will enter the workspace. You can:
-              </p>
-              <ul style={{ fontSize: "0.85rem", color: "var(--text-secondary)", paddingLeft: "1.2rem", marginTop: "0.25rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                <li>Configure your <strong>first source</strong> under the Sources tab.</li>
-                <li>Finish local AI setup from the <strong>AI Model</strong> tab if you skipped it here.</li>
-                <li>Write or import your first draft articles.</li>
-                <li>Run a daily scan to aggregate recent signals.</li>
+              <ul style={{ fontSize: "0.88rem", color: "var(--text-secondary)", paddingLeft: "1.2rem", marginTop: 0, display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                <li><strong>Configure your first source</strong> under Sources.</li>
+                <li><strong>Run a daily scan</strong> to gather recent signals.</li>
+                <li><strong>Review leads in Story Queue</strong>, then draft and edit in Workbench.</li>
+                <li><strong>Finish AI Model setup</strong> later if you skipped it here.</li>
               </ul>
             </div>
           </div>
