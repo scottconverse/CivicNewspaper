@@ -1,0 +1,15 @@
+db=C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\civicdesk.db
+sources_count=9
+daily_scan_runs_count=1
+daily_scan_leads_count=3
+leads_count=6
+evidence_items_count=31
+lead_evidence_count=5
+drafts_count=0
+verification_tasks_count=93
+newest_daily_scan_run={"id": 1, "started_at": "2026-07-02T23:17:59.719051100+00:00", "completed_at": null, "run_status": "in_progress"}
+identity.city=Longmont
+identity.state=CO
+identity.newsroom_name=Longmont Civic Desk
+identity.editor_name=Local Editor
+default_site_exists=True
