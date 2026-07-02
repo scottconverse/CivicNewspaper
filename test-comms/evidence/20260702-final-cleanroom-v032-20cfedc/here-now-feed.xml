@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Longmont Cleanroom Beta Desk</title>
+    <link>index.html</link>
+    <description>A cleanroom test edition for Longmont civic news</description>
+    <language>en-us</language>
+    <pubDate>Thu, 2 Jul 2026 23:45:48 +0000</pubDate>
+    <lastBuildDate>Thu, 2 Jul 2026 23:45:48 +0000</lastBuildDate>
+    <item>
+      <title>Longmont Chamber flags 2026 state-session issues for businesses</title>
+      <link>briefs/2.html</link>
+      <guid>briefs/2</guid>
+      <pubDate>2026-07-02T23:43:27.230084+00:00</pubDate>
+      <description>Longmont Chamber flags 2026 state-session issues for businesses</description>
+    </item>
+
+  </channel>
+</rss>

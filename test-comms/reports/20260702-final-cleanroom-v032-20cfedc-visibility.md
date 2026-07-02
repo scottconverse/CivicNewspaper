@@ -1,4 +1,4 @@
-# BLOCKED - Visibility Report - Civic Desk v0.3.2 20cfedc
+# PASS WITH FINDINGS - Visibility Report - Civic Desk v0.3.2 20cfedc
 
 Directive: `20260702-final-cleanroom-v032-20cfedc`
 Tester branch: `test-comms/cleanroom-coder-tester`
@@ -15,34 +15,37 @@ Tester path: `C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms`
 
 ## Visibility Findings
 
-- Installed app launched as `C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe`.
-- Process/window observed: `civicnews`, title `The Civic Desk`.
-- Identity setup screen was visible and accepted Longmont starter/identity values.
-- Persisted identity values after setup:
+- Installed app launched from `C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe`.
+- Native window title observed: `The Civic Desk`.
+- First-run Longmont setup completed.
+- Persisted identity after setup initially used concrete starter values:
   - `identity.newsroom_name = Longmont Civic Desk`
   - `identity.editor_name = Local Editor`
   - `identity.city = Longmont`
   - `identity.state = CO`
-  - `onboarding.step = 5`
-  - `onboarding_complete = 1`
-- AI setup completed through app-guided runtime installation. No tester-installed Ollama/model/manual source build was used.
-- AI state reached ready with `model.selected = phi4-mini:latest`.
-- Source discovery / Daily Scan completed mechanically.
-- Two linked-source drafts were generated and persisted as `draft_generated`.
-- Opening a generated draft from Workbench rendered a blank Workbench content area, blocking Improve for Publication and approval.
+- Publishing page later paused compile until starter publication text was replaced. Tester used the app's `Edit identity` control to set `identity.newsroom_name = Longmont Cleanroom Beta Desk`.
+- App-guided AI setup reached ready with `model.selected = phi4-mini:latest`; no manual Ollama/model/source build was used.
+- Daily Scan completed and the newest scan row was not left `in_progress`.
+- Two linked-source drafts were generated and persisted as editable `draft_generated` items.
+- Workbench draft opening ultimately showed a visible editor, guardrail warnings, source evidence, `Plain Language Rewrite`, review controls, attestation checkbox, and `Approve for Static Publish`.
+- No-source lead behavior was visible in Story Queue and Workbench: `Needs verification`, `Verify first`, `Linked Sources (0)`, and an assignment note saying it should not be approved until source material is attached or cited.
+- Publishing page `Open folder` opened the default output folder successfully.
+- Compile/export wrote static files and `site-package.zip`.
+- here.now publish succeeded at `https://flint-mango-ee62.here.now`.
 
 ## Evidence
 
 - Clean install and launch log: `test-comms/evidence/20260702-final-cleanroom-v032-20cfedc/install-clean-launch.log`
 - First launch: `test-comms/evidence/20260702-final-cleanroom-v032-20cfedc/screenshot-01-launch.png`
-- Identity filled: `test-comms/evidence/20260702-final-cleanroom-v032-20cfedc/screenshot-02-identity-filled.png`
-- After identity Next: `test-comms/evidence/20260702-final-cleanroom-v032-20cfedc/screenshot-03-after-longmont-next.png`
-- AI ready: `test-comms/evidence/20260702-final-cleanroom-v032-20cfedc/screenshot-04-ai-ready-wait150.png`
-- Story queue: `test-comms/evidence/20260702-final-cleanroom-v032-20cfedc/screenshot-05-story-queue.png`
-- Draft generation evidence: `test-comms/evidence/20260702-final-cleanroom-v032-20cfedc/screenshot-08-after-generate-draft1.png`, `test-comms/evidence/20260702-final-cleanroom-v032-20cfedc/screenshot-13-second-draft-gate.png`
-- Blank Workbench blocker: `test-comms/evidence/20260702-final-cleanroom-v032-20cfedc/screenshot-current-2328z.png`
-- DB summary and full draft text: `test-comms/evidence/20260702-final-cleanroom-v032-20cfedc/final-db-summary.json`, `test-comms/evidence/20260702-final-cleanroom-v032-20cfedc/drafts-full.jsonl`
+- Identity setup: `screenshot-02-identity-filled.png`, `screenshot-03-after-longmont-next.png`
+- AI ready: `screenshot-04-ai-ready-wait150.png`
+- Story queue and source-linked draft generation: `screenshot-05-story-queue.png` through `screenshot-14-after-generate-draft2.png`
+- Workbench editor/actions visible: `screenshot-19-workbench-actions-lower.png`
+- Approval and publish path: `screenshot-25-approved-draft.png`
+- No-source assignment: `screenshot-26-nosource-assignment.png`, `screenshot-27-nosource-notes-generated.png`
+- Public-output fetches: `here-now-index.html`, `here-now-briefs-2.html`, `here-now-feed.xml`
+- DB/public audit: `final-db-summary.json`, `drafts-full.jsonl`, `public-output-audit.json`
 
 ## Result
 
-Visibility and first-run setup checks PASS for v0.3.2 build `20cfedc`. The overall directive is BLOCKED at the Workbench draft-open step: opening a generated draft renders a blank Workbench state, so Improve for Publication, approval, compile/export, ZIP verification, here.now publish, and public-output inspection cannot proceed.
+Visibility PASS with product findings. The app reached installed first-run, AI-ready, Workbench, approval, local package export, and here.now public output. Remaining findings are covered in the final report.

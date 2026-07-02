@@ -1,0 +1,33 @@
+[
+  {
+    "file": "here-now-briefs-2.html",
+    "length": 7721,
+    "bad_matches": [
+      "?",
+      "?",
+      "?",
+      "?"
+    ],
+    "title_count": 3,
+    "has_attribution": true
+  },
+  {
+    "file": "here-now-feed.xml",
+    "length": 724,
+    "bad_matches": [
+      "?",
+      "?",
+      "?",
+      "?"
+    ],
+    "title_count": 2,
+    "has_attribution": false
+  },
+  {
+    "file": "here-now-index.html",
+    "length": 2549,
+    "bad_matches": [],
+    "title_count": 1,
+    "has_attribution": false
+  }
+]
