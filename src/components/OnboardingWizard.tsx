@@ -1424,18 +1424,18 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
         {/* STEP 5: DONE */}
         {step === 5 && (
-          <div style={{ textAlign: "center", padding: "1.25rem 0 0.5rem" }}>
-            <div style={{ display: "inline-flex", background: "rgba(16, 185, 129, 0.1)", padding: "0.75rem", borderRadius: "50%", marginBottom: "0.75rem" }}>
-              <CheckCircle size={48} color="var(--color-success)" />
+          <div data-testid="onboarding-done-step" style={{ textAlign: "center", padding: "0.5rem 0 5.25rem" }}>
+            <div style={{ display: "inline-flex", background: "rgba(16, 185, 129, 0.1)", padding: "0.625rem", borderRadius: "50%", marginBottom: "0.5rem" }}>
+              <CheckCircle size={40} color="var(--color-success)" />
             </div>
             <h3 style={{ color: "var(--color-success)", marginBottom: "0.5rem" }}>Workspace ready.</h3>
             <p className="help-text">
               You can enter the workspace now. If you skipped local AI setup, drafting and AI-assisted review stay limited until you finish AI Model setup.
             </p>
             
-            <div style={{ marginTop: "1rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.875rem", textAlign: "left" }}>
-              <h4 style={{ fontSize: "1.05rem", marginBottom: "0.5rem" }}>What's next?</h4>
-              <ul style={{ fontSize: "0.88rem", color: "var(--text-secondary)", paddingLeft: "1.2rem", marginTop: 0, display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+            <div style={{ marginTop: "0.75rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.75rem", textAlign: "left" }}>
+              <h4 style={{ fontSize: "1rem", marginBottom: "0.375rem" }}>What's next?</h4>
+              <ul style={{ fontSize: "0.86rem", color: "var(--text-secondary)", paddingLeft: "1.2rem", marginTop: 0, display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                 <li><strong>Configure your first source</strong> under Sources.</li>
                 <li><strong>Run a daily scan</strong> to gather recent signals.</li>
                 <li><strong>Review leads in Story Queue</strong>, then draft and edit in Workbench.</li>

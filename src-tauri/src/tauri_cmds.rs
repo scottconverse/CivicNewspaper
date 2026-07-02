@@ -2811,6 +2811,22 @@ mod source_import_extraction_tests {
     }
 
     #[test]
+    fn oversized_source_list_file_is_rejected_before_extraction() {
+        let dir = temp_dir("oversized");
+        let path = dir.join("too-large.csv");
+        let file = std::fs::File::create(&path).unwrap();
+        file.set_len(25 * 1024 * 1024 + 1).unwrap();
+
+        let err = extract_source_import_text(path.to_string_lossy().to_string()).unwrap_err();
+
+        assert!(
+            err.contains("too large"),
+            "oversized source-list files must fail before extraction, got: {err}"
+        );
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
     fn extracts_text_based_pdf_source_list() {
         let dir = temp_dir("pdf-readable");
         let path = dir.join("sources.pdf");

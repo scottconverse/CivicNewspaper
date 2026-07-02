@@ -357,7 +357,8 @@ async fn robots_allows_source_url(initial_url: &str) -> Result<bool, Box<dyn Err
     if !response.status().is_success() {
         return Ok(true);
     }
-    let body = response.text().await.unwrap_or_default();
+    let body_bytes = read_limited_response(response).await.unwrap_or_default();
+    let body = String::from_utf8_lossy(&body_bytes);
     Ok(robots_txt_allows(&body, "CivicNewsScraper", &target_path))
 }
 

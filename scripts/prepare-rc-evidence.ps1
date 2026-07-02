@@ -7,7 +7,8 @@ param(
   [switch]$AllowDirty,
   [switch]$AllowMissingArtifacts,
   [switch]$AllowMissingReleaseEvidence,
-  [switch]$AllowSkippedSmoke
+  [switch]$AllowSkippedSmoke,
+  [switch]$AllowStaleArtifacts
 )
 
 $ErrorActionPreference = "Stop"
@@ -223,6 +224,9 @@ try {
   if ($missingCurrentTargets.Count -gt 0 -and -not $AllowMissingArtifacts) {
     throw "Missing current-version ($($package.version)) artifact(s) for configured bundle target(s): $($missingCurrentTargets -join ', '). Build every configured target or use -AllowMissingArtifacts for a diagnostic receipt."
   }
+  if ($staleArtifacts.Count -gt 0 -and -not $AllowStaleArtifacts) {
+    throw "Stale installer artifact(s) found under ${ArtifactsDir}: $($staleArtifacts.name -join ', '). Remove old bundle artifacts before creating release evidence, or use -AllowStaleArtifacts for a diagnostic receipt."
+  }
 
   $shaFile = Join-Path $RunDir "SHA256SUMS"
   "# SHA256 checksums for CivicNewspaper RC evidence" | Set-Content -Encoding ASCII $shaFile
@@ -262,7 +266,7 @@ try {
     installer_smoke_receipt = if ($resolvedInstallerSmokeReceipt) { $resolvedInstallerSmokeReceipt.Path } else { $null }
     installer_smoke_ok = $installerSmokeOk
     missing_release_evidence = $missingReleaseEvidence
-    diagnostic = [bool]($AllowDirty -or $AllowMissingArtifacts -or $AllowMissingReleaseEvidence -or $AllowSkippedSmoke -or $status -or $smoke.dirty -or $smoke.allow_dirty -or -not $smoke.stable_mode -or $missingCurrentTargets.Count -gt 0 -or $missingReleaseEvidence.Count -gt 0)
+    diagnostic = [bool]($AllowDirty -or $AllowMissingArtifacts -or $AllowMissingReleaseEvidence -or $AllowSkippedSmoke -or $AllowStaleArtifacts -or $status -or $smoke.dirty -or $smoke.allow_dirty -or -not $smoke.stable_mode -or $missingCurrentTargets.Count -gt 0 -or $missingReleaseEvidence.Count -gt 0 -or $staleArtifacts.Count -gt 0)
     notes = @(
       "Windows public beta evidence only.",
       "Mac and Linux installer proof is backlog/proof-needed.",

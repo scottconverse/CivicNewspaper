@@ -39,4 +39,5 @@ ignore = [
     # quick-xml - remaining vulnerable version is only through Tauri/plist
     # metadata tooling. Civic source ingestion uses direct quick-xml >=0.41.
     "RUSTSEC-2026-0194",
+    "RUSTSEC-2026-0195",
 ]

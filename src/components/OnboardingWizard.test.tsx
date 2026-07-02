@@ -212,6 +212,24 @@ describe("OnboardingWizard Component Tests", () => {
     expect(document.querySelector(".onboarding-actions")).not.toBeInTheDocument();
   });
 
+  test("final onboarding handoff reserves space above the sticky action bar", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} initialStep={5} />);
+
+    const doneStep = await screen.findByTestId("onboarding-done-step");
+    expect(doneStep).toHaveStyle({ paddingBottom: "5.25rem" });
+    expect(screen.getByText(/Configure your first source/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /finish onboarding/i })).toBeInTheDocument();
+  });
+
   test("identity step focuses publication name first", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;

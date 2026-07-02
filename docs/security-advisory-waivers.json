@@ -173,6 +173,15 @@
       "release_note": "Rust advisory waiver: transitive Tauri/plist quick-xml warning tracked; source ingestion uses patched quick-xml.",
       "owner": "release maintainer",
       "review_by": "2026-09-30"
+    },
+    {
+      "id": "RUSTSEC-2026-0195",
+      "crate": "quick-xml",
+      "source": "transitive Tauri plist metadata stack",
+      "rationale": "The reachable CivicNewspaper source-ingestion feed parser uses direct quick-xml >=0.41 and the plain Reader API, with response byte caps for both source pages and robots.txt. The remaining quick-xml 0.39.4 copy is transitive Tauri/plist metadata tooling, not untrusted civic source ingestion in the Windows public-beta artifact.",
+      "release_note": "Rust advisory waiver: transitive Tauri/plist quick-xml warning tracked; source ingestion uses patched quick-xml and capped inputs.",
+      "owner": "release maintainer",
+      "review_by": "2026-09-30"
     }
   ]
 }
