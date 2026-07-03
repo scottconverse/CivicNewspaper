@@ -1,0 +1,200 @@
+﻿001 CivicNews Dashboard [Pane] enabled=True
+003 CivicNews Dashboard - Web content [Pane] enabled=True
+013 CivicNews Dashboard [Document] enabled=True
+017 The Civic Desk [Text] enabled=True
+018 LONGMONT / CO [Text] enabled=True
+020 NEWSROOM [Text] enabled=True
+022 Story Queue [ListItem] enabled=True
+023 Story Queue [Button] enabled=True
+025 Daily Scan [ListItem] enabled=True
+026 Daily Scan [Button] enabled=True
+028 Dark Signals [ListItem] enabled=True
+029 Dark Signals [Button] enabled=True
+031 Verification [ListItem] enabled=True
+032 Verification [Button] enabled=True
+034 Workbench [ListItem] enabled=True
+035 Workbench [Button] enabled=True
+037 SET UP [Text] enabled=True
+039 Sources [ListItem] enabled=True
+040 Sources [Button] enabled=True
+042 AI Model [ListItem] enabled=True
+043 AI Model [Button] enabled=True
+045 Publishing [ListItem] enabled=True
+046 Publishing [Button] enabled=True
+048 TOOLS [Text] enabled=True
+050 Browser Pairing [ListItem] enabled=True
+051 Browser Pairing [Button] enabled=True
+053 Ethics & Backups [ListItem] enabled=True
+054 Ethics & Backups [Button] enabled=True
+056 System & Status [ListItem] enabled=True
+057 System & Status [Button] enabled=True
+059 Local AI ready [Text] enabled=True
+060 phi4-mini:latest [Text] enabled=True
+062  [Text] enabled=True
+064 You're running an  [Text] enabled=True
+065 unsigned public beta [Text] enabled=True
+066  of The Civic Desk. Windows SmartScreen may warn on install; that's expected. [Text] enabled=True
+067   [Text] enabled=True
+068 Report issues on GitHub [Hyperlink] enabled=True
+069 . [Text] enabled=True
+070 Dismiss beta notice [Button] enabled=True
+073 Current draft saved, checked, and approved for publishing; a verification record was saved. [Text] enabled=True
+074 Dismiss [Button] enabled=True
+076 Story Workbench [Text] enabled=True
+077 Modify drafted content, review guardrail warnings, and link source material when it helps the editor. [Text] enabled=True
+078 Back to Queue [Button] enabled=True
+079 Save Draft [Button] enabled=True
+080 Delete [Button] enabled=True
+081 Approved for publishing [Text] enabled=True
+082 Longmont Chamber outlines 2026 state-session issues [Text] enabled=True
+083 Improve for Publication [Button] enabled=True
+084 Send Back [Button] enabled=True
+085 I reviewed this story. [CheckBox] enabled=True
+086 I reviewed this story. [Text] enabled=True
+087 Approve [Button] enabled=True
+089 Advisory warnings - these do not block publishing. [Text] enabled=True
+090 1 [Text] enabled=True
+091  ISSUE(S) [Text] enabled=True
+093 Warns [Text] enabled=True
+094 -  [Text] enabled=True
+095 Consider adding a source link [Text] enabled=True
+096 This passage looks like a factual claim without a linked source. Add a link if one exists, rewrite the claim, or leave it for the editor to approve. [Text] enabled=True
+098 Technical details [Button] enabled=True
+099 Technical details [Text] enabled=True
+100 Press-freedom / legal-risk advisor [Text] enabled=True
+101 Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish. [Text] enabled=True
+102 Run Advisor [Button] enabled=True
+104 Distinguish verified facts, allegations, opinion, and unanswered questions. [ListItem] enabled=True
+105 Use extra care with private individuals, minors, medical details, addresses, and active legal matters. [ListItem] enabled=True
+106 Keep notes on source reliability and why publishing serves the community. [ListItem] enabled=True
+107 Story-quality preflight [Text] enabled=True
+108 Checks for headline, attribution, citation, and reporter-note problems before approval. Warnings are advisory; package-validity blockers must be fixed before static publish approval. [Text] enabled=True
+109 Make this a brief [Button] enabled=True
+110 Improve for Publication [Button] enabled=True
+111 No obvious story-quality warnings from the local preflight. [Text] enabled=True
+112 Story Title [Text] enabled=True
+113 Story Title [Edit] enabled=True
+114 Article Body (Markdown) [Text] enabled=True
+115 Plain Language Rewrite [Button] enabled=True
+116 Highlight text and click "Cite" in evidence pane to link. [Text] enabled=True
+117 Article Body (Markdown) [Edit] enabled=True
+118 Current Status:  [Text] enabled=True
+119 Approved for publishing [Text] enabled=True
+120 Send Back for More Work [Button] enabled=True
+121 Unapprove [Button] enabled=True
+122 Hold [Button] enabled=True
+123 Cut Story [Button] enabled=True
+124 Approve for Static Publish [Button] enabled=True
+125 I have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision. [CheckBox] enabled=True
+126 I have reviewed this story and take responsibility for publishing it. [Text] enabled=True
+127  This reminder is for the editor; the app does not make the publication decision. [Text] enabled=True
+128 Social Media Promo Pack [Text] enabled=True
+129 Generate Posts [Button] enabled=True
+130 Generate optimized posts for Twitter/X, Facebook, and Reddit based on the current draft. [Text] enabled=True
+131 Linked Sources [Text] enabled=True
+132 Citation ID: # [Text] enabled=True
+133 19 [Text] enabled=True
+134 Fetched:  [Text] enabled=True
+135 7/2/2026 [Text] enabled=True
+136 " [Text] enabled=True
+137 May 27, 2026     The Colorado General Assembly wrapped up its 2026 session, and as always, there was no shortage of action affecting our business community. From a billion-dollar state budget shortfall to new labor rules and energy policy debates, this was a session that demanded close attention and we were paying it.
+This Is What Your Membership Makes Possible
+Apr 28, 2026     From hiring a lobbyist to launching new networking groups and distributing $60,000 in nonprofit grants, this past year proved what Longmont businesses can accomplish together. CEO Scott Cook shares a look back at what your membership has made possible, and what is coming next.
+Quality First, Always: Meet Caribou Office
+Apr 15, 2026     Founded by Scott Gillies and Kyle Gustafson, Caribou Office delivers high-quality, health-focused office products at accessible prices. See why Longmont businesses are taking notice.
+Our Community
+We understand Longmont, and not just from a business perspective. The Longmont Area Chamber of Commerce is a conduit for our members to connect with the community. Every Chamber member is a partner when it comes to creating a stronger and more empathetic regional economy.
+Email Address  *      First Name  *      Last Name  *
+Follow   Follow     Follow   Follow     Follow   Follow
+Our Community
+We understand Longmont, and not just from a business perspective. The Longmont Area Chamber of Commerce is a conduit for our members to connect with the community. Every Chamber member is a partner when it comes to creating a stronger and more empathetic regional economy.
+Follow      Follow      Follow
+Are you ready to be a part of a bigger community?
+Become a Member
+— Top Supporters
+We encourage and promote a balanced, thriving economy and preserve those unique qualities that are good for businesses and our community.
+528 Main Street   Longmont, CO 80501   303-776-5295   Email Us
+Become a Member
+Member Login
+Quick Links:
+ [Text] enabled=True
+138 " [Text] enabled=True
+139 Link Citation [Button] enabled=True
+140 Citation ID: # [Text] enabled=True
+141 18 [Text] enabled=True
+142 Fetched:  [Text] enabled=True
+143 7/2/2026 [Text] enabled=True
+144 " [Text] enabled=True
+145 Longmont Area Chamber of Commerce - Longmont Area Chamber of Commerce
+Membership
+Benefits of Membership
+Join the Longmont Chamber
+Member Login
+Our Members
+Business Directory
+Press Releases
+Job Openings
+Offers &#038; Deals
+Volunteer Opportunities
+Advocacy
+Events
+Calendars
+Chamber Events
+Community Calendar
+Business Excellence Awards
+Unity in the Community
+Longmont Chamber Golf Tournament
+State of the City
+Networking
+Programs
+Leadership Longmont
+Workers’ Compensation Safety Program
+About
+Team
+Blog
+Longmont Community Profile
+Join Now
+Select Page
+We
+Speak
+Longmont
+Become a Member
+Member Login
+We encourage and promote a balanced, thriving economy and preserve those unique qualities that are  good for businesses and our community.
+Our Strategy
+The Longmont Area Chamber of Commerce is here to build a stronger community. We believe communities are positively influenced by strong businesses in every industry. At the Longmont Chamber, we work directly with business owners to identify their goals and provide them with the resources most relevant to them. What&#8217;s most important to your business?
+Advocacy
+We speak on behalf of business and represent their interests, and ensure that our community benefits by having a healthy business climate.
+Learn More
+Advocacy Focal Points
+Legislative Tracker
+Recent Actions
+Northwest Chamber Alliance
+Connection
+We build meaningful relationships between Longmont businesses and our community and cultivate a business-friendly environment.
+Learn More
+Membership   Unity in the Community   Networking
+Advancement
+We move our community forward by providing the opportunities and resources necessary for business development and growth.
+Learn More
+Leadership Longmont   Blog
+Upcoming Events
+Longmont Chamber Events
+Community Events
+Blog Updates
+The 2026 Legislative Session Is Behind Us: Here&#8217;s What It Means for Longmont Business
+ [Text] enabled=True
+146 " [Text] enabled=True
+147 Link Citation [Button] enabled=True
+148 Publish with review warnings? [Window] enabled=True
+150 Publish with review warnings? [Text] enabled=True
+151 This story has  [Text] enabled=True
+152 1 [Text] enabled=True
+153  review warning(s) [Text] enabled=True
+154   [Text] enabled=True
+155 from your newsroom's guardrail and story-quality checks. The app will not veto the editor, but this decision is recorded with the story. [Text] enabled=True
+157 [Citation Coverage] Paragraph may contain factual claims without a linked source. [ListItem] enabled=True
+158 Editor note (optional) [Text] enabled=True
+159 Editor note (optional) [Edit] enabled=True
+160 Cancel [Button] enabled=True
+161 Publish anyway (logged) [Button] enabled=True

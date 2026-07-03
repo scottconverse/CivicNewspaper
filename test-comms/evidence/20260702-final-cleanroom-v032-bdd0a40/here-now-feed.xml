@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Longmont Cleanroom Beta Desk</title>
+    <link>index.html</link>
+    <description>Local news and community information.</description>
+    <language>en-us</language>
+    <pubDate>Fri, 3 Jul 2026 01:11:37 +0000</pubDate>
+    <lastBuildDate>Fri, 3 Jul 2026 01:11:37 +0000</lastBuildDate>
+    <item>
+      <title>Longmont Chamber outlines 2026 state-session issues</title>
+      <link>briefs/2.html</link>
+      <guid>briefs/2</guid>
+      <pubDate>2026-07-03T01:08:57.629840500+00:00</pubDate>
+      <description>Longmont Chamber outlines 2026 state-session issues</description>
+    </item>
+
+  </channel>
+</rss>
+

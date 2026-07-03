@@ -1,0 +1,61 @@
+﻿ 
+ 
+ 
+     
+     
+     
+     
+     Longmont Cleanroom Beta Desk 
+     
+     
+     
+     
+     :root { --accent-color: #5a1818; } 
+ 
+ 
+     
+        
+          Longmont Cleanroom Beta Desk  
+         Local news and community information. 
+         
+             Home 
+             About 
+             Ethics Policy 
+             How We Report 
+             Corrections Ledger 
+             RSS Feed 
+         
+     
+
+     
+         
+             
+                 
+    Longmont Chamber outlines 2026 state-session issues  
+   
+     2026-07-03T01:08:57.629840500+00:00 
+     Format:  brief  
+   
+ 
+
+
+             
+             
+                 
+   About this Site 
+   A locally edited publication for this community. 
+ 
+ 
+   Ethics Standards 
+   Editorial standards are set by the publisher. Corrections are published when needed. 
+ 
+             
+         
+     
+
+     
+        
+     
+ 
+ 
+

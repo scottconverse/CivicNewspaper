@@ -1,0 +1,160 @@
+﻿070 Dismiss beta notice [Button] enabled=True
+073 Story status updated to 'ready_to_review'. [Text] enabled=True
+074 Dismiss [Button] enabled=True
+076 Story Workbench [Text] enabled=True
+077 Modify drafted content, review guardrail warnings, and link source material when it helps the editor. [Text] enabled=True
+078 Back to Queue [Button] enabled=True
+079 Save Draft [Button] enabled=True
+080 Delete [Button] enabled=True
+081 Ready for review [Text] enabled=True
+082 Unlinked evidence blocking probe [Text] enabled=True
+083 Improve for Publication [Button] enabled=True
+084 Send Back [Button] enabled=True
+085 I reviewed this story. [CheckBox] enabled=True
+086 I reviewed this story. [Text] enabled=True
+087 Approve [Button] enabled=True
+089 Pre-publication guardrails passed: no issues detected. [Text] enabled=True
+090 0 [Text] enabled=True
+091  ISSUE(S) [Text] enabled=True
+092 Press-freedom / legal-risk advisor [Text] enabled=True
+093 Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish. [Text] enabled=True
+094 Run Advisor [Button] enabled=True
+096 Distinguish verified facts, allegations, opinion, and unanswered questions. [ListItem] enabled=True
+097 Use extra care with private individuals, minors, medical details, addresses, and active legal matters. [ListItem] enabled=True
+098 Keep notes on source reliability and why publishing serves the community. [ListItem] enabled=True
+099 Story-quality preflight [Text] enabled=True
+100 Checks for headline, attribution, citation, and reporter-note problems before approval. Warnings are advisory; package-validity blockers must be fixed before static publish approval. [Text] enabled=True
+101 Make this a brief [Button] enabled=True
+102 Improve for Publication [Button] enabled=True
+103  [Text] enabled=True
+104 Fix before static publish approval: [Text] enabled=True
+106 The draft cites evidence ID(s) 999 that are not linked to this lead. [ListItem] enabled=True
+107 This scanned-lead draft's linked source documents do not appear to match the story topic. [ListItem] enabled=True
+109 Story body is very short for this format. Consider making it a brief or adding verified reporting. [ListItem] enabled=True
+110 No clear attribution phrase found. Attribute key facts to the source or rewrite more cautiously. [ListItem] enabled=True
+111 Linked source documents may not match this story topic. Attach the correct source material or rewrite the story around the linked sources. [ListItem] enabled=True
+112 Story Title [Text] enabled=True
+113 Story Title [Edit] enabled=True
+114 Article Body (Markdown) [Text] enabled=True
+115  [Text] enabled=True
+117 Before static publish approval: The draft cites evidence ID(s) 999 that are not linked to this lead. This scanned-lead draft's linked source documents do not appear to match the story topic. [Text] enabled=True
+118 Plain Language Rewrite [Button] enabled=True
+119 Highlight text and click "Cite" in evidence pane to link. [Text] enabled=True
+120 Article Body (Markdown) [Edit] enabled=True
+121 Current Status:  [Text] enabled=True
+122 Ready for review [Text] enabled=True
+123 Send Back for More Work [Button] enabled=True
+124 Hold [Button] enabled=True
+125 Cut Story [Button] enabled=True
+126 Approve for Static Publish [Button] enabled=True
+127 I have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision. [CheckBox] enabled=True
+128 I have reviewed this story and take responsibility for publishing it. [Text] enabled=True
+129  This reminder is for the editor; the app does not make the publication decision. [Text] enabled=True
+130 Social Media Promo Pack [Text] enabled=True
+131 Generate Posts [Button] enabled=True
+132 Generate optimized posts for Twitter/X, Facebook, and Reddit based on the current draft. [Text] enabled=True
+133 Linked Sources [Text] enabled=True
+134 Citation ID: # [Text] enabled=True
+135 16 [Text] enabled=True
+136 Fetched:  [Text] enabled=True
+137 7/2/2026 [Text] enabled=True
+138 " [Text] enabled=True
+139 Discover upcoming events, celebrations, and stories from across St. Vrain.
+Contact Us
+Have a question or comment? Send us a message and we will
+get back to you as soon as possible.
+395 S. Pratt Pkwy, Longmont, CO 80501
+(303) 776-6200
+St. Vrain Valley Schools Home Page
+Please enable JavaScript in your browser to complete this form.    Name  *      Email  *      Topic  *    General  Employment/Human Resources  Infinite Campus  School Calendar  Substitute Teaching  Transcript/Records  Vendor  Website Feedback     Questions/Comments  *                    Submit
+Digital Accessibility Statement
+Legal Notices
+Title IX
+Financial Transparency
+Promotional Flyers
+Staff Login
+Twitter
+LinkedIn
+Vimeo
+St. Vrain Valley Schools
+ [Text] enabled=True
+140 " [Text] enabled=True
+141 Link Citation [Button] enabled=True
+142 Citation ID: # [Text] enabled=True
+143 15 [Text] enabled=True
+144 Fetched:  [Text] enabled=True
+145 7/2/2026 [Text] enabled=True
+146 " [Text] enabled=True
+147 August 1, 2026       &ndash; &ndash;
+Aug
+12
+Board of Education Regular Meeting
+August 12, 2026       &ndash; 6:00 p.m.
+Aug
+19
+Board of Education Study Session
+August 19, 2026       &ndash; 6:00 p.m.
+Previous Board Meetings
+Jul
+1
+Board of Education Member Events for July
+July 1, 2026       &ndash; &ndash;
+Jun
+24
+Board of Education Study Session
+June 24, 2026       &ndash; 5:15 p.m.
+Jun
+24
+Board of Education Regular Meeting
+June 24, 2026       &ndash; 6:00 p.m.
+All Board Meetings
+District News
+St. Vrain Valley Schools Students Eligible for Direct Admission to CU Denver
+St. Vrain Valley Schools students who have demonstrated strong academic achievement are now eligible to receive a direct admission offer from the University of Colorado Denver (CU Denver) through a new partnership between the district and the university. Under the agreement, current St. Vrain juniors and seniors who have earned&hellip;   St. Vrain Valley Schools  Read More
+Read More
+Commentary: This new path into teaching could be a way out of the teacher shortage
+The P-TEACH initiative lowers costs and opens doors for high school students who are interested in careers in education By Stanley Litow and Diallo Shabazz, Published in the Albany Times Union June 24, 2026 As schools across the country struggle to recruit and retain qualified educators, New York&rsquo;s investment may&hellip;   St. Vrain Valley Schools  Read More
+Read More
+St. Vrain Valley Schools receives ASBO Certificate of Excellence for 22nd consecutive year
+St. Vrain Valley Schools has once again been honored with the Certificate of Excellence in Financial Reporting from the Association of School Business Officials International (ASBO), marking the 22nd consecutive year the district has received this prestigious award. The recognition is based on the district&rsquo;s Annual Comprehensive Financial Report (ACFR)&hellip;   St. Vrain Valley Schools  Read More
+Read More
+All News
+This is the St. Vrain Advantage
+ [Text] enabled=True
+148 " [Text] enabled=True
+149 Link Citation [Button] enabled=True
+150 Citation ID: # [Text] enabled=True
+151 14 [Text] enabled=True
+152 Fetched:  [Text] enabled=True
+153 7/2/2026 [Text] enabled=True
+154 " [Text] enabled=True
+155 Quick Links  Financial Transparency  Records Request    Senior Volunteers  There are many ways for the community to get involved with our students and schools, including earning credit toward their property taxes by volunteering with the district.
+Learn more
+Promotional Flyers  Businesses and organizations seeking to distribute an electronic flyer to benefit the students and parents of the St. Vrain Valley Schools may do so by following the guidelines below.
+Learn more
+Facility Use  Most of the St. Vrain Valley School District&rsquo;s schools and fields are available for use by community groups. We support and encourage community use with priority given to youth activities.
+Learn more
+Educator Highlight
+Katie Cooper, Brian McGuirk, Marques Novak
+Specials Team, Burlington Elementary
+&ldquo;Our Specials Team brings incredible value to our school community. Their innovation, teamwork, and dedication make a lasting impact on both students and staff.&rdquo;
+Watch the Video
+Join our team today
+Join a team of over 5,000 employees dedicated to helping students succeed.
+Apply Today
+Featured Stories
+Teaching: A Career Worth Choosing
+Read More
+What Does it Mean to be Future-Ready?
+What is the role of public education in a time of rapid change? The World Economic Forum predicts that 65% of children entering kindergarten today will work in job categories that do not yet exist.&sup1; How can public education prepare students so that by the time they have completed their&hellip;   St. Vrain Valley Schools  Read More
+Read More
+The Public School Advantage
+From my earliest memories, I knew I wanted to be an educator. Thirty-eight years later, that calling still guides me, and my conviction that public schools are among the most important institutions in America has only deepened. They are the heartbeat of every community they serve, and are the gathering&hellip;   St. Vrain Valley Schools  Read More
+Read More
+Upcoming Board Meetings
+Aug
+1
+Board of Education Member Events for August
+ [Text] enabled=True
+156 " [Text] enabled=True
+157 Link Citation [Button] enabled=True

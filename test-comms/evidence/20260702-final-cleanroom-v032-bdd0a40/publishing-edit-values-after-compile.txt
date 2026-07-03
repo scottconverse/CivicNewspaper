@@ -1,0 +1,20 @@
+﻿--- edit 110 Output folder ---
+C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\sites\default
+--- edit 181 Email ---
+
+--- edit 183 Name ---
+
+--- edit 212 Public URL ---
+
+--- edit 214 Deployment ID or note ---
+
+--- edit 221 Connector name ---
+here.now
+--- edit 223 Default public URL ---
+
+--- edit 225 here.now slug ---
+
+--- edit 228 Notes ---
+
+--- edit 230 here.now API key ---
+
