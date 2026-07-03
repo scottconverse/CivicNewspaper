@@ -268,6 +268,25 @@ export function findUnsupportedJurisdictionTerms(candidate: string, referenceTex
   );
 }
 
+export function findUnsupportedRewriteArtifacts(candidate: string, referenceText: string): string[] {
+  const issues: string[] = [];
+  if (/unlinked-evidence-\d+/i.test(candidate)) {
+    issues.push("unlinked evidence citations");
+  }
+  if (/\[\s*Evidence\s+\d+\s*\]/i.test(candidate)) {
+    issues.push("bracketed evidence references");
+  }
+  const referenceLower = referenceText.toLowerCase();
+  const urls = Array.from(candidate.matchAll(/\bhttps?:\/\/[^\s)>\]]+/gi))
+    .map((match) => match[0].replace(/[.,;:!?]+$/, ""))
+    .filter((url, index, all) => all.indexOf(url) === index);
+  const unsupportedUrls = urls.filter((url) => !referenceLower.includes(url.toLowerCase()));
+  if (unsupportedUrls.length > 0) {
+    issues.push(`unsupported external link(s): ${unsupportedUrls.join(", ")}`);
+  }
+  return issues;
+}
+
 // Formats a structured `ollama-pull-progress` event into a single log line.
 // The pull command (`pull_ollama_model`) emits a structured object payload, not
 // a JSON string -- pinning the shape here keeps the listener from regressing to
@@ -2051,7 +2070,10 @@ export function useApp() {
         "You are a careful local newspaper editor. Improve copy for publication without inventing facts. Preserve all named entities, jurisdictions, dates, and evidence:ID citations exactly unless the linked evidence says otherwise. Return clean Markdown only.";
       const evidenceContext = evidenceList.length
         ? evidenceList
-            .map((item) => `Evidence ${item.id}: ${item.excerpt || item.url || "No excerpt available."}`)
+            .map((item) => {
+              const sourceUrl = item.url ? `\nURL: ${item.url}` : "";
+              return `Evidence ${item.id}: ${item.excerpt || "No excerpt available."}${sourceUrl}`;
+            })
             .join("\n")
         : "No linked evidence is attached to this draft.";
       const promptText = `Improve this draft so it reads like reader-facing local newspaper copy, not reporter notes.
@@ -2062,6 +2084,8 @@ Rules:
 - First line must be Headline: followed by a concise, specific headline.
 - Remove reporter scaffolding such as EDITOR_NOTE, Body:, Nut graf, Reporting Steps, [Source needed], [Verification needed], and placeholders.
 - Preserve inline evidence citations exactly when present.
+- Do not add bracketed evidence notes like [Evidence 21]. Use only [Source](evidence:ID) citations for linked evidence IDs already present here.
+- Do not add external URLs, email addresses, social handles, contact details, bullet lists, or source-detail examples unless they are already in the draft and necessary.
 - If linked source evidence exists, include a plain attribution phrase such as "According to..." in the first paragraph.
 - If the source support is thin, make it a brief or watch item and say what is known, not what is guessed.
 - Neutral tone. No advocacy. Do not imply the software makes the editor's decision.
@@ -2086,6 +2110,12 @@ ${selectedDraft.content}`;
       if (unsupportedJurisdictions.length > 0) {
         throw new Error(
           `The improved draft introduced unsupported jurisdiction term(s): ${unsupportedJurisdictions.join(", ")}. The editor content was not changed.`
+        );
+      }
+      const unsupportedArtifacts = findUnsupportedRewriteArtifacts(citationSafe, referenceText);
+      if (unsupportedArtifacts.length > 0) {
+        throw new Error(
+          `The improved draft introduced unsupported source material: ${unsupportedArtifacts.join("; ")}. The editor content was not changed.`
         );
       }
       const normalized = normalizeGeneratedDraft(citationSafe, selectedDraft.title);

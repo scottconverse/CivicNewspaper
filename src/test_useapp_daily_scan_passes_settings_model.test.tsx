@@ -1,7 +1,7 @@
 // src/useApp.test.tsx
 import { render, screen, act } from "@testing-library/react";
 import { describe, test, expect, vi } from "vitest";
-import { ensureAttributionPhrase, findUnsupportedJurisdictionTerms, normalizeEvidenceCitationShapes, sanitizeEvidenceCitations, useApp } from "./useApp";
+import { ensureAttributionPhrase, findUnsupportedJurisdictionTerms, findUnsupportedRewriteArtifacts, normalizeEvidenceCitationShapes, sanitizeEvidenceCitations, useApp } from "./useApp";
 
 // Mock tauri core invoke to return mock initial data
 import { invoke } from "@tauri-apps/api/core";
@@ -70,6 +70,25 @@ describe("useApp Hook Tests", () => {
     expect(findUnsupportedJurisdictionTerms(candidate, reference)).toEqual(["California"]);
     expect(
       findUnsupportedJurisdictionTerms("Colorado lawmakers wrapped up the session.", reference)
+    ).toEqual([]);
+  });
+
+  test("findUnsupportedRewriteArtifacts catches unsupported improve output artifacts", () => {
+    const reference =
+      "Evidence 19: The Colorado General Assembly wrapped up its 2026 session.\nURL: https://longmontchamber.org/";
+    const candidate =
+      "The chamber hired lobbyists [Evidence 21] and shared more details at https://www.longmondchamber.org [Source](unlinked-evidence-24).";
+
+    expect(findUnsupportedRewriteArtifacts(candidate, reference)).toEqual([
+      "unlinked evidence citations",
+      "bracketed evidence references",
+      "unsupported external link(s): https://www.longmondchamber.org",
+    ]);
+    expect(
+      findUnsupportedRewriteArtifacts(
+        "According to the source, the Colorado General Assembly wrapped up its session. [Source](evidence:19)",
+        reference
+      )
     ).toEqual([]);
   });
 
@@ -809,7 +828,7 @@ describe("useApp Hook Tests", () => {
     expect(hookResult.statusMessage).toContain("starter source(s) for Brighton, CO");
   });
 
-  test("improve for publication preflights selected model and sanitizes unsupported evidence citations", async () => {
+  test("improve for publication rejects unsupported evidence citations before changing the editor", async () => {
     const draft = {
       id: 610,
       lead_id: 77,
@@ -859,11 +878,10 @@ describe("useApp Hook Tests", () => {
     expect(invoke).toHaveBeenCalledWith("get_setting", { key: "model.selected" });
     expect(invoke).toHaveBeenCalledWith("ollama_health");
     expect(invoke).toHaveBeenCalledWith("llm_task", expect.any(Object));
-    expect(hookResult.selectedDraft.title).toBe("Improved headline");
-    expect(hookResult.selectedDraft.content).toMatch(/^According to the linked source,/);
-    expect(hookResult.selectedDraft.content).toContain("evidence:7");
-    expect(hookResult.selectedDraft.content).toContain("unlinked-evidence-999");
-    expect(hookResult.selectedDraft.content).not.toContain("evidence:999");
+    expect(hookResult.selectedDraft.title).toBe("Original headline");
+    expect(hookResult.selectedDraft.content).toBe("Original body. [Source](evidence:7)");
+    expect(hookResult.errorMessage).toContain("unsupported source material");
+    expect(hookResult.errorMessage).toContain("unlinked evidence citations");
   });
 
   test("improve for publication does not call LLM when the selected model is unavailable", async () => {
