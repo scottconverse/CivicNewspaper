@@ -1,0 +1,15 @@
+﻿{
+    "timestamp_utc":  "2026-07-03T01:52:37.9586846Z",
+    "computer":  "MSI",
+    "os":  "Microsoft Windows 11 Home",
+    "os_version":  "10.0.26200",
+    "cpu":  "13th Gen Intel(R) Core(TM) i7-13620H",
+    "ram_gb":  15.7,
+    "gpu":  "Intel(R) UHD Graphics; NVIDIA GeForce RTX 4050 Laptop GPU",
+    "disk_free_gb":  341.6,
+    "node":  "not available",
+    "npm":  "not available",
+    "rust":  "not available",
+    "ollama_process":  "27948",
+    "installed_app":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe"
+}

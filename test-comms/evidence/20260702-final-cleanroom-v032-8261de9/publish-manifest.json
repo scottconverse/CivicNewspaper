@@ -1,0 +1,50 @@
+{
+  "issue_id": "issue-20260703-015128-513733200",
+  "output_dir": "C:/Users/civic/AppData/Roaming/com.scottconverse.civicdesk/sites/default",
+  "generated_at": "2026-07-03T01:51:28.513733200+00:00",
+  "provider": "here_now",
+  "published_url": "https://pearly-finch-t8rj.here.now",
+  "deployment_id": "slug=pearly-finch-t8rj;version=01KWJTS7J74CRCNC0VDTCZFN7E;created_slug=pearly-finch-t8rj",
+  "article_count": 1,
+  "skipped_count": 0,
+  "files_written": 18,
+  "generated_files": [
+    "styles.css",
+    "print.css",
+    "briefs/1.html",
+    "index.html",
+    "about.html",
+    "ethics.html",
+    "how-we-report.html",
+    "corrections.html",
+    "feed.xml",
+    "newsletter.md",
+    "substack.md",
+    "share-package.md",
+    "facebook-post.txt",
+    "subreddit-post.md",
+    "nextdoor-post.txt",
+    "short-link-blurb.txt",
+    "publish-manifest.json",
+    "site-package.zip"
+  ],
+  "index_path": "index.html",
+  "rss_path": "feed.xml",
+  "newsletter_path": "newsletter.md",
+  "substack_path": "substack.md",
+  "share_package_path": "share-package.md",
+  "facebook_post_path": "facebook-post.txt",
+  "subreddit_post_path": "subreddit-post.md",
+  "nextdoor_post_path": "nextdoor-post.txt",
+  "short_link_blurb_path": "short-link-blurb.txt",
+  "manifest_path": "publish-manifest.json",
+  "zip_path": "site-package.zip",
+  "articles": [
+    {
+      "title": "Longmont Chamber outlines 2026 state-session issues",
+      "format": "brief",
+      "relative_path": "briefs/1.html",
+      "updated_at": "2026-07-03T01:50:39.440678200+00:00"
+    }
+  ]
+}

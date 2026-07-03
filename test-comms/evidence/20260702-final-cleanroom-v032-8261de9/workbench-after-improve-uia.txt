@@ -1,0 +1,163 @@
+﻿070 Dismiss beta notice [Button] enabled=True
+073 Story Workbench [Text] enabled=True
+074 Modify drafted content, review guardrail warnings, and link source material when it helps the editor. [Text] enabled=True
+075 Back to Queue [Button] enabled=True
+076 Save Draft [Button] enabled=True
+077 Delete [Button] enabled=True
+078 Drafting [Text] enabled=True
+079 Colorado General Assembly Wraps Up 2026 Session with Impact on Local Business Community [Text] enabled=True
+080 Improve for Publication [Button] enabled=True
+081 Send Back [Button] enabled=True
+082 Ready [Button] enabled=True
+083 I reviewed this story. [CheckBox] enabled=True
+084 I reviewed this story. [Text] enabled=True
+085 Approve [Button] enabled=False
+087 Advisory warnings - these do not block publishing. [Text] enabled=True
+088 3 [Text] enabled=True
+089  ISSUE(S) [Text] enabled=True
+091 Warns [Text] enabled=True
+092 -  [Text] enabled=True
+093 Review this guardrail issue [Text] enabled=True
+094 The public title reads like a lead summary instead of a headline. Rewrite it as a short reader-facing headline before publishing. [Text] enabled=True
+096 Technical details [Button] enabled=True
+097 Technical details [Text] enabled=True
+099 Warns [Text] enabled=True
+100 -  [Text] enabled=True
+101 Rewrite source wording [Text] enabled=True
+102 This wording is too close to the source. Rewrite it in your own words or format it as a direct quote with a citation. [Text] enabled=True
+104 Technical details [Button] enabled=True
+105 Technical details [Text] enabled=True
+107 Warns [Text] enabled=True
+108 -  [Text] enabled=True
+109 Consider adding a source link [Text] enabled=True
+110 This passage looks like a factual claim without a linked source. Add a link if one exists, rewrite the claim, or leave it for the editor to approve. [Text] enabled=True
+112 Technical details [Button] enabled=True
+113 Technical details [Text] enabled=True
+114 Press-freedom / legal-risk advisor [Text] enabled=True
+115 Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish. [Text] enabled=True
+116 Run Advisor [Button] enabled=True
+118 Distinguish verified facts, allegations, opinion, and unanswered questions. [ListItem] enabled=True
+119 Use extra care with private individuals, minors, medical details, addresses, and active legal matters. [ListItem] enabled=True
+120 Keep notes on source reliability and why publishing serves the community. [ListItem] enabled=True
+121 Story-quality preflight [Text] enabled=True
+122 Checks for headline, attribution, citation, and reporter-note problems before approval. Warnings are advisory; package-validity blockers must be fixed before static publish approval. [Text] enabled=True
+123 Make this a brief [Button] enabled=True
+124 Improve for Publication [Button] enabled=True
+125  [Text] enabled=True
+126 Fix before static publish approval: [Text] enabled=True
+128 The draft has disabled or unlinked evidence citations. Link the correct source before approval. [ListItem] enabled=True
+129 No obvious story-quality warnings from the local preflight. [Text] enabled=True
+130 Story Title [Text] enabled=True
+131 Story Title [Edit] enabled=True
+132 Article Body (Markdown) [Text] enabled=True
+133 Plain Language Rewrite [Button] enabled=True
+134 Highlight text and click "Cite" in evidence pane to link. [Text] enabled=True
+135 Article Body (Markdown) [Edit] enabled=True
+136 Current Status:  [Text] enabled=True
+137 Drafting [Text] enabled=True
+138 Send Back for More Work [Button] enabled=True
+139 Mark Ready for Review [Button] enabled=True
+140 Hold [Button] enabled=True
+141 Cut Story [Button] enabled=True
+142 Approve for Static Publish [Button] enabled=False
+143 I have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision. [CheckBox] enabled=True
+144 I have reviewed this story and take responsibility for publishing it. [Text] enabled=True
+145  This reminder is for the editor; the app does not make the publication decision. [Text] enabled=True
+146 Social Media Promo Pack [Text] enabled=True
+147 Generate Posts [Button] enabled=True
+148 Generate optimized posts for Twitter/X, Facebook, and Reddit based on the current draft. [Text] enabled=True
+149 Linked Sources [Text] enabled=True
+150 Citation ID: # [Text] enabled=True
+151 19 [Text] enabled=True
+152 Fetched:  [Text] enabled=True
+153 7/2/2026 [Text] enabled=True
+154 " [Text] enabled=True
+155 May 27, 2026     The Colorado General Assembly wrapped up its 2026 session, and as always, there was no shortage of action affecting our business community. From a billion-dollar state budget shortfall to new labor rules and energy policy debates, this was a session that demanded close attention and we were paying it.
+This Is What Your Membership Makes Possible
+Apr 28, 2026     From hiring a lobbyist to launching new networking groups and distributing $60,000 in nonprofit grants, this past year proved what Longmont businesses can accomplish together. CEO Scott Cook shares a look back at what your membership has made possible, and what is coming next.
+Quality First, Always: Meet Caribou Office
+Apr 15, 2026     Founded by Scott Gillies and Kyle Gustafson, Caribou Office delivers high-quality, health-focused office products at accessible prices. See why Longmont businesses are taking notice.
+Our Community
+We understand Longmont, and not just from a business perspective. The Longmont Area Chamber of Commerce is a conduit for our members to connect with the community. Every Chamber member is a partner when it comes to creating a stronger and more empathetic regional economy.
+Email Address  *      First Name  *      Last Name  *
+Follow   Follow     Follow   Follow     Follow   Follow
+Our Community
+We understand Longmont, and not just from a business perspective. The Longmont Area Chamber of Commerce is a conduit for our members to connect with the community. Every Chamber member is a partner when it comes to creating a stronger and more empathetic regional economy.
+Follow      Follow      Follow
+Are you ready to be a part of a bigger community?
+Become a Member
+— Top Supporters
+We encourage and promote a balanced, thriving economy and preserve those unique qualities that are good for businesses and our community.
+528 Main Street   Longmont, CO 80501   303-776-5295   Email Us
+Become a Member
+Member Login
+Quick Links:
+ [Text] enabled=True
+156 " [Text] enabled=True
+157 Link Citation [Button] enabled=True
+158 Citation ID: # [Text] enabled=True
+159 18 [Text] enabled=True
+160 Fetched:  [Text] enabled=True
+161 7/2/2026 [Text] enabled=True
+162 " [Text] enabled=True
+163 Longmont Area Chamber of Commerce - Longmont Area Chamber of Commerce
+Membership
+Benefits of Membership
+Join the Longmont Chamber
+Member Login
+Our Members
+Business Directory
+Press Releases
+Job Openings
+Offers &#038; Deals
+Volunteer Opportunities
+Advocacy
+Events
+Calendars
+Chamber Events
+Community Calendar
+Business Excellence Awards
+Unity in the Community
+Longmont Chamber Golf Tournament
+State of the City
+Networking
+Programs
+Leadership Longmont
+Workers’ Compensation Safety Program
+About
+Team
+Blog
+Longmont Community Profile
+Join Now
+Select Page
+We
+Speak
+Longmont
+Become a Member
+Member Login
+We encourage and promote a balanced, thriving economy and preserve those unique qualities that are  good for businesses and our community.
+Our Strategy
+The Longmont Area Chamber of Commerce is here to build a stronger community. We believe communities are positively influenced by strong businesses in every industry. At the Longmont Chamber, we work directly with business owners to identify their goals and provide them with the resources most relevant to them. What&#8217;s most important to your business?
+Advocacy
+We speak on behalf of business and represent their interests, and ensure that our community benefits by having a healthy business climate.
+Learn More
+Advocacy Focal Points
+Legislative Tracker
+Recent Actions
+Northwest Chamber Alliance
+Connection
+We build meaningful relationships between Longmont businesses and our community and cultivate a business-friendly environment.
+Learn More
+Membership   Unity in the Community   Networking
+Advancement
+We move our community forward by providing the opportunities and resources necessary for business development and growth.
+Learn More
+Leadership Longmont   Blog
+Upcoming Events
+Longmont Chamber Events
+Community Events
+Blog Updates
+The 2026 Legislative Session Is Behind Us: Here&#8217;s What It Means for Longmont Business
+ [Text] enabled=True
+164 " [Text] enabled=True
+165 Link Citation [Button] enabled=True
