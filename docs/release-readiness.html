@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release readiness | The Civic Desk</title>
+    <meta name="description" content="Release readiness for The Civic Desk public beta.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="doc-page.css">
+</head>
+<body class="doc-page">
+    <nav aria-label="Site navigation">
+        <div class="nav-container">
+            <a class="logo" href="index.html#top" aria-label="The Civic Desk home">
+                <span>The Civic Desk</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html#downloads">Downloads</a>
+                <a href="user_manual.html">Manual</a>
+                <a href="install.html">Install</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a class="nav-btn-primary" href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </nav>
+    <main class="doc-shell">
+        <article class="doc-content">
+<h1 id="release-readiness">Release readiness</h1>
+<p>This checklist separates public-beta checks that can be run on a normal development machine from stable-release checks that require signing credentials, clean machines, or live provider accounts.</p>
+<h2 id="local-release-smoke">Local release smoke</h2>
+<p>Run this before tagging a beta or release candidate:</p>
+<pre><code>powershell -NoProfile -ExecutionPolicy Bypass -File scripts\release-smoke.ps1 `
+  -Model &quot;phi4-mini:latest&quot;</code></pre>
+<p>The script writes a receipt under <code>.agent-runs\release-smoke-*</code> and runs:</p>
+<ul>
+<li>frontend tests</li>
+<li>Rust tests</li>
+<li>desktop first-run loopback smoke with isolated app data</li>
+<li>seeded static-site output generation</li>
+<li>anonymous here.now publish and live URL fetch</li>
+<li>live Colorado source scan</li>
+<li>real local Ollama Daily Scan with the selected model</li>
+<li>source import extraction across CSV, TXT, XLSX, DOCX, plus PDF-disabled guidance fixtures</li>
+<li>frontend bulk-import review parsing against the extracted fixture text</li>
+</ul>
+<p>Use <code>-SkipLiveModel</code> only for local diagnostics. A release candidate or stable gate must record every skipped check as a skip and must not treat a partial receipt as complete release evidence.</p>
+<p>By default, the smoke script uses the committed review fixtures under <code>test-fixtures\source-import-extracted</code>. Those prove the bulk-import review parser on realistic extracted text. For release-candidate or stable evidence, pass the full source-file fixture folder so the Rust extraction gate proves CSV, XLSX, TXT, DOCX extraction and public-beta PDF-disabled guidance.</p>
+<p>For stable release evidence, run:</p>
+<pre><code>powershell -NoProfile -ExecutionPolicy Bypass -File scripts\release-smoke.ps1 `
+  -FixtureDir &quot;.agent-runs\source-fixture-artifact&quot; `
+  -Model &quot;phi4-mini:latest&quot; `
+  -Stable</code></pre>
+<p>The stable run fails if the working tree is dirty or if desktop smoke, live model, here.now, or import fixture gates are skipped. Use <code>-AllowDirty</code> only for a non-release diagnostic run. The <code>-FixtureDir</code> value must point to a folder available on the machine running the gate. Use <code>.agent-runs\source-fixture-artifact</code> when the fixture artifact has been restored into the repo workspace, or pass any equivalent full source-file fixture folder that contains the expected CSV, TXT, XLSX, DOCX files and PDF-disabled guidance fixtures.</p>
+<h2 id="release-candidate-packaging-receipt">Release-candidate packaging receipt</h2>
+<p>After tests and smoke checks pass, generate a local RC evidence receipt before publishing any release asset:</p>
+<pre><code>powershell -NoProfile -ExecutionPolicy Bypass -File scripts\prepare-rc-evidence.ps1 `
+  -ReleaseSmokeReceipt &quot;.agent-runs\release-smoke-YYYYMMDD-HHMMSS\release-smoke-receipt.json&quot; `
+  -ModelBakeoffReceipt &quot;.agent-runs\model-bakeoff-YYYYMMDD-HHMMSS.json&quot; `
+  -DependencyAuditReceipt &quot;.agent-runs\dependency-audit-YYYYMMDD-HHMMSS.json&quot; `
+  -InstallerSmokeReceipt &quot;.agent-runs\windows-installer-smoke-YYYYMMDD-HHMMSS\windows-installer-smoke-receipt.json&quot; `
+  -PackagedWalkthroughReceipt &quot;.agent-runs\packaged-first-run-walkthrough-YYYYMMDD-HHMMSS\packaged-first-run-walkthrough-receipt.json&quot;</code></pre>
+<p>The receipt records the exact branch, commit, app versions, Tauri bundle targets, artifact paths, SHA256 hashes, smoke-check results, model-bakeoff receipt, dependency-audit receipt, Windows installer-smoke receipt, and <code>SHA256SUMS</code> output. It is a local evidence artifact; it does not push, merge, tag, or publish. By default it fails if the smoke receipt is missing, from a different repo or commit, dirty/diagnostic, contains failed/skipped checks, no current-version installer artifacts are present, stale historical installer artifacts are present in the bundle folder, the installer-smoke SHA256 does not match the current release artifact SHA256, or the model-bakeoff/dependency-audit/installer-smoke artifacts are missing. Use the diagnostic flags only for local investigation, not release evidence.</p>
+<p>The model bakeoff receipt must show that the configured default model in <code>src\models.json</code> passed every bakeoff case. The dependency audit receipt must be clean, run npm audit at the documented <code>moderate</code> threshold or stricter, and include Rust advisory checking through <code>cargo-audit</code>; a receipt that only exists but contains failures is not release evidence. If <code>cargo-audit</code> uses ignored RustSec advisories, every ignored ID must have a current machine-readable waiver in <code>docs/security-advisory-waivers.json</code>, and the dependency and RC receipts must copy exactly matching waiver entries into release evidence. Missing, extra, duplicated, expired, or incomplete waivers fail RC evidence. The Windows installer smoke receipt must prove NSIS silent install, installed app start from the packaged installer, first-run screenshot capture, uninstaller presence, and silent uninstall, and its recorded installer SHA256 must match the current RC artifact SHA256. MSI lifecycle proof is backlog/proof-needed until MSI is reintroduced as a public beta artifact.</p>
+<p>For this release line, RC packaging evidence is Windows public beta only. macOS and Linux installer proof is backlog/proof-needed until a real platform artifact and clean-machine first-run proof exist.</p>
+<h2 id="hosted-release-workflow">Hosted release workflow</h2>
+<p>The GitHub release workflow is intentionally conservative during public beta:</p>
+<ul>
+<li>tag pushes build Windows artifacts into a <strong>draft</strong> prerelease;</li>
+<li>the hosted workflow fails unless <code>docs/release-evidence/&amp;lt;tag&amp;gt;.json</code> exists at the tagged commit and verifies local RC evidence, Windows installer smoke, packaged first-run proof, final cleanroom proof, and the matching installer SHA256 for that exact tag;</li>
+<li>the workflow attaches <code>SHA256SUMS</code> and runs release-asset integrity checks;</li>
+<li>release-asset integrity recomputes every downloaded asset hash and requires the published Windows installer hash in <code>SHA256SUMS</code> to match the cleanroom-tested installer hash from <code>docs/release-evidence/&amp;lt;tag&amp;gt;.json</code>;</li>
+<li>the workflow does not publish a non-draft public release by itself;</li>
+<li>Scott must review the local RC receipt, cleanroom report, and release notes before undrafting a release.</li>
+</ul>
+<p>This prevents a public unsigned installer from appearing before checksum and local release-gate evidence have been reviewed.</p>
+<h2 id="current-v0-3-2-evidence">Current v0.3.2 evidence</h2>
+<p>The Windows public-beta v0.3.2 release candidate is cleanroom-proven at commit <code>af4a12b0689dd8de64ce6af707b0c305a9cdaba0</code>.</p>
+<ul>
+<li>Hosted evidence file: <code>docs/release-evidence/v0.3.2.json</code></li>
+<li>RC receipt: <code>.agent-runs/release-candidate-20260703-100118/release-candidate-receipt.json</code></li>
+<li>Strict release smoke: <code>.agent-runs/release-smoke-20260703-095436/release-smoke-receipt.json</code></li>
+<li>Windows installer smoke: <code>.agent-runs/windows-installer-smoke-20260702-200332/windows-installer-smoke-receipt.json</code></li>
+<li>Packaged first-run walkthrough: <code>.agent-runs/packaged-first-run-walkthrough-20260702-200346/packaged-first-run-walkthrough-receipt.json</code></li>
+<li>Final cleanroom report: <code>test-comms/reports/20260702-final-cleanroom-v032-af4a12b-report.md</code></li>
+<li>Cleanroom public URL: <code>https://olive-gorge-cgsr.here.now</code></li>
+<li>Cleanroom-tested installer SHA256: <code>AB598EC26F658BB2B0735827F15DC787162D372A0C3FF0A3A18B6ADE48ABE241</code></li>
+</ul>
+<p>This does not publish, merge, or tag the release by itself. Scott must still approve the product push, tag, hosted GitHub Release, and GitHub Pages update.</p>
+<h2 id="evidence-levels">Evidence levels</h2>
+<p>| Level | Required evidence | Allowed skips | |---|---|---| | Public beta | Frontend tests, Rust tests, static-site output gate, release notes, known limitations, install guide, user manual, and troubleshooting guide. | Live provider credentials, signing, true clean-machine proof. Skips must be explicit in the receipt. | | Release candidate | Beta evidence plus desktop smoke, current-version Windows installer artifacts, source-import fixtures, live Colorado scan, model bakeoff, dependency audit, anonymous here.now publish. | External providers without credentials. | | Stable | RC evidence plus no skipped release-smoke gates, clean first-run artifact, signed Windows installer, cross-platform installer proof for every advertised OS, and credentialed live connector verification for supported providers. | None for the release-critical gates. |</p>
+<h2 id="source-import-fixtures">Source import fixtures</h2>
+<p>The full local fixture suite expects realistic files in a machine-available fixture folder. For repo-local release evidence, restore or copy the fixture artifact to:</p>
+<pre><code>.agent-runs\source-fixture-artifact</code></pre>
+<p>If a tester machine uses a different workspace path, pass that machine&#x27;s equivalent full source-file fixture folder with <code>-FixtureDir</code>. Do not hard-code another user&#x27;s Windows profile path in release directives.</p>
+<p>The committed lightweight review fixtures live under:</p>
+<pre><code>test-fixtures\source-import-extracted</code></pre>
+<p>The full source-file set includes clean CSV, messy XLSX, human notes TXT, DOCX briefing, PDF examples, and XLSX edge cases. PDF examples should fail with public-beta PDF-disabled guidance until hardened PDF parsing is added.</p>
+<h2 id="model-bakeoff">Model bakeoff</h2>
+<p>There are two model checks:</p>
+<ul>
+<li>The release-candidate gate is the configured-default check: the model named in <code>src\models.json</code> must pass every bakeoff case in the receipt used by <code>prepare-rc-evidence.ps1</code>.</li>
+<li>The comparison bakeoff is model-selection evidence. Run it before changing the default model, after meaningful prompt/model changes, or when deciding whether the public-beta default should change.</li>
+</ul>
+<p>Run this to record comparison reliability and timing:</p>
+<pre><code>$env:MODEL_BAKEOFF_MODELS=&quot;qwen2.5:7b,gpt-oss:20b,gemma4:e4b,phi4-mini:latest,llama3.2:3b&quot;
+$env:MODEL_BAKEOFF_TIMEOUT_MS=&quot;240000&quot;
+node scripts\model-bakeoff.mjs</code></pre>
+<p>The result is written under <code>.agent-runs\model-bakeoff-*.json</code>. A release candidate may use a narrower default-model receipt when the purpose is to prove the current configured default; do not describe that receipt as a full comparison bakeoff.</p>
+<p>For this public-beta line, <code>phi4-mini:latest</code> is the default scan model because <code>.agent-runs\model-bakeoff-2026-06-30T20-26-21-425Z.json</code> recorded valid JSON output for both <code>civic-signals</code> and <code>empty-noise</code> cases. That comparison receipt included <code>qwen2.5:7b</code>, <code>gpt-oss:20b</code>, <code>gemma4:e4b</code>, <code>phi4-mini:latest</code>, and <code>llama3.2:3b</code> with <code>MODEL_BAKEOFF_TIMEOUT_MS=240000</code>; <code>gemma4:e4b</code> also passed both cases but was slower on the civic-signal case in that run. Keep using the comparison set for model-selection decisions until repeated evidence supports a different default.</p>
+<h2 id="security-checks">Security checks</h2>
+<p>Run:</p>
+<pre><code>npm audit --audit-level=moderate
+cd src-tauri
+cargo audit</code></pre>
+<p>Warnings from transitive desktop framework dependencies should be recorded in the release notes if they cannot be upgraded safely before release.</p>
+<p>Current Rust advisory exceptions live in <code>src-tauri\.cargo\audit.toml</code>; the matching rationale, owner, release-note text, and review date live in <code>docs\security-advisory-waivers.json</code>. The release gate should not accept a dependency audit receipt that suppresses advisories without matching current waiver metadata.</p>
+<h2 id="stable-release-blockers">Stable-release blockers</h2>
+<p>These cannot be fully completed from one unsigned Windows development machine:</p>
+<ul>
+<li>Windows code-signing certificate and signed installer verification</li>
+<li>Mac installer build, signing/notarization decision, and clean-machine proof</li>
+<li>Linux installer/package build and clean-machine or VM proof</li>
+<li>clean-machine installer proof on every OS advertised in public docs</li>
+<li>permanent here.now API-key publish verification</li>
+<li>Netlify, WordPress, GitHub Pages, and permanent here.now live connector verification with real target accounts</li>
+<li>Cloudflare Pages direct API connector work and proof, if it is reintroduced after the public beta assisted/manual workflow</li>
+</ul>
+<h2 id="rollback">Rollback</h2>
+<p>If a release is bad:</p>
+<ol>
+<li>Mark the GitHub release as pre-release or remove it if it is actively harmful.</li>
+<li>Publish a correction note in the release body.</li>
+<li>Tag a patch release from the last known-good commit.</li>
+<li>Keep the failed smoke receipt and model bakeoff result for diagnosis.</li>
+</ol>
+        </article>
+    </main>
+    <footer>
+        <div class="footer-container">
+            <div>
+                <a class="logo" href="index.html#top"><span>The Civic Desk</span></a>
+                <p>Open-source local newsroom software. Repository name: CivicNewspaper. Installed app name: The Civic Desk.</p>
+            </div>
+            <div class="footer-links">
+                <a href="user_manual.html">Manual</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

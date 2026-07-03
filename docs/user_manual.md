@@ -13,7 +13,7 @@ The Civic Desk is public-beta software. It is useful, but it is not a signed sta
 What that means in practice:
 
 - Windows may warn you because the public-beta installer is unsigned.
-- The latest source code/tag may be newer than the latest published installer release.
+- The public release page should match the version you intend to install.
 - Windows is the tested public-beta installer path for this release line.
 - macOS and Linux installers are backlog/proof-needed until clean-machine proof is recorded.
 - You should verify important output before publishing.
@@ -42,7 +42,9 @@ Open the GitHub Releases page:
 
 <https://github.com/scottconverse/CivicNewspaper/releases>
 
-Choose the newest release that has a Windows installer and checksum.
+Choose the v0.3.2 Windows public beta release:
+
+<https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2>
 
 On Windows, use the `.exe` installer. Because the app is unsigned, SmartScreen may show a warning. Click **More info**, confirm the filename came from the project release page, and choose **Run anyway** if you are comfortable continuing.
 

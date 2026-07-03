@@ -58,11 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Public beta releases can lag the latest source tag while a candidate is
-    // still being tested. Do not auto-rewrite the Windows button to GitHub's
-    // `/releases/latest` API; it can point users at a stale installer. The HTML
-    // intentionally links to the release list so users can choose a Windows
-    // asset that includes a matching SHA256SUMS manifest.
+    // Keep the download buttons fixed to the audited release page. Do not
+    // auto-rewrite them to GitHub's `/releases/latest` API; older releases can
+    // remain latest while a new beta is being staged.
 });
 
 // Reveal `.fade-up` sections as they scroll into view. Defined as a standalone

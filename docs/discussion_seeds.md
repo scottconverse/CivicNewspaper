@@ -2,6 +2,15 @@
 
 These are copy-ready starter posts for the CivicNewspaper GitHub Discussions area. The repository is CivicNewspaper; the installed app is The Civic Desk.
 
+Posted seed discussions:
+
+- Welcome: <https://github.com/scottconverse/CivicNewspaper/discussions/26>
+- Local AI and hardware: <https://github.com/scottconverse/CivicNewspaper/discussions/27>
+- Source discovery and bulk import: <https://github.com/scottconverse/CivicNewspaper/discussions/28>
+- Dark Signal Desk: <https://github.com/scottconverse/CivicNewspaper/discussions/29>
+- Publishing stack: <https://github.com/scottconverse/CivicNewspaper/discussions/30>
+- Guardrails and advisor: <https://github.com/scottconverse/CivicNewspaper/discussions/31>
+
 ## 1. Welcome To The Civic Desk Public Beta
 
 **Category:** General

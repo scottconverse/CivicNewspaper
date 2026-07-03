@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Troubleshooting The Civic Desk | The Civic Desk</title>
+    <meta name="description" content="Troubleshooting The Civic Desk for The Civic Desk public beta.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="doc-page.css">
+</head>
+<body class="doc-page">
+    <nav aria-label="Site navigation">
+        <div class="nav-container">
+            <a class="logo" href="index.html#top" aria-label="The Civic Desk home">
+                <span>The Civic Desk</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html#downloads">Downloads</a>
+                <a href="user_manual.html">Manual</a>
+                <a href="install.html">Install</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a class="nav-btn-primary" href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </nav>
+    <main class="doc-shell">
+        <article class="doc-content">
+<h1 id="troubleshooting-the-civic-desk">Troubleshooting The Civic Desk</h1>
+<p>This page is for public-beta users who are trying to install, set up, scan, draft, or publish and something feels stuck or confusing.</p>
+<p>The Civic Desk is local-first desktop software. That means several things happen on your machine: a local database is created, a local AI runtime may be installed, a model may be downloaded, and the app may compile files into a static website before publishing. Some steps are slow the first time.</p>
+<h2 id="windows-says-the-app-is-unknown">Windows Says The App Is Unknown</h2>
+<p>The public-beta Windows installer is unsigned. Windows SmartScreen may show &quot;Windows protected your PC&quot; or &quot;Unknown publisher.&quot;</p>
+<p>What to do:</p>
+<ol>
+<li>Confirm you downloaded the installer from the official GitHub Releases page.</li>
+<li>Confirm the filename matches the release asset.</li>
+<li>Compare the SHA256 checksum using the install guide.</li>
+<li>If the checksum matches and you are comfortable continuing, click <strong>More info</strong> and then <strong>Run anyway</strong>.</li>
+</ol>
+<p>What not to assume:</p>
+<ul>
+<li>The warning does not automatically mean the file is malicious.</li>
+<li>A matching checksum does not replace code signing.</li>
+<li>If the checksum does not match, do not run the installer.</li>
+</ul>
+<h2 id="model-download-looks-stuck">Model Download Looks Stuck</h2>
+<p>Local AI models are large. The first download can take a long time, especially on slower connections.</p>
+<p>What to check:</p>
+<ol>
+<li>Stay on the AI Model screen and look for progress text.</li>
+<li>Confirm the computer is online.</li>
+<li>Leave the app open while the model downloads.</li>
+<li>If progress has not changed for a long time, cancel and retry from the AI Model screen.</li>
+<li>If the recommended model is too slow for the machine, choose a smaller model if the app offers one.</li>
+</ol>
+<p>You can still use source management, manual drafting, editing, backup, export, and publishing without the local model. AI-assisted drafting, ranking, summarizing, and advisor tools will be limited until a model is ready.</p>
+<h2 id="local-ai-runtime-is-offline">Local AI Runtime Is Offline</h2>
+<p>The app may show <strong>Local AI offline</strong>, <strong>Choose model</strong>, or <strong>No model selected</strong>.</p>
+<p>What those mean:</p>
+<ul>
+<li><strong>Local AI offline:</strong> the runtime is not reachable.</li>
+<li><strong>Choose model:</strong> the runtime may be available, but no model is selected for newsroom work.</li>
+<li><strong>No model selected:</strong> setup is incomplete.</li>
+</ul>
+<p>What to do:</p>
+<ol>
+<li>Open <strong>AI Model</strong>.</li>
+<li>Let the app check the machine.</li>
+<li>Select or download the recommended model.</li>
+<li>Return to <strong>System &amp; Status</strong> and confirm the state changes to ready.</li>
+</ol>
+<p>If the app still says offline, export diagnostics from <strong>System &amp; Status</strong> and include that file when reporting the bug.</p>
+<h2 id="daily-scan-finds-nothing">Daily Scan Finds Nothing</h2>
+<p>This can be normal. It can also mean the source list is too thin.</p>
+<p>Check:</p>
+<ol>
+<li>Open <strong>Sources</strong> and confirm at least a few useful sources are enabled.</li>
+<li>Include official records, public notices, local news, and public community/social sources where appropriate.</li>
+<li>Open a few source URLs manually to confirm they still load.</li>
+<li>Run Daily Scan again.</li>
+</ol>
+<p>If the app says there are no useful leads, treat that as an assignment-desk signal, not a failure. Some days there is not enough new material. If this happens repeatedly, add more sources or use discovery.</p>
+<h2 id="the-app-suggests-weak-or-generic-stories">The App Suggests Weak Or Generic Stories</h2>
+<p>The app can surface weak leads. It should warn you, but it should not make your editorial decision. If a static package-integrity blocker appears, fix the cited evidence, copy, or unsupported citation before export.</p>
+<p>Before drafting or approving, ask:</p>
+<ul>
+<li>Why now?</li>
+<li>Is there a new decision, deadline, vote, cost, risk, conflict, opportunity, or public impact?</li>
+<li>Is this just an evergreen city information page?</li>
+<li>Is there enough evidence?</li>
+<li>Should this be a brief, watch item, verification task, or cut item instead?</li>
+</ul>
+<p>Use Workbench actions:</p>
+<ul>
+<li><strong>Improve for Publication</strong> when the draft has useful facts but reads like notes.</li>
+<li><strong>Make this a brief</strong> when the item is real but small.</li>
+<li><strong>Send Back</strong> when it needs fresh reporting, a second source, or clearer evidence.</li>
+<li><strong>Hold</strong> when it may matter later.</li>
+<li><strong>Cut</strong> when it should not be in the issue.</li>
+</ul>
+<h2 id="here-now-preview-did-not-publish">here.now Preview Did Not Publish</h2>
+<p>Anonymous here.now previews are the recommended fast test path, but they still require internet access and a successful static-site compile.</p>
+<p>Check:</p>
+<ol>
+<li>Open <strong>Publishing</strong>.</li>
+<li>Compile the issue first.</li>
+<li>Confirm there is at least one approved story or brief.</li>
+<li>Export the ZIP so you have a local copy.</li>
+<li>Publish to here.now.</li>
+<li>Copy the resulting URL immediately because anonymous previews are temporary.</li>
+</ol>
+<p>If publishing fails:</p>
+<ul>
+<li>Try exporting the ZIP; if the ZIP works, the issue compiled and the problem is likely publishing/network related.</li>
+<li>Try again later if here.now or your network appears unavailable.</li>
+<li>Export diagnostics and include the publish error message in the bug report.</li>
+</ul>
+<h2 id="zip-or-static-output-looks-wrong">ZIP Or Static Output Looks Wrong</h2>
+<p>The ZIP should represent the same issue the app tried to publish.</p>
+<p>Check:</p>
+<ol>
+<li>Open the exported folder or ZIP.</li>
+<li>Open <code>index.html</code>.</li>
+<li>Check article pages, RSS, newsletter markdown, and share copy.</li>
+<li>Look for reporter notes, placeholder text, broken links, or missing headlines.</li>
+</ol>
+<p>If public output contains editor-only notes such as &quot;Reporting Steps&quot;, &quot;EDITOR_NOTE&quot;, &quot;Source needed&quot;, or &quot;Verification needed&quot;, report it as a release-blocking bug.</p>
+<p>The app may refuse to compile if an approved item is not actually reader-facing copy. Common causes:</p>
+<ul>
+<li>The article body is only an editor note, tester note, or approval note.</li>
+<li>A draft from a scanned lead has no linked source evidence.</li>
+<li>Linked source material exists, but the article body has no inline evidence citation.</li>
+<li>A paragraph cites evidence that does not appear to support the paragraph.</li>
+</ul>
+<p>This does not mean the app is deciding what you are allowed to publish. It means the static-site package would be structurally invalid or misleading. Send the item back, attach the correct source, add citations, rewrite the body as public copy, or cut/hold it.</p>
+<h2 id="reset-or-cleanroom-test-the-app-on-windows">Reset Or Cleanroom Test The App On Windows</h2>
+<p>Uninstalling the app is not always enough to create a clean first-run state. The app stores local data under both the install folder and app-data folders.</p>
+<p>For a clean beta test, remove only The Civic Desk/CivicNewspaper data. Do not wipe unrelated Windows user data.</p>
+<p>Typical Windows paths:</p>
+<pre><code>%LOCALAPPDATA%\The Civic Desk
+%LOCALAPPDATA%\com.scottconverse.civicdesk
+%APPDATA%\com.scottconverse.civicdesk
+%USERPROFILE%\.ollama</code></pre>
+<p>Remove <code>%USERPROFILE%\.ollama</code> only when you intentionally want to test local AI setup from scratch and that Ollama/model state was created for this app test.</p>
+<h2 id="source-import-misses-urls">Source Import Misses URLs</h2>
+<p>CSV, TXT, XLSX, and DOCX files should produce reviewable source candidates. PDF import is disabled in the public beta until hardened parsing is available. Convert PDF source lists to TXT, CSV, DOCX, or XLSX, or paste the URLs directly.</p>
+<p>What to do:</p>
+<ol>
+<li>Try the import again with a small file first.</li>
+<li>If the source list is a PDF, convert it to TXT, CSV, DOCX, or XLSX with your own trusted tool, or enter key URLs manually.</li>
+<li>Review every imported candidate before enabling it.</li>
+<li>If a normal text file imports poorly, report the file type and a small example.</li>
+</ol>
+<h2 id="how-to-report-a-bug">How To Report A Bug</h2>
+<p>Use GitHub Issues for bugs:</p>
+<p><a href="https://github.com/scottconverse/CivicNewspaper/issues">https://github.com/scottconverse/CivicNewspaper/issues</a></p>
+<p>Use GitHub Discussions for questions, setup help, and feedback that is not clearly a bug:</p>
+<p><a href="https://github.com/scottconverse/CivicNewspaper/discussions">https://github.com/scottconverse/CivicNewspaper/discussions</a></p>
+<p>Include:</p>
+<ul>
+<li>App version.</li>
+<li>Windows version.</li>
+<li>Installer filename.</li>
+<li>Whether the installer checksum matched.</li>
+<li>What you clicked.</li>
+<li>What you expected.</li>
+<li>What happened.</li>
+<li>Any here.now URL, output ZIP path, or screenshots.</li>
+<li>Diagnostics exported from <strong>System &amp; Status</strong>.</li>
+</ul>
+<p>Do not paste private API keys, credentials, unpublished sensitive reporting notes, or private source lists into a public bug report.</p>
+<p>If a useful report requires private material, say in the public issue that you have private diagnostics available, but do not attach them publicly unless you are comfortable sharing them.</p>
+        </article>
+    </main>
+    <footer>
+        <div class="footer-container">
+            <div>
+                <a class="logo" href="index.html#top"><span>The Civic Desk</span></a>
+                <p>Open-source local newsroom software. Repository name: CivicNewspaper. Installed app name: The Civic Desk.</p>
+            </div>
+            <div class="footer-links">
+                <a href="user_manual.html">Manual</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicNewspaper Architecture | The Civic Desk</title>
+    <meta name="description" content="CivicNewspaper Architecture for The Civic Desk public beta.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="doc-page.css">
+</head>
+<body class="doc-page">
+    <nav aria-label="Site navigation">
+        <div class="nav-container">
+            <a class="logo" href="index.html#top" aria-label="The Civic Desk home">
+                <span>The Civic Desk</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html#downloads">Downloads</a>
+                <a href="user_manual.html">Manual</a>
+                <a href="install.html">Install</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a class="nav-btn-primary" href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </nav>
+    <main class="doc-shell">
+        <article class="doc-content">
+<h1 id="civicnewspaper-architecture">CivicNewspaper Architecture</h1>
+<p>CivicNewspaper is the repository name. The installed desktop app is The Civic Desk.</p>
+<p>The product is a local-first newsroom desktop app for small local publishers. It watches civic sources, imports source lists, finds leads, stores evidence, helps an editor draft and verify stories, and exports or publishes a static local paper.</p>
+<p>The system is advisory about editorial judgment. It can rank, warn, summarize, and suggest verification work. It must not make the editor&#x27;s news judgment for them, but deterministic package-integrity checks can block static approval/export until broken evidence, empty copy, reporter-note scaffolding, or unsupported citations are fixed.</p>
+<h2 id="system-overview">System Overview</h2>
+<pre><code>flowchart LR
+    Editor[&quot;Editor&quot;] --&gt; UI[&quot;React desktop UI&quot;]
+    UI --&gt; Tauri[&quot;Tauri command bridge&quot;]
+    Tauri --&gt; Core[&quot;Rust core modules&quot;]
+    Core --&gt; DB[&quot;SQLite app database&quot;]
+    Core --&gt; Files[&quot;Local output folders&quot;]
+    Core --&gt; Ollama[&quot;Ollama local AI&quot;]
+    Browser[&quot;Browser extension&quot;] --&gt; Loopback[&quot;127.0.0.1 pairing server&quot;]
+    Loopback --&gt; Core
+    Core --&gt; Web[&quot;Public web sources&quot;]
+    Core --&gt; Publishers[&quot;Publishing providers&quot;]
+    Publishers --&gt; Here[&quot;here.now&quot;]
+    Publishers --&gt; Pages[&quot;GitHub Pages&quot;]
+    Publishers --&gt; CF[&quot;Cloudflare Pages&quot;]
+    Publishers --&gt; Netlify[&quot;Netlify&quot;]
+    Publishers --&gt; WP[&quot;WordPress&quot;]
+    Publishers --&gt; Substack[&quot;Substack assisted workflow&quot;]</code></pre>
+<h2 id="major-components">Major Components</h2>
+<h3 id="desktop-shell">Desktop Shell</h3>
+<ul>
+<li>Tauri wraps the app as a native desktop program.</li>
+<li>React and TypeScript provide the user interface.</li>
+<li>Rust owns source fetching, import parsing, database writes, local AI calls, publishing, backup, and extension pairing.</li>
+<li>SQLite stores the newsroom state on the local machine.</li>
+</ul>
+<h3 id="local-ai">Local AI</h3>
+<p>The app uses Ollama for local model calls when available. The AI path supports:</p>
+<ul>
+<li>Daily Scan summarization and ranking.</li>
+<li>Draft assistance.</li>
+<li>Press-freedom and legal-risk advisor output.</li>
+<li>Source and lead explanation.</li>
+</ul>
+<p>The app must degrade when Ollama is missing, slow, offline, or when a model is not installed. Deterministic fetch, import, review, publish, and backup flows should remain usable without AI.</p>
+<h3 id="source-intake">Source Intake</h3>
+<p>Source intake has three main paths:</p>
+<ul>
+<li>Manual source entry.</li>
+<li>Bulk import from CSV, TXT, XLSX, and DOCX. PDF import is disabled in the public beta until hardened parsing is available.</li>
+<li>Discovery adapters for official sites, feeds, agenda portals, document pages, local media, public social/community sources, and search fallback.</li>
+</ul>
+<p>PDF source-list import is intentionally disabled in the public beta. Editors should convert PDF source lists to TXT, CSV, DOCX, or XLSX, or paste URLs directly.</p>
+<h3 id="browser-extension">Browser Extension</h3>
+<p>The browser extension is a local helper for sending pages into The Civic Desk while the editor reads.</p>
+<ul>
+<li>Pairing happens through a short-lived code.</li>
+<li>The loopback service binds to <code>127.0.0.1:12053</code>.</li>
+<li>Browser requests are protected with Host/Origin checks and bearer authorization after pairing.</li>
+<li>Pairing is local to the computer. It is not an internet service.</li>
+</ul>
+<h2 id="newsroom-flow">Newsroom Flow</h2>
+<pre><code>flowchart TD
+    Sources[&quot;Sources&quot;] --&gt; Fetch[&quot;Fetch and import evidence&quot;]
+    Fetch --&gt; Observe[&quot;Create observations&quot;]
+    Observe --&gt; Entities[&quot;Extract entities&quot;]
+    Observe --&gt; Diff[&quot;Detect changes&quot;]
+    Observe --&gt; Leads[&quot;Create leads&quot;]
+    Leads --&gt; Queue[&quot;Story Queue&quot;]
+    Leads --&gt; Dark[&quot;Dark Signals&quot;]
+    Queue --&gt; Verify[&quot;Verification Queue&quot;]
+    Dark --&gt; Verify
+    Verify --&gt; Draft[&quot;Workbench draft&quot;]
+    Draft --&gt; Advisor[&quot;Optional advisor checks&quot;]
+    Advisor --&gt; Human[&quot;Human edit and approval&quot;]
+    Human --&gt; Publish[&quot;Compile, export, publish, share&quot;]</code></pre>
+<h2 id="civic-intelligence-layer">Civic Intelligence Layer</h2>
+<p>The civic intelligence layer converts raw evidence into structured newsroom observations.</p>
+<p>Observation types include:</p>
+<ul>
+<li><code>source_fetched</code></li>
+<li><code>document_changed</code></li>
+<li><code>agenda_item_found</code></li>
+<li><code>video_posted</code></li>
+<li><code>entity_detected</code></li>
+<li><code>social_signal_found</code></li>
+</ul>
+<p>Entity types include:</p>
+<ul>
+<li>people</li>
+<li>companies</li>
+<li>parcels</li>
+<li>addresses</li>
+<li>vendors</li>
+<li>agencies</li>
+</ul>
+<p>The app stores observations and entities so the editor can trace why a lead exists, what changed, and which source produced it.</p>
+<h2 id="dark-signal-desk">Dark Signal Desk</h2>
+<p>The Dark Signal Desk is for weak, early, unusual, or socially surfaced signals that might become stories.</p>
+<p>It should:</p>
+<ul>
+<li>Rank signals.</li>
+<li>Explain why a signal may matter.</li>
+<li>Show origin, risk, entities, suggested verification path, and publication status.</li>
+<li>Preserve signals for editor review.</li>
+<li>Keep low-confidence Tier C material out of published evidence by default.</li>
+</ul>
+<p>It must not hide information from the editor. Ranking is not censorship. The editor decides what to pursue.</p>
+<h2 id="verification-queue">Verification Queue</h2>
+<p>The verification queue turns leads and signals into action items.</p>
+<p>Task states:</p>
+<ul>
+<li><code>suggested</code></li>
+<li><code>auto_checked</code></li>
+<li><code>needs_human</code></li>
+<li><code>blocked</code></li>
+<li><code>resolved</code></li>
+</ul>
+<p>Tasks can link back to stories, signals, sources, entities, and evidence.</p>
+<h2 id="workbench-and-editorial-guardrails">Workbench And Editorial Guardrails</h2>
+<p>The Workbench is where writers and editors draft, revise, hold, approve, or return stories for more work.</p>
+<p>Guardrails and the press-freedom/legal-risk advisor are advisory only. They can warn about sourcing, attribution, defamation risk, privacy risk, public/private figure questions, and verification gaps. They do not make the editor&#x27;s decision. Separately, deterministic static-package checks can visibly block approval/export until the public package is valid.</p>
+<p>Publisher identity, organization type, tone, copyright/footer text, and public site language are configurable so the app does not invent the publisher&#x27;s business model or editorial policy.</p>
+<h2 id="publishing">Publishing</h2>
+<p>Publishing is built around static output first.</p>
+<p>Default publishing order:</p>
+<ol>
+<li>here.now for simple temporary civic website publishing.</li>
+<li>GitHub Pages for a durable public archive.</li>
+<li>Netlify for credentialed technical users.</li>
+<li>Assisted/manual WordPress and Cloudflare Pages hosting by exporting the folder or ZIP and recording the public URL.</li>
+<li>Substack/newsletter as distribution, not the canonical archive.</li>
+</ol>
+<p>The app can produce:</p>
+<ul>
+<li>Static HTML issue output.</li>
+<li>Article pages.</li>
+<li>Homepage.</li>
+<li>RSS feed.</li>
+<li>About, ethics, corrections, and reporting pages.</li>
+<li>ZIP archive.</li>
+<li>Newsletter markdown.</li>
+<li>Substack-ready markdown.</li>
+<li>Social/community share copy.</li>
+</ul>
+<h2 id="publisher-connector-layer">Publisher Connector Layer</h2>
+<p>The Rust publisher layer uses provider-neutral concepts:</p>
+<ul>
+<li>Validate provider configuration.</li>
+<li>Publish a folder or ZIP.</li>
+<li>Return a <code>PublishResult</code>.</li>
+<li>Store publish metadata.</li>
+<li>Keep provider credentials in secure settings where supported.</li>
+</ul>
+<p>Supported provider families in the current code:</p>
+<ul>
+<li><code>here_now</code></li>
+<li><code>github_pages</code></li>
+<li><code>netlify</code></li>
+<li><code>cloudflare_pages</code> assisted/manual beta workflow</li>
+<li><code>substack</code></li>
+<li><code>wordpress</code> assisted/manual beta workflow</li>
+</ul>
+<p>WordPress and Substack are currently assisted workflows: generate or export the publishable package, publish in the outside service, and allow the user to store the final public URL after posting.</p>
+<h2 id="data-storage">Data Storage</h2>
+<p>SQLite is the application database. Schema changes are applied by migration files in <code>src-tauri/migrations/</code>; there is no <code>0002</code> migration. Applied schema version is tracked with <code>PRAGMA user_version</code>.</p>
+<p>Current migration files:</p>
+<ul>
+<li><code>0001_init.sql</code></li>
+<li><code>0003_settings.sql</code></li>
+<li><code>0004_source_tier.sql</code></li>
+<li><code>0005_daily_scans.sql</code></li>
+<li><code>0006_daily_scan_lead_source_nullable.sql</code></li>
+<li><code>0007_source_tier_check.sql</code></li>
+<li><code>0008_draft_publish_gate.sql</code></li>
+<li><code>0009_daily_scan_lead_context.sql</code></li>
+<li><code>0010_publish_runs.sql</code></li>
+<li><code>0011_subscribers.sql</code></li>
+<li><code>0012_civic_intelligence.sql</code></li>
+<li><code>0013_verification_queue.sql</code></li>
+<li><code>0014_beat_memory.sql</code></li>
+<li><code>0015_story_quality_metadata.sql</code></li>
+<li><code>0016_recurrence_metadata.sql</code></li>
+<li><code>0017_publish_decision_audit.sql</code></li>
+<li><code>0018_evidence_source_identity.sql</code></li>
+</ul>
+<p>Evidence identity uses <code>content_hash</code> as the canonical text hash, but duplicate suppression is scoped to <code>(source_id, url, content_hash)</code> so identical notices from different sources remain separate corroborating observations.</p>
+<p>Current primary tables:</p>
+<ul>
+<li><code>sources</code></li>
+<li><code>evidence_items</code></li>
+<li><code>leads</code></li>
+<li><code>lead_evidence</code></li>
+<li><code>drafts</code></li>
+<li><code>published_posts</code></li>
+<li><code>paired_clients</code></li>
+<li><code>settings</code></li>
+<li><code>daily_scan_runs</code></li>
+<li><code>daily_scan_leads</code></li>
+<li><code>publish_runs</code></li>
+<li><code>subscribers</code></li>
+<li><code>civic_observations</code></li>
+<li><code>civic_entities</code></li>
+<li><code>civic_observation_entities</code></li>
+<li><code>source_performance_scores</code></li>
+<li><code>dark_signals</code></li>
+<li><code>verification_tasks</code></li>
+<li><code>verification_task_links</code></li>
+<li><code>beat_memory</code></li>
+<li><code>story_templates</code></li>
+<li><code>publish_decision_audits</code></li>
+</ul>
+<p>The Stage 3 story-quality layer depends on these newer supporting tables:</p>
+<ul>
+<li><code>beat_memory</code> tracks recurring topics so the app can warn when a lead is background or seen-before material instead of treating every familiar page as fresh news.</li>
+<li><code>story_templates</code> stores format guidance for briefs, watch items, investigations, and other story types so the local model has newsroom-specific structure without hard-coding every instruction in source.</li>
+<li><code>publish_decision_audits</code> records the editor-facing reason and gate context around publish decisions. This preserves human judgment and review history without giving software veto power.</li>
+</ul>
+<h2 id="security-model">Security Model</h2>
+<p>Security boundaries are local-first, not offline-only.</p>
+<ul>
+<li>Drafts, database files, settings, and outputs live on the user&#x27;s machine by default.</li>
+<li>External network calls happen when the user fetches sources, discovers sources, uses publishing connectors, or opens public pages.</li>
+<li>Credentials for publishing providers should be stored through secure settings/keyring paths where available.</li>
+<li>The browser extension communicates only with the loopback pairing server.</li>
+<li>The app uses a content security policy for the desktop webview and should keep it as tight as practical for the current frontend.</li>
+</ul>
+<h2 id="deployment-model">Deployment Model</h2>
+<p>The release build creates desktop installers from the Tauri app.</p>
+<p>Current public beta installers are unsigned. A stable release needs signed Windows installers, macOS signing/notarization, cross-platform clean-machine installer proof, and repeatable release smoke artifacts.</p>
+<h2 id="current-stable-release-gaps">Current Stable-Release Gaps</h2>
+<p>The app has public-beta functionality, but stable release still needs:</p>
+<ul>
+<li>Signed installers.</li>
+<li>More clean-machine coverage across platforms.</li>
+<li>More live provider verification with real user-owned credentials.</li>
+<li>OCR path for scanned PDFs.</li>
+<li>More durability testing for interruption during scan, import, publish, model setup, and backup.</li>
+<li>More independent UX testing on non-technical users.</li>
+</ul>
+        </article>
+    </main>
+    <footer>
+        <div class="footer-container">
+            <div>
+                <a class="logo" href="index.html#top"><span>The Civic Desk</span></a>
+                <p>Open-source local newsroom software. Repository name: CivicNewspaper. Installed app name: The Civic Desk.</p>
+            </div>
+            <div class="footer-links">
+                <a href="user_manual.html">Manual</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

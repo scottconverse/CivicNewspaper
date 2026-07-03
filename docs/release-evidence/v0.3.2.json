@@ -46,6 +46,6 @@
     "macos_installer": "backlog/proof-needed",
     "linux_installer": "backlog/proof-needed",
     "unsigned_installer": true,
-    "requires_scott_approval_before_push_merge_tag_or_public_release": true
+    "scott_approved_public_release": true
   }
 }

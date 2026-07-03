@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Civic Desk User Manual | The Civic Desk</title>
+    <meta name="description" content="The Civic Desk User Manual for The Civic Desk public beta.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="doc-page.css">
+</head>
+<body class="doc-page">
+    <nav aria-label="Site navigation">
+        <div class="nav-container">
+            <a class="logo" href="index.html#top" aria-label="The Civic Desk home">
+                <span>The Civic Desk</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html#downloads">Downloads</a>
+                <a href="user_manual.html">Manual</a>
+                <a href="install.html">Install</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a class="nav-btn-primary" href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </nav>
+    <main class="doc-shell">
+        <article class="doc-content">
+<h1 id="the-civic-desk-user-manual">The Civic Desk User Manual</h1>
+<p>The Civic Desk is a desktop newsroom for people trying to cover local civic life with limited time. It helps you collect sources, find leads, draft stories, verify claims, and publish a small local paper.</p>
+<p>This manual is written for a new user, not a programmer. If you are a reporter, editor, town resident, nonprofit worker, blogger, or one-person local publisher, start at the beginning and follow the first-issue walkthrough. If you already know the app, use the later chapters as a reference.</p>
+<p>The most important rule is simple: The Civic Desk assists you. It does not decide for you. It can warn, rank, summarize, suggest, and organize. You decide what is newsworthy, fair, legal, verified, and ready to publish.</p>
+<h2 id="before-you-start">Before You Start</h2>
+<p>The Civic Desk is public-beta software. It is useful, but it is not a signed stable release yet.</p>
+<p>What that means in practice:</p>
+<ul>
+<li>Windows may warn you because the public-beta installer is unsigned.</li>
+<li>The public release page should match the version you intend to install.</li>
+<li>Windows is the tested public-beta installer path for this release line.</li>
+<li>macOS and Linux installers are backlog/proof-needed until clean-machine proof is recorded.</li>
+<li>You should verify important output before publishing.</li>
+</ul>
+<p>The app is local-first, not internet-free. Your database, drafts, settings, and output files are local by default. The app uses the internet when you fetch sources, run discovery/search, download a local AI model, or publish to an external provider.</p>
+<h2 id="what-the-app-does-not-do">What The App Does Not Do</h2>
+<p>The Civic Desk is not a substitute for a publisher, reporter, editor, lawyer, or public-records clerk.</p>
+<p>It does not:</p>
+<ul>
+<li>Decide what you are allowed to publish.</li>
+<li>Guarantee that a lead is true, current, fair, or newsworthy.</li>
+<li>Guarantee that discovery found every useful source in town.</li>
+<li>Turn rumors, comments, or public social posts into verified stories by itself.</li>
+<li>Provide legal advice.</li>
+<li>Replace proofreading, fact-checking, source review, or human judgment.</li>
+<li>Promise polished professional newspaper quality from every AI draft.</li>
+</ul>
+<p>It can warn you, organize evidence, suggest reporting paths, improve drafts, and package an issue. You still decide what to report, what to verify, what to hold, what to cut, and what to publish.</p>
+<h2 id="1-installing-the-app">1. Installing The App</h2>
+<p>Open the GitHub Releases page:</p>
+<p><a href="https://github.com/scottconverse/CivicNewspaper/releases">https://github.com/scottconverse/CivicNewspaper/releases</a></p>
+<p>Choose the v0.3.2 Windows public beta release:</p>
+<p><a href="https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2">https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2</a></p>
+<p>On Windows, use the <code>.exe</code> installer. Because the app is unsigned, SmartScreen may show a warning. Click <strong>More info</strong>, confirm the filename came from the project release page, and choose <strong>Run anyway</strong> if you are comfortable continuing.</p>
+<p>macOS and Linux are planned, but they are not supported public-beta installer paths in this release line yet. The project needs a real artifact, clean-machine install proof, first-run local AI proof, and honest platform-specific warning text before the manual should tell normal users to install those builds.</p>
+<p>Before running an installer, you can compare its SHA256 hash with the release checksum. Checksums confirm that your download matches the release artifact. They are not a replacement for code signing. See <a href="install.html">install.md</a> for exact commands.</p>
+<p>If installation, local AI setup, publishing, source import, or output quality goes wrong, use <a href="troubleshooting.html">troubleshooting.md</a>. It has plain-English fixes for SmartScreen warnings, model downloads, local AI runtime states, weak story output, here.now previews, ZIP/static output, and source import problems.</p>
+<h2 id="2-first-launch-and-setup">2. First Launch And Setup</h2>
+<p>When you open The Civic Desk for the first time, it asks you to describe the publication you want to run.</p>
+<p>You will choose or enter:</p>
+<ul>
+<li>Publication name.</li>
+<li>Editor name.</li>
+<li>Organization type, such as single person, nonprofit, for-profit, private organization, or other.</li>
+<li>City and state.</li>
+<li>Local AI setup.</li>
+<li>Output and backup folders.</li>
+</ul>
+<p>Use real names if you intend to publish publicly. The app should not invent your copyright line, business model, ad policy, AI disclosure, or editorial policy. Those are your decisions.</p>
+<h3 id="local-ai-setup">Local AI Setup</h3>
+<p>The app checks your machine and recommends a local model. For this public-beta line, <code>phi4-mini:latest</code> is the conservative default because the latest local bakeoff showed it returned valid structured results for both real civic signals and empty/noise input. You can still choose another installed model from the AI Model screen, but the app should not silently switch models without telling you.</p>
+<p>Model downloads can be large and slow. This is normal. The setup screen should tell you what is being downloaded and show progress. If you skip local AI setup, you can still use many parts of the app: source review, manual drafting, editing, backup, export, and publishing. AI-assisted summarization, drafting, ranking, and advisor features will be limited until the model is available.</p>
+<p>If the app says local AI is unavailable, do not assume your work is lost. It usually means the Ollama runtime or selected model is not running or not installed. Use the AI Model screen to retry, download, or change the model.</p>
+<h2 id="3-your-first-issue-a-practical-walkthrough">3. Your First Issue: A Practical Walkthrough</h2>
+<p>This chapter walks through a small-town first issue. Do this before trying advanced workflows.</p>
+<h3 id="step-1-add-a-few-reliable-sources">Step 1: Add A Few Reliable Sources</h3>
+<p>Open <strong>Sources</strong>.</p>
+<p>Start with official sources you already know:</p>
+<ul>
+<li>City council agenda page.</li>
+<li>City news or public information page.</li>
+<li>Planning or zoning page.</li>
+<li>School board agenda page.</li>
+<li>County public notices.</li>
+</ul>
+<p>Add each source manually if you know the URL. If you do not, use <strong>Discover for my city</strong>. Discovery should return candidates for review. Do not blindly trust every candidate. Open questionable sources and decide whether they belong.</p>
+<p>Source labels matter:</p>
+<ul>
+<li><strong>Primary record</strong> means official records such as agendas, minutes, ordinances, public notices, court records, or budgets.</li>
+<li><strong>Official communication</strong> means public information pages, press releases, and agency notices.</li>
+<li><strong>News reporting</strong> means independent reporting from a news outlet.</li>
+<li><strong>Community signal</strong> means public community/social sources, such as public Reddit pages, public forums, public meeting-video pages, or other public pages that may surface early signals.</li>
+</ul>
+<p>Community signals are useful, but they are not automatically publishable evidence. Treat them as leads to verify.</p>
+<h3 id="step-2-run-daily-scan">Step 2: Run Daily Scan</h3>
+<p>Open <strong>Daily Scan</strong> and click <strong>Run Daily Scan</strong>.</p>
+<p>The scan should:</p>
+<ol>
+<li>Fetch configured sources.</li>
+<li>Store evidence.</li>
+<li>Detect changes and civic observations.</li>
+<li>Extract entities such as agencies, vendors, people, addresses, companies, parcels, and departments.</li>
+<li>Create leads and dark signals.</li>
+<li>Use local AI, if available, to summarize and rank what needs your attention.</li>
+</ol>
+<p>If there are no sources yet, the app should send you back to Sources instead of running an empty scan.</p>
+<h3 id="step-3-read-the-story-queue-like-an-assignment-editor">Step 3: Read The Story Queue Like An Assignment Editor</h3>
+<p>Open <strong>Story Queue</strong>.</p>
+<p>The Story Queue is not a finished newspaper. It is an assignment list. A lead can be:</p>
+<ul>
+<li>A real story.</li>
+<li>A brief.</li>
+<li>A routine notice.</li>
+<li>A duplicate.</li>
+<li>A background item.</li>
+<li>A bad lead that should be ignored.</li>
+</ul>
+<p>Open the linked source before drafting. Ask:</p>
+<ul>
+<li>Is something new?</li>
+<li>Does it affect residents?</li>
+<li>Is there a decision, deadline, cost, conflict, risk, or opportunity?</li>
+<li>Is there enough evidence to write now?</li>
+<li>Is this only a generic city web page?</li>
+<li>Would a resident reasonably care today?</li>
+</ul>
+<p>If the answer is no, leave it alone, hold it, or turn it into a verification task. Do not publish filler just because the app surfaced it.</p>
+<h3 id="step-4-use-dark-signals-carefully">Step 4: Use Dark Signals Carefully</h3>
+<p>Open <strong>Dark Signals</strong>.</p>
+<p>Dark signals are early warnings. They may come from public social/community pages, comments, public video pages, local forums, or unusual changes in official records.</p>
+<p>The point is not to publish rumors. The point is to notice what may need reporting.</p>
+<p>For every dark signal, ask:</p>
+<ul>
+<li>Where did this come from?</li>
+<li>Is it public and legally accessible?</li>
+<li>What official record could confirm or disprove it?</li>
+<li>Who would know the answer?</li>
+<li>What harm could come from publishing too soon?</li>
+</ul>
+<p>Turn promising dark signals into verification tasks. Keep low-confidence material out of published evidence until it is verified.</p>
+<h3 id="step-5-create-verification-tasks">Step 5: Create Verification Tasks</h3>
+<p>Open <strong>Verification</strong>.</p>
+<p>Use this area to turn leads into reporting work. A verification task might say:</p>
+<ul>
+<li>Check the city agenda packet for the contract amount.</li>
+<li>Call the city clerk to confirm the hearing date.</li>
+<li>Find the parcel record for the address.</li>
+<li>Compare the current agenda with last month&#x27;s agenda.</li>
+<li>Look for a second source confirming the claim.</li>
+</ul>
+<p>Task states help you manage work:</p>
+<ul>
+<li><strong>Suggested:</strong> the app or editor thinks this should be checked.</li>
+<li><strong>Auto-checked:</strong> the app performed a simple check.</li>
+<li><strong>Needs human:</strong> a person must call, email, attend, inspect, or decide.</li>
+<li><strong>Blocked:</strong> you cannot proceed yet.</li>
+<li><strong>Resolved:</strong> the task is done.</li>
+</ul>
+<p>For a one-person publication, this queue is your notebook.</p>
+<h3 id="step-6-draft-a-story">Step 6: Draft A Story</h3>
+<p>When a lead is worth writing, click <strong>Draft</strong> or <strong>Open draft</strong>.</p>
+<p>The Workbench opens with linked sources. Choose the format:</p>
+<ul>
+<li><strong>Brief:</strong> short item, usually under 200 words.</li>
+<li><strong>Watch alert:</strong> something residents should watch, such as a deadline, public hearing, or service disruption.</li>
+<li><strong>Explainer:</strong> background on how a policy or process works.</li>
+<li><strong>Investigation:</strong> deeper story following money, influence, records, or repeated signals.</li>
+<li><strong>Editorial/opinion:</strong> opinion writing, if that fits your publication.</li>
+</ul>
+<p>If local AI is available, click <strong>Generate Draft</strong>. Treat the draft as a starting point. AI drafts often sound like notes. They may include placeholders such as <code>[Source needed]</code> or <code>[Verification needed]</code>. Those are not acceptable in a finished story unless you intentionally publish them as editor&#x27;s notes.</p>
+<p>Before publishing, rewrite the story in your own editorial voice.</p>
+<h3 id="step-7-edit-like-a-publisher">Step 7: Edit Like A Publisher</h3>
+<p>A publishable local story should usually answer:</p>
+<ul>
+<li>What happened?</li>
+<li>When did it happen or when will it happen?</li>
+<li>Who is affected?</li>
+<li>Why does it matter locally?</li>
+<li>What evidence supports it?</li>
+<li>What is still unknown?</li>
+<li>What should residents do next, if anything?</li>
+</ul>
+<p>Do not let the app turn evergreen background pages into fake news. For example, a page explaining that city council meetings have videos is not necessarily a current story unless something changed: a new archive launched, access was expanded, video was removed, captions were added, viewership data surfaced, or residents raised an issue about access.</p>
+<p>If the draft is really a reporting note, keep it in draft, send it back for more work, or turn it into a verification task.</p>
+<h3 id="step-8-run-advisor-and-guardrails">Step 8: Run Advisor And Guardrails</h3>
+<p>The Workbench includes advisory checks. They can flag:</p>
+<ul>
+<li>Missing source support.</li>
+<li>Loaded or accusatory wording.</li>
+<li>Defamation or privacy risk.</li>
+<li>Public/private figure questions.</li>
+<li>Presumption-of-innocence issues.</li>
+<li>Claims that need verification.</li>
+<li>Excessive copying from source material.</li>
+</ul>
+<p>These advisory tools do not make editorial decisions for you. They are there to slow you down at the right moments.</p>
+<p>If the advisor raises a concern, decide what to do:</p>
+<ul>
+<li>Rewrite.</li>
+<li>Add attribution.</li>
+<li>Add evidence.</li>
+<li>Hold the story.</li>
+<li>Mark a verification task.</li>
+<li>Publish anyway with an editor note if you judge that appropriate.</li>
+</ul>
+<p>There is one important exception: <strong>static package-validity blockers</strong> must be fixed before the app will approve a story for static publishing. These are not editorial vetoes. They are output-integrity checks that prevent a public package from containing broken or unsupported material.</p>
+<p>Approval can be blocked when:</p>
+<ul>
+<li>A scanned-source lead has no linked source documents.</li>
+<li>A lead-based story has no inline evidence citation.</li>
+<li>A citation points to evidence that is disabled, missing, or not linked to that lead.</li>
+<li>The article topic does not match the cited evidence.</li>
+<li>The body is empty, too short, too large, or mostly metadata.</li>
+<li>Reporter notes, test notes, or editor-only scaffolding would leak into the public story.</li>
+</ul>
+<p>If approval is blocked, read the on-screen <strong>Fix before static publish approval</strong> list, repair the draft or evidence, save again, and then approve. The editor still decides what is newsworthy and what to publish; the blocker only protects the exported public package from being structurally invalid.</p>
+<h3 id="step-8a-use-the-workbench-status-controls">Step 8A: Use The Workbench Status Controls</h3>
+<p>The Workbench is where a draft becomes an editorial decision. Think of it like the editor&#x27;s desk in a small newsroom.</p>
+<p>If the draft is close but still reads like notes, use <strong>Improve for Publication</strong>. This asks the local model to clean up headline, structure, and reader-facing wording without adding facts. It loads the revised copy into the editor so you can inspect it. It does not publish the story for you. Review the text, check the sources, and save the draft if you want to keep the change.</p>
+<p>If the story is too long or thin for a full article, use <strong>Make this a brief</strong>. This changes the draft format in the editor. Save the draft before moving on so the issue compiler uses the format you actually reviewed.</p>
+<p>If a writer needs to do more reporting, click <strong>Send Back for More Work</strong>. Write a clear assignment note, such as &quot;Confirm the dollar amount with the agenda packet&quot; or &quot;Find a second source before naming the contractor.&quot; The note stays with the draft so the next person knows what to fix.</p>
+<p>If the story is real but not ready today, click <strong>Hold</strong>. Use the hold note to explain what you are waiting for: a meeting packet, a return phone call, an election result, a court filing, or a public document. Held stories are paused. Resume them when the missing piece arrives.</p>
+<p>If the story should not be in this issue, click <strong>Cut Story</strong>. Cut does not mean the app censored the story. It means the editor decided not to run it now. You can restore it later if the newsroom changes its mind.</p>
+<p>When a sent-back or held story is ready again, use <strong>Resume Editing</strong> or <strong>Mark Ready for Review</strong> first. The app will not let a paused draft jump straight to publication from the paused state; that is workflow discipline, not a content veto.</p>
+<h3 id="step-9-approve-for-publishing">Step 9: Approve For Publishing</h3>
+<p>Only approve a story when a human editor has reviewed it.</p>
+<p>Approving means: this exact saved draft is ready to be part of the public issue. It does not mean the app certified it. It means you did. When you approve, the app saves the visible draft first, checks it again, records the human review, and then marks it ready for the issue.</p>
+<p>The app records that a human review happened. It should never silently approve a story for you.</p>
+<h3 id="step-10-compile-export-publish">Step 10: Compile, Export, Publish</h3>
+<p>Open <strong>Publishing</strong>.</p>
+<p>The normal sequence is:</p>
+<ol>
+<li><strong>Compile:</strong> build the static issue locally.</li>
+<li><strong>Preview:</strong> open the output and check it.</li>
+<li><strong>Export:</strong> create the ZIP and share package.</li>
+<li><strong>Publish:</strong> send the site to a provider.</li>
+<li><strong>Share:</strong> use the generated newsletter and community posts.</li>
+</ol>
+<p>The recommended default publisher is <strong>here.now</strong>. Anonymous here.now publishing can create a temporary preview without an account. Account/API-key publishing can support permanent sites. GitHub Pages is the durable public archive option. Netlify is for more technical users with an existing site and token. Cloudflare Pages and WordPress are assisted/manual in this beta: export the folder or ZIP, publish through that service, then record the public URL in the app. Substack is assisted: the app prepares the text, you paste it into Substack, publish there, and record the URL.</p>
+<p>Always inspect the output before sharing the link.</p>
+<h2 id="4-everyday-workflow-after-setup">4. Everyday Workflow After Setup</h2>
+<p>Once your sources are configured, the day-to-day workflow is simple:</p>
+<ol>
+<li>Run Daily Scan.</li>
+<li>Review new leads.</li>
+<li>Open the source for anything interesting.</li>
+<li>Create verification tasks.</li>
+<li>Draft only the leads that are actually newsworthy.</li>
+<li>Edit drafts into real stories or briefs.</li>
+<li>Run advisor/guardrails when useful.</li>
+<li>Approve publishable items.</li>
+<li>Compile and preview the issue.</li>
+<li>Publish and share.</li>
+</ol>
+<p>You do not need to publish every lead. A good day may produce zero stories and several watch items. That is better than padding the paper with weak rewrites.</p>
+<h2 id="5-understanding-lead-quality">5. Understanding Lead Quality</h2>
+<p>The app currently finds more possible leads than polished stories. That is by design, but it means you must use judgment.</p>
+<p>A strong lead usually has one or more of these:</p>
+<ul>
+<li>A new decision.</li>
+<li>A deadline.</li>
+<li>A public hearing.</li>
+<li>A contract, budget item, or vendor.</li>
+<li>A policy change.</li>
+<li>A changed document.</li>
+<li>A repeated pattern across sources.</li>
+<li>A credible dark signal with a verification path.</li>
+<li>A local consequence residents can understand.</li>
+</ul>
+<p>A weak lead often looks like:</p>
+<ul>
+<li>A general department page.</li>
+<li>A page that has existed for years.</li>
+<li>A broad city services page.</li>
+<li>A source that was merely fetched for the first time.</li>
+<li>A generic summary of how government works.</li>
+<li>A duplicate of another lead.</li>
+<li>A story with no current hook.</li>
+</ul>
+<p>Weak leads are not useless. They can help build background knowledge. But they should not automatically become published stories.</p>
+<h2 id="6-source-discovery-and-bulk-import">6. Source Discovery And Bulk Import</h2>
+<p>You can import source lists from:</p>
+<ul>
+<li>CSV</li>
+<li>TXT</li>
+<li>XLSX</li>
+<li>DOCX</li>
+<li>PDF files are not imported in the public beta. Convert PDF source lists to TXT, CSV, DOCX, or XLSX, or paste the URLs directly.</li>
+</ul>
+<p>The app should split URLs into separate reviewable candidates. If a spreadsheet or document contains many URLs and the app finds only one, that is a bug.</p>
+<p>PDF import is disabled in the public beta, including scanned and text PDFs. Convert PDFs to a supported format with your own trusted tool, or paste the source URLs directly. Hardened/sandboxed PDF parsing remains on the security backlog.</p>
+<p>When importing a file, review:</p>
+<ul>
+<li>Source name.</li>
+<li>URL.</li>
+<li>Type.</li>
+<li>Tier.</li>
+<li>Duplicate status.</li>
+<li>Whether it is reachable.</li>
+<li>Whether it belongs to your jurisdiction.</li>
+</ul>
+<p>Do not import every URL just because it appeared in a file.</p>
+<h2 id="7-browser-extension">7. Browser Extension</h2>
+<p>The browser extension lets you send public pages into The Civic Desk while you read.</p>
+<p>Use it when you find a useful page outside the app:</p>
+<ol>
+<li>Open <strong>Browser Pairing</strong> in The Civic Desk.</li>
+<li>Generate a pairing code.</li>
+<li>Open the extension.</li>
+<li>Enter the code.</li>
+<li>Confirm the app shows the paired device.</li>
+<li>Send a public page to the app.</li>
+</ol>
+<p>The pairing is local to your computer. It is not an internet service.</p>
+<h2 id="8-publishing-output-and-site-customization">8. Publishing Output And Site Customization</h2>
+<p>The app can generate:</p>
+<ul>
+<li>Homepage.</li>
+<li>Article pages.</li>
+<li>RSS feed.</li>
+<li>About page.</li>
+<li>Ethics/reporting page.</li>
+<li>Corrections page.</li>
+<li>Print stylesheet.</li>
+<li>ZIP package.</li>
+<li>Newsletter markdown.</li>
+<li>Substack-ready markdown.</li>
+<li>Facebook post.</li>
+<li>Subreddit post.</li>
+<li>Nextdoor post.</li>
+<li>Short-link blurb.</li>
+</ul>
+<p>You can configure:</p>
+<ul>
+<li>Publication name.</li>
+<li>Subtitle.</li>
+<li>Editor/publisher identity.</li>
+<li>Organization type.</li>
+<li>About text.</li>
+<li>Ethics text.</li>
+<li>How-we-report text.</li>
+<li>Footer text.</li>
+<li>Accent color.</li>
+<li>Layout style.</li>
+<li>Logo image.</li>
+</ul>
+<p>The app should not invent these for you. If the output says &quot;we run no ads&quot; or &quot;all stories are public-record backed,&quot; that should be because you wrote it, not because the software assumed it.</p>
+<h2 id="9-backups-and-restore">9. Backups And Restore</h2>
+<p>Use backups before major imports, big scans, or release work.</p>
+<p>Create a backup from the app&#x27;s backup/system area. Store it somewhere you control, such as an external drive or private cloud folder.</p>
+<p>Restore replaces the current local database with the backup. Treat restore as a serious action. If you are unsure, make a fresh backup first.</p>
+<p>The current app is single-machine software. Do not open the same live SQLite database from two computers at once.</p>
+<h2 id="10-troubleshooting">10. Troubleshooting</h2>
+<h3 id="daily-scan-produces-weak-leads">Daily Scan Produces Weak Leads</h3>
+<p>This can happen when sources are broad pages rather than update feeds or agenda packets. Add more precise sources: agenda RSS, meeting packets, public notices, department news pages, board calendars, and document portals.</p>
+<p>If a lead is not newsworthy, do not draft it. Hold it, ignore it, or create a verification task.</p>
+<h3 id="draft-looks-like-reporter-notes">Draft Looks Like Reporter Notes</h3>
+<p>That means the AI produced a working draft, not a finished story. Edit it. Remove &quot;Headline:&quot;, &quot;Nut graf:&quot;, &quot;Reporting steps:&quot;, &quot;[Source needed]&quot;, and similar internal scaffolding unless you intentionally want those in public copy.</p>
+<h3 id="local-ai-is-slow">Local AI Is Slow</h3>
+<p>Large local models can be slow, especially on CPU. Try a shorter format, a smaller model, or manual drafting. The app should not freeze without progress.</p>
+<h3 id="model-missing-or-ai-offline">Model Missing Or AI Offline</h3>
+<p>Open <strong>AI Model</strong>. Confirm the runtime is running and the selected model is installed. If not, download the recommended model or switch to one that exists locally.</p>
+<h3 id="publishing-fails">Publishing Fails</h3>
+<p>First compile and preview locally. If local output works but provider publishing fails, check:</p>
+<ul>
+<li>Provider credentials.</li>
+<li>Target slug/repo/project.</li>
+<li>Network connection.</li>
+<li>Whether the provider requires an account.</li>
+<li>Whether the publish URL is temporary.</li>
+</ul>
+<p>You can still export the ZIP and publish manually.</p>
+<h3 id="sources-import-poorly">Sources Import Poorly</h3>
+<p>If XLSX or DOCX imports flatten many URLs into one candidate, report it as a bug with the file type and an example. The expected behavior is separate reviewable URL candidates. PDF import is disabled in the public beta until hardened parsing is available.</p>
+<h2 id="11-advanced-reference">11. Advanced Reference</h2>
+<h3 id="main-navigation">Main Navigation</h3>
+<ul>
+<li><strong>Story Queue:</strong> review leads and drafts.</li>
+<li><strong>Daily Scan:</strong> run source checks and AI-assisted summaries.</li>
+<li><strong>Dark Signals:</strong> review weak or public social/community signals.</li>
+<li><strong>Verification:</strong> manage reporting tasks.</li>
+<li><strong>Workbench:</strong> write, edit, advise, approve, hold, cut, or return stories.</li>
+<li><strong>Sources:</strong> add, discover, import, and review sources.</li>
+<li><strong>AI Model:</strong> install/check local model support.</li>
+<li><strong>Publishing:</strong> compile, export, publish, and share.</li>
+<li><strong>Browser Pairing:</strong> connect the local browser extension.</li>
+<li><strong>Ethics &amp; Backups:</strong> configure policy language and backup/restore.</li>
+<li><strong>System &amp; Status:</strong> diagnostics and app state.</li>
+</ul>
+<h3 id="publishing-providers">Publishing Providers</h3>
+<ul>
+<li><strong>here.now:</strong> recommended default. Temporary anonymous previews are useful for testing. API-key/account publishing can support permanent sites.</li>
+<li><strong>GitHub Pages:</strong> best for durable public archives in a repository.</li>
+<li><strong>Cloudflare Pages:</strong> assisted/manual hosting option in this public beta.</li>
+<li><strong>Netlify:</strong> technical hosting option.</li>
+<li><strong>WordPress:</strong> direct API publishing is disabled in the public beta until draft-first publishing, rollback, and live connector proof are complete. Export the ZIP/static folder or record the URL after publishing manually.</li>
+<li><strong>Substack:</strong> assisted copy/paste workflow.</li>
+<li><strong>Other/manual:</strong> records a public URL after you publish elsewhere.</li>
+</ul>
+<h3 id="current-public-beta-limits">Current Public-Beta Limits</h3>
+<ul>
+<li>Installers are unsigned.</li>
+<li>Latest source/tag and latest published installer release may not always be the same.</li>
+<li>Windows is the tested public-beta installer path.</li>
+<li>macOS and Linux installer proof is backlog/proof-needed.</li>
+<li>OCR for scanned PDFs and hardened/sandboxed PDF parsing are not complete.</li>
+<li>Fully polished newsroom-quality story selection still needs improvement.</li>
+<li>External provider verification depends on user-owned credentials.</li>
+</ul>
+<h3 id="developer-commands">Developer Commands</h3>
+<p>These are for contributors, not normal newsroom use.</p>
+<pre><code>npm install
+npm run tauri dev
+npm run tauri build
+npm test -- --run
+cd src-tauri &amp;&amp; cargo test --lib</code></pre>
+<p>The v0.3.x app uses app-managed local AI setup during first run. The legacy sidecar-fetch script is not part of the current release verification path.</p>
+<h3 id="data-model-summary">Data Model Summary</h3>
+<p>The local database stores sources, evidence, leads, lead/evidence links, drafts, publish runs, subscribers, observations, entities, source performance scores, dark signals, and verification tasks. Schema version is tracked with SQLite <code>PRAGMA user_version</code>.</p>
+        </article>
+    </main>
+    <footer>
+        <div class="footer-container">
+            <div>
+                <a class="logo" href="index.html#top"><span>The Civic Desk</span></a>
+                <p>Open-source local newsroom software. Repository name: CivicNewspaper. Installed app name: The Civic Desk.</p>
+            </div>
+            <div class="footer-links">
+                <a href="user_manual.html">Manual</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -18,7 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Made browser-extension API errors status-aware so empty 401, 403, and 429 responses produce useful pairing/auth/rate-limit messages.
 - Corrected first-run completion copy so skipped local AI setup is described honestly.
 
-## [0.3.1] - 2026-06-30
+## 0.3.1 - 2026-06-30
 
 ### Added
 - Added reasoned Workbench send-back and hold decisions so writers can see why a draft needs more reporting, verification, or later review.
@@ -34,7 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Preserved editor workflow notes across refresh by storing hold/send-back notes with the draft.
 - Reduced the risk of publishing reporter notes by surfacing preflight warnings before approval while preserving the rule that software never vetoes the editor.
 
-## [0.3.0] - 2026-06-29
+## 0.3.0 - 2026-06-29
 
 ### Added
 - Added story-quality metadata across daily scan leads and the story queue, including story type, editorial disposition, novelty score, novelty reason, publishability notes, and recurrence memory.
@@ -293,9 +293,7 @@ Initial pre-alpha snapshot of the codebase. Not released.
 - CI/CD.
 
 [Unreleased]: https://github.com/scottconverse/CivicNewspaper/compare/v0.3.2..HEAD
-[0.3.2]: https://github.com/scottconverse/CivicNewspaper/compare/v0.3.1..v0.3.2
-[0.3.1]: https://github.com/scottconverse/CivicNewspaper/compare/v0.3.0..v0.3.1
-[0.3.0]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.7..v0.3.0
+[0.3.2]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.9..v0.3.2
 [0.2.7]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.6..v0.2.7
 [0.2.6]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.5..v0.2.6
 [0.2.5]: https://github.com/scottconverse/CivicNewspaper/compare/v0.2.4..v0.2.5

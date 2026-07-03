@@ -2,7 +2,7 @@
 
 > **Project name:** CivicNewspaper. **Installed app name:** The Civic Desk.
 >
-> **Current source:** v0.3.2 public-beta release candidate. The Windows installer represented by commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final cleanroom testing. Published GitHub Release installers may still lag until Scott approves the v0.3.2 release. Installers are unsigned. This is not a stable production release.
+> **Current release:** v0.3.2 Windows public beta. The Windows installer represented by commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final cleanroom testing. Installers are unsigned. This is not a stable production release.
 
 The Civic Desk is a local-first desktop newsroom tool for small local publishers, civic reporters, and community editors. It helps one person or a small team monitor public local sources, discover story leads, draft articles with a local AI model, review risks and evidence, and publish a static local-news issue.
 
@@ -33,7 +33,7 @@ The app is built for the reality that many towns no longer have enough reporters
 
 ## Download
 
-Download installers from the [GitHub Releases page](https://github.com/scottconverse/CivicNewspaper/releases). Use the newest release that includes a Windows installer and checksum for the version you intend to install. If the release page still shows only older versions, the current v0.3.2 source candidate has not been published as a release yet.
+Download the v0.3.2 Windows public beta from the [v0.3.2 release page](https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2). Use the `.exe` installer and verify it against `SHA256SUMS` before opening it.
 
 - **Windows:** use the `.exe` installer. Because the installer is unsigned, choose **More info** then **Run anyway** when SmartScreen appears.
 - **macOS and Linux:** backlog/proof-needed for this release line. Do not treat macOS or Linux download cards, package configs, or historical artifacts as supported public-beta installers until a clean-machine proof is recorded.
@@ -124,7 +124,7 @@ The Ollama runtime binary is not committed to the repo. The app-managed first-ru
 
 ## Release Status
 
-v0.3.2 is a Windows public-beta release candidate. Local isolated-profile smoke, strict source-import fixture smoke, packaged Windows installer smoke, live local-model smoke, anonymous here.now smoke, model bakeoff, dependency audit, and the final remote cleanroom tester run passed for commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`. The cleanroom-tested installer SHA256 is `AB598EC26F658BB2B0735827F15DC787162D372A0C3FF0A3A18B6ADE48ABE241`; the tester published a verification issue to `https://olive-gorge-cgsr.here.now`. Hosted release evidence is recorded in [docs/release-evidence/v0.3.2.json](docs/release-evidence/v0.3.2.json). Product `main`, release tags, and public GitHub Releases still require Scott approval before publication. Stable release still requires signed installers, cross-platform clean-machine proof for every advertised platform, matching published release artifacts, and credentialed live verification for external publishing providers.
+v0.3.2 is a Windows public beta. Local isolated-profile smoke, strict source-import fixture smoke, packaged Windows installer smoke, live local-model smoke, anonymous here.now smoke, model bakeoff, dependency audit, and the final remote cleanroom tester run passed for commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`. The cleanroom-tested installer SHA256 is `AB598EC26F658BB2B0735827F15DC787162D372A0C3FF0A3A18B6ADE48ABE241`; the tester published a verification issue to `https://olive-gorge-cgsr.here.now`. Hosted release evidence is recorded in [docs/release-evidence/v0.3.2.json](docs/release-evidence/v0.3.2.json). Stable release still requires signed installers, cross-platform clean-machine proof for every advertised platform, matching published release artifacts, and credentialed live verification for external publishing providers.
 
 ## Backlog: Mac And Linux Installer Proof
 

@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicNewspaper V1 Product Requirements Document | The Civic Desk</title>
+    <meta name="description" content="CivicNewspaper V1 Product Requirements Document for The Civic Desk public beta.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="doc-page.css">
+</head>
+<body class="doc-page">
+    <nav aria-label="Site navigation">
+        <div class="nav-container">
+            <a class="logo" href="index.html#top" aria-label="The Civic Desk home">
+                <span>The Civic Desk</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html#downloads">Downloads</a>
+                <a href="user_manual.html">Manual</a>
+                <a href="install.html">Install</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a class="nav-btn-primary" href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </nav>
+    <main class="doc-shell">
+        <article class="doc-content">
+<h1 id="civicnewspaper-v1-product-requirements-document">CivicNewspaper V1 Product Requirements Document</h1>
+<p>Status: draft for v0.3.2 to v1.0.0 planning Current product version: v0.3.2 Product name: CivicNewspaper Installed app name: The Civic Desk</p>
+<h2 id="1-product-vision">1. Product Vision</h2>
+<p>CivicNewspaper should become a local-first desktop newsroom for small towns, community publishers, independent reporters, and civic groups. By v1.0.0, a non-technical publisher should be able to install the app, configure a place, discover useful official and public sources, identify real story leads, draft and revise stories with local AI help, verify claims, publish a static issue, and recover from ordinary failures without developer supervision.</p>
+<p>The product&#x27;s unique advantage is not that it can ask an AI to write an article. Cloud products can already do that. CivicNewspaper&#x27;s advantage is that it can run a persistent, private, town-specific local intelligence layer across the entire newsroom workflow without sending unfinished reporting, sensitive leads, local source lists, editorial notes, unpublished drafts, or verification concerns to a cloud model.</p>
+<p>The local LLM should act as a private newsroom brain: classifying sources, recognizing repeated background material, spotting novelty, suggesting story forms, creating reporter notebooks, extracting claims, suggesting verification tasks, coaching editors, and helping line up an issue. It must not replace the editor or make the editor&#x27;s news judgment. Deterministic package-integrity checks may still block export until broken public output is repaired.</p>
+<h2 id="2-problem-statement">2. Problem Statement</h2>
+<p>Small local publishers face a practical collapse of reporting capacity. Many towns have public records, agendas, meeting videos, public notices, community posts, and local tips available online, but there are too few people watching them every day. Existing AI tools usually help draft text after a human already knows what the story is. They do not reliably help a local editor answer the harder questions:</p>
+<ul>
+<li>What changed since the last scan?</li>
+<li>Is this actually news or just old background?</li>
+<li>Is this a duplicate of something already found?</li>
+<li>What kind of item is it: article, brief, watch item, public notice, or background?</li>
+<li>What claims need verification?</li>
+<li>Which sources support which claims?</li>
+<li>What should stay in the reporter notebook and not appear in public output?</li>
+<li>How does this connect to prior local entities, addresses, vendors, agencies, or issues?</li>
+<li>What should be published today?</li>
+</ul>
+<p>CivicNewspaper v1.0.0 should solve that workflow, not just produce HTML.</p>
+<h2 id="3-target-users">3. Target Users</h2>
+<h3 id="primary-users">Primary Users</h3>
+<p>Independent local publisher: Runs a small-town paper, newsletter, or civic desk. Needs usable leads, drafts, publishing, and a clear issue package.</p>
+<p>Reporter/editor: Uses the app to monitor beats, draft from evidence, revise copy, check risks, and prepare publication-ready stories.</p>
+<p>Community civic group: Publishes a public-interest civic bulletin. Needs watch items, public notices, meeting recaps, and transparent source links.</p>
+<p>Solo local resident publisher: May not have formal journalism training. Needs simple workflows, plain-language guidance, and strong warnings without being blocked by software.</p>
+<h3 id="secondary-users">Secondary Users</h3>
+<p>Developer/operator: Maintains connectors, deployment, packaging, tests, and source adapters.</p>
+<p>Researcher/auditor: Reviews evidence, source snapshots, issue output, and how a story was produced.</p>
+<h2 id="4-product-principles">4. Product Principles</h2>
+<p>Human editor always decides. The app may warn, suggest, coach, classify, and rank. It must never silently veto the editor&#x27;s judgment; visible static-package integrity checks may prevent approval/export until broken evidence, empty copy, reporter notes, or unsupported citations are fixed.</p>
+<p>Local-first by default. Unpublished drafts, notes, local source lists, and verification concerns should stay on the user&#x27;s machine unless the user explicitly publishes or exports them.</p>
+<p>Local LLM as newsroom intelligence, not ghostwriter. The model should improve source understanding, novelty detection, triage, verification, editing, and issue planning. Drafting is only one use.</p>
+<p>Evidence before prose. Every generated story should trace back to sources, snapshots, transcripts, public records, or clearly labeled human notes.</p>
+<p>New to the app is not news. The app must distinguish newly fetched material from genuinely new civic facts.</p>
+<p>No public scaffolding leakage. Public output must never expose reporter notes, prompt artifacts, checklist labels, placeholder tags, or hidden editorial guidance.</p>
+<p>Configurable publisher identity. The app must not assume nonprofit status, no ads, public-record-only mission, AI disclosure language, or a specific publication name.</p>
+<p>Warnings, not paternalism. The app can warn about weak sourcing, legal risk, privacy risk, redaction risk, single-source claims, and unverified social material. It cannot decide for the editor.</p>
+<h2 id="5-current-baseline">5. Current Baseline</h2>
+<p>As of v0.3.0, the app already has:</p>
+<ul>
+<li>Tauri 2 desktop shell.</li>
+<li>React/TypeScript frontend.</li>
+<li>Rust backend.</li>
+<li>Local SQLite database through <code>rusqlite</code>.</li>
+<li>Local model flow through Ollama-compatible local AI.</li>
+<li>Daily Scan, Story Queue, Dark Signals, Verification Queue, and Workbench.</li>
+<li>Static issue compiler.</li>
+<li>ZIP export.</li>
+<li>here.now quick publishing.</li>
+<li>Connector work for GitHub Pages, Cloudflare Pages, Netlify, WordPress, and assisted publishing.</li>
+<li>Browser-extension pairing.</li>
+<li>Local settings, publisher identity, guardrails, and press-freedom/legal-risk advisor.</li>
+</ul>
+<p>The main gap is not mechanics. The main gap is newsroom quality: novelty detection, source quality, story form selection, editor workflow, verification task depth, and public output quality.</p>
+<h2 id="6-v1-product-goals">6. V1 Product Goals</h2>
+<p>By v1.0.0, CivicNewspaper should:</p>
+<ol>
+<li>Produce a real issue from a clean install.</li>
+<li>Discover and review official, social, and local sources.</li>
+<li>Use Big Local News civic-scraper for major civic platforms.</li>
+<li>Maintain source snapshots and beat memory.</li>
+<li>Detect duplicates and stale evergreen/background material.</li>
+<li>Separate leads into article, brief, watch item, public notice, meeting item, alert, investigation lead, and background.</li>
+<li>Use local LLMs throughout the workflow to improve classification, triage, novelty, verification, editing, and issue planning.</li>
+<li>Allow editor actions: draft, revise, send back, hold, cut, restore, approve, publish-ready, publish.</li>
+<li>Generate verification tasks from claims.</li>
+<li>Check PDFs for redaction risk.</li>
+<li>Support local transcription and transcript review for public meetings if meeting workflow is included in the release claim.</li>
+<li>Publish professional static output with clean article pages, RSS, share package, ZIP, and here.now URL.</li>
+<li>Survive restart, failed scans, failed model setup, failed publish, and failed imports.</li>
+<li>Provide complete non-technical documentation.</li>
+</ol>
+<h2 id="7-non-goals-for-v1">7. Non-Goals For V1</h2>
+<p>The following are not required for v1.0.0 unless explicitly added later:</p>
+<ul>
+<li>Multi-user newsroom server.</li>
+<li>Cloud-hosted SaaS dashboard.</li>
+<li>Fully autonomous publication without editor review.</li>
+<li>Legal advice.</li>
+<li>Code-signed installers, if certificates are not available.</li>
+<li>Advanced speaker recognition.</li>
+<li>Full DocumentCloud hosting/self-hosting.</li>
+<li>Full courts beat.</li>
+<li>Full FOIA case management.</li>
+<li>Full GraphRAG document-intelligence system.</li>
+<li>Guaranteed complete source discovery for every town.</li>
+</ul>
+<h2 id="8-local-llm-strategy">8. Local LLM Strategy</h2>
+<p>The local LLM should be available as a reusable backend service, not a one-off drafting helper. The Rust backend should expose structured operations that call the configured local model with typed inputs and typed outputs.</p>
+<h3 id="model-runtime">Model Runtime</h3>
+<p>Primary runtime:</p>
+<ul>
+<li>Ollama-compatible local model runtime already used by CivicNewspaper.</li>
+</ul>
+<p>Future-compatible runtimes:</p>
+<ul>
+<li>LM Studio OpenAI-compatible local server.</li>
+<li>llama.cpp server.</li>
+<li>vLLM where appropriate.</li>
+<li>Cloud fallback only if explicitly configured by the publisher.</li>
+</ul>
+<h3 id="local-llm-requirements">Local LLM Requirements</h3>
+<p>The model layer must support:</p>
+<ul>
+<li>Hardware-based model recommendation.</li>
+<li>Download progress.</li>
+<li>Timeout handling.</li>
+<li>Retry and cancellation.</li>
+<li>Degraded mode when no model is available.</li>
+<li>JSON-first structured outputs where possible.</li>
+<li>Prompt versioning.</li>
+<li>Prompt/template configuration by publisher.</li>
+<li>Audit trail of local model task type, input source IDs, output summary, and timestamp.</li>
+<li>No hidden cloud calls for draft/review work unless user explicitly enables cloud fallback.</li>
+</ul>
+<h3 id="local-llm-injection-points">Local LLM Injection Points</h3>
+<p>Source intake:</p>
+<ul>
+<li>Classify source type.</li>
+<li>Detect official vs social vs local media vs vendor/PR vs background.</li>
+<li>Suggest source labels.</li>
+<li>Identify duplicate sources.</li>
+<li>Summarize why a source may matter.</li>
+</ul>
+<p>Source discovery:</p>
+<ul>
+<li>Generate search queries for missing beats.</li>
+<li>Suggest official/social/local-media source candidates.</li>
+<li>Explain why a candidate should be reviewed.</li>
+<li>Cross-reference single-source leads with search expansion.</li>
+</ul>
+<p>Snapshot and novelty:</p>
+<ul>
+<li>Compare current source text to prior snapshots.</li>
+<li>Identify new facts.</li>
+<li>Identify unchanged background.</li>
+<li>Detect date-only changes.</li>
+<li>Detect recurring notices.</li>
+<li>Suggest &quot;not news yet&quot; disposition.</li>
+</ul>
+<p>Lead triage:</p>
+<ul>
+<li>Recommend article, brief, watch item, public notice, alert, meeting preview, meeting recap, investigation lead, or background.</li>
+<li>Explain why.</li>
+<li>Identify missing evidence.</li>
+<li>Detect duplicates.</li>
+</ul>
+<p>Reporter notebook:</p>
+<ul>
+<li>Produce private notes: what happened, why it may matter, who is affected, what is known, what is unknown, who to call, what documents to request, and prior related items.</li>
+</ul>
+<p>Drafting:</p>
+<ul>
+<li>Generate story drafts from selected leads only.</li>
+<li>Use story-type-specific prompts.</li>
+<li>Preserve source references.</li>
+<li>Avoid publishing notebook/checklist/scaffolding text.</li>
+</ul>
+<p>Editing:</p>
+<ul>
+<li>Suggest headlines.</li>
+<li>Flag summary-style headlines.</li>
+<li>Flag buried ledes.</li>
+<li>Flag unsupported assertions.</li>
+<li>Suggest plain-language rewrites.</li>
+<li>Apply publisher stylebook.</li>
+</ul>
+<p>Verification:</p>
+<ul>
+<li>Extract atomic claims.</li>
+<li>Classify claims by type.</li>
+<li>Link claims to sources.</li>
+<li>Create verification tasks.</li>
+<li>Warn on single-source claims.</li>
+</ul>
+<p>Legal and press-freedom advisor:</p>
+<ul>
+<li>Invoke-only.</li>
+<li>Detect risk areas.</li>
+<li>Suggest questions.</li>
+<li>Never block.</li>
+</ul>
+<p>Transcripts:</p>
+<ul>
+<li>Segment meeting transcript by topic/agenda item.</li>
+<li>Extract action items.</li>
+<li>Extract votes where possible.</li>
+<li>Suggest quote candidates.</li>
+<li>Compare packet/staff memo to meeting discussion.</li>
+</ul>
+<p>Issue planning:</p>
+<ul>
+<li>Recommend homepage lineup.</li>
+<li>Separate articles, briefs, watchlist, notices, and editor notebook.</li>
+<li>Suggest newsletter summary.</li>
+<li>Suggest social/community posts.</li>
+</ul>
+<h2 id="9-core-functional-requirements">9. Core Functional Requirements</h2>
+<h3 id="9-1-source-management">9.1 Source Management</h3>
+<p>The app must allow publishers to add, discover, import, review, label, trust, pause, and remove sources.</p>
+<p>Source records must track:</p>
+<ul>
+<li>URL or local file path.</li>
+<li>Source type.</li>
+<li>Source platform.</li>
+<li>Jurisdiction.</li>
+<li>Official/social/local-media/vendor/unknown classification.</li>
+<li>Confidence.</li>
+<li>Review status.</li>
+<li>Last fetched.</li>
+<li>Last successful fetch.</li>
+<li>Failure count.</li>
+<li>Current snapshot hash.</li>
+<li>Related entities.</li>
+</ul>
+<p>Local LLM use:</p>
+<ul>
+<li>Source classification.</li>
+<li>Duplicate detection.</li>
+<li>Source explanation.</li>
+<li>Suggested beat tags.</li>
+</ul>
+<p>Relevant external projects:</p>
+<ul>
+<li>Big Local News civic-scraper: https://github.com/biglocalnews/civic-scraper</li>
+<li>Open Civic Data Legistar scraper: https://github.com/opencivicdata/python-legistar-scraper</li>
+<li>Open Civic Data division IDs: https://github.com/opencivicdata/ocd-division-ids</li>
+<li>civic-ai-tools: https://github.com/npstorey/civic-ai-tools</li>
+</ul>
+<h3 id="9-2-source-fetching-and-scraping">9.2 Source Fetching And Scraping</h3>
+<p>The app must fetch ordinary web pages and support civic platform scraping.</p>
+<p>Big Local News civic-scraper should be integrated as a sidecar for:</p>
+<ul>
+<li>CivicClerk.</li>
+<li>CivicPlus.</li>
+<li>Granicus.</li>
+<li>Legistar.</li>
+<li>PrimeGov.</li>
+</ul>
+<p>Integration shape:</p>
+<ul>
+<li>Rust task launches controlled Python sidecar command.</li>
+<li>Sidecar returns structured JSON and artifact paths.</li>
+<li>Artifacts are stored in app evidence directory.</li>
+<li>Metadata is normalized into SQLite.</li>
+<li>Failures become retryable task records.</li>
+</ul>
+<p>Local LLM use:</p>
+<ul>
+<li>Summarize fetched source context.</li>
+<li>Identify source platform when deterministic detection is uncertain.</li>
+<li>Suggest whether fetched content is evergreen/background/current.</li>
+</ul>
+<h3 id="9-3-beat-memory-and-novelty-ledger">9.3 Beat Memory And Novelty Ledger</h3>
+<p>The app must remember prior source snapshots and prior lead clusters.</p>
+<p>The system must detect:</p>
+<ul>
+<li>Same content as prior scan.</li>
+<li>Date-only or boilerplate-only changes.</li>
+<li>New agenda item.</li>
+<li>New vote/action.</li>
+<li>New notice.</li>
+<li>Recurring background page.</li>
+<li>Duplicate of prior lead.</li>
+<li>Follow-up to prior story.</li>
+</ul>
+<p>Local LLM use:</p>
+<ul>
+<li>Semantic comparison of prior and current source text.</li>
+<li>Explain what changed.</li>
+<li>Explain why something is or is not newsworthy.</li>
+<li>Suggest lead disposition.</li>
+</ul>
+<p>Relevant external project:</p>
+<ul>
+<li>Marshall Project Klaxon: https://github.com/themarshallproject/klaxon</li>
+</ul>
+<h3 id="9-4-lead-queue">9.4 Lead Queue</h3>
+<p>The lead queue must show both machine signals and editorial state.</p>
+<p>Lead fields:</p>
+<ul>
+<li>Title.</li>
+<li>Summary.</li>
+<li>Source IDs.</li>
+<li>Evidence IDs.</li>
+<li>Lead cluster ID.</li>
+<li>Beat.</li>
+<li>Story type recommendation.</li>
+<li>Novelty reason.</li>
+<li>Verification status.</li>
+<li>Editor disposition.</li>
+<li>Last action.</li>
+<li>Local LLM notes.</li>
+</ul>
+<p>Required statuses:</p>
+<ul>
+<li>New.</li>
+<li>Changed.</li>
+<li>Duplicate.</li>
+<li>Background.</li>
+<li>Not news yet.</li>
+<li>Needs reporting.</li>
+<li>Needs verification.</li>
+<li>Ready to draft.</li>
+<li>Drafted.</li>
+<li>Held.</li>
+<li>Cut.</li>
+<li>Approved.</li>
+<li>Published.</li>
+</ul>
+<p>Local LLM use:</p>
+<ul>
+<li>Story type recommendation.</li>
+<li>Lead-quality explanation.</li>
+<li>Suggested next reporting action.</li>
+</ul>
+<h3 id="9-5-workbench-and-editorial-workflow">9.5 Workbench And Editorial Workflow</h3>
+<p>The Workbench must support a complete writer/editor loop.</p>
+<p>Required actions:</p>
+<ul>
+<li>Generate draft.</li>
+<li>Edit draft.</li>
+<li>Rewrite.</li>
+<li>Send back for more work.</li>
+<li>Hold.</li>
+<li>Cut.</li>
+<li>Restore.</li>
+<li>Mark needs verification.</li>
+<li>Mark ready.</li>
+<li>Approve.</li>
+<li>Unapprove.</li>
+<li>Publish-ready.</li>
+</ul>
+<p>The app must make held/cut/send-back drafts easy to find.</p>
+<p>Local LLM use:</p>
+<ul>
+<li>Draft generation.</li>
+<li>Rewrite in selected style.</li>
+<li>Headline alternatives.</li>
+<li>Lede critique.</li>
+<li>Editor coaching.</li>
+<li>Verification prompt.</li>
+<li>Plain-language rewrite.</li>
+</ul>
+<p>Relevant external projects:</p>
+<ul>
+<li>AP Brainerd: https://github.com/AssociatedPress/local-ai-brainerd-dispatch</li>
+<li>AP KSAT: https://github.com/AssociatedPress/local-ai-ksat</li>
+<li>AP El Vocero: https://github.com/AssociatedPress/local-ai-el-vocero</li>
+</ul>
+<h3 id="9-6-story-templates-and-prompt-configuration">9.6 Story Templates And Prompt Configuration</h3>
+<p>The app must define story templates.</p>
+<p>Minimum templates:</p>
+<ul>
+<li>Hard-news article.</li>
+<li>Brief.</li>
+<li>Watch item.</li>
+<li>Meeting preview.</li>
+<li>Meeting recap.</li>
+<li>Public notice.</li>
+<li>Alert.</li>
+<li>Investigation lead.</li>
+<li>Explainer.</li>
+<li>Service item.</li>
+</ul>
+<p>Each template should define:</p>
+<ul>
+<li>When to use it.</li>
+<li>Required evidence.</li>
+<li>Optional evidence.</li>
+<li>Draft structure.</li>
+<li>Headline style.</li>
+<li>Public-output rules.</li>
+<li>Verification checklist.</li>
+<li>Prompt text.</li>
+<li>Local style settings.</li>
+</ul>
+<p>Local LLM use:</p>
+<ul>
+<li>Template recommendation.</li>
+<li>Template-specific drafting.</li>
+<li>Template-specific editing.</li>
+</ul>
+<h3 id="9-7-verification-queue">9.7 Verification Queue</h3>
+<p>The app must generate verification tasks from leads and drafts.</p>
+<p>Task fields:</p>
+<ul>
+<li>Claim.</li>
+<li>Claim type.</li>
+<li>Source support.</li>
+<li>Missing support.</li>
+<li>Suggested check.</li>
+<li>Risk type.</li>
+<li>Status.</li>
+<li>Related story.</li>
+<li>Related source.</li>
+</ul>
+<p>Local LLM use:</p>
+<ul>
+<li>Atomic claim extraction.</li>
+<li>Claim type classification.</li>
+<li>Evidence matching.</li>
+<li>Task generation.</li>
+</ul>
+<p>Relevant external projects:</p>
+<ul>
+<li>OpenFactVerification/Loki: https://github.com/Libr-AI/OpenFactVerification</li>
+<li>Free Law X-Ray: https://github.com/freelawproject/x-ray</li>
+</ul>
+<h3 id="9-8-document-safety-and-pdf-checks">9.8 Document Safety And PDF Checks</h3>
+<p>The app should warn about potentially unsafe or misleading documents.</p>
+<p>Requirements:</p>
+<ul>
+<li>Detect image-only PDFs and explain OCR limitations.</li>
+<li>Run X-Ray redaction-risk checks where available.</li>
+<li>Warn on hidden text/redaction risk.</li>
+<li>Allow optional external sanitization workflow.</li>
+</ul>
+<p>Local LLM use:</p>
+<ul>
+<li>Explain document issues in plain language.</li>
+<li>Suggest verification tasks.</li>
+</ul>
+<p>Relevant external projects:</p>
+<ul>
+<li>Free Law X-Ray: https://github.com/freelawproject/x-ray</li>
+<li>Dangerzone: https://github.com/freedomofpress/dangerzone</li>
+</ul>
+<p>Dangerzone should be treated as optional/reference unless licensing, container, and distribution implications are resolved.</p>
+<h3 id="9-9-meeting-audio-video-and-transcripts">9.9 Meeting Audio/Video And Transcripts</h3>
+<p>The app should support public meeting audio/video ingestion when this feature is claimed in a release.</p>
+<p>Requirements:</p>
+<ul>
+<li>Add meeting media.</li>
+<li>Download or import media where legally/publicly available.</li>
+<li>Transcribe locally.</li>
+<li>Store transcript.</li>
+<li>Review transcript.</li>
+<li>Link transcript segments to stories.</li>
+<li>Publish transcript pages optionally.</li>
+</ul>
+<p>Local LLM use:</p>
+<ul>
+<li>Agenda segmentation.</li>
+<li>Topic summaries.</li>
+<li>Vote/action extraction.</li>
+<li>Quote candidate extraction.</li>
+<li>Comparison between staff packet and meeting discussion.</li>
+</ul>
+<p>Relevant external projects:</p>
+<ul>
+<li>whisper.cpp: https://github.com/ggml-org/whisper.cpp</li>
+<li>whisper-rs: https://codeberg.org/tazz4843/whisper-rs</li>
+<li>tauri-plugin-whisper-rs: https://crates.io/crates/tauri-plugin-whisper-rs</li>
+<li>Hyperaudio Lite: https://github.com/hyperaudio/hyperaudio-lite</li>
+<li>Council Data Project backend: https://github.com/CouncilDataProject/cdp-backend</li>
+<li>Speakerbox: https://github.com/CouncilDataProject/speakerbox</li>
+<li>OpenCouncil: https://github.com/schemalabz/opencouncil</li>
+</ul>
+<h3 id="9-10-publishing">9.10 Publishing</h3>
+<p>The app must publish clean, professional static output.</p>
+<p>Required outputs:</p>
+<ul>
+<li>Homepage.</li>
+<li>Article pages.</li>
+<li>RSS.</li>
+<li>About page.</li>
+<li>Ethics/how-we-report page.</li>
+<li>Corrections page.</li>
+<li>ZIP package.</li>
+<li>Newsletter markdown.</li>
+<li>Substack-ready markdown.</li>
+<li>Social/community post copy.</li>
+<li>Manifest.</li>
+<li>Publish receipt.</li>
+</ul>
+<p>Publishing targets:</p>
+<ul>
+<li>here.now quick publish.</li>
+<li>Local ZIP.</li>
+<li>GitHub Pages.</li>
+<li>Netlify.</li>
+<li>Cloudflare Pages.</li>
+<li>WordPress if kept.</li>
+<li>Assisted/manual URL recording.</li>
+</ul>
+<p>Local LLM use:</p>
+<ul>
+<li>Issue lineup suggestion.</li>
+<li>Headline alternatives.</li>
+<li>Newsletter summary.</li>
+<li>Social package generation.</li>
+<li>Public-output cleanup warnings.</li>
+</ul>
+<h3 id="9-11-public-site-customization">9.11 Public Site Customization</h3>
+<p>The publisher must control identity and language.</p>
+<p>Configurable fields:</p>
+<ul>
+<li>Publication name.</li>
+<li>Publisher/editor name.</li>
+<li>Organization type.</li>
+<li>City/state.</li>
+<li>For-profit/nonprofit/individual/community group/private organization.</li>
+<li>Logo.</li>
+<li>Masthead.</li>
+<li>Theme/accent.</li>
+<li>Footer.</li>
+<li>AI disclosure language, if any.</li>
+<li>Ad policy language, if any.</li>
+<li>Editorial mission language.</li>
+</ul>
+<p>The app must not invent claims such as:</p>
+<ul>
+<li>No ads.</li>
+<li>Public-record-only.</li>
+<li>All stories are AI-assisted.</li>
+<li>Nonprofit status.</li>
+<li>Specific publisher identity.</li>
+</ul>
+<p>Local LLM use:</p>
+<ul>
+<li>Suggest neutral copy based on publisher settings.</li>
+<li>Warn when public copy includes unsupported claims.</li>
+</ul>
+<h3 id="9-12-durable-tasks-and-recovery">9.12 Durable Tasks And Recovery</h3>
+<p>The app must track long-running work as durable tasks.</p>
+<p>Task types:</p>
+<ul>
+<li>Source discovery.</li>
+<li>Source fetch.</li>
+<li>Civic-scraper run.</li>
+<li>Import.</li>
+<li>Model setup.</li>
+<li>LLM task.</li>
+<li>Draft generation.</li>
+<li>Verification generation.</li>
+<li>Transcription.</li>
+<li>Export.</li>
+<li>Publish.</li>
+</ul>
+<p>Task statuses:</p>
+<ul>
+<li>Queued.</li>
+<li>Running.</li>
+<li>Paused.</li>
+<li>Failed.</li>
+<li>Retryable.</li>
+<li>Completed.</li>
+<li>Canceled.</li>
+</ul>
+<p>Local LLM use:</p>
+<ul>
+<li>Summarize task failures in plain language.</li>
+<li>Suggest next recovery step.</li>
+</ul>
+<p>Relevant external reference:</p>
+<ul>
+<li>OpenCouncil task architecture: https://github.com/schemalabz/opencouncil</li>
+</ul>
+<h3 id="9-13-documentation-and-support">9.13 Documentation And Support</h3>
+<p>The app must include complete documentation for non-technical users.</p>
+<p>Required docs:</p>
+<ul>
+<li>Install guide.</li>
+<li>First issue walkthrough.</li>
+<li>Source setup guide.</li>
+<li>Editor workflow guide.</li>
+<li>Local AI/model setup guide.</li>
+<li>Publishing guide.</li>
+<li>here.now guide.</li>
+<li>Troubleshooting.</li>
+<li>Known limitations.</li>
+<li>Press-freedom advisor explanation.</li>
+<li>Bug report instructions.</li>
+</ul>
+<p>Local LLM use:</p>
+<ul>
+<li>Optional in-app help explanations.</li>
+<li>Error explanation.</li>
+<li>Support bundle summarization.</li>
+</ul>
+<p>Relevant governance reference:</p>
+<ul>
+<li>mySociety AI Framework: https://ai-framework.mysociety.org/</li>
+</ul>
+<h2 id="10-technical-architecture">10. Technical Architecture</h2>
+<h3 id="existing-core">Existing Core</h3>
+<ul>
+<li>Frontend: React and TypeScript.</li>
+<li>Desktop: Tauri 2.</li>
+<li>Backend: Rust.</li>
+<li>Database: SQLite via <code>rusqlite</code>.</li>
+<li>Async runtime: Tokio.</li>
+<li>HTTP: reqwest and Axum.</li>
+<li>Publishing: Rust static compiler and ZIP output.</li>
+<li>Local AI: Ollama-compatible runtime.</li>
+</ul>
+<h3 id="proposed-core-additions">Proposed Core Additions</h3>
+<p>Local intelligence service:</p>
+<ul>
+<li>Rust module: <code>local_ai</code>.</li>
+<li>Prompt registry.</li>
+<li>Typed operations.</li>
+<li>Model/runtime health checks.</li>
+<li>Timeout/retry/cancel.</li>
+<li>JSON schema validation.</li>
+<li>Task logging.</li>
+</ul>
+<p>Durable task service:</p>
+<ul>
+<li>Rust module: <code>tasks</code>.</li>
+<li>SQLite-backed task ledger.</li>
+<li>Frontend progress subscriptions.</li>
+<li>Retry/reprocess APIs.</li>
+</ul>
+<p>Source intelligence service:</p>
+<ul>
+<li>Rust module: <code>source_intake</code>.</li>
+<li>Platform detection.</li>
+<li>Source labels.</li>
+<li>Big Local News sidecar runner.</li>
+<li>Snapshot store.</li>
+</ul>
+<p>Novelty service:</p>
+<ul>
+<li>Rust module: <code>novelty</code>.</li>
+<li>Text normalization.</li>
+<li>Hashing.</li>
+<li>Diffing.</li>
+<li>LLM semantic change summary.</li>
+<li>Lead clustering.</li>
+</ul>
+<p>Editorial service:</p>
+<ul>
+<li>Rust module: <code>editorial</code>.</li>
+<li>Story templates.</li>
+<li>Prompt configuration.</li>
+<li>Draft lifecycle.</li>
+<li>Public-output checks.</li>
+</ul>
+<p>Verification service:</p>
+<ul>
+<li>Rust module: <code>verification</code>.</li>
+<li>Claim extraction.</li>
+<li>Evidence matching.</li>
+<li>X-Ray integration.</li>
+<li>Advisor task generation.</li>
+</ul>
+<p>Meeting media service:</p>
+<ul>
+<li>Rust module: <code>meetings</code>.</li>
+<li>Whisper integration.</li>
+<li>Transcript storage.</li>
+<li>Segment linking.</li>
+<li>Public transcript export.</li>
+</ul>
+<h2 id="11-external-integration-catalog">11. External Integration Catalog</h2>
+<p>Direct dependency or sidecar candidates:</p>
+<ul>
+<li>Big Local News civic-scraper: https://github.com/biglocalnews/civic-scraper</li>
+<li>Open Civic Data Legistar scraper: https://github.com/opencivicdata/python-legistar-scraper</li>
+<li>Open Civic Data division IDs: https://github.com/opencivicdata/ocd-division-ids</li>
+<li>Free Law X-Ray: https://github.com/freelawproject/x-ray</li>
+<li>whisper.cpp: https://github.com/ggml-org/whisper.cpp</li>
+<li>whisper-rs: https://codeberg.org/tazz4843/whisper-rs</li>
+<li>tauri-plugin-whisper-rs: https://crates.io/crates/tauri-plugin-whisper-rs</li>
+<li>Hyperaudio Lite: https://github.com/hyperaudio/hyperaudio-lite</li>
+<li>Datasette: https://github.com/simonw/datasette</li>
+<li>sqlite-utils: https://github.com/simonw/sqlite-utils</li>
+</ul>
+<p>Pattern/reference only unless licensing is resolved:</p>
+<ul>
+<li>AP Brainerd: https://github.com/AssociatedPress/local-ai-brainerd-dispatch</li>
+<li>AP KSAT: https://github.com/AssociatedPress/local-ai-ksat</li>
+<li>AP El Vocero: https://github.com/AssociatedPress/local-ai-el-vocero</li>
+<li>Dangerzone: https://github.com/freedomofpress/dangerzone</li>
+<li>DocumentCloud: https://github.com/MuckRock/documentcloud</li>
+<li>OpenFOIA: https://github.com/JordanCoin/openfoia</li>
+<li>BBC Citron: https://github.com/bbc/citron</li>
+</ul>
+<p>Architecture/study references:</p>
+<ul>
+<li>OpenCouncil: https://github.com/schemalabz/opencouncil</li>
+<li>Council Data Project backend: https://github.com/CouncilDataProject/cdp-backend</li>
+<li>Speakerbox: https://github.com/CouncilDataProject/speakerbox</li>
+<li>OpenFactVerification/Loki: https://github.com/Libr-AI/OpenFactVerification</li>
+<li>JournalismAI quote extraction: https://github.com/JournalismAI-2021-Quotes/quote-extraction</li>
+<li>DocMind AI: https://github.com/BjornMelin/docmind-ai-llm</li>
+<li>civic-ai-tools: https://github.com/npstorey/civic-ai-tools</li>
+<li>Querido Diario: https://github.com/okfn-brasil/querido-diario</li>
+<li>CourtListener: https://github.com/freelawproject/courtlistener</li>
+<li>Juriscraper: https://github.com/freelawproject/juriscraper</li>
+</ul>
+<h2 id="12-v1-success-metrics">12. V1 Success Metrics</h2>
+<p>Product quality:</p>
+<ul>
+<li>A clean machine can produce a complete local issue.</li>
+<li>At least 5 usable reader-facing items are produced in a realistic city test with human review.</li>
+<li>Duplicate/stale story rate is low enough that the editor is not fighting the tool.</li>
+<li>Public output contains no scaffolding artifacts.</li>
+</ul>
+<p>Workflow quality:</p>
+<ul>
+<li>Editor can recover held, cut, and send-back drafts.</li>
+<li>Verification tasks are understandable.</li>
+<li>Source review is clear.</li>
+<li>Long-running tasks report progress.</li>
+</ul>
+<p>Technical quality:</p>
+<ul>
+<li>Local AI works or degrades clearly.</li>
+<li>Big Local News integration is tested.</li>
+<li>Backup/restore works.</li>
+<li>Upgrade from older beta DBs works.</li>
+<li>here.now and ZIP publishing work.</li>
+</ul>
+<p>Trust quality:</p>
+<ul>
+<li>No AI or advisory warning vetoes publication; visible deterministic package-integrity blockers can stop export until broken public output is repaired.</li>
+<li>AI/editorial warnings are advisory.</li>
+<li>Publisher identity and disclosure language are configurable.</li>
+<li>Docs are honest about limitations.</li>
+</ul>
+<h2 id="13-major-risks">13. Major Risks</h2>
+<p>Story quality risk:</p>
+<p>Adding more source volume before story-quality gates will produce more weak stories faster.</p>
+<p>Mitigation:</p>
+<p>Build novelty, clustering, story templates, and editor workflow before Big Local News expansion.</p>
+<p>Licensing risk:</p>
+<p>Some high-value references are GPL or AGPL.</p>
+<p>Mitigation:</p>
+<p>Use them as patterns unless project licensing strategy changes.</p>
+<p>Local model quality risk:</p>
+<p>Small local models may produce weak prose or weak analysis.</p>
+<p>Mitigation:</p>
+<p>Use deterministic preprocessing, structured prompts, story templates, verification tasks, and editor review. Do not rely on the model alone.</p>
+<p>Installer risk:</p>
+<p>Unsigned installers will scare some users.</p>
+<p>Mitigation:</p>
+<p>Explain beta unsigned status clearly. Do not claim signing until available.</p>
+<p>Source reliability risk:</p>
+<p>Public sites change.</p>
+<p>Mitigation:</p>
+<p>Use sidecar scrapers where available, durable task failures, source review, and clear degraded modes.</p>
+<h2 id="14-open-questions">14. Open Questions</h2>
+<ul>
+<li>Which local model should be default for v1.0.0 on 8 GB, 16 GB, and 32 GB machines?</li>
+<li>Should Big Local News sidecar be bundled, downloaded during setup, or installed as a managed Python environment?</li>
+<li>Which platforms are officially claimed at v1.0.0: Windows only, Windows plus macOS, or Windows/macOS/Linux?</li>
+<li>Should transcript workflow be required for v1.0.0 or allowed as a post-1.0 feature?</li>
+<li>Should Datasette-style public evidence archive be included in v1.0.0 or kept as a later transparency feature?</li>
+<li>What publisher identity defaults should setup provide without making editorial claims for the user?</li>
+</ul>
+        </article>
+    </main>
+    <footer>
+        <div class="footer-container">
+            <div>
+                <a class="logo" href="index.html#top"><span>The Civic Desk</span></a>
+                <p>Open-source local newsroom software. Repository name: CivicNewspaper. Installed app name: The Civic Desk.</p>
+            </div>
+            <div class="footer-links">
+                <a href="user_manual.html">Manual</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

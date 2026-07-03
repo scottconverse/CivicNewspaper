@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publishing Connectors | The Civic Desk</title>
+    <meta name="description" content="Publishing Connectors for The Civic Desk public beta.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="doc-page.css">
+</head>
+<body class="doc-page">
+    <nav aria-label="Site navigation">
+        <div class="nav-container">
+            <a class="logo" href="index.html#top" aria-label="The Civic Desk home">
+                <span>The Civic Desk</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html#downloads">Downloads</a>
+                <a href="user_manual.html">Manual</a>
+                <a href="install.html">Install</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a class="nav-btn-primary" href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </nav>
+    <main class="doc-shell">
+        <article class="doc-content">
+<h1 id="publishing-connectors">Publishing Connectors</h1>
+<p>The Civic Desk has two publishing modes:</p>
+<ul>
+<li><strong>API publish</strong>: the app uploads the generated issue through an official provider path.</li>
+<li><strong>Assisted publish</strong>: the app generates the package and share copy, then records the public URL after the editor publishes elsewhere.</li>
+</ul>
+<p>Recommended stack: publish instantly with here.now, use GitHub Pages when the editor wants a durable public archive in their own repository, keep Netlify for credentialed technical users, and treat WordPress, Cloudflare Pages, Substack, and newsletter distribution as assisted workflows unless a later release records connector proof.</p>
+<h2 id="beta-verification-status">Beta Verification Status</h2>
+<p>For this release line, anonymous here.now preview publishing is the tested default fast path. GitHub Pages, Netlify, and permanent here.now account publishing require user-owned credentials and real target accounts. WordPress API publishing is disabled in this public beta. Cloudflare Pages API publishing is disabled in this public beta. Release evidence should state exactly which connector was live-verified for that release. Do not treat GitHub Pages, Netlify, WordPress, or permanent here.now account publishing as stable-grade verified unless the release notes include release-specific live proof and a live credentialed connector proof.</p>
+<h2 id="api-publish-connectors">API Publish Connectors</h2>
+<h3 id="here-now">here.now</h3>
+<ul>
+<li>Requires: no credential for 24-hour preview publishing; here.now API key for permanent account-owned sites.</li>
+<li>Publishes: generated static files, excluding <code>site-package.zip</code>.</li>
+<li>Method: here.now Sites API creates a pending Site version, uploads each file to presigned URLs, then finalizes the version.</li>
+<li>Output: live here.now URL and version metadata. Anonymous preview sites expire after 24 hours.</li>
+<li>Optional target: here.now slug. Leave blank to create a new site, or enter an existing slug to update it.</li>
+</ul>
+<h3 id="netlify">Netlify</h3>
+<ul>
+<li>Requires: Netlify personal access token, Netlify site ID.</li>
+<li>Publishes: <code>site-package.zip</code>.</li>
+<li>Method: Netlify deploy API, ZIP upload to the configured site.</li>
+<li>Output: provider deployment ID and live URL returned by Netlify when available.</li>
+</ul>
+<h3 id="github-pages">GitHub Pages</h3>
+<ul>
+<li>Requires: GitHub token with repository contents write access, <code>owner/repo</code>, branch, optional folder path.</li>
+<li>Publishes: generated static files, excluding <code>site-package.zip</code>.</li>
+<li>Method: GitHub REST Contents API writes each generated file to the configured branch/path. The connector creates the publish branch from the default branch when needed, configures GitHub Pages from root or <code>/docs</code>, and removes stale generated files listed in the previous Civic Desk manifest while preserving files such as <code>CNAME</code>.</li>
+<li>Output: configured public URL, or a derived <code>https://owner.github.io/repo/</code> URL. Best fit: durable/open repository-backed archive.</li>
+</ul>
+<h2 id="assisted-connectors">Assisted Connectors</h2>
+<h3 id="wordpress">WordPress</h3>
+<p>Direct WordPress API publishing is disabled in this public beta until draft-first publishing, rollback, and live connector proof are complete. Export the generated folder or <code>site-package.zip</code>, publish through WordPress manually or through your own workflow, then paste the public URL into The Civic Desk.</p>
+<h3 id="substack">Substack</h3>
+<p>Substack does not provide a supported public publishing API for third-party apps to create posts. The app generates <code>substack.md</code> for copy/paste publishing, then the editor records the public post URL.</p>
+<h3 id="other-host">Other Host</h3>
+<p>Use this for static hosts, local web servers, or platforms without a supported API connector. The app records the public URL and refreshes the generated manifest, RSS, newsletter, and social copy.</p>
+<h3 id="cloudflare-pages">Cloudflare Pages</h3>
+<p>Cloudflare Pages is an assisted workflow in this public beta. Export the generated folder or <code>site-package.zip</code>, deploy it through Cloudflare&#x27;s dashboard or your own CLI, then paste the public URL into The Civic Desk so the manifest, RSS, newsletter, and share copy are updated.</p>
+        </article>
+    </main>
+    <footer>
+        <div class="footer-container">
+            <div>
+                <a class="logo" href="index.html#top"><span>The Civic Desk</span></a>
+                <p>Open-source local newsroom software. Repository name: CivicNewspaper. Installed app name: The Civic Desk.</p>
+            </div>
+            <div class="footer-links">
+                <a href="user_manual.html">Manual</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

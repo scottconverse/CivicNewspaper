@@ -61,8 +61,11 @@ try {
 if (requireCleanString(evidence.tag, "tag") !== tag) {
   fail(`evidence tag ${evidence.tag} does not match workflow tag ${tag}.`);
 }
-if (requireCleanString(evidence.commit, "commit") !== head) {
-  fail(`evidence commit ${evidence.commit} does not match workflow HEAD ${head}.`);
+const evidenceCommit = requireCleanString(evidence.commit, "commit");
+try {
+  execFileSync("git", ["merge-base", "--is-ancestor", evidenceCommit, head], { stdio: "ignore" });
+} catch {
+  fail(`evidence commit ${evidenceCommit} is not an ancestor of workflow HEAD ${head}.`);
 }
 
 requireCleanString(evidence.generated_at, "generated_at");

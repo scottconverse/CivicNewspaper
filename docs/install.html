@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Installation Guide And Checksum Verification | The Civic Desk</title>
+    <meta name="description" content="Installation Guide And Checksum Verification for The Civic Desk public beta.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="doc-page.css">
+</head>
+<body class="doc-page">
+    <nav aria-label="Site navigation">
+        <div class="nav-container">
+            <a class="logo" href="index.html#top" aria-label="The Civic Desk home">
+                <span>The Civic Desk</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html#downloads">Downloads</a>
+                <a href="user_manual.html">Manual</a>
+                <a href="install.html">Install</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a class="nav-btn-primary" href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </nav>
+    <main class="doc-shell">
+        <article class="doc-content">
+<h1 id="installation-guide-and-checksum-verification">Installation Guide And Checksum Verification</h1>
+<p>This guide explains how to install The Civic Desk from the CivicNewspaper releases page and how to verify a downloaded installer.</p>
+<p>The public beta Windows installer is unsigned. Windows SmartScreen may warn you before the app opens. That warning is expected for an unsigned beta and does not by itself mean the file is malicious. It also does not prove the file is safe. Use the checksum steps below to confirm the download matches the release artifact.</p>
+<h2 id="download">Download</h2>
+<p>Open the releases page:</p>
+<p><a href="https://github.com/scottconverse/CivicNewspaper/releases">https://github.com/scottconverse/CivicNewspaper/releases</a></p>
+<p>Use the v0.3.2 Windows public-beta release when installing this version:</p>
+<p><a href="https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2">https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2</a></p>
+<h2 id="windows">Windows</h2>
+<ol>
+<li>Download the <code>.exe</code> installer from the release assets.</li>
+<li>Optional but recommended: verify the SHA256 checksum before opening the installer.</li>
+<li>Double-click the installer.</li>
+<li>If Windows SmartScreen says &quot;Windows protected your PC,&quot; click <strong>More info</strong>.</li>
+<li>Confirm the filename matches the release asset you downloaded. Because the beta is unsigned, Windows may show an unknown publisher; use the checksum below to verify the artifact.</li>
+<li>Click <strong>Run anyway</strong>.</li>
+<li>Follow the installer prompts.</li>
+<li>Launch <strong>The Civic Desk</strong> from the Start menu.</li>
+</ol>
+<h2 id="macos-and-linux">macOS And Linux</h2>
+<p>macOS and Linux installers are backlog/proof-needed for this release line. Do not assume a historical <code>.dmg</code>, <code>.deb</code>, package config, or build target is supported until the release notes include a clean-machine proof for that platform.</p>
+<h2 id="clean-machine-proof">Clean-Machine Proof</h2>
+<p>Every release candidate needs a clean-machine or remote-tester report before it can be called cleanroom-proven. For v0.3.2, the Windows public-beta installer represented by commit <code>af4a12b0689dd8de64ce6af707b0c305a9cdaba0</code> passed final remote cleanroom testing with zero blocker, critical, or major findings. The cleanroom-tested installer SHA256 is <code>AB598EC26F658BB2B0735827F15DC787162D372A0C3FF0A3A18B6ADE48ABE241</code>.</p>
+<p>Required proof for a cleanroom-proven release:</p>
+<ol>
+<li>Build the artifact from a named commit.</li>
+<li>Install it on a clean machine or VM.</li>
+<li>Verify first-run setup, local AI setup or the skip/degraded path, source intake, draft generation, ZIP export, and here.now publishing.</li>
+<li>Record the report path, report hash, installer hash, tester machine, and any signing, notarization, permission, or package-manager warnings honestly in the release notes.</li>
+<li>Verify that hosted release evidence and published asset hashes match the cleanroom-tested installer.</li>
+</ol>
+<p>The v0.3.2 hosted-release evidence file is <a href="release-evidence/v0.3.2.json">release-evidence/v0.3.2.json</a>.</p>
+<p>macOS and Linux additionally require real platform artifacts and platform-specific clean-machine proof before public docs advertise them as supported installer paths.</p>
+<h2 id="verify-the-sha256-checksum">Verify The SHA256 Checksum</h2>
+<p>A SHA256 checksum proves that the file you downloaded matches the file listed in the release manifest. It is not the same as code signing and does not prove who built the file.</p>
+<ol>
+<li>Open the release page for the installer you downloaded.</li>
+<li>Find the <code>SHA256SUMS</code> file or the checksum listed for your installer.</li>
+<li>Compute the local hash.</li>
+<li>Compare the two strings exactly.</li>
+</ol>
+<h3 id="windows-powershell">Windows PowerShell</h3>
+<pre><code>Get-FileHash -Algorithm SHA256 &quot;C:\Users\YourName\Downloads\The Civic Desk_0.3.2_x64-setup.exe&quot;</code></pre>
+<p>If the hash does not match, delete the installer and report it on the project issue tracker: <a href="https://github.com/scottconverse/CivicNewspaper/issues">https://github.com/scottconverse/CivicNewspaper/issues</a>. Do not run a mismatched installer.</p>
+<h2 id="first-launch">First Launch</h2>
+<p>On first launch, the setup flow asks for:</p>
+<ul>
+<li>Publication name.</li>
+<li>Editor name.</li>
+<li>Organization type.</li>
+<li>City and state.</li>
+<li>Local AI/model setup.</li>
+<li>Backup and publishing folders.</li>
+</ul>
+<p>On the Windows public-beta path, the app may recommend and download a local model through its product-owned Ollama runtime. Model downloads can be large and slow. The app should show progress and allow an explicit skip/degraded path. macOS and Linux runtime/installer automation remains backlog until platform clean-machine proof is recorded.</p>
+<p>If setup or publishing gets stuck, see <a href="troubleshooting.html">troubleshooting.md</a> for SmartScreen, model download, local AI runtime, here.now preview, ZIP/static output, weak-story, and source-import guidance.</p>
+<h2 id="current-public-beta-limits">Current Public-Beta Limits</h2>
+<ul>
+<li>Installers are unsigned.</li>
+<li>Windows is the tested public-beta installer path for this release line.</li>
+<li>macOS and Linux installer proof is backlog/proof-needed.</li>
+<li>Some external publishing providers require user-owned credentials.</li>
+<li>PDF source-list import is disabled in the public beta until hardened parsing is available; convert PDFs to TXT/CSV/DOCX/XLSX or paste URLs directly.</li>
+<li>Clean-machine installer coverage is improving but not yet stable-release grade.</li>
+</ul>
+        </article>
+    </main>
+    <footer>
+        <div class="footer-container">
+            <div>
+                <a class="logo" href="index.html#top"><span>The Civic Desk</span></a>
+                <p>Open-source local newsroom software. Repository name: CivicNewspaper. Installed app name: The Civic Desk.</p>
+            </div>
+            <div class="footer-links">
+                <a href="user_manual.html">Manual</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

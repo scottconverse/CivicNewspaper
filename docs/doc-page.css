@@ -1,0 +1,90 @@
+.doc-page {
+    background: #f7f3eb;
+}
+
+.doc-shell {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 7rem 1.5rem 4rem;
+}
+
+.doc-content {
+    background: #fffdf8;
+    border: 1px solid rgba(22, 50, 46, 0.14);
+    border-radius: 8px;
+    box-shadow: 0 18px 45px rgba(26, 37, 35, 0.08);
+    padding: clamp(1.4rem, 4vw, 3rem);
+}
+
+.doc-content h1,
+.doc-content h2,
+.doc-content h3,
+.doc-content h4 {
+    color: #183b36;
+    letter-spacing: 0;
+}
+
+.doc-content h1 {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    margin-top: 0;
+}
+
+.doc-content h2 {
+    border-top: 1px solid rgba(22, 50, 46, 0.14);
+    margin-top: 2.6rem;
+    padding-top: 1.6rem;
+}
+
+.doc-content p,
+.doc-content li {
+    color: #273f3b;
+    font-size: 1rem;
+    line-height: 1.72;
+}
+
+.doc-content a {
+    color: #145c54;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+}
+
+.doc-content code {
+    background: #efe7d8;
+    border-radius: 4px;
+    color: #203935;
+    padding: 0.08rem 0.28rem;
+}
+
+.doc-content pre {
+    background: #132421;
+    border-radius: 8px;
+    color: #f7f3eb;
+    overflow-x: auto;
+    padding: 1rem;
+}
+
+.doc-content pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+}
+
+.doc-content blockquote {
+    border-left: 4px solid #2a8f83;
+    color: #244844;
+    margin: 1.4rem 0;
+    padding: 0.1rem 0 0.1rem 1rem;
+}
+
+.doc-content table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.doc-content th,
+.doc-content td {
+    border: 1px solid rgba(22, 50, 46, 0.14);
+    padding: 0.65rem;
+    text-align: left;
+}

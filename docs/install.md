@@ -10,7 +10,9 @@ Open the releases page:
 
 <https://github.com/scottconverse/CivicNewspaper/releases>
 
-Use the newest release that includes a Windows installer and checksum for the version you intend to install. The latest source candidate and the latest published installer release may not always be the same during public beta. If the release page still shows only older versions, v0.3.2 has not been publicly released yet.
+Use the v0.3.2 Windows public-beta release when installing this version:
+
+<https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2>
 
 ## Windows
 
@@ -39,7 +41,7 @@ Required proof for a cleanroom-proven release:
 4. Record the report path, report hash, installer hash, tester machine, and any signing, notarization, permission, or package-manager warnings honestly in the release notes.
 5. Verify that hosted release evidence and published asset hashes match the cleanroom-tested installer.
 
-The v0.3.2 hosted-release evidence file is [release-evidence/v0.3.2.json](release-evidence/v0.3.2.json). It is release-preparation evidence only; the public release still requires Scott approval before product push, merge, tag, or GitHub Release publication.
+The v0.3.2 hosted-release evidence file is [release-evidence/v0.3.2.json](release-evidence/v0.3.2.json).
 
 macOS and Linux additionally require real platform artifacts and platform-specific clean-machine proof before public docs advertise them as supported installer paths.
 

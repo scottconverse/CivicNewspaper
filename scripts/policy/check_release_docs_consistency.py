@@ -37,7 +37,7 @@ def main() -> int:
     require("README.md", "Local isolated-profile smoke", failures)
     require("README.md", "final remote cleanroom tester run passed", failures)
     require("README.md", "docs/release-evidence/v0.3.2.json", failures)
-    require("README.md", "Product `main`, release tags, and public GitHub Releases still require Scott approval", failures)
+    require("README.md", "v0.3.2 is a Windows public beta", failures)
     forbid("README.md", "true clean-machine or remote tester run is still required", failures)
 
     require("CONTRIBUTING.md", "app-managed local AI setup", failures)
@@ -50,7 +50,7 @@ def main() -> int:
         require(path, "macOS and Linux", failures)
 
     require("docs/install.md", "passed final remote cleanroom testing", failures)
-    require("docs/install.md", "release-preparation evidence only", failures)
+    require("docs/install.md", "https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2", failures)
     require("docs/release-readiness.md", "Current v0.3.2 evidence", failures)
     require("docs/release-readiness.md", "docs/release-evidence/v0.3.2.json", failures)
     require("docs/release-evidence/v0.3.2.json", "af4a12b0689dd8de64ce6af707b0c305a9cdaba0", failures)

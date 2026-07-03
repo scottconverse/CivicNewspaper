@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Discussion Seed Posts | The Civic Desk</title>
+    <meta name="description" content="GitHub Discussion Seed Posts for The Civic Desk public beta.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="doc-page.css">
+</head>
+<body class="doc-page">
+    <nav aria-label="Site navigation">
+        <div class="nav-container">
+            <a class="logo" href="index.html#top" aria-label="The Civic Desk home">
+                <span>The Civic Desk</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html#downloads">Downloads</a>
+                <a href="user_manual.html">Manual</a>
+                <a href="install.html">Install</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a class="nav-btn-primary" href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </nav>
+    <main class="doc-shell">
+        <article class="doc-content">
+<h1 id="github-discussion-seed-posts">GitHub Discussion Seed Posts</h1>
+<p>These are copy-ready starter posts for the CivicNewspaper GitHub Discussions area. The repository is CivicNewspaper; the installed app is The Civic Desk.</p>
+<p>Posted seed discussions:</p>
+<ul>
+<li>Welcome: <a href="https://github.com/scottconverse/CivicNewspaper/discussions/26">https://github.com/scottconverse/CivicNewspaper/discussions/26</a></li>
+<li>Local AI and hardware: <a href="https://github.com/scottconverse/CivicNewspaper/discussions/27">https://github.com/scottconverse/CivicNewspaper/discussions/27</a></li>
+<li>Source discovery and bulk import: <a href="https://github.com/scottconverse/CivicNewspaper/discussions/28">https://github.com/scottconverse/CivicNewspaper/discussions/28</a></li>
+<li>Dark Signal Desk: <a href="https://github.com/scottconverse/CivicNewspaper/discussions/29">https://github.com/scottconverse/CivicNewspaper/discussions/29</a></li>
+<li>Publishing stack: <a href="https://github.com/scottconverse/CivicNewspaper/discussions/30">https://github.com/scottconverse/CivicNewspaper/discussions/30</a></li>
+<li>Guardrails and advisor: <a href="https://github.com/scottconverse/CivicNewspaper/discussions/31">https://github.com/scottconverse/CivicNewspaper/discussions/31</a></li>
+</ul>
+<h2 id="1-welcome-to-the-civic-desk-public-beta">1. Welcome To The Civic Desk Public Beta</h2>
+<p><strong>Category:</strong> General</p>
+<p><strong>Title:</strong> Welcome to The Civic Desk public beta</p>
+<p><strong>Body:</strong></p>
+<p>Welcome to the CivicNewspaper community.</p>
+<p>The Civic Desk is a local-first desktop newsroom for people trying to cover local government with limited time and limited staff. It helps a small publisher add sources, scan for leads, review evidence, draft stories, verify claims, and publish a static local paper.</p>
+<p>This is a public beta, not a signed stable release. We want bug reports, usability reports, clean-machine install results, real source intake examples, and honest feedback from people who might actually use this to cover a town, city, county, school board, water district, or local agency.</p>
+<p>Helpful reports include:</p>
+<ul>
+<li>Your operating system and app version.</li>
+<li>What city or jurisdiction you tested.</li>
+<li>What source type you used.</li>
+<li>What worked.</li>
+<li>What broke.</li>
+<li>Whether the output was useful to a real editor.</li>
+</ul>
+<p>The guiding rule is simple: the software can assist, warn, rank, and organize. The human editor decides.</p>
+<h2 id="2-local-ai-and-hardware">2. Local AI And Hardware</h2>
+<p><strong>Category:</strong> Q&amp;A</p>
+<p><strong>Title:</strong> Local AI setup, model choice, and hardware notes</p>
+<p><strong>Body:</strong></p>
+<p>The Civic Desk uses Ollama for local AI features when available. Local AI can help with Daily Scan summaries, draft assistance, and optional press-freedom/legal-risk review.</p>
+<p>The app should continue to function in degraded mode if Ollama is missing, slow, offline, or no model is installed. Deterministic source fetching, import review, Workbench editing, backup, export, and publishing should still be usable.</p>
+<p>Useful things to share here:</p>
+<ul>
+<li>Machine RAM, CPU, and GPU if known.</li>
+<li>Which model the app recommended.</li>
+<li>Whether model download progress was clear.</li>
+<li>Whether Daily Scan and drafting felt fast enough.</li>
+<li>What happened when the model was missing or unavailable.</li>
+</ul>
+<p>Please do not paste private sources, credentials, or unpublished sensitive drafts into a public discussion.</p>
+<h2 id="3-source-discovery-and-bulk-import">3. Source Discovery And Bulk Import</h2>
+<p><strong>Category:</strong> Ideas</p>
+<p><strong>Title:</strong> Source discovery and bulk import examples</p>
+<p><strong>Body:</strong></p>
+<p>Source intake is one of the most important parts of the product. The app supports manual sources, discovery, and imports from CSV, TXT, XLSX, and DOCX files. PDF import is disabled in the public beta until hardened parsing is available; convert PDF source lists to a supported format or paste the URLs directly.</p>
+<p>The sources we especially want to test:</p>
+<ul>
+<li>City council agendas and minutes.</li>
+<li>Planning and zoning pages.</li>
+<li>School board agendas.</li>
+<li>County records and public notices.</li>
+<li>Police, fire, and emergency service feeds.</li>
+<li>Local news sites and calendars.</li>
+<li>Public social/community pages that do not require login.</li>
+<li>YouTube meeting videos and transcript sources.</li>
+</ul>
+<p>Good bug reports include the file type, a short description of the layout, how many URLs you expected, how many the app found, and whether duplicates or split-cell URLs were handled correctly.</p>
+<h2 id="4-dark-signals-and-verification">4. Dark Signals And Verification</h2>
+<p><strong>Category:</strong> Editorial Workflow</p>
+<p><strong>Title:</strong> Dark Signal Desk: how should weak leads be ranked and verified?</p>
+<p><strong>Body:</strong></p>
+<p>The Dark Signal Desk is for early, weak, unusual, or socially surfaced signals. These may come from public forums, public social posts, local video transcripts, comments, or community discussion.</p>
+<p>The app should rank and explain signals, but it must never hide information from the editor. A low-confidence signal should remain visible and clearly labeled so a human can decide whether it deserves more reporting.</p>
+<p>Useful discussion points:</p>
+<ul>
+<li>What sources produce early local signals in your community?</li>
+<li>What labels make uncertainty clear without burying the lead?</li>
+<li>What verification steps should the app suggest first?</li>
+<li>How should the app distinguish publishable evidence from editor-only leads?</li>
+</ul>
+<p>Low-confidence material should not become published evidence automatically. It should become a verification task.</p>
+<h2 id="5-publishing-options">5. Publishing Options</h2>
+<p><strong>Category:</strong> Q&amp;A</p>
+<p><strong>Title:</strong> Publishing stack: here.now, GitHub Pages, Netlify, assisted WordPress, manual Cloudflare, Substack</p>
+<p><strong>Body:</strong></p>
+<p>The Civic Desk produces static website output first. That output can be zipped, reviewed, archived, and published.</p>
+<p>Recommended publishing paths:</p>
+<ul>
+<li>here.now for simple temporary publishing and fast testing.</li>
+<li>GitHub Pages for a durable public archive.</li>
+<li>Netlify for technical users with an existing site/token.</li>
+<li>Cloudflare Pages as an assisted/manual hosting path: export the folder or ZIP, deploy in Cloudflare, then save the public URL.</li>
+<li>WordPress as an assisted/manual path for users with an existing site.</li>
+<li>Substack and newsletters as distribution channels, not the only canonical archive.</li>
+</ul>
+<p>If you test a provider, please share:</p>
+<ul>
+<li>Provider name.</li>
+<li>Whether setup was clear.</li>
+<li>Whether dry-run/test connection worked.</li>
+<li>Whether the published URL loaded.</li>
+<li>What failed and how recovery behaved.</li>
+</ul>
+<p>Do not post provider tokens, access keys, or private repo credentials.</p>
+<h2 id="6-guardrails-and-press-freedom-advisor">6. Guardrails And Press-Freedom Advisor</h2>
+<p><strong>Category:</strong> Editorial Workflow</p>
+<p><strong>Title:</strong> Guardrails and advisor output should help, not override editors</p>
+<p><strong>Body:</strong></p>
+<p>The Civic Desk includes advisory guardrails and an optional press-freedom/legal-risk advisor. These tools can flag sourcing gaps, attribution issues, privacy concerns, defamation risk, public/private figure questions, and verification tasks.</p>
+<p>They are not legal advice. They are not censorship. They must not veto the editor.</p>
+<p>Please share examples where:</p>
+<ul>
+<li>The warning was useful.</li>
+<li>The warning was confusing.</li>
+<li>The language sounded too legalistic.</li>
+<li>The tool missed an obvious risk.</li>
+<li>The tool overreacted to ordinary reporting language.</li>
+</ul>
+<p>The goal is to help under-resourced local publishers slow down at the right moments without taking editorial judgment away from them.</p>
+        </article>
+    </main>
+    <footer>
+        <div class="footer-container">
+            <div>
+                <a class="logo" href="index.html#top"><span>The Civic Desk</span></a>
+                <p>Open-source local newsroom software. Repository name: CivicNewspaper. Installed app name: The Civic Desk.</p>
+            </div>
+            <div class="footer-links">
+                <a href="user_manual.html">Manual</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
