@@ -1,7 +1,7 @@
 // src/useApp.test.tsx
 import { render, screen, act } from "@testing-library/react";
 import { describe, test, expect, vi } from "vitest";
-import { ensureAttributionPhrase, sanitizeEvidenceCitations, useApp } from "./useApp";
+import { ensureAttributionPhrase, normalizeEvidenceCitationShapes, sanitizeEvidenceCitations, useApp } from "./useApp";
 
 // Mock tauri core invoke to return mock initial data
 import { invoke } from "@tauri-apps/api/core";
@@ -33,6 +33,18 @@ describe("useApp Hook Tests", () => {
     expect(sanitized).toContain("unlinked-evidence-999");
     expect(sanitized).toContain("unlinked-evidence-123");
     expect(sanitized).toContain("unlinked-evidence-456");
+  });
+
+  test("normalizeEvidenceCitationShapes turns model citation shorthand into markdown links", () => {
+    const normalized = normalizeEvidenceCitationShapes(
+      "A paragraph cites shorthand (evidence:13), bracket syntax [evidence:14], and keeps [Source](evidence:15).",
+    );
+
+    expect(normalized).toContain("[Source](evidence:13)");
+    expect(normalized).toContain("[Source](evidence:14)");
+    expect(normalized).toContain("[Source](evidence:15)");
+    expect(normalized).not.toContain("shorthand (evidence:13)");
+    expect(normalized).not.toContain("[evidence:14]");
   });
 
   test("ensureAttributionPhrase source-binds improved drafts with linked evidence", () => {

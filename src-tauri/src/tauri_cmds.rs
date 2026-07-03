@@ -1160,6 +1160,33 @@ pub(crate) fn story_decision_with_conn(
                         .to_string(),
                 );
             }
+            if let Some(lead_id) = draft.lead_id {
+                let linked_ids: HashSet<i32> = db::get_evidence_by_lead(conn, lead_id)
+                    .map_err(|e| e.to_string())?
+                    .iter()
+                    .filter_map(|item| item.id)
+                    .collect();
+                let citation_re = regex::Regex::new("(?i)evidence:\\s*(?://)?\\s*(\\d+)")
+                    .expect("valid citation regex");
+                let mut unlinked_ids: Vec<i32> = citation_re
+                    .captures_iter(&draft.content)
+                    .filter_map(|caps| caps.get(1))
+                    .filter_map(|m| m.as_str().parse::<i32>().ok())
+                    .filter(|evidence_id| !linked_ids.contains(evidence_id))
+                    .collect();
+                unlinked_ids.sort_unstable();
+                unlinked_ids.dedup();
+                if !unlinked_ids.is_empty() {
+                    let ids = unlinked_ids
+                        .iter()
+                        .map(i32::to_string)
+                        .collect::<Vec<_>>()
+                        .join(", ");
+                    return Err(format!(
+                        "This draft cites evidence ID(s) {ids} that are not linked to this lead. Use the linked source citation buttons or attach the correct source before approving it for publish."
+                    ));
+                }
+            }
         }
     }
     if let Err(err) = enforce_publish_gate(conn, id, decision, override_reason) {

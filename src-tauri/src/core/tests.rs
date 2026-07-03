@@ -5634,6 +5634,91 @@ I should produce JSON only.
         );
     }
 
+    #[test]
+    fn test_story_decision_blocks_publish_with_unlinked_evidence_citation() {
+        use crate::tauri_cmds::story_decision_with_conn;
+        let conn =
+            init_db("file:test_story_decision_unlinked_evidence?mode=memory&cache=shared").unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "St. Vrain Schools".to_string(),
+                url: "https://example.test/stvrain".to_string(),
+                r#type: "official_comm".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        let linked_evidence_id = insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://example.test/stvrain".to_string()),
+                excerpt:
+                    "St. Vrain describes experiential academic programs through the Innovation Center."
+                        .to_string(),
+                content_hash: "linked-academic-programs".to_string(),
+                entities: "[]".to_string(),
+                fetched_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+        let lead_id = insert_lead(
+            &conn,
+            &Lead {
+                id: None,
+                detector_name: "test".to_string(),
+                why: "St. Vrain highlights experiential academic programs".to_string(),
+                confidence: "high".to_string(),
+                risk_level: "low".to_string(),
+                confirmation_checklist: "[]".to_string(),
+                from_scan_lead_id: None,
+                story_type: Some("watch".to_string()),
+                disposition: Some("ready_to_draft".to_string()),
+                novelty_score: Some(2),
+                novelty_reason: Some("School program notice.".to_string()),
+                recurrence_count: None,
+                recurrence_note: None,
+                created_at: Utc::now().to_rfc3339(),
+            },
+            &[linked_evidence_id],
+        )
+        .unwrap();
+        let draft_id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: Some(lead_id),
+                format: "watch".to_string(),
+                title: "St. Vrain highlights experiential academic programs".to_string(),
+                content: "According to the linked source, St. Vrain describes experiential academic programs. [Source](evidence:13)\n\nThis is a watch brief for residents.".to_string(),
+                status: "draft_generated".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        let err = story_decision_with_conn(&conn, draft_id, "ready_to_publish", None)
+            .expect_err("unlinked citation should block the publish-ready transition");
+
+        assert!(
+            err.contains("not linked to this lead"),
+            "unexpected error: {err}"
+        );
+        let draft = crate::core::db::get_draft(&conn, draft_id).unwrap().unwrap();
+        assert_eq!(draft.status, "draft_generated");
+    }
+
     // RE-AUDIT NEW-3: whole-word/inflection matching avoids substring false
     // positives but still catches real inflections.
     #[test]

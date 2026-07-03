@@ -215,6 +215,16 @@ export function sanitizeEvidenceCitations(text: string, allowedEvidenceIds: numb
   });
 }
 
+export function normalizeEvidenceCitationShapes(text: string): string {
+  return text
+    .replace(/\[\s*source\s*\]\(\s*evidence:\s*(?:\/\/)?\s*(\d+)\s*\)/gi, (_match, id) => `[Source](evidence:${id})`)
+    .replace(/\[\s*(?:source|citation)?\s*evidence:\s*(?:\/\/)?\s*(\d+)\s*\]/gi, (_match, id) => `[Source](evidence:${id})`)
+    .replace(/\(\s*evidence:\s*(?:\/\/)?\s*(\d+)\s*\)/gi, (match, id, offset, fullText) => {
+      const previousChar = offset > 0 ? fullText[offset - 1] : "";
+      return previousChar === "]" ? match : `[Source](evidence:${id})`;
+    });
+}
+
 export function ensureAttributionPhrase(text: string, allowedEvidenceIds: number[]): string {
   if (allowedEvidenceIds.length === 0 || /according to/i.test(text)) return text;
   const firstEvidenceId = allowedEvidenceIds[0];
@@ -2038,7 +2048,8 @@ ${selectedDraft.content}`;
       const allowedEvidenceIds = evidenceList
         .map((item) => item.id)
         .filter((id): id is number => typeof id === "number");
-      const citationSafe = sanitizeEvidenceCitations(improved, allowedEvidenceIds);
+      const normalizedCitations = normalizeEvidenceCitationShapes(improved);
+      const citationSafe = sanitizeEvidenceCitations(normalizedCitations, allowedEvidenceIds);
       const normalized = normalizeGeneratedDraft(citationSafe, selectedDraft.title);
       const attributedContent = ensureAttributionPhrase(normalized.content, allowedEvidenceIds);
       setSelectedDraft({

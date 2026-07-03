@@ -375,6 +375,35 @@ describe("Workbench Component Tests", () => {
     expect(onApprovePublish).toHaveBeenCalledTimes(1);
   });
 
+  test("blocks static publish approval when an inline evidence citation is not linked to the lead", () => {
+    const handleApprovePublish = vi.fn();
+    renderEditor({
+      selectedDraft: {
+        ...mockDraft,
+        content:
+          "According to the linked source, the district describes experiential academic programs. [Source](evidence:13)\n\nThis is a watch brief for residents.",
+      },
+      evidenceList: [{
+        id: 7,
+        source_id: 1,
+        fetched_at: "2026-05-23T00:00:00Z",
+        excerpt: "The district describes experiential academic programs through the Innovation Center.",
+        content_hash: "hash",
+        entities: "[]",
+      }],
+      onApprovePublish: handleApprovePublish,
+    });
+
+    const strip = document.getElementById("workbench-priority-strip")!;
+    fireEvent.click(within(strip).getByLabelText(/reviewed this story/i));
+    fireEvent.click(within(strip).getByRole("button", { name: /^Approve$/i }));
+
+    expect(handleApprovePublish).not.toHaveBeenCalled();
+    expect(screen.getAllByRole("alert").map((alert) => alert.textContent).join(" ")).toContain(
+      "The draft cites evidence ID(s) 13 that are not linked to this lead."
+    );
+  });
+
   test("renders advisory warning copy without mojibake", () => {
     const mockReport: GuardrailsReport = {
       is_clean: true,

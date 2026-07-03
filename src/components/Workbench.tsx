@@ -223,6 +223,16 @@ function getStaticPublishBlockers(draft: Draft, evidenceList: EvidenceItem[]): s
   const title = (draft.title || "").trim();
   const content = (draft.content || "").trim();
   const hasLead = draft.lead_id !== undefined && draft.lead_id !== null;
+  const linkedEvidenceIds = new Set(
+    evidenceList
+      .map((item) => item.id)
+      .filter((id): id is number => typeof id === "number")
+      .map((id) => String(id))
+  );
+  const citedEvidenceIds = Array.from(content.matchAll(/evidence:\s*(?:\/\/)?\s*(\d+)/gi))
+    .map((match) => match[1])
+    .filter(Boolean);
+  const unlinkedCitationIds = citedEvidenceIds.filter((id) => !linkedEvidenceIds.has(id));
   if (!content || content.split(/\s+/).filter(Boolean).length < 15) {
     blockers.push("The article body is empty or too short for a public page.");
   }
@@ -231,6 +241,9 @@ function getStaticPublishBlockers(draft: Draft, evidenceList: EvidenceItem[]): s
   }
   if (/source check:|unlinked-evidence-\d+/i.test(content)) {
     blockers.push("The draft has disabled or unlinked evidence citations. Link the correct source before approval.");
+  }
+  if (unlinkedCitationIds.length > 0) {
+    blockers.push(`The draft cites evidence ID(s) ${Array.from(new Set(unlinkedCitationIds)).join(", ")} that are not linked to this lead.`);
   }
   if (/approved during cleanroom mechanics test|despite quality warnings|see tester report|mechanics test|tester report/i.test(content)) {
     blockers.push("The body looks like an editor/test note, not public story copy.");
