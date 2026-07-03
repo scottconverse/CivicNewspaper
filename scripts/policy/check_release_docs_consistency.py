@@ -4,7 +4,8 @@
 This is intentionally narrow. It protects the claims that have repeatedly drifted:
 Windows-only public-beta installer proof, unsigned installer honesty, here.now as
 the live-tested default, credentialed providers as proof-needed, Cloudflare as
-assisted/manual, app-managed local AI setup, and portable fixture paths.
+assisted/manual, app-managed local AI setup, hosted release evidence, and
+portable fixture paths.
 """
 
 from __future__ import annotations
@@ -34,8 +35,10 @@ def main() -> int:
     failures: list[str] = []
 
     require("README.md", "Local isolated-profile smoke", failures)
-    require("README.md", "true clean-machine or remote tester run is still required", failures)
-    forbid("README.md", "Cleanroom testing has proven", failures)
+    require("README.md", "final remote cleanroom tester run passed", failures)
+    require("README.md", "docs/release-evidence/v0.3.2.json", failures)
+    require("README.md", "Product `main`, release tags, and public GitHub Releases still require Scott approval", failures)
+    forbid("README.md", "true clean-machine or remote tester run is still required", failures)
 
     require("CONTRIBUTING.md", "app-managed local AI setup", failures)
     require("CONTRIBUTING.md", "not a required source-build step", failures)
@@ -45,6 +48,13 @@ def main() -> int:
     for path in ("docs/install.md", "docs/user_manual.md", "docs/release-readiness.md"):
         require(path, "backlog/proof-needed", failures)
         require(path, "macOS and Linux", failures)
+
+    require("docs/install.md", "passed final remote cleanroom testing", failures)
+    require("docs/install.md", "release-preparation evidence only", failures)
+    require("docs/release-readiness.md", "Current v0.3.2 evidence", failures)
+    require("docs/release-readiness.md", "docs/release-evidence/v0.3.2.json", failures)
+    require("docs/release-evidence/v0.3.2.json", "af4a12b0689dd8de64ce6af707b0c305a9cdaba0", failures)
+    require("docs/release-evidence/v0.3.2.json", "AB598EC26F658BB2B0735827F15DC787162D372A0C3FF0A3A18B6ADE48ABE241", failures)
 
     require("docs/publishing-connectors.md", "anonymous here.now preview publishing is the tested default fast path", failures)
     require("docs/publishing-connectors.md", "Cloudflare Pages API publishing is disabled", failures)

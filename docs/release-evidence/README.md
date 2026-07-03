@@ -1,8 +1,8 @@
 # Hosted Release Evidence
 
-This folder is intentionally empty until a release candidate is ready to tag.
+This folder contains hosted release evidence files for release candidates that are ready for tag review.
 
-Before pushing a `vX.Y.Z` tag, add `docs/release-evidence/vX.Y.Z.json` in the same commit that will be tagged. The hosted release workflow refuses to build or upload public beta artifacts unless that JSON file proves, for the exact tag and commit:
+Before pushing a `vX.Y.Z` tag, add or update `docs/release-evidence/vX.Y.Z.json` in the same commit that will be tagged. The hosted release workflow refuses to build or upload public beta artifacts unless that JSON file proves, for the exact tag and commit:
 
 - local release smoke passed;
 - default-model bakeoff passed;

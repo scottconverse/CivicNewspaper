@@ -10,7 +10,7 @@ Open the releases page:
 
 <https://github.com/scottconverse/CivicNewspaper/releases>
 
-Use the newest release that includes a Windows installer and checksum. The latest source tag and the latest published installer release may not always be the same during public beta.
+Use the newest release that includes a Windows installer and checksum for the version you intend to install. The latest source candidate and the latest published installer release may not always be the same during public beta. If the release page still shows only older versions, v0.3.2 has not been publicly released yet.
 
 ## Windows
 
@@ -29,7 +29,7 @@ macOS and Linux installers are backlog/proof-needed for this release line. Do no
 
 ## Clean-Machine Proof
 
-Every release candidate still needs a clean-machine or remote-tester report before it can be called cleanroom-proven. For v0.3.2, local Windows packaged first-run proof is available, but the final external cleanroom report is still a release gate.
+Every release candidate needs a clean-machine or remote-tester report before it can be called cleanroom-proven. For v0.3.2, the Windows public-beta installer represented by commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final remote cleanroom testing with zero blocker, critical, or major findings. The cleanroom-tested installer SHA256 is `AB598EC26F658BB2B0735827F15DC787162D372A0C3FF0A3A18B6ADE48ABE241`.
 
 Required proof for a cleanroom-proven release:
 
@@ -38,6 +38,8 @@ Required proof for a cleanroom-proven release:
 3. Verify first-run setup, local AI setup or the skip/degraded path, source intake, draft generation, ZIP export, and here.now publishing.
 4. Record the report path, report hash, installer hash, tester machine, and any signing, notarization, permission, or package-manager warnings honestly in the release notes.
 5. Verify that hosted release evidence and published asset hashes match the cleanroom-tested installer.
+
+The v0.3.2 hosted-release evidence file is [release-evidence/v0.3.2.json](release-evidence/v0.3.2.json). It is release-preparation evidence only; the public release still requires Scott approval before product push, merge, tag, or GitHub Release publication.
 
 macOS and Linux additionally require real platform artifacts and platform-specific clean-machine proof before public docs advertise them as supported installer paths.
 

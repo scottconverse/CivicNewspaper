@@ -1,6 +1,6 @@
 # Implementation Plan: v0.3.0 to v1.0.0
 
-This document supersedes the earlier v0.2.9 planning snapshot. The older v0.2.9 draft is historical; this file is the maintained roadmap from the public-beta baseline that shipped as v0.3.0 and the current v0.3.2 repair candidate.
+This document supersedes the earlier v0.2.9 planning snapshot. The older v0.2.9 draft is historical; this file is the maintained roadmap from the public-beta baseline that shipped as v0.3.0 and the current v0.3.2 Windows release candidate.
 
 Current v0.3.2 focus areas:
 

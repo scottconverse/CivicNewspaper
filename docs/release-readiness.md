@@ -70,6 +70,21 @@ The GitHub release workflow is intentionally conservative during public beta:
 
 This prevents a public unsigned installer from appearing before checksum and local release-gate evidence have been reviewed.
 
+## Current v0.3.2 evidence
+
+The Windows public-beta v0.3.2 release candidate is cleanroom-proven at commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`.
+
+- Hosted evidence file: `docs/release-evidence/v0.3.2.json`
+- RC receipt: `.agent-runs/release-candidate-20260703-100118/release-candidate-receipt.json`
+- Strict release smoke: `.agent-runs/release-smoke-20260703-095436/release-smoke-receipt.json`
+- Windows installer smoke: `.agent-runs/windows-installer-smoke-20260702-200332/windows-installer-smoke-receipt.json`
+- Packaged first-run walkthrough: `.agent-runs/packaged-first-run-walkthrough-20260702-200346/packaged-first-run-walkthrough-receipt.json`
+- Final cleanroom report: `test-comms/reports/20260702-final-cleanroom-v032-af4a12b-report.md`
+- Cleanroom public URL: `https://olive-gorge-cgsr.here.now`
+- Cleanroom-tested installer SHA256: `AB598EC26F658BB2B0735827F15DC787162D372A0C3FF0A3A18B6ADE48ABE241`
+
+This does not publish, merge, or tag the release by itself. Scott must still approve the product push, tag, hosted GitHub Release, and GitHub Pages update.
+
 ## Evidence levels
 
 | Level | Required evidence | Allowed skips |

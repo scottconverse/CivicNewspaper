@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [0.3.2] - 2026-07-02
 
 ### Changed
+- Recorded final Windows public-beta cleanroom pass for commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`, installer SHA256 `AB598EC26F658BB2B0735827F15DC787162D372A0C3FF0A3A18B6ADE48ABE241`, and here.now verification URL `https://olive-gorge-cgsr.here.now`.
 - Hardened the Windows public-beta first-run setup path so identity entry, local-AI skip, defaults, and workspace entry can be proven from the packaged installer.
 - Made release smoke reject stable runs that also allow a dirty working tree.
 - Updated release-facing docs to match the v0.3.2 Windows-only public-beta installer scope.

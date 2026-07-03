@@ -1,0 +1,51 @@
+{
+  "tag": "v0.3.2",
+  "commit": "af4a12b0689dd8de64ce6af707b0c305a9cdaba0",
+  "generated_at": "2026-07-03T16:01:18-06:00",
+  "rc_receipt_path": ".agent-runs/release-candidate-20260703-100118/release-candidate-receipt.json",
+  "rc_receipt_sha256": "24FA27F6223198B4D2B09F41BDED7EC7EBC30740FF7B22C3278BC45293FBE1AE",
+  "release_smoke": {
+    "ok": true,
+    "receipt_path": ".agent-runs/release-smoke-20260703-095436/release-smoke-receipt.json",
+    "receipt_sha256": "2EA7087E30D6523166229ABD148916AC911321707390B214EB2E380DE9BB17B1"
+  },
+  "model_bakeoff": {
+    "ok": true,
+    "receipt_path": ".agent-runs/model-bakeoff-2026-07-02T15-18-51-669Z.json",
+    "receipt_sha256": "298322380A6DBF569A9C519FA128618139298462B26A11F08C61EC5691DC6FA0"
+  },
+  "dependency_audit": {
+    "ok": true,
+    "receipt_path": ".agent-runs/dependency-audit-20260702-091800.json",
+    "receipt_sha256": "25B82F73E949E2059F4D633791672FB7C37DD260623A6D23DC7470663220C489"
+  },
+  "windows_installer_smoke": {
+    "ok": true,
+    "receipt_path": ".agent-runs/windows-installer-smoke-20260702-200332/windows-installer-smoke-receipt.json",
+    "receipt_sha256": "B88983C74BA6B0819C4BF1DE96973E2C74482B8F03C0A7E8E1B9BD1263216FE0",
+    "installer_name": "The Civic Desk_0.3.2_x64-setup.exe",
+    "installer_sha256": "AB598EC26F658BB2B0735827F15DC787162D372A0C3FF0A3A18B6ADE48ABE241"
+  },
+  "packaged_first_run_walkthrough": {
+    "ok": true,
+    "receipt_path": ".agent-runs/packaged-first-run-walkthrough-20260702-200346/packaged-first-run-walkthrough-receipt.json",
+    "receipt_sha256": "6206A470CCC85D9E0AC4AEC6B9B163597E099CA77E56D9649DE3DBAAD23B54C6"
+  },
+  "cleanroom": {
+    "ok": true,
+    "report_path": "test-comms/reports/20260702-final-cleanroom-v032-af4a12b-report.md",
+    "report_sha256": "34A14F7E40765E4AD2026300FDC7AD08E39261C36FD34D0AAA7B655F867338D1",
+    "tester_machine": "MSI Windows 11 Home, Intel i7-13620H, 15.7 GB RAM, Intel UHD plus NVIDIA RTX 4050 Laptop GPU",
+    "installer_sha256": "AB598EC26F658BB2B0735827F15DC787162D372A0C3FF0A3A18B6ADE48ABE241",
+    "public_url": "https://olive-gorge-cgsr.here.now",
+    "zip_path": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\site-package.zip",
+    "verdict": "PASS with zero blocker, critical, or major findings."
+  },
+  "release_scope": {
+    "windows_public_beta": true,
+    "macos_installer": "backlog/proof-needed",
+    "linux_installer": "backlog/proof-needed",
+    "unsigned_installer": true,
+    "requires_scott_approval_before_push_merge_tag_or_public_release": true
+  }
+}
