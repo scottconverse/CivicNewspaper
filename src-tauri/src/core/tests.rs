@@ -1546,6 +1546,121 @@ mod tests {
     }
 
     #[test]
+    fn test_daily_scan_downgrades_multi_item_event_index_before_drafting() {
+        let response = r#"
+        {
+          "leads": [
+            {
+              "title": "Official city website: Independence Weekend Free Concert Friday, July 3 &#8211; ArtWalk Saturday, July 4 &#8211; Farmers Market Sunday, July 5",
+              "summary": "The city homepage lists multiple events including a concert in July, an ArtWalk in July, and a farmers market in July. It also links to things to do, event calendar, weekend activities, and workshops.",
+              "original_url": "https://example.gov/events",
+              "why_flagged": "This could be useful for residents.",
+              "source_name": "Official city website",
+              "source_type": "official_calendar",
+              "priority": "high",
+              "suggested_next_step": "Draft a weekend events story.",
+              "story_type": "story",
+              "what_changed": "Several dated events are listed.",
+              "immediacy": 5,
+              "impact": 4,
+              "conflict": 1,
+              "novelty": 4,
+              "what_would_make_it_publishable": "Confirm event details"
+            }
+          ]
+        }
+        "#;
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT INTO daily_scan_runs (started_at, run_status) VALUES ('', 'running')",
+            [],
+        )
+        .unwrap();
+
+        crate::core::daily_scan::parse_and_save_scan_response(&conn, 1, response).unwrap();
+
+        let lead = list_daily_scan_leads(&conn, 1).unwrap().pop().unwrap();
+        assert!(
+            !lead.title.contains("&#8211;"),
+            "encoded HTML entities must be cleaned before display"
+        );
+        assert_eq!(lead.disposition.as_deref(), Some("needs_verification"));
+        assert!(lead
+            .publishability_note
+            .as_deref()
+            .unwrap_or_default()
+            .contains("combine multiple calendar or event-listing items"));
+
+        let queue_lead = list_leads(&conn).unwrap().pop().unwrap();
+        assert_ne!(queue_lead.disposition.as_deref(), Some("ready_to_draft"));
+    }
+
+    #[test]
+    fn test_daily_scan_downgrades_markup_and_broad_rollup_leads() {
+        let response = r#"
+        {
+          "leads": [
+            {
+              "title": "Review community signal from city events: -->",
+              "summary": "Things to do event calendar all events search events submit your event calendar view list view upcoming events",
+              "original_url": "https://example.gov/events",
+              "why_flagged": "Navigation page may contain civic updates.",
+              "source_name": "City events",
+              "source_type": "events",
+              "priority": "high",
+              "suggested_next_step": "Draft if useful.",
+              "story_type": "story",
+              "what_changed": "New current item.",
+              "immediacy": 5,
+              "impact": 4,
+              "conflict": 1,
+              "novelty": 4,
+              "what_would_make_it_publishable": "Confirm source"
+            },
+            {
+              "title": "Chamber legislative session update",
+              "summary": "The chamber of commerce posted a Colorado General Assembly legislative session update for the business community.",
+              "original_url": "https://example.org/chamber",
+              "why_flagged": "The session may affect policy.",
+              "source_name": "Regional chamber",
+              "source_type": "community_signal",
+              "priority": "high",
+              "suggested_next_step": "Draft a story.",
+              "story_type": "story",
+              "what_changed": "The legislative session is underway.",
+              "immediacy": 5,
+              "impact": 4,
+              "conflict": 1,
+              "novelty": 4,
+              "what_would_make_it_publishable": "Confirm local impact"
+            }
+          ]
+        }
+        "#;
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT INTO daily_scan_runs (started_at, run_status) VALUES ('', 'running')",
+            [],
+        )
+        .unwrap();
+
+        crate::core::daily_scan::parse_and_save_scan_response(&conn, 1, response).unwrap();
+
+        let leads = list_daily_scan_leads(&conn, 1).unwrap();
+        assert_eq!(leads.len(), 2);
+        assert!(leads
+            .iter()
+            .all(|lead| lead.disposition.as_deref() == Some("needs_verification")));
+        assert!(leads.iter().any(|lead| lead
+            .publishability_note
+            .as_deref()
+            .unwrap_or_default()
+            .contains("broad organization or legislative-session rollup")));
+    }
+
+    #[test]
     fn test_daily_scan_does_not_mark_different_topics_on_same_source_page_recurring() {
         let first_response = r#"
         {

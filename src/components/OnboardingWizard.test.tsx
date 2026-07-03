@@ -71,6 +71,31 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(handleComplete).toHaveBeenCalled());
   });
 
+  test("fresh setup persists default publish and backup paths immediately", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_resolved_app_data_dir") return Promise.resolve("C:\\Users\\Tester\\AppData\\Roaming\\CivicDesk");
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: [], version: "0.1.0" });
+      if (cmd === "set_setting") return Promise.resolve();
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} />);
+
+    await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "paths.publish",
+      value: "C:\\Users\\Tester\\AppData\\Roaming\\CivicDesk/sites/default",
+    }));
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "paths.backup",
+      value: "C:\\Users\\Tester\\AppData\\Roaming\\CivicDesk/backups",
+    });
+  });
+
   test("Ollama Unreachable: Shows not detected and allows skipping", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;

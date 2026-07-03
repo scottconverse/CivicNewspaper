@@ -307,8 +307,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                   <div
                     key={lead.id}
                     className={`card lead-card ${selectedLeadId === lead.id ? "selected-lead" : ""}`}
-                    onClick={openLeadOrDraft}
-                    style={{ cursor: "pointer", borderColor: selectedLeadId === lead.id ? "var(--accent-primary)" : undefined }}
+                    style={{ borderColor: selectedLeadId === lead.id ? "var(--accent-primary)" : undefined }}
                     data-testid={`lead-card-${lead.id}`}
                   >
                   <div>
@@ -360,7 +359,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                   <div className="mt-2 text-right">
                     <button 
                       type="button"
-                      className="btn btn-secondary btn-sm"
+                      className="btn btn-primary btn-sm lead-draft-action"
                       data-testid={`btn-draft-lead-${lead.id}`}
                       aria-label={`${draftLabel} ${lead.why}`}
                       onClick={(e) => {

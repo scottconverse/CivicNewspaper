@@ -47,7 +47,7 @@ describe("LeadQueue Component Tests", () => {
     },
   ];
 
-  test("renders 3 fixture leads with risk/status badges and triggers onSelect", () => {
+  test("renders 3 fixture leads with risk/status badges and keeps card text passive", () => {
     const handleSelect = vi.fn();
 
     render(
@@ -75,10 +75,10 @@ describe("LeadQueue Component Tests", () => {
     expect(screen.getByText("Risk: med")).toBeInTheDocument();
     expect(screen.getByText("Risk: low")).toBeInTheDocument();
 
-    // Click on the first lead card and assert callback fired
+    // Lead text is selectable/readable; the explicit Draft button starts work.
     const firstLeadCard = screen.getByTestId("lead-card-101");
     fireEvent.click(firstLeadCard);
-    expect(handleSelect).toHaveBeenCalledWith(101, fixtureLeads[0]);
+    expect(handleSelect).not.toHaveBeenCalled();
   });
 
   test("visible Draft button passes the rendered lead object to the parent", () => {

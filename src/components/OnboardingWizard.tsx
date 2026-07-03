@@ -183,6 +183,18 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     await setSetting(key, value);
   };
 
+  const ensureDefaultPathSettings = async (defaultPublishPath: string, defaultBackupPath: string) => {
+    if (!isTauri()) return;
+    const savedPublishPath = await getSetting("paths.publish");
+    const savedBackupPath = await getSetting("paths.backup");
+    if (!savedPublishPath) {
+      await saveSetting("paths.publish", defaultPublishPath);
+    }
+    if (!savedBackupPath) {
+      await saveSetting("paths.backup", defaultBackupPath);
+    }
+  };
+
   const saveOnboardingDone = async () => {
     if (!isTauri()) return;
     await setOnboardingComplete(true);
@@ -309,6 +321,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
           const bPath = await join(appData, "backups");
           setBackupPath(bPath);
+          await ensureDefaultPathSettings(pPath, bPath);
         } else {
           setPublishPath("C:\\CivicNews\\sites\\default");
           setBackupPath("C:\\CivicNews\\backups");

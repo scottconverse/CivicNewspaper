@@ -128,8 +128,8 @@ pub fn parse_and_save_scan_response(
         let lead = DailyScanLead {
             id: None,
             scan_id: run_id,
-            title: item.title,
-            summary: item.summary,
+            title: clean_scan_public_text(&item.title),
+            summary: clean_scan_public_text(&item.summary),
             source_id: None, // Assume None, aggregated logic (D5)
             original_url,
             why_flagged: Some(why_flagged),
@@ -268,6 +268,24 @@ fn publishability_next_step(item: &ScanResultItem) -> Option<String> {
             value.trim_end_matches('.')
         )
     })
+}
+
+fn clean_scan_public_text(value: &str) -> String {
+    value
+        .replace("&#8211;", "-")
+        .replace("&#8212;", "-")
+        .replace("&#8216;", "'")
+        .replace("&#8217;", "'")
+        .replace("&#8220;", "\"")
+        .replace("&#8221;", "\"")
+        .replace("&amp;", "&")
+        .replace("&nbsp;", " ")
+        .replace("-->", "")
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+        .trim()
+        .to_string()
 }
 
 /// Strip a surrounding markdown code fence (```json ... ``` or ``` ... ```) from
@@ -1142,6 +1160,9 @@ fn save_daily_scan_lead_for_queue(
     }
     let recurring_memory = find_recurring_memory(conn, lead)?;
     let mut lead = lead_with_beat_memory(lead, recurring_memory.as_ref());
+    if let Some(reason) = scan_lead_public_quality_issue(&lead) {
+        lead = downgrade_scan_lead_for_public_quality(lead, reason);
+    }
     let evidence_ids = evidence_ids_for_scan_lead(conn, &lead)?;
     if evidence_ids.is_empty() && scan_lead_requires_linked_evidence(&lead) {
         lead = downgrade_scan_lead_without_evidence(lead);
@@ -1238,6 +1259,123 @@ fn downgrade_scan_lead_without_evidence(mut lead: DailyScanLead) -> DailyScanLea
         _ => "Attach or cite the public source document before drafting.".to_string(),
     });
     lead
+}
+
+fn scan_lead_public_quality_issue(lead: &DailyScanLead) -> Option<&'static str> {
+    let text = [
+        lead.title.as_str(),
+        lead.summary.as_str(),
+        lead.why_flagged.as_deref().unwrap_or_default(),
+    ]
+    .join(" ");
+    let lower = text.to_lowercase();
+    if text.contains("&#")
+        || text.contains("-->")
+        || text.contains("<script")
+        || text.contains("<nav")
+    {
+        return Some(
+            "The lead text still contains markup, encoded HTML, or page-navigation debris.",
+        );
+    }
+    let quality = evidence_quality(&text);
+    if quality.looks_like_navigation_or_index() {
+        return Some("The lead appears to summarize source navigation, category lists, or an index page instead of one reportable item.");
+    }
+    if looks_like_multi_item_event_listing(&lower) {
+        return Some("The lead appears to combine multiple calendar or event-listing items; split and verify one specific civic item before drafting.");
+    }
+    if looks_like_broad_legislative_or_chamber_rollup(&lower) {
+        return Some("The lead appears to be a broad organization or legislative-session rollup, not a specific local civic development.");
+    }
+    None
+}
+
+fn downgrade_scan_lead_for_public_quality(mut lead: DailyScanLead, reason: &str) -> DailyScanLead {
+    if matches!(
+        lead.disposition.as_deref(),
+        Some("ready_to_draft") | Some("review")
+    ) {
+        lead.disposition = Some("needs_verification".to_string());
+    }
+    lead.priority = Some("low".to_string());
+    lead.publishability_note = Some(match lead.publishability_note {
+        Some(note) if !note.trim().is_empty() => {
+            format!("{}. {}", note.trim_end_matches('.'), reason)
+        }
+        _ => reason.to_string(),
+    });
+    lead.suggested_next_step = Some(match lead.suggested_next_step {
+        Some(step) if !step.trim().is_empty() => format!(
+            "{}. Then confirm this is one current, local, source-backed item before drafting.",
+            step.trim_end_matches('.')
+        ),
+        _ => "Confirm this is one current, local, source-backed item before drafting.".to_string(),
+    });
+    lead.why_flagged = Some(match lead.why_flagged {
+        Some(why) if !why.trim().is_empty() => {
+            format!("{}. Quality gate: {}", why.trim_end_matches('.'), reason)
+        }
+        _ => format!("Quality gate: {reason}"),
+    });
+    lead
+}
+
+fn looks_like_multi_item_event_listing(lower: &str) -> bool {
+    let month_hits = [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+    ]
+    .iter()
+    .map(|month| lower.matches(month).count())
+    .sum::<usize>();
+    let event_hits = [
+        "concert",
+        "festival",
+        "artwalk",
+        "farmers market",
+        "events",
+        "things to do",
+        "weekend",
+        "calendar",
+        "workshop",
+        "class",
+    ]
+    .iter()
+    .filter(|term| lower.contains(**term))
+    .count();
+    lower.len() > 220 && month_hits >= 3 && event_hits >= 3
+}
+
+fn looks_like_broad_legislative_or_chamber_rollup(lower: &str) -> bool {
+    let broad_terms = [
+        "general assembly",
+        "legislative session",
+        "state legislature",
+        "chamber of commerce",
+        "business community",
+    ];
+    let local_action_terms = [
+        "city council",
+        "public hearing",
+        "permit",
+        "local ordinance",
+        "planning commission",
+        "school board",
+        "county commission",
+    ];
+    broad_terms.iter().any(|term| lower.contains(*term))
+        && !local_action_terms.iter().any(|term| lower.contains(*term))
 }
 
 #[derive(Debug)]
