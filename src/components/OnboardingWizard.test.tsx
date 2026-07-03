@@ -128,6 +128,35 @@ describe("OnboardingWizard Component Tests", () => {
     expect(invokeMock).toHaveBeenCalledWith("set_setting", { key: "ai.setup_skipped", value: "true" });
   });
 
+  test("AI setup exposes skip before diagnostics when local runtime is unavailable", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: false, models: [], version: null });
+      if (cmd === "get_setting") return Promise.resolve(null);
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={handleComplete} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+
+    await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
+    expect(screen.getByRole("group", { name: /AI setup choices/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Install local AI runtime/i })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /Skip for now/i }).length).toBeGreaterThan(0);
+
+    const buttons = screen.getAllByRole("button").map(button => button.textContent || "");
+    const firstSkipIndex = buttons.findIndex(label => /Skip for now/i.test(label));
+    const diagnosticsIndex = buttons.findIndex(label => /Save diagnostics file/i.test(label));
+    expect(firstSkipIndex).toBeGreaterThanOrEqual(0);
+    if (diagnosticsIndex >= 0) {
+      expect(firstSkipIndex).toBeLessThan(diagnosticsIndex);
+    }
+  });
+
   test("offline AI setup install button invokes app-managed runtime install", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;

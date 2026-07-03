@@ -387,7 +387,12 @@ try {
   Add-ScreenshotCheck "after-next-screenshot" $afterNextScreenshot
 
   if ($CompleteOnboarding) {
-    Click-WindowPoint -Process $appProcess -X 625 -Y 817
+    [void][CivicDeskWalkthroughWin32]::SetForegroundWindow($appProcess.MainWindowHandle)
+    Start-Sleep -Milliseconds 150
+    # Step 2 focuses the visible "Skip for now" action when the local AI
+    # runtime is unavailable. Use the focus path instead of stale coordinates
+    # so this smoke keeps proving the actual keyboard-accessible route.
+    [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
     Start-Sleep -Seconds 1
     $skipConfirmScreenshot = Join-Path $OutputDir "04-skip-confirmation.png"
     Capture-WindowScreenshot -Process $appProcess -Path $skipConfirmScreenshot

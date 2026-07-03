@@ -10,7 +10,7 @@ Open the releases page:
 
 <https://github.com/scottconverse/CivicNewspaper/releases>
 
-Use the v0.3.2 Windows public-beta release when installing this version:
+Use the v0.3.2 Windows-only public-beta release when installing this version:
 
 <https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2>
 
@@ -80,7 +80,7 @@ If setup or publishing gets stuck, see [troubleshooting.md](troubleshooting.md) 
 ## Current Public-Beta Limits
 
 - Installers are unsigned.
-- Windows is the tested public-beta installer path for this release line.
+- Windows only is the tested public-beta installer path for this release line.
 - macOS and Linux installer proof is backlog/proof-needed.
 - Some external publishing providers require user-owned credentials.
 - PDF source-list import is disabled in the public beta until hardened parsing is available; convert PDFs to TXT/CSV/DOCX/XLSX or paste URLs directly.

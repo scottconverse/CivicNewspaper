@@ -151,6 +151,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const cityInputRef = useRef<HTMLInputElement | null>(null);
   const stateInputRef = useRef<HTMLInputElement | null>(null);
   const primaryActionRef = useRef<HTMLButtonElement | null>(null);
+  const stepTwoSkipButtonRef = useRef<HTMLButtonElement | null>(null);
   const modelDownloadButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // Step 3 State
@@ -815,9 +816,45 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     }
   };
 
+  const requestSkipAiSetup = () => {
+    if (step === 2) {
+      setSkipConfirm({
+        title: "Skip AI setup?",
+        message: "AI drafting and AI-assisted review will stay limited until you complete setup from AI Model. Deterministic source checks can still run.",
+        confirmLabel: "Continue without AI",
+        onConfirm: async () => {
+          await markAiSetupSkipped();
+          await goToStep(4);
+        },
+      });
+    } else if (step === 3) {
+      setSkipConfirm({
+        title: "Skip the model download?",
+        message: "AI drafting and AI-assisted review will stay limited until you download a model from AI Model. Deterministic source checks can still run.",
+        confirmLabel: "Continue without model",
+        onConfirm: async () => {
+          await markAiSetupSkipped();
+          await cancelPullModel();
+          await goToStep(4);
+        },
+      });
+    }
+  };
+
   const handleBack = () => {
     if (step > 1) void goToStep(step - 1);
   };
+
+  useEffect(() => {
+    if (step !== 2) return;
+    window.setTimeout(() => {
+      if (stepTwoNeedsRuntimeInstall) {
+        stepTwoSkipButtonRef.current?.focus();
+      } else {
+        primaryActionRef.current?.focus();
+      }
+    }, 0);
+  }, [step, stepTwoNeedsRuntimeInstall]);
 
   useEffect(() => {
     if (
@@ -1183,7 +1220,74 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
         {/* STEP 2: AI SERVICE SETUP */}
         {step === 2 && (
-          <div className="card">
+          <div className="onboarding-ai-step">
+            <div className="onboarding-step-two-actions" role="group" aria-label="AI setup choices">
+              <div>
+                <strong>Choose how to continue</strong>
+                <p className="help-text">
+                  You can install local AI now, or skip it and finish setup. Source checks still work without AI.
+                </p>
+              </div>
+              <div className="onboarding-step-two-buttons">
+                {health && !health.reachable && (
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => void installRuntime()}
+                    disabled={runtimeInstalling}
+                  >
+                    <Download size={14} style={{ marginRight: "0.5rem" }} />
+                    {runtimeInstalling ? "Installing..." : "Install local AI runtime"}
+                  </button>
+                )}
+                {health && health.reachable && health.models.length === 0 && (
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => {
+                      setAutoStartPull(true);
+                      void goToStep(3);
+                    }}
+                    disabled={pulling}
+                  >
+                    <Download size={14} style={{ marginRight: "0.5rem" }} />
+                    {pulling ? "Downloading..." : `Download ${model}`}
+                  </button>
+                )}
+                {health && health.reachable && health.models.length > 0 && (
+                  <button
+                    type="button"
+                    ref={primaryActionRef}
+                    className="btn btn-primary"
+                    onClick={() => void handleNext()}
+                  >
+                    Use selected model
+                    <ChevronRight size={14} style={{ marginLeft: "0.5rem" }} />
+                  </button>
+                )}
+                {health && !health.reachable && (
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setRetryCount(c => c + 1)}
+                    disabled={checkingHealth || runtimeInstalling}
+                  >
+                    <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} />
+                    {checkingHealth ? "Checking..." : "Retry"}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  ref={stepTwoSkipButtonRef}
+                  className="btn btn-secondary"
+                  onClick={requestSkipAiSetup}
+                >
+                  Skip for now
+                </button>
+              </div>
+            </div>
+
+            <div className="card onboarding-ai-status-card">
             {checkingHealth ? (
               <div style={{ textAlign: "center", padding: "2rem 0" }}>
                 <RefreshCcw className="animate-spin" size={32} style={{ color: "var(--accent-primary)", marginBottom: "1rem" }} />
@@ -1205,17 +1309,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 {healthTimeout && (
                   <div style={{ background: "rgba(239, 68, 68, 0.05)", padding: "1rem", borderRadius: "8px" }}>
                     <h4 style={{ color: "var(--color-error)" }}>Couldn't reach the AI service</h4>
-                    <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "1rem" }}>
-                      <button type="button" className="btn btn-primary btn-sm" onClick={() => void installRuntime()} disabled={runtimeInstalling}>
-                        <Download size={14} style={{ marginRight: "0.5rem" }} /> {runtimeInstalling ? "Installing..." : "Install local AI runtime"}
-                      </button>
-                      <button type="button" className="btn btn-primary btn-sm" onClick={() => { setHealthTimeout(false); setCheckingHealth(true); setRetryCount(c => c + 1); }}>
-                        <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} /> Retry
-                      </button>
-                      <button type="button" className="btn btn-secondary btn-sm" onClick={handleExportDiagnostics}>
-                        Save diagnostics file
-                      </button>
-                    </div>
                     <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>
                       The private AI service did not start. First try restarting Civic Desk. If Windows or antivirus asked about this app, allow it, then retry. If it still fails, save a diagnostics file for support.
                     </p>
@@ -1253,22 +1346,18 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                     {exportStatus && (
                       <p style={{ fontSize: "0.85rem", color: "var(--accent-primary)", marginBottom: "0.5rem" }}>{exportStatus}</p>
                     )}
+                    <details>
+                      <summary>Need help from support?</summary>
+                      <button type="button" className="btn btn-secondary btn-sm" onClick={handleExportDiagnostics} style={{ marginTop: "0.75rem" }}>
+                        Save diagnostics file
+                      </button>
+                    </details>
                   </div>
                 )}
 
                 {!healthTimeout && health && !health.reachable && (
                   <div style={{ background: "rgba(239, 68, 68, 0.05)", padding: "1rem", borderRadius: "8px" }}>
                     <h4 style={{ color: "var(--color-error)" }}>Starting the local AI service</h4>
-                    <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "1rem" }}>
-                      <button type="button" className="btn btn-primary" onClick={() => void installRuntime()} disabled={runtimeInstalling}>
-                        <Download size={14} style={{ marginRight: "0.5rem" }} />
-                        {runtimeInstalling ? "Installing..." : "Install local AI runtime"}
-                      </button>
-                      <button type="button" className="btn btn-secondary" onClick={() => setRetryCount(c => c + 1)} disabled={checkingHealth}>
-                        <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} />
-                        {checkingHealth ? "Checking..." : "Check Initialization Status"}
-                      </button>
-                    </div>
                     <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>The Civic Desk includes a local AI service that runs on your computer. It may take a moment to start up. Once it's running, you'll download a model in the next step.</p>
                     <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
                       On a clean machine, use the install button if the service does not become ready.
@@ -1306,19 +1395,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                         {SLOW_CPU_CAUTION}
                       </p>
                     )}
-                    <button
-                      type="button"
-                      className="btn btn-primary"
-                      onClick={() => {
-                        setAutoStartPull(true);
-                        void goToStep(3);
-                      }}
-                      disabled={pulling}
-                      style={{ marginTop: "1rem" }}
-                    >
-                      <Download size={16} style={{ marginRight: "0.5rem" }} />
-                      {pulling ? "Downloading..." : `Download ${model}`}
-                    </button>
                   </div>
                 )}
 
@@ -1342,6 +1418,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 )}
               </>
             )}
+            </div>
           </div>
         )}
 
@@ -1484,31 +1561,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           </button>
 
           <div style={{ display: "flex", gap: "1rem" }}>
-            {(step === 2 || step === 3) && (
-              <button type="button" className="btn btn-secondary" onClick={() => {
-                if (step === 2) {
-                  setSkipConfirm({
-                    title: "Skip AI setup?",
-                    message: "AI drafting and AI-assisted review will stay limited until you complete setup from AI Model. Deterministic source checks can still run.",
-                    confirmLabel: "Continue without AI",
-                    onConfirm: async () => {
-                      await markAiSetupSkipped();
-                      await goToStep(4);
-                    },
-                  });
-                } else if (step === 3) {
-                  setSkipConfirm({
-                    title: "Skip the model download?",
-                    message: "AI drafting and AI-assisted review will stay limited until you download a model from AI Model. Deterministic source checks can still run.",
-                    confirmLabel: "Continue without model",
-                    onConfirm: async () => {
-                      await markAiSetupSkipped();
-                      await cancelPullModel();
-                      await goToStep(4);
-                    },
-                  });
-                }
-              }}>
+            {step === 3 && (
+              <button type="button" className="btn btn-secondary" onClick={requestSkipAiSetup}>
                 Skip for now
               </button>
             )}

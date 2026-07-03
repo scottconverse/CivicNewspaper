@@ -659,6 +659,50 @@ button:disabled {
   padding: 1rem;
 }
 
+.onboarding-ai-step {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.onboarding-step-two-actions {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-card);
+  box-shadow: 0 8px 18px rgba(30, 41, 59, 0.08);
+}
+
+.onboarding-step-two-actions strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.onboarding-step-two-actions .help-text {
+  margin: 0;
+}
+
+.onboarding-step-two-buttons,
+.onboarding-secondary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.onboarding-step-two-buttons .btn {
+  min-height: 42px;
+}
+
+.onboarding-ai-status-card {
+  margin: 0;
+}
+
 .onboarding-identity-fields {
   display: flex;
   flex-direction: column;
@@ -801,6 +845,14 @@ button:disabled {
     margin-top: 0.55rem;
     padding-top: 0.55rem;
     padding-bottom: 0.85rem;
+  }
+
+  .onboarding-step-two-actions {
+    padding: 0.7rem;
+  }
+
+  .onboarding-step-two-buttons .btn {
+    flex: 1 1 180px;
   }
 }
 

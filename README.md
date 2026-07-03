@@ -2,7 +2,7 @@
 
 > **Project name:** CivicNewspaper. **Installed app name:** The Civic Desk.
 >
-> **Current release:** v0.3.2 Windows public beta. The current rebuilt Windows installer candidate is built from commit `4cef5ab218b6fe7b6167f143a0db57377e6ac3fe`; an earlier v0.3.2 installer at `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final cleanroom testing, and the rebuilt public asset is awaiting the final tester recheck. Installers are unsigned. This is not a stable production release.
+> **Current release:** v0.3.2 Windows-only public beta. The current rebuilt Windows installer candidate is built from commit `4cef5ab218b6fe7b6167f143a0db57377e6ac3fe`; an earlier v0.3.2 installer at `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final cleanroom testing, and the rebuilt public asset is awaiting the final tester recheck. Installers are unsigned. This is not a stable production release.
 
 The Civic Desk is a local-first desktop newsroom tool for small local publishers, civic reporters, and community editors. It helps one person or a small team monitor public local sources, discover story leads, draft articles with a local AI model, review risks and evidence, and publish a static local-news issue.
 
@@ -33,7 +33,7 @@ The app is built for the reality that many towns no longer have enough reporters
 
 ## Download
 
-Download the v0.3.2 Windows public beta from the [v0.3.2 release page](https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2). Use `The.Civic.Desk_0.3.2_x64-setup.exe` and verify it against `SHA256SUMS` before opening it.
+Download the v0.3.2 Windows-only public beta from the [v0.3.2 release page](https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2). Use `The.Civic.Desk_0.3.2_x64-setup.exe` and verify it against `SHA256SUMS` before opening it.
 
 - **Windows:** use `The.Civic.Desk_0.3.2_x64-setup.exe`. Because the installer is unsigned, choose **More info** then **Run anyway** when SmartScreen appears.
 - **macOS and Linux:** backlog/proof-needed for this release line. Do not treat macOS or Linux download cards, package configs, or historical artifacts as supported public-beta installers until a clean-machine proof is recorded.
