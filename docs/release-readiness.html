@@ -47,10 +47,10 @@
 <p>By default, the smoke script uses the committed review fixtures under <code>test-fixtures\source-import-extracted</code>. Those prove the bulk-import review parser on realistic extracted text. For release-candidate or stable evidence, pass the full source-file fixture folder so the Rust extraction gate proves CSV, XLSX, TXT, DOCX extraction and public-beta PDF-disabled guidance.</p>
 <p>For stable release evidence, run:</p>
 <pre><code>powershell -NoProfile -ExecutionPolicy Bypass -File scripts\release-smoke.ps1 `
-  -FixtureDir &quot;.agent-runs\source-fixture-artifact&quot; `
+  -FixtureDir &quot;tests\fixtures\source-import&quot; `
   -Model &quot;phi4-mini:latest&quot; `
   -Stable</code></pre>
-<p>The stable run fails if the working tree is dirty or if desktop smoke, live model, here.now, or import fixture gates are skipped. Use <code>-AllowDirty</code> only for a non-release diagnostic run. The <code>-FixtureDir</code> value must point to a folder available on the machine running the gate. Use <code>.agent-runs\source-fixture-artifact</code> when the fixture artifact has been restored into the repo workspace, or pass any equivalent full source-file fixture folder that contains the expected CSV, TXT, XLSX, DOCX files and PDF-disabled guidance fixtures.</p>
+<p>The stable run fails if the working tree is dirty or if desktop smoke, live model, here.now, or import fixture gates are skipped. Use <code>-AllowDirty</code> only for a non-release diagnostic run. The <code>-FixtureDir</code> value must point to a folder available on the machine running the gate. Use the committed <code>tests\fixtures\source-import</code> fixture folder for normal release checks, or pass any equivalent full source-file fixture folder that contains the expected CSV, TXT, XLSX, DOCX files and PDF-disabled guidance fixtures.</p>
 <h2 id="release-candidate-packaging-receipt">Release-candidate packaging receipt</h2>
 <p>After tests and smoke checks pass, generate a local RC evidence receipt before publishing any release asset:</p>
 <pre><code>powershell -NoProfile -ExecutionPolicy Bypass -File scripts\prepare-rc-evidence.ps1 `
@@ -74,7 +74,7 @@
 </ul>
 <p>This prevents a public unsigned installer from appearing before checksum and local release-gate evidence have been reviewed.</p>
 <h2 id="current-v0-3-2-evidence">Current v0.3.2 evidence</h2>
-<p>The Windows public-beta v0.3.2 release candidate is cleanroom-proven at commit <code>af4a12b0689dd8de64ce6af707b0c305a9cdaba0</code>.</p>
+<p>The Windows public-beta v0.3.2 release line has cleanroom proof at commit <code>af4a12b0689dd8de64ce6af707b0c305a9cdaba0</code>. The current public installer asset was rebuilt from commit <code>fa39c39d2cdb9e96df851c971992de8eb3720513</code> after CI portability repairs and is queued for final cleanroom recheck.</p>
 <ul>
 <li>Hosted evidence file: <code>docs/release-evidence/v0.3.2.json</code></li>
 <li>RC receipt: <code>.agent-runs/release-candidate-20260703-100118/release-candidate-receipt.json</code></li>
@@ -83,14 +83,14 @@
 <li>Packaged first-run walkthrough: <code>.agent-runs/packaged-first-run-walkthrough-20260702-200346/packaged-first-run-walkthrough-receipt.json</code></li>
 <li>Final cleanroom report: <code>test-comms/reports/20260702-final-cleanroom-v032-af4a12b-report.md</code></li>
 <li>Cleanroom public URL: <code>https://olive-gorge-cgsr.here.now</code></li>
-<li>Cleanroom-tested installer SHA256: <code>AB598EC26F658BB2B0735827F15DC787162D372A0C3FF0A3A18B6ADE48ABE241</code></li>
+<li>Current public installer SHA256: <code>9C3B6670A445233C0CDAF98F49505A89C6D88E034DD391471357762092872533</code></li>
 </ul>
 <p>This does not publish, merge, or tag the release by itself. Scott must still approve the product push, tag, hosted GitHub Release, and GitHub Pages update.</p>
 <h2 id="evidence-levels">Evidence levels</h2>
 <p>| Level | Required evidence | Allowed skips | |---|---|---| | Public beta | Frontend tests, Rust tests, static-site output gate, release notes, known limitations, install guide, user manual, and troubleshooting guide. | Live provider credentials, signing, true clean-machine proof. Skips must be explicit in the receipt. | | Release candidate | Beta evidence plus desktop smoke, current-version Windows installer artifacts, source-import fixtures, live Colorado scan, model bakeoff, dependency audit, anonymous here.now publish. | External providers without credentials. | | Stable | RC evidence plus no skipped release-smoke gates, clean first-run artifact, signed Windows installer, cross-platform installer proof for every advertised OS, and credentialed live connector verification for supported providers. | None for the release-critical gates. |</p>
 <h2 id="source-import-fixtures">Source import fixtures</h2>
 <p>The full local fixture suite expects realistic files in a machine-available fixture folder. For repo-local release evidence, restore or copy the fixture artifact to:</p>
-<pre><code>.agent-runs\source-fixture-artifact</code></pre>
+<pre><code>tests\fixtures\source-import</code></pre>
 <p>If a tester machine uses a different workspace path, pass that machine&#x27;s equivalent full source-file fixture folder with <code>-FixtureDir</code>. Do not hard-code another user&#x27;s Windows profile path in release directives.</p>
 <p>The committed lightweight review fixtures live under:</p>
 <pre><code>test-fixtures\source-import-extracted</code></pre>

@@ -35,7 +35,7 @@ def main() -> int:
     failures: list[str] = []
 
     require("README.md", "Local isolated-profile smoke", failures)
-    require("README.md", "final remote cleanroom tester run passed", failures)
+    require("README.md", "queued for final cleanroom recheck", failures)
     require("README.md", "docs/release-evidence/v0.3.2.json", failures)
     require("README.md", "v0.3.2 is a Windows public beta", failures)
     forbid("README.md", "true clean-machine or remote tester run is still required", failures)
@@ -53,15 +53,15 @@ def main() -> int:
     require("docs/install.md", "https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2", failures)
     require("docs/release-readiness.md", "Current v0.3.2 evidence", failures)
     require("docs/release-readiness.md", "docs/release-evidence/v0.3.2.json", failures)
-    require("docs/release-evidence/v0.3.2.json", "af4a12b0689dd8de64ce6af707b0c305a9cdaba0", failures)
-    require("docs/release-evidence/v0.3.2.json", "AB598EC26F658BB2B0735827F15DC787162D372A0C3FF0A3A18B6ADE48ABE241", failures)
+    require("docs/release-evidence/v0.3.2.json", "fa39c39d2cdb9e96df851c971992de8eb3720513", failures)
+    require("docs/release-evidence/v0.3.2.json", "9C3B6670A445233C0CDAF98F49505A89C6D88E034DD391471357762092872533", failures)
 
     require("docs/publishing-connectors.md", "anonymous here.now preview publishing is the tested default fast path", failures)
     require("docs/publishing-connectors.md", "Cloudflare Pages API publishing is disabled", failures)
     require("docs/publishing-connectors.md", "require user-owned credentials and real target accounts", failures)
     require("docs/publishing-connectors.md", "release-specific live proof", failures)
 
-    require("docs/release-readiness.md", ".agent-runs\\source-fixture-artifact", failures)
+    require("docs/release-readiness.md", "tests\\fixtures\\source-import", failures)
     forbid("docs/release-readiness.md", "C:\\Users\\instynct\\Desktop\\CivicNewspaperTestFiles", failures)
 
     if failures:

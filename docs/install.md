@@ -31,7 +31,7 @@ macOS and Linux installers are backlog/proof-needed for this release line. Do no
 
 ## Clean-Machine Proof
 
-Every release candidate needs a clean-machine or remote-tester report before it can be called cleanroom-proven. For v0.3.2, the Windows public-beta installer represented by commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final remote cleanroom testing with zero blocker, critical, or major findings. The cleanroom-tested installer SHA256 is `AB598EC26F658BB2B0735827F15DC787162D372A0C3FF0A3A18B6ADE48ABE241`.
+Every release candidate needs a clean-machine or remote-tester report before it can be called cleanroom-proven. For v0.3.2, the Windows public-beta installer represented by commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final remote cleanroom testing with zero blocker, critical, or major findings. The current public installer asset was rebuilt from commit `fa39c39d2cdb9e96df851c971992de8eb3720513` after CI portability repairs; its SHA256 is `9C3B6670A445233C0CDAF98F49505A89C6D88E034DD391471357762092872533`, and it is queued for final cleanroom recheck.
 
 Required proof for a cleanroom-proven release:
 

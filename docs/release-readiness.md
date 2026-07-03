@@ -31,12 +31,12 @@ For stable release evidence, run:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\release-smoke.ps1 `
-  -FixtureDir ".agent-runs\source-fixture-artifact" `
+  -FixtureDir "tests\fixtures\source-import" `
   -Model "phi4-mini:latest" `
   -Stable
 ```
 
-The stable run fails if the working tree is dirty or if desktop smoke, live model, here.now, or import fixture gates are skipped. Use `-AllowDirty` only for a non-release diagnostic run. The `-FixtureDir` value must point to a folder available on the machine running the gate. Use `.agent-runs\source-fixture-artifact` when the fixture artifact has been restored into the repo workspace, or pass any equivalent full source-file fixture folder that contains the expected CSV, TXT, XLSX, DOCX files and PDF-disabled guidance fixtures.
+The stable run fails if the working tree is dirty or if desktop smoke, live model, here.now, or import fixture gates are skipped. Use `-AllowDirty` only for a non-release diagnostic run. The `-FixtureDir` value must point to a folder available on the machine running the gate. Use the committed `tests\fixtures\source-import` fixture folder for normal release checks, or pass any equivalent full source-file fixture folder that contains the expected CSV, TXT, XLSX, DOCX files and PDF-disabled guidance fixtures.
 
 ## Release-candidate packaging receipt
 
@@ -72,7 +72,7 @@ This prevents a public unsigned installer from appearing before checksum and loc
 
 ## Current v0.3.2 evidence
 
-The Windows public-beta v0.3.2 release candidate is cleanroom-proven at commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`.
+The Windows public-beta v0.3.2 release line has cleanroom proof at commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`. The current public installer asset was rebuilt from commit `fa39c39d2cdb9e96df851c971992de8eb3720513` after CI portability repairs and is queued for final cleanroom recheck.
 
 - Hosted evidence file: `docs/release-evidence/v0.3.2.json`
 - RC receipt: `.agent-runs/release-candidate-20260703-100118/release-candidate-receipt.json`
@@ -81,7 +81,7 @@ The Windows public-beta v0.3.2 release candidate is cleanroom-proven at commit `
 - Packaged first-run walkthrough: `.agent-runs/packaged-first-run-walkthrough-20260702-200346/packaged-first-run-walkthrough-receipt.json`
 - Final cleanroom report: `test-comms/reports/20260702-final-cleanroom-v032-af4a12b-report.md`
 - Cleanroom public URL: `https://olive-gorge-cgsr.here.now`
-- Cleanroom-tested installer SHA256: `AB598EC26F658BB2B0735827F15DC787162D372A0C3FF0A3A18B6ADE48ABE241`
+- Current public installer SHA256: `9C3B6670A445233C0CDAF98F49505A89C6D88E034DD391471357762092872533`
 
 This does not publish, merge, or tag the release by itself. Scott must still approve the product push, tag, hosted GitHub Release, and GitHub Pages update.
 
@@ -99,7 +99,7 @@ The full local fixture suite expects realistic files in a machine-available fixt
 folder. For repo-local release evidence, restore or copy the fixture artifact to:
 
 ```text
-.agent-runs\source-fixture-artifact
+tests\fixtures\source-import
 ```
 
 If a tester machine uses a different workspace path, pass that machine's equivalent
