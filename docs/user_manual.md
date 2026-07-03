@@ -66,8 +66,8 @@ You will choose or enter:
 - City.
 - State.
 - Local AI setup.
-- Publish Path.
-- Backup Path.
+- Publication folder, where finished HTML sites and ZIP review packages are saved.
+- Backup folder, where database backup copies are saved.
 
 Use real names if you intend to publish publicly. The app should not invent your copyright line, business model, ad policy, AI disclosure, or editorial policy. Those are your decisions.
 
