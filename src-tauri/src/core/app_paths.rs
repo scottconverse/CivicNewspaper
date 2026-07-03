@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use tauri::{AppHandle, Manager, Runtime};
 
@@ -30,13 +30,13 @@ pub fn app_data_dir<R: Runtime>(app: &AppHandle<R>) -> Result<PathBuf, String> {
     Ok(path)
 }
 
-pub fn ensure_standard_app_dirs(app_data: &PathBuf) -> Result<(), String> {
+pub fn ensure_standard_app_dirs(app_data: &Path) -> Result<(), String> {
     for relative in [
         ["sites", "default"].as_slice(),
         ["backups"].as_slice(),
         ["logs"].as_slice(),
     ] {
-        let mut path = app_data.clone();
+        let mut path = app_data.to_path_buf();
         for part in relative {
             path.push(part);
         }

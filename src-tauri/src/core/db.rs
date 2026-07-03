@@ -239,13 +239,8 @@ pub fn init_db(path: &str) -> Result<Connection, Box<dyn Error + Send + Sync>> {
     Ok(conn)
 }
 
-// App Data Path Resolver for Tauri v2.
-// ENG-Nit2: returns a `Send + Sync` boxed error so it composes with async/
-// multithreaded callers (and the rest of the core error surface) without
-// fighting auto-trait bounds.
 pub fn get_app_db_path(app: &tauri::AppHandle) -> Result<PathBuf, Box<dyn Error + Send + Sync>> {
-    let app_data = super::app_paths::app_data_dir(app)
-        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+    let app_data = super::app_paths::app_data_dir(app).map_err(std::io::Error::other)?;
     let db_path = app_data.join(DB_FILE_NAME);
 
     if !db_path.exists() {

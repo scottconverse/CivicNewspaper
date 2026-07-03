@@ -1,0 +1,40 @@
+Colorado civic sources - copied from notes, not cleaned
+
+Brighton / Adams County
+- City: https://www.brightonco.gov/ (good)
+- Agenda center: <https://www.brightonco.gov/AgendaCenter>, duplicate: https://www.brightonco.gov/AgendaCenter.
+- 27J schools -- https://www.sd27j.org/ maybe board page later
+- Adams County: https://adcogov.org/ and commissioners https://adcogov.org/board-county-commissioners
+
+Denver / Aurora
+Denver main portal https://www.denvergov.org/; council page is long:
+https://www.denvergov.org/Government/Agencies-Departments-Offices/Agencies-Departments-Offices-Directory/City-Council
+Legistar calendar: https://denver.legistar.com/Calendar.aspx)
+Aurora main https://www.auroragov.org/ plus meetings https://aurora.legistar.com/Calendar.aspx,
+Aurora schools: https://www.aurorak12.org/
+
+Boulder / Longmont
+Boulder city https://bouldercolorado.gov/, council https://bouldercolorado.gov/services/city-council
+Boulder County - https://bouldercounty.gov/ and commissioners: https://bouldercounty.gov/government/board-of-county-commissioners/
+Longmont: https://www.longmontcolorado.gov/ ; agendas https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk/agendas-and-minutes
+St. Vrain schools https://www.svvsd.org/
+
+Northern / Western / Southern Colorado
+Fort Collins city: https://www.fcgov.com/ ; agenda page: https://www.fcgov.com/cityclerk/councilagenda
+Larimer County (https://www.larimer.gov/) BOCC: https://www.larimer.gov/bocc
+Grand Junction city https://www.gjcity.org/ and https://www.gjcity.org/AgendaCenter
+Mesa County: https://www.mesacounty.us/
+Pueblo city: https://www.pueblo.us/ - agenda center https://www.pueblo.us/AgendaCenter - county https://county.pueblo.org/
+
+Local media / public notice / community
+Daily Camera https://www.dailycamera.com/
+Coloradoan: https://www.coloradoan.com/; Pueblo Chieftain https://www.chieftain.com/
+Colorado public notices https://www.publicnoticecolorado.com/ and CML https://www.cml.org/
+Community page: https://facebook.com/groups/brightonneighbors (maybe reject or classify as community)
+YouTube example: https://www.youtube.com/@CityofAuroraColorado
+
+Malformed or should reject:
+- htp://bad-brighton-url
+- https://
+- www dot bouldercolorado dot gov
+- mailto:clerk@city.example

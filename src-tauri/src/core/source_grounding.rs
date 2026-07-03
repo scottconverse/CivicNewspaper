@@ -135,11 +135,11 @@ fn light_stem(token: &str) -> String {
 
 fn required_overlap(lead_token_count: usize) -> usize {
     if lead_token_count <= 3 {
-        lead_token_count.min(2).max(1)
+        lead_token_count.clamp(1, 2)
     } else if lead_token_count <= 5 {
         3
     } else {
-        ((lead_token_count + 2) / 3).clamp(4, 6)
+        lead_token_count.div_ceil(3).clamp(4, 6)
     }
 }
 
@@ -196,7 +196,7 @@ pub fn paragraph_is_source_aligned(paragraph: &str, source_text: &str) -> bool {
     }
     let source_tokens = grounding_tokens(source_text);
     let overlap = paragraph_tokens.intersection(&source_tokens).count();
-    let required = ((paragraph_tokens.len() + 3) / 4).clamp(2, 6);
+    let required = paragraph_tokens.len().div_ceil(4).clamp(2, 6);
     overlap >= required
 }
 

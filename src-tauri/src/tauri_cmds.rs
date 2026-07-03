@@ -328,7 +328,7 @@ fn normalize_source_url(url: &str) -> String {
         .trim()
         .trim_matches(|ch| matches!(ch, '"' | '\'' | '`'))
         .trim()
-        .trim_end_matches(|ch| matches!(ch, '.' | ',' | ';' | ':' | '!' | '?'))
+        .trim_end_matches(['.', ',', ';', ':', '!', '?'])
         .to_string();
 
     loop {
@@ -350,7 +350,7 @@ fn normalize_source_url(url: &str) -> String {
         }
         value.pop();
         value = value
-            .trim_end_matches(|ch| matches!(ch, '.' | ',' | ';' | ':' | '!' | '?'))
+            .trim_end_matches(['.', ',', ';', ':', '!', '?'])
             .to_string();
     }
 
@@ -1739,6 +1739,7 @@ fn story_template_guidance(
     .ok()
 }
 
+#[allow(clippy::too_many_arguments)]
 fn build_draft_prompt(
     lead_why: &str,
     story_type: Option<&str>,
@@ -1889,6 +1890,16 @@ pub async fn generate_draft<R: tauri::Runtime>(
         let mut stmt = conn
             .prepare("SELECT why, story_type, disposition, novelty_score, novelty_reason, recurrence_count, recurrence_note FROM leads WHERE id = ?1")
             .map_err(|e| e.to_string())?;
+        type LeadPromptRow = (
+            String,
+            Option<String>,
+            Option<String>,
+            Option<i32>,
+            Option<String>,
+            Option<i32>,
+            Option<String>,
+        );
+
         let (
             why,
             story_type,
@@ -1897,15 +1908,7 @@ pub async fn generate_draft<R: tauri::Runtime>(
             novelty_reason,
             recurrence_count,
             recurrence_note,
-        ): (
-            String,
-            Option<String>,
-            Option<String>,
-            Option<i32>,
-            Option<String>,
-            Option<i32>,
-            Option<String>,
-        ) = stmt
+        ): LeadPromptRow = stmt
             .query_row([lead_id], |row| {
                 Ok((
                     row.get(0)?,
@@ -2283,9 +2286,9 @@ fn default_publish_config_for_unsaved_connector(
     if provider != publisher::PublisherProvider::HereNow.as_str() {
         return None;
     }
-    let display_name = std::path::Path::new(output_dir)
-        .file_name()
-        .and_then(|name| name.to_str())
+    let display_name = output_dir
+        .split(['/', '\\'])
+        .next_back()
         .map(str::trim)
         .filter(|name| !name.is_empty())
         .unwrap_or("Civic Newspaper preview")
@@ -3098,8 +3101,9 @@ mod source_import_extraction_tests {
                 PathBuf::from(env!("CARGO_MANIFEST_DIR"))
                     .parent()
                     .expect("src-tauri should have a repo parent")
-                    .join(".agent-runs")
-                    .join("source-fixture-artifact")
+                    .join("tests")
+                    .join("fixtures")
+                    .join("source-import")
             });
         assert!(
             fixture_dir.join("colorado-source-list-clean.csv").is_file(),

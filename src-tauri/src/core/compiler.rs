@@ -275,7 +275,10 @@ pub(crate) fn repair_common_mojibake(text: &str) -> String {
         repaired = next;
     }
     let repaired = repaired
-        .replace("\u{00c3}\u{00a2}\u{00e2}\u{201a}\u{00ac}\u{00c2}\u{00a2}", "-")
+        .replace(
+            "\u{00c3}\u{00a2}\u{00e2}\u{201a}\u{00ac}\u{00c2}\u{00a2}",
+            "-",
+        )
         .replace("\u{00e2}\u{20ac}\u{00a2}", "-")
         .replace("&amp;#8217;", "'")
         .replace("&#8217;", "'")
@@ -304,14 +307,9 @@ pub(crate) fn repair_common_mojibake(text: &str) -> String {
         .replace("\u{00e2}\u{0080}\u{0098}", "'")
         .replace("\u{00e2}\u{0080}\u{009c}", "\"")
         .replace("\u{00e2}\u{0080}\u{009d}", "\"")
-        .replace('\u{2018}', "'")
-        .replace('\u{2019}', "'")
-        .replace('\u{201c}', "\"")
-        .replace('\u{201d}', "\"")
-        .replace('\u{2013}', "-")
-        .replace('\u{2014}', "-")
-        .replace('\u{2022}', "-")
-        .replace('\u{00b7}', "-");
+        .replace(['\u{2018}', '\u{2019}'], "'")
+        .replace(['\u{201c}', '\u{201d}'], "\"")
+        .replace(['\u{2013}', '\u{2014}', '\u{2022}', '\u{00b7}'], "-");
     repaired
         .chars()
         .filter(|ch| {
@@ -452,9 +450,10 @@ fn cited_paragraphs_are_source_aligned(
             source_text.push('\n');
         }
         if !source_grounding::paragraph_is_source_aligned(paragraph, &source_text) {
-            return Err(format!(
+            return Err(
                 "cited paragraph has little factual vocabulary overlap with linked source evidence; rewrite or attach the correct source"
-            ));
+                    .to_string(),
+            );
         }
     }
     Ok(())
@@ -918,6 +917,7 @@ pub fn record_publish_destination_files(
 }
 
 #[cfg(test)]
+#[allow(clippy::items_after_test_module)]
 mod tests {
     use super::*;
     use crate::core::db;

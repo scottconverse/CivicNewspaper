@@ -5715,7 +5715,9 @@ I should produce JSON only.
             err.contains("not linked to this lead"),
             "unexpected error: {err}"
         );
-        let draft = crate::core::db::get_draft(&conn, draft_id).unwrap().unwrap();
+        let draft = crate::core::db::get_draft(&conn, draft_id)
+            .unwrap()
+            .unwrap();
         assert_eq!(draft.status, "draft_generated");
     }
 

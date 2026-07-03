@@ -173,7 +173,18 @@ pub fn record_source_fetch(
         tier: source.tier.clone(),
     };
     insert_observation(conn, &obs)?;
-    update_source_score(conn, source_id, success, 0, 0, 0, 0, Some(&now))
+    update_source_score(
+        conn,
+        SourceScoreUpdate {
+            source_id,
+            fetch_success: success,
+            new_items: 0,
+            changed_items: 0,
+            entity_hits: 0,
+            dark_signal_hits: 0,
+            last_fetch_at: Some(&now),
+        },
+    )
 }
 
 pub fn record_evidence_intelligence(
@@ -261,13 +272,15 @@ pub fn record_evidence_intelligence(
 
     update_source_score(
         conn,
-        source.id.unwrap_or_default(),
-        true,
-        1,
-        i32::from(changed),
-        extracted.len() as i32,
-        dark_hits,
-        Some(&item.fetched_at),
+        SourceScoreUpdate {
+            source_id: source.id.unwrap_or_default(),
+            fetch_success: true,
+            new_items: 1,
+            changed_items: i32::from(changed),
+            entity_hits: extracted.len() as i32,
+            dark_signal_hits: dark_hits,
+            last_fetch_at: Some(&item.fetched_at),
+        },
     )
 }
 
@@ -496,17 +509,18 @@ fn label_entity_type(value: &str) -> &'static str {
     }
 }
 
-fn update_source_score(
-    conn: &Connection,
+struct SourceScoreUpdate<'a> {
     source_id: i32,
     fetch_success: bool,
     new_items: i32,
     changed_items: i32,
     entity_hits: i32,
     dark_signal_hits: i32,
-    last_fetch_at: Option<&str>,
-) -> SqlResult<()> {
-    if source_id == 0 {
+    last_fetch_at: Option<&'a str>,
+}
+
+fn update_source_score(conn: &Connection, update: SourceScoreUpdate<'_>) -> SqlResult<()> {
+    if update.source_id == 0 {
         return Ok(());
     }
     let now = Utc::now().to_rfc3339();
@@ -514,7 +528,7 @@ fn update_source_score(
         "INSERT INTO source_performance_scores (source_id, updated_at)
          VALUES (?1, ?2)
          ON CONFLICT(source_id) DO NOTHING",
-        params![source_id, now],
+        params![update.source_id, now],
     )?;
     conn.execute(
         "UPDATE source_performance_scores
@@ -526,20 +540,20 @@ fn update_source_score(
              dark_signal_hits = dark_signal_hits + ?6,
              last_fetch_at = COALESCE(?7, last_fetch_at),
              updated_at = ?8
-         WHERE source_id = ?9",
+        WHERE source_id = ?9",
         params![
-            i32::from(fetch_success),
-            i32::from(!fetch_success),
-            new_items,
-            changed_items,
-            entity_hits,
-            dark_signal_hits,
-            last_fetch_at,
+            i32::from(update.fetch_success),
+            i32::from(!update.fetch_success),
+            update.new_items,
+            update.changed_items,
+            update.entity_hits,
+            update.dark_signal_hits,
+            update.last_fetch_at,
             now,
-            source_id
+            update.source_id
         ],
     )?;
-    recalculate_source_score(conn, source_id)
+    recalculate_source_score(conn, update.source_id)
 }
 
 fn recalculate_source_score(conn: &Connection, source_id: i32) -> SqlResult<()> {
