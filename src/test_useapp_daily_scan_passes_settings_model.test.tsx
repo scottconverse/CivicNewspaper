@@ -1,7 +1,7 @@
 // src/useApp.test.tsx
 import { render, screen, act } from "@testing-library/react";
 import { describe, test, expect, vi } from "vitest";
-import { ensureAttributionPhrase, normalizeEvidenceCitationShapes, sanitizeEvidenceCitations, useApp } from "./useApp";
+import { ensureAttributionPhrase, findUnsupportedJurisdictionTerms, normalizeEvidenceCitationShapes, sanitizeEvidenceCitations, useApp } from "./useApp";
 
 // Mock tauri core invoke to return mock initial data
 import { invoke } from "@tauri-apps/api/core";
@@ -60,6 +60,17 @@ describe("useApp Hook Tests", () => {
   test("ensureAttributionPhrase leaves already attributed drafts alone", () => {
     const text = "According to district records, the program starts this fall. [Source](evidence:12)";
     expect(ensureAttributionPhrase(text, [12])).toBe(text);
+  });
+
+  test("findUnsupportedJurisdictionTerms catches state-name drift in improved drafts", () => {
+    const reference = "The Colorado General Assembly wrapped up its 2026 session.";
+    const candidate =
+      "The California Legislature wrapped up its 2026 session. [Source](evidence:19)";
+
+    expect(findUnsupportedJurisdictionTerms(candidate, reference)).toEqual(["California"]);
+    expect(
+      findUnsupportedJurisdictionTerms("Colorado lawmakers wrapped up the session.", reference)
+    ).toEqual([]);
   });
 
   test("initializes hook states correctly and handles navigation updates", async () => {

@@ -246,6 +246,28 @@ export function ensureAttributionPhrase(text: string, allowedEvidenceIds: number
   return paragraphs.join("\n\n");
 }
 
+const US_STATE_NAMES = [
+  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
+  "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+  "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
+  "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
+  "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina",
+  "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
+  "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
+  "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming",
+];
+
+function containsWholePhrase(text: string, phrase: string): boolean {
+  const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`\\b${escaped}\\b`, "i").test(text);
+}
+
+export function findUnsupportedJurisdictionTerms(candidate: string, referenceText: string): string[] {
+  return US_STATE_NAMES.filter(
+    (state) => containsWholePhrase(candidate, state) && !containsWholePhrase(referenceText, state)
+  );
+}
+
 // Formats a structured `ollama-pull-progress` event into a single log line.
 // The pull command (`pull_ollama_model`) emits a structured object payload, not
 // a JSON string -- pinning the shape here keeps the listener from regressing to
@@ -2026,11 +2048,17 @@ export function useApp() {
       setErrorMessage("");
       if (!(await ensureSelectedModelReady("Improving a draft for publication"))) return;
       const systemPrompt =
-        "You are a careful local newspaper editor. Improve copy for publication without inventing facts. Preserve all evidence:ID citations. Return clean Markdown only.";
+        "You are a careful local newspaper editor. Improve copy for publication without inventing facts. Preserve all named entities, jurisdictions, dates, and evidence:ID citations exactly unless the linked evidence says otherwise. Return clean Markdown only.";
+      const evidenceContext = evidenceList.length
+        ? evidenceList
+            .map((item) => `Evidence ${item.id}: ${item.excerpt || item.url || "No excerpt available."}`)
+            .join("\n")
+        : "No linked evidence is attached to this draft.";
       const promptText = `Improve this draft so it reads like reader-facing local newspaper copy, not reporter notes.
 
 Rules:
 - Keep the editor's facts only; do not invent quotes, dates, dollar amounts, causes, impacts, or source details.
+- Preserve source meaning exactly. Do not change named entities, places, state names, agencies, jurisdictions, dates, or numbers unless the linked evidence explicitly supports the change.
 - First line must be Headline: followed by a concise, specific headline.
 - Remove reporter scaffolding such as EDITOR_NOTE, Body:, Nut graf, Reporting Steps, [Source needed], [Verification needed], and placeholders.
 - Preserve inline evidence citations exactly when present.
@@ -2041,6 +2069,9 @@ Rules:
 Current format: ${selectedDraft.format}
 Current title: ${selectedDraft.title}
 
+Linked source evidence:
+${evidenceContext}
+
 Draft:
 ${selectedDraft.content}`;
 
@@ -2050,6 +2081,13 @@ ${selectedDraft.content}`;
         .filter((id): id is number => typeof id === "number");
       const normalizedCitations = normalizeEvidenceCitationShapes(improved);
       const citationSafe = sanitizeEvidenceCitations(normalizedCitations, allowedEvidenceIds);
+      const referenceText = `${selectedDraft.title}\n${selectedDraft.content}\n${evidenceContext}`;
+      const unsupportedJurisdictions = findUnsupportedJurisdictionTerms(citationSafe, referenceText);
+      if (unsupportedJurisdictions.length > 0) {
+        throw new Error(
+          `The improved draft introduced unsupported jurisdiction term(s): ${unsupportedJurisdictions.join(", ")}. The editor content was not changed.`
+        );
+      }
       const normalized = normalizeGeneratedDraft(citationSafe, selectedDraft.title);
       const attributedContent = ensureAttributionPhrase(normalized.content, allowedEvidenceIds);
       setSelectedDraft({
