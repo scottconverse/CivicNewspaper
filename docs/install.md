@@ -16,7 +16,7 @@ Use the v0.3.2 Windows public-beta release when installing this version:
 
 ## Windows
 
-1. Download the `.exe` installer from the release assets.
+1. Download `The.Civic.Desk_0.3.2_x64-setup.exe` from the release assets.
 2. Optional but recommended: verify the SHA256 checksum before opening the installer.
 3. Double-click the installer.
 4. If Windows SmartScreen says "Windows protected your PC," click **More info**.
@@ -57,7 +57,7 @@ A SHA256 checksum proves that the file you downloaded matches the file listed in
 ### Windows PowerShell
 
 ```powershell
-Get-FileHash -Algorithm SHA256 "C:\Users\YourName\Downloads\The Civic Desk_0.3.2_x64-setup.exe"
+Get-FileHash -Algorithm SHA256 "C:\Users\YourName\Downloads\The.Civic.Desk_0.3.2_x64-setup.exe"
 ```
 
 If the hash does not match, delete the installer and report it on the project issue tracker: <https://github.com/scottconverse/CivicNewspaper/issues>. Do not run a mismatched installer.

@@ -24,6 +24,7 @@
     "receipt_path": ".agent-runs/windows-installer-smoke-20260702-200332/windows-installer-smoke-receipt.json",
     "receipt_sha256": "B88983C74BA6B0819C4BF1DE96973E2C74482B8F03C0A7E8E1B9BD1263216FE0",
     "installer_name": "The Civic Desk_0.3.2_x64-setup.exe",
+    "release_asset_name": "The.Civic.Desk_0.3.2_x64-setup.exe",
     "installer_sha256": "AB598EC26F658BB2B0735827F15DC787162D372A0C3FF0A3A18B6ADE48ABE241"
   },
   "packaged_first_run_walkthrough": {

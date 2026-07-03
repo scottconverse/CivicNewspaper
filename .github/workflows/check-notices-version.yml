@@ -25,12 +25,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Verify Ollama version in fetch script matches NOTICES.md
+      - name: Verify Ollama runtime metadata is documented
         run: |
-          V=$(grep -E "^OLLAMA_VERSION=" scripts/fetch-ollama-binaries.sh | sed -E 's/.*="?([^"]+)"?.*/\1/')
-          echo "Found Ollama version: $V in fetch script"
+          V=$(grep -E 'OLLAMA_RUNTIME_VERSION: &str = ' src-tauri/src/core/llm.rs | sed -E 's/.*"([^"]+)".*/\1/')
+          echo "Found app-managed Ollama runtime version: $V"
           if [ -z "$V" ]; then
-            echo "FAIL: Could not extract OLLAMA_VERSION from scripts/fetch-ollama-binaries.sh"
+            echo "FAIL: Could not extract OLLAMA_RUNTIME_VERSION from src-tauri/src/core/llm.rs"
             exit 1
           fi
           if grep -q "$V" NOTICES.md; then

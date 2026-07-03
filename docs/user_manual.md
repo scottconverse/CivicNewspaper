@@ -56,16 +56,18 @@ If installation, local AI setup, publishing, source import, or output quality go
 
 ## 2. First Launch And Setup
 
-When you open The Civic Desk for the first time, it asks you to describe the publication you want to run.
+When you open The Civic Desk for the first time, it walks you through five essential setup steps and asks you to describe the publication you want to run.
 
 You will choose or enter:
 
-- Publication name.
-- Editor name.
+- Publication Name.
+- Editor Name.
 - Organization type, such as single person, nonprofit, for-profit, private organization, or other.
-- City and state.
+- City.
+- State.
 - Local AI setup.
-- Output and backup folders.
+- Publish Path.
+- Backup Path.
 
 Use real names if you intend to publish publicly. The app should not invent your copyright line, business model, ad policy, AI disclosure, or editorial policy. Those are your decisions.
 
