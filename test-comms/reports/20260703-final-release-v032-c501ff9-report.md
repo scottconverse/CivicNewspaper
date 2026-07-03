@@ -17,9 +17,9 @@ Because the directive says the release passes only with zero blocker/critical/ma
 ## Evidence Paths
 
 - Visibility report: `test-comms/reports/20260703-final-release-v032-c501ff9-visibility.md`
-- Release assets evidence: `test-comms/reports/20260703-final-release-v032-c501ff9-evidence/`
-- Installer: `test-comms/reports/20260703-final-release-v032-c501ff9-evidence/The.Civic.Desk_0.3.2_x64-setup.exe`
-- Checksums: `test-comms/reports/20260703-final-release-v032-c501ff9-evidence/SHA256SUMS`
+- Release assets evidence: `test-comms/evidence/20260703-final-release-v032-c501ff9/`
+- Installer: `test-comms/evidence/20260703-final-release-v032-c501ff9/The.Civic.Desk_0.3.2_x64-setup.exe`
+- Checksums: `test-comms/evidence/20260703-final-release-v032-c501ff9/SHA256SUMS`
 
 ## Release Asset Verification
 
