@@ -61,7 +61,7 @@ async function assertNav(page, navId, expected) {
   const tab = page.locator(`#nav-tab-${navId}`);
   await tab.click();
   if (expected instanceof RegExp) {
-    await page.getByText(expected).first().waitFor({ timeout: 5000 });
+    await page.getByRole("heading", { name: expected }).first().waitFor({ timeout: 5000 });
   } else {
     await page.getByRole("heading", { name: expected }).waitFor({ timeout: 5000 });
   }
@@ -212,7 +212,7 @@ async function main() {
       ["dailyScan", "Daily Scan"],
       ["darkSignals", "Dark Signal Desk"],
       ["verification", "Verification Queue"],
-      ["workbench", /Workbench|No draft selected|Select a story/i],
+      ["workbench", /Workbench|No lead or draft selected|Select a story/i],
       ["sources", "Sources"],
       ["onboarding", "AI Model Setup"],
       ["publish", "Publishing"],
@@ -227,19 +227,45 @@ async function main() {
     await assertKeyboardAndAccessibility(page, results);
     await page.screenshot({ path: path.join(runDir, "main-navigation.png"), fullPage: true });
 
+    await page.setViewportSize({ width: 960, height: 720 });
+    await page.goto(baseUrl);
+    await expectBuildMarker(page, expectedBuildId, attachMode);
+    const mediumTargets = [
+      ["queue", "Story Queue"],
+      ["workbench", /Workbench|No lead or draft selected|Select a story/i],
+      ["sources", "Sources"],
+      ["publish", "Publishing"],
+      ["system", /System|Status|Diagnostics/i],
+    ];
+    for (const [navId, expected] of mediumTargets) {
+      await assertNav(page, navId, expected);
+      const activeContent = expected instanceof RegExp
+        ? page.getByRole("heading", { name: expected }).first()
+        : page.getByRole("heading", { name: expected });
+      const contentVisible = await activeContent.evaluate((node) => {
+        const rect = node.getBoundingClientRect();
+        return rect.top >= 0 && rect.top < window.innerHeight * 0.8 && rect.left >= 0 && rect.left < window.innerWidth;
+      });
+      if (!contentVisible) {
+        throw new Error(`Medium viewport nav-${navId} changed active tab but did not reveal the route content.`);
+      }
+      results.push({ name: `medium-nav-${navId}`, ok: true });
+    }
+    await page.screenshot({ path: path.join(runDir, "medium-navigation.png"), fullPage: true });
+
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(baseUrl);
     await expectBuildMarker(page, expectedBuildId, attachMode);
     const mobileTargets = [
       ["sources", "Sources"],
       ["publish", "Publishing"],
-      ["workbench", /Workbench|No draft selected|Select a story/i],
+      ["workbench", /Workbench|No lead or draft selected|Select a story/i],
       ["system", /System|Status|Diagnostics/i],
     ];
     for (const [navId, expected] of mobileTargets) {
       await assertNav(page, navId, expected);
       const target = expected instanceof RegExp
-        ? page.getByText(expected).first()
+        ? page.getByRole("heading", { name: expected }).first()
         : page.getByRole("heading", { name: expected });
       const isVisibleInViewport = await target.evaluate((node) => {
         const rect = node.getBoundingClientRect();
