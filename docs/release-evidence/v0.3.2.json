@@ -1,7 +1,7 @@
 {
   "tag": "v0.3.2",
-  "commit": "fa39c39d2cdb9e96df851c971992de8eb3720513",
-  "generated_at": "2026-07-03T11:26:00-06:00",
+  "commit": "4cef5ab218b6fe7b6167f143a0db57377e6ac3fe",
+  "generated_at": "2026-07-03T12:29:00-06:00",
   "rc_receipt_path": ".agent-runs/release-candidate-20260703-100118/release-candidate-receipt.json",
   "rc_receipt_sha256": "24FA27F6223198B4D2B09F41BDED7EC7EBC30740FF7B22C3278BC45293FBE1AE",
   "release_smoke": {
@@ -21,32 +21,32 @@
   },
   "windows_installer_smoke": {
     "ok": true,
-    "receipt_path": ".agent-runs/windows-installer-smoke-20260703-112458/windows-installer-smoke-receipt.json",
-    "receipt_sha256": "CAA2B8034B3F1D47CCC691A2684398A8287E6A45A9DFD57A7C83D05C06D227EF",
+    "receipt_path": ".agent-runs/windows-installer-smoke-20260703-123043/windows-installer-smoke-receipt.json",
+    "receipt_sha256": "5EBBE257E644BF8A74F23DB8DD2EE862BF6E1446AF4BCB0E81617C8D98882025",
     "installer_name": "The Civic Desk_0.3.2_x64-setup.exe",
     "release_asset_name": "The.Civic.Desk_0.3.2_x64-setup.exe",
-    "installer_sha256": "9C3B6670A445233C0CDAF98F49505A89C6D88E034DD391471357762092872533"
+    "installer_sha256": "0E038A6D03436BAC572CA9ABB47F17221F6F4B87F08A4D963B192AD99708834A"
   },
   "packaged_first_run_walkthrough": {
     "ok": true,
-    "receipt_path": ".agent-runs/packaged-first-run-walkthrough-20260703-112524/packaged-first-run-walkthrough-receipt.json",
-    "receipt_sha256": "F972156D848C4F442267FBE0A9F3C7439D90D3ED31739006F2A093C354C94C88"
+    "receipt_path": ".agent-runs/packaged-first-run-walkthrough-20260703-123116/packaged-first-run-walkthrough-receipt.json",
+    "receipt_sha256": "05ED3AB369F1B4D9DC7AE56690BD535463084FAC130471E97D62BF8D7F30F072"
   },
   "cleanroom": {
-    "ok": true,
-    "report_path": "test-comms/reports/20260702-final-cleanroom-v032-af4a12b-report.md",
-    "report_sha256": "34A14F7E40765E4AD2026300FDC7AD08E39261C36FD34D0AAA7B655F867338D1",
-    "tester_machine": "MSI Windows 11 Home, Intel i7-13620H, 15.7 GB RAM, Intel UHD plus NVIDIA RTX 4050 Laptop GPU",
-    "installer_sha256": "9C3B6670A445233C0CDAF98F49505A89C6D88E034DD391471357762092872533",
-    "public_url": "https://olive-gorge-cgsr.here.now",
-    "zip_path": "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\sites\\default\\site-package.zip",
-    "verdict": "PASS with zero blocker, critical, or major findings."
+    "ok": false,
+    "report_path": null,
+    "report_sha256": null,
+    "tester_machine": "pending final cleanroom rerun",
+    "installer_sha256": "0E038A6D03436BAC572CA9ABB47F17221F6F4B87F08A4D963B192AD99708834A",
+    "public_url": null,
+    "zip_path": null,
+    "verdict": "PENDING: local fixes, local installer smoke, and packaged first-run walkthrough passed for commit 4cef5ab218b6fe7b6167f143a0db57377e6ac3fe. Final remote cleanroom proof is still required before this rebuilt artifact can replace the public release evidence."
   },
   "release_scope": {
     "windows_public_beta": true,
     "macos_installer": "backlog/proof-needed",
     "linux_installer": "backlog/proof-needed",
     "unsigned_installer": true,
-    "scott_approved_public_release": true
+    "scott_approved_public_release": false
   }
 }
