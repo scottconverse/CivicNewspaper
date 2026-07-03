@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://olive-gorge-cgsr.here.now/",
+    "status": 200,
+    "bytes": 2563,
+    "file": "here-now-index.html"
+  },
+  {
+    "url": "https://olive-gorge-cgsr.here.now/briefs/1.html",
+    "status": 200,
+    "bytes": 7755,
+    "file": "here-now-briefs-1.html"
+  },
+  {
+    "url": "https://olive-gorge-cgsr.here.now/feed.xml",
+    "status": 200,
+    "bytes": 691,
+    "file": "here-now-feed.xml"
+  }
+]

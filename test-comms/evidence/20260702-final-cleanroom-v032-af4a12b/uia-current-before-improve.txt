@@ -1,0 +1,3 @@
+﻿000 The Civic Desk [Window] enabled=True
+001 CivicNews Dashboard [Pane] enabled=True
+002 CivicNews Dashboard - Web content [Pane] enabled=True
