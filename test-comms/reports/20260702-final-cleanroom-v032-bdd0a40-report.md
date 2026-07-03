@@ -1,190 +1,104 @@
-# Final Cleanroom Report - Civic Desk v0.3.2 bdd0a40
+# Tester Report - Final Cleanroom v0.3.2 bdd0a40
 
-Status: PASS
+Date: 2026-07-03T01:22:00Z
+Tester machine: MSI Windows 11 Home, Intel i7-13620H, 15.7 GB RAM, Intel UHD + NVIDIA RTX 4050 Laptop GPU
+Repo: https://github.com/scottconverse/CivicNewspaper
+Product branch: main
+Product commit represented by installer: bdd0a40e0af46701c8a8eb1b815178bf830caae9
+Directive: test-comms/directives/20260702-final-cleanroom-v032-bdd0a40.md
 
-## Scope
+## Result
 
-- Repo: `https://github.com/scottconverse/CivicNewspaper`
-- Branch: `test-comms/cleanroom-coder-tester`
-- Active directive: `test-comms/directives/20260702-final-cleanroom-v032-bdd0a40.md`
-- Product commit represented by installer: `bdd0a40e0af46701c8a8eb1b815178bf830caae9`
-- Evidence folder: `test-comms/evidence/20260702-final-cleanroom-v032-bdd0a40/`
+PASS WITH FINDINGS. The installed app completed cleanroom setup, generated source-linked drafts, blocked no-source/unlinked-evidence approval, compiled the static site, wrote site-package.zip, recorded a publish run, published to here.now, and the public pages passed the banned-marker/mojibake scan.
 
-## Installer
+Public URL:
 
-- Installer path: `test-comms/artifacts/20260702-final-cleanroom-v032-bdd0a40/The Civic Desk_0.3.2_x64-setup.exe`
-- Observed SHA256: `D7FA08CDB668E49D229F6C403B1666F351B5627F1B8EB94333944F3FB9F8A4F8`
-- Observed size: `5229228`
-- Evidence: `installer-verify.txt`
+- https://hearty-clover-fzqa.here.now
 
-## Clean Wipe And Launch
+## Environment
 
-Clean wipe removed prior app state under:
+- Windows version: Microsoft Windows 11 Home 10.0.26200
+- CPU: 13th Gen Intel(R) Core(TM) i7-13620H
+- RAM: 15.7 GB
+- GPU: Intel(R) UHD Graphics; NVIDIA GeForce RTX 4050 Laptop GPU
+- Disk free: 347.2 GB
+- Ollama installed/running: app-guided install completed; ollama process observed after setup
+- Models present/selected: phi4-mini:latest
+- Installed app: C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+- Native window title observed: The Civic Desk
 
-- `%APPDATA%\com.scottconverse.civicdesk`
-- `%LOCALAPPDATA%\com.scottconverse.civicdesk`
-- `%LOCALAPPDATA%\The Civic Desk`
+## Steps Run
 
-The installed app launched from:
+1. Pulled test-comms/cleanroom-coder-tester and reread ACTIVE_DIRECTIVE.md, README.md, protocol.md, tester prompt, and the active bdd0a40 directive.
+2. Verified the NSIS installer hash and byte size.
+3. Stopped existing civicnews and ollama processes, ran the prior uninstaller when present, removed app data and local install folders, removed test-only .ollama state, installed only the bdd0a40 NSIS artifact, and launched the installed app.
+4. Completed first-run identity setup for Longmont, Colorado with publication name Longmont Cleanroom Beta Desk and editor Cleanroom Tester.
+5. Used the app-guided local AI setup until the database showed model.selected phi4-mini:latest and onboarding_complete 1.
+6. Waited for Daily Scan completion and checked the database.
+7. Generated two linked-source drafts from different leads.
+8. Created one no-source verification assignment and confirmed it stayed needs_verification without approval.
+9. Exercised Workbench draft picker, top action strip, Improve for Publication, manual editor cleanup, approval attestation, unlinked-evidence blocking, Publishing output folder open, compile checklist, Compile site, ZIP/package outputs, here.now publish, and public page inspection.
 
-`C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe`
+## Results
 
-The app identity showed `The Civic Desk`, `LONGMONT / CO`, not a Vite/dev identity.
+- Installer verification: PASS.
+- Clean wipe/install: PASS.
+- Native app identity: PASS, title was The Civic Desk.
+- Longmont first-run setup: PASS.
+- App-guided AI setup: PASS.
+- Source discovery/Daily Scan: PASS. Latest scan completed with 9 sources, 1 scan run, 24 scan leads, 27 total leads, 26 evidence items, and 11 lead-evidence links.
+- Two linked drafts: PASS. Drafts created for St. Vrain Valley Schools and Longmont Area Chamber leads.
+- No-source lead handling: PASS. Lead 24 became draft 3, status needs_verification, with missing_evidence_notes and no attestation.
+- Improve for Publication: MIXED. The editor normalized citation syntax to linked [Source](evidence:19), but it also changed "Colorado General Assembly" to "California Legislature" in the editable text. I corrected the draft manually before approval.
+- Unlinked evidence approval blocking: PASS. A probe draft citing [Source](evidence:999) showed "Fix before static publish approval" and specifically named evidence ID 999 as not linked to the lead; it was not approved.
+- Static compile: PASS. Output path C:/Users/civic/AppData/Roaming/com.scottconverse.civicdesk/sites/default, 18 files, 1 article, 0 skipped.
+- here.now publish: PASS. Publish run provider changed to here_now with deployment slug hearty-clover-fzqa.
+- Public output scan: PASS. Fetched index, briefs/2.html, and feed.xml from here.now; banned markers, unlinked evidence markers, and mojibake markers were not found.
 
-Evidence:
+## Evidence
 
-- `install-clean-launch.log`
-- `screenshot-01-launch.png`
-- `screenshot-02-after-identity-next.png`
-- `screenshot-03-ai-ready.png`
+- Installer verification: test-comms/evidence/20260702-final-cleanroom-v032-bdd0a40/installer-verify.txt
+- Clean install/launch log: test-comms/evidence/20260702-final-cleanroom-v032-bdd0a40/install-clean-launch.log
+- AI setup DB proof: test-comms/evidence/20260702-final-cleanroom-v032-bdd0a40/db-after-ai-ready.txt
+- Daily Scan DB proof: test-comms/evidence/20260702-final-cleanroom-v032-bdd0a40/db-after-scan-wait120.txt
+- Draft/approval DB proof: test-comms/evidence/20260702-final-cleanroom-v032-bdd0a40/db-after-approval.jsonl
+- Compile DB proof: test-comms/evidence/20260702-final-cleanroom-v032-bdd0a40/db-after-compile.jsonl
+- here.now DB proof: test-comms/evidence/20260702-final-cleanroom-v032-bdd0a40/db-after-here-now.jsonl
+- Publish folder listing: test-comms/evidence/20260702-final-cleanroom-v032-bdd0a40/publish-folder-listing.txt
+- ZIP listing: test-comms/evidence/20260702-final-cleanroom-v032-bdd0a40/zip-listing.txt
+- Local public audit: test-comms/evidence/20260702-final-cleanroom-v032-bdd0a40/local-public-output-audit.json
+- here.now public audit: test-comms/evidence/20260702-final-cleanroom-v032-bdd0a40/here-now-public-audit.json
+- Screenshots: screenshot-01-launch.png through screenshot-13-unlinked-evidence-blocked.png in the evidence folder
 
-## AI Setup And Sources
+## Publish Details
 
-App-guided local AI setup completed. The app reported `Local AI ready` with model `phi4-mini:latest`.
+- Approved draft ID: 2
+- Published post path: briefs/2.html
+- Publish run issue_id: issue-20260703-011137-759360100
+- Files written: styles.css, print.css, briefs/2.html, index.html, about.html, ethics.html, how-we-report.html, corrections.html, feed.xml, newsletter.md, substack.md, share-package.md, facebook-post.txt, subreddit-post.md, nextdoor-post.txt, short-link-blurb.txt, publish-manifest.json, site-package.zip
+- ZIP path: C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk\sites\default\site-package.zip
+- here.now deployment: slug=hearty-clover-fzqa;version=01KWJRJ2V5MBBEKXAGBQND9VHN;created_slug=hearty-clover-fzqa
 
-Database summary after setup:
+## Findings
 
-- `sources`: 9
-- `daily_scan_runs`: 1
-- `daily_scan_leads`: 24
-- `leads`: 27
-- `evidence_items`: 26
-- `lead_evidence`: 11
+Severity counts:
 
-The latest Daily Scan was completed and was not stuck `in_progress`.
+- Blocker: 0
+- Critical: 0
+- Major: 1
+- Minor: 0
+- Nit: 0
 
-Evidence:
+### Major - Improve for Publication introduced an inaccurate state legislature reference
 
-- `db-after-ai-ready.txt`
-- `db-after-scan-wait120.txt`
-- `final-db-summary.json`
+Observed: On the Longmont Area Chamber linked-source draft, Improve for Publication rewrote the source sentence as "California Legislature" even though the linked source says "Colorado General Assembly." The citation remained normalized as [Source](evidence:19).
 
-## Drafts And Verification Gates
+Expected: Improve for Publication should preserve the jurisdiction/source meaning while normalizing linked citations.
 
-Three drafts were generated from different leads:
+Impact: An editor who trusts the rewrite could publish a materially wrong state reference.
 
-- Draft 1, lead 26: St. Vrain Valley Schools, `draft_generated`, linked citation `[Source](evidence:16)`.
-- Draft 2, lead 25: Longmont Area Chamber of Commerce, improved to `Longmont Chamber outlines 2026 state-session issues`, `ready_to_publish`, linked citation `[Source](evidence:19)`.
-- Draft 3, lead 24: City of Longmont art winners, `needs_verification`, no source documents linked.
+Repro: Open draft 2, click Improve for Publication, inspect test-comms/evidence/20260702-final-cleanroom-v032-bdd0a40/workbench-linked-after-improve-edit-values.txt.
 
-The no-source lead remained a verification assignment with this message:
+## Request For Coder
 
-`No source documents are linked to this lead yet. Treat it as a verification assignment until public source material is attached or cited.`
-
-Evidence:
-
-- `drafts-after-improve.jsonl`
-- `final-drafts.jsonl`
-- `screenshot-07-story-queue-scrolled.png`
-- `screenshot-08-after-verify-first.png`
-- `screenshot-09-after-generate-verification-notes.png`
-
-## Workbench And Approval
-
-Workbench draft picker and the top action strip were present. The selected linked-source Chamber draft exposed:
-
-- `Back to Queue`
-- `Save Draft`
-- `Delete`
-- `Improve for Publication`
-
-`Improve for Publication` rewrote the Chamber draft into a reader-facing brief with the normalized linked citation `[Source](evidence:19)`.
-
-The editor approval flow displayed one advisory citation-coverage warning, asked for an editor note, and logged the approval decision. Draft 2 was approved as `ready_to_publish`, with:
-
-- `attested_by`: `Cleanroom Tester`
-- `guardrail_override_reason`: `Editor reviewed pre-publication warnings and chose to publish.`
-- one `publish_decision_audits` row
-
-Evidence:
-
-- `screenshot-10-workbench-open.png`
-- `screenshot-11-workbench-draft-select.png`
-- `screenshot-12-after-improve-click.png`
-- `screenshot-14-workbench-pagedown2.png`
-- `screenshot-10-approved-linked-draft.png`
-- `db-after-approval.jsonl`
-- `uia-after-approval.txt`
-
-Note: I did not intentionally corrupt a valid draft to synthesize an unlinked evidence ID. I verified the no-source assignment block, verified linked-source citation normalization, and verified the final static and public output did not contain unlinked `evidence:` citations.
-
-## Compile, ZIP, And Publish
-
-Publishing showed the compile controls and a ready approved story count. `Compile site` produced a static site package and a database publish run.
-
-Publish run:
-
-- `issue_id`: `issue-20260703-011137-759360100`
-- `output_path`: `C:/Users/civic/AppData/Roaming/com.scottconverse.civicdesk/sites/default`
-- `article_count`: 1
-- `skipped_count`: 0
-- `files_written`: 18
-- `provider`: `here_now`
-- `published_url`: `https://hearty-clover-fzqa.here.now`
-- `deployment_id`: `slug=hearty-clover-fzqa;version=01KWJRJ2V5MBBEKXAGBQND9VHN;created_slug=hearty-clover-fzqa`
-
-Generated files included:
-
-- `index.html`
-- `briefs/2.html`
-- `styles.css`
-- `print.css`
-- `feed.xml`
-- `newsletter.md`
-- `substack.md`
-- `share-package.md`
-- `site-package.zip`
-
-Evidence:
-
-- `uia-publishing-before-compile.txt`
-- `uia-publishing-after-compile.txt`
-- `screenshot-11-after-compile.png`
-- `db-after-compile.jsonl`
-- `publish-folder-listing.txt`
-- `zip-listing.txt`
-- `publish-manifest.json`
-- `final-publish-runs.jsonl`
-
-## Public Output Audit
-
-The local static output and here.now output were inspected for the directive's prohibited public-output markers:
-
-- `EDITOR_NOTE`
-- `[EDITOR_NOTE`
-- `Body:`
-- `Headline:`
-- `Nut graf`
-- `Reporting Steps`
-- `[Source needed]`
-- `[Verification needed]`
-- `[End of Report]`
-- mojibake marker code points or visible mojibake
-- unlinked `evidence:` citations
-- disabled `unlinked-evidence-` citations
-- generic city navigation pages treated as news stories
-
-Both audits returned empty arrays:
-
-- `local-public-output-audit.json`: `[]`
-- `here-now-public-audit.json`: `[]`
-
-The here.now public output included:
-
-- `here-now-index.html`
-- `here-now-briefs-2.html`
-- `here-now-feed.xml`
-
-Evidence:
-
-- `article-briefs-2.html.txt`
-- `here-now-index.html`
-- `here-now-briefs-2.html`
-- `here-now-feed.xml`
-- `here-now-index.html.text-snippet.txt`
-- `here-now-briefs-2.html.text-snippet.txt`
-- `here-now-feed.xml.text-snippet.txt`
-
-## Conclusion
-
-The bdd0a40 cleanroom release path passed the previously blocked finish-line area: static compile produced files and `site-package.zip`, the database recorded a publish run, `Publish to here.now` completed, and the public output audit found no prohibited markers or unlinked evidence citations.
+Please investigate the Improve for Publication rewrite drift that changed Colorado to California. The release mechanics and public-output gates passed after manual editor cleanup.
