@@ -4,7 +4,7 @@ Tester: run this from `msi\civic` on the cleanroom Windows tester machine.
 
 ## Source Of Truth
 
-This file is the active directive. Ignore older directive filenames.
+This file is archived for traceability. The active directive is `test-comms/ACTIVE_DIRECTIVE.md`. If the two differ, follow `test-comms/ACTIVE_DIRECTIVE.md`.
 
 ## Product/Release Under Test
 
