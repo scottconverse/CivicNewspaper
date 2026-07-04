@@ -271,16 +271,19 @@ fn publishability_next_step(item: &ScanResultItem) -> Option<String> {
 }
 
 fn clean_scan_public_text(value: &str) -> String {
-    value
-        .replace("&#8211;", "-")
-        .replace("&#8212;", "-")
-        .replace("&#8216;", "'")
-        .replace("&#8217;", "'")
-        .replace("&#8220;", "\"")
-        .replace("&#8221;", "\"")
-        .replace("&amp;", "&")
-        .replace("&nbsp;", " ")
-        .replace("-->", "")
+    normalize_source_text_for_quality(value)
+}
+
+fn decode_repair_source_text(value: &str) -> String {
+    let once = html_escape::decode_html_entities(value).to_string();
+    let twice = html_escape::decode_html_entities(&once).to_string();
+    crate::core::compiler::repair_common_mojibake(&twice)
+        .replace(['\u{00a0}', '\u{2022}'], " ")
+        .replace("-->", " ")
+}
+
+fn normalize_source_text_for_quality(value: &str) -> String {
+    decode_repair_source_text(value)
         .split_whitespace()
         .collect::<Vec<_>>()
         .join(" ")
@@ -372,7 +375,7 @@ fn build_batch_prompt(
             idx + 1,
             item.source_id,
             item.url.as_deref().unwrap_or(""),
-            item.excerpt
+            clean_inline(&item.excerpt)
         ));
     }
 
@@ -417,7 +420,7 @@ fn save_fallback_leads(
             .map(|source| source.name.clone())
             .unwrap_or_else(|| format!("Source #{}", item.source_id));
         let source_type = source.as_ref().map(|source| source.r#type.clone());
-        let excerpt = item.excerpt.replace('\n', " ");
+        let excerpt = clean_inline(&item.excerpt);
         let summary = if excerpt.chars().count() > 260 {
             format!("{}...", excerpt.chars().take(260).collect::<String>())
         } else {
@@ -621,12 +624,7 @@ fn is_calendar_or_event_source_type(source_type: &str) -> bool {
 }
 
 fn clean_inline(value: &str) -> String {
-    value
-        .split_whitespace()
-        .collect::<Vec<_>>()
-        .join(" ")
-        .trim()
-        .to_string()
+    normalize_source_text_for_quality(value)
 }
 
 fn truncate_chars(value: &str, max_chars: usize) -> String {
@@ -658,6 +656,9 @@ fn rescue_title(source_name: &str, excerpt: &str) -> String {
 fn evidence_looks_actionable(excerpt: &str) -> bool {
     let quality = evidence_quality(excerpt);
     if quality.looks_like_navigation_or_index() {
+        return false;
+    }
+    if looks_like_multi_item_event_listing(&quality.text) {
         return false;
     }
     if looks_static_or_evergreen(&quality.text) && !evidence_has_strong_current_action(excerpt) {
@@ -718,13 +719,17 @@ impl EvidenceQuality {
 }
 
 fn evidence_quality(value: &str) -> EvidenceQuality {
-    let text = value.to_lowercase();
+    let normalized = decode_repair_source_text(value);
+    let text = normalized.to_lowercase();
     let word_count = text.split_whitespace().count();
     let sentence_count = text
         .split_terminator(['.', '!', '?'])
         .filter(|part| part.split_whitespace().count() >= 5)
         .count();
-    let line_count = value.lines().filter(|line| !line.trim().is_empty()).count();
+    let line_count = normalized
+        .lines()
+        .filter(|line| !line.trim().is_empty())
+        .count();
     let chrome_markers = [
         "your browser is not supported",
         "skip navigation",
@@ -847,7 +852,7 @@ fn evidence_quality(value: &str) -> EvidenceQuality {
         .iter()
         .filter(|term| text.contains(**term))
         .count();
-    let link_like_count = value
+    let link_like_count = normalized
         .lines()
         .filter(|line| {
             let trimmed = line.trim();
@@ -920,7 +925,7 @@ fn current_action_signal_count(text: &str) -> usize {
 }
 
 fn evidence_has_calendar_signal(excerpt: &str) -> bool {
-    let text = excerpt.to_lowercase();
+    let text = normalize_source_text_for_quality(excerpt).to_lowercase();
     const MONTHS: &[&str] = &[
         "january",
         "february",
@@ -945,7 +950,7 @@ fn evidence_has_calendar_signal(excerpt: &str) -> bool {
 }
 
 fn evidence_has_strong_current_action(excerpt: &str) -> bool {
-    let text = excerpt.to_lowercase();
+    let text = normalize_source_text_for_quality(excerpt).to_lowercase();
     [
         "approved",
         "adopted",
@@ -975,7 +980,7 @@ fn evidence_has_strong_current_action(excerpt: &str) -> bool {
 }
 
 fn evidence_has_public_impact_signal(excerpt: &str) -> bool {
-    let text = excerpt.to_lowercase();
+    let text = normalize_source_text_for_quality(excerpt).to_lowercase();
     [
         "residents",
         "businesses",
@@ -997,7 +1002,7 @@ fn evidence_has_public_impact_signal(excerpt: &str) -> bool {
 }
 
 fn evidence_has_conflict_signal(excerpt: &str) -> bool {
-    let text = excerpt.to_lowercase();
+    let text = normalize_source_text_for_quality(excerpt).to_lowercase();
     [
         "lawsuit",
         "appeal",
@@ -1350,11 +1355,25 @@ fn looks_like_multi_item_event_listing(lower: &str) -> bool {
         "calendar",
         "workshop",
         "class",
+        "library closed",
+        "free fitness",
+        "symphony",
+        "storytime",
+        "loteria mexicana",
+        "lotería mexicana",
     ]
     .iter()
-    .filter(|term| lower.contains(**term))
-    .count();
-    lower.len() > 220 && month_hits >= 3 && event_hits >= 3
+    .map(|term| lower.matches(*term).count())
+    .sum::<usize>();
+    let time_hits = regex::Regex::new(r"(?i)\b\d{1,2}\s*(am|pm)\b")
+        .expect("valid event time regex")
+        .find_iter(lower)
+        .count();
+    let date_range_hits = lower.matches(" - ").count() + lower.matches(" to ").count();
+    (lower.len() > 220 && month_hits >= 3 && event_hits >= 3)
+        || (lower.len() > 360 && month_hits >= 1 && event_hits >= 4)
+        || (lower.len() > 360 && time_hits >= 4 && event_hits >= 3)
+        || (lower.len() > 420 && date_range_hits >= 4 && event_hits >= 3)
 }
 
 fn looks_like_broad_legislative_or_chamber_rollup(lower: &str) -> bool {
@@ -2007,7 +2026,11 @@ fn evidence_ids_for_scan_lead(
     let topic = scan_lead_grounding_text(lead);
     let mut ids: Vec<i32> = candidates
         .into_iter()
-        .filter(|(_, excerpt)| !evidence_quality(excerpt).looks_like_navigation_or_index())
+        .filter(|(_, excerpt)| {
+            let quality = evidence_quality(excerpt);
+            !quality.looks_like_navigation_or_index()
+                && !looks_like_multi_item_event_listing(&quality.text)
+        })
         .filter(|(_, excerpt)| source_grounding::evidence_matches_topic(&topic, excerpt))
         .map(|(id, _)| id)
         .take(3)
@@ -2126,6 +2149,20 @@ Visitors Guide
 Submit Your Photos!";
 
         assert!(!evidence_looks_actionable(excerpt));
+    }
+
+    #[test]
+    fn encoded_multi_item_event_listing_is_not_actionable_or_raw() {
+        let excerpt =
+            "Longmont official city website: Independence Weekend Free Concert Friday, July 3 \u{00e2}\u{20ac}\u{00a2} 6 pm &#8211; 10 pm. LIBRARY CLOSED Friday, July 3 \u{00e2}\u{20ac}\u{00a2} 6 pm &#8211; 10 pm. Free Fitness in the Park Saturday, July 4 \u{00e2}\u{20ac}\u{00a2} 8 am &#8211; 9 am. July 4th Longmont Symphony Concert Saturday, July 4 \u{00e2}\u{20ac}\u{00a2} 11 am &#8211; 12 pm. Independence Weekend Festival Saturday, July 4 \u{00e2}\u{20ac}\u{00a2} 4 pm &#8211; 10 pm. Loter\u{00c3}\u{00ad}a Mexicana Monday, July 6 \u{00e2}\u{20ac}\u{00a2} 5 pm &#8211; 6 pm. Bilingual Storytime Tuesday, July 7 \u{00e2}\u{20ac}\u{00a2} 10 am &#8211; 11 am.";
+
+        let cleaned = clean_scan_public_text(excerpt);
+
+        assert!(!cleaned.contains("&#8211;"));
+        assert!(!cleaned.contains("\u{00e2}\u{20ac}\u{00a2}"));
+        assert!(cleaned.contains("6 pm - 10 pm"));
+        assert!(!evidence_looks_actionable(excerpt));
+        assert!(looks_like_multi_item_event_listing(&cleaned.to_lowercase()));
     }
 
     #[test]

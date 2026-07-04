@@ -383,6 +383,13 @@ pub(crate) fn add_source_inner(
     let conn = db
         .lock()
         .map_err(|_| "Failed to lock database".to_string())?;
+    if let Ok(existing_id) = conn.query_row(
+        "SELECT id FROM sources WHERE lower(trim(url)) = lower(trim(?1)) LIMIT 1",
+        [&url],
+        |row| row.get::<_, i32>(0),
+    ) {
+        return Ok(existing_id);
+    }
     let source = Source {
         id: None,
         name,
@@ -1321,11 +1328,25 @@ fn strip_bracketed_insert_placeholders(line: &str) -> String {
     compacted
 }
 
+fn normalize_draft_source_text(value: &str) -> String {
+    let once = html_escape::decode_html_entities(value).to_string();
+    let twice = html_escape::decode_html_entities(&once).to_string();
+    compiler::repair_common_mojibake(&twice)
+        .replace(['\u{00a0}', '\u{2022}'], " ")
+        .replace("-->", " ")
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+        .trim()
+        .to_string()
+}
+
 fn clean_generated_draft_for_workbench(text: &str) -> String {
     let mut cleaned = Vec::new();
     let mut skipping_reporting_steps = false;
 
-    for line in text.lines() {
+    for raw_line in text.lines() {
+        let line = normalize_draft_source_text(raw_line);
         let trimmed = line.trim();
         let plain = trimmed.trim_matches('*').trim();
         let lower = plain.to_lowercase();
@@ -1355,7 +1376,7 @@ fn clean_generated_draft_for_workbench(text: &str) -> String {
             skipping_reporting_steps = false;
         }
 
-        let line = strip_bracketed_insert_placeholders(line);
+        let line = strip_bracketed_insert_placeholders(&line);
         if !line.trim().is_empty()
             || cleaned
                 .last()
@@ -1370,11 +1391,7 @@ fn clean_generated_draft_for_workbench(text: &str) -> String {
 }
 
 fn first_public_sentence(text: &str) -> String {
-    let cleaned = compiler::repair_common_mojibake(text)
-        .replace('\n', " ")
-        .split_whitespace()
-        .collect::<Vec<_>>()
-        .join(" ");
+    let cleaned = normalize_draft_source_text(text);
     let sentence_end = cleaned
         .char_indices()
         .find_map(|(idx, ch)| matches!(ch, '.' | '!' | '?').then_some(idx + ch.len_utf8()));
@@ -1468,6 +1485,12 @@ fn generated_draft_quality_issue(
 ) -> Option<String> {
     let lower = draft.to_lowercase();
     let evidence_lower = evidence_text.to_lowercase();
+    if draft.contains("&#") || draft.contains("&amp;#") || draft.contains("-->") {
+        return Some("model output retained encoded HTML or page markup debris".to_string());
+    }
+    if looks_like_multi_item_event_listing_draft(&lower) {
+        return Some("model output copied a broad multi-item event listing".to_string());
+    }
     if draft.len() > 8_000 {
         return Some("model output was far too long for a draft".to_string());
     }
@@ -1531,6 +1554,49 @@ fn generated_draft_quality_issue(
         }
     }
     None
+}
+
+fn looks_like_multi_item_event_listing_draft(lower: &str) -> bool {
+    let month_hits = [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+    ]
+    .iter()
+    .map(|month| lower.matches(month).count())
+    .sum::<usize>();
+    let event_hits = [
+        "concert",
+        "festival",
+        "calendar",
+        "library closed",
+        "free fitness",
+        "symphony",
+        "storytime",
+        "loteria mexicana",
+        "lotería mexicana",
+        "bilingual",
+        "workshop",
+        "class",
+    ]
+    .iter()
+    .map(|term| lower.matches(*term).count())
+    .sum::<usize>();
+    let time_hits = regex::Regex::new(r"(?i)\b\d{1,2}\s*(am|pm)\b")
+        .expect("valid event time regex")
+        .find_iter(lower)
+        .count();
+    (lower.len() > 360 && month_hits >= 1 && event_hits >= 4)
+        || (lower.len() > 360 && time_hits >= 4 && event_hits >= 3)
 }
 
 #[cfg(test)]
@@ -1641,6 +1707,23 @@ mod draft_citation_tests {
                 .unwrap()
                 .contains("unsupported")
         );
+    }
+
+    #[test]
+    fn rejects_encoded_multi_item_event_listing_drafts() {
+        let draft = "Headline: Independence Weekend Events\n\nAccording to the source, Friday, July 3 \u{00e2}\u{20ac}\u{00a2} 6 pm &#8211; 10 pm brings a free concert. LIBRARY CLOSED Friday, July 3 \u{00e2}\u{20ac}\u{00a2} 6 pm &#8211; 10 pm. Free Fitness in the Park Saturday, July 4 \u{00e2}\u{20ac}\u{00a2} 8 am &#8211; 9 am. July 4th Longmont Symphony Concert Saturday, July 4 \u{00e2}\u{20ac}\u{00a2} 11 am &#8211; 12 pm. Independence Weekend Festival Saturday, July 4 \u{00e2}\u{20ac}\u{00a2} 4 pm &#8211; 10 pm. Loter\u{00c3}\u{00ad}a Mexicana Monday, July 6 \u{00e2}\u{20ac}\u{00a2} 5 pm &#8211; 6 pm. Bilingual Storytime Tuesday, July 7 \u{00e2}\u{20ac}\u{00a2} 10 am &#8211; 11 am. [Source](evidence:9)";
+        let cleaned = super::clean_generated_draft_for_workbench(draft);
+
+        assert!(!cleaned.contains("&#8211;"));
+        assert!(!cleaned.contains("\u{00e2}\u{20ac}\u{00a2}"));
+        assert!(cleaned.contains("6 pm - 10 pm"));
+        assert!(super::generated_draft_quality_issue(
+            &cleaned,
+            "Evidence Citation ID: 9\nExcerpt: Events calendar.\n\n",
+            1,
+        )
+        .unwrap()
+        .contains("event listing"));
     }
 
     #[test]
@@ -1942,7 +2025,8 @@ pub async fn generate_draft<R: tauri::Runtime>(
         let item_id = item.id.unwrap_or(0);
         evidence_context.push_str(&format!(
             "Evidence Citation ID: {}\nExcerpt: {}\n\n",
-            item_id, item.excerpt
+            item_id,
+            normalize_draft_source_text(&item.excerpt)
         ));
     }
 

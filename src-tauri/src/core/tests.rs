@@ -3002,6 +3002,43 @@ I should produce JSON only.
     }
 
     #[test]
+    fn test_add_source_reuses_existing_normalized_url() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        let db_conn: DbConn = Arc::new(Mutex::new(conn));
+
+        let first = crate::tauri_cmds::add_source_inner(
+            &db_conn,
+            "Longmont official city website".to_string(),
+            "https://longmontcolorado.gov/".to_string(),
+            "primary_record".to_string(),
+            "official_record".to_string(),
+        )
+        .unwrap();
+        let second = crate::tauri_cmds::add_source_inner(
+            &db_conn,
+            "Longmont official city website duplicate".to_string(),
+            "https://longmontcolorado.gov/.".to_string(),
+            "primary_record".to_string(),
+            "official_record".to_string(),
+        )
+        .unwrap();
+
+        let conn = db_conn.lock().unwrap();
+        let count: i32 = conn
+            .query_row("SELECT COUNT(*) FROM sources", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(
+            first, second,
+            "duplicate URL should return the existing source id"
+        );
+        assert_eq!(
+            count, 1,
+            "normalized duplicate source URL should not insert a new row"
+        );
+    }
+
+    #[test]
     fn test_add_source_trims_extracted_trailing_punctuation() {
         let mut conn = Connection::open_in_memory().unwrap();
         run_migrations(&mut conn).unwrap();
