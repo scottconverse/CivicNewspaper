@@ -72,16 +72,16 @@ This prevents a public unsigned installer from appearing before checksum and loc
 
 ## Current v0.3.2 evidence
 
-The Windows public-beta v0.3.2 release line has cleanroom proof at commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`. The current rebuilt release-candidate installer was built from commit `4cef5ab218b6fe7b6167f143a0db57377e6ac3fe` after CI portability repairs and is queued for final cleanroom recheck.
+The Windows public-beta v0.3.2 release line has cleanroom proof at commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`. The current rebuilt release-candidate installer was built from commit `feb5878e789ac09709531c26ad453cbce72bf1ff` after AI setup visibility repairs and is queued for final cleanroom recheck.
 
 - Hosted evidence file: `docs/release-evidence/v0.3.2.json`
 - RC receipt: `.agent-runs/release-candidate-20260703-100118/release-candidate-receipt.json`
 - Strict release smoke: `.agent-runs/release-smoke-20260703-095436/release-smoke-receipt.json`
-- Windows installer smoke: `.agent-runs/windows-installer-smoke-20260703-123043/windows-installer-smoke-receipt.json`
-- Packaged first-run walkthrough: `.agent-runs/packaged-first-run-walkthrough-20260703-123116/packaged-first-run-walkthrough-receipt.json`
-- Final cleanroom report: pending final cleanroom rerun for commit `4cef5ab218b6fe7b6167f143a0db57377e6ac3fe`
+- Windows installer smoke: `.agent-runs/windows-installer-smoke-20260703-180258/windows-installer-smoke-receipt.json`
+- Packaged first-run walkthrough: `.agent-runs/packaged-first-run-walkthrough-20260703-180336/packaged-first-run-walkthrough-receipt.json`
+- Final cleanroom report: pending final cleanroom rerun for commit `feb5878e789ac09709531c26ad453cbce72bf1ff`
 - Cleanroom public URL: pending final cleanroom rerun
-- Current rebuilt release-candidate installer SHA256: `0E038A6D03436BAC572CA9ABB47F17221F6F4B87F08A4D963B192AD99708834A`
+- Current rebuilt release-candidate installer SHA256: `CF7D7DBDE3A97486FED198490397A8A662B90A8A34CE5D3F73ACA3CF61A76522`
 
 This does not publish, merge, or tag the release by itself. Scott must still approve the product push, tag, hosted GitHub Release, and GitHub Pages update.
 

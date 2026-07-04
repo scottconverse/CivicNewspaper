@@ -1,7 +1,7 @@
 {
   "tag": "v0.3.2",
-  "commit": "4cef5ab218b6fe7b6167f143a0db57377e6ac3fe",
-  "generated_at": "2026-07-03T12:29:00-06:00",
+  "commit": "feb5878e789ac09709531c26ad453cbce72bf1ff",
+  "generated_at": "2026-07-03T18:08:00-06:00",
   "rc_receipt_path": ".agent-runs/release-candidate-20260703-100118/release-candidate-receipt.json",
   "rc_receipt_sha256": "24FA27F6223198B4D2B09F41BDED7EC7EBC30740FF7B22C3278BC45293FBE1AE",
   "release_smoke": {
@@ -21,26 +21,26 @@
   },
   "windows_installer_smoke": {
     "ok": true,
-    "receipt_path": ".agent-runs/windows-installer-smoke-20260703-123043/windows-installer-smoke-receipt.json",
-    "receipt_sha256": "5EBBE257E644BF8A74F23DB8DD2EE862BF6E1446AF4BCB0E81617C8D98882025",
+    "receipt_path": ".agent-runs/windows-installer-smoke-20260703-180258/windows-installer-smoke-receipt.json",
+    "receipt_sha256": "387E05E4F863005DE2F606E254D895BB08CAAC8E4A45E0CEC1B899CA62A683D3",
     "installer_name": "The Civic Desk_0.3.2_x64-setup.exe",
     "release_asset_name": "The.Civic.Desk_0.3.2_x64-setup.exe",
-    "installer_sha256": "0E038A6D03436BAC572CA9ABB47F17221F6F4B87F08A4D963B192AD99708834A"
+    "installer_sha256": "CF7D7DBDE3A97486FED198490397A8A662B90A8A34CE5D3F73ACA3CF61A76522"
   },
   "packaged_first_run_walkthrough": {
     "ok": true,
-    "receipt_path": ".agent-runs/packaged-first-run-walkthrough-20260703-123116/packaged-first-run-walkthrough-receipt.json",
-    "receipt_sha256": "05ED3AB369F1B4D9DC7AE56690BD535463084FAC130471E97D62BF8D7F30F072"
+    "receipt_path": ".agent-runs/packaged-first-run-walkthrough-20260703-180336/packaged-first-run-walkthrough-receipt.json",
+    "receipt_sha256": "69B731AA44D29865DD0CD3AE3F65191C4A28CD3DC0337FA3C81A6A5AFD190387"
   },
   "cleanroom": {
     "ok": false,
     "report_path": null,
     "report_sha256": null,
     "tester_machine": "pending final cleanroom rerun",
-    "installer_sha256": "0E038A6D03436BAC572CA9ABB47F17221F6F4B87F08A4D963B192AD99708834A",
+    "installer_sha256": "CF7D7DBDE3A97486FED198490397A8A662B90A8A34CE5D3F73ACA3CF61A76522",
     "public_url": null,
     "zip_path": null,
-    "verdict": "PENDING: local fixes, local installer smoke, and packaged first-run walkthrough passed for commit 4cef5ab218b6fe7b6167f143a0db57377e6ac3fe. Final remote cleanroom proof is still required before this rebuilt artifact can replace the public release evidence."
+    "verdict": "PENDING: local AI setup visibility repairs, local installer smoke, and packaged first-run walkthrough passed for commit feb5878e789ac09709531c26ad453cbce72bf1ff. Final remote cleanroom proof is still required before this rebuilt artifact can replace the public release evidence."
   },
   "release_scope": {
     "windows_public_beta": true,

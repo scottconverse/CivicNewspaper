@@ -2,7 +2,7 @@
 
 > **Project name:** CivicNewspaper. **Installed app name:** The Civic Desk.
 >
-> **Current release:** v0.3.2 Windows-only public beta. The current rebuilt Windows installer candidate is built from commit `4cef5ab218b6fe7b6167f143a0db57377e6ac3fe`; an earlier v0.3.2 installer at `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final cleanroom testing, and the rebuilt public asset is awaiting the final tester recheck. Installers are unsigned. This is not a stable production release.
+> **Current release:** v0.3.2 Windows-only public beta. The current rebuilt Windows installer candidate is built from commit `feb5878e789ac09709531c26ad453cbce72bf1ff`; an earlier v0.3.2 installer at `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final cleanroom testing, and the rebuilt public asset is awaiting the final tester recheck. Installers are unsigned. This is not a stable production release.
 
 The Civic Desk is a local-first desktop newsroom tool for small local publishers, civic reporters, and community editors. It helps one person or a small team monitor public local sources, discover story leads, draft articles with a local AI model, review risks and evidence, and publish a static local-news issue.
 
@@ -124,7 +124,7 @@ The Ollama runtime binary is not committed to the repo. The app-managed first-ru
 
 ## Release Status
 
-v0.3.2 is a Windows public beta. Local isolated-profile smoke, strict source-import fixture smoke, packaged Windows installer smoke, live local-model smoke, anonymous here.now smoke, model bakeoff, dependency audit, and the final remote cleanroom tester run passed for commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`; that tester published a verification issue to `https://olive-gorge-cgsr.here.now`. The current rebuilt release-candidate installer was built from commit `4cef5ab218b6fe7b6167f143a0db57377e6ac3fe` after CI portability repairs and has SHA256 `0E038A6D03436BAC572CA9ABB47F17221F6F4B87F08A4D963B192AD99708834A`; it passed local installer smoke and packaged first-run walkthrough and is queued for final cleanroom recheck. Hosted release evidence is recorded in [docs/release-evidence/v0.3.2.json](docs/release-evidence/v0.3.2.json). Stable release still requires signed installers, cross-platform clean-machine proof for every advertised platform, matching published release artifacts, and credentialed live verification for external publishing providers.
+v0.3.2 is a Windows public beta. Local isolated-profile smoke, strict source-import fixture smoke, packaged Windows installer smoke, live local-model smoke, anonymous here.now smoke, model bakeoff, dependency audit, and the final remote cleanroom tester run passed for commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`; that tester published a verification issue to `https://olive-gorge-cgsr.here.now`. The current rebuilt release-candidate installer was built from commit `feb5878e789ac09709531c26ad453cbce72bf1ff` after AI setup visibility repairs and has SHA256 `CF7D7DBDE3A97486FED198490397A8A662B90A8A34CE5D3F73ACA3CF61A76522`; it passed local installer smoke and packaged first-run walkthrough and is queued for final cleanroom recheck. Hosted release evidence is recorded in [docs/release-evidence/v0.3.2.json](docs/release-evidence/v0.3.2.json). Stable release still requires signed installers, cross-platform clean-machine proof for every advertised platform, matching published release artifacts, and credentialed live verification for external publishing providers.
 
 ## Backlog: Mac And Linux Installer Proof
 
