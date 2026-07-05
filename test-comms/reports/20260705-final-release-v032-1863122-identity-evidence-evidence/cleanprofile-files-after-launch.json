@@ -1,0 +1,37 @@
+﻿[
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1863122-identity-evidence\\backups",
+        "Length":  null,
+        "LastWriteTimeUtc":  "\/Date(1783224847705)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1863122-identity-evidence\\logs",
+        "Length":  null,
+        "LastWriteTimeUtc":  "\/Date(1783224847706)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1863122-identity-evidence\\sites",
+        "Length":  null,
+        "LastWriteTimeUtc":  "\/Date(1783224847705)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1863122-identity-evidence\\civicdesk.db",
+        "Length":  4096,
+        "LastWriteTimeUtc":  "\/Date(1783224847709)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1863122-identity-evidence\\civicdesk.db-shm",
+        "Length":  32768,
+        "LastWriteTimeUtc":  "\/Date(1783224847712)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1863122-identity-evidence\\civicdesk.db-wal",
+        "Length":  403792,
+        "LastWriteTimeUtc":  "\/Date(1783224848007)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1863122-identity-evidence\\sites\\default",
+        "Length":  null,
+        "LastWriteTimeUtc":  "\/Date(1783224847705)\/"
+    }
+]

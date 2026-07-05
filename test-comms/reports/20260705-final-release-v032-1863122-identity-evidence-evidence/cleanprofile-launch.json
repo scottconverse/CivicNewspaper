@@ -1,0 +1,7 @@
+﻿{
+    "utc":  "2026-07-05T04:14:15Z",
+    "clean_profile":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1863122-identity-evidence",
+    "app_exe":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+    "pid":  33828,
+    "webview_args":  "--remote-debugging-port=9223 --remote-allow-origins=*"
+}

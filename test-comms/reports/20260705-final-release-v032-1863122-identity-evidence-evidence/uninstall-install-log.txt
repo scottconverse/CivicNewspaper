@@ -1,0 +1,5 @@
+﻿Start 2026-07-05T04:13:49Z
+Running prior uninstaller: C:\Users\civic\AppData\Local\The Civic Desk\uninstall.exe /S
+Uninstaller exit code: 0
+Running installer: C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\reports\20260705-final-release-v032-1863122-identity-evidence-evidence\The.Civic.Desk_0.3.2_x64-setup.exe /S
+Installer exit code: 0

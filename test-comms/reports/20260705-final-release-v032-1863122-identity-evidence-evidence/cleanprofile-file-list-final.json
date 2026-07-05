@@ -1,0 +1,34 @@
+[
+  {
+    "path": "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1863122-identity-evidence\\backups",
+    "size": 0
+  },
+  {
+    "path": "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1863122-identity-evidence\\civicdesk.db",
+    "size": 323584
+  },
+  {
+    "path": "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1863122-identity-evidence\\civicdesk.db-shm",
+    "size": 32768
+  },
+  {
+    "path": "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1863122-identity-evidence\\civicdesk.db-wal",
+    "size": 4132392
+  },
+  {
+    "path": "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1863122-identity-evidence\\community_profile.json",
+    "size": 662
+  },
+  {
+    "path": "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1863122-identity-evidence\\logs",
+    "size": 0
+  },
+  {
+    "path": "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1863122-identity-evidence\\sites",
+    "size": 0
+  },
+  {
+    "path": "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1863122-identity-evidence\\sites\\default",
+    "size": 0
+  }
+]
