@@ -453,6 +453,37 @@ export function useApp() {
     return picked;
   };
 
+  const profileWithIdentityFallback = async (profile: CommunityProfile, persist = true): Promise<CommunityProfile> => {
+    const savedCity = ((await getSetting("identity.city")) || "").trim();
+    const savedState = ((await getSetting("identity.state")) || "").trim().toUpperCase();
+    const savedTitle = ((await getSetting("identity.newsroom_name")) || "").trim();
+    const savedOrganizationType = ((await getSetting("identity.organization_type")) || "").trim();
+    const merged = {
+      ...profile,
+      city: profile.city?.trim() || savedCity,
+      state: profile.state?.trim().toUpperCase() || savedState,
+      site_title: profile.site_title?.trim() || savedTitle || profile.site_title,
+      organization_type: profile.organization_type?.trim() || savedOrganizationType || "single_person",
+    };
+    if (
+      persist &&
+      (
+        merged.city !== profile.city ||
+        merged.state !== profile.state ||
+        merged.site_title !== profile.site_title ||
+        merged.organization_type !== profile.organization_type
+      )
+    ) {
+      await saveCommunityProfile(merged);
+    }
+    return merged;
+  };
+
+  const loadCommunityProfileWithIdentityFallback = async (): Promise<CommunityProfile> => {
+    const profile = await getCommunityProfile();
+    return profileWithIdentityFallback(profile);
+  };
+
   const addStarterSourcesForCommunity = async (city: string, state: string) => {
     let imported = 0;
     const categories = await discoverSources(city, state);
@@ -477,7 +508,7 @@ export function useApp() {
       const firstRunIntake = await getSetting("setup.first_run_intake");
       if (recovered !== "true" && firstRunIntake !== "true") return;
 
-      const profile = await getCommunityProfile();
+      const profile = await loadCommunityProfileWithIdentityFallback();
       const city = (profile.city || "").trim();
       const state = (profile.state || "").trim().toUpperCase();
       const isRecovered = recovered === "true";
@@ -765,7 +796,7 @@ export function useApp() {
       setLeads(q.leads || []);
       setDrafts(q.drafts || []);
 
-      const p = await getCommunityProfile();
+      const p = await loadCommunityProfileWithIdentityFallback();
       setCommunityProfile(p);
 
       // RE-AUDIT (model-badge): keep the selected-model label fresh after a pull
@@ -891,8 +922,10 @@ export function useApp() {
         setStatusMessage(`The selected model ${model} is not installed. Running deterministic evidence checks and fallback review packet.`);
       }
 
-      const city = (communityProfile?.city || "").trim();
-      const state = (communityProfile?.state || "").trim().toUpperCase();
+      const freshProfile = await loadCommunityProfileWithIdentityFallback();
+      setCommunityProfile(freshProfile);
+      const city = (freshProfile.city || "").trim();
+      const state = (freshProfile.state || "").trim().toUpperCase();
       if (!city || !state) {
         setActiveTab("settings");
         setErrorMessage("Choose your publication city and state in Settings before running Daily Scan.");
@@ -1220,8 +1253,9 @@ export function useApp() {
 
     try {
       setLoading(true);
-      await saveCommunityProfile(profile);
-      setCommunityProfile(profile);
+      const mergedProfile = await profileWithIdentityFallback(profile, false);
+      await saveCommunityProfile(mergedProfile);
+      setCommunityProfile(mergedProfile);
       setStatusMessage("Ethics standard and community profile updated.");
     } catch (e: any) {
       setErrorMessage(toUserMessage(e));
@@ -1524,7 +1558,7 @@ export function useApp() {
     // a selected model; reload both so the masthead reflects the user's entries
     // immediately rather than the defaults loaded at mount.
     try {
-      const profile = await getCommunityProfile();
+      const profile = await loadCommunityProfileWithIdentityFallback();
       setCommunityProfile(profile);
       if (profile.city?.trim() && profile.state?.trim()) {
         await setSetting("setup.first_run_intake", "true");

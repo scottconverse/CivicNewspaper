@@ -259,6 +259,136 @@ describe("useApp Hook Tests", () => {
     expect(hookResult.errorMessage).toContain("Choose your publication city and state");
   });
 
+  test("daily scan recovers city and state from onboarding identity settings when profile state is stale", async () => {
+    const saves: any[] = [];
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
+      if (cmd === "get_queue") return { leads: [], drafts: [] };
+      if (cmd === "get_sources") return [];
+      if (cmd === "get_community_profile") {
+        return {
+          site_title: "My Local Publication",
+          site_subtitle: "Local news and community information.",
+          about_text: "A locally edited publication for this community.",
+          ethics_text: "Editorial standards are set by the publisher.",
+          how_we_report_text: "Stories and sources are reviewed by the editor.",
+          organization_type: "single_person",
+          footer_text: "",
+          logo_url: "",
+          accent_color: "#5a1818",
+          layout_style: "classic",
+          first_amendment_advisor_enabled: true,
+          money_threshold: 250000,
+          watchlist: [],
+          city: "",
+          state: "",
+        };
+      }
+      if (cmd === "list_paired_clients") return [];
+      if (cmd === "get_system_ram") return 16;
+      if (cmd === "get_setting") {
+        if (args?.key === "identity.city") return "Longmont";
+        if (args?.key === "identity.state") return "CO";
+        if (args?.key === "identity.newsroom_name") return "Longmont Civic Desk";
+        if (args?.key === "identity.organization_type") return "single_person";
+        if (args?.key === "model.selected") return "qwen2.5:7b";
+        return "";
+      }
+      if (cmd === "save_community_profile") {
+        saves.push(args.profile);
+        return null;
+      }
+      if (cmd === "ollama_health") return { reachable: true, models: ["qwen2.5:7b"], version: "0.1.0" };
+      if (cmd === "run_daily_scan") return 321;
+      return null;
+    });
+
+    let hookResult: any;
+    const TestComp = () => {
+      hookResult = useApp();
+      return <span data-testid="active-tab">{hookResult.activeTab}</span>;
+    };
+
+    await act(async () => {
+      render(<TestComp />);
+    });
+    vi.mocked(invoke).mockClear();
+    saves.length = 0;
+
+    await act(async () => {
+      await hookResult.handleDailyScan();
+    });
+
+    expect(invoke).toHaveBeenCalledWith("run_daily_scan", { city: "Longmont", state: "CO", sinceHours: 24 });
+    expect(saves.some((profile) => profile.city === "Longmont" && profile.state === "CO")).toBe(true);
+    expect(screen.getByTestId("active-tab")).not.toHaveTextContent("settings");
+    expect(hookResult.errorMessage).not.toContain("Choose your publication city and state");
+  });
+
+  test("settings save preserves onboarding identity city and state when the editable profile is stale", async () => {
+    const saves: any[] = [];
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
+      if (cmd === "get_queue") return { leads: [], drafts: [] };
+      if (cmd === "get_sources") return [];
+      if (cmd === "get_community_profile") return { city: "", state: "" };
+      if (cmd === "list_paired_clients") return [];
+      if (cmd === "get_system_ram") return 16;
+      if (cmd === "get_setting") {
+        if (args?.key === "identity.city") return "Longmont";
+        if (args?.key === "identity.state") return "CO";
+        if (args?.key === "identity.newsroom_name") return "Longmont Civic Desk";
+        if (args?.key === "identity.organization_type") return "single_person";
+        return "";
+      }
+      if (cmd === "save_community_profile") {
+        saves.push(args.profile);
+        return null;
+      }
+      return null;
+    });
+
+    let hookResult: any;
+    const TestComp = () => {
+      hookResult = useApp();
+      return null;
+    };
+
+    await act(async () => {
+      render(<TestComp />);
+    });
+    vi.mocked(invoke).mockClear();
+    saves.length = 0;
+
+    await act(async () => {
+      await hookResult.handleSaveProfile({
+        site_title: "My Local Publication",
+        site_subtitle: "Local news and community information.",
+        about_text: "A locally edited publication for this community.",
+        ethics_text: "Editorial standards are set by the publisher.",
+        how_we_report_text: "Stories and sources are reviewed by the editor.",
+        organization_type: "single_person",
+        footer_text: "",
+        logo_url: "",
+        accent_color: "#5a1818",
+        layout_style: "classic",
+        first_amendment_advisor_enabled: true,
+        money_threshold: 250000,
+        watchlist: [],
+        city: "",
+        state: "",
+      });
+    });
+
+    expect(saves).toEqual([
+      expect.objectContaining({
+        city: "Longmont",
+        state: "CO",
+        site_title: "My Local Publication",
+      }),
+    ]);
+    expect(hookResult.communityProfile.city).toBe("Longmont");
+    expect(hookResult.communityProfile.state).toBe("CO");
+  });
+
   test("imports discovered official sources with official tier", async () => {
     const calls: Array<{ cmd: string; args: any }> = [];
     vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
