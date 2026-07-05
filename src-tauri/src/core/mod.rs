@@ -3,6 +3,7 @@ pub mod app_paths;
 pub mod auth;
 pub mod backups;
 pub mod compiler;
+pub mod content_quality;
 pub mod daily_scan;
 pub mod db;
 pub mod detectors;

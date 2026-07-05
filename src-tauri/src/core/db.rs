@@ -236,6 +236,7 @@ pub fn open_conn(path: &str) -> Result<Connection, Box<dyn Error + Send + Sync>>
 pub fn init_db(path: &str) -> Result<Connection, Box<dyn Error + Send + Sync>> {
     let mut conn = open_conn(path)?;
     super::migrations::run_migrations(&mut conn)?;
+    remediate_legacy_quality_issues(&conn)?;
     Ok(conn)
 }
 
@@ -374,7 +375,9 @@ pub fn get_evidence_by_lead(conn: &Connection, lead_id: i32) -> SqlResult<Vec<Ev
     })?;
     let mut items = Vec::new();
     for item in iter {
-        items.push(item?);
+        let mut item = item?;
+        item.excerpt = super::content_quality::normalize_public_text(&item.excerpt);
+        items.push(item);
     }
     Ok(items)
 }
@@ -533,6 +536,182 @@ pub fn list_leads(conn: &Connection) -> SqlResult<Vec<Lead>> {
         leads.push(lead?);
     }
     Ok(leads)
+}
+
+pub fn remediate_legacy_quality_issues(conn: &Connection) -> SqlResult<usize> {
+    let mut changed = 0usize;
+
+    {
+        let mut stmt = conn.prepare("SELECT id, excerpt FROM evidence_items")?;
+        let rows = stmt
+            .query_map([], |row| {
+                Ok((row.get::<_, i32>(0)?, row.get::<_, String>(1)?))
+            })?
+            .collect::<SqlResult<Vec<_>>>()?;
+        for (id, excerpt) in rows {
+            let cleaned = super::content_quality::normalize_public_text(&excerpt);
+            if cleaned != excerpt {
+                changed += conn.execute(
+                    "UPDATE evidence_items SET excerpt = ?1 WHERE id = ?2",
+                    params![cleaned, id],
+                )?;
+            }
+        }
+    }
+
+    let mut bad_scan_lead_ids = Vec::new();
+    {
+        let mut stmt = conn.prepare(
+            "SELECT id, title, summary, why_flagged, publishability_note FROM daily_scan_leads",
+        )?;
+        let rows = stmt
+            .query_map([], |row| {
+                Ok((
+                    row.get::<_, i32>(0)?,
+                    row.get::<_, String>(1)?,
+                    row.get::<_, String>(2)?,
+                    row.get::<_, Option<String>>(3)?,
+                    row.get::<_, Option<String>>(4)?,
+                ))
+            })?
+            .collect::<SqlResult<Vec<_>>>()?;
+        for (id, title, summary, why_flagged, publishability_note) in rows {
+            let issue = super::content_quality::public_quality_issue(&[
+                &title,
+                &summary,
+                why_flagged.as_deref().unwrap_or_default(),
+            ]);
+            let clean_title = super::content_quality::normalize_public_text(&title);
+            let clean_summary = super::content_quality::normalize_public_text(&summary);
+            if let Some(reason) = issue {
+                bad_scan_lead_ids.push(id);
+                changed += conn.execute(
+                    "UPDATE daily_scan_leads
+                     SET title = ?1,
+                         summary = ?2,
+                         disposition = 'needs_verification',
+                         priority = 'low',
+                         publishability_note = ?3,
+                         suggested_next_step = 'Split this into one current, local, source-backed item before drafting.',
+                         why_flagged = ?4
+                     WHERE id = ?5",
+                    params![
+                        clean_title,
+                        clean_summary,
+                        super::content_quality::append_quality_note(publishability_note, reason),
+                        super::content_quality::append_quality_note(why_flagged, reason),
+                        id
+                    ],
+                )?;
+            } else if clean_title != title || clean_summary != summary {
+                changed += conn.execute(
+                    "UPDATE daily_scan_leads SET title = ?1, summary = ?2 WHERE id = ?3",
+                    params![clean_title, clean_summary, id],
+                )?;
+            }
+        }
+    }
+
+    let mut bad_story_lead_ids = Vec::new();
+    {
+        let mut stmt = conn.prepare("SELECT id, why, from_scan_lead_id FROM leads")?;
+        let rows = stmt
+            .query_map([], |row| {
+                Ok((
+                    row.get::<_, i32>(0)?,
+                    row.get::<_, String>(1)?,
+                    row.get::<_, Option<i32>>(2)?,
+                ))
+            })?
+            .collect::<SqlResult<Vec<_>>>()?;
+        for (id, why, from_scan_lead_id) in rows {
+            let inherited_bad = from_scan_lead_id
+                .map(|scan_id| bad_scan_lead_ids.contains(&scan_id))
+                .unwrap_or(false);
+            let issue = super::content_quality::public_quality_issue(&[&why]);
+            let clean_why = super::content_quality::normalize_public_text(&why);
+            if inherited_bad || issue.is_some() {
+                bad_story_lead_ids.push(id);
+                let reason =
+                    issue.unwrap_or("Linked scan lead was quarantined by story-quality gates.");
+                changed += conn.execute(
+                    "UPDATE leads
+                     SET why = ?1,
+                         confidence = 'low',
+                         risk_level = 'low',
+                         disposition = 'needs_verification',
+                         novelty_score = CASE WHEN novelty_score IS NULL OR novelty_score > 1 THEN 1 ELSE novelty_score END,
+                         novelty_reason = ?2
+                     WHERE id = ?3",
+                    params![
+                        super::content_quality::append_quality_note(Some(clean_why), reason),
+                        reason,
+                        id
+                    ],
+                )?;
+            } else if clean_why != why {
+                changed += conn.execute(
+                    "UPDATE leads SET why = ?1 WHERE id = ?2",
+                    params![clean_why, id],
+                )?;
+            }
+        }
+    }
+
+    {
+        let mut stmt =
+            conn.prepare("SELECT id, lead_id, title, content, missing_evidence_notes FROM drafts")?;
+        let rows = stmt
+            .query_map([], |row| {
+                Ok((
+                    row.get::<_, i32>(0)?,
+                    row.get::<_, Option<i32>>(1)?,
+                    row.get::<_, String>(2)?,
+                    row.get::<_, String>(3)?,
+                    row.get::<_, Option<String>>(4)?,
+                ))
+            })?
+            .collect::<SqlResult<Vec<_>>>()?;
+        for (id, lead_id, title, content, notes) in rows {
+            let linked_bad = lead_id
+                .map(|lead_id| bad_story_lead_ids.contains(&lead_id))
+                .unwrap_or(false);
+            let issue = super::content_quality::public_quality_issue(&[&title, &content]);
+            let clean_title = super::content_quality::normalize_public_text(&title);
+            let clean_content = super::content_quality::clean_multiline_public_text(&content);
+            if linked_bad || issue.is_some() {
+                let reason = issue.unwrap_or("Linked lead was quarantined by story-quality gates.");
+                let quarantine_title = "Quarantined draft needs fresh source review";
+                let quarantine_content = format!(
+                    "This legacy draft was cut by The Civic Desk quality gate before publication. {reason} Start a fresh draft only after confirming one current, local, source-backed item."
+                );
+                changed += conn.execute(
+                    "UPDATE drafts
+                     SET title = ?1,
+                         content = ?2,
+                         status = 'killed',
+                         lead_id = NULL,
+                         missing_evidence_notes = ?3,
+                         updated_at = ?4
+                     WHERE id = ?5",
+                    params![
+                        quarantine_title,
+                        quarantine_content,
+                        super::content_quality::append_quality_note(notes, reason),
+                        Utc::now().to_rfc3339(),
+                        id
+                    ],
+                )?;
+            } else if clean_title != title || clean_content != content {
+                changed += conn.execute(
+                    "UPDATE drafts SET title = ?1, content = ?2, updated_at = ?3 WHERE id = ?4",
+                    params![clean_title, clean_content, Utc::now().to_rfc3339(), id],
+                )?;
+            }
+        }
+    }
+
+    Ok(changed)
 }
 
 // --- Daily Scans ---
@@ -1121,4 +1300,153 @@ pub fn record_paired_client_use(conn: &Connection, token: &str) -> SqlResult<()>
         params![now, token],
     )?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn remediates_legacy_encoded_calendar_leads_and_drafts() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        crate::core::migrations::run_migrations(&mut conn).unwrap();
+        let broken_bullet = "\u{00c3}\u{00a2}\u{00e2}\u{201a}\u{00ac}\u{00c2}\u{00a2}";
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "City Events".to_string(),
+                url: "https://example.gov/events".to_string(),
+                r#type: "official_comm".to_string(),
+                status: "online".to_string(),
+                tier: "official_record".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        let evidence_id = insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://example.gov/events".to_string()),
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: format!("Friday, July 3 {broken_bullet} 6 pm &#8211; 10 pm -->"),
+                content_hash: "events".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
+        let run_id = insert_daily_scan_run(
+            &conn,
+            &DailyScanRun {
+                id: None,
+                started_at: Utc::now().to_rfc3339(),
+                completed_at: Some(Utc::now().to_rfc3339()),
+                run_status: "completed".to_string(),
+            },
+        )
+        .unwrap();
+        let scan_lead_id = insert_daily_scan_lead(
+            &conn,
+            &DailyScanLead {
+                id: None,
+                scan_id: run_id,
+                title: format!("Independence Weekend Free Concert Friday, July 3 {broken_bullet} 6 pm &#8211; 10 pm"),
+                summary: format!("LIBRARY CLOSED Friday, July 3 {broken_bullet} 6 pm &#8211; 10 pm. Free Fitness in the Park Saturday, July 4 {broken_bullet} 8 am &#8211; 9 am. July 4th Symphony Concert Saturday, July 4 {broken_bullet} 11 am &#8211; 12 pm. Independence Weekend Festival Saturday, July 4 {broken_bullet} 4 pm &#8211; 10 pm."),
+                source_id: Some(source_id),
+                original_url: "https://example.gov/events".to_string(),
+                why_flagged: Some("Review community signal from city events: -->".to_string()),
+                source_name: Some("City Events".to_string()),
+                source_type: Some("official_comm".to_string()),
+                priority: Some("high".to_string()),
+                suggested_next_step: Some("Draft this now.".to_string()),
+                story_type: Some("story".to_string()),
+                what_changed: Some("Weekend events are listed.".to_string()),
+                immediacy: Some(5),
+                impact: Some(4),
+                conflict: None,
+                novelty: Some(4),
+                publishability_note: None,
+                disposition: Some("ready_to_draft".to_string()),
+                recurrence_count: None,
+                recurrence_note: None,
+            },
+        )
+        .unwrap();
+        let lead_id = insert_lead(
+            &conn,
+            &Lead {
+                id: None,
+                detector_name: "daily_scan".to_string(),
+                why: format!("Independence Weekend Free Concert Friday, July 3 {broken_bullet} 6 pm &#8211; 10 pm"),
+                confidence: "high".to_string(),
+                risk_level: "high".to_string(),
+                confirmation_checklist: "[]".to_string(),
+                from_scan_lead_id: Some(scan_lead_id),
+                story_type: Some("story".to_string()),
+                disposition: Some("ready_to_draft".to_string()),
+                novelty_score: Some(4),
+                novelty_reason: None,
+                recurrence_count: None,
+                recurrence_note: None,
+                created_at: String::new(),
+            },
+            &[evidence_id],
+        )
+        .unwrap();
+        let draft_id = insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: Some(lead_id),
+                format: "watch".to_string(),
+                title: "Independence Weekend Events".to_string(),
+                content: format!("According to the source, Friday, July 3 {broken_bullet} 6 pm &#8211; 10 pm. LIBRARY CLOSED Friday, July 3 {broken_bullet} 6 pm &#8211; 10 pm. Free Fitness in the Park Saturday, July 4 {broken_bullet} 8 am &#8211; 9 am. July 4th Symphony Concert Saturday, July 4 {broken_bullet} 11 am &#8211; 12 pm. Independence Weekend Festival Saturday, July 4 {broken_bullet} 4 pm &#8211; 10 pm. [Source](evidence:1)"),
+                status: "ready_to_publish".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: String::new(),
+                updated_at: String::new(),
+            },
+        )
+        .unwrap();
+
+        let changed = remediate_legacy_quality_issues(&conn).unwrap();
+
+        assert!(changed > 0);
+        let scan_disposition: String = conn
+            .query_row(
+                "SELECT disposition FROM daily_scan_leads WHERE id = ?1",
+                [scan_lead_id],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(scan_disposition, "needs_verification");
+        let lead_disposition: String = conn
+            .query_row(
+                "SELECT disposition FROM leads WHERE id = ?1",
+                [lead_id],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(lead_disposition, "needs_verification");
+        let draft = get_draft(&conn, draft_id).unwrap().unwrap();
+        assert_eq!(draft.status, "killed");
+        assert_eq!(draft.lead_id, None);
+        assert_eq!(draft.title, "Quarantined draft needs fresh source review");
+        assert!(!draft.content.contains("&#8211;"));
+        assert!(!draft.content.contains(broken_bullet));
+        assert!(!draft.content.contains("LIBRARY CLOSED"));
+        assert!(draft.content.contains("quality gate"));
+        assert!(draft
+            .missing_evidence_notes
+            .unwrap()
+            .contains("Quality gate"));
+        let evidence = get_evidence_by_lead(&conn, lead_id).unwrap();
+        assert_eq!(evidence[0].excerpt, "Friday, July 3 - 6 pm - 10 pm");
+    }
 }

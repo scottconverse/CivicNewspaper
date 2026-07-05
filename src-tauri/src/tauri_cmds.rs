@@ -1022,6 +1022,7 @@ pub fn get_queue(db: tauri::State<'_, DbConn>) -> Result<QueueData, String> {
         .lock()
         .map_err(|_| "Failed to lock database".to_string())?;
     recover_in_progress_scans_with_saved_leads(&conn).map_err(|e| e.to_string())?;
+    db::remediate_legacy_quality_issues(&conn).map_err(|e| e.to_string())?;
     let leads = db::list_leads(&conn).map_err(|e| e.to_string())?;
     let drafts = db::list_drafts(&conn).map_err(|e| e.to_string())?;
     Ok(QueueData { leads, drafts })
@@ -1329,16 +1330,7 @@ fn strip_bracketed_insert_placeholders(line: &str) -> String {
 }
 
 fn normalize_draft_source_text(value: &str) -> String {
-    let once = html_escape::decode_html_entities(value).to_string();
-    let twice = html_escape::decode_html_entities(&once).to_string();
-    compiler::repair_common_mojibake(&twice)
-        .replace(['\u{00a0}', '\u{2022}'], " ")
-        .replace("-->", " ")
-        .split_whitespace()
-        .collect::<Vec<_>>()
-        .join(" ")
-        .trim()
-        .to_string()
+    crate::core::content_quality::normalize_public_text(value)
 }
 
 fn clean_generated_draft_for_workbench(text: &str) -> String {
