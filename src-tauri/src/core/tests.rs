@@ -1354,11 +1354,13 @@ mod tests {
         );
         assert_eq!(lead.source_name.as_deref(), Some("Council Agenda Center"));
         assert_eq!(lead.source_type.as_deref(), Some("agenda"));
-        assert_eq!(lead.priority.as_deref(), Some("high"));
+        assert_eq!(lead.priority.as_deref(), Some("low"));
         assert_eq!(lead.disposition.as_deref(), Some("needs_verification"));
         assert_eq!(
             lead.suggested_next_step.as_deref(),
-            Some("Confirm the hearing date and agenda item number.")
+            Some(
+                "Confirm the hearing date and agenda item number. Then attach or cite the source document before drafting."
+            )
         );
     }
 
@@ -1658,6 +1660,55 @@ mod tests {
             .as_deref()
             .unwrap_or_default()
             .contains("broad organization or legislative-session rollup")));
+    }
+
+    #[test]
+    fn test_daily_scan_downgrades_any_no_evidence_lead_before_story_queue() {
+        let response = r#"
+        {
+          "leads": [
+            {
+              "title": "City clerk office enhances accessibility and community services",
+              "summary": "The city clerk page describes records, elections, licensing, and accessibility services.",
+              "original_url": "https://example.gov/city-clerk",
+              "why_flagged": "The city clerk page may contain useful civic background.",
+              "source_name": "City Clerk Office",
+              "source_type": "official update",
+              "priority": "high",
+              "suggested_next_step": "Draft a community services item.",
+              "story_type": "watch",
+              "what_changed": "No current change found.",
+              "immediacy": 1,
+              "impact": 2,
+              "conflict": 1,
+              "novelty": 1,
+              "what_would_make_it_publishable": "A new filing deadline, election update, public notice, or documented service change."
+            }
+          ]
+        }
+        "#;
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT INTO daily_scan_runs (started_at, run_status) VALUES ('', 'running')",
+            [],
+        )
+        .unwrap();
+
+        crate::core::daily_scan::parse_and_save_scan_response(&conn, 1, response).unwrap();
+
+        let scan_lead = list_daily_scan_leads(&conn, 1).unwrap().pop().unwrap();
+        assert_eq!(scan_lead.disposition.as_deref(), Some("needs_verification"));
+        assert_eq!(scan_lead.priority.as_deref(), Some("low"));
+        assert_eq!(scan_lead.story_type.as_deref(), Some("verification"));
+
+        let queue_lead = list_leads(&conn).unwrap().pop().unwrap();
+        assert_eq!(
+            queue_lead.disposition.as_deref(),
+            Some("needs_verification")
+        );
+        assert_eq!(queue_lead.risk_level, "low");
+        assert_eq!(queue_lead.story_type.as_deref(), Some("verification"));
     }
 
     #[test]

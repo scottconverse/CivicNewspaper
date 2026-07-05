@@ -1452,18 +1452,45 @@ fn source_bound_fallback_draft(
     lead_why: &str,
     evidence_items: &[EvidenceItem],
     audience: &str,
+    format: &str,
 ) -> String {
     let headline = source_bound_headline(lead_why);
-    let Some(item) = evidence_items.iter().find(|item| item.id.is_some()) else {
+    if !evidence_items.iter().any(|item| item.id.is_some()) {
         return format!(
             "Headline: {headline}\n\nNo source documents are linked to this lead yet. Treat it as a verification assignment until an editor attaches public source material."
         );
+    }
+    let linked_sentences = evidence_items
+        .iter()
+        .filter_map(|item| item.id.map(|id| (id, first_public_sentence(&item.excerpt))))
+        .take(3)
+        .collect::<Vec<_>>();
+    let first_paragraph = linked_sentences
+        .first()
+        .map(|(id, sentence)| {
+            format!("According to the linked source, {sentence} [Source](evidence:{id}).")
+        })
+        .unwrap_or_else(|| {
+            "No source documents are linked to this lead yet. Treat it as a verification assignment until an editor attaches public source material.".to_string()
+        });
+    let extra_sources = linked_sentences
+        .iter()
+        .skip(1)
+        .map(|(id, sentence)| {
+            format!("A second linked source says {sentence} [Source](evidence:{id}).")
+        })
+        .collect::<Vec<_>>()
+        .join("\n\n");
+    let closing = if matches!(format, "brief" | "story" | "article") && linked_sentences.len() > 1 {
+        format!("Taken together, the linked records give {audience} a source-backed civic brief. Keep the story limited to these records until an editor confirms any public impact, cost, decision date, or agency response not shown in the linked sources.")
+    } else {
+        format!("This is a watch brief for {audience}. The linked source does not, by itself, confirm a broader development; watch for a newly posted date, vote, cost, agency response, or other public update before expanding it into a full story.")
     };
-    let id = item.id.unwrap_or(0);
-    let source_sentence = first_public_sentence(&item.excerpt);
-    format!(
-        "Headline: {headline}\n\nAccording to the linked source, {source_sentence} [Source](evidence:{id}).\n\nThis is a watch brief for {audience}. The linked source does not, by itself, confirm a broader development; watch for a newly posted date, vote, cost, agency response, or other public update before expanding it into a full story."
-    )
+    if extra_sources.is_empty() {
+        format!("Headline: {headline}\n\n{first_paragraph}\n\n{closing}")
+    } else {
+        format!("Headline: {headline}\n\n{first_paragraph}\n\n{extra_sources}\n\n{closing}")
+    }
 }
 
 fn repeated_phrase_count(text: &str, phrase: &str) -> usize {
@@ -1474,9 +1501,11 @@ fn generated_draft_quality_issue(
     draft: &str,
     evidence_text: &str,
     evidence_count: usize,
+    format: &str,
 ) -> Option<String> {
     let lower = draft.to_lowercase();
     let evidence_lower = evidence_text.to_lowercase();
+    let reader_facing_format = matches!(format, "brief" | "story" | "article");
     if draft.contains("&#") || draft.contains("&amp;#") || draft.contains("-->") {
         return Some("model output retained encoded HTML or page markup debris".to_string());
     }
@@ -1510,6 +1539,25 @@ fn generated_draft_quality_issue(
     }
     if evidence_count > 0 && !lower.contains("according to") {
         return Some("model output did not clearly attribute sourced claims".to_string());
+    }
+    if reader_facing_format && lower.contains("this is a watch brief") {
+        return Some(
+            "model output used watch-brief scaffolding for a reader-facing brief".to_string(),
+        );
+    }
+    if reader_facing_format && evidence_count > 1 {
+        let paragraph_count = draft
+            .split("\n\n")
+            .filter(|part| {
+                let trimmed = part.trim();
+                !trimmed.is_empty() && !trimmed.to_lowercase().starts_with("headline:")
+            })
+            .count();
+        if paragraph_count < 2 {
+            return Some(
+                "model output was too thin for a linked-evidence reader-facing brief".to_string(),
+            );
+        }
     }
     for term in [
         "cancel",
@@ -1666,12 +1714,13 @@ mod draft_citation_tests {
         let draft = "According to the source, the program was canceled because of COVID funding cuts. [Source](evidence:66)";
         let evidence_text = format!("Evidence Citation ID: 66\nExcerpt: {}\n\n", item.excerpt);
 
-        let issue = super::generated_draft_quality_issue(draft, &evidence_text, 1)
+        let issue = super::generated_draft_quality_issue(draft, &evidence_text, 1, "watch")
             .expect("unsupported claims should be rejected");
         let fallback = super::source_bound_fallback_draft(
             "Snacks and Antojitos (Summer Program)",
             &[item],
             "local readers",
+            "watch",
         );
 
         assert!(issue.contains("unsupported"));
@@ -1690,12 +1739,12 @@ mod draft_citation_tests {
         let named_drift = "School District 2 and Burlington Public Schools will hold meetings according to the source [Source](evidence:15).";
 
         assert!(
-            super::generated_draft_quality_issue(unattributed, evidence_text, 1)
+            super::generated_draft_quality_issue(unattributed, evidence_text, 1, "watch")
                 .unwrap()
                 .contains("attribute")
         );
         assert!(
-            super::generated_draft_quality_issue(named_drift, evidence_text, 1)
+            super::generated_draft_quality_issue(named_drift, evidence_text, 1, "watch")
                 .unwrap()
                 .contains("unsupported")
         );
@@ -1713,9 +1762,21 @@ mod draft_citation_tests {
             &cleaned,
             "Evidence Citation ID: 9\nExcerpt: Events calendar.\n\n",
             1,
+            "watch",
         )
         .unwrap()
         .contains("event listing"));
+    }
+
+    #[test]
+    fn rejects_watch_fragment_for_reader_facing_brief() {
+        let evidence_text = "Evidence Citation ID: 15\nExcerpt: St. Vrain Valley Schools announced an academic program update.\n\nEvidence Citation ID: 16\nExcerpt: The district listed a board meeting date for the program.\n\n";
+        let draft = "Headline: Academic Excellence By Design Initiative\n\nAccording to the linked source, August 1, 2026 - Aug 12 Board of Education Regular Meeting [Source](evidence:15).\n\nThis is a watch brief for residents.";
+
+        let issue = super::generated_draft_quality_issue(draft, evidence_text, 2, "brief")
+            .expect("watch fragments should not satisfy a brief lead");
+
+        assert!(issue.contains("watch-brief scaffolding"));
     }
 
     #[test]
@@ -1736,6 +1797,7 @@ mod draft_citation_tests {
             "St. Vrain direct admission offer",
             &[item],
             "local readers",
+            "watch",
         );
 
         assert!(fallback.contains("According to the linked source"));
@@ -1749,6 +1811,7 @@ mod draft_citation_tests {
             "City of Longmont to Perform Chip Seal on Francis Street July 6-15",
             &[],
             "Longmont readers",
+            "watch",
         );
         let lower = fallback.to_lowercase();
 
@@ -2045,6 +2108,7 @@ pub async fn generate_draft<R: tauri::Runtime>(
             &lead_why,
             &evidence_items,
             &audience,
+            &format,
         ));
     }
 
@@ -2078,7 +2142,7 @@ pub async fn generate_draft<R: tauri::Runtime>(
     let citation_safe = sanitize_unlinked_evidence_citations(&normalized_citations, &allowed_ids);
     let cleaned = clean_generated_draft_for_workbench(&citation_safe);
     if let Some(issue) =
-        generated_draft_quality_issue(&cleaned, &evidence_context, evidence_items.len())
+        generated_draft_quality_issue(&cleaned, &evidence_context, evidence_items.len(), &format)
     {
         eprintln!(
             "Generated draft for lead {} replaced with source-bound fallback: {}",
@@ -2088,6 +2152,7 @@ pub async fn generate_draft<R: tauri::Runtime>(
             &lead_why,
             &evidence_items,
             &audience,
+            &format,
         ))
     } else {
         Ok(cleaned)

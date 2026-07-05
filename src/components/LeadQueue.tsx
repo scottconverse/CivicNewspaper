@@ -134,6 +134,10 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
       (novelty > 0 && novelty <= 2)
     );
   };
+  const leadDraftActionLabel = (lead: Lead, existingDraft?: Draft) => {
+    if (existingDraft) return "Open draft";
+    return leadNeedsDraftCaution(lead) ? "Verify first" : "Draft";
+  };
   const draftByLeadId = new Map<number, Draft>();
   for (const draft of drafts) {
     if (draft.lead_id && !draftByLeadId.has(draft.lead_id)) {
@@ -288,14 +292,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
             ) : (
               sortedLeads.map((lead) => {
                 const existingDraft = lead.id ? draftByLeadId.get(lead.id) : undefined;
-                const disposition = (lead.disposition ?? "review").toLowerCase();
-                const draftLabel = existingDraft
-                  ? "Open draft"
-                  : disposition === "needs_verification"
-                    ? "Verify first"
-                    : leadNeedsDraftCaution(lead)
-                    ? "Draft anyway"
-                    : "Draft";
+                const draftLabel = leadDraftActionLabel(lead, existingDraft);
                 const openLeadOrDraft = () => {
                   if (existingDraft) {
                     onOpenDraftEditor(existingDraft);

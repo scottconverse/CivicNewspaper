@@ -422,6 +422,15 @@ export function useApp() {
     );
   };
 
+  const draftFormatForLead = (lead: Lead) => {
+    const storyType = (lead.story_type ?? "").toLowerCase();
+    const disposition = (lead.disposition ?? "").toLowerCase();
+    if (storyType === "brief" || storyType === "story") return "brief";
+    if (storyType === "explainer" || storyType === "investigation" || storyType === "opinion") return storyType;
+    if (storyType === "background" || disposition === "background") return "explainer";
+    return "watch";
+  };
+
   const draftHasPublishableLinkedSourceShape = (content: string, linkedEvidenceCount: number) => {
     return (
       linkedEvidenceCount > 0 &&
@@ -1267,6 +1276,7 @@ export function useApp() {
   const handleOpenDraftWizard = (lead: Lead) => {
     setSelectedLead(lead);
     setSelectedDraft(null);
+    setDraftFormat(draftFormatForLead(lead));
     setEvidenceList([]);
     setGuardrailsReport(null);
     setActiveTab("workbench");

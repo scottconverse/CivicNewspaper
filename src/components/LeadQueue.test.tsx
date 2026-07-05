@@ -210,7 +210,7 @@ describe("LeadQueue Component Tests", () => {
     expect(screen.queryByText(/Scrape & Detect above/i)).not.toBeInTheDocument();
   });
 
-  test("labels watch leads as draft-anyway and verification leads as verify-first choices", () => {
+  test("labels weak leads as verify-first instead of normal draft choices", () => {
     render(
       <LeadQueue
         leads={[
@@ -246,8 +246,8 @@ describe("LeadQueue Component Tests", () => {
     );
 
     expect(screen.getByRole("button", { name: /^Draft \$350,000 budget approved/i })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /Draft anyway/i })).toHaveLength(1);
-    expect(screen.getByRole("button", { name: /Verify first/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Draft anyway/i })).not.toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /Verify first/i })).toHaveLength(2);
   });
 
   test("drafts tab filters send-back, held, and cut workflow states", () => {

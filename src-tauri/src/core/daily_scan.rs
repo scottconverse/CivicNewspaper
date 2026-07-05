@@ -1169,7 +1169,7 @@ fn save_daily_scan_lead_for_queue(
         lead = downgrade_scan_lead_for_public_quality(lead, reason);
     }
     let evidence_ids = evidence_ids_for_scan_lead(conn, &lead)?;
-    if evidence_ids.is_empty() && scan_lead_requires_linked_evidence(&lead) {
+    if evidence_ids.is_empty() {
         lead = downgrade_scan_lead_without_evidence(lead);
     }
     let scan_lead_id = db::insert_daily_scan_lead(conn, &lead)?;
@@ -1235,22 +1235,24 @@ fn save_daily_scan_lead_for_queue(
     Ok(scan_lead_id)
 }
 
-fn scan_lead_requires_linked_evidence(lead: &DailyScanLead) -> bool {
-    matches!(lead.story_type.as_deref(), Some("story") | Some("brief"))
-        && matches!(
-            lead.disposition.as_deref(),
-            Some("ready_to_draft") | Some("review")
-        )
-}
-
 fn scan_lead_grounding_text(lead: &DailyScanLead) -> String {
     [lead.title.as_str(), lead.summary.as_str()].join(" ")
 }
 
 fn downgrade_scan_lead_without_evidence(mut lead: DailyScanLead) -> DailyScanLead {
-    lead.disposition = Some("needs_verification".to_string());
+    let keep_background = matches!(lead.story_type.as_deref(), Some("background"))
+        || matches!(lead.disposition.as_deref(), Some("background"));
+    lead.disposition = Some(if keep_background {
+        "background".to_string()
+    } else {
+        "needs_verification".to_string()
+    });
     lead.priority = Some("low".to_string());
-    lead.story_type = Some("verification".to_string());
+    lead.story_type = Some(if keep_background {
+        "background".to_string()
+    } else {
+        "verification".to_string()
+    });
     let evidence_note = "No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy.";
     lead.publishability_note = Some(match lead.publishability_note {
         Some(note) if !note.trim().is_empty() => {
