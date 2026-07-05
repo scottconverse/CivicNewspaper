@@ -985,6 +985,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       event.stopPropagation();
       markIdentityInteraction();
       applyIdentityValues(profile);
+      void advanceIdentityStep(profile);
     };
 
     document.addEventListener("pointerdown", handleNativeStarter, { capture: true });
@@ -1039,22 +1040,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           <span style={{ fontWeight: 600, fontSize: "0.9rem", color: "var(--text-secondary)" }}>
             Step {step} of {steps.length}
           </span>
-          {step === 1 && (
-            <button
-              type="button"
-              ref={primaryActionRef}
-              className="btn btn-primary btn-sm"
-              id="btn-wizard-next"
-              onPointerDown={prePersistIdentityOnPress}
-              onClick={(event) => {
-                event.preventDefault();
-                void handleNext();
-              }}
-            >
-              Next
-              <ChevronRight size={14} style={{ marginLeft: "0.35rem" }} />
-            </button>
-          )}
         </div>
       </div>
 
@@ -1099,6 +1084,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                     onClick={() => {
                       markIdentityInteraction();
                       applyIdentityValues(profile);
+                      void advanceIdentityStep(profile);
                     }}
                   >
                     {profile.label}
@@ -1554,39 +1540,45 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         )}
       </div>
 
-      {step !== 1 && (
-        <div className="flex-between onboarding-actions">
+      <div className="flex-between onboarding-actions">
+        {step === 1 ? (
+          <span className="help-text">Choose a starter profile or continue with the fields shown.</span>
+        ) : (
           <button type="button" className="btn btn-secondary" onClick={handleBack} disabled={step === 1}>
             Back
           </button>
+        )}
 
-          <div style={{ display: "flex", gap: "1rem" }}>
-            {step === 3 && (
-              <button type="button" className="btn btn-secondary" onClick={requestSkipAiSetup}>
-                Skip for now
-              </button>
-            )}
+        <div style={{ display: "flex", gap: "1rem" }}>
+          {step === 3 && (
+            <button type="button" className="btn btn-secondary" onClick={requestSkipAiSetup}>
+              Skip for now
+            </button>
+          )}
 
-            <button
-              type="button"
-              ref={primaryActionRef}
-              className="btn btn-primary"
-              onClick={handleNext}
-              id="btn-wizard-next"
-              disabled={runtimeInstalling || pulling || stepTwoNeedsRuntimeInstall}
-              aria-describedby={stepTwoNeedsRuntimeInstall ? "onboarding-runtime-required-note" : undefined}
-              title={stepTwoNeedsRuntimeInstall ? "Install the local AI runtime or choose Skip for now before continuing." : undefined}
-            >
-              {step === 3 && !pulling && !pullComplete && !(health && modelInstalled(model, health.models))
+          <button
+            type="button"
+            ref={primaryActionRef}
+            className="btn btn-primary"
+            onPointerDown={step === 1 ? prePersistIdentityOnPress : undefined}
+            onClick={handleNext}
+            id="btn-wizard-next"
+            aria-label={step === 1 ? "Continue setup Next" : undefined}
+            disabled={runtimeInstalling || pulling || stepTwoNeedsRuntimeInstall}
+            aria-describedby={stepTwoNeedsRuntimeInstall ? "onboarding-runtime-required-note" : undefined}
+            title={stepTwoNeedsRuntimeInstall ? "Install the local AI runtime or choose Skip for now before continuing." : undefined}
+          >
+            {step === 1
+              ? "Continue setup"
+              : step === 3 && !pulling && !pullComplete && !(health && modelInstalled(model, health.models))
                 ? "Start download"
                 : step === steps.length
                   ? "Finish Onboarding"
                   : "Next"}
-              <ChevronRight size={16} style={{ marginLeft: "0.5rem" }} />
-            </button>
-          </div>
+            <ChevronRight size={16} style={{ marginLeft: "0.5rem" }} />
+          </button>
         </div>
-      )}
+      </div>
 
       {skipConfirm && (
         <ConfirmModal

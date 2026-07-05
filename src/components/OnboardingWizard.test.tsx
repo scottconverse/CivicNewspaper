@@ -263,7 +263,8 @@ describe("OnboardingWizard Component Tests", () => {
     expect(screen.getByRole("progressbar", { name: /setup progress/i })).toHaveAttribute("aria-valuenow", "20");
     expect(document.querySelector(".onboarding-step-body")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /next/i })).toBeInTheDocument();
-    expect(document.querySelector(".onboarding-actions")).not.toBeInTheDocument();
+    expect(document.querySelector(".onboarding-actions")).toBeInTheDocument();
+    expect(screen.getByText(/Choose a starter profile or continue with the fields shown/i)).toBeInTheDocument();
   });
 
   test("final onboarding handoff reserves space above the sticky action bar", async () => {
@@ -328,7 +329,7 @@ describe("OnboardingWizard Component Tests", () => {
     expect(publicationInput).toHaveValue("ABC");
   });
 
-  test("identity starter profile fills Longmont setup and Next advances", async () => {
+  test("identity starter profile fills Longmont setup and advances", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
     const user = userEvent.setup();
@@ -354,11 +355,6 @@ describe("OnboardingWizard Component Tests", () => {
     expect(screen.getByRole("button", { name: /next/i }).tagName).toBe("BUTTON");
 
     await user.click(screen.getByRole("button", { name: "Longmont" }));
-    expect(screen.getByLabelText("Publication Name")).toHaveValue("Longmont Civic Desk");
-    expect(screen.getByLabelText("Editor Name")).toHaveValue("Local Editor");
-    expect(screen.getByLabelText("City")).toHaveValue("Longmont");
-
-    await user.click(screen.getByRole("button", { name: /next/i }));
 
     await waitFor(() => expect(screen.getByText("Step 2 of 5")).toBeInTheDocument());
     expect(invokeMock).toHaveBeenCalledWith("set_setting", {
