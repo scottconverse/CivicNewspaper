@@ -1,0 +1,26 @@
+﻿[
+    {
+        "path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+        "exists":  false
+    },
+    {
+        "path":  "C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk",
+        "exists":  false
+    },
+    {
+        "path":  "C:\\Users\\civic\\AppData\\Roaming\\The Civic Desk",
+        "exists":  false
+    },
+    {
+        "path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk",
+        "exists":  true
+    },
+    {
+        "path":  "C:\\Users\\civic\\AppData\\Roaming\\org.civicnews.app",
+        "exists":  false
+    },
+    {
+        "path":  "C:\\Users\\civic\\AppData\\Local\\org.civicnews.app",
+        "exists":  false
+    }
+]

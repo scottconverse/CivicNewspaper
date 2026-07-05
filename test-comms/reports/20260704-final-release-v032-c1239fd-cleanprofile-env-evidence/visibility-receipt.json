@@ -1,0 +1,26 @@
+﻿{
+    "timestamp_utc":  "2026-07-05T03:03:09.0061481Z",
+    "machine_user":  "MSI\\civic",
+    "repo_path":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms",
+    "branch":  "test-comms/cleanroom-coder-tester",
+    "head":  "518901554f8790a3a4d39c845f6a26eb517b8b76",
+    "release_url_status":  200,
+    "docs_url_status":  200,
+    "asset_names":  [
+                        "SHA256SUMS.txt",
+                        "The.Civic.Desk_0.3.2_x64-setup.exe"
+                    ],
+    "installer_asset_count":  1,
+    "checksum_asset_count":  1,
+    "installer_asset_size":  5251952,
+    "downloaded_installer_size":  5251952,
+    "downloaded_installer_sha256":  "A8E32A95AE64C69B3A58B0A5CC670F04B6ADCA726933CAA49C5CC4AEBD3D37B1",
+    "checksum_text":  "A8E32A95AE64C69B3A58B0A5CC670F04B6ADCA726933CAA49C5CC4AEBD3D37B1  The.Civic.Desk_0.3.2_x64-setup.exe",
+    "release_page_has_sha":  true,
+    "release_api_body_has_sha":  true,
+    "release_api_body_has_size":  true,
+    "docs_has_sha":  true,
+    "docs_has_more_info":  true,
+    "docs_has_run_anyway":  true,
+    "docs_has_windows_only_beta":  true
+}

@@ -1,0 +1,58 @@
+﻿{
+    "app_exe":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+    "app_exe_exists":  true,
+    "installer_exit_code":  0,
+    "uninstaller_exit_code":  null,
+    "state_before":  [
+                         {
+                             "path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+                             "exists":  false
+                         },
+                         {
+                             "path":  "C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk",
+                             "exists":  false
+                         },
+                         {
+                             "path":  "C:\\Users\\civic\\AppData\\Roaming\\The Civic Desk",
+                             "exists":  false
+                         },
+                         {
+                             "path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk",
+                             "exists":  true
+                         },
+                         {
+                             "path":  "C:\\Users\\civic\\AppData\\Roaming\\org.civicnews.app",
+                             "exists":  false
+                         },
+                         {
+                             "path":  "C:\\Users\\civic\\AppData\\Local\\org.civicnews.app",
+                             "exists":  false
+                         }
+                     ],
+    "state_after":  [
+                        {
+                            "path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+                            "exists":  false
+                        },
+                        {
+                            "path":  "C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk",
+                            "exists":  false
+                        },
+                        {
+                            "path":  "C:\\Users\\civic\\AppData\\Roaming\\The Civic Desk",
+                            "exists":  false
+                        },
+                        {
+                            "path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk",
+                            "exists":  true
+                        },
+                        {
+                            "path":  "C:\\Users\\civic\\AppData\\Roaming\\org.civicnews.app",
+                            "exists":  false
+                        },
+                        {
+                            "path":  "C:\\Users\\civic\\AppData\\Local\\org.civicnews.app",
+                            "exists":  false
+                        }
+                    ]
+}

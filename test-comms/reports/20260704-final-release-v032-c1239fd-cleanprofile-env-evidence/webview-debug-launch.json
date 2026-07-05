@@ -1,0 +1,20 @@
+﻿{
+    "pid":  29420,
+    "clean_profile":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-c1239fd-cleanprofile-env-debug",
+    "debug_available":  true,
+    "debug_targets":  {
+                          "value":  [
+                                        {
+                                            "description":  "",
+                                            "devtoolsFrontendUrl":  "https://aka.ms/docs-landing-page/serve_rev/@d8414318246f5132427f455636044b6f79c4e03f/inspector.html?ws=127.0.0.1:9223/devtools/page/78F152D831BA936759CB8393AC73D5B3",
+                                            "faviconUrl":  "http://tauri.localhost/favicon.svg",
+                                            "id":  "78F152D831BA936759CB8393AC73D5B3",
+                                            "title":  "CivicNews Dashboard",
+                                            "type":  "page",
+                                            "url":  "http://tauri.localhost/",
+                                            "webSocketDebuggerUrl":  "ws://127.0.0.1:9223/devtools/page/78F152D831BA936759CB8393AC73D5B3"
+                                        }
+                                    ],
+                          "Count":  1
+                      }
+}

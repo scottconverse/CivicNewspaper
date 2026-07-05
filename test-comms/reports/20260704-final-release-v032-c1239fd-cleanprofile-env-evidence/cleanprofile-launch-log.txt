@@ -1,0 +1,4 @@
+﻿Launch 2026-07-04T21:05:04.7989966-06:00
+CIVICNEWS_APP_DATA_DIR=C:\Users\civic\AppData\Local\Temp\civicdesk-final-v032-c1239fd-cleanprofile-env
+Exe=C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+Pid=19744

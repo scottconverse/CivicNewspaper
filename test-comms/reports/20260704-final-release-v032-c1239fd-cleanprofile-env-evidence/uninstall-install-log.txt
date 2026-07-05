@@ -1,0 +1,5 @@
+﻿Start 2026-07-04T21:03:52.0930024-06:00
+Running prior uninstaller: C:\Users\civic\AppData\Local\The Civic Desk\uninstall.exe /S
+Uninstaller exit code: 0
+Running installer: C:\Users\civic\AppData\Local\Temp\The.Civic.Desk_0.3.2_x64-setup.exe /S
+Installer exit code: 0

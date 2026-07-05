@@ -1,0 +1,37 @@
+﻿[
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-c1239fd-cleanprofile-env\\backups",
+        "Length":  null,
+        "LastWriteTime":  "\/Date(1783220707245)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-c1239fd-cleanprofile-env\\logs",
+        "Length":  null,
+        "LastWriteTime":  "\/Date(1783220707245)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-c1239fd-cleanprofile-env\\sites",
+        "Length":  null,
+        "LastWriteTime":  "\/Date(1783220707245)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-c1239fd-cleanprofile-env\\civicdesk.db",
+        "Length":  4096,
+        "LastWriteTime":  "\/Date(1783220707249)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-c1239fd-cleanprofile-env\\civicdesk.db-shm",
+        "Length":  32768,
+        "LastWriteTime":  "\/Date(1783220707250)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-c1239fd-cleanprofile-env\\civicdesk.db-wal",
+        "Length":  420272,
+        "LastWriteTime":  "\/Date(1783220707552)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-c1239fd-cleanprofile-env\\sites\\default",
+        "Length":  null,
+        "LastWriteTime":  "\/Date(1783220707245)\/"
+    }
+]
