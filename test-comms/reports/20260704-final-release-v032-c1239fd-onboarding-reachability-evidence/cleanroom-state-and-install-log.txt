@@ -1,0 +1,15 @@
+UTC: 2026-07-05T02:47:01Z
+precleanup exists=True path=C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk
+precleanup exists=True path=C:\Users\civic\AppData\Local\com.scottconverse.civicdesk
+precleanup exists=False path=C:\Users\civic\AppData\Roaming\The Civic Desk
+precleanup exists=True path=C:\Users\civic\AppData\Local\The Civic Desk
+running uninstall C:\Users\civic\AppData\Local\The Civic Desk\uninstall.exe
+removing C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk
+removing C:\Users\civic\AppData\Local\com.scottconverse.civicdesk
+postcleanup exists=False path=C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk
+postcleanup exists=False path=C:\Users\civic\AppData\Local\com.scottconverse.civicdesk
+postcleanup exists=False path=C:\Users\civic\AppData\Roaming\The Civic Desk
+postcleanup exists=False path=C:\Users\civic\AppData\Local\The Civic Desk
+installing C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\reports\20260704-final-release-v032-c1239fd-onboarding-reachability-evidence\The.Civic.Desk_0.3.2_x64-setup.exe
+installer exit code 0
+installed app path C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe

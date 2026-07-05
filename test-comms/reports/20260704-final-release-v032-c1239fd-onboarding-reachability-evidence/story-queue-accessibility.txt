@@ -1,0 +1,374 @@
+Window: "The Civic Desk", App: civicnews.exe.
+	0 window The Civic Desk Secondary Actions: Raise
+		1 pane
+			2 pane CivicNews Dashboard
+				3 pane (disabled)
+				4 region CivicNews Dashboard - Web content
+					5 region
+						6 region
+							7 region
+								8 region
+								9 region
+									10 region
+										11 region
+											12 region
+												13 region
+													14 document CivicNews Dashboard ID: RootWebArea
+														15 group
+															16 group ID: root
+																17 complementary
+																	18 text The Civic Desk
+																	19 text LONGMONT / CO
+																	20 navigation
+																		21 text NEWSROOM
+																		22 list
+																			23 list item Story Queue
+																				24 button Story Queue Description: Story Queue (Alt+1) ID: nav-tab-queue
+																					25 graphic
+																			26 list item Daily Scan
+																				27 button Daily Scan Description: Daily Scan (Alt+2) ID: nav-tab-dailyScan
+																					28 graphic
+																			29 list item Dark Signals
+																				30 button Dark Signals Description: Dark Signals (Alt+3) ID: nav-tab-darkSignals
+																					31 graphic
+																			32 list item Verification
+																				33 button Verification Description: Verification (Alt+4) ID: nav-tab-verification
+																					34 graphic
+																			35 list item Workbench
+																				36 button Workbench Description: Workbench (Alt+5) ID: nav-tab-workbench
+																					37 graphic
+																		38 text SET UP
+																		39 list
+																			40 list item Sources
+																				41 button Sources Description: Sources (Alt+6) ID: nav-tab-sources
+																					42 graphic
+																			43 list item AI Model
+																				44 button AI Model Description: AI Model (Alt+7) ID: nav-tab-onboarding
+																					45 graphic
+																			46 list item Publishing
+																				47 button Publishing Description: Publishing (Alt+8) ID: nav-tab-publish
+																					48 graphic
+																		49 text TOOLS
+																		50 list
+																			51 list item Browser Pairing
+																				52 button Browser Pairing Description: Browser Pairing (Alt+9) ID: nav-tab-pairing
+																					53 graphic
+																			54 list item Ethics & Backups
+																				55 button Ethics & Backups Description: Ethics & Backups (Alt+10) ID: nav-tab-settings
+																					56 graphic
+																			57 list item System & Status
+																				58 button System & Status Description: System & Status (Alt+11) ID: nav-tab-system
+																					59 graphic
+																	60 text Local AI ready
+																	61 text phi4-mini:latest
+																62 main
+																	63 alert
+																		64 graphic
+																		65 text You're running an
+																		66 text unsigned public beta
+																		67 text of The Civic Desk. Windows SmartScreen may warn on install; that's expected.
+																		68 text 
+																		69 link Report issues on GitHub
+																		70 text .
+																		71 button Dismiss beta notice
+																			72 graphic
+																	73 heading Story Queue
+																	74 text Civic signals your sources surfaced, ready to verify and turn into plain-language stories.
+																	75 button Refresh ID: btn-sync-list
+																		76 graphic
+																	77 button Daily Scan ID: btn-daily-scan
+																		78 graphic
+																	79 button Scrape & Detect ID: btn-scrape-detect
+																		80 graphic
+																	81 text NEW LEADS
+																	82 text 24
+																	83 button Open 1 drafts
+																	84 text HIGH PRIORITY
+																	85 text 5
+																	86 text SOURCES
+																	87 text 18
+								88 region
+						89 region
+						90 region
+		91 title bar
+			92 menu bar System ID: MenuBar
+				93 menu item System
+			94 button Minimize
+			95 button Maximize
+			96 button Close
+
+Document text: ```
+The Civic Desk
+LONGMONT / CO
+NEWSROOM
+￼
+Story Queue
+￼
+Daily Scan
+￼
+Dark Signals
+￼
+Verification
+￼
+Workbench
+SET UP
+￼
+Sources
+￼
+AI Model
+￼
+Publishing
+TOOLS
+￼
+Browser Pairing
+￼
+Ethics & Backups
+￼
+System & Status
+Local AI ready
+phi4-mini:latest
+￼
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+￼
+Story Queue
+Civic signals your sources surfaced, ready to verify and turn into plain-language stories.
+￼
+Refresh
+￼
+Daily Scan
+￼
+Scrape & Detect
+NEW LEADS
+24
+IN DRAFTING
+1
+HIGH PRIORITY
+5
+SOURCES
+18
+￼
+Local-first workflow
+Scan sources, draft from linked evidence, run guardrails, then publish a static paper.
+Leads
+24
+Drafts
+1
+Scan results
+latest
+￼
+Filter leads
+￼
+Sort by:
+￼
+Risk: low
+Brief
+Needs verification
+daily_scan
+Longmont official city website: Independence Weekend Free Concert Friday, July 3 - 6 pm - 10 pm 700 Longs Peak A...: Independence Weekend Free Concert Friday, July 3 - 6 pm - 10 pm 700 Longs Peak Ave. Longmont, CO 80501 United States Recreation Services LIBRARY CLOSED Saturday, July 4 - 12 am - 11:59 pm Library Free Fitness in the Park Saturday, July 4 - 9 am - 10 am 1900 Coll... Editor context: The scan found actionable source evidence after the local model produced too few draftable leads. This is an editor lead, not an automatic publication decision. Suggested next step: Open the source, confirm the date or action, and look for a second public source before approving reader-facing copy. Quality gate: Text contains encoded HTML, mojibake, or page-markup debris. Quality gate: Text appears to combine multiple calendar or event-listing items; split and verify one specific civic item before drafting.
+Novelty 1/5. Text appears to combine multiple calendar or event-listing items; split and verify one specific civic item before drafting.
+Confidence: low
+Verify first
+￼
+Risk: low
+Needs verification
+daily_scan
+Longmont Library Services Notable News - Shock Art Event Announcement: The Longmont Museum has announced a 'Do Something Fantastic, Cut the Plastic' event slated for July 2nd. It promises to be an engaging plastic-free community activity. Editor context: Community events can lead to increased foot traffic and economic benefits; also significant in terms of city promotion efforts or environmental initiatives. Suggested next step: Verify the event details including date change implications for public safety planning and potential volunteer opportunities.
+Novelty /5.
+Confidence: low
+Verify first
+￼
+Risk: low
+Needs verification
+daily_scan
+Longmont Independence Weekend Concerts and Festivals: Upcoming concerts for July 3rd (concert) followed by fireworks on the evening of July 4th are scheduled as part of Longmont's cultural events. Editor context: Cultural events can have an impact on local businesses, city planning and resource allocation; may also affect public safety considerations for large gatherings. Suggested next step: Check with the concert organizers or city's arts department regarding any changes in plans and potential attendance numbers which could affect local services. Quality gate: Text appears to combine multiple calendar or event-listing items; split and verify one specific civic item before drafting.
+Novelty 1/5. Text appears to combine multiple calendar or event-listing items; split and verify one specific civic item before drafting.
+Confidence: low
+Verify first
+￼
+Risk: low
+Watch
+Needs verification
+daily_scan
+City of Longmont Announces Library Events for July: The City of Longmont's official website lists upcoming events, including concerts and fireworks at a community park on July 3rd. Editor context: Events often generate public interest; this could be part of ongoing civic engagement or promotional efforts by the city. Suggested treatment: watch. Newsworthiness: 8/20 (immediacy 1, impact 2, conflict 1, novelty 4). Why now: No current change found; the information is up-to-date at the time of fetching but may be subject to last-minute adjustments. Suggested next step: Monitor for any changes in scheduled dates due to unforeseen circumstances such as weather conditions. What would make this publishable: If any events were canceled or rescheduled, it would create a new lead. Quality gate: Text appears to combine multiple calendar or event-listing items; split and verify one specific civic item before drafting.
+Novelty 1/5. Text appears to combine multiple calendar or event-listing items; split and verify one specific civic item before drafting.
+Confidence: low
+Verify first
+￼
+Risk: med
+Background
+Background
+daily_scan
+Vision Zero Projects in Longmont: City council plans to implement Vision Zero projects aimed at improving transportation safety. Editor context: Public involvement in these initiatives could significantly impact community participation and city planning, especially concerning road safety improvements. Suggested treatment: background. Newsworthiness: 10/20 (immediacy 3, impact 4, conflict 1, novelty 2). Why now: Upcoming council actions related to transportation safety initiatives announced in Vision Zero project context. Suggested next step: Investigate specific projects listed for the upcoming agenda meeting to report detailed updates and potential impacts.
+Novelty 2/5. Upcoming council actions related to transportation safety initiatives announced in Vision Zero project context.
+Confidence: med
+Draft anyway
+￼
+Risk: high
+Story
+Needs verification
+daily_scan
+Independence Weekend Free Concert at Longmont Library: A free concert is scheduled for Independence Day weekend, with performances by various artists. Editor context: This event could attract a significant number of attendees and has local cultural significance. Suggested treatment: story. Newsworthiness: 10/20 (immediacy 4, impact 3, conflict 1, novelty 2). Why now: A concert event has been added to Longmont's Independence Weekend activities calendar. Suggested next step: Confirm the schedule, ticket availability if needed, artist lineup, expected attendance numbers for reporting on public interest and safety measures. Then attach or cite the source document before drafting.
+Novelty 2/5. A concert event has been added to Longmont's Independence Weekend activities calendar.
+Confidence: high
+Verify first
+￼
+Risk: med
+Watch
+Watch
+daily_scan
+Upcoming Vision Zero Town Hall Meeting: A public meeting is scheduled to discuss and gather feedback on upcoming Vision Zero initiatives planned by City Council. Editor context: This is an opportunity for the community to participate in a crucial decision-making process affecting public safety. Suggested treatment: watch. Newsworthiness: 10/20 (immediacy 3, impact 2, conflict 1, novelty 4). Why now: An announcement of a public forum/event where citizens can learn more about and contribute opinions regarding upcoming Vision Zero projects in Longmont. Suggested next step: Attend or check back on meeting notes after it takes place for any updates; report community feedback received during the session if relevant to city agenda.
+Novelty 4/5. An announcement of a public forum/event where citizens can learn more about and contribute opinions regarding upcoming Vision Zero projects in Longmont.
+Confidence: med
+Draft anyway
+￼
+Risk: high
+Verification
+Needs verification
+daily_scan
+New Vision Zero projects announced in Longmont: The City of Longmont has unveiled new initiatives under its Vision Zero program aimed at improving transportation safety. Editor context: This is a timely announcement of city-level action on an important public issue affecting the community's well-being and safety. Suggested treatment: verification. Newsworthiness: 10/20 (immediacy 4, impact 3, conflict 1, novelty 2). Why now: New Vision Zero initiatives have been announced by Longmont City Council. Suggested next step: Verify specific projects, scope, timeline for implementation, budget allocation, expected outcomes or impacts on the community before drafting. What would make this publishable: Detailed descriptions of the new projects, their expected benefits for transportation safety in Longmont.
+Novelty 2/5. New Vision Zero initiatives have been announced by Longmont City Council.
+Confidence: high
+Verify first
+￼
+Risk: med
+Brief
+Editor review
+daily_scan
+St. Vrain Valley Schools Announces $53 Million in Industry Certifications Earned: In the academic year of 2021-2022, students at St. Vrain earned a total of 331 industry certifications. Editor context: Highlights student achievements and provides insight into how effectively current programs are preparing them for future employment opportunities. Suggested treatment: brief. Newsworthiness: 7/20 (immediacy 1, impact 3, conflict 1, novelty 2). Suggested next step: Follow up with specific examples of industry certifications earned by students, including any notable increases in certain fields compared to previous years.
+Novelty 2/5.
+Confidence: med
+Draft anyway
+￼
+Risk: med
+Brief
+Editor review
+daily_scan
+St. Vrain Valley Schools Receives Over $12 Million in Grants: Since January 2018, St. Vrain has received over $13 million through competitive grants. Editor context: This information could impact community discussions on school funding and resource allocation. Suggested treatment: brief. Newsworthiness: 8/20 (immediacy 1, impact 2, conflict 1, novelty 4). Suggested next step: Verify the total amount received in grants over time, identify key grant projects impacting student programs or facilities.
+Novelty 4/5.
+Confidence: med
+Draft
+￼
+Risk: high
+Story
+Needs verification
+daily_scan
+Longmont Library Roof Contract Vote Scheduled: The city council has scheduled an action for voting on a roof contract at Longmont's public library, indicating financial expenditure and potential construction timeline adjustments. Editor context: Current civic decision with implications for the city's budget allocation to facilities. Suggested treatment: story. Newsworthiness: 14/20 (immediacy 5, impact 4, conflict 2, novelty 3). Why now: A council vote is scheduled on this particular roof work project. Suggested next step: Confirm details of vendor, contract amount and expected voting date before drafting a story or brief. Verify if construction timeline adjustments are planned as part of the agreement. What would make this publishable: Details of the vendor chosen for roofing works and total cost would make this lead publishable. Then attach or cite the source document before drafting.
+Novelty 3/5. A council vote is scheduled on this particular roof work project.
+Confidence: high
+Verify first
+￼
+Risk: med
+Brief
+Needs verification
+daily_scan
+Library Hours Change for Independence Day Weekend at Longmont Library: Longmont Public Library hours adjusted during the July Fourth weekend, impacting patrons who planned to visit. Editor context: Public service change affecting library operations and access of resources during a major holiday event in Longmont. Suggested treatment: brief. Newsworthiness: 8/20 (immediacy 3, impact 2, conflict 1, novelty 2). Why now: Library operating days and timings were modified during July 4th holiday period in Longmont. Suggested next step: Confirm hours adjustments with the Library Director to ensure accuracy for affected patrons. Then attach or cite the source document before drafting.
+Novelty 2/5. Library operating days and timings were modified during July 4th holiday period in Longmont
+Confidence: med
+Verify first
+￼
+Risk: med
+Brief
+Needs verification
+daily_scan
+City of Longmont Library Closure for Independence Day: The library in downtown Longmont will be closed from July 3 to August 6, coinciding with major holidays and events. Editor context: Public facility closure impacting residents who rely on the local public library for resources during holiday period. Suggested treatment: brief. Newsworthiness: 10/20 (immediacy 4, impact 3, conflict 1, novelty 2). Why now: Specific dates of closure for the main public library facility during holidays period. Suggested next step: Verify with City Clerk if there are any special provisions or alternative plans in place due to closures. Then attach or cite the source document before drafting.
+Novelty 2/5. Specific dates of closure for the main public library facility during holidays period
+Confidence: med
+Verify first
+￼
+Risk: low
+Needs verification
+daily_scan
+Children's Storytime Series at Library: Longmont Public Library offers a children's story time series designed for preschool through 5th grade, with bilingual options available. This is the first session of this summer. Editor context: The library has demonstrated an investment in supporting early literacy and cultural understanding among children who attend public libraries. Suggested next step: Open the original source and confirm the key dates, names, and decision points before drafting.
+Novelty /5.
+Confidence: low
+Verify first
+￼
+Risk: low
+Needs verification
+daily_scan
+Drop-in Programs at Longmont Museum & Library: Longmont Public Library and Local Museum are offering drop-in programs for children, teenagers as well as adults during summer months. These events involve interactive workshops that foster creativity among participants. Editor context: These initiatives demonstrate the city of Longmont's commitment to providing diverse opportunities beyond traditional educational settings in an effort toward inclusive civic participation and cultural enrichment. Suggested next step: Open the original source and confirm the key dates, names, and decision points before drafting.
+Novelty /5.
+Confidence: low
+Verify first
+￼
+Risk: high
+Needs verification
+daily_scan
+Council Vote on Library Roof Contract Scheduled: The City Council of Longmont has scheduled a vote this Tuesday regarding the contract for roof work at their public library. The item matters because it affects city spending, construction timeline and impacts citizens who use or rely upon that facility. Editor context: City Council meeting decisions directly affect all Longmont residents in terms of funding priorities for municipal services. Suggested next step: Monitor the upcoming council vote. Cross-check with any public notices or announcements related to this topic prior to drafting.
+Novelty /5.
+Confidence: high
+Verify first
+￼
+Risk: med
+Verification
+Needs verification
+daily_scan
+Review community signal from Longmont Area Chamber of Commerce: May 27, 2026 The Colorado General Assembly wrapped up its 2026 session, and as always, there was no shortage of action affecting our business community. From a billion-dollar state budget shortfall to new labor rules and energy policy debates, this was a session that demanded close attention and Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting.
+Novelty /5. Dark-signal pattern detected from recent evidence.
+Confidence: med
+Verify first
+￼
+Risk: low
+Verification
+Needs verification
+daily_scan
+Review community signal from Longmont city events: Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Quality gate: Text contains encoded HTML, mojibake, or page-markup debris.
+Novelty 1/5. Text contains encoded HTML, mojibake, or page-markup debris.
+Confidence: low
+Verify first
+￼
+Risk: low
+Verification
+Needs verification
+daily_scan
+Review community signal from Longmont city events: Discover all the departments that make up the City of Longmont's government. Get detailed information on their roles, responsibilities, and how they serve the community. Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Quality gate: Text contains encoded HTML, mojibake, or page-markup debris.
+Novelty 1/5. Text contains encoded HTML, mojibake, or page-markup debris.
+Confidence: low
+Verify first
+￼
+Risk: med
+Verification
+Needs verification
+daily_scan
+Review community signal from Longmont city events: Children, Youth and Families at the Youth Center Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting.
+Novelty /5. Dark-signal pattern detected from recent evidence.
+Confidence: med
+Verify first
+￼
+Risk: high
+Verification
+Needs verification
+daily_scan
+Review community signal from Longmont city events: Saturday, July 4 - 5 pm - 10 pm Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting.
+Novelty /5. Dark-signal pattern detected from recent evidence.
+Confidence: high
+Verify first
+￼
+Risk: low
+Watch
+Watch
+New Primary Record
+A new official primary document from 'St. Vrain Valley Schools' was fetched today (https://www.svvsd.org/).
+Novelty 2/5. Newly fetched official page; verify a current change before treating it as news.
+Confidence: high
+Draft anyway
+￼
+Risk: low
+Watch
+Watch
+New Primary Record
+A new official primary document from 'Longmont public notices search' was fetched today (https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk).
+Novelty 2/5. Newly fetched official page; verify a current change before treating it as news.
+Confidence: high
+Draft anyway
+￼
+Risk: low
+Watch
+Watch
+New Primary Record
+A new official primary document from 'Longmont official city website' was fetched today (https://www.longmontcolorado.gov/).
+Novelty 2/5. Newly fetched official page; verify a current change before treating it as news.
+Confidence: high
+Draft anyway
+￼
+```

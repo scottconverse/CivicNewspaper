@@ -1,0 +1,226 @@
+Window: "The Civic Desk", App: civicnews.exe.
+	0 window The Civic Desk Secondary Actions: Raise
+		1 pane
+			2 pane CivicNews Dashboard
+				3 pane (disabled)
+				4 region CivicNews Dashboard - Web content
+					5 region
+						6 region
+							7 region
+								8 region
+								9 region
+									10 region
+										11 region
+											12 region
+												13 region
+													14 document CivicNews Dashboard ID: RootWebArea
+														15 group
+															16 group ID: root
+																17 complementary
+																	18 text The Civic Desk
+																	19 text LONGMONT / CO
+																	20 navigation
+																		21 text NEWSROOM
+																		22 list
+																			23 list item Story Queue
+																				24 button Story Queue Description: Story Queue (Alt+1) ID: nav-tab-queue
+																					25 graphic
+																			26 list item Daily Scan
+																				27 button Daily Scan Description: Daily Scan (Alt+2) ID: nav-tab-dailyScan
+																					28 graphic
+																			29 list item Dark Signals
+																				30 button Dark Signals Description: Dark Signals (Alt+3) ID: nav-tab-darkSignals
+																					31 graphic
+																			32 list item Verification
+																				33 button Verification Description: Verification (Alt+4) ID: nav-tab-verification
+																					34 graphic
+																			35 list item Workbench
+																				36 button Workbench Description: Workbench (Alt+5) ID: nav-tab-workbench
+																					37 graphic
+																		38 text SET UP
+																		39 list
+																			40 list item Sources
+																				41 button Sources Description: Sources (Alt+6) ID: nav-tab-sources
+																					42 graphic
+																			43 list item AI Model
+																				44 button AI Model Description: AI Model (Alt+7) ID: nav-tab-onboarding
+																					45 graphic
+																			46 list item Publishing
+																				47 button Publishing Description: Publishing (Alt+8) ID: nav-tab-publish
+																					48 graphic
+																		49 text TOOLS
+																		50 list
+																			51 list item Browser Pairing
+																				52 button Browser Pairing Description: Browser Pairing (Alt+9) ID: nav-tab-pairing
+																					53 graphic
+																			54 list item Ethics & Backups
+																				55 button Ethics & Backups Description: Ethics & Backups (Alt+10) ID: nav-tab-settings
+																					56 graphic
+																			57 list item System & Status
+																				58 button System & Status Description: System & Status (Alt+11) ID: nav-tab-system
+																					59 graphic
+																	60 text Local AI ready
+																	61 text phi4-mini:latest
+																62 main
+																	63 alert
+																		64 graphic
+																		65 text You're running an
+																		66 text unsigned public beta
+																		67 text of The Civic Desk. Windows SmartScreen may warn on install; that's expected.
+																		68 text 
+																		69 link Report issues on GitHub
+																		70 text .
+																		71 button Dismiss beta notice
+																			72 graphic
+																	73 group Story Workbench Modify drafted content, review guardrail warnings, and link source material when it helps the editor. Back to Queue Save Draft Delete Cut Quarantined draft needs fresh source review Improve for Publication I reviewed this story. Approve Advisory warnings - these do not block publishing. 1 ISSUE(S) Warns - Consider adding a source link This passage looks like a factual claim without a linked source. Add a link if one exists, rewrite the claim, or leave it for the editor to approve. Technical details Press-freedom / legal-risk advisor Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish. Run Advisor Distinguish verified facts, allegations, opinion, and unanswered questions. Use extra care with private individuals, minors, medical details, addresses, and active legal matters. Keep notes on source reliability and why publishing serves the community. Story-quality preflight Checks for headline, attribution, citation, and reporter-note problems before approval. Warnings are advisory; package-validity blockers must be fixed before static publish approval. Make this a brief Improve for Publication No source documents are linked. Treat this as a verification assignment until you attach or cite public source material. Story body is very short for this format. Consider making it a brief or adding verified reporting. Story Title Quarantined draft needs fresh source review Article Body (Markdown) Plain Language Rewrite Highlight text and click "Cite" in evidence pane to link. This legacy draft was cut by The Civic Desk quality gate before publication. Text appears to combine multiple calendar or event-listing items; split and verify one specific civic item before drafting. Start a fresh draft only after confirming one current, local, source-backed item. ID: workbench-editor-panel
+																		74 heading Story Workbench
+																		75 text Modify drafted content, review guardrail warnings, and link source material when it helps the editor.
+																		76 button Back to Queue ID: btn-close-workbench
+																		77 button Save Draft ID: btn-save-draft
+																		78 button Delete ID: btn-delete-workbench-draft
+																		79 text Cut
+																		80 text Quarantined draft needs fresh source review
+																		81 button Improve for Publication ID: btn-improve-publication-top
+																		82 check box I reviewed this story. ID: chk-attest-top
+																		83 text I reviewed this story.
+																		84 button (disabled) Approve Description: Restore this story before approving it for publishing ID: btn-status-publish-top
+																		85 graphic
+																		86 text Advisory warnings - these do not block publishing.
+																		87 text 1
+																		88 text ISSUE(S)
+																		89 graphic
+																		90 text Warns
+																		91 text -
+																		92 text Consider adding a source link
+																		93 text This passage looks like a factual claim without a linked source. Add a link if one exists, rewrite the claim, or leave it for the editor to approve.
+																		94 details
+																			95 disclosure triangle Technical details
+																				96 text Technical details
+																		97 heading Press-freedom / legal-risk advisor
+																		98 text Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.
+																		99 button Run Advisor Description: Run an optional press-freedom and legal-risk review ID: btn-press-freedom-review
+																		100 list
+																			101 list item Distinguish verified facts, allegations, opinion, and unanswered questions.
+																			102 list item Use extra care with private individuals, minors, medical details, addresses, and active legal matters.
+																			103 list item Keep notes on source reliability and why publishing serves the community.
+																		104 heading Story-quality preflight
+																		105 text Checks for headline, attribution, citation, and reporter-note problems before approval. Warnings are advisory; package-validity blockers must be fixed before static publish approval.
+																		106 button Make this a brief ID: btn-make-brief
+																		107 button Improve for Publication ID: btn-improve-publication
+																		108 list
+																			109 list item No source documents are linked. Treat this as a verification assignment until you attach or cite public source material.
+																			110 list item Story body is very short for this format. Consider making it a brief or adding verified reporting.
+																		111 text Story Title
+																		112 edit Story Title ID: input-draft-title
+																		113 text Article Body (Markdown)
+																		114 button Plain Language Rewrite Description: Rewrite the draft in plainer language ID: btn-plain-language-rewrite
+																		115 text Highlight text and click "Cite" in evidence pane to link.
+																		116 edit Article Body (Markdown) ID: draft-editor-textarea
+																		117 text Current Status:
+																		118 text Cut
+																		119 button Restore to Drafting ID: btn-status-resume-draft
+																		120 button Hold ID: btn-status-hold
+																		121 button (disabled) Approve for Static Publish Description: Restore this story before approving it for publishing ID: btn-status-publish
+																		122 status
+																			123 text This story is cut from the issue. Restore it to drafting if the newsroom decides to keep working on it.
+																		124 check box I have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision. ID: chk-attest
+																		125 text I have reviewed this story and take responsibility for publishing it.
+																		126 text This reminder is for the editor; the app does not make the publication decision.
+																		127 heading Social Media Promo Pack
+																		128 button Generate Posts ID: btn-generate-social
+																		129 text Generate optimized posts for Twitter/X, Facebook, and Reddit based on the current draft.
+																		130 heading Linked Sources
+																		131 text No source documents are linked to this story draft.
+								132 region
+						133 region
+						134 region
+		135 title bar
+			136 menu bar System ID: MenuBar
+				137 menu item System
+			138 button Minimize
+			139 button Maximize
+			140 button Close
+
+Document text: ```
+The Civic Desk
+LONGMONT / CO
+NEWSROOM
+￼
+Story Queue
+￼
+Daily Scan
+￼
+Dark Signals
+￼
+Verification
+￼
+Workbench
+SET UP
+￼
+Sources
+￼
+AI Model
+￼
+Publishing
+TOOLS
+￼
+Browser Pairing
+￼
+Ethics & Backups
+￼
+System & Status
+Local AI ready
+phi4-mini:latest
+￼
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+￼
+Story Workbench
+Modify drafted content, review guardrail warnings, and link source material when it helps the editor.
+Back to Queue
+Save Draft
+Delete
+Cut
+Quarantined draft needs fresh source reviewQuarantined draft needs …
+Improve for Publication
+￼
+I reviewed this story.
+Approve
+￼
+Advisory warnings - these do not block publishing.
+1 ISSUE(S)
+￼
+Warns
+- Consider adding a source link
+This passage looks like a factual claim without a linked source. Add a link if one exists, rewrite the claim, or leave it for the editor to approve.
+Technical details
+Press-freedom / legal-risk advisor
+Advisory only. Run this when you want risk notes, verification paths, and wording options. The publisher decides what to investigate, edit, hold, or publish.
+Run Advisor
+• Distinguish verified facts, allegations, opinion, and unanswered questions.
+• Use extra care with private individuals, minors, medical details, addresses, and active legal matters.
+• Keep notes on source reliability and why publishing serves the community.
+Story-quality preflight
+Checks for headline, attribution, citation, and reporter-note problems before approval. Warnings are advisory; package-validity blockers must be fixed before static publish approval.
+Make this a brief
+Improve for Publication
+• No source documents are linked. Treat this as a verification assignment until you attach or cite public source material.
+• Story body is very short for this format. Consider making it a brief or adding verified reporting.
+Story Title
+Quarantined draft needs fresh source review
+Article Body (Markdown)
+Plain Language Rewrite
+Highlight text and click "Cite" in evidence pane to link.
+This legacy draft was cut by The Civic Desk quality gate before publication. Text appears to combine multiple calendar or event-listing items; split and verify one specific civic item before drafting. Start a fresh draft only after confirming one current, local, source-backed item.
+Current Status: Cut
+Restore to Drafting
+Hold
+Approve for Static Publish
+This story is cut from the issue. Restore it to drafting if the newsroom decides to keep working on it.
+￼
+I have reviewed this story and take responsibility for publishing it. This reminder is for the editor; the app does not make the publication decision.
+Social Media Promo Pack
+Generate Posts
+Generate optimized posts for Twitter/X, Facebook, and Reddit based on the current draft.
+Linked Sources
+No source documents are linked to this story draft.
+```
