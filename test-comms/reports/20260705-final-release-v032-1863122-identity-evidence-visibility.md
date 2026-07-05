@@ -1,15 +1,23 @@
-﻿# Visibility Report - Civic Desk v0.3.2 1863122 Identity And Evidence
+﻿# VISIBILITY REPORT (REWRITTEN FOR CODER DISCOVERY)
+#
+# Coder discovery anchor (do not move):
+# Repo: C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms
+# Branch: test-comms/cleanroom-coder-tester
+# Active directive file: C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\ACTIVE_DIRECTIVE.md
+# Expected visibility report path: C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\reports\20260705-final-release-v032-1863122-identity-evidence-visibility.md
 
-Date: 2026-07-05T04:13:25Z
-Tester machine: `msi\civic`
-Repo: `C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms`
-Branch: `test-comms/cleanroom-coder-tester`
-Comms commit: `3d24d44b45405ecb20c6a7806bbe58b1e27e34ed`
+# Visibility Report - Civic Desk v0.3.2 1863122 Identity And Evidence
+
+Date: 2026-07-05T04:13:25Z  
+Tester machine: `msi\civic`  
+Repo: `C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms`  
+Branch: `test-comms/cleanroom-coder-tester`  
+Comms commit: `3d24d44b45405ecb20c6a7806bbe58b1e27e34ed`  
 Directive: `test-comms/ACTIVE_DIRECTIVE.md`
 
 ## Result
 
-PASS for pre-install visibility.
+**PASS** for pre-install visibility checks.
 
 ## Checks
 
@@ -23,7 +31,7 @@ PASS for pre-install visibility.
 - Release page installer mentions: 4.
 - Release page checksum mentions: 1.
 - SHA256SUMS names installer and contains expected hash: True.
-- Docs contain expected hash, More info, Run anyway, Windows beta language: True.
+- Docs contain expected hash, `More info`, `Run anyway`, Windows beta language: True.
 - Docs contain stale hash `E75859477EC5794D9FF2006F68344E4222D1EB3EDB5457C542C2ABB1D45E16A8`: False.
 
 ## Evidence
