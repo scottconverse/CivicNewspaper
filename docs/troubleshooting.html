@@ -134,14 +134,20 @@
 </ul>
 <p>This does not mean the app is deciding what you are allowed to publish. It means the static-site package would be structurally invalid or misleading. Send the item back, attach the correct source, add citations, rewrite the body as public copy, or cut/hold it.</p>
 <h2 id="reset-or-cleanroom-test-the-app-on-windows">Reset Or Cleanroom Test The App On Windows</h2>
-<p>Uninstalling the app is not always enough to create a clean first-run state. The app stores local data under both the install folder and app-data folders.</p>
+<p>Uninstalling the app is not always enough to create a clean first-run state. The app stores local data under both the install folder and app-data folders. It can also migrate an older beta database from the original CivicNewspaper app-data folder, so a test that deletes only the current folder may still reopen an older newsroom.</p>
 <p>For a clean beta test, remove only The Civic Desk/CivicNewspaper data. Do not wipe unrelated Windows user data.</p>
 <p>Typical Windows paths:</p>
 <pre><code>%LOCALAPPDATA%\The Civic Desk
 %LOCALAPPDATA%\com.scottconverse.civicdesk
 %APPDATA%\com.scottconverse.civicdesk
+%APPDATA%\org.civicnews.app
+%LOCALAPPDATA%\org.civicnews.app
 %USERPROFILE%\.ollama</code></pre>
 <p>Remove <code>%USERPROFILE%\.ollama</code> only when you intentionally want to test local AI setup from scratch and that Ollama/model state was created for this app test.</p>
+<p>For automated cleanroom testing, you can avoid inherited state without deleting user data by launching the installed app with a temporary app-data folder:</p>
+<pre><code>$env:CIVICNEWS_APP_DATA_DIR = &quot;$env:TEMP\civicdesk-cleanroom&quot;
+&amp; &quot;$env:LOCALAPPDATA\The Civic Desk\civicnews.exe&quot;</code></pre>
+<p>Close the app and remove the temporary folder when the test is done. Do not use this override for everyday work unless you intentionally want a separate empty workspace.</p>
 <h2 id="source-import-misses-urls">Source Import Misses URLs</h2>
 <p>CSV, TXT, XLSX, and DOCX files should produce reviewable source candidates. PDF import is disabled in the public beta until hardened parsing is available. Convert PDF source lists to TXT, CSV, DOCX, or XLSX, or paste the URLs directly.</p>
 <p>What to do:</p>

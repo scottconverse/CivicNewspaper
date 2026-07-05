@@ -130,7 +130,7 @@ This does not mean the app is deciding what you are allowed to publish. It means
 
 ## Reset Or Cleanroom Test The App On Windows
 
-Uninstalling the app is not always enough to create a clean first-run state. The app stores local data under both the install folder and app-data folders.
+Uninstalling the app is not always enough to create a clean first-run state. The app stores local data under both the install folder and app-data folders. It can also migrate an older beta database from the original CivicNewspaper app-data folder, so a test that deletes only the current folder may still reopen an older newsroom.
 
 For a clean beta test, remove only The Civic Desk/CivicNewspaper data. Do not wipe unrelated Windows user data.
 
@@ -140,10 +140,21 @@ Typical Windows paths:
 %LOCALAPPDATA%\The Civic Desk
 %LOCALAPPDATA%\com.scottconverse.civicdesk
 %APPDATA%\com.scottconverse.civicdesk
+%APPDATA%\org.civicnews.app
+%LOCALAPPDATA%\org.civicnews.app
 %USERPROFILE%\.ollama
 ```
 
 Remove `%USERPROFILE%\.ollama` only when you intentionally want to test local AI setup from scratch and that Ollama/model state was created for this app test.
+
+For automated cleanroom testing, you can avoid inherited state without deleting user data by launching the installed app with a temporary app-data folder:
+
+```powershell
+$env:CIVICNEWS_APP_DATA_DIR = "$env:TEMP\civicdesk-cleanroom"
+& "$env:LOCALAPPDATA\The Civic Desk\civicnews.exe"
+```
+
+Close the app and remove the temporary folder when the test is done. Do not use this override for everyday work unless you intentionally want a separate empty workspace.
 
 ## Source Import Misses URLs
 
