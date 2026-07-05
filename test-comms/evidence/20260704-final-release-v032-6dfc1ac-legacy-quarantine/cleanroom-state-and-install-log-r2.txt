@@ -1,0 +1,26 @@
+﻿UTC start: 2026-07-05T02:08:33Z
+Machine/user: msi\civic
+Installer: C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms\test-comms\evidence\20260704-final-release-v032-6dfc1ac-legacy-quarantine\The.Civic.Desk_0.3.2_x64-setup.exe
+State paths before cleanup:
+- C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk existed=False
+- C:\Users\civic\AppData\Local\com.scottconverse.civicdesk existed=False
+- C:\Users\civic\AppData\Roaming\The Civic Desk existed=False
+- C:\Users\civic\AppData\Local\The Civic Desk existed=True
+  removed=true
+State paths after cleanup:
+- C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk exists=False
+- C:\Users\civic\AppData\Local\com.scottconverse.civicdesk exists=False
+- C:\Users\civic\AppData\Roaming\The Civic Desk exists=False
+- C:\Users\civic\AppData\Local\The Civic Desk exists=False
+Installed app inventory before reinstall:
+- missing root C:\Users\civic\AppData\Local\The Civic Desk
+- missing root C:\Users\civic\AppData\Local\Programs\The Civic Desk
+- C:\Users\civic\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\The Civic Desk.lnk
+- C:\Users\civic\OneDrive\Desktop\The Civic Desk.lnk
+Install/reinstall start: 2026-07-05T02:08:33Z
+Installer exit: 0
+Installed app inventory after reinstall:
+- missing root C:\Users\civic\AppData\Local\Programs\The Civic Desk
+- C:\Users\civic\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\The Civic Desk.lnk
+- C:\Users\civic\OneDrive\Desktop\The Civic Desk.lnk
+UTC end: 2026-07-05T02:08:36Z

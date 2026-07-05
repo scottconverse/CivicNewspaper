@@ -1,0 +1,4 @@
+﻿UTC: 2026-07-05T02:09:10Z
+Launched: C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
+Initial pid: 34444
+Process: name=civicnews pid=34444 mainWindowTitle=The Civic Desk path=C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe
