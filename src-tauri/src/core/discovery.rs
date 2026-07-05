@@ -93,6 +93,63 @@ fn slugify_city(city: &str, separator: &str) -> String {
     parts.join(separator)
 }
 
+fn normalize_state_for_discovery(state: &str) -> String {
+    match state.trim().to_ascii_lowercase().as_str() {
+        "alabama" => "AL",
+        "alaska" => "AK",
+        "arizona" => "AZ",
+        "arkansas" => "AR",
+        "california" => "CA",
+        "colorado" => "CO",
+        "connecticut" => "CT",
+        "delaware" => "DE",
+        "florida" => "FL",
+        "georgia" => "GA",
+        "hawaii" => "HI",
+        "idaho" => "ID",
+        "illinois" => "IL",
+        "indiana" => "IN",
+        "iowa" => "IA",
+        "kansas" => "KS",
+        "kentucky" => "KY",
+        "louisiana" => "LA",
+        "maine" => "ME",
+        "maryland" => "MD",
+        "massachusetts" => "MA",
+        "michigan" => "MI",
+        "minnesota" => "MN",
+        "mississippi" => "MS",
+        "missouri" => "MO",
+        "montana" => "MT",
+        "nebraska" => "NE",
+        "nevada" => "NV",
+        "new hampshire" => "NH",
+        "new jersey" => "NJ",
+        "new mexico" => "NM",
+        "new york" => "NY",
+        "north carolina" => "NC",
+        "north dakota" => "ND",
+        "ohio" => "OH",
+        "oklahoma" => "OK",
+        "oregon" => "OR",
+        "pennsylvania" => "PA",
+        "rhode island" => "RI",
+        "south carolina" => "SC",
+        "south dakota" => "SD",
+        "tennessee" => "TN",
+        "texas" => "TX",
+        "utah" => "UT",
+        "vermont" => "VT",
+        "virginia" => "VA",
+        "washington" => "WA",
+        "west virginia" => "WV",
+        "wisconsin" => "WI",
+        "wyoming" => "WY",
+        value => return value.trim().to_ascii_uppercase(),
+    }
+    .to_string()
+}
+
 fn search_url(query: &str) -> String {
     let mut url =
         reqwest::Url::parse("https://www.google.com/search").expect("static URL is valid");
@@ -673,6 +730,8 @@ pub async fn discover_all_sources(
     city: &str,
     state: &str,
 ) -> Result<Vec<DiscoveredSourceCategory>, Box<dyn Error>> {
+    let normalized_state = normalize_state_for_discovery(state);
+    let state = normalized_state.as_str();
     let client = Client::builder()
         .timeout(Duration::from_secs(10))
         .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
@@ -824,6 +883,13 @@ mod tests {
                 "{city} should include {expected_host}"
             );
         }
+    }
+
+    #[test]
+    fn normalizes_full_state_names_for_discovery_inputs() {
+        assert_eq!(normalize_state_for_discovery("Colorado"), "CO");
+        assert_eq!(normalize_state_for_discovery(" colorado "), "CO");
+        assert_eq!(normalize_state_for_discovery("co"), "CO");
     }
 
     #[test]

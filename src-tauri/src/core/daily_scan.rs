@@ -1249,6 +1249,8 @@ fn scan_lead_grounding_text(lead: &DailyScanLead) -> String {
 
 fn downgrade_scan_lead_without_evidence(mut lead: DailyScanLead) -> DailyScanLead {
     lead.disposition = Some("needs_verification".to_string());
+    lead.priority = Some("low".to_string());
+    lead.story_type = Some("verification".to_string());
     let evidence_note = "No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy.";
     lead.publishability_note = Some(match lead.publishability_note {
         Some(note) if !note.trim().is_empty() => {

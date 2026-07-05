@@ -2297,6 +2297,16 @@ I should produce JSON only.
             Some("needs_verification"),
             "a model-suggested story with no matching evidence row must not be draft-ready"
         );
+        assert_eq!(
+            unsupported_model_lead.priority.as_deref(),
+            Some("low"),
+            "unsupported model claims must not remain high-priority in Daily Scan"
+        );
+        assert_eq!(
+            unsupported_model_lead.story_type.as_deref(),
+            Some("verification"),
+            "unsupported model claims must be labeled as verification work"
+        );
         assert!(
             unsupported_model_lead
                 .publishability_note
@@ -2318,6 +2328,10 @@ I should produce JSON only.
             unsupported_queue_lead.disposition.as_deref(),
             Some("ready_to_draft"),
             "unsupported model lead must not be offered as a normal draft path"
+        );
+        assert_eq!(
+            unsupported_queue_lead.risk_level, "low",
+            "unsupported model lead must not look like high-risk/high-priority story work"
         );
 
         let evidence_backed_draftable = story_queue_leads.iter().any(|lead| {
@@ -2408,6 +2422,16 @@ I should produce JSON only.
             chrome_lead.disposition.as_deref(),
             Some("needs_verification"),
             "news/category index chrome must not create a draft-ready lead"
+        );
+        assert_eq!(
+            chrome_lead.priority.as_deref(),
+            Some("low"),
+            "news/category index chrome must not remain high-priority"
+        );
+        assert_eq!(
+            chrome_lead.story_type.as_deref(),
+            Some("verification"),
+            "news/category index chrome must be verification work"
         );
         assert!(
             chrome_lead
