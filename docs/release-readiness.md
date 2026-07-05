@@ -72,16 +72,16 @@ This prevents a public unsigned installer from appearing before checksum and loc
 
 ## Current v0.3.2 evidence
 
-The Windows public-beta v0.3.2 release line has cleanroom proof at commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`. The current rebuilt release-candidate installer was built from commit `eab6a31e0bfb1463bcb8f0f26d8909adc4d77d8c` after AI setup visibility and encoded calendar-rollup story-quality repairs and is queued for final cleanroom recheck.
+The Windows public-beta v0.3.2 release line has cleanroom proof at commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`. The current rebuilt release-candidate installer was built from commit `6dfc1ac8239a920251fca44d1fdbc9e5a960c58b` after AI setup visibility and legacy malformed-draft quarantine and encoded calendar-rollup story-quality repairs and is queued for final cleanroom recheck.
 
 - Hosted evidence file: `docs/release-evidence/v0.3.2.json`
-- RC receipt: `.agent-runs/release-candidate-20260703-100118/release-candidate-receipt.json`
-- Strict release smoke: `.agent-runs/release-smoke-20260703-095436/release-smoke-receipt.json`
-- Windows installer smoke: `.agent-runs/windows-installer-smoke-20260703-180258/windows-installer-smoke-receipt.json`
-- Packaged first-run walkthrough: `.agent-runs/packaged-first-run-walkthrough-20260703-180336/packaged-first-run-walkthrough-receipt.json`
-- Final cleanroom report: pending final cleanroom rerun for commit `eab6a31e0bfb1463bcb8f0f26d8909adc4d77d8c`
+- RC receipt: `.agent-runs/release-candidate-20260704-185159/release-candidate-receipt.json`
+- Strict release smoke: `.agent-runs/release-smoke-20260704-195443/release-smoke-receipt.json`
+- Windows installer smoke: `.agent-runs/windows-installer-smoke-20260704-194810/windows-installer-smoke-receipt.json`
+- Packaged first-run walkthrough: `.agent-runs/packaged-first-run-walkthrough-20260704-194838/packaged-first-run-walkthrough-receipt.json`
+- Final cleanroom report: pending final cleanroom rerun for commit `6dfc1ac8239a920251fca44d1fdbc9e5a960c58b`
 - Cleanroom public URL: pending final cleanroom rerun
-- Current rebuilt release-candidate installer SHA256: `1FCDCC2524A16C90A766EFF74ADA8675614FD5A15628749B77678802BCD9B766`
+- Current rebuilt release-candidate installer SHA256: `FA64134DD63DE0194AE4645CC41ECC405576DA117311A5FD592673EACB619EF4`
 
 This does not publish, merge, or tag the release by itself. Scott must still approve the product push, tag, hosted GitHub Release, and GitHub Pages update.
 
