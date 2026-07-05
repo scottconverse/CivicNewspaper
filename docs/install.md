@@ -1,4 +1,4 @@
-# Installation Guide And Checksum Verification
+﻿# Installation Guide And Checksum Verification
 
 This guide explains how to install The Civic Desk from the CivicNewspaper releases page and how to verify a downloaded installer.
 
@@ -31,7 +31,7 @@ macOS and Linux installers are backlog/proof-needed for this release line. Do no
 
 ## Clean-Machine Proof
 
-Every release candidate needs a clean-machine or remote-tester report before it can be called cleanroom-proven. For v0.3.2, the Windows public-beta installer represented by commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final remote cleanroom testing with zero blocker, critical, or major findings. The current rebuilt release-candidate installer was built from commit `6dfc1ac8239a920251fca44d1fdbc9e5a960c58b` after AI setup visibility and legacy malformed-draft quarantine and encoded calendar-rollup story-quality repairs; its SHA256 is `FA64134DD63DE0194AE4645CC41ECC405576DA117311A5FD592673EACB619EF4`, it passed stable release smoke, local installer smoke, and packaged first-run walkthrough locally, and it is queued for final cleanroom recheck.
+Every release candidate needs a clean-machine or remote-tester report before it can be called cleanroom-proven. For v0.3.2, the Windows public-beta installer represented by commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final remote cleanroom testing with zero blocker, critical, or major findings. The current rebuilt release-candidate installer was built from commit `c1239fda79dd3bfc58e24c52657997550ccd2930` after AI setup visibility, installed-app onboarding reachability, legacy malformed-draft quarantine, and encoded calendar-rollup story-quality repairs; its SHA256 is `A8E32A95AE64C69B3A58B0A5CC670F04B6ADCA726933CAA49C5CC4AEBD3D37B1`, it passed stable release smoke, local installer smoke, and packaged first-run walkthrough locally, and it is queued for final cleanroom recheck.
 
 Required proof for a cleanroom-proven release:
 
@@ -85,3 +85,4 @@ If setup or publishing gets stuck, see [troubleshooting.md](troubleshooting.md) 
 - Some external publishing providers require user-owned credentials.
 - PDF source-list import is disabled in the public beta until hardened parsing is available; convert PDFs to TXT/CSV/DOCX/XLSX or paste URLs directly.
 - Clean-machine installer coverage is improving but not yet stable-release grade.
+

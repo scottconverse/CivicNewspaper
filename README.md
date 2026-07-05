@@ -1,8 +1,8 @@
-# CivicNewspaper / The Civic Desk
+﻿# CivicNewspaper / The Civic Desk
 
 > **Project name:** CivicNewspaper. **Installed app name:** The Civic Desk.
 >
-> **Current release:** v0.3.2 Windows-only public beta. The current rebuilt Windows installer candidate is built from commit `6dfc1ac8239a920251fca44d1fdbc9e5a960c58b`; an earlier v0.3.2 installer at `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final cleanroom testing, and the rebuilt public asset is awaiting the final tester recheck. Installers are unsigned. This is not a stable production release.
+> **Current release:** v0.3.2 Windows-only public beta. The current rebuilt Windows installer candidate is built from commit `c1239fda79dd3bfc58e24c52657997550ccd2930`; an earlier v0.3.2 installer at `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final cleanroom testing, and the rebuilt public asset is awaiting the final tester recheck. Installers are unsigned. This is not a stable production release.
 
 The Civic Desk is a local-first desktop newsroom tool for small local publishers, civic reporters, and community editors. It helps one person or a small team monitor public local sources, discover story leads, draft articles with a local AI model, review risks and evidence, and publish a static local-news issue.
 
@@ -124,7 +124,7 @@ The Ollama runtime binary is not committed to the repo. The app-managed first-ru
 
 ## Release Status
 
-v0.3.2 is a Windows public beta. Local isolated-profile smoke, strict source-import fixture smoke, packaged Windows installer smoke, live local-model smoke, anonymous here.now smoke, model bakeoff, dependency audit, and the final remote cleanroom tester run passed for commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`; that tester published a verification issue to `https://olive-gorge-cgsr.here.now`. The current rebuilt release-candidate installer was built from commit `6dfc1ac8239a920251fca44d1fdbc9e5a960c58b` after AI setup visibility and legacy malformed-draft quarantine and encoded calendar-rollup story-quality repairs and has SHA256 `FA64134DD63DE0194AE4645CC41ECC405576DA117311A5FD592673EACB619EF4`; it passed stable release smoke, local installer smoke, and packaged first-run walkthrough and is queued for final cleanroom recheck. Hosted release evidence is recorded in [docs/release-evidence/v0.3.2.json](docs/release-evidence/v0.3.2.json). Stable release still requires signed installers, cross-platform clean-machine proof for every advertised platform, matching published release artifacts, and credentialed live verification for external publishing providers.
+v0.3.2 is a Windows public beta. Local isolated-profile smoke, strict source-import fixture smoke, packaged Windows installer smoke, live local-model smoke, anonymous here.now smoke, model bakeoff, dependency audit, and the final remote cleanroom tester run passed for commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`; that tester published a verification issue to `https://olive-gorge-cgsr.here.now`. The current rebuilt release-candidate installer was built from commit `c1239fda79dd3bfc58e24c52657997550ccd2930` after AI setup visibility, installed-app onboarding reachability, legacy malformed-draft quarantine, and encoded calendar-rollup story-quality repairs and has SHA256 `A8E32A95AE64C69B3A58B0A5CC670F04B6ADCA726933CAA49C5CC4AEBD3D37B1`; it passed stable release smoke, local installer smoke, and packaged first-run walkthrough and is queued for final cleanroom recheck. Hosted release evidence is recorded in [docs/release-evidence/v0.3.2.json](docs/release-evidence/v0.3.2.json). Stable release still requires signed installers, cross-platform clean-machine proof for every advertised platform, matching published release artifacts, and credentialed live verification for external publishing providers.
 
 ## Backlog: Mac And Linux Installer Proof
 
@@ -137,3 +137,4 @@ MIT. See [LICENSE](LICENSE).
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Useful contribution areas include source discovery adapters, import fixtures, accessibility checks, publishing connector hardening, release smoke tests, and better local model evaluation.
+
