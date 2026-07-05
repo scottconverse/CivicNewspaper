@@ -1,4 +1,4 @@
-﻿# Installation Guide And Checksum Verification
+# Installation Guide And Checksum Verification
 
 This guide explains how to install The Civic Desk from the CivicNewspaper releases page and how to verify a downloaded installer.
 
@@ -31,7 +31,7 @@ macOS and Linux installers are backlog/proof-needed for this release line. Do no
 
 ## Clean-Machine Proof
 
-Every release candidate needs a clean-machine or remote-tester report before it can be called cleanroom-proven. For v0.3.2, the Windows public-beta installer represented by commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final remote cleanroom testing with zero blocker, critical, or major findings. The current rebuilt release-candidate installer was built from commit `6a17fcbb90d61e99f90d0ac41d59b95b2bcfe7c7` after AI setup visibility, installed-app onboarding reachability, legacy malformed-draft quarantine, encoded calendar-rollup story-quality repairs, and onboarding identity reconciliation before Daily Scan; its SHA256 is `E75859477EC5794D9FF2006F68344E4222D1EB3EDB5457C542C2ABB1D45E16A8`, it passed stable release smoke, local installer smoke, and packaged first-run walkthrough locally, and it is queued for final cleanroom recheck.
+Every release candidate needs a clean-machine or remote-tester report before it can be called cleanroom-proven. For v0.3.2, the Windows public-beta installer represented by commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final remote cleanroom testing with zero blocker, critical, or major findings. The current rebuilt release-candidate installer was built from commit `186312209b743824ae33bd48777c90b0e6a545ec` after AI setup visibility, installed-app onboarding reachability, legacy malformed-draft quarantine, encoded calendar-rollup story-quality repairs, and onboarding identity reconciliation before Daily Scan, unsupported Daily Scan lead downgrading, and full state-name discovery normalization; its SHA256 is `6CD5B8C6D3565AFAE8A39357DEAEC1CE53ADEDADB8316BEB6C44DCB86C87EE74`, it passed stable release smoke, local installer smoke, and packaged first-run walkthrough locally, and it is queued for final cleanroom recheck.
 
 Required proof for a cleanroom-proven release:
 
@@ -85,4 +85,3 @@ If setup or publishing gets stuck, see [troubleshooting.md](troubleshooting.md) 
 - Some external publishing providers require user-owned credentials.
 - PDF source-list import is disabled in the public beta until hardened parsing is available; convert PDFs to TXT/CSV/DOCX/XLSX or paste URLs directly.
 - Clean-machine installer coverage is improving but not yet stable-release grade.
-

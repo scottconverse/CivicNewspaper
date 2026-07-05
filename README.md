@@ -1,8 +1,8 @@
-﻿# CivicNewspaper / The Civic Desk
+# CivicNewspaper / The Civic Desk
 
 > **Project name:** CivicNewspaper. **Installed app name:** The Civic Desk.
 >
-> **Current release:** v0.3.2 Windows-only public beta. The current rebuilt Windows installer candidate is built from commit `6a17fcbb90d61e99f90d0ac41d59b95b2bcfe7c7`; an earlier v0.3.2 installer at `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final cleanroom testing, and the rebuilt public asset is awaiting the final tester recheck. Installers are unsigned. This is not a stable production release.
+> **Current release:** v0.3.2 Windows-only public beta. The current rebuilt Windows installer candidate is built from commit `186312209b743824ae33bd48777c90b0e6a545ec`; an earlier v0.3.2 installer at `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final cleanroom testing, and the rebuilt public asset is awaiting the final tester recheck. Installers are unsigned. This is not a stable production release.
 
 The Civic Desk is a local-first desktop newsroom tool for small local publishers, civic reporters, and community editors. It helps one person or a small team monitor public local sources, discover story leads, draft articles with a local AI model, review risks and evidence, and publish a static local-news issue.
 
@@ -124,7 +124,7 @@ The Ollama runtime binary is not committed to the repo. The app-managed first-ru
 
 ## Release Status
 
-v0.3.2 is a Windows public beta. Local isolated-profile smoke, strict source-import fixture smoke, packaged Windows installer smoke, live local-model smoke, anonymous here.now smoke, model bakeoff, dependency audit, and the final remote cleanroom tester run passed for commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`; that tester published a verification issue to `https://olive-gorge-cgsr.here.now`. The current rebuilt release-candidate installer was built from commit `6a17fcbb90d61e99f90d0ac41d59b95b2bcfe7c7` after AI setup visibility, installed-app onboarding reachability, legacy malformed-draft quarantine, encoded calendar-rollup story-quality repairs, and onboarding identity reconciliation before Daily Scan. It has SHA256 `E75859477EC5794D9FF2006F68344E4222D1EB3EDB5457C542C2ABB1D45E16A8`; it passed stable release smoke, local installer smoke, and packaged first-run walkthrough and is queued for final cleanroom recheck. Hosted release evidence is recorded in [docs/release-evidence/v0.3.2.json](docs/release-evidence/v0.3.2.json). Stable release still requires signed installers, cross-platform clean-machine proof for every advertised platform, matching published release artifacts, and credentialed live verification for external publishing providers.
+v0.3.2 is a Windows public beta. Local isolated-profile smoke, strict source-import fixture smoke, packaged Windows installer smoke, live local-model smoke, anonymous here.now smoke, model bakeoff, dependency audit, and the final remote cleanroom tester run passed for commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`; that tester published a verification issue to `https://olive-gorge-cgsr.here.now`. The current rebuilt release-candidate installer was built from commit `186312209b743824ae33bd48777c90b0e6a545ec` after AI setup visibility, installed-app onboarding reachability, legacy malformed-draft quarantine, encoded calendar-rollup story-quality repairs, and onboarding identity reconciliation before Daily Scan, unsupported Daily Scan lead downgrading, and full state-name discovery normalization. It has SHA256 `6CD5B8C6D3565AFAE8A39357DEAEC1CE53ADEDADB8316BEB6C44DCB86C87EE74`; it passed stable release smoke, local installer smoke, and packaged first-run walkthrough and is queued for final cleanroom recheck. Hosted release evidence is recorded in [docs/release-evidence/v0.3.2.json](docs/release-evidence/v0.3.2.json). Stable release still requires signed installers, cross-platform clean-machine proof for every advertised platform, matching published release artifacts, and credentialed live verification for external publishing providers.
 
 ## Backlog: Mac And Linux Installer Proof
 
@@ -137,4 +137,3 @@ MIT. See [LICENSE](LICENSE).
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Useful contribution areas include source discovery adapters, import fixtures, accessibility checks, publishing connector hardening, release smoke tests, and better local model evaluation.
-

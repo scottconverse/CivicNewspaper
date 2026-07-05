@@ -1,13 +1,13 @@
 {
   "tag": "v0.3.2",
-  "commit": "6a17fcbb90d61e99f90d0ac41d59b95b2bcfe7c7",
-  "generated_at": "2026-07-04T21:45:00-06:00",
+  "commit": "186312209b743824ae33bd48777c90b0e6a545ec",
+  "generated_at": "2026-07-04T22:05:00-06:00",
   "rc_receipt_path": ".agent-runs/release-candidate-20260704-185159/release-candidate-receipt.json",
   "rc_receipt_sha256": "A5915070D43DE48FDE8C21F3092EBB995DC88558A218F2ADA72E413A74EF292C",
   "release_smoke": {
     "ok": true,
-    "receipt_path": ".agent-runs/release-smoke-20260704-213805/release-smoke-receipt.json",
-    "receipt_sha256": "AB1DD7C1FA9E2F111497609920CD0134553ADF1CB3092C937242F9DD2A785E5B"
+    "receipt_path": ".agent-runs/release-smoke-20260704-215822/release-smoke-receipt.json",
+    "receipt_sha256": "8B3E4CDA4E1D9B591A0E831875A502F7D99FF46CFB0A1D3381DFF7B966B952EB"
   },
   "model_bakeoff": {
     "ok": true,
@@ -21,27 +21,27 @@
   },
   "windows_installer_smoke": {
     "ok": true,
-    "receipt_path": ".agent-runs/windows-installer-smoke-20260704-213115/windows-installer-smoke-receipt.json",
-    "receipt_sha256": "10367C4D687F2DAA387B381A6B4AABE4E63C5DCF548FB38128A54DBB81932946",
+    "receipt_path": ".agent-runs/windows-installer-smoke-20260704-215726/windows-installer-smoke-receipt.json",
+    "receipt_sha256": "3B404C81FD9C41172642B88E1648EC3F17474145CEFB8981041F47B9C8BC62A8",
     "installer_name": "The Civic Desk_0.3.2_x64-setup.exe",
     "release_asset_name": "The.Civic.Desk_0.3.2_x64-setup.exe",
-    "installer_sha256": "E75859477EC5794D9FF2006F68344E4222D1EB3EDB5457C542C2ABB1D45E16A8",
-    "installer_size": 5254969
+    "installer_sha256": "6CD5B8C6D3565AFAE8A39357DEAEC1CE53ADEDADB8316BEB6C44DCB86C87EE74",
+    "installer_size": 5250373
   },
   "packaged_first_run_walkthrough": {
     "ok": true,
-    "receipt_path": ".agent-runs/packaged-first-run-walkthrough-20260704-213149/packaged-first-run-walkthrough-receipt.json",
-    "receipt_sha256": "C0771CBC2D0D53559AC6DA0AE1BCCB751E266B5065E0E4E68A86A176E9DC5DA4"
+    "receipt_path": ".agent-runs/packaged-first-run-walkthrough-20260704-215747/packaged-first-run-walkthrough-receipt.json",
+    "receipt_sha256": "4E40101A17875C9455036D088173B69696F5954A71FC3DB532B4CFEAD098069A"
   },
   "cleanroom": {
     "ok": false,
     "report_path": null,
     "report_sha256": null,
     "tester_machine": "pending final cleanroom rerun",
-    "installer_sha256": "E75859477EC5794D9FF2006F68344E4222D1EB3EDB5457C542C2ABB1D45E16A8",
+    "installer_sha256": "6CD5B8C6D3565AFAE8A39357DEAEC1CE53ADEDADB8316BEB6C44DCB86C87EE74",
     "public_url": null,
     "zip_path": null,
-    "verdict": "PENDING: installed-app onboarding reachability, legacy malformed-draft quarantine, encoded calendar-rollup story-quality repairs, onboarding identity reconciliation before Daily Scan, release smoke, local installer smoke, and packaged first-run walkthrough passed for commit 6a17fcbb90d61e99f90d0ac41d59b95b2bcfe7c7. Final remote cleanroom proof is still required before this rebuilt artifact is called beta-release ready."
+    "verdict": "PENDING: installed-app onboarding reachability, legacy malformed-draft quarantine, encoded calendar-rollup story-quality repairs, onboarding identity reconciliation before Daily Scan, unsupported Daily Scan lead downgrading, and full state-name discovery normalization, release smoke, local installer smoke, and packaged first-run walkthrough passed for commit 186312209b743824ae33bd48777c90b0e6a545ec. Final remote cleanroom proof is still required before this rebuilt artifact is called beta-release ready."
   },
   "release_scope": {
     "windows_public_beta": true,

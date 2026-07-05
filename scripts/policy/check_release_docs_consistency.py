@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Check release-scope documentation claims against the current beta contract.
 
 This is intentionally narrow. It protects the claims that have repeatedly drifted:
@@ -53,8 +53,8 @@ def main() -> int:
     require("docs/install.md", "https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2", failures)
     require("docs/release-readiness.md", "Current v0.3.2 evidence", failures)
     require("docs/release-readiness.md", "docs/release-evidence/v0.3.2.json", failures)
-    require("docs/release-evidence/v0.3.2.json", "6a17fcbb90d61e99f90d0ac41d59b95b2bcfe7c7", failures)
-    require("docs/release-evidence/v0.3.2.json", "E75859477EC5794D9FF2006F68344E4222D1EB3EDB5457C542C2ABB1D45E16A8", failures)
+    require("docs/release-evidence/v0.3.2.json", "186312209b743824ae33bd48777c90b0e6a545ec", failures)
+    require("docs/release-evidence/v0.3.2.json", "6CD5B8C6D3565AFAE8A39357DEAEC1CE53ADEDADB8316BEB6C44DCB86C87EE74", failures)
 
     require("docs/publishing-connectors.md", "anonymous here.now preview publishing is the tested default fast path", failures)
     require("docs/publishing-connectors.md", "Cloudflare Pages API publishing is disabled", failures)
@@ -76,4 +76,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
