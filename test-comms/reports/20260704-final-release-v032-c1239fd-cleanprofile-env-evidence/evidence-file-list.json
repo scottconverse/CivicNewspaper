@@ -1,0 +1,322 @@
+﻿[
+    {
+        "Name":  "after-defender-alt-tab.png",
+        "Length":  62318,
+        "LastWriteTime":  "\/Date(1783220821839)\/"
+    },
+    {
+        "Name":  "after-defender-dismiss-skip-attempt-screen.png",
+        "Length":  53989,
+        "LastWriteTime":  "\/Date(1783221173256)\/"
+    },
+    {
+        "Name":  "after-defender-dismiss-source-state.png",
+        "Length":  96482,
+        "LastWriteTime":  "\/Date(1783221559141)\/"
+    },
+    {
+        "Name":  "after-finish-onboarding-dashboard-cdp.png",
+        "Length":  153791,
+        "LastWriteTime":  "\/Date(1783221343264)\/"
+    },
+    {
+        "Name":  "after-step1-scroll-state-enter.png",
+        "Length":  62910,
+        "LastWriteTime":  "\/Date(1783221228293)\/"
+    },
+    {
+        "Name":  "after-step2-skip-click-live.png",
+        "Length":  62318,
+        "LastWriteTime":  "\/Date(1783221258181)\/"
+    },
+    {
+        "Name":  "after-step2-tab-enter-live.png",
+        "Length":  61341,
+        "LastWriteTime":  "\/Date(1783221298222)\/"
+    },
+    {
+        "Name":  "after-step5-enter-workspace-attempt.png",
+        "Length":  61338,
+        "LastWriteTime":  "\/Date(1783221324596)\/"
+    },
+    {
+        "Name":  "cleanprofile-files-after-launch.json",
+        "Length":  1534,
+        "LastWriteTime":  "\/Date(1783220714832)\/"
+    },
+    {
+        "Name":  "cleanprofile-first-launch-screen.png",
+        "Length":  60908,
+        "LastWriteTime":  "\/Date(1783220714908)\/"
+    },
+    {
+        "Name":  "cleanprofile-launch-log.txt",
+        "Length":  223,
+        "LastWriteTime":  "\/Date(1783220706739)\/"
+    },
+    {
+        "Name":  "cleanprofile-processes.json",
+        "Length":  185,
+        "LastWriteTime":  "\/Date(1783220714813)\/"
+    },
+    {
+        "Name":  "community_profile.final.json",
+        "Length":  663,
+        "LastWriteTime":  "\/Date(1783221753350)\/"
+    },
+    {
+        "Name":  "daily-scan-after-direct-settings-save-cdp.png",
+        "Length":  155240,
+        "LastWriteTime":  "\/Date(1783221886684)\/"
+    },
+    {
+        "Name":  "daily-scan-after-run-cdp.png",
+        "Length":  162747,
+        "LastWriteTime":  "\/Date(1783221598422)\/"
+    },
+    {
+        "Name":  "daily-scan-after-settings-city-state-cdp.png",
+        "Length":  162895,
+        "LastWriteTime":  "\/Date(1783221743477)\/"
+    },
+    {
+        "Name":  "environment-final.json",
+        "Length":  1870,
+        "LastWriteTime":  "\/Date(1783221939634)\/"
+    },
+    {
+        "Name":  "install-receipt.json",
+        "Length":  2675,
+        "LastWriteTime":  "\/Date(1783220647563)\/"
+    },
+    {
+        "Name":  "navigation-daily-scan.png",
+        "Length":  98084,
+        "LastWriteTime":  "\/Date(1783221379489)\/"
+    },
+    {
+        "Name":  "onboarding-after-ai-skip.png",
+        "Length":  72889,
+        "LastWriteTime":  "\/Date(1783220802059)\/"
+    },
+    {
+        "Name":  "onboarding-after-starter-keyboard-continue.png",
+        "Length":  62830,
+        "LastWriteTime":  "\/Date(1783220777720)\/"
+    },
+    {
+        "Name":  "onboarding-after-step1-tab-continue.png",
+        "Length":  54329,
+        "LastWriteTime":  "\/Date(1783221102487)\/"
+    },
+    {
+        "Name":  "onboarding-step-after-appactivate-skip-click.png",
+        "Length":  62318,
+        "LastWriteTime":  "\/Date(1783220897069)\/"
+    },
+    {
+        "Name":  "onboarding-step-after-skip-click.png",
+        "Length":  62318,
+        "LastWriteTime":  "\/Date(1783220849108)\/"
+    },
+    {
+        "Name":  "onboarding-step-after-tab-enter.png",
+        "Length":  52896,
+        "LastWriteTime":  "\/Date(1783220936042)\/"
+    },
+    {
+        "Name":  "onboarding-step1-after-wheel-down.png",
+        "Length":  47719,
+        "LastWriteTime":  "\/Date(1783221068706)\/"
+    },
+    {
+        "Name":  "onboarding-step1-fields-typed.png",
+        "Length":  53559,
+        "LastWriteTime":  "\/Date(1783220967538)\/"
+    },
+    {
+        "Name":  "onboarding-step1-longmont-clicked.png",
+        "Length":  64611,
+        "LastWriteTime":  "\/Date(1783220752002)\/"
+    },
+    {
+        "Name":  "onboarding-step1-lower-fields.png",
+        "Length":  47375,
+        "LastWriteTime":  "\/Date(1783221002899)\/"
+    },
+    {
+        "Name":  "onboarding-step1-state-continue.png",
+        "Length":  47375,
+        "LastWriteTime":  "\/Date(1783221023941)\/"
+    },
+    {
+        "Name":  "onboarding-step4-defaults-cdp.png",
+        "Length":  105759,
+        "LastWriteTime":  "\/Date(1783221294046)\/"
+    },
+    {
+        "Name":  "onboarding-step5-done-cdp.png",
+        "Length":  104148,
+        "LastWriteTime":  "\/Date(1783221333174)\/"
+    },
+    {
+        "Name":  "public-docs.html",
+        "Length":  15706,
+        "LastWriteTime":  "\/Date(1783220583328)\/"
+    },
+    {
+        "Name":  "release-api.json",
+        "Length":  10675,
+        "LastWriteTime":  "\/Date(1783220583617)\/"
+    },
+    {
+        "Name":  "release-page.html",
+        "Length":  211928,
+        "LastWriteTime":  "\/Date(1783220583010)\/"
+    },
+    {
+        "Name":  "route-ai-model-cdp.png",
+        "Length":  183102,
+        "LastWriteTime":  "\/Date(1783221364413)\/"
+    },
+    {
+        "Name":  "route-daily-scan-cdp.png",
+        "Length":  156671,
+        "LastWriteTime":  "\/Date(1783221358947)\/"
+    },
+    {
+        "Name":  "route-ethics-backups-cdp.png",
+        "Length":  158108,
+        "LastWriteTime":  "\/Date(1783221362230)\/"
+    },
+    {
+        "Name":  "route-publishing-cdp.png",
+        "Length":  182045,
+        "LastWriteTime":  "\/Date(1783221361139)\/"
+    },
+    {
+        "Name":  "route-sources-cdp.png",
+        "Length":  149162,
+        "LastWriteTime":  "\/Date(1783221357865)\/"
+    },
+    {
+        "Name":  "route-story-queue-cdp.png",
+        "Length":  153791,
+        "LastWriteTime":  "\/Date(1783221365511)\/"
+    },
+    {
+        "Name":  "route-system-status-cdp.png",
+        "Length":  159761,
+        "LastWriteTime":  "\/Date(1783221363305)\/"
+    },
+    {
+        "Name":  "route-workbench-cdp.png",
+        "Length":  130572,
+        "LastWriteTime":  "\/Date(1783221360034)\/"
+    },
+    {
+        "Name":  "settings-after-scroll-up.png",
+        "Length":  96482,
+        "LastWriteTime":  "\/Date(1783221596024)\/"
+    },
+    {
+        "Name":  "settings-city-state-saved-cdp.png",
+        "Length":  199615,
+        "LastWriteTime":  "\/Date(1783221622357)\/"
+    },
+    {
+        "Name":  "settings-direct-fill-save-cdp.png",
+        "Length":  198825,
+        "LastWriteTime":  "\/Date(1783221756439)\/"
+    },
+    {
+        "Name":  "SHA256SUMS.downloaded.txt",
+        "Length":  107,
+        "LastWriteTime":  "\/Date(1783220589288)\/"
+    },
+    {
+        "Name":  "SHA256SUMS.txt",
+        "Length":  102,
+        "LastWriteTime":  "\/Date(1783220586899)\/"
+    },
+    {
+        "Name":  "source-discovery-after-action-wait.png",
+        "Length":  64340,
+        "LastWriteTime":  "\/Date(1783221526130)\/"
+    },
+    {
+        "Name":  "source-discovery-after-longmont-co-submit.png",
+        "Length":  83506,
+        "LastWriteTime":  "\/Date(1783221415934)\/"
+    },
+    {
+        "Name":  "source-discovery-modal-scrolled.png",
+        "Length":  80200,
+        "LastWriteTime":  "\/Date(1783221480723)\/"
+    },
+    {
+        "Name":  "sources-after-auto-find-feeds-cdp.png",
+        "Length":  151162,
+        "LastWriteTime":  "\/Date(1783221433905)\/"
+    },
+    {
+        "Name":  "sources-after-auto-find-feeds-co-cdp.png",
+        "Length":  144250,
+        "LastWriteTime":  "\/Date(1783221475433)\/"
+    },
+    {
+        "Name":  "sources-after-discover-click.png",
+        "Length":  80200,
+        "LastWriteTime":  "\/Date(1783221454325)\/"
+    },
+    {
+        "Name":  "sources-after-discovery-cdp.png",
+        "Length":  164263,
+        "LastWriteTime":  "\/Date(1783221392114)\/"
+    },
+    {
+        "Name":  "sources-after-import-official-cdp.png",
+        "Length":  142137,
+        "LastWriteTime":  "\/Date(1783221495144)\/"
+    },
+    {
+        "Name":  "sqlite-leads-sources-drafts.json",
+        "Length":  37014,
+        "LastWriteTime":  "\/Date(1783221918713)\/"
+    },
+    {
+        "Name":  "state-paths-after-install.json",
+        "Length":  711,
+        "LastWriteTime":  "\/Date(1783220647560)\/"
+    },
+    {
+        "Name":  "state-paths-before-install.json",
+        "Length":  711,
+        "LastWriteTime":  "\/Date(1783220632093)\/"
+    },
+    {
+        "Name":  "step5-scrolled-for-enter-button.png",
+        "Length":  78007,
+        "LastWriteTime":  "\/Date(1783221349157)\/"
+    },
+    {
+        "Name":  "uninstall-install-log.txt",
+        "Length":  275,
+        "LastWriteTime":  "\/Date(1783220642556)\/"
+    },
+    {
+        "Name":  "visibility-receipt.json",
+        "Length":  1144,
+        "LastWriteTime":  "\/Date(1783220589274)\/"
+    },
+    {
+        "Name":  "webview-debug-launch.json",
+        "Length":  1279,
+        "LastWriteTime":  "\/Date(1783221187178)\/"
+    },
+    {
+        "Name":  "workbench-first-lead-cdp.png",
+        "Length":  156410,
+        "LastWriteTime":  "\/Date(1783221901947)\/"
+    }
+]

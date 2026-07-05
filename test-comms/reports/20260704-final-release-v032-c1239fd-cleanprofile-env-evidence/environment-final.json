@@ -1,0 +1,46 @@
+﻿{
+    "timestamp_utc":  "2026-07-05T03:25:37.9831020Z",
+    "machine_user":  "MSI\\civic",
+    "computer_name":  "MSI",
+    "os":  {
+               "Caption":  "Microsoft Windows 11 Home",
+               "Version":  "10.0.26200",
+               "BuildNumber":  "26200",
+               "OSArchitecture":  "64-bit"
+           },
+    "cpu":  {
+                "Name":  "13th Gen Intel(R) Core(TM) i7-13620H",
+                "NumberOfCores":  10,
+                "NumberOfLogicalProcessors":  16
+            },
+    "ram_gb":  15.71,
+    "gpu":  [
+                {
+                    "Name":  "Intel(R) UHD Graphics",
+                    "AdapterRAM":  2147479552,
+                    "DriverVersion":  "32.0.101.5972"
+                },
+                {
+                    "Name":  "NVIDIA GeForce RTX 4050 Laptop GPU",
+                    "AdapterRAM":  4293918720,
+                    "DriverVersion":  "32.0.15.8129"
+                }
+            ],
+    "disk_free_gb":  340.52,
+    "ollama_process":  [
+                           {
+                               "Id":  35540,
+                               "ProcessName":  "ollama",
+                               "Path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk\\ollama-runtime\\v0.30.11\\ollama.exe"
+                           }
+                       ],
+    "app_process":  [
+                        {
+                            "Id":  29420,
+                            "ProcessName":  "civicnews",
+                            "MainWindowTitle":  "The Civic Desk",
+                            "Path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe"
+                        }
+                    ],
+    "clean_profile":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-c1239fd-cleanprofile-env-debug"
+}
