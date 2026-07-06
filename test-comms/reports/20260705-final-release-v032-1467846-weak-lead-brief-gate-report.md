@@ -1,10 +1,10 @@
 ﻿# TEST REPORT - Civic Desk v0.3.2 1467846 Weak Lead and Brief Gate Rerun
 
-Date: 2026-07-06T03:20:00Z  
+Date: 2026-07-06T05:17:43Z  
 Tester machine: ``msi\\civic`` (required) / current run is ``C:\Users\instynct``  
 Repo: `C:\Users\instynct\Desktop\CODE\civicnewspaper-test-comms`  
 Product/release: GitHub release `v0.3.2` (build commit under test from installer: `14678467489a49c169006a8f05511a60c78ec6fa`)  
-Test-comms branch: `test-comms/cleanroom-coder-tester` (`6ddf2b600e7e9b4fd2c75d3a8e72862b095175c8`)  
+Test-comms branch: `test-comms/cleanroom-coder-tester` (`543e3dadbc621aa4eda97175a920b932837992f6`)  
 Directive: `test-comms/ACTIVE_DIRECTIVE.md`  
 
 **Commit this message should include [skip ci]**
@@ -16,7 +16,7 @@ Directive: `test-comms/ACTIVE_DIRECTIVE.md`
 ## Environment
 
 - OS/environment: Windows shell (local coder machine), not the mandated cleanroom host `msi\\civic`.
-- Product repo branch/HEAD: `test-comms/cleanroom-coder-tester` @ `6ddf2b600e7e9b4fd2c75d3a8e72862b095175c8`.
+- Product repo branch/HEAD: `test-comms/cleanroom-coder-tester` @ `543e3dadbc621aa4eda97175a920b932837992f6`.
 - Product/release: GitHub release `v0.3.2`.
 - Release asset SHA verified: `99B3C381C877D8B67997FCB2CEA07222C1C78A0C8CF5B4DB35424F6B01300292`
 - Release asset size verified: `5231944` bytes
@@ -42,6 +42,10 @@ Directive: `test-comms/ACTIVE_DIRECTIVE.md`
 
 ### Focused local verification (product code)
 
+- `npm run test`: **PASS** (26 test files, 228 tests)
+- `npm run lint:tokens`: **PASS**
+- `npm run build`: **PASS**
+- `npm run test:ui-smoke`: **PASS** (receipt: `.agent-runs/ui-smoke-2026-07-06T05-17-37-188Z/ui-smoke-receipt.json`)
 - `npm test components/LeadQueue.test.tsx components/Workbench.test.tsx components/DailyScanResults.test.tsx src/test_useapp_daily_scan_passes_settings_model.test.tsx`: **PASS** (4 files, 77 tests)
 - `npm run test:ui-smoke`: **PASS** (receipt: `.agent-runs/ui-smoke-2026-07-06T03-19-25-585Z/ui-smoke-receipt.json`)
 
@@ -56,6 +60,7 @@ Directive: `test-comms/ACTIVE_DIRECTIVE.md`
 - `test-comms/reports/20260705-final-release-v032-1467846-weak-lead-brief-gate-evidence/docs-page.html`
 - `test-comms/reports/20260705-final-release-v032-1467846-weak-lead-brief-gate-evidence/SHA256SUMS.txt`
 - `.agent-runs/ui-smoke-2026-07-06T03-19-25-585Z/ui-smoke-receipt.json`
+- `test-comms/reports/20260705-final-release-v032-1467846-weak-lead-brief-gate-evidence/ui-smoke-receipt-2026-07-06T05-17-37-188Z.json`
 
 ## Severity
 

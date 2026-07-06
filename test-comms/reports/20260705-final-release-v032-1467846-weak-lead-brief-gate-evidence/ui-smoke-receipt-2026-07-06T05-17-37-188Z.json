@@ -1,0 +1,124 @@
+{
+  "generated_at": "2026-07-06T05:17:43.302Z",
+  "mode": "managed",
+  "base_url": "http://127.0.0.1:58377",
+  "managed_pid": 40488,
+  "managed_port": 58377,
+  "git_sha": "3c7ff9a07b2d6b94953249a911d8fc675d4f3a7e",
+  "dirty": false,
+  "expected_build_id": "3c7ff9a07b2d6b94953249a911d8fc675d4f3a7e:clean:2026-07-06T05-17-37-188Z",
+  "actual_build_id": "3c7ff9a07b2d6b94953249a911d8fc675d4f3a7e:clean:2026-07-06T05-17-37-188Z",
+  "results": [
+    {
+      "name": "forced-browser-first-run",
+      "ok": true
+    },
+    {
+      "name": "nav-dailyScan",
+      "ok": true
+    },
+    {
+      "name": "nav-darkSignals",
+      "ok": true
+    },
+    {
+      "name": "nav-verification",
+      "ok": true
+    },
+    {
+      "name": "nav-workbench",
+      "ok": true
+    },
+    {
+      "name": "nav-sources",
+      "ok": true
+    },
+    {
+      "name": "nav-onboarding",
+      "ok": true
+    },
+    {
+      "name": "nav-publish",
+      "ok": true
+    },
+    {
+      "name": "nav-pairing",
+      "ok": true
+    },
+    {
+      "name": "nav-settings",
+      "ok": true
+    },
+    {
+      "name": "nav-system",
+      "ok": true
+    },
+    {
+      "name": "keyboard-tab-focus-visible",
+      "ok": true,
+      "details": {
+        "tag": "a",
+        "id": "",
+        "text": "Report issues on GitHub",
+        "visible": true
+      }
+    },
+    {
+      "name": "visible-controls-have-accessible-names",
+      "ok": true
+    },
+    {
+      "name": "primary-text-contrast-aa",
+      "ok": true,
+      "details": {
+        "ratio": 14.543986288855486,
+        "text": [
+          27,
+          32,
+          39
+        ],
+        "background": [
+          245,
+          241,
+          234
+        ]
+      }
+    },
+    {
+      "name": "medium-nav-queue",
+      "ok": true
+    },
+    {
+      "name": "medium-nav-workbench",
+      "ok": true
+    },
+    {
+      "name": "medium-nav-sources",
+      "ok": true
+    },
+    {
+      "name": "medium-nav-publish",
+      "ok": true
+    },
+    {
+      "name": "medium-nav-system",
+      "ok": true
+    },
+    {
+      "name": "mobile-nav-sources",
+      "ok": true
+    },
+    {
+      "name": "mobile-nav-publish",
+      "ok": true
+    },
+    {
+      "name": "mobile-nav-workbench",
+      "ok": true
+    },
+    {
+      "name": "mobile-nav-system",
+      "ok": true
+    }
+  ]
+}
