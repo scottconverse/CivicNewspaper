@@ -1,0 +1,2 @@
+SHA256SUMS.txt
+The.Civic.Desk_0.3.2_x64-setup.exe

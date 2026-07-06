@@ -1,0 +1,8 @@
+﻿{
+    "release_assets":  [
+                           "SHA256SUMS.txt",
+                           "The.Civic.Desk_0.3.2_x64-setup.exe"
+                       ],
+    "expected_asset_count":  2,
+    "actual_asset_count":  2
+}

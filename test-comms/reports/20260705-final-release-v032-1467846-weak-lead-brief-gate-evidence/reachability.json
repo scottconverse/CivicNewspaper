@@ -1,0 +1,16 @@
+﻿{
+    "release_reachable":  true,
+    "docs_reachable":  true,
+    "release_status":  200,
+    "docs_status":  200,
+    "release_url":  "https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2",
+    "docs_url":  "https://scottconverse.github.io/CivicNewspaper/",
+    "release_contains_expected_sha":  true,
+    "release_contains_expected_size":  true,
+    "release_contains_expected_commit":  true,
+    "docs_contains_expected_sha":  true,
+    "docs_contains_more_info":  true,
+    "docs_contains_run_anyway":  true,
+    "docs_contains_windows_only":  false,
+    "docs_contains_old_hash":  false
+}
