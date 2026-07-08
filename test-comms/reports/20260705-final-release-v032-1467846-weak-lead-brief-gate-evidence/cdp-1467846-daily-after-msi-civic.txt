@@ -1,0 +1,180 @@
+The Civic Desk
+LONGMONT / CO
+NEWSROOM
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+SET UP
+Sources
+AI Model
+Publishing
+TOOLS
+Browser Pairing
+Ethics & Backups
+System & Status
+AI limited mode
+Source checks still work
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Daily Scan complete (Scan ID: 1).
+Dismiss
+
+MORNING EDITOR PACKET
+
+Daily Scan
+
+Run deterministic record checks first, then use local AI only to summarize and rank what needs an editor's look.
+
+Refresh
+Run Daily Scan
+SOURCES WATCHED
+9
+OPEN LEADS
+5
+DRAFTS IN DESK
+0
+AI STATUS
+Limited
+
+AI BRIEF
+
+Latest scan #1
+
+Civic Desk keeps this pass local, private, and evidence-first. Use it to find the handful of records worth turning into leads. If local AI is unavailable, deterministic checks still build a review packet.
+
+SCAN PROGRESS
+
+Daily Scan saved 5 lead(s).
+
+Model: phi4-mini:latest. Evidence: 26. Saved leads: 5.
+
+Complete
+Scan Results for Scan #1
+
+LONGMONT CITY EVENTS / COMMUNITY SIGNAL
+
+Review community signal from Longmont city events
+Verification
+Needs verification
+Low priority
+
+Come explore the issues and discover solutions with community resources and a panel featuring regional waste reduction and reuse experts.
+
+Why now: Dark-signal pattern detected from recent evidence.
+
+Before publishing: Confirm the signal against source records or a second public source before drafting. No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy.
+
+Why this was flagged
+
+Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence.
+
+Suggested next step
+
+Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then attach or cite the source document before drafting.
+
+Open source and review
+Open in Workbench
+Source #9
+
+LONGMONT CITY EVENTS / COMMUNITY SIGNAL
+
+Review community signal from Longmont city events
+Verification
+Needs verification
+Low priority
+
+Transportation
+
+Why now: Dark-signal pattern detected from recent evidence.
+
+Before publishing: Confirm the signal against source records or a second public source before drafting. No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy.
+
+Why this was flagged
+
+Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence.
+
+Suggested next step
+
+Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then attach or cite the source document before drafting.
+
+Open source and review
+Open in Workbench
+Source #9
+
+LONGMONT CITY EVENTS / COMMUNITY SIGNAL
+
+Review community signal from Longmont city events
+Verification
+Needs verification
+Low priority
+
+Known for their driving rhythms and innovative approaches to the traditional music of Eastern Europe, this 11-piece brass band brings the sounds of the Old World to the Rocky Mountains.
+
+Why now: Dark-signal pattern detected from recent evidence.
+
+Before publishing: Confirm the signal against source records or a second public source before drafting. No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy.
+
+Why this was flagged
+
+Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence.
+
+Suggested next step
+
+Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then attach or cite the source document before drafting.
+
+Open source and review
+Open in Workbench
+Source #9
+
+LONGMONT CITY EVENTS / COMMUNITY SIGNAL
+
+Review community signal from Longmont city events
+Verification
+Needs verification
+Low priority
+
+-->
+
+Why now: Dark-signal pattern detected from recent evidence.
+
+Before publishing: Confirm the signal against source records or a second public source before drafting. The lead text still contains markup, encoded HTML, or page-navigation debris. No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy.
+
+Why this was flagged
+
+Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Quality gate: The lead text still contains markup, encoded HTML, or page-navigation debris.
+
+Suggested next step
+
+Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting. Then attach or cite the source document before drafting.
+
+Open source and review
+Open in Workbench
+Source #9
+
+LONGMONT CITY EVENTS / COMMUNITY SIGNAL
+
+Review community signal from Longmont city events
+Verification
+Needs verification
+Low priority
+
+Discover all the departments that make up the City of Longmont&#8217;s government. Get detailed information on their roles, responsibilities, and how they serve the community.
+
+Why now: Dark-signal pattern detected from recent evidence.
+
+Before publishing: Confirm the signal against source records or a second public source before drafting. The lead text still contains markup, encoded HTML, or page-navigation debris. No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy.
+
+Why this was flagged
+
+Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Quality gate: The lead text still contains markup, encoded HTML, or page-navigation debris.
+
+Suggested next step
+
+Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting. Then attach or cite the source document before drafting.
+
+Open source and review
+Open in Workbench
+Source #9

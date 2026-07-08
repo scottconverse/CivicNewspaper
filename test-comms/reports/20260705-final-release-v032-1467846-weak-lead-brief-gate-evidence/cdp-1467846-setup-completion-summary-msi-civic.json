@@ -1,0 +1,26 @@
+{
+  "generated_at": "2026-07-08T23:10:06.643Z",
+  "logs": [
+    {
+      "i": 0,
+      "text": "Workspace Setup\nStep 2 of 5\nAI Service Setup\n\nCheck the connection to the local AI service that runs on your computer.\n\nTo continue, install the local AI runtime or choose Skip for now. Skipping is supported: source checks still work, and you can finish AI setup later from AI Model.\nChoose how to continue\n\nYou can install local AI now, or skip it and finish setup. Source checks still work without AI.\n\nInstall local AI runtime\nRetry\nSkip for now\nLocal AI Service Connection\n\nLocal RAM: 15 GB\n\nCouldn't reach the AI service\n\nThe private AI service did not start. First try restarting Civic Desk. If Windows or antivirus asked about this app, allow it, then retry. If it still fails, save a diagnostics file for support.\n\nIf this is a clean machine, Civic Desk can download and install its local AI runtime for you. This is a large one-time download and may take a while.\n\nNeed help from support?\nBack\nNext"
+    },
+    {
+      "i": 1,
+      "text": "Workspace Setup\nStep 2 of 5\nAI Service Setup\n\nCheck the connection to the local AI service that runs on your computer.\n\nTo continue, install the local AI runtime or choose Skip for now. Skipping is supported: source checks still work, and you can finish AI setup later from AI Model.\nChoose how to continue\n\nYou can install local AI now, or skip it and finish setup. Source checks still work without AI.\n\nInstall local AI runtime\nRetry\nSkip for now\nLocal AI Service Connection\n\nLocal RAM: 15 GB\n\nCouldn't reach the AI service\n\nThe private AI service did not start. First try restarting Civic Desk. If Windows or antivirus asked about this app, allow it, then retry. If it still fails, save a diagnostics file for support.\n\nIf this is a clean machine, Civic Desk can download and install its local AI runtime for you. This is a large one-time download and may take a while.\n\nNeed help from support?\nBack\nNext\nSkip AI setup?\n\nAI drafting and AI-assisted review will stay limited until you complete setup from AI Model. Deterministic source checks can still run.\n\nKeep setting up AI\nContinue without AI"
+    },
+    {
+      "i": 2,
+      "text": "Workspace Setup\nStep 4 of 5\nDefaults\n\nConfigure publication directories and backup database paths.\n\nUse the recommended local folders\n\nThe Civic Desk will save finished publication files and backups in your Windows user profile. You can change these later in Settings.\n\nAdvanced: choose exact folders\nBack\nNext"
+    },
+    {
+      "i": 3,
+      "text": "Workspace Setup\nStep 5 of 5\nDone\n\nOnboarding completed. Ready to inspect local stories.\n\nWorkspace ready.\n\nYou can enter the workspace now. If you skipped local AI setup, drafting and AI-assisted review stay limited until you finish AI Model setup.\n\nWhat's next?\nStarter sources may be added automatically when you enter the workspace.\nDaily Scan is next once the starter-source step finishes, or you can add sources manually.\nReview leads in Story Queue, then draft and edit in Workbench.\nFinish AI Model setup later if you skipped it here.\nBack\nFinish Onboarding"
+    },
+    {
+      "i": 4,
+      "text": "The Civic Desk\nLONGMONT / CO\nNEWSROOM\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSET UP\nSources\nAI Model\nPublishing\nTOOLS\nBrowser Pairing\nEthics & Backups\nSystem & Status\nAI limited mode\nSource checks still work\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nSetup task:\nAdding starter sources for Longmont, CO. When this finishes, you will move to Daily Scan.\nSources\n\nThe municipal feeds and record portals The Civic Desk watches for you.\n\nDiscover for my city\nBulk import\nSOURCE\tTIER\tLAST CHECK\t\n\nNo feeds or portals yet.\nStart with discovery, import a source list, or paste a single source below.\nDiscover\nImport list\nAdd a source\n\nPaste a city webpage or RSS feed. The Civic Desk figures out the rest.\n\nName\nURL\nType\nAuto-detect\nRSS\nHTML\nMedia\nTier\nPrimary\nSecondary\nWatch\nAdd Source"
+    }
+  ],
+  "finalText": "The Civic Desk\nLONGMONT / CO\nNEWSROOM\nStory Queue\nDaily Scan\nDark Signals\nVerification\nWorkbench\nSET UP\nSources\nAI Model\nPublishing\nTOOLS\nBrowser Pairing\nEthics & Backups\nSystem & Status\nAI limited mode\nSource checks still work\n\nYou're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.\n\nSetup task:\nAdding starter sources for Longmont, CO. When this finishes, you will move to Daily Scan.\nSources\n\nThe municipal feeds and record portals The Civic Desk watches for you.\n\nDiscover for my city\nBulk import\nSOURCE\tTIER\tLAST CHECK\t\n\nNo feeds or portals yet.\nStart with discovery, import a source list, or paste a single source below.\nDiscover\nImport list\nAdd a source\n\nPaste a city webpage or RSS feed. The Civic Desk figures out the rest.\n\nName\nURL\nType\nAuto-detect\nRSS\nHTML\nMedia\nTier\nPrimary\nSecondary\nWatch\nAdd Source"
+}

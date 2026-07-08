@@ -1,0 +1,26 @@
+Workspace Setup
+Step 1 of 5
+Identity
+
+Define your local news outlet name and mission.
+
+Starter profiles
+Longmont
+Brighton
+Denver
+
+These identity fields are optional during setup and can be edited later in Settings before you publish.
+
+Publication Name (optional)
+Editor Name (optional)
+Publisher Type
+Single person
+For-profit publication
+Nonprofit publication
+Private organization
+Community group
+Other
+City
+State
+Choose a starter profile or continue with the fields shown.
+Continue setup

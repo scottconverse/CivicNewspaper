@@ -1,0 +1,13 @@
+Workspace Setup
+Step 4 of 5
+Defaults
+
+Configure publication directories and backup database paths.
+
+Use the recommended local folders
+
+The Civic Desk will save finished publication files and backups in your Windows user profile. You can change these later in Settings.
+
+Advanced: choose exact folders
+Back
+Next

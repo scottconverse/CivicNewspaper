@@ -1,0 +1,99 @@
+The Civic Desk
+LONGMONT / CO
+NEWSROOM
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+SET UP
+Sources
+AI Model
+Publishing
+TOOLS
+Browser Pairing
+Ethics & Backups
+System & Status
+AI limited mode
+Source checks still work
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Story Queue
+
+Civic signals your sources surfaced, ready to verify and turn into plain-language stories.
+
+Refresh
+Daily Scan
+Scrape & Detect
+NEW LEADS
+5
+IN DRAFTING
+0
+HIGH PRIORITY
+0
+SOURCES
+9
+Local-first workflow
+Scan sources, draft from linked evidence, run guardrails, then publish a static paper.
+Leads
+5
+Drafts
+0
+Scan results
+latest
+Filter leads
+Sort by:
+Date Created
+Risk Level
+Confidence
+Risk: low
+Verification
+Needs verification
+daily_scan
+Review community signal from Longmont city events: Discover all the departments that make up the City of Longmont's government. Get detailed information on their roles, responsibilities, and how they serve the community. Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Quality gate: The lead text still contains markup, encoded HTML, or page-navigation debris. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting. Then attach or cite the source document before drafting. Quality gate: Text contains encoded HTML, mojibake, or page-markup debris.
+
+Novelty 1/5. Text contains encoded HTML, mojibake, or page-markup debris.
+
+Confidence: low
+Verify first
+Risk: low
+Verification
+Needs verification
+daily_scan
+Review community signal from Longmont city events: Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Quality gate: The lead text still contains markup, encoded HTML, or page-navigation debris. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting. Then attach or cite the source document before drafting. Quality gate: Text contains encoded HTML, mojibake, or page-markup debris.
+
+Novelty 1/5. Text contains encoded HTML, mojibake, or page-markup debris.
+
+Confidence: low
+Verify first
+Risk: low
+Verification
+Needs verification
+daily_scan
+Review community signal from Longmont city events: Known for their driving rhythms and innovative approaches to the traditional music of Eastern Europe, this 11-piece brass band brings the sounds of the Old World to the Rocky Mountains. Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then attach or cite the source document before drafting.
+
+Novelty /5. Dark-signal pattern detected from recent evidence.
+
+Confidence: low
+Verify first
+Risk: low
+Verification
+Needs verification
+daily_scan
+Review community signal from Longmont city events: Transportation Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then attach or cite the source document before drafting.
+
+Novelty /5. Dark-signal pattern detected from recent evidence.
+
+Confidence: low
+Verify first
+Risk: low
+Verification
+Needs verification
+daily_scan
+Review community signal from Longmont city events: Come explore the issues and discover solutions with community resources and a panel featuring regional waste reduction and reuse experts. Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then attach or cite the source document before drafting.
+
+Novelty /5. Dark-signal pattern detected from recent evidence.
+
+Confidence: low
+Verify first

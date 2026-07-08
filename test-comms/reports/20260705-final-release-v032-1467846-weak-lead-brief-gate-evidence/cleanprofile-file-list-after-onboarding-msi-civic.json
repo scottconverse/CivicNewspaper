@@ -1,0 +1,42 @@
+﻿[
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1467846-weak-lead-brief-gate\\backups",
+        "Length":  null,
+        "LastWriteTime":  "\/Date(1783551986787)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1467846-weak-lead-brief-gate\\logs",
+        "Length":  null,
+        "LastWriteTime":  "\/Date(1783551986787)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1467846-weak-lead-brief-gate\\sites",
+        "Length":  null,
+        "LastWriteTime":  "\/Date(1783551986787)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1467846-weak-lead-brief-gate\\civicdesk.db",
+        "Length":  4096,
+        "LastWriteTime":  "\/Date(1783551986791)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1467846-weak-lead-brief-gate\\civicdesk.db-shm",
+        "Length":  32768,
+        "LastWriteTime":  "\/Date(1783551986793)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1467846-weak-lead-brief-gate\\civicdesk.db-wal",
+        "Length":  906432,
+        "LastWriteTime":  "\/Date(1783552211736)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1467846-weak-lead-brief-gate\\community_profile.json",
+        "Length":  662,
+        "LastWriteTime":  "\/Date(1783552205667)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1467846-weak-lead-brief-gate\\sites\\default",
+        "Length":  null,
+        "LastWriteTime":  "\/Date(1783551986786)\/"
+    }
+]

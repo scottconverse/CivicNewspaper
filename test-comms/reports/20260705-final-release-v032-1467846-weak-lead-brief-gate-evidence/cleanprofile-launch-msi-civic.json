@@ -1,0 +1,22 @@
+﻿{
+    "timestamp":  "2026-07-08T23:06:33.8632616Z",
+    "clean_profile":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1467846-weak-lead-brief-gate",
+    "exe":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+    "process_id":  29156,
+    "webview_args":  "--remote-debugging-port=9223 --remote-allow-origins=*",
+    "cdp_targets":  {
+                        "value":  [
+                                      {
+                                          "description":  "",
+                                          "devtoolsFrontendUrl":  "https://aka.ms/docs-landing-page/serve_rev/@6362dfa84aa4f30c18c60ac12387d02753f37dc6/inspector.html?ws=127.0.0.1:9223/devtools/page/4F4A5705D3E5C4E97481ECAA2B1D0474",
+                                          "faviconUrl":  "http://tauri.localhost/favicon.svg",
+                                          "id":  "4F4A5705D3E5C4E97481ECAA2B1D0474",
+                                          "title":  "CivicNews Dashboard",
+                                          "type":  "page",
+                                          "url":  "http://tauri.localhost/",
+                                          "webSocketDebuggerUrl":  "ws://127.0.0.1:9223/devtools/page/4F4A5705D3E5C4E97481ECAA2B1D0474"
+                                      }
+                                  ],
+                        "Count":  1
+                    }
+}

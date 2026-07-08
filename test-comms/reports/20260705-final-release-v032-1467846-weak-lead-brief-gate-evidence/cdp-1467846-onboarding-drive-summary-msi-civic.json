@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-07-08T23:08:30.583Z",
+  "steps": [
+    {
+      "name": "before",
+      "text": "Setup is not receiving identity input yet. Choose a starter profile, type your city and state, or use Tab and Enter to continue with fields you control.\nWorkspace Setup\nStep 1 of 5\nIdentity\n\nDefine your local news outlet name and mission.\n\nStarter profiles\nLongmont\nBrighton\nDenver\n\nThese identity fields are optional during setup and can be edited later in Settings before you publish.\n\nPublication Name (optional)\nEditor Name (optional)\nPublisher Type\nSingle person\nFor-profit publication\nNonprofit publication\nPrivate organization\nCommunity group\nOther\nCity\nState\nChoose a starter profile or continue with the fields shown.\nContinue setup"
+    },
+    {
+      "name": "after-longmont-click",
+      "text": "Workspace Setup\nStep 2 of 5\nAI Service Setup\n\nCheck the connection to the local AI service that runs on your computer.\n\nTo continue, install the local AI runtime or choose Skip for now. Skipping is supported: source checks still work, and you can finish AI setup later from AI Model.\nChoose how to continue\n\nYou can install local AI now, or skip it and finish setup. Source checks still work without AI.\n\nInstall local AI runtime\nChecking...\nSkip for now\n\nStarting the local AI service...\n\nBack\nNext"
+    },
+    {
+      "name": "after-continue-1",
+      "text": "Workspace Setup\nStep 1 of 5\nIdentity\n\nDefine your local news outlet name and mission.\n\nStarter profiles\nLongmont\nBrighton\nDenver\n\nThese identity fields are optional during setup and can be edited later in Settings before you publish.\n\nPublication Name (optional)\nEditor Name (optional)\nPublisher Type\nSingle person\nFor-profit publication\nNonprofit publication\nPrivate organization\nCommunity group\nOther\nCity\nState\nChoose a starter profile or continue with the fields shown.\nContinue setup"
+    },
+    {
+      "name": "after-continue-2",
+      "text": "Workspace Setup\nStep 2 of 5\nAI Service Setup\n\nCheck the connection to the local AI service that runs on your computer.\n\nTo continue, install the local AI runtime or choose Skip for now. Skipping is supported: source checks still work, and you can finish AI setup later from AI Model.\nChoose how to continue\n\nYou can install local AI now, or skip it and finish setup. Source checks still work without AI.\n\nInstall local AI runtime\nChecking...\nSkip for now\n\nStarting the local AI service...\n\nBack\nNext"
+    },
+    {
+      "name": "after-continue-3",
+      "text": "Workspace Setup\nStep 1 of 5\nIdentity\n\nDefine your local news outlet name and mission.\n\nStarter profiles\nLongmont\nBrighton\nDenver\n\nThese identity fields are optional during setup and can be edited later in Settings before you publish.\n\nPublication Name (optional)\nEditor Name (optional)\nPublisher Type\nSingle person\nFor-profit publication\nNonprofit publication\nPrivate organization\nCommunity group\nOther\nCity\nState\nChoose a starter profile or continue with the fields shown.\nContinue setup"
+    },
+    {
+      "name": "after-continue-4",
+      "text": "Workspace Setup\nStep 2 of 5\nAI Service Setup\n\nCheck the connection to the local AI service that runs on your computer.\n\nTo continue, install the local AI runtime or choose Skip for now. Skipping is supported: source checks still work, and you can finish AI setup later from AI Model.\nChoose how to continue\n\nYou can install local AI now, or skip it and finish setup. Source checks still work without AI.\n\nInstall local AI runtime\nChecking...\nSkip for now\n\nStarting the local AI service...\n\nBack\nNext"
+    },
+    {
+      "name": "after-continue-5",
+      "text": "Workspace Setup\nStep 1 of 5\nIdentity\n\nDefine your local news outlet name and mission.\n\nStarter profiles\nLongmont\nBrighton\nDenver\n\nThese identity fields are optional during setup and can be edited later in Settings before you publish.\n\nPublication Name (optional)\nEditor Name (optional)\nPublisher Type\nSingle person\nFor-profit publication\nNonprofit publication\nPrivate organization\nCommunity group\nOther\nCity\nState\nChoose a starter profile or continue with the fields shown.\nContinue setup"
+    },
+    {
+      "name": "after-continue-6",
+      "text": "Workspace Setup\nStep 2 of 5\nAI Service Setup\n\nCheck the connection to the local AI service that runs on your computer.\n\nTo continue, install the local AI runtime or choose Skip for now. Skipping is supported: source checks still work, and you can finish AI setup later from AI Model.\nChoose how to continue\n\nYou can install local AI now, or skip it and finish setup. Source checks still work without AI.\n\nInstall local AI runtime\nChecking...\nSkip for now\n\nStarting the local AI service...\n\nBack\nNext"
+    }
+  ],
+  "finalText": "Workspace Setup\nStep 2 of 5\nAI Service Setup\n\nCheck the connection to the local AI service that runs on your computer.\n\nTo continue, install the local AI runtime or choose Skip for now. Skipping is supported: source checks still work, and you can finish AI setup later from AI Model.\nChoose how to continue\n\nYou can install local AI now, or skip it and finish setup. Source checks still work without AI.\n\nInstall local AI runtime\nChecking...\nSkip for now\n\nStarting the local AI service...\n\nBack\nNext"
+}
