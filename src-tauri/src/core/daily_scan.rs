@@ -1282,6 +1282,10 @@ fn scan_lead_public_quality_issue(lead: &DailyScanLead) -> Option<&'static str> 
         || text.contains("-->")
         || text.contains("<script")
         || text.contains("<nav")
+        || lower.contains("all categories")
+        || lower.contains("sort news by")
+        || lower.contains("results found")
+        || lower.contains("email signup")
     {
         return Some(
             "The lead text still contains markup, encoded HTML, or page-navigation debris.",
@@ -1307,7 +1311,16 @@ fn downgrade_scan_lead_for_public_quality(mut lead: DailyScanLead, reason: &str)
     ) {
         lead.disposition = Some("needs_verification".to_string());
     }
+    lead.story_type = Some("verification".to_string());
     lead.priority = Some("low".to_string());
+    let source_label = lead
+        .source_name
+        .as_deref()
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .unwrap_or("watched source");
+    lead.title = format!("Verify source-quality issue from {source_label}");
+    lead.summary = "The scan found an official-source page, but the lead text looks like navigation, an index, markup, or a multi-item listing instead of one reportable civic item.".to_string();
     lead.publishability_note = Some(match lead.publishability_note {
         Some(note) if !note.trim().is_empty() => {
             format!("{}. {}", note.trim_end_matches('.'), reason)

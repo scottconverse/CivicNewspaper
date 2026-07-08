@@ -127,6 +127,7 @@ pub fn run_detectors(
 
             // 2. New Primary Record Detector
             if source_type == "primary_record" || source_type == "official_comm" {
+                let can_brief = official_record_is_brief_candidate(&excerpt, &evidence_url);
                 let why = format!(
                     "A new official primary document from '{}' was fetched today ({}).",
                     source_name,
@@ -145,10 +146,16 @@ pub fn run_detectors(
                     risk_level: risk_level.to_string(),
                     confirmation_checklist: serde_json::to_string(&checklist)?,
                     from_scan_lead_id: None,
-                    story_type: Some("watch".to_string()),
-                    disposition: Some("watch".to_string()),
-                    novelty_score: Some(2),
-                    novelty_reason: Some("Newly fetched official page; verify a current change before treating it as news.".to_string()),
+                    story_type: Some(if can_brief { "brief" } else { "watch" }.to_string()),
+                    disposition: Some(
+                        if can_brief { "ready_to_draft" } else { "watch" }.to_string(),
+                    ),
+                    novelty_score: Some(if can_brief { 4 } else { 2 }),
+                    novelty_reason: Some(if can_brief {
+                        "Linked official source evidence contains concrete civic action, timeline, or public-impact language.".to_string()
+                    } else {
+                        "Newly fetched official page; verify a current change before treating it as news.".to_string()
+                    }),
                     recurrence_count: None,
                     recurrence_note: None,
                     created_at: Utc::now().to_rfc3339(),
@@ -375,6 +382,86 @@ fn lead_exists(conn: &Connection, detector_name: &str, why: &str) -> Result<bool
         conn.prepare("SELECT count(*) FROM leads WHERE detector_name = ?1 AND why = ?2")?;
     let count: i32 = stmt.query_row([detector_name, why], |row| row.get(0))?;
     Ok(count > 0)
+}
+
+fn official_record_is_brief_candidate(excerpt: &str, evidence_url: &Option<String>) -> bool {
+    let text = excerpt.split_whitespace().collect::<Vec<_>>().join(" ");
+    let lower = text.to_lowercase();
+
+    if text.len() < 80 {
+        return false;
+    }
+
+    let navigation_or_index_markers = [
+        "all categories",
+        "sort news by",
+        "email signup",
+        "2949 results",
+        "departments departments",
+        "home government residents",
+        "skip to main content",
+        "select language",
+        "search this site",
+    ];
+    if navigation_or_index_markers
+        .iter()
+        .any(|marker| lower.contains(marker))
+    {
+        return false;
+    }
+
+    let concrete_action_markers = [
+        "approved",
+        "adopted",
+        "passed",
+        "voted",
+        "public hearing",
+        "special meeting",
+        "agenda",
+        "deadline",
+        "submit by",
+        "due date",
+        "public comment",
+        "rfp",
+        "bid due",
+        "applications close",
+        "contract",
+        "grant",
+        "permit",
+        "road closure",
+        "outage",
+        "construction",
+        "budget",
+        "ordinance",
+        "resolution",
+    ];
+    let has_action = concrete_action_markers
+        .iter()
+        .any(|marker| lower.contains(marker));
+    let has_date_or_amount = lower.contains('$')
+        || Regex::new(
+            r"\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{1,2}\b",
+        )
+        .unwrap()
+        .is_match(&lower)
+        || Regex::new(r"\b\d{1,2}/\d{1,2}/\d{2,4}\b")
+            .unwrap()
+            .is_match(&lower);
+    let url_looks_specific = evidence_url
+        .as_deref()
+        .map(|url| {
+            let url = url.to_lowercase();
+            url.contains("agenda")
+                || url.contains("minutes")
+                || url.contains("news")
+                || url.contains("notice")
+                || url.contains("calendar")
+                || url.contains("bid")
+                || url.contains("rfp")
+        })
+        .unwrap_or(false);
+
+    has_action && (has_date_or_amount || url_looks_specific)
 }
 
 fn format_money(val: f64) -> String {

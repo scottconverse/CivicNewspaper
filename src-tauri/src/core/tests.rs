@@ -2467,8 +2467,14 @@ I should produce JSON only.
         let scan_leads = list_daily_scan_leads(&conn, run_id).unwrap();
         let chrome_lead = scan_leads
             .iter()
-            .find(|lead| lead.title == "Longmont city news")
+            .find(|lead| lead.title == "Verify source-quality issue from Longmont city news")
             .expect("model lead should still be visible to editors");
+        assert!(
+            !chrome_lead.title.contains("All Categories")
+                && !chrome_lead.summary.contains("All Categories")
+                && !chrome_lead.summary.contains("2949 results"),
+            "quality-gated scan leads should not surface raw navigation/index debris"
+        );
         assert_eq!(
             chrome_lead.disposition.as_deref(),
             Some("needs_verification"),
@@ -2502,6 +2508,12 @@ I should produce JSON only.
             queue_lead.disposition.as_deref(),
             Some("ready_to_draft"),
             "the Story Queue must not offer a Draft path for category/navigation chrome"
+        );
+        assert!(
+            queue_lead.why.contains("Verify source-quality issue")
+                && !queue_lead.why.contains("All Categories")
+                && !queue_lead.why.contains("2949 results"),
+            "the Story Queue card should explain the verification issue without repeating page chrome"
         );
         let linked_evidence_count: i32 = conn
             .query_row(
@@ -3274,6 +3286,115 @@ I should produce JSON only.
             !leads.iter().any(|l| l.detector_name == "Watchlist Hit"),
             "an empty watchlist must produce no Watchlist Hit leads"
         );
+    }
+
+    #[test]
+    fn test_detector_promotes_actionable_official_record_to_brief() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Longmont agendas and minutes".to_string(),
+                url: "https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk/agendas-and-minutes".to_string(),
+                r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        let ev = insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://www.longmontcolorado.gov/agenda/july-9-2026".to_string()),
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "The July 9 City Council agenda includes a public hearing on a housing grant application deadline and a construction contract for a public facility.".to_string(),
+                content_hash: "h_actionable_official_record".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
+
+        run_detectors(
+            &conn,
+            &[ev],
+            r#"{"money_threshold": 250000.0, "watchlist": []}"#,
+        )
+        .unwrap();
+        let leads = list_leads(&conn).unwrap();
+        let record_lead = leads
+            .iter()
+            .find(|lead| lead.detector_name == "New Primary Record")
+            .expect("official record detector should fire");
+        assert_eq!(record_lead.story_type.as_deref(), Some("brief"));
+        assert_eq!(record_lead.disposition.as_deref(), Some("ready_to_draft"));
+        assert_eq!(record_lead.novelty_score, Some(4));
+        let linked_evidence_count: i32 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM lead_evidence WHERE lead_id = ?1",
+                [record_lead.id.unwrap()],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(
+            linked_evidence_count, 1,
+            "draftable official-record briefs must stay linked to source evidence"
+        );
+    }
+
+    #[test]
+    fn test_detector_keeps_generic_official_navigation_as_watch() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        run_migrations(&mut conn).unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Longmont official city website".to_string(),
+                url: "https://www.longmontcolorado.gov/".to_string(),
+                r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        let ev = insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://www.longmontcolorado.gov/".to_string()),
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "Home Government Residents Business Visitors Departments City Clerk City Council Public Safety Parks Recreation Library Utility Billing Search this site Select language".to_string(),
+                content_hash: "h_generic_official_navigation".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
+
+        run_detectors(
+            &conn,
+            &[ev],
+            r#"{"money_threshold": 250000.0, "watchlist": []}"#,
+        )
+        .unwrap();
+        let leads = list_leads(&conn).unwrap();
+        let record_lead = leads
+            .iter()
+            .find(|lead| lead.detector_name == "New Primary Record")
+            .expect("official record detector should fire");
+        assert_eq!(record_lead.story_type.as_deref(), Some("watch"));
+        assert_eq!(record_lead.disposition.as_deref(), Some("watch"));
+        assert_eq!(record_lead.novelty_score, Some(2));
     }
 
     #[test]
