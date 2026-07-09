@@ -1,5 +1,5 @@
-{
-  "db_path": "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1e03894-source-backed-brief\\civicdesk.db",
+﻿{
+  "db": "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1e03894-source-backed-brief\\civicdesk.db",
   "tables": [
     "beat_memory",
     "civic_entities",
@@ -24,113 +24,483 @@
     "subscribers",
     "verification_tasks"
   ],
-  "sources_count": 9,
-  "evidence_items_count": 26,
-  "daily_scan_runs_count": 1,
-  "daily_scan_leads_count": 5,
-  "leads_count": 5,
-  "lead_evidence_count": 0,
-  "drafts_count": 0,
-  "published_posts_count": 0,
-  "publish_runs_count": 0,
-  "leads": [
+  "counts": {
+    "beat_memory": 5,
+    "civic_entities": 48,
+    "civic_observation_entities": 174,
+    "civic_observations": 122,
+    "daily_scan_leads": 5,
+    "daily_scan_runs": 1,
+    "dark_signals": 9,
+    "drafts": 0,
+    "evidence_items": 26,
+    "lead_evidence": 0,
+    "leads": 5,
+    "paired_clients": 0,
+    "publish_decision_audits": 0,
+    "publish_runs": 0,
+    "published_posts": 0,
+    "settings": 13,
+    "source_performance_scores": 9,
+    "sources": 9,
+    "sqlite_sequence": 11,
+    "story_templates": 5,
+    "subscribers": 0,
+    "verification_tasks": 59
+  },
+  "columns": {
+    "beat_memory": [
+      "id",
+      "topic_key",
+      "representative_title",
+      "source_url",
+      "first_seen_at",
+      "last_seen_at",
+      "seen_count",
+      "last_scan_lead_id",
+      "last_summary"
+    ],
+    "civic_entities": [
+      "id",
+      "entity_type",
+      "name",
+      "normalized_name",
+      "first_seen_at",
+      "last_seen_at",
+      "mention_count"
+    ],
+    "civic_observation_entities": [
+      "observation_id",
+      "entity_id",
+      "context"
+    ],
+    "civic_observations": [
+      "id",
+      "observation_type",
+      "source_id",
+      "evidence_id",
+      "title",
+      "summary",
+      "url",
+      "observed_at",
+      "content_hash",
+      "previous_hash",
+      "diff_summary",
+      "metadata_json",
+      "tier"
+    ],
+    "daily_scan_leads": [
+      "id",
+      "scan_id",
+      "title",
+      "summary",
+      "source_id",
+      "original_url",
+      "why_flagged",
+      "source_name",
+      "source_type",
+      "priority",
+      "suggested_next_step",
+      "story_type",
+      "what_changed",
+      "immediacy",
+      "impact",
+      "conflict",
+      "novelty",
+      "publishability_note",
+      "disposition",
+      "recurrence_count",
+      "recurrence_note"
+    ],
+    "daily_scan_runs": [
+      "id",
+      "started_at",
+      "completed_at",
+      "run_status"
+    ],
+    "dark_signals": [
+      "id",
+      "observation_id",
+      "source_id",
+      "title",
+      "summary",
+      "origin",
+      "risk_level",
+      "rank_score",
+      "tier",
+      "evidence_policy",
+      "why_it_matters",
+      "verification_path",
+      "publication_status",
+      "created_at",
+      "updated_at"
+    ],
+    "drafts": [
+      "id",
+      "lead_id",
+      "format",
+      "title",
+      "content",
+      "status",
+      "verification_checklist",
+      "missing_evidence_notes",
+      "correction_note",
+      "created_at",
+      "updated_at",
+      "attested_by",
+      "attested_at",
+      "guardrail_override_reason"
+    ],
+    "evidence_items": [
+      "id",
+      "source_id",
+      "url",
+      "fetched_at",
+      "excerpt",
+      "content_hash",
+      "entities"
+    ],
+    "lead_evidence": [
+      "lead_id",
+      "evidence_id"
+    ],
+    "leads": [
+      "id",
+      "detector_name",
+      "why",
+      "confidence",
+      "risk_level",
+      "confirmation_checklist",
+      "created_at",
+      "from_scan_lead_id",
+      "story_type",
+      "disposition",
+      "novelty_score",
+      "novelty_reason",
+      "recurrence_count",
+      "recurrence_note"
+    ],
+    "paired_clients": [
+      "id",
+      "token",
+      "label",
+      "pairing_pin",
+      "pin_expires_at",
+      "created_at",
+      "last_used_at",
+      "revoked"
+    ],
+    "publish_decision_audits": [
+      "id",
+      "draft_id",
+      "decision",
+      "attested",
+      "guardrail_override_reason",
+      "guardrail_issue_count",
+      "note",
+      "created_at"
+    ],
+    "publish_runs": [
+      "id",
+      "issue_id",
+      "output_path",
+      "generated_files",
+      "provider",
+      "published_url",
+      "deployment_id",
+      "article_count",
+      "skipped_count",
+      "files_written",
+      "generated_at"
+    ],
+    "published_posts": [
+      "id",
+      "draft_id",
+      "file_path",
+      "url",
+      "published_at",
+      "correction_history"
+    ],
+    "settings": [
+      "key",
+      "value"
+    ],
+    "source_performance_scores": [
+      "source_id",
+      "fetch_successes",
+      "fetch_failures",
+      "new_items",
+      "changed_items",
+      "entity_hits",
+      "dark_signal_hits",
+      "reliability_score",
+      "usefulness_score",
+      "last_fetch_at",
+      "updated_at"
+    ],
+    "sources": [
+      "id",
+      "name",
+      "url",
+      "type",
+      "status",
+      "last_success_at",
+      "last_failed_at",
+      "last_scraped",
+      "tier"
+    ],
+    "sqlite_sequence": [
+      "name",
+      "seq"
+    ],
+    "story_templates": [
+      "id",
+      "key",
+      "label",
+      "description",
+      "prompt_guidance"
+    ],
+    "subscribers": [
+      "id",
+      "email",
+      "name",
+      "status",
+      "created_at",
+      "updated_at"
+    ],
+    "verification_tasks": [
+      "id",
+      "dark_signal_id",
+      "observation_id",
+      "lead_id",
+      "draft_id",
+      "entity_id",
+      "check_type",
+      "title",
+      "description",
+      "target_label",
+      "target_url",
+      "status",
+      "effort_level",
+      "impact_level",
+      "rank_score",
+      "result_summary",
+      "created_at",
+      "updated_at"
+    ]
+  },
+  "leads_sample": [
     {
       "id": 1,
+      "detector_name": "daily_scan",
+      "why": "Review community signal from Longmont city events: Longmont Senior Center 910 Longs Peak Ave., Longmont, CO, United States Thu 9 Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Open the linked source, confirm the date, location, organizer, and public relevance, then draft a short brief from the source-backed facts. Then attach or cite the source document before drafting.",
+      "confidence": "low",
+      "risk_level": "low",
+      "confirmation_checklist": "[\"Open the linked source, confirm the date, location, organizer, and public relevance, then draft a short brief from the source-backed facts. Then attach or cite the source document before drafting.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-09T01:08:11.882807700+00:00",
+      "from_scan_lead_id": 1,
       "story_type": "verification",
       "disposition": "needs_verification",
-      "risk_level": "low",
-      "confidence": "low",
       "novelty_score": 4,
+      "novelty_reason": "Specific source-backed civic item detected from recent evidence.",
       "recurrence_count": null,
-      "created_at": "2026-07-09T01:08:11.882807700+00:00"
+      "recurrence_note": null
     },
     {
       "id": 2,
+      "detector_name": "daily_scan",
+      "why": "Review community signal from Longmont city events: Explore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place. All Services Departments Airport Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then attach or cite the source document before drafting.",
+      "confidence": "low",
+      "risk_level": "low",
+      "confirmation_checklist": "[\"Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then attach or cite the source document before drafting.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-09T01:08:11.886313300+00:00",
+      "from_scan_lead_id": 2,
       "story_type": "verification",
       "disposition": "needs_verification",
-      "risk_level": "low",
-      "confidence": "low",
       "novelty_score": null,
+      "novelty_reason": "Dark-signal pattern detected from recent evidence.",
       "recurrence_count": null,
-      "created_at": "2026-07-09T01:08:11.886313300+00:00"
+      "recurrence_note": null
     },
     {
       "id": 3,
+      "detector_name": "daily_scan",
+      "why": "Review community signal from Longmont city events: Nature Fridays at Sandstone Ranch Friday, July 10 - 9 am - 12 pm Nature Fridays at Sandstone Ranch Series Sandstone Ranch Visitors Center Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then attach or cite the source document before drafting.",
+      "confidence": "low",
+      "risk_level": "low",
+      "confirmation_checklist": "[\"Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then attach or cite the source document before drafting.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-09T01:08:11.889361500+00:00",
+      "from_scan_lead_id": 3,
       "story_type": "verification",
       "disposition": "needs_verification",
-      "risk_level": "low",
-      "confidence": "low",
       "novelty_score": null,
+      "novelty_reason": "Dark-signal pattern detected from recent evidence.",
       "recurrence_count": null,
-      "created_at": "2026-07-09T01:08:11.889361500+00:00"
+      "recurrence_note": null
     },
     {
       "id": 4,
+      "detector_name": "daily_scan",
+      "why": "Verify source-quality issue from Longmont city events: The scan found an official-source page, but the lead text looks like navigation, an index, markup, or a multi-item listing instead of one reportable civic item. Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Quality gate: The lead text still contains markup, encoded HTML, or page-navigation debris. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting. Then attach or cite the source document before drafting.",
+      "confidence": "low",
+      "risk_level": "low",
+      "confirmation_checklist": "[\"Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting. Then attach or cite the source document before drafting.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-09T01:08:11.892374600+00:00",
+      "from_scan_lead_id": 4,
       "story_type": "verification",
       "disposition": "needs_verification",
-      "risk_level": "low",
-      "confidence": "low",
       "novelty_score": null,
+      "novelty_reason": "Dark-signal pattern detected from recent evidence.",
       "recurrence_count": null,
-      "created_at": "2026-07-09T01:08:11.892374600+00:00"
+      "recurrence_note": null
     },
     {
       "id": 5,
+      "detector_name": "daily_scan",
+      "why": "Verify source-quality issue from Longmont Area Chamber of Commerce: The scan found an official-source page, but the lead text looks like navigation, an index, markup, or a multi-item listing instead of one reportable civic item. Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Quality gate: The lead appears to be a broad organization or legislative-session rollup, not a specific local civic development. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting. Then attach or cite the source document before drafting.",
+      "confidence": "low",
+      "risk_level": "low",
+      "confirmation_checklist": "[\"Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting. Then attach or cite the source document before drafting.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-09T01:08:11.895708700+00:00",
+      "from_scan_lead_id": 5,
       "story_type": "verification",
       "disposition": "needs_verification",
-      "risk_level": "low",
-      "confidence": "low",
       "novelty_score": null,
+      "novelty_reason": "Dark-signal pattern detected from recent evidence.",
       "recurrence_count": null,
-      "created_at": "2026-07-09T01:08:11.895708700+00:00"
+      "recurrence_note": null
     }
   ],
-  "daily_scan_leads": [
+  "lead_evidence_sample": [],
+  "drafts_sample": [],
+  "published_posts_sample": [],
+  "sources_sample": [
     {
       "id": 1,
-      "title": "Review community signal from Longmont city events",
-      "source_name": "Longmont city events",
-      "priority": "low",
-      "story_type": "verification",
-      "disposition": "needs_verification",
-      "publishability_note": "Single-source official civic briefs are draftable only after confirming the linked source facts; seek a second public source when available. No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy."
+      "name": "Longmont official city website",
+      "url": "https://www.longmontcolorado.gov/",
+      "type": "primary_record",
+      "status": "online",
+      "last_success_at": "2026-07-09T01:08:00.033408500+00:00",
+      "last_failed_at": null,
+      "last_scraped": "2026-07-09T01:08:00.033408500+00:00",
+      "tier": "official_record"
     },
     {
       "id": 2,
-      "title": "Review community signal from Longmont city events",
-      "source_name": "Longmont city events",
-      "priority": "low",
-      "story_type": "verification",
-      "disposition": "needs_verification",
-      "publishability_note": "Confirm the signal against source records or a second public source before drafting. No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy."
+      "name": "Longmont agendas and minutes",
+      "url": "https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk/agendas-and-minutes",
+      "type": "primary_record",
+      "status": "offline",
+      "last_success_at": null,
+      "last_failed_at": "2026-07-09T01:08:03.552613600+00:00",
+      "last_scraped": null,
+      "tier": "official_record"
     },
     {
       "id": 3,
-      "title": "Review community signal from Longmont city events",
-      "source_name": "Longmont city events",
-      "priority": "low",
-      "story_type": "verification",
-      "disposition": "needs_verification",
-      "publishability_note": "Confirm the signal against source records or a second public source before drafting. No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy."
+      "name": "Longmont public notices search",
+      "url": "https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk",
+      "type": "primary_record",
+      "status": "online",
+      "last_success_at": "2026-07-09T01:08:05.954807200+00:00",
+      "last_failed_at": null,
+      "last_scraped": "2026-07-09T01:08:05.954807200+00:00",
+      "tier": "official_record"
     },
     {
       "id": 4,
-      "title": "Verify source-quality issue from Longmont city events",
-      "source_name": "Longmont city events",
-      "priority": "low",
-      "story_type": "verification",
-      "disposition": "needs_verification",
-      "publishability_note": "Confirm the signal against source records or a second public source before drafting. The lead text still contains markup, encoded HTML, or page-navigation debris. No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy."
+      "name": "St. Vrain Valley Schools",
+      "url": "https://www.svvsd.org/",
+      "type": "primary_record",
+      "status": "online",
+      "last_success_at": "2026-07-09T01:08:06.098479300+00:00",
+      "last_failed_at": null,
+      "last_scraped": "2026-07-09T01:08:06.098479300+00:00",
+      "tier": "official_record"
     },
     {
       "id": 5,
-      "title": "Verify source-quality issue from Longmont Area Chamber of Commerce",
-      "source_name": "Longmont Area Chamber of Commerce",
-      "priority": "low",
-      "story_type": "verification",
-      "disposition": "needs_verification",
-      "publishability_note": "Confirm the signal against source records or a second public source before drafting. The lead appears to be a broad organization or legislative-session rollup, not a specific local civic development. No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy."
+      "name": "Longmont Public Safety",
+      "url": "https://www.longmontcolorado.gov/departments/departments-n-z/public-safety",
+      "type": "official_comm",
+      "status": "offline",
+      "last_success_at": null,
+      "last_failed_at": "2026-07-09T01:08:09.546713600+00:00",
+      "last_scraped": null,
+      "tier": "official_record"
+    },
+    {
+      "id": 6,
+      "name": "r/Longmont",
+      "url": "https://www.reddit.com/r/Longmont/",
+      "type": "community_signal",
+      "status": "offline",
+      "last_success_at": null,
+      "last_failed_at": "2026-07-09T01:08:09.583592700+00:00",
+      "last_scraped": null,
+      "tier": "community_signal"
+    },
+    {
+      "id": 7,
+      "name": "Longmont Leader local news",
+      "url": "https://www.longmontleader.com/local-news",
+      "type": "media_lead",
+      "status": "online",
+      "last_success_at": "2026-07-09T01:08:10.236795200+00:00",
+      "last_failed_at": null,
+      "last_scraped": "2026-07-09T01:08:10.236795200+00:00",
+      "tier": "news_reporting"
+    },
+    {
+      "id": 8,
+      "name": "Longmont Area Chamber of Commerce",
+      "url": "https://longmontchamber.org/",
+      "type": "community_signal",
+      "status": "online",
+      "last_success_at": "2026-07-09T01:08:11.663575700+00:00",
+      "last_failed_at": null,
+      "last_scraped": "2026-07-09T01:08:11.663575700+00:00",
+      "tier": "community_signal"
+    },
+    {
+      "id": 9,
+      "name": "Longmont city events",
+      "url": "https://longmontcolorado.gov/events/",
+      "type": "official_calendar",
+      "status": "online",
+      "last_success_at": "2026-07-09T01:08:11.841579200+00:00",
+      "last_failed_at": null,
+      "last_scraped": "2026-07-09T01:08:11.841579200+00:00",
+      "tier": "community_signal"
     }
   ],
-  "lead_evidence": []
+  "leads_selected": [
+    {
+      "id": 5,
+      "story_type": "verification",
+      "disposition": "needs_verification"
+    },
+    {
+      "id": 4,
+      "story_type": "verification",
+      "disposition": "needs_verification"
+    },
+    {
+      "id": 3,
+      "story_type": "verification",
+      "disposition": "needs_verification"
+    },
+    {
+      "id": 2,
+      "story_type": "verification",
+      "disposition": "needs_verification"
+    },
+    {
+      "id": 1,
+      "story_type": "verification",
+      "disposition": "needs_verification"
+    }
+  ],
+  "lead_evidence_selected": []
 }
