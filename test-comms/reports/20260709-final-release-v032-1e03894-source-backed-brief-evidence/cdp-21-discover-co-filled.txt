@@ -1,0 +1,113 @@
+The Civic Desk
+LONGMONT / CO
+NEWSROOM
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+SET UP
+Sources
+AI Model
+Publishing
+TOOLS
+Browser Pairing
+Ethics & Backups
+System & Status
+AI limited mode
+Source checks still work
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Sources
+
+The municipal feeds and record portals The Civic Desk watches for you.
+
+Discover for my city
+Bulk import
+SOURCE	TIER	LAST CHECK	
+
+Longmont official city website
+Primary
+Online
+https://www.longmontcolorado.gov/
+	Primary	7/8/2026	
+
+
+Longmont agendas and minutes
+Primary
+Offline
+https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk/agendas-and-minutes
+	Primary	Never	
+
+
+Longmont public notices search
+Primary
+Online
+https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk
+	Primary	7/8/2026	
+
+
+St. Vrain Valley Schools
+Primary
+Online
+https://www.svvsd.org/
+	Primary	7/8/2026	
+
+
+Longmont Public Safety
+Official
+Offline
+https://www.longmontcolorado.gov/departments/departments-n-z/public-safety
+	Primary	Never	
+
+
+r/Longmont
+Watch
+Offline
+https://www.reddit.com/r/Longmont/
+	Watch	Never	
+
+
+Longmont Leader local news
+Media
+Online
+https://www.longmontleader.com/local-news
+	Secondary	7/8/2026	
+
+
+Longmont Area Chamber of Commerce
+Watch
+Online
+https://longmontchamber.org/
+	Watch	7/8/2026	
+
+
+Longmont city events
+Official Calendar
+Online
+https://longmontcolorado.gov/events/
+	Watch	7/8/2026	
+Add a source
+
+Paste a city webpage or RSS feed. The Civic Desk figures out the rest.
+
+Name
+URL
+Type
+Auto-detect
+RSS
+HTML
+Media
+Tier
+Primary
+Secondary
+Watch
+Add Source
+Town Setup & Source Auto-Discovery
+Close
+City name
+State
+Auto-Find Feeds
+
+Enter your town's name and state above to auto-discover local civic feeds.

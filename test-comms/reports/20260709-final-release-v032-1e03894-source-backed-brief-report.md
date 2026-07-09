@@ -74,7 +74,7 @@ The following directive steps were not completed because Blocker 1 prevented the
 - Publish through here.now.
 - Inspect the public here.now site as a visitor.
 
-The separate second source discovery/import check for `Longmont` / `CO` was not captured in this run before the blocker was reached. The clean profile did have 9 watched sources, source discovery using `Longmont` / `Colorado` was captured, and Daily Scan used those sources.
+The separate second source discovery check for `Longmont` / `CO` was started and captured while still searching, but completed `CO` discovery results were not captured before the blocker was reached. The clean profile did have 9 watched sources, source discovery using `Longmont` / `Colorado` was captured, and Daily Scan used those sources.
 
 ## Evidence
 
@@ -92,6 +92,7 @@ The separate second source discovery/import check for `Longmont` / `CO` was not 
 - `test-comms/reports/20260709-final-release-v032-1e03894-source-backed-brief-evidence/cdp-12-daily-before-run.txt`
 - `test-comms/reports/20260709-final-release-v032-1e03894-source-backed-brief-evidence/cdp-13-daily-run-18.txt`
 - `test-comms/reports/20260709-final-release-v032-1e03894-source-backed-brief-evidence/cdp-16-discover-colorado-filled.txt`
+- `test-comms/reports/20260709-final-release-v032-1e03894-source-backed-brief-evidence/cdp-22-discover-co-wait-0.txt`
 - `test-comms/reports/20260709-final-release-v032-1e03894-source-backed-brief-evidence/sqlite-summary-final.json`
 
 ## Notes

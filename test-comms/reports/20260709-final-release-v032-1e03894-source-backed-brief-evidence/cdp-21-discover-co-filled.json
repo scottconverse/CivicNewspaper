@@ -1,0 +1,248 @@
+{
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "aria": null,
+      "id": "nav-tab-queue",
+      "disabled": false
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "aria": null,
+      "id": "nav-tab-dailyScan",
+      "disabled": false
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "aria": null,
+      "id": "nav-tab-darkSignals",
+      "disabled": false
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "aria": null,
+      "id": "nav-tab-verification",
+      "disabled": false
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "aria": null,
+      "id": "nav-tab-workbench",
+      "disabled": false
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "aria": null,
+      "id": "nav-tab-sources",
+      "disabled": false
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "aria": null,
+      "id": "nav-tab-onboarding",
+      "disabled": false
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "aria": null,
+      "id": "nav-tab-publish",
+      "disabled": false
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "aria": null,
+      "id": "nav-tab-pairing",
+      "disabled": false
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "aria": null,
+      "id": "nav-tab-settings",
+      "disabled": false
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "aria": null,
+      "id": "nav-tab-system",
+      "disabled": false
+    },
+    {
+      "i": 11,
+      "text": "",
+      "aria": "Dismiss beta notice",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 12,
+      "text": "Discover for my city",
+      "aria": null,
+      "id": "btn-trigger-discovery",
+      "disabled": false
+    },
+    {
+      "i": 13,
+      "text": "Bulk import",
+      "aria": null,
+      "id": "btn-trigger-bulk-import",
+      "disabled": false
+    },
+    {
+      "i": 14,
+      "text": "",
+      "aria": "Delete source Longmont official city website",
+      "id": "btn-delete-source-1",
+      "disabled": false
+    },
+    {
+      "i": 15,
+      "text": "",
+      "aria": "Delete source Longmont agendas and minutes",
+      "id": "btn-delete-source-2",
+      "disabled": false
+    },
+    {
+      "i": 16,
+      "text": "",
+      "aria": "Delete source Longmont public notices search",
+      "id": "btn-delete-source-3",
+      "disabled": false
+    },
+    {
+      "i": 17,
+      "text": "",
+      "aria": "Delete source St. Vrain Valley Schools",
+      "id": "btn-delete-source-4",
+      "disabled": false
+    },
+    {
+      "i": 18,
+      "text": "",
+      "aria": "Delete source Longmont Public Safety",
+      "id": "btn-delete-source-5",
+      "disabled": false
+    },
+    {
+      "i": 19,
+      "text": "",
+      "aria": "Delete source r/Longmont",
+      "id": "btn-delete-source-6",
+      "disabled": false
+    },
+    {
+      "i": 20,
+      "text": "",
+      "aria": "Delete source Longmont Leader local news",
+      "id": "btn-delete-source-7",
+      "disabled": false
+    },
+    {
+      "i": 21,
+      "text": "",
+      "aria": "Delete source Longmont Area Chamber of Commerce",
+      "id": "btn-delete-source-8",
+      "disabled": false
+    },
+    {
+      "i": 22,
+      "text": "",
+      "aria": "Delete source Longmont city events",
+      "id": "btn-delete-source-9",
+      "disabled": false
+    },
+    {
+      "i": 23,
+      "text": "Add Source",
+      "aria": null,
+      "id": "btn-submit-add-source",
+      "disabled": false
+    },
+    {
+      "i": 24,
+      "text": "Close",
+      "aria": null,
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 25,
+      "text": "Auto-Find Feeds",
+      "aria": null,
+      "id": "btn-submit-discovery",
+      "disabled": false
+    }
+  ],
+  "inputs": [
+    {
+      "i": 0,
+      "id": "input-new-source-name",
+      "tag": "INPUT",
+      "type": "text",
+      "value": "Colorado",
+      "placeholder": "e.g. City Council Agendas",
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 1,
+      "id": "input-new-source-url",
+      "tag": "INPUT",
+      "type": "url",
+      "value": "Longmont",
+      "placeholder": "e.g. https://city.gov/agendas/rss",
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 2,
+      "id": "select-new-source-type",
+      "tag": "SELECT",
+      "type": null,
+      "value": "primary_record",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 3,
+      "id": "select-new-source-tier",
+      "tag": "SELECT",
+      "type": null,
+      "value": "community_signal",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 4,
+      "id": "input-discovery-city",
+      "tag": "INPUT",
+      "type": "text",
+      "value": "Longmont",
+      "placeholder": "City Name (e.g. Brighton)",
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 5,
+      "id": "input-discovery-state",
+      "tag": "INPUT",
+      "type": "text",
+      "value": "CO",
+      "placeholder": "State (e.g. CO)",
+      "label": null,
+      "name": null
+    }
+  ]
+}
