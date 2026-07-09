@@ -1668,7 +1668,7 @@ fn source_bound_fallback_draft(
         })
         .collect::<Vec<_>>()
         .join("\n\n");
-    let closing = if matches!(format, "brief" | "story" | "article") && linked_sentences.len() > 1 {
+    let closing = if matches!(format, "brief" | "story" | "article") {
         format!("Taken together, the linked records give {audience} a source-backed civic brief. Keep the story limited to these records until an editor confirms any public impact, cost, decision date, or agency response not shown in the linked sources.")
     } else {
         format!("This is a watch brief for {audience}. The linked source does not, by itself, confirm a broader development; watch for a newly posted date, vote, cost, agency response, or other public update before expanding it into a full story.")
@@ -1990,6 +1990,30 @@ mod draft_citation_tests {
         assert!(fallback.contains("According to the linked source"));
         assert!(fallback.contains("[Source](evidence:15)"));
         assert!(!fallback.contains("Burlington Public Schools"));
+    }
+
+    #[test]
+    fn source_bound_brief_fallback_does_not_use_watch_brief_copy() {
+        let item = crate::core::db::EvidenceItem {
+            id: Some(25),
+            source_id: 1,
+            url: Some("https://longmontcolorado.gov/events/".to_string()),
+            fetched_at: "2026-07-09T00:00:00Z".to_string(),
+            excerpt: "Longmont posted a utility update for residents with a public meeting date, city department contact, and transportation service information.".to_string(),
+            content_hash: "utility".to_string(),
+            entities: "[]".to_string(),
+        };
+
+        let fallback = super::source_bound_fallback_draft(
+            "Review community signal from Longmont city events",
+            &[item],
+            "Longmont readers",
+            "brief",
+        );
+
+        assert!(fallback.contains("source-backed civic brief"));
+        assert!(!fallback.to_lowercase().contains("watch brief"));
+        assert!(fallback.contains("[Source](evidence:25)"));
     }
 
     #[test]
