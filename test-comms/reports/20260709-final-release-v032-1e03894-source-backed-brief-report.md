@@ -43,6 +43,8 @@ Evidence:
 - `sqlite-summary-final.json` shows `daily_scan_leads_count: 5`, `leads_count: 5`, `lead_evidence_count: 0`, `drafts_count: 0`, and `published_posts_count: 0`.
 - Every stored lead has `story_type: verification`, `disposition: needs_verification`, `risk_level: low`, and `confidence: low`.
 - Daily Scan UI evidence shows five saved leads, all verification/community/source-quality items.
+- Story Queue evidence shows `NEW LEADS 5`, `IN DRAFTING 0`, `HIGH PRIORITY 0`, and all cards labeled `Verification` / `Needs verification`.
+- Workbench evidence shows `No lead or draft selected` and `No drafts exist yet`.
 - Daily Scan lead publishability notes repeatedly state that no source documents could be linked and that public source material must be attached or verified before drafting.
 
 Because there was no linked-evidence Story/Brief lead, Workbench Brief-default validation, draft generation, copy-quality review, editor workflow, export, here.now publication, and public site inspection were not run.
@@ -93,6 +95,8 @@ Source discovery using both full state name `Colorado` and abbreviation `CO` was
 - `test-comms/reports/20260709-final-release-v032-1e03894-source-backed-brief-evidence/cdp-13-daily-run-18.txt`
 - `test-comms/reports/20260709-final-release-v032-1e03894-source-backed-brief-evidence/cdp-16-discover-colorado-filled.txt`
 - `test-comms/reports/20260709-final-release-v032-1e03894-source-backed-brief-evidence/cdp-23-discover-co-results.txt`
+- `test-comms/reports/20260709-final-release-v032-1e03894-source-backed-brief-evidence/cdp-24-story-queue.txt`
+- `test-comms/reports/20260709-final-release-v032-1e03894-source-backed-brief-evidence/cdp-26-workbench.txt`
 - `test-comms/reports/20260709-final-release-v032-1e03894-source-backed-brief-evidence/sqlite-summary-final.json`
 
 ## Notes

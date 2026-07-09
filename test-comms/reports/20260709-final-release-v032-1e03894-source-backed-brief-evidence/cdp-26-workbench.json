@@ -1,0 +1,97 @@
+{
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "aria": null,
+      "id": "nav-tab-queue",
+      "disabled": false
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "aria": null,
+      "id": "nav-tab-dailyScan",
+      "disabled": false
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "aria": null,
+      "id": "nav-tab-darkSignals",
+      "disabled": false
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "aria": null,
+      "id": "nav-tab-verification",
+      "disabled": false
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "aria": null,
+      "id": "nav-tab-workbench",
+      "disabled": false
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "aria": null,
+      "id": "nav-tab-sources",
+      "disabled": false
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "aria": null,
+      "id": "nav-tab-onboarding",
+      "disabled": false
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "aria": null,
+      "id": "nav-tab-publish",
+      "disabled": false
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "aria": null,
+      "id": "nav-tab-pairing",
+      "disabled": false
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "aria": null,
+      "id": "nav-tab-settings",
+      "disabled": false
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "aria": null,
+      "id": "nav-tab-system",
+      "disabled": false
+    },
+    {
+      "i": 11,
+      "text": "",
+      "aria": "Dismiss beta notice",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 12,
+      "text": "Back to Story Queue",
+      "aria": null,
+      "id": "btn-workbench-empty-back",
+      "disabled": false
+    }
+  ],
+  "selects": [],
+  "inputs": []
+}

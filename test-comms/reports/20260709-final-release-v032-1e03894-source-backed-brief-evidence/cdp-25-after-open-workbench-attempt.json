@@ -1,0 +1,207 @@
+{
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "aria": null,
+      "id": "nav-tab-queue",
+      "disabled": false
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "aria": null,
+      "id": "nav-tab-dailyScan",
+      "disabled": false
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "aria": null,
+      "id": "nav-tab-darkSignals",
+      "disabled": false
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "aria": null,
+      "id": "nav-tab-verification",
+      "disabled": false
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "aria": null,
+      "id": "nav-tab-workbench",
+      "disabled": false
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "aria": null,
+      "id": "nav-tab-sources",
+      "disabled": false
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "aria": null,
+      "id": "nav-tab-onboarding",
+      "disabled": false
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "aria": null,
+      "id": "nav-tab-publish",
+      "disabled": false
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "aria": null,
+      "id": "nav-tab-pairing",
+      "disabled": false
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "aria": null,
+      "id": "nav-tab-settings",
+      "disabled": false
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "aria": null,
+      "id": "nav-tab-system",
+      "disabled": false
+    },
+    {
+      "i": 11,
+      "text": "",
+      "aria": "Dismiss beta notice",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 12,
+      "text": "Refresh",
+      "aria": null,
+      "id": "btn-sync-list",
+      "disabled": false
+    },
+    {
+      "i": 13,
+      "text": "Daily Scan",
+      "aria": null,
+      "id": "btn-daily-scan",
+      "disabled": false
+    },
+    {
+      "i": 14,
+      "text": "Scrape & Detect",
+      "aria": null,
+      "id": "btn-scrape-detect",
+      "disabled": false
+    },
+    {
+      "i": 15,
+      "text": "IN DRAFTING\n0",
+      "aria": "Open 0 drafts",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 16,
+      "text": "Leads\n5",
+      "aria": null,
+      "id": "queue-tab-leads",
+      "disabled": false
+    },
+    {
+      "i": 17,
+      "text": "Drafts\n0",
+      "aria": null,
+      "id": "queue-tab-drafts",
+      "disabled": false
+    },
+    {
+      "i": 18,
+      "text": "Scan results\nlatest",
+      "aria": null,
+      "id": "queue-tab-scan-results",
+      "disabled": false
+    },
+    {
+      "i": 19,
+      "text": "Verify first",
+      "aria": "Verify first Verify source-quality issue from Longmont Area Chamber of Commerce: The scan found an official-source page, but the lead text looks like navigation, an index, markup, or a multi-item listing instead of one reportable civic item. Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Quality gate: The lead appears to be a broad organization or legislative-session rollup, not a specific local civic development. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting. Then attach or cite the source document before drafting.",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 20,
+      "text": "Verify first",
+      "aria": "Verify first Verify source-quality issue from Longmont city events: The scan found an official-source page, but the lead text looks like navigation, an index, markup, or a multi-item listing instead of one reportable civic item. Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Quality gate: The lead text still contains markup, encoded HTML, or page-navigation debris. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting. Then attach or cite the source document before drafting.",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 21,
+      "text": "Verify first",
+      "aria": "Verify first Review community signal from Longmont city events: Nature Fridays at Sandstone Ranch Friday, July 10 - 9 am - 12 pm Nature Fridays at Sandstone Ranch Series Sandstone Ranch Visitors Center Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then attach or cite the source document before drafting.",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 22,
+      "text": "Verify first",
+      "aria": "Verify first Review community signal from Longmont city events: Explore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place. All Services Departments Airport Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then attach or cite the source document before drafting.",
+      "id": "",
+      "disabled": false
+    },
+    {
+      "i": 23,
+      "text": "Verify first",
+      "aria": "Verify first Review community signal from Longmont city events: Longmont Senior Center 910 Longs Peak Ave., Longmont, CO, United States Thu 9 Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Open the linked source, confirm the date, location, organizer, and public relevance, then draft a short brief from the source-backed facts. Then attach or cite the source document before drafting.",
+      "id": "",
+      "disabled": false
+    }
+  ],
+  "selects": [
+    {
+      "i": 0,
+      "value": "date",
+      "options": [
+        {
+          "text": "Date Created",
+          "value": "date",
+          "selected": true
+        },
+        {
+          "text": "Risk Level",
+          "value": "risk",
+          "selected": false
+        },
+        {
+          "text": "Confidence",
+          "value": "confidence",
+          "selected": false
+        }
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "i": 0,
+      "id": "leads-filter-input",
+      "tag": "INPUT",
+      "type": "text",
+      "value": "",
+      "placeholder": "Filter leads...",
+      "label": null,
+      "name": null
+    }
+  ]
+}
