@@ -246,8 +246,7 @@ describe("LeadQueue Component Tests", () => {
     );
 
     expect(screen.getByRole("button", { name: /^Draft \$350,000 budget approved/i })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Draft anyway/i })).not.toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /Verify first/i })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: /^Review/i })).toHaveLength(2);
   });
 
   test("drafts tab filters send-back, held, and cut workflow states", () => {

@@ -1230,9 +1230,7 @@ fn dark_signal_is_source_backed_brief_candidate(signal: &intelligence::DarkSigna
     {
         return false;
     }
-    evidence_has_strong_current_action(&text)
-        || evidence_has_public_impact_signal(&text)
-        || [
+    let has_civic_service_signal = [
             "senior center",
             "waste reduction",
             "reuse experts",
@@ -1246,7 +1244,10 @@ fn dark_signal_is_source_backed_brief_candidate(signal: &intelligence::DarkSigna
             "recreation services",
         ]
         .iter()
-        .any(|needle| text.contains(needle))
+        .any(|needle| text.contains(needle));
+    has_civic_service_signal
+        && (evidence_has_strong_current_action(&text)
+            || evidence_has_public_impact_signal(&text))
 }
 
 fn save_daily_scan_lead_for_queue(
@@ -2164,6 +2165,41 @@ fn evidence_ids_for_scan_lead(
 #[cfg(test)]
 mod rescue_tests {
     use super::*;
+
+    fn dark_signal(summary: &str) -> intelligence::DarkSignal {
+        intelligence::DarkSignal {
+            id: None,
+            observation_id: None,
+            source_id: None,
+            title: "Signal".to_string(),
+            summary: summary.to_string(),
+            origin: "City official source".to_string(),
+            risk_level: "medium".to_string(),
+            rank_score: 1.0,
+            tier: "official_record".to_string(),
+            evidence_policy: "linked".to_string(),
+            why_it_matters: "Editor review".to_string(),
+            verification_path: "Open the linked source".to_string(),
+            publication_status: "new".to_string(),
+            created_at: Utc::now().to_rfc3339(),
+            updated_at: Utc::now().to_rfc3339(),
+            entities: vec![],
+        }
+    }
+
+    #[test]
+    fn dark_signal_keywords_do_not_promote_without_current_action_or_impact() {
+        assert!(!dark_signal_is_source_backed_brief_candidate(&dark_signal(
+            "The senior center has a general resources page with recreation services and utility information."
+        )));
+    }
+
+    #[test]
+    fn dark_signal_promotes_non_fixture_civic_service_update() {
+        assert!(dark_signal_is_source_backed_brief_candidate(&dark_signal(
+            "The municipal utility posted an outage notice for residents and said crews will restore service by tonight."
+        )));
+    }
 
     #[test]
     fn broad_events_navigation_shell_is_not_actionable_rescue_evidence() {

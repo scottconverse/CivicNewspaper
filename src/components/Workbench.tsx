@@ -64,7 +64,6 @@ interface WorkbenchProps {
   evidenceList: EvidenceItem[];
   guardrailsReport: GuardrailsReport | null;
   ollamaOnline: boolean;
-  manualLlmMode: boolean;
   draftFormat: string;
   onDraftFormatChange: (val: string) => void;
   customSystemPrompt: string;
@@ -257,9 +256,6 @@ function getStaticPublishBlockers(draft: Draft, evidenceList: EvidenceItem[]): s
   if (hasLead && evidenceCount > 0 && !/evidence:\s*(?:\/\/)?\s*\d+/i.test(content)) {
     blockers.push("This scanned-lead draft needs at least one inline evidence citation before approval.");
   }
-  if (hasLead && evidenceCount > 0 && !evidenceAppearsTopicMatched(draft, evidenceList)) {
-    blockers.push("This scanned-lead draft's linked source documents do not appear to match the story topic.");
-  }
   return blockers;
 }
 
@@ -270,7 +266,6 @@ export const Workbench: React.FC<WorkbenchProps> = ({
   evidenceList,
   guardrailsReport,
   ollamaOnline,
-  manualLlmMode,
   draftFormat,
   onDraftFormatChange,
   customSystemPrompt,
@@ -359,7 +354,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
       return;
     }
     event.preventDefault();
-    if (ollamaOnline || manualLlmMode) {
+    if (ollamaOnline) {
       onGenerateText();
     }
   };
@@ -617,7 +612,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
         </div>
 
         <div className="draft-wizard-top-actions">
-          <button ref={generateDraftButtonRef} type="button" className="btn btn-primary" onClick={onGenerateText} disabled={generatingText || (!ollamaOnline && !manualLlmMode)} id="btn-generate-draft-top">
+          <button ref={generateDraftButtonRef} type="button" className="btn btn-primary" onClick={onGenerateText} disabled={generatingText || !ollamaOnline} id="btn-generate-draft-top">
             {generatingText ? "Generating Draft..." : generateDraftLabel}
           </button>
           <button type="button" className="btn btn-secondary" onClick={onCancelDraftWizard} disabled={generatingText} id="btn-cancel-draft-top">
@@ -674,9 +669,9 @@ export const Workbench: React.FC<WorkbenchProps> = ({
             </div>
           </div>
 
-          {!ollamaOnline && !manualLlmMode && (
+          {!ollamaOnline && (
             <div className="error-text" id="ollama-offline-warning" role="status" aria-live="polite" style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
-              <AlertTriangle size={14} /> The local AI service is offline. Set up the local AI model, or use Manual Mode in settings.
+              <AlertTriangle size={14} /> The local AI service is offline. Set up the local AI model to generate or improve drafts. Source review, editing, export, and publishing still work.
               {onOpenAiSetup && (
                 <button type="button" className="btn btn-secondary btn-sm" onClick={onOpenAiSetup} id="btn-open-ai-setup-from-workbench">
                   Open AI Setup
@@ -686,7 +681,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
           )}
 
           <div className="draft-wizard-bottom-actions">
-            <button type="button" className="btn btn-primary" onClick={onGenerateText} disabled={generatingText || (!ollamaOnline && !manualLlmMode)} id="btn-generate-draft-bottom">
+            <button type="button" className="btn btn-primary" onClick={onGenerateText} disabled={generatingText || !ollamaOnline} id="btn-generate-draft-bottom">
               {generatingText ? "Generating Draft..." : generateDraftLabel}
             </button>
             <button type="button" className="btn btn-secondary" onClick={onCancelDraftWizard} disabled={generatingText} id="btn-cancel-draft-bottom">
@@ -758,7 +753,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                 className="btn btn-secondary btn-sm"
                 id="btn-improve-publication-top"
                 onClick={handleImproveForPublication}
-                disabled={isImprovingForPublication || (!ollamaOnline && !manualLlmMode) || !selectedDraft.content}
+                disabled={isImprovingForPublication || !ollamaOnline || !selectedDraft.content}
               >
                 {isImprovingForPublication ? "Improving..." : "Improve for Publication"}
               </button>
@@ -913,7 +908,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                   className="btn btn-secondary btn-sm"
                   id="btn-improve-publication"
                   onClick={handleImproveForPublication}
-                  disabled={isImprovingForPublication || (!ollamaOnline && !manualLlmMode) || !selectedDraft.content}
+                  disabled={isImprovingForPublication || !ollamaOnline || !selectedDraft.content}
                 >
                   {isImprovingForPublication ? "Improving..." : "Improve for Publication"}
                 </button>
@@ -1121,7 +1116,7 @@ export const Workbench: React.FC<WorkbenchProps> = ({
                 <button 
                   className="btn btn-secondary btn-sm" 
                   onClick={onGenerateSocial}
-                  disabled={isGeneratingSocial || (!ollamaOnline && !manualLlmMode)}
+                  disabled={isGeneratingSocial || !ollamaOnline}
                   id="btn-generate-social"
                 >
                   {isGeneratingSocial ? "Generating..." : "Generate Posts"}

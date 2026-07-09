@@ -246,16 +246,16 @@ export function ensureAttributionPhrase(text: string, allowedEvidenceIds: number
   return paragraphs.join("\n\n");
 }
 
-const US_STATE_NAMES = [
-  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
-  "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
-  "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
-  "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
-  "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina",
-  "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
-  "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
-  "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming",
-];
+const US_STATES: Record<string, string> = {
+  Alabama: "AL", Alaska: "AK", Arizona: "AZ", Arkansas: "AR", California: "CA", Colorado: "CO", Connecticut: "CT",
+  Delaware: "DE", Florida: "FL", Georgia: "GA", Hawaii: "HI", Idaho: "ID", Illinois: "IL", Indiana: "IN", Iowa: "IA",
+  Kansas: "KS", Kentucky: "KY", Louisiana: "LA", Maine: "ME", Maryland: "MD", Massachusetts: "MA", Michigan: "MI",
+  Minnesota: "MN", Mississippi: "MS", Missouri: "MO", Montana: "MT", Nebraska: "NE", Nevada: "NV",
+  "New Hampshire": "NH", "New Jersey": "NJ", "New Mexico": "NM", "New York": "NY", "North Carolina": "NC",
+  "North Dakota": "ND", Ohio: "OH", Oklahoma: "OK", Oregon: "OR", Pennsylvania: "PA", "Rhode Island": "RI",
+  "South Carolina": "SC", "South Dakota": "SD", Tennessee: "TN", Texas: "TX", Utah: "UT", Vermont: "VT",
+  Virginia: "VA", Washington: "WA", "West Virginia": "WV", Wisconsin: "WI", Wyoming: "WY",
+};
 
 function containsWholePhrase(text: string, phrase: string): boolean {
   const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -263,9 +263,13 @@ function containsWholePhrase(text: string, phrase: string): boolean {
 }
 
 export function findUnsupportedJurisdictionTerms(candidate: string, referenceText: string): string[] {
-  return US_STATE_NAMES.filter(
-    (state) => containsWholePhrase(candidate, state) && !containsWholePhrase(referenceText, state)
-  );
+  return Object.entries(US_STATES)
+    .filter(([state, abbr]) =>
+      containsWholePhrase(candidate, state) &&
+      !containsWholePhrase(referenceText, state) &&
+      !containsWholePhrase(referenceText, abbr)
+    )
+    .map(([state]) => state);
 }
 
 export function findUnsupportedRewriteArtifacts(candidate: string, referenceText: string): string[] {
@@ -387,7 +391,6 @@ export function useApp() {
   const [wizardModel, setWizardModel] = useState("");
   const [pullingModel, setPullingModel] = useState(false);
   const [pullProgressText, setPullProgressText] = useState<string[]>([]);
-  const [manualLlmMode, setManualLlmMode] = useState(false);
   const [customLlmPrompt, setCustomLlmPrompt] = useState("");
   const [customLlmSystem, setCustomLlmSystem] = useState("You are a helpful assistant.");
   const [customLlmResult, setCustomLlmResult] = useState("");
@@ -1274,28 +1277,26 @@ export function useApp() {
       // actually being installed -- so a user who skipped the model download could
       // click it and hit an opaque "model not found." Check model presence first
       // and route to the model-download step instead of failing cryptically.
-      if (!manualLlmMode) {
-        setStatusMessage("Checking AI model presence...");
-        const model = await getSetting("model.selected");
-        if (!model) {
-          setErrorMessage("Generating a draft requires a selected AI model, but none was configured. Redirecting to model download setup...");
-          setOnboardingStep(3);
-          setActiveTab("onboarding");
-          return;
-        }
-        const health = await ollamaHealth();
-        if (!health.reachable) {
-          setErrorMessage("Generating a draft couldn't reach the local AI service. Start Ollama or open AI Model to check setup, then try again.");
-          setOnboardingStep(2);
-          setActiveTab("onboarding");
-          return;
-        }
-        if (!modelInstalled(model, health.models)) {
-          setErrorMessage(`Generating a draft requires the ${model} model, which isn't downloaded yet. Redirecting to model download setup...`);
-          setOnboardingStep(3);
-          setActiveTab("onboarding");
-          return;
-        }
+      setStatusMessage("Checking AI model presence...");
+      const model = await getSetting("model.selected");
+      if (!model) {
+        setErrorMessage("Generating a draft requires a selected AI model, but none was configured. Redirecting to model download setup...");
+        setOnboardingStep(3);
+        setActiveTab("onboarding");
+        return;
+      }
+      const health = await ollamaHealth();
+      if (!health.reachable) {
+        setErrorMessage("Generating a draft couldn't reach the local AI service. Start Ollama or open AI Model to check setup, then try again.");
+        setOnboardingStep(2);
+        setActiveTab("onboarding");
+        return;
+      }
+      if (!modelInstalled(model, health.models)) {
+        setErrorMessage(`Generating a draft requires the ${model} model, which isn't downloaded yet. Redirecting to model download setup...`);
+        setOnboardingStep(3);
+        setActiveTab("onboarding");
+        return;
       }
 
       setStatusMessage("Asking the local AI model to write and save a working draft... (this may take a moment)");
@@ -1359,7 +1360,6 @@ export function useApp() {
   };
 
   const ensureSelectedModelReady = async (actionName: string): Promise<boolean> => {
-    if (manualLlmMode) return true;
     setStatusMessage(`Checking AI model presence before ${actionName}...`);
     const model = await getSetting("model.selected");
     if (!model) {
@@ -2311,8 +2311,6 @@ ${selectedDraft.content}`;
     pullProgressText,
     onboardingStep,
     setOnboardingStep,
-    manualLlmMode,
-    setManualLlmMode,
     customLlmPrompt,
     setCustomLlmPrompt,
     customLlmSystem,

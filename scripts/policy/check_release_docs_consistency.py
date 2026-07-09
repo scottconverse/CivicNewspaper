@@ -11,10 +11,22 @@ portable fixture paths.
 from __future__ import annotations
 
 from pathlib import Path
+import os
+import shutil
+import subprocess
 import sys
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+RELEASE_TAG = "v0.3.2"
+PRODUCT_COMMIT = "17766b7ccb0cc744522090e28997b764676ce1c5"
+INSTALLER_SHA256 = "8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3"
+INSTALLER_SIZE = "5260917"
+STALE_RELEASE_VALUES = (
+    "35e6cf0f4a8f01d74ef79247feaaadbd34dbb3da",
+    "8204BB4210DD284518D114C57A3089BAC11D7B0EC8E0F83D8D61928D44FEB6E0",
+    "5240548",
+)
 
 
 def read(path: str) -> str:
@@ -29,6 +41,31 @@ def require(path: str, needle: str, failures: list[str]) -> None:
 def forbid(path: str, needle: str, failures: list[str]) -> None:
     if needle.lower() in read(path).lower():
         failures.append(f"{path}: forbidden stale claim `{needle}`")
+
+
+def check_release_body(failures: list[str]) -> None:
+    if os.environ.get("CIVICNEWS_SKIP_GITHUB_RELEASE_CHECK") == "1":
+        return
+    if not shutil.which("gh"):
+        failures.append("GitHub release body check requires `gh`, or set CIVICNEWS_SKIP_GITHUB_RELEASE_CHECK=1 for offline diagnostics.")
+        return
+    result = subprocess.run(
+        ["gh", "release", "view", RELEASE_TAG, "--json", "body", "--jq", ".body"],
+        cwd=REPO_ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        failures.append(f"GitHub release body check failed: {result.stderr.strip() or result.stdout.strip()}")
+        return
+    body = result.stdout
+    for expected in (PRODUCT_COMMIT, INSTALLER_SHA256, INSTALLER_SIZE):
+        if expected.lower() not in body.lower():
+            failures.append(f"GitHub release body missing `{expected}`")
+    for stale in STALE_RELEASE_VALUES:
+        if stale.lower() in body.lower():
+            failures.append(f"GitHub release body contains stale `{stale}`")
 
 
 def main() -> int:
@@ -55,6 +92,7 @@ def main() -> int:
     require("docs/release-readiness.md", "docs/release-evidence/v0.3.2.json", failures)
     require("docs/release-evidence/v0.3.2.json", "17766b7ccb0cc744522090e28997b764676ce1c5", failures)
     require("docs/release-evidence/v0.3.2.json", "8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3", failures)
+    check_release_body(failures)
 
     require("docs/publishing-connectors.md", "anonymous here.now preview publishing is the tested default fast path", failures)
     require("docs/publishing-connectors.md", "Cloudflare Pages API publishing is disabled", failures)

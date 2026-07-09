@@ -396,7 +396,6 @@ fn official_record_is_brief_candidate(excerpt: &str, evidence_url: &Option<Strin
         "all categories",
         "sort news by",
         "email signup",
-        "2949 results",
         "departments departments",
         "home government residents",
         "skip to main content",
@@ -406,6 +405,9 @@ fn official_record_is_brief_candidate(excerpt: &str, evidence_url: &Option<Strin
     if navigation_or_index_markers
         .iter()
         .any(|marker| lower.contains(marker))
+        || Regex::new(r"\b\d[\d,]*\s+results?\s+found\b")
+            .unwrap()
+            .is_match(&lower)
     {
         return false;
     }
@@ -462,6 +464,29 @@ fn official_record_is_brief_candidate(excerpt: &str, evidence_url: &Option<Strin
         .unwrap_or(false);
 
     has_action && (has_date_or_amount || url_looks_specific)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn official_record_rejects_generic_result_count_navigation() {
+        let excerpt = "All Categories Adults Parks Planning Development Services Public Health Updates Recreation Services Type All News Alerts Email Signup 17 results found Sort news by Newest to Oldest Oldest to Newest";
+        assert!(!official_record_is_brief_candidate(
+            excerpt,
+            &Some("https://example.gov/news".to_string())
+        ));
+    }
+
+    #[test]
+    fn official_record_accepts_non_fixture_public_hearing_notice() {
+        let excerpt = "The city posted a public hearing notice for March 12 about a downtown road closure permit. Residents may submit public comment before the deadline.";
+        assert!(official_record_is_brief_candidate(
+            excerpt,
+            &Some("https://example.gov/notice/road-closure".to_string())
+        ));
+    }
 }
 
 fn format_money(val: f64) -> String {

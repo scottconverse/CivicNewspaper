@@ -166,7 +166,6 @@ pub fn run() {
             attest_draft,
             get_guardrail_terms,
             set_guardrail_terms,
-            generate_draft,
             generate_and_save_draft,
             llm_task,
             guardrails_check,

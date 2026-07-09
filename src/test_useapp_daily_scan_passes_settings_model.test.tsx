@@ -71,6 +71,9 @@ describe("useApp Hook Tests", () => {
     expect(
       findUnsupportedJurisdictionTerms("Colorado lawmakers wrapped up the session.", reference)
     ).toEqual([]);
+    expect(
+      findUnsupportedJurisdictionTerms("Colorado residents can review the notice.", "Evidence 7: Longmont, CO posted the notice.")
+    ).toEqual([]);
   });
 
   test("findUnsupportedRewriteArtifacts catches unsupported improve output artifacts", () => {

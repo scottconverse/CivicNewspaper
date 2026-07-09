@@ -9,7 +9,6 @@ vi.mock("../ipc", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../ipc")>();
   return { ...actual, plainLanguageRewrite: vi.fn(), pressFreedomLegalReview: vi.fn() };
 });
-
 describe("Workbench Component Tests", () => {
   const mockLead: Lead = {
     id: 42,
@@ -50,7 +49,6 @@ describe("Workbench Component Tests", () => {
         evidenceList={mockEvidence}
         guardrailsReport={null}
         ollamaOnline={true}
-        manualLlmMode={false}
         draftFormat="watch"
         onDraftFormatChange={vi.fn()}
         customSystemPrompt=""
@@ -96,7 +94,6 @@ describe("Workbench Component Tests", () => {
         evidenceList={[]}
         guardrailsReport={null}
         ollamaOnline={true}
-        manualLlmMode={false}
         draftFormat="watch"
         onDraftFormatChange={vi.fn()}
         customSystemPrompt=""
@@ -139,7 +136,6 @@ describe("Workbench Component Tests", () => {
         evidenceList={[]}
         guardrailsReport={null}
         ollamaOnline={true}
-        manualLlmMode={false}
         draftFormat="watch"
         onDraftFormatChange={vi.fn()}
         customSystemPrompt=""
@@ -189,7 +185,6 @@ describe("Workbench Component Tests", () => {
         evidenceList={[]}
         guardrailsReport={null}
         ollamaOnline={true}
-        manualLlmMode={false}
         draftFormat="watch"
         onDraftFormatChange={vi.fn()}
         customSystemPrompt=""
@@ -231,7 +226,6 @@ describe("Workbench Component Tests", () => {
         evidenceList={[]}
         guardrailsReport={null}
         ollamaOnline={true}
-        manualLlmMode={false}
         draftFormat="watch"
         onDraftFormatChange={vi.fn()}
         customSystemPrompt=""
@@ -268,7 +262,6 @@ describe("Workbench Component Tests", () => {
         evidenceList={[]}
         guardrailsReport={null}
         ollamaOnline={true}
-        manualLlmMode={false}
         draftFormat="watch"
         onDraftFormatChange={vi.fn()}
         customSystemPrompt=""
@@ -313,7 +306,6 @@ describe("Workbench Component Tests", () => {
         evidenceList={[]}
         guardrailsReport={mockReport}
         ollamaOnline={true}
-        manualLlmMode={false}
         draftFormat="watch"
         onDraftFormatChange={vi.fn()}
         customSystemPrompt=""
@@ -402,6 +394,68 @@ describe("Workbench Component Tests", () => {
     expect(screen.getAllByRole("alert").map((alert) => alert.textContent).join(" ")).toContain(
       "The draft cites evidence ID(s) 13 that are not linked to this lead."
     );
+  });
+
+  test("does not hard-block approval only because linked evidence topic matching is narrow", () => {
+    const handleApprovePublish = vi.fn();
+    renderEditor({
+      selectedDraft: {
+        ...mockDraft,
+        format: "brief",
+        title: "Review community signal from Longmont city events",
+        content:
+          "According to the linked source, Longmont posted a utility update for residents with a public meeting date. [Source](evidence:7)\n\nThe linked record gives readers a source-backed civic brief.",
+      },
+      evidenceList: [{
+        id: 7,
+        source_id: 1,
+        fetched_at: "2026-05-23T00:00:00Z",
+        excerpt: "Utility outage notice for residents. Crews will restore service by tonight.",
+        content_hash: "hash",
+        entities: "[]",
+      }],
+      onApprovePublish: handleApprovePublish,
+    });
+
+    const strip = document.getElementById("workbench-priority-strip")!;
+    fireEvent.click(within(strip).getByLabelText(/reviewed this story/i));
+    fireEvent.click(within(strip).getByRole("button", { name: /^Approve$/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Publish anyway/i }));
+
+    expect(handleApprovePublish).toHaveBeenCalledWith("Editor reviewed pre-publication warnings and chose to publish.");
+  });
+
+  test("offline AI warning does not point to unreachable manual mode", () => {
+    render(
+      <Workbench
+        selectedLead={mockLead}
+        selectedDraft={null}
+        evidenceList={[]}
+        guardrailsReport={null}
+        ollamaOnline={false}
+        draftFormat="watch"
+        onDraftFormatChange={vi.fn()}
+        customSystemPrompt=""
+        onCustomSystemPromptChange={vi.fn()}
+        generatingText={false}
+        onGenerateText={vi.fn()}
+        onCancelDraftWizard={vi.fn()}
+        onSaveDraftEditor={vi.fn()}
+        onCloseWorkbench={vi.fn()}
+        onDeleteDraft={vi.fn()}
+        onDecision={vi.fn()}
+        isGeneratingSocial={false}
+        socialPackResult=""
+        onSocialPackResultChange={vi.fn()}
+        onGenerateSocial={vi.fn()}
+        onUpdateDraftTitle={vi.fn()}
+        onUpdateDraftContent={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole("status")).toHaveTextContent(/set up the local AI model/i);
+    expect(screen.queryByText(/Manual Mode/i)).not.toBeInTheDocument();
+    expect(document.getElementById("btn-generate-draft-top")).toBeDisabled();
   });
 
   test("renders advisory warning copy without mojibake", () => {
@@ -699,7 +753,7 @@ describe("Workbench Component Tests", () => {
     expect(onImproveForPublication).toHaveBeenCalledTimes(1);
   });
 
-  test("scanned-lead approval blocks when linked evidence is unrelated to the story topic", () => {
+  test("scanned-lead approval asks for editor confirmation when linked evidence topic looks unrelated", () => {
     const onApprovePublish = vi.fn();
 
     renderEditor({
@@ -724,16 +778,16 @@ describe("Workbench Component Tests", () => {
     });
 
     expect(screen.getByText(/linked source documents may not match this story topic/i)).toBeInTheDocument();
-    expect(screen.getByText(/linked source documents do not appear to match the story topic/i)).toBeInTheDocument();
 
     attestEditor();
     fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
 
-    expect(screen.getByText(/Before static publish approval: This scanned-lead draft's linked source documents do not appear to match the story topic./i)).toBeInTheDocument();
-    expect(onApprovePublish).not.toHaveBeenCalled();
+    expect(screen.getByText(/Publish with review warnings/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Publish anyway/i }));
+    expect(onApprovePublish).toHaveBeenCalledWith("Editor reviewed pre-publication warnings and chose to publish.");
   });
 
-  test("scanned-lead approval blocks broad calendar excerpts that do not support the specific event topic", () => {
+  test("scanned-lead approval asks for editor confirmation on broad calendar excerpts", () => {
     const onApprovePublish = vi.fn();
 
     renderEditor({
@@ -763,8 +817,9 @@ describe("Workbench Component Tests", () => {
     attestEditor();
     fireEvent.click(screen.getByRole("button", { name: /Approve for Static Publish/i }));
 
-    expect(screen.getByText(/Before static publish approval: This scanned-lead draft's linked source documents do not appear to match the story topic./i)).toBeInTheDocument();
-    expect(onApprovePublish).not.toHaveBeenCalled();
+    expect(screen.getByText(/Publish with review warnings/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Publish anyway/i }));
+    expect(onApprovePublish).toHaveBeenCalledWith("Editor reviewed pre-publication warnings and chose to publish.");
   });
 
   test("needs-verification drafts explain that more work is required", () => {

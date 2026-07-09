@@ -148,7 +148,6 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
             evidenceList={app.evidenceList}
             guardrailsReport={app.guardrailsReport}
             ollamaOnline={app.ollamaOnline}
-            manualLlmMode={app.manualLlmMode}
             draftFormat={app.draftFormat}
             onDraftFormatChange={app.setDraftFormat}
             customSystemPrompt={app.customSystemPrompt}
@@ -434,7 +433,6 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
           evidenceList={app.evidenceList}
           guardrailsReport={app.guardrailsReport}
           ollamaOnline={app.ollamaOnline}
-          manualLlmMode={app.manualLlmMode}
           draftFormat={app.draftFormat}
           onDraftFormatChange={app.setDraftFormat}
           customSystemPrompt={app.customSystemPrompt}

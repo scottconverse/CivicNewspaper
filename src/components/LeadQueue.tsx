@@ -136,7 +136,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
   };
   const leadDraftActionLabel = (lead: Lead, existingDraft?: Draft) => {
     if (existingDraft) return "Open draft";
-    return leadNeedsDraftCaution(lead) ? "Verify first" : "Draft";
+    return leadNeedsDraftCaution(lead) ? "Review" : "Draft";
   };
   const draftByLeadId = new Map<number, Draft>();
   for (const draft of drafts) {
@@ -410,7 +410,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
                 {drafts.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="text-center" style={{ padding: "3rem" }}>
-                      No drafts generated yet. Select a lead and choose Draft, Verify first, or Draft anyway to begin.
+                      No drafts generated yet. Select a lead and choose Draft or Review to begin.
                     </td>
                   </tr>
                 ) : filteredDrafts.length === 0 ? (
