@@ -75,7 +75,7 @@ Use real names if you intend to publish publicly. The app should not invent your
 
 The app checks your machine and recommends a local model. For this public-beta line, `phi4-mini:latest` is the conservative default because the latest local bakeoff showed it returned valid structured results for both real civic signals and empty/noise input. You can still choose another installed model from the AI Model screen, but the app should not silently switch models without telling you.
 
-Model downloads can be large and slow. This is normal. The setup screen should tell you what is being downloaded and show progress. If you skip local AI setup, you can still use many parts of the app: source review, manual drafting, editing, backup, export, and publishing. AI-assisted summarization, drafting, ranking, and advisor features will be limited until the model is available.
+Model downloads can be large and slow. This is normal. The setup screen should tell you what is being downloaded and show progress. If you skip local AI setup, you can still use many parts of the app: source review, manual writing in the editor, editing, backup, export, and publishing. AI-assisted summarization, drafting, ranking, improvement, social copy, and advisor features require a reachable local model.
 
 If the app says local AI is unavailable, do not assume your work is lost. It usually means the Ollama runtime or selected model is not running or not installed. Use the AI Model screen to retry, download, or change the model.
 

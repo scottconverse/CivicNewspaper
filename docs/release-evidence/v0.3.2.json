@@ -1,47 +1,47 @@
 {
     "tag":  "v0.3.2",
-    "commit":  "17766b7ccb0cc744522090e28997b764676ce1c5",
-    "generated_at":  "2026-07-04T23:05:30-06:00",
-    "rc_receipt_path":  ".agent-runs/release-candidate-20260704-230528/release-candidate-receipt.json",
-    "rc_receipt_sha256":  "2607F693BB4ACC39468EF14FC54B0A30B7A3CD5BD3E6B3E1832598CFBFD631C8",
+    "commit":  "ba49af4d69d2c4d6d88bfd148490494f243cc9d7",
+    "generated_at":  "2026-07-09T09:28:00-06:00",
+    "rc_receipt_path":  "pending current ba49af4 release-candidate receipt",
+    "rc_receipt_sha256":  "PENDING_CURRENT_RECEIPT",
     "release_smoke":  {
-                          "ok":  true,
-                          "receipt_path":  ".agent-runs/release-smoke-20260704-225633/release-smoke-receipt.json",
-                          "receipt_sha256":  "0CD5952420CAAE346E8981081C813A1D39B9BDD969784F80B9B16157A1048DF0"
+                          "ok":  false,
+                          "receipt_path":  "pending current ba49af4 release smoke receipt",
+                          "receipt_sha256":  "PENDING_CURRENT_RECEIPT"
                       },
     "model_bakeoff":  {
-                          "ok":  true,
-                          "receipt_path":  ".agent-runs/model-bakeoff-2026-07-02T15-18-51-669Z.json",
-                          "receipt_sha256":  "298322380A6DBF569A9C519FA128618139298462B26A11F08C61EC5691DC6FA0"
+                          "ok":  false,
+                          "receipt_path":  "pending current ba49af4 model bakeoff receipt",
+                          "receipt_sha256":  "PENDING_CURRENT_RECEIPT"
                       },
     "dependency_audit":  {
                              "ok":  true,
-                             "receipt_path":  ".agent-runs/dependency-audit-20260702-091800.json",
-                             "receipt_sha256":  "25B82F73E949E2059F4D633791672FB7C37DD260623A6D23DC7470663220C489"
+                             "receipt_path":  ".agent-runs/dependency-audit-20260709-093244.json",
+                             "receipt_sha256":  "1F7CC8E1AF18BFCE2B60328AAC0EB9503FBD8BFD6E3006A76AD48C2AE31E82F6"
                          },
     "windows_installer_smoke":  {
-                                    "ok":  true,
-                                    "receipt_path":  ".agent-runs/windows-installer-smoke-20260704-230413/windows-installer-smoke-receipt.json",
-                                    "receipt_sha256":  "C427FD868A2636F5A3DAD5B2D25501ED60F87447CA9DBBC8D461AFE3A69B204B",
+                                    "ok":  false,
+                                    "receipt_path":  "pending current ba49af4 installer smoke receipt",
+                                    "receipt_sha256":  "PENDING_CURRENT_RECEIPT",
                                     "installer_name":  "The Civic Desk_0.3.2_x64-setup.exe",
                                     "release_asset_name":  "The.Civic.Desk_0.3.2_x64-setup.exe",
-                                    "installer_sha256":  "8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3",
-                                    "installer_size":  5260917
+                                    "installer_sha256":  "1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5",
+                                    "installer_size":  5250809
                                 },
     "packaged_first_run_walkthrough":  {
-                                           "ok":  true,
-                                           "receipt_path":  ".agent-runs/packaged-first-run-walkthrough-20260704-230445/packaged-first-run-walkthrough-receipt.json",
-                                           "receipt_sha256":  "95A439EBB88EA16629CEC7B17CA028AFC61589EAB1172DAFA25A1269A4FD2875"
+                                           "ok":  false,
+                                           "receipt_path":  "pending current ba49af4 packaged first-run walkthrough receipt",
+                                           "receipt_sha256":  "PENDING_CURRENT_RECEIPT"
                                        },
     "cleanroom":  {
                       "ok":  false,
                       "report_path":  null,
                       "report_sha256":  null,
                       "tester_machine":  "pending final cleanroom rerun",
-                      "installer_sha256":  "8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3",
+                      "installer_sha256":  "1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5",
                       "public_url":  null,
                       "zip_path":  null,
-                      "verdict":  "PENDING: installed-app onboarding reachability, legacy malformed-draft quarantine, encoded calendar-rollup story-quality repairs, onboarding identity reconciliation before Daily Scan, unsupported Daily Scan lead downgrading, full state-name discovery normalization, weak scan lead draft gating, reader-facing brief format fallback, official-record brief promotion, source-quality cleanup, source-backed Daily Scan brief promotion, dependency advisory update, durable draft persistence, linked-evidence Brief fallback, release smoke, local installer smoke, packaged first-run walkthrough, and full Rust/frontend verification passed for commit 17766b7ccb0cc744522090e28997b764676ce1c5. Final remote cleanroom proof is still required before this rebuilt artifact is called beta-release ready."
+                      "verdict":  "PENDING: publish-preflight editor override, honest offline-AI drafting copy, release-body provenance checking, durable draft persistence, linked-evidence Brief fallback, and full Rust/frontend verification passed for commit ba49af4d69d2c4d6d88bfd148490494f243cc9d7. Final remote cleanroom proof is still required before this rebuilt artifact is called beta-release ready."
                   },
     "release_scope":  {
                           "windows_public_beta":  true,

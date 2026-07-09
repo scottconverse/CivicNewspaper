@@ -19,9 +19,9 @@ import sys
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RELEASE_TAG = "v0.3.2"
-PRODUCT_COMMIT = "17766b7ccb0cc744522090e28997b764676ce1c5"
-INSTALLER_SHA256 = "8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3"
-INSTALLER_SIZE = "5260917"
+PRODUCT_COMMIT = "ba49af4d69d2c4d6d88bfd148490494f243cc9d7"
+INSTALLER_SHA256 = "1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5"
+INSTALLER_SIZE = "5250809"
 STALE_RELEASE_VALUES = (
     "35e6cf0f4a8f01d74ef79247feaaadbd34dbb3da",
     "8204BB4210DD284518D114C57A3089BAC11D7B0EC8E0F83D8D61928D44FEB6E0",
@@ -90,8 +90,8 @@ def main() -> int:
     require("docs/install.md", "https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2", failures)
     require("docs/release-readiness.md", "Current v0.3.2 evidence", failures)
     require("docs/release-readiness.md", "docs/release-evidence/v0.3.2.json", failures)
-    require("docs/release-evidence/v0.3.2.json", "17766b7ccb0cc744522090e28997b764676ce1c5", failures)
-    require("docs/release-evidence/v0.3.2.json", "8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3", failures)
+    require("docs/release-evidence/v0.3.2.json", PRODUCT_COMMIT, failures)
+    require("docs/release-evidence/v0.3.2.json", INSTALLER_SHA256, failures)
     check_release_body(failures)
 
     require("docs/publishing-connectors.md", "anonymous here.now preview publishing is the tested default fast path", failures)

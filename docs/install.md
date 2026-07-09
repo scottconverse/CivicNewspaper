@@ -31,13 +31,13 @@ macOS and Linux installers are backlog/proof-needed for this release line. Do no
 
 ## Clean-Machine Proof
 
-Every release candidate needs a clean-machine or remote-tester report before it can be called cleanroom-proven. For v0.3.2, the Windows public-beta installer represented by commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final remote cleanroom testing with zero blocker, critical, or major findings. The current rebuilt release-candidate installer was built from commit `17766b7ccb0cc744522090e28997b764676ce1c5` after AI setup visibility, installed-app onboarding reachability, legacy malformed-draft quarantine, encoded calendar-rollup story-quality repairs, onboarding identity reconciliation before Daily Scan, unsupported Daily Scan lead downgrading, full state-name discovery normalization, weak scan lead draft gating, reader-facing brief format fallback, official-record brief promotion, source-quality cleanup, source-backed Daily Scan brief promotion, and dependency advisory update, durable draft persistence, and linked-evidence Brief fallback; its SHA256 is `8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3`, it passed stable release smoke, local installer smoke, packaged first-run walkthrough locally, full Rust/frontend verification, and it is queued for final cleanroom recheck.
+Every release candidate needs a clean-machine or remote-tester report before it can be called cleanroom-proven. For v0.3.2, the Windows public-beta installer represented by commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0` passed final remote cleanroom testing with zero blocker, critical, or major findings. The current rebuilt release-candidate installer was built from commit `ba49af4d69d2c4d6d88bfd148490494f243cc9d7` after AI setup visibility, installed-app onboarding reachability, legacy malformed-draft quarantine, encoded calendar-rollup story-quality repairs, onboarding identity reconciliation before Daily Scan, unsupported Daily Scan lead downgrading, full state-name discovery normalization, weak scan lead draft gating, reader-facing brief format fallback, official-record brief promotion, source-quality cleanup, source-backed Daily Scan brief promotion, dependency advisory update, durable draft persistence, linked-evidence Brief fallback, publish-preflight editor override, honest offline-AI drafting copy, and release-body provenance checking; its SHA256 is `1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5`, size `5250809` bytes, it passed full Rust/frontend verification and local Windows installer build, and it is queued for final cleanroom recheck.
 
 Required proof for a cleanroom-proven release:
 
 1. Build the artifact from a named commit.
 2. Install it on a clean machine or VM.
-3. Verify first-run setup, local AI setup or the skip/degraded path, source intake, draft generation, ZIP export, and here.now publishing.
+3. Verify first-run setup, local AI setup or the AI-skipped source-review path, source intake, draft generation, ZIP export, and here.now publishing.
 4. Record the report path, report hash, installer hash, tester machine, and any signing, notarization, permission, or package-manager warnings honestly in the release notes.
 5. Verify that hosted release evidence and published asset hashes match the cleanroom-tested installer.
 
@@ -73,7 +73,7 @@ On first launch, the setup flow asks for:
 - Local AI/model setup.
 - Backup and publishing folders.
 
-On the Windows public-beta path, the app may recommend and download a local model through its product-owned Ollama runtime. Model downloads can be large and slow. The app should show progress and allow an explicit skip/degraded path. macOS and Linux runtime/installer automation remains backlog until platform clean-machine proof is recorded.
+On the Windows public-beta path, the app may recommend and download a local model through its product-owned Ollama runtime. Model downloads can be large and slow. The app should show progress and allow an explicit AI-skipped source-review path. macOS and Linux runtime/installer automation remains backlog until platform clean-machine proof is recorded.
 
 If setup or publishing gets stuck, see [troubleshooting.md](troubleshooting.md) for SmartScreen, model download, local AI runtime, here.now preview, ZIP/static output, weak-story, and source-import guidance.
 

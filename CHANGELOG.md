@@ -7,12 +7,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [0.3.2] - 2026-07-02
 
 ### Changed
+- Rebuilt the current v0.3.2 Windows candidate from commit `ba49af4d69d2c4d6d88bfd148490494f243cc9d7`, installer SHA256 `1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5`, size `5250809` bytes; final cleanroom recheck is still required before calling this rebuilt artifact cleanroom-proven.
 - Recorded final Windows public-beta cleanroom pass for commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`, installer SHA256 `AB598EC26F658BB2B0735827F15DC787162D372A0C3FF0A3A18B6ADE48ABE241`, and here.now verification URL `https://olive-gorge-cgsr.here.now`.
 - Hardened the Windows public-beta first-run setup path so identity entry, local-AI skip, defaults, and workspace entry can be proven from the packaged installer.
 - Made release smoke reject stable runs that also allow a dirty working tree.
 - Updated release-facing docs to match the v0.3.2 Windows-only public-beta installer scope.
 
 ### Fixed
+- Fixed the publish-preflight dead end by keeping package-integrity problems as blockers while routing topic/quality heuristics through a logged editor confirmation.
+- Removed the unreachable Manual Mode promise from offline AI drafting copy; draft generation, improvement, and social copy now plainly require a reachable local model.
+- Renamed cautious lead queue actions from "Verify first" to "Review" so the button matches the action it performs.
+- Removed the dead `generate_draft` IPC/Rust command so only the durable `generate_and_save_draft` pipeline remains.
+- Generalized source-backed Brief classifiers away from fixture-specific result-count and civic-service keywords.
+- Made release docs consistency check the live GitHub release body for matching commit, installer hash, and size.
 - Made lead creation atomic with evidence linking so failed evidence references cannot leave orphan draftable leads behind.
 - Improved mobile navigation and system-status layout so grouped controls and AI state remain visible on narrow screens.
 - Made browser-extension API errors status-aware so empty 401, 403, and 429 responses produce useful pairing/auth/rate-limit messages.
