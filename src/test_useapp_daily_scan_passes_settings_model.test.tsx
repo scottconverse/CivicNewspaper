@@ -489,13 +489,19 @@ describe("useApp Hook Tests", () => {
       if (cmd === "get_evidence") return [];
       if (cmd === "get_setting" && args?.key === "model.selected") return "qwen2.5:7b";
       if (cmd === "ollama_health") return { reachable: true, models: ["qwen2.5:7b"], version: "0.6.0" };
-      if (cmd === "generate_draft") {
-        return "Headline: Council weighs land purchase\n\nNut graf: The council is reviewing a land purchase tied to a public agenda item.\n\nThe decision could affect nearby residents.";
-      }
-      if (cmd === "save_draft") {
-        const draft = { ...args.draft, id: 501 };
+      if (cmd === "generate_and_save_draft") {
+        const draft = {
+          id: 501,
+          lead_id: args.leadId,
+          format: args.format,
+          title: "Council weighs land purchase",
+          content: "The council is reviewing a land purchase tied to a public agenda item.\n\nThe decision could affect nearby residents.",
+          status: "needs_verification",
+          verification_checklist: "[]",
+          missing_evidence_notes: "No source documents are linked to this lead yet. Treat this as a verification assignment until public source material is attached or cited.",
+        };
         savedDrafts.push(draft);
-        return 501;
+        return draft;
       }
       return null;
     });
@@ -530,22 +536,12 @@ describe("useApp Hook Tests", () => {
 
     expect(invoke).toHaveBeenCalledWith("get_setting", { key: "model.selected" });
     expect(invoke).toHaveBeenCalledWith("ollama_health");
-    expect(invoke).toHaveBeenCalledWith("generate_draft", {
+    expect(invoke).toHaveBeenCalledWith("generate_and_save_draft", {
       leadId: 77,
       format: "watch",
       systemPrompt: undefined,
     });
-    expect(invoke).toHaveBeenCalledWith(
-      "save_draft",
-      expect.objectContaining({
-        draft: expect.objectContaining({
-          lead_id: 77,
-          content: "The council is reviewing a land purchase tied to a public agenda item.\n\nThe decision could affect nearby residents.",
-          status: "needs_verification",
-          missing_evidence_notes: expect.stringMatching(/No source documents are linked/i),
-        }),
-      })
-    );
+    expect(invoke).not.toHaveBeenCalledWith("save_draft", expect.anything());
     expect(invoke).toHaveBeenCalledWith("guardrails_check", { draftId: 501 });
     expect(hookResult.selectedLead).toBeNull();
     expect(hookResult.selectedDraft?.id).toBe(501);
@@ -566,13 +562,18 @@ describe("useApp Hook Tests", () => {
       if (cmd === "get_evidence") return [];
       if (cmd === "get_setting" && args?.key === "model.selected") return "qwen2.5:7b";
       if (cmd === "ollama_health") return { reachable: true, models: ["qwen2.5:7b"], version: "0.6.0" };
-      if (cmd === "generate_draft") {
-        return "Headline: Council to review traffic safety\n\nEDITOR_NOTE: This needs more reporting.\n\nThe council will review traffic safety at an upcoming meeting [insert date if available].\n\nReporting Steps:\n- Call the clerk.\n- Verify the agenda.\n\nResidents can follow the next posted agenda for details. [Source](evidence:4)\n\n[End of Report]";
-      }
-      if (cmd === "save_draft") {
-        const draft = { ...args.draft, id: 502 };
+      if (cmd === "generate_and_save_draft") {
+        const draft = {
+          id: 502,
+          lead_id: args.leadId,
+          format: args.format,
+          title: "Council to review traffic safety",
+          content: "The council will review traffic safety at an upcoming meeting.\n\nResidents can follow the next posted agenda for details. [Source](evidence:4)",
+          status: "needs_verification",
+          verification_checklist: "[]",
+        };
         savedDrafts.push(draft);
-        return 502;
+        return draft;
       }
       return null;
     });
@@ -627,11 +628,19 @@ describe("useApp Hook Tests", () => {
       if (cmd === "get_evidence") return [];
       if (cmd === "get_setting" && args?.key === "model.selected") return "qwen2.5:7b";
       if (cmd === "ollama_health") return { reachable: true, models: ["qwen2.5:7b"], version: "0.6.0" };
-      if (cmd === "generate_draft") return "A city page was updated and residents may want to watch it.";
-      if (cmd === "save_draft") {
-        const draft = { ...args.draft, id: 503 };
+      if (cmd === "generate_and_save_draft") {
+        const draft = {
+          id: 503,
+          lead_id: args.leadId,
+          format: args.format,
+          title: "A Longmont source page was fetched again.",
+          content: "A city page was updated and residents may want to watch it.",
+          status: "needs_verification",
+          verification_checklist: "[]",
+          missing_evidence_notes: "No source documents are linked to this lead yet. Treat this as a verification assignment until public source material is attached or cited.",
+        };
         savedDrafts.push(draft);
-        return 503;
+        return draft;
       }
       if (cmd === "guardrails_check") return guardrailsReport;
       return null;
@@ -696,13 +705,18 @@ describe("useApp Hook Tests", () => {
       if (cmd === "get_evidence") return linkedEvidence;
       if (cmd === "get_setting" && args?.key === "model.selected") return "qwen2.5:7b";
       if (cmd === "ollama_health") return { reachable: true, models: ["qwen2.5:7b"], version: "0.6.0" };
-      if (cmd === "generate_draft") {
-        return "Headline: Summer Concert Series Adds 2MX2 Performance \u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a2 7 pm\n\nAccording to the linked source, 2MX2 is scheduled to perform Thursday \u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a2 7 pm at Longmont Museum. [Source](evidence:7)\n\nThe listing gives residents the time and location for the concert.";
-      }
-      if (cmd === "save_draft") {
-        const draft = { ...args.draft, id: 504 };
+      if (cmd === "generate_and_save_draft") {
+        const draft = {
+          id: 504,
+          lead_id: args.leadId,
+          format: args.format,
+          title: "Summer Concert Series Adds 2MX2 Performance - 7 pm",
+          content: "According to the linked source, 2MX2 is scheduled to perform Thursday - 7 pm at Longmont Museum. [Source](evidence:7)\n\nThe listing gives residents the time and location for the concert.",
+          status: "draft_generated",
+          verification_checklist: "[]",
+        };
         savedDrafts.push(draft);
-        return 504;
+        return draft;
       }
       if (cmd === "guardrails_check") return { is_clean: true, issues: [] };
       return null;
@@ -758,11 +772,18 @@ describe("useApp Hook Tests", () => {
       if (cmd === "get_evidence") return [];
       if (cmd === "get_setting" && args?.key === "model.selected") return "qwen2.5:7b";
       if (cmd === "ollama_health") return { reachable: true, models: ["qwen2.5:7b"], version: "0.6.0" };
-      if (cmd === "generate_draft") return `Generated draft for lead ${args.leadId}.`;
-      if (cmd === "save_draft") {
-        const draft = { ...args.draft, id: nextDraftId++ };
+      if (cmd === "generate_and_save_draft") {
+        const draft = {
+          id: nextDraftId++,
+          lead_id: args.leadId,
+          format: args.format,
+          title: `Longmont test lead ${args.leadId}`,
+          content: `Generated draft for lead ${args.leadId}.`,
+          status: "needs_verification",
+          verification_checklist: "[]",
+        };
         savedDrafts.push(draft);
-        return draft.id;
+        return draft;
       }
       return null;
     });

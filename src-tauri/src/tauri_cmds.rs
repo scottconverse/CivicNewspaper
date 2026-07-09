@@ -1382,6 +1382,101 @@ fn clean_generated_draft_for_workbench(text: &str) -> String {
     cleaned.join("\n").trim().to_string()
 }
 
+fn normalize_generated_draft_parts(raw: &str, fallback_title: &str) -> (String, String) {
+    let repaired = raw.replace("\r\n", "\n");
+    let mut title = fallback_title
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ");
+    let mut title_line_index: Option<usize> = None;
+    let headline_re = regex::Regex::new(
+        r"(?i)^\s*(?:#{1,2}\s+|(?:\*\*)?\s*(?:headline|title)\s*:\s*)(.+?)(?:\*\*)?\s*$",
+    )
+    .expect("valid headline regex");
+    let lines = repaired.lines().collect::<Vec<_>>();
+
+    for (idx, line) in lines.iter().take(8).enumerate() {
+        if let Some(captures) = headline_re.captures(line) {
+            if let Some(value) = captures.get(1).map(|m| m.as_str().trim()) {
+                if !value.is_empty() {
+                    title = value.replace("**", "").trim().to_string();
+                    title_line_index = Some(idx);
+                    break;
+                }
+            }
+        }
+    }
+
+    let mut cleaned_lines = Vec::new();
+    let mut skipping_reporting_steps = false;
+    let label_re =
+        regex::Regex::new(r"(?i)^\s*(?:\*\*)?\s*(?:nut graf|lede)\s*:\s*(?:\*\*)?\s*(.*)$")
+            .expect("valid draft label regex");
+    let placeholder_re = regex::Regex::new(
+        r"(?i)\[(?:insert [^\]]+|[^\]]+ if available|source needed|verification needed)\]",
+    )
+    .expect("valid placeholder regex");
+
+    for (idx, line) in lines.iter().enumerate() {
+        if title_line_index == Some(idx) {
+            continue;
+        }
+        let plain = line.trim().trim_matches('*').trim();
+        let lower = plain.to_lowercase();
+        if line_has_forbidden_draft_marker(plain)
+            || lower.starts_with("tester edit:")
+            || regex::Regex::new(
+                r"(?i)^\s*\[?\s*(source needed|verification needed|end of report)\s*\]?\s*$",
+            )
+            .expect("valid draft marker regex")
+            .is_match(plain)
+        {
+            skipping_reporting_steps = false;
+            continue;
+        }
+        if lower.starts_with("reporting steps:") || lower.starts_with("next reporting steps:") {
+            skipping_reporting_steps = true;
+            continue;
+        }
+        if skipping_reporting_steps {
+            if plain.is_empty()
+                || plain.starts_with('-')
+                || plain.starts_with('*')
+                || plain
+                    .chars()
+                    .next()
+                    .map(|ch| ch.is_ascii_digit())
+                    .unwrap_or(false)
+                || plain.ends_with('?')
+            {
+                continue;
+            }
+            skipping_reporting_steps = false;
+        }
+
+        let labeled = label_re
+            .captures(line)
+            .and_then(|captures| captures.get(1).map(|m| m.as_str()))
+            .unwrap_or(line);
+        let normalized = placeholder_re
+            .replace_all(labeled, "")
+            .replace("  ", " ")
+            .trim_end()
+            .to_string();
+        cleaned_lines.push(normalized);
+    }
+
+    let content = cleaned_lines
+        .join("\n")
+        .lines()
+        .map(str::trim_end)
+        .collect::<Vec<_>>()
+        .join("\n")
+        .trim()
+        .to_string();
+    (title, content)
+}
+
 fn first_public_sentence(text: &str) -> String {
     let cleaned = normalize_draft_source_text(text);
     let sentence_end = cleaned
@@ -1404,6 +1499,74 @@ fn first_public_sentence(text: &str) -> String {
         "The linked source has a civic update that needs editor review.".to_string()
     } else {
         sentence
+    }
+}
+
+fn lead_needs_draft_caution(
+    story_type: Option<&str>,
+    disposition: Option<&str>,
+    novelty_score: Option<i32>,
+    recurrence_count: Option<i32>,
+) -> bool {
+    let story_type = story_type.unwrap_or_default().to_lowercase();
+    let disposition = disposition.unwrap_or("review").to_lowercase();
+    let novelty = novelty_score.unwrap_or(0);
+    recurrence_count.unwrap_or(0) > 0
+        || matches!(story_type.as_str(), "background" | "watch" | "verification")
+        || matches!(
+            disposition.as_str(),
+            "background" | "watch" | "needs_verification"
+        )
+        || (novelty > 0 && novelty <= 2)
+}
+
+fn draft_has_publishable_linked_source_shape(content: &str, linked_evidence_count: usize) -> bool {
+    linked_evidence_count > 0
+        && regex::Regex::new("(?i)evidence:\\s*(?://)?\\s*\\d+")
+            .expect("valid evidence regex")
+            .is_match(content)
+        && content.to_lowercase().contains("according to")
+}
+
+fn build_persistable_draft(
+    lead_id: i32,
+    lead_why: &str,
+    story_type: Option<&str>,
+    disposition: Option<&str>,
+    novelty_score: Option<i32>,
+    recurrence_count: Option<i32>,
+    generated_text: &str,
+    evidence_count: usize,
+    format: &str,
+) -> Draft {
+    let fallback_title = source_bound_headline(lead_why);
+    let (title, content) = normalize_generated_draft_parts(generated_text, &fallback_title);
+    let cautious =
+        lead_needs_draft_caution(story_type, disposition, novelty_score, recurrence_count);
+    let publishable_linked_shape =
+        draft_has_publishable_linked_source_shape(&content, evidence_count);
+    let force_verification = evidence_count == 0 || (cautious && !publishable_linked_shape);
+
+    Draft {
+        id: None,
+        lead_id: Some(lead_id),
+        format: format.to_string(),
+        title,
+        content,
+        status: if force_verification {
+            "needs_verification".to_string()
+        } else {
+            "draft_generated".to_string()
+        },
+        verification_checklist: "[]".to_string(),
+        missing_evidence_notes: if evidence_count == 0 {
+            Some("No source documents are linked to this lead yet. Treat this as a verification assignment until public source material is attached or cited.".to_string())
+        } else {
+            None
+        },
+        correction_note: None,
+        created_at: String::new(),
+        updated_at: String::new(),
     }
 }
 
@@ -1821,6 +1984,48 @@ mod draft_citation_tests {
         assert!(!lower.contains("kmgh"));
         assert!(!lower.contains("sam mims"));
     }
+
+    #[test]
+    fn durable_generated_brief_draft_is_persistable_from_linked_evidence() {
+        let mut conn = rusqlite::Connection::open_in_memory().unwrap();
+        crate::core::migrations::run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT INTO leads (id, detector_name, why, confidence, risk_level, confirmation_checklist, from_scan_lead_id, story_type, disposition, novelty_score, novelty_reason, created_at)
+             VALUES (4, 'daily_scan', 'Review community signal from Longmont city events: Public Safety Sustainability Transportation Utilities', 'med', 'med', '[]', 4, 'brief', 'ready_to_draft', 4, 'Specific source-backed civic item detected from recent evidence.', '2026-07-09T00:00:00Z')",
+            [],
+        )
+        .unwrap();
+        let generated = "Headline: Longmont reviews utility update\n\nAccording to the linked source, Longmont posted a utility update for residents. [Source](evidence:25)\n\nThe brief should stay limited to the linked source.";
+
+        let draft = super::build_persistable_draft(
+            4,
+            "Review community signal from Longmont city events: Public Safety Sustainability Transportation Utilities",
+            Some("brief"),
+            Some("ready_to_draft"),
+            Some(4),
+            None,
+            generated,
+            1,
+            "brief",
+        );
+
+        assert_eq!(draft.lead_id, Some(4));
+        assert_eq!(draft.format, "brief");
+        assert_eq!(draft.status, "draft_generated");
+        assert_eq!(draft.missing_evidence_notes, None);
+        assert_eq!(draft.title, "Longmont reviews utility update");
+        assert!(!draft.content.contains("Headline:"));
+        assert!(draft.content.contains("According to the linked source"));
+
+        let draft_id = crate::core::db::insert_draft(&conn, &draft).unwrap();
+        let persisted = crate::core::db::get_draft(&conn, draft_id)
+            .unwrap()
+            .unwrap();
+        assert_eq!(persisted.id, Some(draft_id));
+        assert_eq!(persisted.lead_id, Some(4));
+        assert_eq!(persisted.status, "draft_generated");
+        assert_eq!(persisted.title, "Longmont reviews utility update");
+    }
 }
 
 #[cfg(test)]
@@ -2157,6 +2362,169 @@ pub async fn generate_draft<R: tauri::Runtime>(
     } else {
         Ok(cleaned)
     }
+}
+
+#[tauri::command]
+pub async fn generate_and_save_draft<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
+    db: tauri::State<'_, DbConn>,
+    lead_id: i32,
+    format: String,
+    system_prompt: Option<String>,
+) -> Result<Draft, String> {
+    let (
+        lead_why,
+        story_type,
+        disposition,
+        novelty_score,
+        novelty_reason,
+        recurrence_count,
+        recurrence_note,
+        template_guidance,
+        evidence_items,
+    ) = {
+        let conn = db
+            .lock()
+            .map_err(|_| "Failed to lock database".to_string())?;
+        let mut stmt = conn
+            .prepare("SELECT why, story_type, disposition, novelty_score, novelty_reason, recurrence_count, recurrence_note FROM leads WHERE id = ?1")
+            .map_err(|e| e.to_string())?;
+        type LeadPromptRow = (
+            String,
+            Option<String>,
+            Option<String>,
+            Option<i32>,
+            Option<String>,
+            Option<i32>,
+            Option<String>,
+        );
+
+        let (
+            why,
+            story_type,
+            disposition,
+            novelty_score,
+            novelty_reason,
+            recurrence_count,
+            recurrence_note,
+        ): LeadPromptRow = stmt
+            .query_row([lead_id], |row| {
+                Ok((
+                    row.get(0)?,
+                    row.get(1)?,
+                    row.get(2)?,
+                    row.get(3)?,
+                    row.get(4)?,
+                    row.get(5)?,
+                    row.get(6)?,
+                ))
+            })
+            .map_err(|e| e.to_string())?;
+        let template_guidance = story_template_guidance(&conn, story_type.as_deref());
+        let items = db::get_evidence_by_lead(&conn, lead_id).map_err(|e| e.to_string())?;
+        let topic_matched_items = source_grounding::filter_topic_matched_evidence(&why, &items);
+        (
+            why,
+            story_type,
+            disposition,
+            novelty_score,
+            novelty_reason,
+            recurrence_count,
+            recurrence_note,
+            template_guidance,
+            topic_matched_items,
+        )
+    };
+
+    let mut evidence_context = String::new();
+    for item in &evidence_items {
+        let item_id = item.id.unwrap_or(0);
+        evidence_context.push_str(&format!(
+            "Evidence Citation ID: {}\nExcerpt: {}\n\n",
+            item_id,
+            normalize_draft_source_text(&item.excerpt)
+        ));
+    }
+
+    let profile = get_community_profile(app.clone())?;
+    let audience = audience_from_profile(&profile);
+    let generated_text = if evidence_items.is_empty() {
+        source_bound_fallback_draft(&lead_why, &evidence_items, &audience, &format)
+    } else {
+        let prompt = build_draft_prompt(
+            &lead_why,
+            story_type.as_deref(),
+            disposition.as_deref(),
+            novelty_score,
+            novelty_reason.as_deref(),
+            recurrence_count,
+            recurrence_note.as_deref(),
+            template_guidance.as_deref(),
+            &evidence_context,
+            evidence_items.len(),
+            &format,
+            &audience,
+        );
+
+        let sys = system_prompt.unwrap_or_else(|| "You are an assistant for a local publication editor. You help prepare careful working drafts. Do not decide what is publishable; warn about uncertainty and leave final judgment to the human editor.".to_string());
+        let model = get_selected_model_or_fallback(&db).await;
+        let installed = list_installed_models().await;
+        if !model_is_installed(&model, &installed) {
+            return Err(format!(
+                "MODEL_NOT_INSTALLED: The selected AI model '{}' is not installed. Open Setup and download a model before drafting.",
+                model
+            ));
+        }
+
+        let llm_client = app
+            .state::<std::sync::Arc<dyn crate::core::llm::LlmClient>>()
+            .inner()
+            .clone();
+        let draft = llm_client.call(&model, &prompt, &sys).await?;
+        let allowed_ids = evidence_items
+            .iter()
+            .filter_map(|item| item.id)
+            .collect::<HashSet<_>>();
+        let normalized_citations = normalize_model_evidence_citations(&draft);
+        let citation_safe =
+            sanitize_unlinked_evidence_citations(&normalized_citations, &allowed_ids);
+        let cleaned = clean_generated_draft_for_workbench(&citation_safe);
+        if let Some(issue) = generated_draft_quality_issue(
+            &cleaned,
+            &evidence_context,
+            evidence_items.len(),
+            &format,
+        ) {
+            eprintln!(
+                "Generated draft for lead {} replaced with source-bound fallback: {}",
+                lead_id, issue
+            );
+            source_bound_fallback_draft(&lead_why, &evidence_items, &audience, &format)
+        } else {
+            cleaned
+        }
+    };
+
+    let mut draft = build_persistable_draft(
+        lead_id,
+        &lead_why,
+        story_type.as_deref(),
+        disposition.as_deref(),
+        novelty_score,
+        recurrence_count,
+        &generated_text,
+        evidence_items.len(),
+        &format,
+    );
+
+    let conn = db
+        .lock()
+        .map_err(|_| "Failed to lock database".to_string())?;
+    let draft_id = db::insert_draft(&conn, &draft).map_err(|e| e.to_string())?;
+    draft.id = Some(draft_id);
+    db::get_draft(&conn, draft_id)
+        .map_err(|e| e.to_string())?
+        .ok_or_else(|| "Draft was saved but could not be reloaded.".to_string())
 }
 
 #[tauri::command]

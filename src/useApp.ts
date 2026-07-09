@@ -20,7 +20,7 @@ import {
   deleteDraft,
   storyDecision,
   attestDraft,
-  generateDraft,
+  generateAndSaveDraft,
   llmTask,
   guardrailsCheck,
   publish,
@@ -406,22 +406,6 @@ export function useApp() {
 
   const pullLogEndRef = useRef<HTMLDivElement>(null);
 
-  const leadNeedsDraftCaution = (lead: Lead) => {
-    const disposition = (lead.disposition ?? "review").toLowerCase();
-    const storyType = (lead.story_type ?? "").toLowerCase();
-    const novelty = lead.novelty_score ?? 0;
-    return Boolean(
-      (lead.recurrence_count ?? 0) > 0 ||
-      storyType === "background" ||
-      storyType === "watch" ||
-      storyType === "verification" ||
-      disposition === "background" ||
-      disposition === "watch" ||
-      disposition === "needs_verification" ||
-      (novelty > 0 && novelty <= 2)
-    );
-  };
-
   const draftFormatForLead = (lead: Lead) => {
     const storyType = (lead.story_type ?? "").toLowerCase();
     const disposition = (lead.disposition ?? "").toLowerCase();
@@ -429,14 +413,6 @@ export function useApp() {
     if (storyType === "explainer" || storyType === "investigation" || storyType === "opinion") return storyType;
     if (storyType === "background" || disposition === "background") return "explainer";
     return "watch";
-  };
-
-  const draftHasPublishableLinkedSourceShape = (content: string, linkedEvidenceCount: number) => {
-    return (
-      linkedEvidenceCount > 0 &&
-      /evidence:\s*(?:\/\/)?\s*\d+/i.test(content) &&
-      /\baccording to\b/i.test(content)
-    );
   };
 
   const pickStarterDiscoveryCandidates = (categories: DiscoveredSourceCategory[]) => {
@@ -1322,51 +1298,25 @@ export function useApp() {
         }
       }
 
-      setStatusMessage("Asking the local AI model to write a working draft... (this may take a moment)");
-      const text = await generateDraft(
+      setStatusMessage("Asking the local AI model to write and save a working draft... (this may take a moment)");
+      const draftObj = await generateAndSaveDraft(
         selectedLead.id,
         draftFormat,
         customSystemPrompt ? customSystemPrompt : undefined
       );
 
-      const leadTitle = selectedLead.why.replace(/\s+/g, " ").trim();
-      const normalizedDraft = normalizeGeneratedDraft(text, leadTitle);
-      const now = new Date().toISOString();
-      const cautiousLead = leadNeedsDraftCaution(selectedLead);
-      const publishableLinkedSourceShape = draftHasPublishableLinkedSourceShape(
-        normalizedDraft.content,
-        evidenceList.length
-      );
-      const forceVerification = evidenceList.length === 0 || (cautiousLead && !publishableLinkedSourceShape);
-      const draftObj: Draft = {
-        lead_id: selectedLead.id,
-        format: draftFormat,
-        title: normalizedDraft.title,
-        content: normalizedDraft.content,
-        status: forceVerification ? "needs_verification" : "draft_generated",
-        verification_checklist: "[]",
-        missing_evidence_notes: evidenceList.length === 0
-          ? "No source documents are linked to this lead yet. Treat this as a verification assignment until public source material is attached or cited."
-          : undefined,
-        created_at: now,
-        updated_at: now,
-      };
-
-      const newId = await saveDraft(draftObj);
-      draftObj.id = newId;
-
       setSelectedLead(null);
       setSelectedDraft(draftObj);
       setActiveTab("workbench");
       try {
-        const report = await guardrailsCheck(newId);
+        const report = await guardrailsCheck(draftObj.id!);
         setGuardrailsReport(report);
       } catch (err) {
         console.warn("Could not run guardrails on generated draft:", err);
         setGuardrailsReport(null);
       }
       setStatusMessage(
-        forceVerification
+        draftObj.status === "needs_verification"
           ? "Draft generated and marked as needing more work because the lead has watch, background, verification, recurrence, or low-novelty signals."
           : "Draft generated successfully."
       );

@@ -531,6 +531,10 @@ export async function generateDraft(leadId: number, format: string, systemPrompt
   return invokeGuarded<string>("generate_draft", { leadId, format, systemPrompt });
 }
 
+export async function generateAndSaveDraft(leadId: number, format: string, systemPrompt?: string): Promise<Draft> {
+  return invokeGuarded<Draft>("generate_and_save_draft", { leadId, format, systemPrompt });
+}
+
 export async function llmTask(prompt: string, system: string): Promise<string> {
   return invokeGuarded<string>("llm_task", { prompt, system });
 }
