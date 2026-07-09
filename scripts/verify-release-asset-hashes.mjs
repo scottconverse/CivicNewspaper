@@ -83,8 +83,12 @@ if (evidencePath && existsSync(evidencePath)) {
     fail(`could not parse release evidence ${evidencePath}: ${error.message}`);
   }
   const installerName = evidence?.windows_installer_smoke?.installer_name;
+  const releaseAssetName = evidence?.windows_installer_smoke?.release_asset_name || installerName;
   if (typeof installerName !== "string" || !installerName.trim()) {
     fail("release evidence is missing windows_installer_smoke.installer_name.");
+  }
+  if (typeof releaseAssetName !== "string" || !releaseAssetName.trim()) {
+    fail("release evidence is missing windows_installer_smoke.release_asset_name.");
   }
   const expectedInstallerHash = cleanHash(
     evidence?.windows_installer_smoke?.installer_sha256,
@@ -94,13 +98,13 @@ if (evidencePath && existsSync(evidencePath)) {
   if (cleanroomHash !== expectedInstallerHash) {
     fail("cleanroom installer SHA256 does not match Windows installer-smoke SHA256.");
   }
-  const manifestHash = manifest.get(installerName);
+  const manifestHash = manifest.get(releaseAssetName);
   if (!manifestHash) {
-    fail(`SHA256SUMS does not list the cleanroom-tested installer '${installerName}'.`);
+    fail(`SHA256SUMS does not list the release installer asset '${releaseAssetName}'.`);
   }
   if (manifestHash !== expectedInstallerHash) {
     fail(
-      `published installer hash does not match cleanroom-tested hash for '${installerName}': ` +
+      `published installer hash does not match cleanroom-tested hash for '${releaseAssetName}': ` +
         `manifest=${manifestHash} evidence=${expectedInstallerHash}`
     );
   }

@@ -130,6 +130,42 @@ describe("release verifier scripts", () => {
     expect(result.output).toContain("OK: verified 1 published asset hash");
   });
 
+  test("asset hash verifier uses release asset name when local installer name differs", () => {
+    const dir = mkdtempSync(join(tmpdir(), "civic-assets-"));
+    tempDirs.push(dir);
+    const localInstallerName = "The Civic Desk_0.3.2_x64-setup.exe";
+    const releaseAssetName = "The.Civic.Desk_0.3.2_x64-setup.exe";
+    const assetBody = "installer bytes";
+    const assetHash = sha256Text(assetBody);
+    writeFileSync(join(dir, releaseAssetName), assetBody);
+    const manifest = join(dir, "SHA256SUMS.txt");
+    writeFileSync(manifest, `${assetHash}  ${releaseAssetName}\n`);
+    const evidence = join(dir, "evidence.json");
+    writeFileSync(
+      evidence,
+      JSON.stringify({
+        windows_installer_smoke: {
+          installer_name: localInstallerName,
+          release_asset_name: releaseAssetName,
+          installer_sha256: assetHash,
+        },
+        cleanroom: { installer_sha256: assetHash },
+      })
+    );
+
+    const result = runNode("scripts/verify-release-asset-hashes.mjs", [
+      "--assets-dir",
+      dir,
+      "--manifest",
+      manifest,
+      "--evidence",
+      evidence,
+    ]);
+
+    expect(result.ok).toBe(true);
+    expect(result.output).toContain("OK: verified 1 published asset hash");
+  });
+
   test("asset hash verifier rejects manifest/evidence hash mismatch", () => {
     const dir = mkdtempSync(join(tmpdir(), "civic-assets-"));
     tempDirs.push(dir);

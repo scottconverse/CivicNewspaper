@@ -50,7 +50,7 @@ macOS and Linux additionally require real platform artifacts and platform-specif
 A SHA256 checksum proves that the file you downloaded matches the file listed in the release manifest. It is not the same as code signing and does not prove who built the file.
 
 1. Open the release page for the installer you downloaded.
-2. Find the `SHA256SUMS` file or the checksum listed for your installer.
+2. Find the `SHA256SUMS.txt` file or the checksum listed for your installer.
 3. Compute the local hash.
 4. Compare the two strings exactly.
 

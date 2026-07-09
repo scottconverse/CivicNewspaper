@@ -33,7 +33,7 @@ The app is built for the reality that many towns no longer have enough reporters
 
 ## Download
 
-Download the v0.3.2 Windows-only public beta from the [v0.3.2 release page](https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2). Use `The.Civic.Desk_0.3.2_x64-setup.exe` and verify it against `SHA256SUMS` before opening it.
+Download the v0.3.2 Windows-only public beta from the [v0.3.2 release page](https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2). Use `The.Civic.Desk_0.3.2_x64-setup.exe` and verify it against `SHA256SUMS.txt` before opening it.
 
 - **Windows:** use `The.Civic.Desk_0.3.2_x64-setup.exe`. Because the installer is unsigned, choose **More info** then **Run anyway** when SmartScreen appears.
 - **macOS and Linux:** backlog/proof-needed for this release line. Do not treat macOS or Linux download cards, package configs, or historical artifacts as supported public-beta installers until a clean-machine proof is recorded.
