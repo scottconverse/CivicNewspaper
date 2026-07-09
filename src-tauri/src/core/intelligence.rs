@@ -369,8 +369,11 @@ fn insert_dark_signal(
     let summary = item
         .excerpt
         .lines()
-        .find(|line| !line.trim().is_empty())
-        .unwrap_or(&item.excerpt)
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .take(4)
+        .collect::<Vec<_>>()
+        .join(" ")
         .chars()
         .take(300)
         .collect::<String>();

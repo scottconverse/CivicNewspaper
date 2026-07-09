@@ -3009,6 +3009,89 @@ I should produce JSON only.
         assert!(events.iter().any(|stage| stage == "complete"));
     }
 
+    #[tokio::test]
+    async fn test_daily_scan_promotes_source_backed_city_program_signal_to_brief() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        crate::core::migrations::run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT OR REPLACE INTO settings (key, value) VALUES ('model.selected', 'offline-model')",
+            [],
+        )
+        .unwrap();
+        let source_id = insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Longmont city events".to_string(),
+                url: "https://longmontcolorado.gov/events".to_string(),
+                r#type: "official_calendar".to_string(),
+                tier: "community_signal".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        insert_evidence_item(
+            &conn,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://longmontcolorado.gov/events/senior-center-workshop".to_string()),
+                fetched_at: Utc::now().to_rfc3339(),
+                excerpt: "Longmont Senior Center\nThe City of Longmont will host a public workshop on July 12 at the Longmont Senior Center about waste reduction resources for residents.".to_string(),
+                content_hash: "longmont_senior_center_program_hash".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
+        let db_conn: DbConn = Arc::new(Mutex::new(conn));
+
+        struct OfflineLlmClient;
+        #[async_trait::async_trait]
+        impl crate::core::llm::LlmClient for OfflineLlmClient {
+            async fn call(&self, _m: &str, _p: &str, _s: &str) -> Result<String, String> {
+                Err("local model offline".to_string())
+            }
+        }
+        let llm_client: Arc<dyn crate::core::llm::LlmClient> = Arc::new(OfflineLlmClient);
+
+        let run_id = crate::core::daily_scan::run_daily_scan_with_progress(
+            &db_conn,
+            &llm_client,
+            "aggregator prompt template",
+            "Longmont",
+            "CO",
+            24,
+            |_| {},
+        )
+        .await
+        .expect("deterministic city-program signal should be enough for a brief");
+
+        let conn = db_conn.lock().unwrap();
+        let leads = list_daily_scan_leads(&conn, run_id).unwrap();
+        let brief = leads
+            .iter()
+            .find(|lead| lead.summary.contains("Longmont Senior Center"))
+            .expect("expected source-backed Longmont program lead");
+        assert_eq!(brief.story_type.as_deref(), Some("brief"));
+        assert_eq!(brief.disposition.as_deref(), Some("ready_to_draft"));
+        let linked_count: i32 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM lead_evidence le
+                 JOIN leads l ON l.id = le.lead_id
+                 WHERE l.from_scan_lead_id = ?1",
+                [brief.id.unwrap()],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert!(
+            linked_count > 0,
+            "draftable city-program brief should retain linked evidence"
+        );
+    }
+
     // ===== C-6 / CRIT-1: add_source storage gate (SSRF + tier) =====
     //
     // add_source is the single chokepoint every source-ingestion path funnels

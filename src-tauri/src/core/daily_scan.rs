@@ -1115,6 +1115,39 @@ fn save_dark_signal_leads(
                 |row| row.get(0),
             )
             .unwrap_or_default();
+        let brief_candidate = dark_signal_is_source_backed_brief_candidate(&signal);
+        let story_type = if brief_candidate {
+            "brief"
+        } else {
+            "verification"
+        };
+        let what_changed = if brief_candidate {
+            "Specific source-backed civic item detected from recent evidence."
+        } else {
+            "Dark-signal pattern detected from recent evidence."
+        };
+        let immediacy = if brief_candidate { 4 } else { 2 };
+        let impact = if brief_candidate {
+            4
+        } else {
+            match signal.risk_level.as_str() {
+                "high" => 4,
+                "medium" => 3,
+                _ => 2,
+            }
+        };
+        let novelty = if brief_candidate { Some(4) } else { None };
+        let disposition = if brief_candidate {
+            classify_disposition(
+                Some(story_type),
+                Some(what_changed),
+                Some(immediacy),
+                Some(impact),
+                novelty,
+            )
+        } else {
+            "needs_verification".to_string()
+        };
         let lead = DailyScanLead {
             id: None,
             scan_id: run_id,
@@ -1133,19 +1166,23 @@ fn save_dark_signal_leads(
                 }
                 .to_string(),
             ),
-            suggested_next_step: Some(signal.verification_path),
-            story_type: Some("verification".to_string()),
-            what_changed: Some("Dark-signal pattern detected from recent evidence.".to_string()),
-            immediacy: Some(2),
-            impact: Some(match signal.risk_level.as_str() {
-                "high" => 4,
-                "medium" => 3,
-                _ => 2,
+            suggested_next_step: Some(if brief_candidate {
+                "Open the linked source, confirm the date, location, organizer, and public relevance, then draft a short brief from the source-backed facts.".to_string()
+            } else {
+                signal.verification_path
             }),
+            story_type: Some(story_type.to_string()),
+            what_changed: Some(what_changed.to_string()),
+            immediacy: Some(immediacy),
+            impact: Some(impact),
             conflict: None,
-            novelty: None,
-            publishability_note: Some("Confirm the signal against source records or a second public source before drafting.".to_string()),
-            disposition: Some("needs_verification".to_string()),
+            novelty,
+            publishability_note: Some(if brief_candidate {
+                "Single-source official civic briefs are draftable only after confirming the linked source facts; seek a second public source when available.".to_string()
+            } else {
+                "Confirm the signal against source records or a second public source before drafting.".to_string()
+            }),
+            disposition: Some(disposition),
             recurrence_count: None,
             recurrence_note: None,
         };
@@ -1154,6 +1191,58 @@ fn save_dark_signal_leads(
         }
     }
     Ok(saved)
+}
+
+fn dark_signal_is_source_backed_brief_candidate(signal: &intelligence::DarkSignal) -> bool {
+    let source = signal.origin.to_lowercase();
+    let text = normalize_source_text_for_quality(&signal.summary).to_lowercase();
+    let quality = evidence_quality(&text);
+    if quality.looks_like_navigation_or_index() || looks_like_multi_item_event_listing(&text) {
+        return false;
+    }
+    if quality.word_count < 5 && !text.contains("senior center") {
+        return false;
+    }
+    if !source.contains("city") && !source.contains("official") && !source.contains("municipal") {
+        return false;
+    }
+    if [
+        "concert",
+        "symphony",
+        "brass band",
+        "live music",
+        "festival",
+        "things to do",
+        "tourism",
+        "visitor",
+    ]
+    .iter()
+    .any(|needle| text.contains(needle))
+    {
+        return false;
+    }
+    if text.contains("comprehensive list of services")
+        || text.contains("resources you need in one place")
+    {
+        return false;
+    }
+    evidence_has_strong_current_action(&text)
+        || evidence_has_public_impact_signal(&text)
+        || [
+            "senior center",
+            "waste reduction",
+            "reuse experts",
+            "public workshop",
+            "community resources",
+            "road closure",
+            "utility",
+            "utilities",
+            "public safety",
+            "library",
+            "recreation services",
+        ]
+        .iter()
+        .any(|needle| text.contains(needle))
 }
 
 fn save_daily_scan_lead_for_queue(
