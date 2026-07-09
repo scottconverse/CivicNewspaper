@@ -1,0 +1,260 @@
+The Civic Desk
+LONGMONT / CO
+NEWSROOM
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+SET UP
+Sources
+AI Model
+Publishing
+TOOLS
+Browser Pairing
+Ethics & Backups
+System & Status
+AI limited mode
+Source checks still work
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Sources
+
+The municipal feeds and record portals The Civic Desk watches for you.
+
+Discover for my city
+Bulk import
+SOURCE	TIER	LAST CHECK	
+
+Longmont official city website
+Primary
+Online
+https://www.longmontcolorado.gov/
+	Primary	7/8/2026	
+
+
+Longmont agendas and minutes
+Primary
+Offline
+https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk/agendas-and-minutes
+	Primary	Never	
+
+
+Longmont public notices search
+Primary
+Online
+https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk
+	Primary	7/8/2026	
+
+
+St. Vrain Valley Schools
+Primary
+Online
+https://www.svvsd.org/
+	Primary	7/8/2026	
+
+
+Longmont Public Safety
+Official
+Offline
+https://www.longmontcolorado.gov/departments/departments-n-z/public-safety
+	Primary	Never	
+
+
+r/Longmont
+Watch
+Offline
+https://www.reddit.com/r/Longmont/
+	Watch	Never	
+
+
+Longmont Leader local news
+Media
+Online
+https://www.longmontleader.com/local-news
+	Secondary	7/8/2026	
+
+
+Longmont Area Chamber of Commerce
+Watch
+Online
+https://longmontchamber.org/
+	Watch	7/8/2026	
+
+
+Longmont city events
+Official Calendar
+Online
+https://longmontcolorado.gov/events/
+	Watch	7/8/2026	
+Add a source
+
+Paste a city webpage or RSS feed. The Civic Desk figures out the rest.
+
+Name
+URL
+Type
+Auto-detect
+RSS
+HTML
+Media
+Tier
+Primary
+Secondary
+Watch
+Add Source
+Town Setup & Source Auto-Discovery
+Close
+City name
+State
+Auto-Find Feeds
+Selected: 0 sources
+Clear
+Import Checked Sources
+
+Select only the sources you trust. Search links are helpers for review, not verified feeds.
+
+Municipal Website
+Primary Record
+Longmont official city website
+Official record
+https://www.longmontcolorado.gov/
+
+Likely a primary civic source. Confirm it is the right department/feed.
+
+Longmont city news
+Official record
+https://www.longmontcolorado.gov/news
+
+Likely a primary civic source. Confirm it is the right department/feed.
+
+City Council Agenda
+Primary Record
+Longmont agendas and minutes
+Official record
+https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk/agendas-and-minutes
+
+Likely a primary civic source. Confirm it is the right department/feed.
+
+Longmont City Council
+Official record
+https://www.longmontcolorado.gov/departments/departments-a-d/city-council
+
+Likely a primary civic source. Confirm it is the right department/feed.
+
+Public & Legal Notices
+Primary Record
+Longmont public notices search
+Official record
+https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk
+
+Likely a primary civic source. Confirm it is the right department/feed.
+
+Colorado public notices
+Needs review
+https://www.publicnoticecolorado.com/
+
+Check ownership and usefulness before importing.
+
+Boulder County public notices
+Official record
+https://bouldercounty.gov/
+
+Likely a primary civic source. Confirm it is the right department/feed.
+
+School Board Agenda
+Primary Record
+St. Vrain Valley Schools
+Needs review
+https://www.svvsd.org/
+
+Check ownership and usefulness before importing.
+
+Police Department Facebook
+Official Comm
+Longmont Public Safety
+Official record
+https://www.longmontcolorado.gov/departments/departments-n-z/public-safety
+
+Likely a primary civic source. Confirm it is the right department/feed.
+
+City of Longmont Facebook
+Community signal
+https://www.facebook.com/cityoflongmontco/
+
+Useful for leads, but verify against public records before publishing.
+
+Longmont Public Safety Facebook
+Community signal
+https://www.facebook.com/LongmontFirePoliceOEM/
+
+Useful for leads, but verify against public records before publishing.
+
+Local Reddit Community
+Community Signal
+r/Longmont
+Community signal
+https://www.reddit.com/r/Longmont/
+
+Useful for leads, but verify against public records before publishing.
+
+r/Boulder
+Community signal
+https://www.reddit.com/r/boulder/
+
+Useful for leads, but verify against public records before publishing.
+
+Local Newspaper Headlines
+Media Lead
+Longmont Leader local news
+News source
+https://www.longmontleader.com/local-news
+
+Good for leads and context; verify facts against primary records.
+
+Times-Call Longmont news
+News source
+https://www.timescall.com/location/colorado/boulder-county/longmont/
+
+Good for leads and context; verify facts against primary records.
+
+Chamber of Commerce
+Community Signal
+Longmont Area Chamber of Commerce
+Needs review
+https://longmontchamber.org/
+
+Check ownership and usefulness before importing.
+
+Library Events
+Community Signal
+Longmont Library
+Official record
+https://www.longmontcolorado.gov/departments/departments-e-m/library
+
+Likely a primary civic source. Confirm it is the right department/feed.
+
+Visit Longmont events
+Needs review
+https://www.visitlongmont.org/events/
+
+Check ownership and usefulness before importing.
+
+Downtown Longmont events
+Needs review
+https://www.downtownlongmont.com/events/calendar
+
+Check ownership and usefulness before importing.
+
+Longmont city events
+Official record
+https://longmontcolorado.gov/events/
+
+Likely a primary civic source. Confirm it is the right department/feed.
+
+Longmont city YouTube
+Needs review
+https://www.youtube.com/cityoflongmont
+
+Check ownership and usefulness before importing.

@@ -60,7 +60,7 @@ The directive exists to validate the 1e03894 fix for source-backed Daily Scan Br
 - Weak/no-source leads remained low-priority verification work instead of ready-to-draft stories.
 - Source-quality issue cards were presented as `Verify source-quality issue...` rather than raw page navigation as the lead title.
 - `Draft anyway` was not observed in the captured Daily Scan evidence.
-- Source discovery using `Longmont` / `Colorado` produced reviewed candidate sources and did not return an empty no-guidance result.
+- Source discovery using both `Longmont` / `Colorado` and `Longmont` / `CO` produced reviewed candidate sources and did not return an empty no-guidance result.
 
 ## Not Completed
 
@@ -74,7 +74,7 @@ The following directive steps were not completed because Blocker 1 prevented the
 - Publish through here.now.
 - Inspect the public here.now site as a visitor.
 
-The separate second source discovery check for `Longmont` / `CO` was started and captured while still searching, but completed `CO` discovery results were not captured before the blocker was reached. The clean profile did have 9 watched sources, source discovery using `Longmont` / `Colorado` was captured, and Daily Scan used those sources.
+Source discovery using both full state name `Colorado` and abbreviation `CO` was captured. The `CO` discovery result returned candidate sources but had `Selected: 0 sources` in the captured modal state, so no additional source import was completed after the initial watched-source set. The clean profile had 9 watched sources, and Daily Scan used those sources.
 
 ## Evidence
 
@@ -92,7 +92,7 @@ The separate second source discovery check for `Longmont` / `CO` was started and
 - `test-comms/reports/20260709-final-release-v032-1e03894-source-backed-brief-evidence/cdp-12-daily-before-run.txt`
 - `test-comms/reports/20260709-final-release-v032-1e03894-source-backed-brief-evidence/cdp-13-daily-run-18.txt`
 - `test-comms/reports/20260709-final-release-v032-1e03894-source-backed-brief-evidence/cdp-16-discover-colorado-filled.txt`
-- `test-comms/reports/20260709-final-release-v032-1e03894-source-backed-brief-evidence/cdp-22-discover-co-wait-0.txt`
+- `test-comms/reports/20260709-final-release-v032-1e03894-source-backed-brief-evidence/cdp-23-discover-co-results.txt`
 - `test-comms/reports/20260709-final-release-v032-1e03894-source-backed-brief-evidence/sqlite-summary-final.json`
 
 ## Notes
