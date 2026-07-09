@@ -1,4 +1,4 @@
-# Final Cleanroom Release Verification - The Civic Desk v0.3.2 35e6cf0 Dark-Signal Evidence Link Rerun
+# Final Cleanroom Release Verification - The Civic Desk v0.3.2 17766b7 Durable Draft Persistence Rerun
 
 Tester: run this from `msi\civic` on the cleanroom Windows tester machine.
 
@@ -11,11 +11,11 @@ This file is the active directive. Ignore older directive filenames.
 - Repository: `scottconverse/CivicNewspaper`
 - Release URL: https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2
 - Public docs URL: https://scottconverse.github.io/CivicNewspaper/
-- Product build commit embedded in the Windows app build: `35e6cf0f4a8f01d74ef79247feaaadbd34dbb3da`
-- Release/docs commit on `main`: `62a44b1ea4b4ea3ba05a76811d9c45af37d825c8`
+- Product build commit embedded in the Windows app build: `17766b7ccb0cc744522090e28997b764676ce1c5`
+- Release/docs commit on `main`: `2e946205d1763247cbd8d4720b85fb2cec2af63a`
 - Windows installer asset: `The.Civic.Desk_0.3.2_x64-setup.exe`
-- Windows installer size: `5240548` bytes
-- Windows installer SHA256: `8204BB4210DD284518D114C57A3089BAC11D7B0EC8E0F83D8D61928D44FEB6E0`
+- Windows installer size: `5260917` bytes
+- Windows installer SHA256: `8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3`
 - Checksum asset: `SHA256SUMS.txt`
 
 Do not use any installer copied from `C:\Users\instynct`. Download the installer and checksum file from the GitHub release URL above.
@@ -24,18 +24,20 @@ Do not use any installer copied from `C:\Users\instynct`. Download the installer
 
 Write these reports on this branch:
 
-- Visibility: `test-comms/reports/20260709-final-release-v032-35e6cf0-dark-signal-evidence-visibility.md`
-- Full report: `test-comms/reports/20260709-final-release-v032-35e6cf0-dark-signal-evidence-report.md`
+- Visibility: `test-comms/reports/20260709-final-release-v032-17766b7-durable-draft-visibility.md`
+- Full report: `test-comms/reports/20260709-final-release-v032-17766b7-durable-draft-report.md`
 
 Attach screenshots, logs, exported ZIP path notes, downloaded release asset notes, SQLite/app-data evidence, and publication URLs under:
 
-- `test-comms/reports/20260709-final-release-v032-35e6cf0-dark-signal-evidence-evidence/`
+- `test-comms/reports/20260709-final-release-v032-17766b7-durable-draft-evidence/`
 
 ## Why This Rerun Exists
 
 The previous `1e03894` source-backed Brief rerun proved release visibility, installer lifecycle, first-run onboarding, source discovery with both `Colorado` and `CO`, weak-lead draft gating, source-quality issue cleanup, and source-backed Daily Scan Brief promotion. It still failed final cleanroom because the fresh Longmont run recognized a source-backed Longmont item but saved no `lead_evidence`, leaving no draftable linked-evidence Story or Brief lead.
 
-Coder fixes in `35e6cf0f4a8f01d74ef79247feaaadbd34dbb3da`:
+The `35e6cf0f4a8f01d74ef79247feaaadbd34dbb3da` rerun fixed linked evidence: Daily Scan produced 5 leads, `lead_evidence_count=5`, and one `Brief / Ready to draft` Longmont lead with linked source evidence. It still failed final cleanroom because clicking `Generate Draft` from that ready Brief closed/relaunched the app/WebView and left `drafts_count=0`, blocking editor workflow, export, and here.now publication.
+
+Coder fixes in `17766b7ccb0cc744522090e28997b764676ce1c5`:
 
 - Official `New Primary Record` leads remain `Watch` for generic home, directory, search, navigation, or index pages.
 - Official `New Primary Record` leads become draftable `Brief` leads only when linked source evidence contains concrete civic action, timeline, meeting/deadline, amount, or public-impact language.
@@ -43,6 +45,9 @@ Coder fixes in `35e6cf0f4a8f01d74ef79247feaaadbd34dbb3da`:
 - Source-backed Daily Scan Brief promotion upgrades clean official civic-service/program signals when they have linked source evidence and concrete action language.
 - Dark-signal Daily Scan leads retain the deterministic observation's trusted `lead_evidence` instead of trying to rediscover it from a broader event/source page.
 - Daily Scan quality-gated verification cards rewrite raw navigation/category/index debris into a clean `Verify source-quality issue from ...` queue card instead of leading with scraped page chrome.
+- `Generate Draft` now creates and saves the draft inside one backend command before returning it to the UI, so a WebView/app relaunch cannot lose the generated draft between a frontend `generate_draft` call and a later frontend `save_draft` call.
+- Draftable Story/Brief leads keep linked source evidence when the stricter topic matcher is too narrow for broad Longmont Daily Scan lead text.
+- Source-bound fallback copy for Brief/Story output remains reader-facing and must not emit `watch brief` wording.
 - Existing weak-lead protections remain in force: unsupported/no-source/model-suggested items are downgraded before Story Queue, weak/watch/background/verification/low-novelty leads show verification-first behavior, and Story/Brief drafting defaults to Brief rather than Watch.
 
 ## Visibility Check
@@ -54,16 +59,16 @@ Before installing, write the visibility report confirming:
 3. Branch is `test-comms/cleanroom-coder-tester`.
 4. You read `test-comms/ACTIVE_DIRECTIVE.md`.
 5. You can reach the GitHub release URL and public docs URL.
-6. The release page shows installer SHA256 `8204BB4210DD284518D114C57A3089BAC11D7B0EC8E0F83D8D61928D44FEB6E0`, size `5240548`, and product commit `35e6cf0f4a8f01d74ef79247feaaadbd34dbb3da`.
+6. The release page shows installer SHA256 `8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3`, size `5260917`, and product commit `17766b7ccb0cc744522090e28997b764676ce1c5`.
 7. The release page has exactly one Windows installer asset and one checksum asset.
-8. `SHA256SUMS.txt` names `The.Civic.Desk_0.3.2_x64-setup.exe` and contains SHA256 `8204BB4210DD284518D114C57A3089BAC11D7B0EC8E0F83D8D61928D44FEB6E0`.
-9. The public docs URL shows installer SHA256 `8204BB4210DD284518D114C57A3089BAC11D7B0EC8E0F83D8D61928D44FEB6E0`, `More info`, `Run anyway`, Windows-only beta language, and no stale `E7B620C4D51837DDD43028B511E396643EE9A67D1CD23DC0B59BC5442277DCD7` hash.
+8. `SHA256SUMS.txt` names `The.Civic.Desk_0.3.2_x64-setup.exe` and contains SHA256 `8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3`.
+9. The public docs URL shows installer SHA256 `8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3`, `More info`, `Run anyway`, Windows-only beta language, and no stale `E7B620C4D51837DDD43028B511E396643EE9A67D1CD23DC0B59BC5442277DCD7` hash.
 
 ## Cleanroom Test Procedure
 
 1. Pull this branch and verify this ACTIVE_DIRECTIVE is current.
 2. Download `The.Civic.Desk_0.3.2_x64-setup.exe` and `SHA256SUMS.txt` from the GitHub release page.
-3. Verify the installer SHA256 exactly matches `8204BB4210DD284518D114C57A3089BAC11D7B0EC8E0F83D8D61928D44FEB6E0`.
+3. Verify the installer SHA256 exactly matches `8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3`.
 4. Verify `SHA256SUMS.txt` names `The.Civic.Desk_0.3.2_x64-setup.exe` and contains the same SHA256.
 5. Confirm the release page and public docs explain that the Windows installer is unsigned, why SmartScreen may warn, and that the expected install path is `More info` then `Run anyway` when the hash matches.
 6. Uninstall any prior The Civic Desk app instance so the installer lifecycle is tested. Do not delete unrelated user data.
@@ -72,7 +77,7 @@ Before installing, write the visibility report confirming:
 9. Create and use a fresh isolated app-data folder for this cleanroom run:
 
 ```powershell
-$cleanProfile = Join-Path $env:TEMP "civicdesk-final-v032-35e6cf0-dark-signal-evidence"
+$cleanProfile = Join-Path $env:TEMP "civicdesk-final-v032-17766b7-durable-draft"
 Remove-Item -LiteralPath $cleanProfile -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Path $cleanProfile -Force | Out-Null
 $env:CIVICNEWS_APP_DATA_DIR = $cleanProfile
