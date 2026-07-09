@@ -1570,6 +1570,30 @@ fn build_persistable_draft(
     }
 }
 
+fn is_source_backed_draftable_lead(story_type: Option<&str>, disposition: Option<&str>) -> bool {
+    let story_type = story_type.unwrap_or_default().to_lowercase();
+    let disposition = disposition.unwrap_or_default().to_lowercase();
+    matches!(story_type.as_str(), "brief" | "story")
+        && matches!(disposition.as_str(), "ready_to_draft" | "draftable")
+}
+
+fn draft_evidence_for_lead(
+    lead_why: &str,
+    story_type: Option<&str>,
+    disposition: Option<&str>,
+    linked_items: Vec<EvidenceItem>,
+) -> Vec<EvidenceItem> {
+    let topic_matched = source_grounding::filter_topic_matched_evidence(lead_why, &linked_items);
+    if topic_matched.is_empty()
+        && !linked_items.is_empty()
+        && is_source_backed_draftable_lead(story_type, disposition)
+    {
+        linked_items
+    } else {
+        topic_matched
+    }
+}
+
 fn source_bound_headline(lead_why: &str) -> String {
     let cleaned = lead_why
         .replace('\n', " ")
@@ -2026,6 +2050,29 @@ mod draft_citation_tests {
         assert_eq!(persisted.status, "draft_generated");
         assert_eq!(persisted.title, "Longmont reviews utility update");
     }
+
+    #[test]
+    fn draftable_brief_keeps_linked_evidence_when_topic_filter_is_too_strict() {
+        let linked = vec![crate::core::db::EvidenceItem {
+            id: Some(25),
+            source_id: 1,
+            url: Some("https://longmontcolorado.gov/events/".to_string()),
+            fetched_at: "2026-07-09T00:00:00Z".to_string(),
+            excerpt: "Longmont posted a utility update for residents with a public meeting date, city department contact, and transportation service information.".to_string(),
+            content_hash: "utility".to_string(),
+            entities: "[]".to_string(),
+        }];
+
+        let evidence = super::draft_evidence_for_lead(
+            "Review community signal from Longmont city events: Public Safety Sustainability Transportation Utilities",
+            Some("brief"),
+            Some("ready_to_draft"),
+            linked,
+        );
+
+        assert_eq!(evidence.len(), 1);
+        assert_eq!(evidence[0].id, Some(25));
+    }
 }
 
 #[cfg(test)]
@@ -2265,8 +2312,13 @@ pub async fn generate_draft<R: tauri::Runtime>(
             })
             .map_err(|e| e.to_string())?;
         let template_guidance = story_template_guidance(&conn, story_type.as_deref());
-        let items = db::get_evidence_by_lead(&conn, lead_id).map_err(|e| e.to_string())?;
-        let topic_matched_items = source_grounding::filter_topic_matched_evidence(&why, &items);
+        let linked_items = db::get_evidence_by_lead(&conn, lead_id).map_err(|e| e.to_string())?;
+        let evidence_items = draft_evidence_for_lead(
+            &why,
+            story_type.as_deref(),
+            disposition.as_deref(),
+            linked_items,
+        );
         (
             why,
             story_type,
@@ -2276,7 +2328,7 @@ pub async fn generate_draft<R: tauri::Runtime>(
             recurrence_count,
             recurrence_note,
             template_guidance,
-            topic_matched_items,
+            evidence_items,
         )
     };
 
@@ -2421,8 +2473,13 @@ pub async fn generate_and_save_draft<R: tauri::Runtime>(
             })
             .map_err(|e| e.to_string())?;
         let template_guidance = story_template_guidance(&conn, story_type.as_deref());
-        let items = db::get_evidence_by_lead(&conn, lead_id).map_err(|e| e.to_string())?;
-        let topic_matched_items = source_grounding::filter_topic_matched_evidence(&why, &items);
+        let linked_items = db::get_evidence_by_lead(&conn, lead_id).map_err(|e| e.to_string())?;
+        let evidence_items = draft_evidence_for_lead(
+            &why,
+            story_type.as_deref(),
+            disposition.as_deref(),
+            linked_items,
+        );
         (
             why,
             story_type,
@@ -2432,7 +2489,7 @@ pub async fn generate_and_save_draft<R: tauri::Runtime>(
             recurrence_count,
             recurrence_note,
             template_guidance,
-            topic_matched_items,
+            evidence_items,
         )
     };
 
