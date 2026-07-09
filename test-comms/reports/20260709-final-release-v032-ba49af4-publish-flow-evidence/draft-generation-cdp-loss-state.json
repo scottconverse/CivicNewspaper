@@ -1,0 +1,19 @@
+﻿{
+    "captured_at":  "2026-07-09T15:54:22.1972623Z",
+    "note":  "After draft generation, Playwright CDP page/context closed; civicnews process still alive but http://127.0.0.1:9222/json/version timed out. Draft row was present in SQLite.",
+    "civic_processes":  [
+                            {
+                                "Id":  39520,
+                                "ProcessName":  "civicnews",
+                                "MainWindowTitle":  "The Civic Desk",
+                                "Path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe"
+                            }
+                        ],
+    "ollama_processes":  [
+                             {
+                                 "Id":  38248,
+                                 "ProcessName":  "ollama",
+                                 "Path":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-ba49af4-publish-flow\\ollama-runtime\\v0.30.11\\ollama.exe"
+                             }
+                         ]
+}

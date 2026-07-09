@@ -1,0 +1,171 @@
+{
+  "settings_count": 12,
+  "settings_rows": [
+    {
+      "key": "model.selected",
+      "value": "phi4-mini:latest"
+    },
+    {
+      "key": "identity.editor_name",
+      "value": "Local Editor"
+    },
+    {
+      "key": "identity.newsroom_name",
+      "value": "Longmont Civic Desk"
+    },
+    {
+      "key": "identity.organization_type",
+      "value": "single_person"
+    },
+    {
+      "key": "identity.city",
+      "value": "Longmont"
+    },
+    {
+      "key": "identity.state",
+      "value": "CO"
+    },
+    {
+      "key": "ai.setup_skipped",
+      "value": "true"
+    },
+    {
+      "key": "paths.publish",
+      "value": "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-ba49af4-publish-flow\\sites\\default"
+    },
+    {
+      "key": "paths.backup",
+      "value": "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-ba49af4-publish-flow\\backups"
+    },
+    {
+      "key": "onboarding.step",
+      "value": "5"
+    },
+    {
+      "key": "onboarding_complete",
+      "value": "1"
+    },
+    {
+      "key": "setup.first_run_intake",
+      "value": "consumed"
+    }
+  ],
+  "sources_count": 9,
+  "sources_rows": [
+    {
+      "id": 1,
+      "name": "Longmont official city website",
+      "url": "https://www.longmontcolorado.gov/",
+      "type": "primary_record",
+      "status": "online",
+      "last_success_at": null,
+      "last_failed_at": null,
+      "last_scraped": null,
+      "tier": "official_record"
+    },
+    {
+      "id": 2,
+      "name": "Longmont agendas and minutes",
+      "url": "https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk/agendas-and-minutes",
+      "type": "primary_record",
+      "status": "online",
+      "last_success_at": null,
+      "last_failed_at": null,
+      "last_scraped": null,
+      "tier": "official_record"
+    },
+    {
+      "id": 3,
+      "name": "Longmont public notices search",
+      "url": "https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk",
+      "type": "primary_record",
+      "status": "online",
+      "last_success_at": null,
+      "last_failed_at": null,
+      "last_scraped": null,
+      "tier": "official_record"
+    },
+    {
+      "id": 4,
+      "name": "St. Vrain Valley Schools",
+      "url": "https://www.svvsd.org/",
+      "type": "primary_record",
+      "status": "online",
+      "last_success_at": null,
+      "last_failed_at": null,
+      "last_scraped": null,
+      "tier": "official_record"
+    },
+    {
+      "id": 5,
+      "name": "Longmont Public Safety",
+      "url": "https://www.longmontcolorado.gov/departments/departments-n-z/public-safety",
+      "type": "official_comm",
+      "status": "online",
+      "last_success_at": null,
+      "last_failed_at": null,
+      "last_scraped": null,
+      "tier": "official_record"
+    },
+    {
+      "id": 6,
+      "name": "r/Longmont",
+      "url": "https://www.reddit.com/r/Longmont/",
+      "type": "community_signal",
+      "status": "online",
+      "last_success_at": null,
+      "last_failed_at": null,
+      "last_scraped": null,
+      "tier": "community_signal"
+    },
+    {
+      "id": 7,
+      "name": "Longmont Leader local news",
+      "url": "https://www.longmontleader.com/local-news",
+      "type": "media_lead",
+      "status": "online",
+      "last_success_at": null,
+      "last_failed_at": null,
+      "last_scraped": null,
+      "tier": "news_reporting"
+    },
+    {
+      "id": 8,
+      "name": "Longmont Area Chamber of Commerce",
+      "url": "https://longmontchamber.org/",
+      "type": "community_signal",
+      "status": "online",
+      "last_success_at": null,
+      "last_failed_at": null,
+      "last_scraped": null,
+      "tier": "community_signal"
+    },
+    {
+      "id": 9,
+      "name": "Longmont city events",
+      "url": "https://longmontcolorado.gov/events/",
+      "type": "official_calendar",
+      "status": "online",
+      "last_success_at": null,
+      "last_failed_at": null,
+      "last_scraped": null,
+      "tier": "community_signal"
+    }
+  ],
+  "daily_scan_runs_count": 0,
+  "daily_scan_runs_rows": [],
+  "daily_scan_leads_count": 0,
+  "daily_scan_leads_rows": [],
+  "leads_count": 0,
+  "leads_rows": [],
+  "lead_evidence_count": 0,
+  "lead_evidence_rows": [],
+  "evidence_items_count": 0,
+  "evidence_items_rows": [],
+  "drafts_count": 0,
+  "drafts_rows": [],
+  "published_posts_count": 0,
+  "published_posts_rows": [],
+  "publish_runs_count": 0,
+  "publish_runs_rows": []
+}

@@ -1,0 +1,29 @@
+The Civic Desk
+LONGMONT / CO
+NEWSROOM
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+SET UP
+Sources
+AI Model
+Publishing
+TOOLS
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+phi4-mini:latest
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+No lead or draft selected
+
+Open a draft below, or return to the queue to start a new story from a lead.
+
+Review community signal from Longmont city events: Public Safety Sustainability Transportation
+brief - Approved for publishing
+Open
+Back to Story Queue

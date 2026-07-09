@@ -1,0 +1,100 @@
+[
+  {
+    "i": 0,
+    "text": "Story Queue",
+    "aria": null,
+    "disabled": false,
+    "title": "Story Queue (Alt+1)"
+  },
+  {
+    "i": 1,
+    "text": "Daily Scan",
+    "aria": null,
+    "disabled": false,
+    "title": "Daily Scan (Alt+2)"
+  },
+  {
+    "i": 2,
+    "text": "Dark Signals",
+    "aria": null,
+    "disabled": false,
+    "title": "Dark Signals (Alt+3)"
+  },
+  {
+    "i": 3,
+    "text": "Verification",
+    "aria": null,
+    "disabled": false,
+    "title": "Verification (Alt+4)"
+  },
+  {
+    "i": 4,
+    "text": "Workbench",
+    "aria": null,
+    "disabled": false,
+    "title": "Workbench (Alt+5)"
+  },
+  {
+    "i": 5,
+    "text": "Sources",
+    "aria": null,
+    "disabled": false,
+    "title": "Sources (Alt+6)"
+  },
+  {
+    "i": 6,
+    "text": "AI Model",
+    "aria": null,
+    "disabled": false,
+    "title": "AI Model (Alt+7)"
+  },
+  {
+    "i": 7,
+    "text": "Publishing",
+    "aria": null,
+    "disabled": false,
+    "title": "Publishing (Alt+8)"
+  },
+  {
+    "i": 8,
+    "text": "Browser Pairing",
+    "aria": null,
+    "disabled": false,
+    "title": "Browser Pairing (Alt+9)"
+  },
+  {
+    "i": 9,
+    "text": "Ethics & Backups",
+    "aria": null,
+    "disabled": false,
+    "title": "Ethics & Backups (Alt+10)"
+  },
+  {
+    "i": 10,
+    "text": "System & Status",
+    "aria": null,
+    "disabled": false,
+    "title": "System & Status (Alt+11)"
+  },
+  {
+    "i": 11,
+    "text": "",
+    "aria": "Dismiss beta notice",
+    "disabled": false,
+    "title": null
+  },
+  {
+    "i": 12,
+    "text": "Review community signal from Longmont city events: Public Safety Sustainability Transportation\nbrief - Approved for publishing\nOpen",
+    "aria": null,
+    "disabled": false,
+    "title": null
+  },
+  {
+    "i": 13,
+    "text": "Back to Story Queue",
+    "aria": null,
+    "disabled": false,
+    "title": null
+  }
+]

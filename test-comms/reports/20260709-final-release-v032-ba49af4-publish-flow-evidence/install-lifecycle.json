@@ -1,0 +1,40 @@
+﻿{
+    "timestamp":  "2026-07-09T15:43:53.5200553Z",
+    "uninstallers":  [
+                         {
+                             "uninstaller":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\uninstall.exe",
+                             "exitCode":  0
+                         }
+                     ],
+    "installer":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-v032-ba49af4-release\\The.Civic.Desk_0.3.2_x64-setup.exe",
+    "installerExitCode":  0,
+    "expectedExe":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+    "exeExists":  true,
+    "exeVersion":  "0.3.2",
+    "pathsAfterInstall":  [
+                              {
+                                  "path":  "C:\\Users\\civic\\AppData\\Roaming\\com.scottconverse.civicdesk",
+                                  "exists":  false
+                              },
+                              {
+                                  "path":  "C:\\Users\\civic\\AppData\\Local\\com.scottconverse.civicdesk",
+                                  "exists":  true
+                              },
+                              {
+                                  "path":  "C:\\Users\\civic\\AppData\\Roaming\\The Civic Desk",
+                                  "exists":  false
+                              },
+                              {
+                                  "path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk",
+                                  "exists":  true
+                              },
+                              {
+                                  "path":  "C:\\Users\\civic\\AppData\\Roaming\\org.civicnews.app",
+                                  "exists":  false
+                              },
+                              {
+                                  "path":  "C:\\Users\\civic\\AppData\\Local\\org.civicnews.app",
+                                  "exists":  false
+                              }
+                          ]
+}

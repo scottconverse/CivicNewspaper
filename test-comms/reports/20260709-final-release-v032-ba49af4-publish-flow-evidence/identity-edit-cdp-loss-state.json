@@ -1,0 +1,12 @@
+﻿{
+    "captured_at":  "2026-07-09T15:56:20.6853631Z",
+    "note":  "Second CDP loss occurred while attempting identity edit/save after draft approval. civicnews stayed/restarted without remote debugging endpoint; draft approval persisted in SQLite.",
+    "civic_processes":  [
+                            {
+                                "Id":  3292,
+                                "ProcessName":  "civicnews",
+                                "MainWindowTitle":  "The Civic Desk",
+                                "Path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe"
+                            }
+                        ]
+}

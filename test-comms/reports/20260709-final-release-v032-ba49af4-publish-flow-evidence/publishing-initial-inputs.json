@@ -1,0 +1,32 @@
+[
+  {
+    "i": 0,
+    "tag": "INPUT",
+    "type": "text",
+    "value": "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-ba49af4-publish-flow\\sites\\default",
+    "checked": false,
+    "disabled": false,
+    "placeholder": "C:\\\\CivicDesk\\\\site",
+    "aria": null
+  },
+  {
+    "i": 1,
+    "tag": "INPUT",
+    "type": "email",
+    "value": "",
+    "checked": false,
+    "disabled": false,
+    "placeholder": "reader@example.com",
+    "aria": null
+  },
+  {
+    "i": 2,
+    "tag": "INPUT",
+    "type": "text",
+    "value": "",
+    "checked": false,
+    "disabled": false,
+    "placeholder": "optional",
+    "aria": null
+  }
+]
