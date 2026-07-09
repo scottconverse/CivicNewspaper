@@ -12,7 +12,7 @@ This file is the active directive. Ignore older directive filenames.
 - Release URL: https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2
 - Public docs URL: https://scottconverse.github.io/CivicNewspaper/
 - Product build commit embedded in the Windows app build: `ba49af4d69d2c4d6d88bfd148490494f243cc9d7`
-- Release/docs commit on `main`: `4ba609690e0094c453b4a2852fd209cc8c8b2c83`
+- Release/docs commit on `main`: `2cb62b8262a04111d00b1b4e1d0ebd9b4a78eeb1`
 - Windows installer asset: `The.Civic.Desk_0.3.2_x64-setup.exe`
 - Windows installer size: `5250809` bytes
 - Windows installer SHA256: `1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5`
@@ -49,7 +49,7 @@ Coder fixes in `ba49af4d69d2c4d6d88bfd148490494f243cc9d7`:
 - Cautious Story Queue actions are labeled `Review`, not `Verify first`.
 - The dead `generate_draft` command/export was removed; only durable `generate_and_save_draft` remains.
 - Source-backed Brief classifiers now use generalized current-action/public-impact checks instead of fixture-shaped result-count/service keywords.
-- Release body, checksum asset, README, install guide, manual, landing page, release-readiness page, and release-evidence JSON were updated to the `ba49af4` installer SHA/size.
+- Release body, checksum asset, README, install guide, manual, landing page, release-readiness page, and release-evidence JSON were updated to the `ba49af4` installer SHA/size; the landing page now marks the rebuilt Windows candidate as awaiting final cleanroom recheck.
 - The release docs consistency gate now checks the live GitHub release body for matching commit/hash/size.
 
 ## Visibility Check
@@ -64,7 +64,7 @@ Before installing, write the visibility report confirming:
 6. The release page shows installer SHA256 `1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5`, size `5250809`, and product commit `ba49af4d69d2c4d6d88bfd148490494f243cc9d7`.
 7. The release page has exactly one Windows installer asset and one checksum asset.
 8. `SHA256SUMS.txt` names `The.Civic.Desk_0.3.2_x64-setup.exe` and contains SHA256 `1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5`.
-9. The public docs URL shows installer SHA256 `1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5`, size `5250809`, `More info`, `Run anyway`, Windows-only beta language, and no stale `8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3`, `8204BB4210DD284518D114C57A3089BAC11D7B0EC8E0F83D8D61928D44FEB6E0`, or `E7B620C4D51837DDD43028B511E396643EE9A67D1CD23DC0B59BC5442277DCD7` hash.
+9. The public docs URL shows installer SHA256 `1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5`, size `5250809`, `More info`, `Run anyway`, Windows-only beta language, and `Rebuilt Windows candidate awaiting final cleanroom recheck`, with no stale `8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3`, `8204BB4210DD284518D114C57A3089BAC11D7B0EC8E0F83D8D61928D44FEB6E0`, or `E7B620C4D51837DDD43028B511E396643EE9A67D1CD23DC0B59BC5442277DCD7` hash.
 
 ## Cleanroom Test Procedure
 
