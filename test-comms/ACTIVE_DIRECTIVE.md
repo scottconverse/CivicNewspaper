@@ -1,4 +1,4 @@
-# Final Cleanroom Release Verification - The Civic Desk v0.3.2 17766b7 Durable Draft Persistence Rerun
+# Final Cleanroom Release Verification - The Civic Desk v0.3.2 ba49af4 Publish Flow Rerun
 
 Tester: run this from `msi\civic` on the cleanroom Windows tester machine.
 
@@ -11,11 +11,11 @@ This file is the active directive. Ignore older directive filenames.
 - Repository: `scottconverse/CivicNewspaper`
 - Release URL: https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2
 - Public docs URL: https://scottconverse.github.io/CivicNewspaper/
-- Product build commit embedded in the Windows app build: `17766b7ccb0cc744522090e28997b764676ce1c5`
-- Release/docs commit on `main`: `2e946205d1763247cbd8d4720b85fb2cec2af63a`
+- Product build commit embedded in the Windows app build: `ba49af4d69d2c4d6d88bfd148490494f243cc9d7`
+- Release/docs commit on `main`: `4ba609690e0094c453b4a2852fd209cc8c8b2c83`
 - Windows installer asset: `The.Civic.Desk_0.3.2_x64-setup.exe`
-- Windows installer size: `5260917` bytes
-- Windows installer SHA256: `8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3`
+- Windows installer size: `5250809` bytes
+- Windows installer SHA256: `1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5`
 - Checksum asset: `SHA256SUMS.txt`
 
 Do not use any installer copied from `C:\Users\instynct`. Download the installer and checksum file from the GitHub release URL above.
@@ -24,31 +24,33 @@ Do not use any installer copied from `C:\Users\instynct`. Download the installer
 
 Write these reports on this branch:
 
-- Visibility: `test-comms/reports/20260709-final-release-v032-17766b7-durable-draft-visibility.md`
-- Full report: `test-comms/reports/20260709-final-release-v032-17766b7-durable-draft-report.md`
+- Visibility: `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-visibility.md`
+- Full report: `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-report.md`
 
 Attach screenshots, logs, exported ZIP path notes, downloaded release asset notes, SQLite/app-data evidence, and publication URLs under:
 
-- `test-comms/reports/20260709-final-release-v032-17766b7-durable-draft-evidence/`
+- `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/`
 
 ## Why This Rerun Exists
 
-The previous `1e03894` source-backed Brief rerun proved release visibility, installer lifecycle, first-run onboarding, source discovery with both `Colorado` and `CO`, weak-lead draft gating, source-quality issue cleanup, and source-backed Daily Scan Brief promotion. It still failed final cleanroom because the fresh Longmont run recognized a source-backed Longmont item but saved no `lead_evidence`, leaving no draftable linked-evidence Story or Brief lead.
+The `17766b7ccb0cc744522090e28997b764676ce1c5` rerun fixed durable draft persistence: a ready Brief generated and saved a draft. It still failed final cleanroom because the editor could not finish the core release path:
 
-The `35e6cf0f4a8f01d74ef79247feaaadbd34dbb3da` rerun fixed linked evidence: Daily Scan produced 5 leads, `lead_evidence_count=5`, and one `Brief / Ready to draft` Longmont lead with linked source evidence. It still failed final cleanroom because clicking `Generate Draft` from that ready Brief closed/relaunched the app/WebView and left `drafts_count=0`, blocking editor workflow, export, and here.now publication.
+- Static publish approval hard-blocked a generated linked-evidence Brief on heuristic topic/attribution warnings with no editor override.
+- `Improve for Publication` could reject the app's own `CO` workspace context when a model wrote `Colorado`.
+- The release body advertised stale commit/hash/size provenance.
+- The UI promised an unreachable Manual Mode for offline AI drafting.
+- The Story Queue button label `Verify first` opened the draft wizard without any verification step.
 
-Coder fixes in `17766b7ccb0cc744522090e28997b764676ce1c5`:
+Coder fixes in `ba49af4d69d2c4d6d88bfd148490494f243cc9d7`:
 
-- Official `New Primary Record` leads remain `Watch` for generic home, directory, search, navigation, or index pages.
-- Official `New Primary Record` leads become draftable `Brief` leads only when linked source evidence contains concrete civic action, timeline, meeting/deadline, amount, or public-impact language.
-- Draftable official-record Brief leads keep their linked `lead_evidence` grounding.
-- Source-backed Daily Scan Brief promotion upgrades clean official civic-service/program signals when they have linked source evidence and concrete action language.
-- Dark-signal Daily Scan leads retain the deterministic observation's trusted `lead_evidence` instead of trying to rediscover it from a broader event/source page.
-- Daily Scan quality-gated verification cards rewrite raw navigation/category/index debris into a clean `Verify source-quality issue from ...` queue card instead of leading with scraped page chrome.
-- `Generate Draft` now creates and saves the draft inside one backend command before returning it to the UI, so a WebView/app relaunch cannot lose the generated draft between a frontend `generate_draft` call and a later frontend `save_draft` call.
-- Draftable Story/Brief leads keep linked source evidence when the stricter topic matcher is too narrow for broad Longmont Daily Scan lead text.
-- Source-bound fallback copy for Brief/Story output remains reader-facing and must not emit `watch brief` wording.
-- Existing weak-lead protections remain in force: unsupported/no-source/model-suggested items are downgraded before Story Queue, weak/watch/background/verification/low-novelty leads show verification-first behavior, and Story/Brief drafting defaults to Brief rather than Watch.
+- Static package-integrity problems still block approval, but topic/quality heuristics route through logged editor confirmation instead of vetoing the editor.
+- `CO` and `Colorado` are treated as the same supported jurisdiction during Improve for Publication checks.
+- Offline AI copy no longer promises Manual Mode; draft generation, improvement, and social copy plainly require a reachable local model.
+- Cautious Story Queue actions are labeled `Review`, not `Verify first`.
+- The dead `generate_draft` command/export was removed; only durable `generate_and_save_draft` remains.
+- Source-backed Brief classifiers now use generalized current-action/public-impact checks instead of fixture-shaped result-count/service keywords.
+- Release body, checksum asset, README, install guide, manual, landing page, release-readiness page, and release-evidence JSON were updated to the `ba49af4` installer SHA/size.
+- The release docs consistency gate now checks the live GitHub release body for matching commit/hash/size.
 
 ## Visibility Check
 
@@ -59,16 +61,16 @@ Before installing, write the visibility report confirming:
 3. Branch is `test-comms/cleanroom-coder-tester`.
 4. You read `test-comms/ACTIVE_DIRECTIVE.md`.
 5. You can reach the GitHub release URL and public docs URL.
-6. The release page shows installer SHA256 `8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3`, size `5260917`, and product commit `17766b7ccb0cc744522090e28997b764676ce1c5`.
+6. The release page shows installer SHA256 `1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5`, size `5250809`, and product commit `ba49af4d69d2c4d6d88bfd148490494f243cc9d7`.
 7. The release page has exactly one Windows installer asset and one checksum asset.
-8. `SHA256SUMS.txt` names `The.Civic.Desk_0.3.2_x64-setup.exe` and contains SHA256 `8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3`.
-9. The public docs URL shows installer SHA256 `8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3`, `More info`, `Run anyway`, Windows-only beta language, and no stale `E7B620C4D51837DDD43028B511E396643EE9A67D1CD23DC0B59BC5442277DCD7` hash.
+8. `SHA256SUMS.txt` names `The.Civic.Desk_0.3.2_x64-setup.exe` and contains SHA256 `1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5`.
+9. The public docs URL shows installer SHA256 `1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5`, size `5250809`, `More info`, `Run anyway`, Windows-only beta language, and no stale `8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3`, `8204BB4210DD284518D114C57A3089BAC11D7B0EC8E0F83D8D61928D44FEB6E0`, or `E7B620C4D51837DDD43028B511E396643EE9A67D1CD23DC0B59BC5442277DCD7` hash.
 
 ## Cleanroom Test Procedure
 
 1. Pull this branch and verify this ACTIVE_DIRECTIVE is current.
 2. Download `The.Civic.Desk_0.3.2_x64-setup.exe` and `SHA256SUMS.txt` from the GitHub release page.
-3. Verify the installer SHA256 exactly matches `8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3`.
+3. Verify the installer SHA256 exactly matches `1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5`.
 4. Verify `SHA256SUMS.txt` names `The.Civic.Desk_0.3.2_x64-setup.exe` and contains the same SHA256.
 5. Confirm the release page and public docs explain that the Windows installer is unsigned, why SmartScreen may warn, and that the expected install path is `More info` then `Run anyway` when the hash matches.
 6. Uninstall any prior The Civic Desk app instance so the installer lifecycle is tested. Do not delete unrelated user data.
@@ -77,32 +79,33 @@ Before installing, write the visibility report confirming:
 9. Create and use a fresh isolated app-data folder for this cleanroom run:
 
 ```powershell
-$cleanProfile = Join-Path $env:TEMP "civicdesk-final-v032-17766b7-durable-draft"
+$cleanProfile = Join-Path $env:TEMP "civicdesk-final-v032-ba49af4-publish-flow"
 Remove-Item -LiteralPath $cleanProfile -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Path $cleanProfile -Force | Out-Null
 $env:CIVICNEWS_APP_DATA_DIR = $cleanProfile
 & "$env:LOCALAPPDATA\The Civic Desk\civicnews.exe"
 ```
 
-10. Launch only the installed EXE from the GitHub release installer. Do not launch from source. Keep the `CIVICNEWS_APP_DATA_DIR` environment variable set in the PowerShell process that starts the installed EXE.
-11. Verify the first screen is first-run onboarding, not inherited Longmont state.
-12. Complete first-run setup for Longmont, Colorado using the app-guided local AI setup. Use the app controls as a new user would. If direct field automation is unreliable, use the visible `Longmont` starter profile.
-13. After onboarding finishes, do not manually repair city/state in Settings before the first Daily Scan. Go directly to Daily Scan and run it. This must pass without the prior `Choose your publication city and state in Settings before running Daily Scan.` blocker.
-14. Capture the saved `community_profile.json` and any relevant settings/SQLite evidence showing city `Longmont` and state `CO` after onboarding and after Daily Scan.
-15. Run source discovery/import twice if practical: once using `Longmont` / `Colorado`, and once using `Longmont` / `CO`. Full state name input should not produce an empty no-guidance result.
-16. Run Daily Scan and inspect leads. Confirm unsupported/no-source/model-suggested items are low-priority verification work, not high-priority or ready-to-draft story work.
-17. Specifically check that leads with no linked `lead_evidence` are not presented as strong draftable stories, do not show `Draft anyway`, and that Workbench offers verification-note behavior rather than a normal draft path for those leads.
-18. Confirm weak, generic, recurring, unsupported, non-jurisdictional, navigation/index, markup-debris, multi-item event listing, and broad legislative/chamber rollup items are clearly labeled, suppressed, downgraded, or separated from ordinary publishable story leads.
-19. Find at least one credible Longmont lead with linked evidence and Story or Brief treatment. Confirm the Workbench Article Format selector defaults to Brief for Story/Brief leads, not Watch.
-20. Draft at least one credible Longmont story or brief from linked source evidence. Use the explicit `Draft` or `Open draft` control; do not rely on clicking passive card text.
-21. Confirm public copy has a real headline, coherent reader-facing body, no watch-fragment phrasing for Brief output, no reporter scaffolding, no `EDITOR_NOTE`, no `Body:`, no `Headline:`, no `Nut graf`, no `[Source needed]`, no `[Verification needed]`, no `[End of Report]`, no mojibake marker code points, no encoded HTML entity leakage, and no unsupported facts.
-22. Exercise editor workflow including hold/send-back/approve/cut where available. Confirm a held draft can be clearly sent back for more work.
-23. Compile/export the static site and record the exported ZIP path.
-24. Publish through the default here.now anonymous preview flow. This anonymous here.now preview is authorized for this release cleanroom test. Do not use credentialed external providers.
-25. Record the public here.now URL.
-26. Inspect the public here.now site as a visitor. Confirm there are no duplicate topic stories, no raw Markdown, no internal tester/developer paths, no unsupported Mac/Linux installer claims, and no broken story links.
-27. Inspect the public docs/landing page from https://scottconverse.github.io/CivicNewspaper/ and the release page. Confirm v0.3.2, Windows-only beta, unsigned installer guidance, here.now support, discussion links, and release download links are all present and honest.
-28. Write a full human-readable report with PASS/FAIL and explicit blocker/critical/major/minor findings. The release only passes if there are zero blocker, critical, and major findings.
+10. Launch only the installed EXE from the GitHub release installer. Do not launch from source.
+11. Verify first-run onboarding appears, not inherited Longmont state.
+12. Complete first-run setup for Longmont, Colorado using the app-guided local AI setup. If direct field automation is unreliable, use the visible `Longmont` starter profile.
+13. After onboarding, go directly to Daily Scan and run it without manually repairing city/state in Settings.
+14. Capture saved profile/settings/SQLite evidence showing city `Longmont` and state `CO`.
+15. Run source discovery/import twice if practical: once using `Longmont` / `Colorado`, and once using `Longmont` / `CO`.
+16. Run Daily Scan and inspect leads. Confirm unsupported/no-source/model-suggested/navigation/index items are downgraded or verification work, not strong ready-to-draft story work.
+17. Confirm leads with no linked `lead_evidence` do not show a strong Draft path and do not show `Draft anyway`.
+18. Confirm cautious/background/watch/verification leads use honest `Review` labeling, not `Verify first`.
+19. Find at least one credible Longmont lead with linked evidence and Story or Brief treatment. Confirm Article Format defaults to Brief for Story/Brief leads.
+20. Draft at least one credible Longmont story or brief from linked source evidence.
+21. Confirm generated public copy has a real headline, coherent reader-facing body, no watch-fragment phrasing for Brief output, no reporter scaffolding, no `EDITOR_NOTE`, no `Body:`, no `Headline:`, no `Nut graf`, no `[Source needed]`, no `[Verification needed]`, no `[End of Report]`, no mojibake marker code points, no encoded HTML entity leakage, and no unsupported facts.
+22. Exercise editor workflow: send back, hold, restore/resume where available, improve if local AI is ready, approve, cut if available.
+23. Specifically retest the prior blocker: after generating a linked-evidence Brief, check `I reviewed this story`, click `Approve`, and confirm heuristic topic/quality warnings can be resolved through the logged editor confirmation instead of blocking static publish approval.
+24. Compile/export the static site and record the exported ZIP path.
+25. Publish through the default here.now anonymous preview flow. This anonymous here.now preview is authorized for this release cleanroom test. Do not use credentialed external providers.
+26. Record the public here.now URL.
+27. Inspect the public here.now site as a visitor. Confirm there are no duplicate topic stories, no raw Markdown, no internal tester/developer paths, no unsupported Mac/Linux installer claims, and no broken story links.
+28. Inspect the public docs/landing page from https://scottconverse.github.io/CivicNewspaper/ and the release page. Confirm v0.3.2, Windows-only beta, unsigned installer guidance, here.now support, discussion links, release download links, installer SHA256, size, and commit are all present and honest.
+29. Write a full human-readable report with PASS/FAIL and explicit blocker/critical/major/minor/nit findings. The release only passes if there are zero blocker, critical, major, minor, and nit findings.
 
 ## Do Not Do
 
