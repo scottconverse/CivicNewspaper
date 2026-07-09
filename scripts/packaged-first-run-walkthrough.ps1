@@ -293,7 +293,7 @@ try {
   }
 
   $driverScript = Join-Path $repo "scripts\packaged-webview-driver.mjs"
-  & node $driverScript --cdp-url $cdpUrl --mode first-run --output-dir $OutputDir
+  & node $driverScript --cdp-url $cdpUrl --mode first-run --output-dir $OutputDir --expected-build-id $($receipt.commit)
   if ($LASTEXITCODE -ne 0) {
     throw "Packaged first-run webview driver failed with exit code $LASTEXITCODE"
   }
@@ -483,7 +483,7 @@ print(token)
       throw "Packaged core-flow app did not expose WebView2 CDP at $coreCdpUrl"
     }
 
-    & node $driverScript --cdp-url $coreCdpUrl --mode core-flow --output-dir $coreFlowDir --model $Model
+    & node $driverScript --cdp-url $coreCdpUrl --mode core-flow --output-dir $coreFlowDir --model $Model --expected-build-id $($receipt.commit)
     if ($LASTEXITCODE -ne 0) {
       throw "Packaged core-flow webview driver failed with exit code $LASTEXITCODE"
     }

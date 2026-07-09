@@ -35,15 +35,22 @@ describe("release coverage gate", () => {
 
   test("requires accessible packaged first-run and live core-flow proof", () => {
     const walkthrough = read("scripts/packaged-first-run-walkthrough.ps1");
+    const webviewDriver = read("scripts/packaged-webview-driver.mjs");
     const releaseSmoke = read("scripts/release-smoke.ps1");
     const rcEvidence = read("scripts/prepare-rc-evidence.ps1");
 
     expect(walkthrough).toContain("packaged-webview-driver.mjs");
+    expect(walkthrough).toContain("--expected-build-id $($receipt.commit)");
     expect(walkthrough).toContain("core-flow-database-persistence");
     expect(walkthrough).toContain('"$receiptPath.sha256"');
     expect(walkthrough).not.toContain("SendKeys");
     expect(walkthrough).not.toContain("Click-WindowPoint");
+    expect(webviewDriver).toContain('locator("#civicnews-build-id")');
+    expect(webviewDriver).toContain('check("build-id-matches-commit"');
     expect(releaseSmoke).toContain("packaged-first-run-and-core-flow");
+    expect(rcEvidence).toContain("packagedWalkthrough.installer_sha256");
+    expect(rcEvidence).toContain("packagedWalkthrough.installer_size");
+    expect(rcEvidence).toContain("does not match the packaged walkthrough receipt");
     expect(rcEvidence).toContain("core-draft-reloaded-in-workbench");
   });
 });

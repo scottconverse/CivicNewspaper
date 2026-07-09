@@ -11,10 +11,11 @@ const cdpUrl = option("cdp-url");
 const mode = option("mode");
 const outputDir = path.resolve(option("output-dir"));
 const model = option("model", "phi4-mini:latest");
+const expectedBuildId = option("expected-build-id");
 const outputPath = path.join(outputDir, `${mode}-webview-result.json`);
 
-if (!cdpUrl || !mode || !option("output-dir")) {
-  throw new Error("Usage: node packaged-webview-driver.mjs --cdp-url URL --mode first-run|core-flow --output-dir DIR [--model MODEL]");
+if (!cdpUrl || !mode || !option("output-dir") || !expectedBuildId) {
+  throw new Error("Usage: node packaged-webview-driver.mjs --cdp-url URL --mode first-run|core-flow --output-dir DIR --expected-build-id SHA [--model MODEL]");
 }
 
 await mkdir(outputDir, { recursive: true });
@@ -161,6 +162,11 @@ try {
   const context = browser.contexts()[0];
   const page = context.pages()[0];
   await page.waitForLoadState("domcontentloaded");
+  const embeddedBuildId = await page.locator("#civicnews-build-id").getAttribute("data-build-id");
+  check("build-id-matches-commit", embeddedBuildId === expectedBuildId, {
+    expected: expectedBuildId,
+    actual: embeddedBuildId,
+  });
   if (mode === "first-run") await runFirstRun(page);
   else if (mode === "core-flow") await runCoreFlow(page);
   else throw new Error(`Unknown mode: ${mode}`);

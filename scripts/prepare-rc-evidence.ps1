@@ -239,6 +239,7 @@ try {
       "window-handle-present",
       "webview-cdp-ready",
       "first-run-webview-driver",
+      "webview-build-id-matches-commit",
       "webview-dependency-absent-choice-visible",
       "webview-workspace-reached",
       "webview-zero-source-guidance-usable",
@@ -354,13 +355,20 @@ try {
   if ($staleArtifacts.Count -gt 0 -and -not $AllowStaleArtifacts) {
     throw "Stale installer artifact(s) found under ${ArtifactsDir}: $($staleArtifacts.name -join ', '). Remove old bundle artifacts before creating release evidence, or use -AllowStaleArtifacts for a diagnostic receipt."
   }
-  $preBuildIdArtifacts = @($artifacts | Where-Object { [DateTime]::Parse([string]$_.last_write_time_utc).ToUniversalTime() -lt $frontendBuildIdTimeUtc })
-  if ($preBuildIdArtifacts.Count -gt 0 -and -not $AllowStaleArtifacts) {
-    throw "Installer artifact(s) are older than dist\build-id.txt for current HEAD: $($preBuildIdArtifacts.name -join ', '). Rebuild the installer after npm run build."
-  }
   $preCommitArtifacts = @($artifacts | Where-Object { [DateTime]::Parse([string]$_.last_write_time_utc).ToUniversalTime() -lt $headCommitTimeUtc })
   if ($preCommitArtifacts.Count -gt 0 -and -not $AllowStaleArtifacts) {
     throw "Installer artifact(s) predate current HEAD commit time: $($preCommitArtifacts.name -join ', '). Rebuild the installer from the audited commit."
+  }
+
+  if ($packagedWalkthroughOk -and $artifacts.Count -gt 0) {
+    $walkthroughHash = ([string]$packagedWalkthrough.installer_sha256).Trim().ToUpperInvariant()
+    $walkthroughSize = [int64]$packagedWalkthrough.installer_size
+    $walkthroughArtifacts = @($artifacts | Where-Object {
+      ([string]$_.sha256).ToUpperInvariant() -eq $walkthroughHash -and [int64]$_.bytes -eq $walkthroughSize
+    })
+    if ($walkthroughArtifacts.Count -eq 0) {
+      throw "Current release artifact does not match the packaged walkthrough receipt SHA256 and size."
+    }
   }
 
   if ($installerSmokeOk -and $artifacts.Count -gt 0) {
