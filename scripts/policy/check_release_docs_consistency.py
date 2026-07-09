@@ -53,8 +53,8 @@ def main() -> int:
     require("docs/install.md", "https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2", failures)
     require("docs/release-readiness.md", "Current v0.3.2 evidence", failures)
     require("docs/release-readiness.md", "docs/release-evidence/v0.3.2.json", failures)
-    require("docs/release-evidence/v0.3.2.json", "35e6cf0f4a8f01d74ef79247feaaadbd34dbb3da", failures)
-    require("docs/release-evidence/v0.3.2.json", "8204BB4210DD284518D114C57A3089BAC11D7B0EC8E0F83D8D61928D44FEB6E0", failures)
+    require("docs/release-evidence/v0.3.2.json", "38e328bdaa0a74d4f59b30b63738d5ece8cf7f5c", failures)
+    require("docs/release-evidence/v0.3.2.json", "B71F47CCD68DC41280C209C5BCB91B143BE6F20A6B65513045DE001A2FE7B37D", failures)
 
     require("docs/publishing-connectors.md", "anonymous here.now preview publishing is the tested default fast path", failures)
     require("docs/publishing-connectors.md", "Cloudflare Pages API publishing is disabled", failures)
