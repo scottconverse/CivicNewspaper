@@ -4,6 +4,42 @@ This smoke test verifies the release paths that unit tests and browser component
 
 Save screenshots, logs, output ZIPs, here.now URLs, model notes, and failure notes beside the release receipt.
 
+## Required Evidence Header
+
+Complete this header before testing. A report without every field is not release evidence.
+
+| Field | Required value |
+|---|---|
+| Release tag | Exact tag under test |
+| Git commit | Full 40-character product commit |
+| Installer filename | Exact tested filename |
+| Installer SHA256 | Hash computed from the tested file |
+| Installer size | Exact byte count |
+| Release-evidence comparison | PASS only when filename, SHA256, size, tag, and commit match `docs/release-evidence/<tag>.json` |
+| App version/build ID | Value shown by the installed app or packaged build metadata |
+| Test machine | Machine/VM name and Windows version |
+| Isolated profile | Windows user plus exact `CIVICNEWS_APP_DATA_DIR` when used |
+| Local AI state | Runtime/model present or absent, with process/API probe path |
+| Report path | Absolute or repository-relative final report path |
+| Report SHA256 | Computed after the report is final |
+| Output ZIP path and SHA256 | Exact package produced by the tested app |
+| Published URL | Final here.now URL, or explicit SKIP reason |
+
+Before declaring PASS, compute the installer hash and size, compare them to the hosted release-evidence record, and record the comparison result. Never infer provenance from a screenshot filename or a tester note.
+
+Every report must include this result table:
+
+| Section | PASS / FAIL / SKIP | Evidence path or exact reason |
+|---|---|---|
+| Install and first launch | | |
+| Dependency-absent first run | | |
+| Local AI setup and live model | | |
+| Source intake | | |
+| Daily Scan to Workbench | | |
+| Publishing and ZIP | | |
+| Browser extension | | |
+| Backup/restore/recovery | | |
+
 ## Required Environment
 
 - Clean Windows user profile, Windows Sandbox, VM, or second test machine.
@@ -127,3 +163,12 @@ The smoke test does not pass unless it produces:
 - A human-readable report explaining what passed, what failed, and what was fixed.
 
 One lead or one story is a failure for this gate.
+
+## Completion Checklist
+
+- [ ] Evidence header is complete and matches `docs/release-evidence/<tag>.json`.
+- [ ] Every section has PASS, FAIL, or an honest SKIP with its reason.
+- [ ] Screenshots and DB/settings evidence corroborate the actions claimed in the report.
+- [ ] Report SHA256 was computed after the final edit.
+- [ ] Output ZIP SHA256 and published URL were independently re-opened or re-checked.
+- [ ] Severity rollup records Blocker, Critical, Major, Minor, and Nit counts.

@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "test": "vitest run --no-color",
+    "test:coverage": "vitest run --coverage",
     "test:ui-smoke": "node scripts/ui-smoke.mjs",
     "lint:tokens": "node scripts/check-design-tokens.mjs"
   },
@@ -29,6 +30,7 @@
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^6.0.3",
+    "@vitest/coverage-v8": "4.1.9",
     "jsdom": "^25",
     "playwright": "^1.61.1",
     "typescript": "~5.8.3",

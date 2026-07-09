@@ -1,6 +1,7 @@
 param(
   [string]$FixtureDir = "",
   [string]$Model = "phi4-mini:latest",
+  [string]$PackagedInstaller = "",
   [switch]$SkipLiveModel,
   [switch]$SkipHereNow,
   [switch]$SkipDesktopSmoke,
@@ -33,6 +34,7 @@ $receipt = [ordered]@{
   stable_mode = [bool]$Stable
   allow_dirty = [bool]$AllowDirty
   ui_smoke_receipt = $null
+  packaged_walkthrough_receipt = $null
   ui_smoke_results = @()
   branch = $null
   commit = $null
@@ -183,9 +185,31 @@ try {
       throw "Stable release smoke cannot skip desktop first-run smoke."
     }
     Add-SkippedCheck "desktop-first-run-loopback-smoke" "Skipped by -SkipDesktopSmoke."
+    Add-SkippedCheck "packaged-first-run-and-core-flow" "Skipped by -SkipDesktopSmoke."
   } else {
     Invoke-Check "desktop-first-run-loopback-smoke" {
       powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoRoot "scripts\desktop-smoke.ps1") -RunDir (Join-Path $RunDir "desktop-smoke")
+    }
+    Invoke-Check "packaged-first-run-and-core-flow" {
+      $walkthroughParams = @{
+        OutputDir = (Join-Path $RunDir "packaged-walkthrough")
+        Model = $Model
+        CompleteOnboarding = $true
+        CoreFlow = $true
+      }
+      if ($PackagedInstaller) {
+        $walkthroughParams.NsisInstaller = $PackagedInstaller
+      }
+      & (Join-Path $RepoRoot "scripts\packaged-first-run-walkthrough.ps1") @walkthroughParams
+      $walkthroughReceipt = Join-Path $RunDir "packaged-walkthrough\packaged-first-run-walkthrough-receipt.json"
+      if (-not (Test-Path -LiteralPath $walkthroughReceipt)) {
+        throw "Packaged walkthrough did not write its receipt."
+      }
+      $walkthrough = Get-Content -Raw -LiteralPath $walkthroughReceipt | ConvertFrom-Json
+      if (-not $walkthrough.ok -or -not $walkthrough.core_flow) {
+        throw "Packaged walkthrough receipt did not prove both first-run and core-flow paths."
+      }
+      $receipt.packaged_walkthrough_receipt = $walkthroughReceipt
     }
   }
 

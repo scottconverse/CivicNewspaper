@@ -14,6 +14,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Updated release-facing docs to match the v0.3.2 Windows-only public-beta installer scope.
 
 ### Fixed
+- Replaced coordinate/keystroke packaged walkthrough automation with accessible-name WebView2 automation that proves dependency-absent onboarding, zero-source guidance, live-model Daily Scan, durable draft generation, and Workbench reload against the installed app.
+- Replaced textual site-root prefix checks with component-aware canonical containment and traversal/sibling regression coverage.
+- Added screen-reader announcements for Daily Scan progress and failures, a programmatic name for the installed-model selector, and selected-state semantics for Story Queue views.
+- Made frontend and Rust coverage floors release-gating, preserved machine-readable coverage artifacts, and added focused thresholds for first-run, IPC, Workbench, and publishing surfaces.
+- Bound manual smoke reports to exact tag, commit, installer filename/hash/size, machine/profile, app version, report/output hashes, result table, and hosted release evidence.
+- Linked the authenticated localhost API and Browser Bridge setup from the main README and landing-page documentation index.
 - Fixed the publish-preflight dead end by keeping package-integrity problems as blockers while routing topic/quality heuristics through a logged editor confirmation.
 - Removed the unreachable Manual Mode promise from offline AI drafting copy; draft generation, improvement, and social copy now plainly require a reachable local model.
 - Renamed cautious lead queue actions from "Verify first" to "Review" so the button matches the action it performs.

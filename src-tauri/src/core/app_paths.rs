@@ -47,15 +47,23 @@ pub fn ensure_standard_app_dirs(app_data: &Path) -> Result<(), String> {
 
 pub fn is_standard_site_path(app_data: &std::path::Path, path: &std::path::Path) -> bool {
     let site_root = app_data.join("sites");
-    let normalize = |value: &std::path::Path| {
-        value
-            .components()
-            .collect::<PathBuf>()
-            .to_string_lossy()
-            .replace('\\', "/")
-            .to_lowercase()
+    if path
+        .components()
+        .any(|component| matches!(component, std::path::Component::ParentDir))
+        || !path.starts_with(&site_root)
+    {
+        return false;
+    }
+
+    let Ok(canonical_root) = site_root.canonicalize() else {
+        return false;
     };
-    normalize(path).starts_with(&normalize(&site_root))
+    let Some(existing_ancestor) = path.ancestors().find(|ancestor| ancestor.exists()) else {
+        return false;
+    };
+    existing_ancestor
+        .canonicalize()
+        .is_ok_and(|ancestor| ancestor.starts_with(canonical_root))
 }
 
 #[cfg(test)]
@@ -104,14 +112,28 @@ mod tests {
 
     #[test]
     fn standard_site_path_detection_is_scoped_to_sites_folder() {
-        let app_data = PathBuf::from(r"C:\Users\civic\AppData\Roaming\com.scottconverse.civicdesk");
+        let root = tempdir().unwrap();
+        let app_data = root.path().join("app-data");
+        ensure_standard_app_dirs(&app_data).unwrap();
         assert!(is_standard_site_path(
             &app_data,
             &app_data.join("sites").join("default")
         ));
+        assert!(is_standard_site_path(
+            &app_data,
+            &app_data.join("sites").join("default").join("issue-001")
+        ));
         assert!(!is_standard_site_path(
             &app_data,
             &app_data.join("backups").join("default")
+        ));
+        assert!(!is_standard_site_path(
+            &app_data,
+            &app_data.join("sites-archive").join("new")
+        ));
+        assert!(!is_standard_site_path(
+            &app_data,
+            &app_data.join("sites").join("..").join("backups")
         ));
     }
 }

@@ -1088,17 +1088,15 @@ fn save_dark_signal_leads(
         .into_iter()
         .filter(|signal| signal.publication_status != "dismissed")
         .filter_map(|signal| {
-            let evidence_id = signal
-                .observation_id
-                .and_then(|observation_id| {
-                    conn.query_row(
-                        "SELECT evidence_id FROM civic_observations WHERE id = ?1",
-                        [observation_id],
-                        |row| row.get::<_, Option<i32>>(0),
-                    )
-                    .ok()
-                    .flatten()
-                })?;
+            let evidence_id = signal.observation_id.and_then(|observation_id| {
+                conn.query_row(
+                    "SELECT evidence_id FROM civic_observations WHERE id = ?1",
+                    [observation_id],
+                    |row| row.get::<_, Option<i32>>(0),
+                )
+                .ok()
+                .flatten()
+            })?;
             evidence_ids
                 .contains(&evidence_id)
                 .then_some((signal, evidence_id))
@@ -1231,23 +1229,22 @@ fn dark_signal_is_source_backed_brief_candidate(signal: &intelligence::DarkSigna
         return false;
     }
     let has_civic_service_signal = [
-            "senior center",
-            "waste reduction",
-            "reuse experts",
-            "public workshop",
-            "community resources",
-            "road closure",
-            "utility",
-            "utilities",
-            "public safety",
-            "library",
-            "recreation services",
-        ]
-        .iter()
-        .any(|needle| text.contains(needle));
+        "senior center",
+        "waste reduction",
+        "reuse experts",
+        "public workshop",
+        "community resources",
+        "road closure",
+        "utility",
+        "utilities",
+        "public safety",
+        "library",
+        "recreation services",
+    ]
+    .iter()
+    .any(|needle| text.contains(needle));
     has_civic_service_signal
-        && (evidence_has_strong_current_action(&text)
-            || evidence_has_public_impact_signal(&text))
+        && (evidence_has_strong_current_action(&text) || evidence_has_public_impact_signal(&text))
 }
 
 fn save_daily_scan_lead_for_queue(

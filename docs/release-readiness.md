@@ -16,6 +16,8 @@ The script writes a receipt under `.agent-runs\release-smoke-*` and runs:
 - frontend tests
 - Rust tests
 - desktop first-run loopback smoke with isolated app data
+- installed-package first run with the local AI endpoint forced absent, accessible-name actions, persisted completion markers, and zero-source guidance
+- installed-package live-model flow from fetched municipal sources through linked lead, generated/saved draft, and Workbench reload
 - seeded static-site output generation
 - anonymous here.now publish and live URL fetch
 - live Colorado source scan
@@ -38,6 +40,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\release-smoke.ps1 `
 
 The stable run fails if the working tree is dirty or if desktop smoke, live model, here.now, or import fixture gates are skipped. Use `-AllowDirty` only for a non-release diagnostic run. The `-FixtureDir` value must point to a folder available on the machine running the gate. Use the committed `tests\fixtures\source-import` fixture folder for normal release checks, or pass any equivalent full source-file fixture folder that contains the expected CSV, TXT, XLSX, DOCX files and PDF-disabled guidance fixtures.
 
+For this Windows beta release-candidate line, cleanroom evidence may be produced locally in an isolated app-data profile, Windows Sandbox, or VM. An external tester is optional, not mandatory, when the local report binds the exact installer SHA256/size and commit, proves the dependency-absent first run, and proves the live-model source-to-Workbench path against the installed package.
+
 ## Release-candidate packaging receipt
 
 After tests and smoke checks pass, generate a local RC evidence receipt before publishing any release asset:
@@ -51,7 +55,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\prepare-rc-evidence.
   -PackagedWalkthroughReceipt ".agent-runs\packaged-first-run-walkthrough-YYYYMMDD-HHMMSS\packaged-first-run-walkthrough-receipt.json"
 ```
 
-The receipt records the exact branch, commit, app versions, Tauri bundle targets, artifact paths, SHA256 hashes, smoke-check results, model-bakeoff receipt, dependency-audit receipt, Windows installer-smoke receipt, and checksum-manifest output. It is a local evidence artifact; it does not push, merge, tag, or publish. By default it fails if the smoke receipt is missing, from a different repo or commit, dirty/diagnostic, contains failed/skipped checks, no current-version installer artifacts are present, stale historical installer artifacts are present in the bundle folder, the installer-smoke SHA256 does not match the current release artifact SHA256, or the model-bakeoff/dependency-audit/installer-smoke artifacts are missing. Use the diagnostic flags only for local investigation, not release evidence.
+The receipt records the exact branch, commit, app versions, Tauri bundle targets, artifact paths, SHA256 hashes, smoke-check results, model-bakeoff receipt, dependency-audit receipt, Windows installer-smoke receipt, packaged first-run/core-flow receipt, and checksum-manifest output. It is a local evidence artifact; it does not push, merge, tag, or publish. By default it fails if the smoke receipt is missing, from a different repo or commit, dirty/diagnostic, contains failed/skipped checks, no current-version installer artifacts are present, stale historical installer artifacts are present in the bundle folder, the installer-smoke SHA256 does not match the current release artifact SHA256, or the required model-bakeoff/dependency-audit/installer/package artifacts are missing. Use the diagnostic flags only for local investigation, not release evidence.
 
 The model bakeoff receipt must show that the configured default model in `src\models.json` passed every bakeoff case. The dependency audit receipt must be clean, run npm audit at the documented `moderate` threshold or stricter, and include Rust advisory checking through `cargo-audit`; a receipt that only exists but contains failures is not release evidence. If `cargo-audit` uses ignored RustSec advisories, every ignored ID must have a current machine-readable waiver in `docs/security-advisory-waivers.json`, and the dependency and RC receipts must copy exactly matching waiver entries into release evidence. Missing, extra, duplicated, expired, or incomplete waivers fail RC evidence. The Windows installer smoke receipt must prove NSIS silent install, installed app start from the packaged installer, first-run screenshot capture, uninstaller presence, and silent uninstall, and its recorded installer SHA256 must match the current RC artifact SHA256. MSI lifecycle proof is backlog/proof-needed until MSI is reintroduced as a public beta artifact.
 
@@ -62,7 +66,7 @@ For this release line, RC packaging evidence is Windows public beta only. macOS 
 The GitHub release workflow is intentionally conservative during public beta:
 
 - tag pushes build Windows artifacts into a **draft** prerelease;
-- the hosted workflow fails unless `docs/release-evidence/<tag>.json` exists at the tagged commit and verifies local RC evidence, Windows installer smoke, packaged first-run proof, final cleanroom proof, and the matching installer SHA256 for that exact tag;
+- the hosted workflow fails unless `docs/release-evidence/<tag>.json` exists at the tagged commit and verifies local RC evidence, Windows installer smoke, isolated packaged first-run/core-flow cleanroom proof, and the matching installer SHA256 for that exact tag;
 - the workflow attaches a checksum manifest and runs release-asset integrity checks;
 - release-asset integrity recomputes every downloaded asset hash and requires the published Windows installer hash in the checksum manifest to match the cleanroom-tested installer hash from `docs/release-evidence/<tag>.json`;
 - the workflow does not publish a non-draft public release by itself;
@@ -92,7 +96,7 @@ This does not publish, merge, or tag the release by itself. Scott must still app
 | Level | Required evidence | Allowed skips |
 |---|---|---|
 | Public beta | Frontend tests, Rust tests, static-site output gate, release notes, known limitations, install guide, user manual, and troubleshooting guide. | Live provider credentials, signing, true clean-machine proof. Skips must be explicit in the receipt. |
-| Release candidate | Beta evidence plus desktop smoke, current-version Windows installer artifacts, source-import fixtures, live Colorado scan, model bakeoff, dependency audit, anonymous here.now publish. | External providers without credentials. |
+| Release candidate | Beta evidence plus enforced coverage floors, desktop smoke, current-version Windows installer artifacts, isolated packaged first-run/core-flow proof, source-import fixtures, live Colorado scan, model bakeoff, dependency audit, anonymous here.now publish. | External providers without credentials; external tester optional when local packaged proof is complete. |
 | Stable | RC evidence plus no skipped release-smoke gates, clean first-run artifact, signed Windows installer, cross-platform installer proof for every advertised OS, and credentialed live connector verification for supported providers. | None for the release-critical gates. |
 
 ## Source import fixtures
@@ -104,7 +108,7 @@ folder. For repo-local release evidence, restore or copy the fixture artifact to
 tests\fixtures\source-import
 ```
 
-If a tester machine uses a different workspace path, pass that machine's equivalent
+If the gate machine uses a different workspace path, pass that machine's equivalent
 full source-file fixture folder with `-FixtureDir`. Do not hard-code another user's
 Windows profile path in release directives.
 

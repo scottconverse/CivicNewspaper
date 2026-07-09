@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loopback HTTP API Reference | The Civic Desk</title>
+    <meta name="description" content="Loopback HTTP API Reference for The Civic Desk public beta.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="doc-page.css">
+</head>
+<body class="doc-page">
+    <nav aria-label="Site navigation">
+        <div class="nav-container">
+            <a class="logo" href="index.html#top" aria-label="The Civic Desk home">
+                <span>The Civic Desk</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html#downloads">Downloads</a>
+                <a href="user_manual.html">Manual</a>
+                <a href="install.html">Install</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a class="nav-btn-primary" href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </nav>
+    <main class="doc-shell">
+        <article class="doc-content">
+<h1 id="loopback-http-api-reference">Loopback HTTP API Reference</h1>
+<p>CivicNewspaper&#x27;s Rust backend runs an Axum HTTP server bound strictly to <code>127.0.0.1:12053</code>. It exists so local clients, including the Chromium browser extension and local assistant tools, can pair with the desktop app and exchange data over a controlled local channel.</p>
+<p>This file is the route contract. If <code>src-tauri/src/core/server.rs</code> or <code>src-tauri/src/core/auth.rs</code> changes, update this document.</p>
+<h2 id="trust-boundary">Trust Boundary</h2>
+<p>The trust boundary is the local user account, not the process. Any process running as the same OS user can reach <code>127.0.0.1:12053</code>. After pairing, the bearer token is the authorization gate. See <a href="../SECURITY.html">SECURITY.md</a> for the full threat model.</p>
+<h2 id="base-url">Base URL</h2>
+<pre><code>http://127.0.0.1:12053</code></pre>
+<p>The server binds <code>127.0.0.1</code> only. It is not intended to be reachable from another machine.</p>
+<h2 id="request-prerequisites">Request Prerequisites</h2>
+<p>All API routes are Host/Origin-gated.</p>
+<ol>
+<li><strong>Host header:</strong> must be exactly <code>127.0.0.1:12053</code>. Other values return <code>403 Forbidden</code>.</li>
+<li><strong>Origin header:</strong> if present, must be the bundled Civic Desk Browser Bridge origin <code>chrome-extension://fobahchhglbihbjfldjlnbbaoagbmjif</code> or an explicitly configured development origin. <code>Origin: null</code>, arbitrary Chrome extensions, and untrusted web origins return <code>403 Forbidden</code>.</li>
+<li><strong>No-Origin callers:</strong> protected routes may omit <code>Origin</code> only because they still need <code>Authorization: Bearer &amp;lt;token&amp;gt;</code>. The pairing route may omit <code>Origin</code> only when the request includes <code>x-civicnews-pair: 1</code>.</li>
+<li><strong>Bearer token:</strong> every route except <code>POST /api/pair</code> requires <code>Authorization: Bearer &amp;lt;token&amp;gt;</code>. Missing, malformed, revoked, or unknown tokens return <code>401 Unauthorized</code>.</li>
+</ol>
+<p><code>POST /api/pair</code> has no bearer-token requirement because it issues the bearer token. It still enforces Host/Origin rules, the explicit no-Origin pairing header, the one-time PIN check, and the rate limit.</p>
+<h2 id="routes">Routes</h2>
+<p>| Method | Path | Auth | Purpose | |---|---|---|---| | POST | <code>/api/pair</code> | Pairing PIN, Host/Origin gate, rate limit | Exchange the one-time pairing token for a bearer token | | GET | <code>/api/queue</code> | Bearer | List all leads and drafts | | GET | <code>/api/evidence/:lead_id</code> | Bearer | List evidence items behind a lead | | POST | <code>/api/drafts</code> | Bearer | Create a new draft, forced to <code>draft_generated</code> | | POST | <code>/api/llm/task</code> | Bearer | Run a one-shot local-LLM prompt | | POST | <code>/api/guardrails/check</code> | Bearer | Run advisory guardrails over a draft |</p>
+<h2 id="post-api-pair"><code>POST /api/pair</code></h2>
+<p>Exchanges the one-time pairing token shown in the desktop app&#x27;s Browser Pairing tab for a long-lived bearer token. The field is named <code>pin</code> for historical reasons; the value is the 22-character pairing token, not a numeric PIN.</p>
+<p>No-Origin local clients must include:</p>
+<pre><code>x-civicnews-pair: 1
+Host: 127.0.0.1:12053</code></pre>
+<p>Browser-extension clients may instead use the bundled Civic Desk Browser Bridge Origin <code>chrome-extension://fobahchhglbihbjfldjlnbbaoagbmjif</code>. Developer builds may allow extra origins only through <code>CIVICNEWS_ALLOWED_EXTENSION_ORIGINS</code>.</p>
+<p>Rate limit: 5 failed attempts per client IP per 1800 seconds. A successful pair resets the counter.</p>
+<p>Request:</p>
+<pre><code>{ &quot;pin&quot;: &quot;&lt;22-char pairing token&gt;&quot; }</code></pre>
+<p>Response:</p>
+<pre><code>{ &quot;token&quot;: &quot;&lt;long-lived bearer token&gt;&quot; }</code></pre>
+<p>Errors: <code>401 Unauthorized</code>, <code>403 Forbidden</code>, <code>429 Too Many Requests</code>, <code>500 Internal Server Error</code>.</p>
+<h2 id="get-api-queue"><code>GET /api/queue</code></h2>
+<p>Returns every lead and draft in the local database.</p>
+<p>Response:</p>
+<pre><code>{
+  &quot;leads&quot;: [
+    {
+      &quot;id&quot;: 1,
+      &quot;detector_name&quot;: &quot;Money Threshold&quot;,
+      &quot;why&quot;: &quot;Why the lead was flagged&quot;,
+      &quot;confidence&quot;: &quot;medium&quot;,
+      &quot;risk_level&quot;: &quot;low&quot;,
+      &quot;confirmation_checklist&quot;: &quot;[]&quot;,
+      &quot;from_scan_lead_id&quot;: null,
+      &quot;story_type&quot;: &quot;brief&quot;,
+      &quot;disposition&quot;: &quot;ready_to_draft&quot;,
+      &quot;novelty_score&quot;: 4,
+      &quot;novelty_reason&quot;: &quot;New meeting agenda item&quot;,
+      &quot;recurrence_count&quot;: 0,
+      &quot;recurrence_note&quot;: null,
+      &quot;created_at&quot;: &quot;2026-05-28T12:00:00Z&quot;
+    }
+  ],
+  &quot;drafts&quot;: [
+    {
+      &quot;id&quot;: 1,
+      &quot;lead_id&quot;: 1,
+      &quot;format&quot;: &quot;brief&quot;,
+      &quot;title&quot;: &quot;Council sets hearing date&quot;,
+      &quot;content&quot;: &quot;Draft Markdown&quot;,
+      &quot;status&quot;: &quot;draft_generated&quot;,
+      &quot;verification_checklist&quot;: &quot;[]&quot;,
+      &quot;missing_evidence_notes&quot;: null,
+      &quot;correction_note&quot;: null,
+      &quot;created_at&quot;: &quot;2026-05-28T12:00:00Z&quot;,
+      &quot;updated_at&quot;: &quot;2026-05-28T12:00:00Z&quot;
+    }
+  ]
+}</code></pre>
+<p>Checklist fields are JSON strings, not nested JSON arrays.</p>
+<h2 id="get-api-evidence-lead-id"><code>GET /api/evidence/:lead_id</code></h2>
+<p>Returns evidence items associated with a lead id.</p>
+<pre><code>[
+  {
+    &quot;id&quot;: 1,
+    &quot;source_id&quot;: 3,
+    &quot;url&quot;: &quot;https://example.gov/minutes/2026-05&quot;,
+    &quot;fetched_at&quot;: &quot;2026-05-28T12:00:00Z&quot;,
+    &quot;excerpt&quot;: &quot;Relevant excerpt&quot;,
+    &quot;content_hash&quot;: &quot;b94d27b9...&quot;,
+    &quot;entities&quot;: &quot;[\&quot;City Council\&quot;]&quot;
+  }
+]</code></pre>
+<p><code>entities</code> is a JSON string containing an array of strings.</p>
+<h2 id="post-api-drafts"><code>POST /api/drafts</code></h2>
+<p>Creates a new draft. The server forces <code>status</code> to <code>draft_generated</code>; clients cannot create an approved or published draft through this route.</p>
+<p>Request:</p>
+<pre><code>{
+  &quot;lead_id&quot;: 1,
+  &quot;format&quot;: &quot;brief&quot;,
+  &quot;title&quot;: &quot;Draft title&quot;,
+  &quot;content&quot;: &quot;Draft Markdown&quot;,
+  &quot;verification_checklist&quot;: &quot;[]&quot;
+}</code></pre>
+<p>Response:</p>
+<pre><code>{ &quot;id&quot;: 42 }</code></pre>
+<h2 id="post-api-llm-task"><code>POST /api/llm/task</code></h2>
+<p>Runs a single prompt against the selected local Ollama model, falling back to the default model if no model is selected.</p>
+<p>Request:</p>
+<pre><code>{
+  &quot;prompt&quot;: &quot;Prompt text&quot;,
+  &quot;system&quot;: &quot;System instruction&quot;
+}</code></pre>
+<p>Response:</p>
+<pre><code>{ &quot;result&quot;: &quot;Model output&quot; }</code></pre>
+<p>Errors: <code>503 Service Unavailable</code> or <code>504 Gateway Timeout</code>.</p>
+<h2 id="post-api-guardrails-check"><code>POST /api/guardrails/check</code></h2>
+<p>Runs advisory guardrails over an existing draft. Guardrails warn and record concerns; they do not veto the publisher&#x27;s final decision.</p>
+<p>Request:</p>
+<pre><code>{ &quot;draft_id&quot;: 42 }</code></pre>
+<p>Response:</p>
+<pre><code>{
+  &quot;is_clean&quot;: false,
+  &quot;issues&quot;: [
+    {
+      &quot;category&quot;: &quot;Citation Coverage&quot;,
+      &quot;message&quot;: &quot;Missing citation&quot;,
+      &quot;severity&quot;: &quot;warning&quot;,
+      &quot;paragraph_index&quot;: 3
+    }
+  ]
+}</code></pre>
+<h2 id="status-codes">Status Codes</h2>
+<p>| Code | Meaning | |---|---| | <code>200 OK</code> | Success | | <code>401 Unauthorized</code> | Missing, malformed, revoked, unknown bearer token, or wrong pairing token | | <code>403 Forbidden</code> | Bad Host, untrusted Origin, or no-Origin pair request missing <code>x-civicnews-pair</code> | | <code>429 Too Many Requests</code> | Pairing rate limit hit | | <code>503 Service Unavailable</code> | Local Ollama instance could not be reached or the model call failed | | <code>504 Gateway Timeout</code> | Local model call exceeded the configured timeout | | <code>500 Internal Server Error</code> | Database or internal failure |</p>
+        </article>
+    </main>
+    <footer>
+        <div class="footer-container">
+            <div>
+                <a class="logo" href="index.html#top"><span>The Civic Desk</span></a>
+                <p>Open-source local newsroom software. Repository name: CivicNewspaper. Installed app name: The Civic Desk.</p>
+            </div>
+            <div class="footer-links">
+                <a href="user_manual.html">Manual</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

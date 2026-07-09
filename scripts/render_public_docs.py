@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
 
 PUBLIC_DOCS = [
+    "api.md",
     "user_manual.md",
     "install.md",
     "release-readiness.md",

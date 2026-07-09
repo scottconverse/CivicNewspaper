@@ -119,6 +119,8 @@ The Ollama runtime binary is not committed to the repo. The app-managed first-ru
 - [Install guide](docs/install.md) - unsigned installer and checksum instructions.
 - [Troubleshooting](docs/troubleshooting.md) - SmartScreen, model download, local AI, weak output, here.now preview, ZIP, and import help.
 - [Publishing connectors](docs/publishing-connectors.md) - supported publishing paths.
+- [Browser Bridge extension](browser-extension/chromium/README.md) - install and pair the Chromium extension.
+- [Authenticated localhost API](docs/api.md) - loopback-only routes, headers, authentication, and response contract for the Browser Bridge and local tools.
 - [Release readiness](docs/release-readiness.md) - beta, release-candidate, and stable gates.
 - [Discussion seeds](docs/discussion_seeds.md) - launch posts for GitHub Discussions or community forums.
 

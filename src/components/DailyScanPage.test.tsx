@@ -67,6 +67,54 @@ describe("DailyScanPage", () => {
     expect(screen.getByText(/Deterministic checks run first/)).toBeInTheDocument();
   });
 
+  it("announces progress politely and failures assertively", () => {
+    const { rerender } = render(
+      <DailyScanPage
+        latestScanId={null}
+        leadCount={0}
+        draftCount={0}
+        sourceCount={1}
+        loading={true}
+        ollamaOnline={true}
+        dailyScanProgress={{
+          stage: "fetching",
+          message: "Checking watched sources.",
+          evidence_count: 0,
+          saved_leads: 0,
+        }}
+        onRunScan={vi.fn()}
+        onRefresh={vi.fn()}
+        onGoToSources={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole("status")).toHaveAttribute("aria-live", "polite");
+    expect(screen.getByRole("status")).toHaveAttribute("aria-atomic", "true");
+
+    rerender(
+      <DailyScanPage
+        latestScanId={null}
+        leadCount={0}
+        draftCount={0}
+        sourceCount={1}
+        loading={false}
+        ollamaOnline={true}
+        dailyScanProgress={{
+          stage: "failed",
+          message: "Daily Scan could not finish.",
+          evidence_count: 0,
+          saved_leads: 0,
+        }}
+        onRunScan={vi.fn()}
+        onRefresh={vi.fn()}
+        onGoToSources={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole("alert")).toHaveAttribute("aria-live", "assertive");
+    expect(screen.getByRole("alert")).toHaveTextContent("Daily Scan could not finish.");
+  });
+
   it("labels the source-fetch stage for one-button daily scans", () => {
     renderPage({
       loading: true,

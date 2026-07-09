@@ -907,6 +907,23 @@ describe("OnboardingWizard Component Tests", () => {
     expect(screen.getByRole("button", { name: new RegExp(`Download ${recommendedModel}`, "i") })).toBeInTheDocument();
   });
 
+  test("installed model selector has a programmatic name", async () => {
+    const invokeMock = tauriCore.invoke as any;
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      if (cmd === "ollama_health") {
+        return Promise.resolve({ reachable: true, models: ["phi4-mini:latest"], version: "0.1.0" });
+      }
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+
+    expect(await screen.findByLabelText("Installed model")).toHaveValue("phi4-mini:latest");
+  });
+
   test("Ollama reachable with no models: Next starts the recommended model download", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;

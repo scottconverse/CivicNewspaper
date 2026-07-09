@@ -1416,6 +1416,10 @@ fn normalize_generated_draft_parts(raw: &str, fallback_title: &str) -> (String, 
         r"(?i)\[(?:insert [^\]]+|[^\]]+ if available|source needed|verification needed)\]",
     )
     .expect("valid placeholder regex");
+    let draft_marker_re = regex::Regex::new(
+        r"(?i)^\s*\[?\s*(source needed|verification needed|end of report)\s*\]?\s*$",
+    )
+    .expect("valid draft marker regex");
 
     for (idx, line) in lines.iter().enumerate() {
         if title_line_index == Some(idx) {
@@ -1425,11 +1429,7 @@ fn normalize_generated_draft_parts(raw: &str, fallback_title: &str) -> (String, 
         let lower = plain.to_lowercase();
         if line_has_forbidden_draft_marker(plain)
             || lower.starts_with("tester edit:")
-            || regex::Regex::new(
-                r"(?i)^\s*\[?\s*(source needed|verification needed|end of report)\s*\]?\s*$",
-            )
-            .expect("valid draft marker regex")
-            .is_match(plain)
+            || draft_marker_re.is_match(plain)
         {
             skipping_reporting_steps = false;
             continue;
@@ -1528,6 +1528,7 @@ fn draft_has_publishable_linked_source_shape(content: &str, linked_evidence_coun
         && content.to_lowercase().contains("according to")
 }
 
+#[allow(clippy::too_many_arguments)]
 fn build_persistable_draft(
     lead_id: i32,
     lead_why: &str,

@@ -114,7 +114,14 @@ export const DailyScanPage: React.FC<DailyScanPageProps> = ({
       </section>
 
       {dailyScanProgress && (
-        <section className="card" data-testid="daily-scan-progress" style={{ marginTop: "1rem" }}>
+        <section
+          className="card"
+          data-testid="daily-scan-progress"
+          role={dailyScanProgress.stage === "failed" ? "alert" : "status"}
+          aria-live={dailyScanProgress.stage === "failed" ? "assertive" : "polite"}
+          aria-atomic="true"
+          style={{ marginTop: "1rem" }}
+        >
           <div className="flex-between" style={{ alignItems: "flex-start", gap: "1rem" }}>
             <div>
               <p className="eyebrow">Scan progress</p>
