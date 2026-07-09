@@ -1,0 +1,1393 @@
+{
+  "settings_schema": [
+    {
+      "cid": 0,
+      "name": "key",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 1
+    },
+    {
+      "cid": 1,
+      "name": "value",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    }
+  ],
+  "settings_count": 13,
+  "settings_rows": [
+    {
+      "key": "model.selected",
+      "value": "phi4-mini:latest"
+    },
+    {
+      "key": "identity.editor_name",
+      "value": "Local Editor"
+    },
+    {
+      "key": "identity.newsroom_name",
+      "value": "Longmont Civic Desk"
+    },
+    {
+      "key": "identity.organization_type",
+      "value": "single_person"
+    },
+    {
+      "key": "identity.city",
+      "value": "Longmont"
+    },
+    {
+      "key": "identity.state",
+      "value": "CO"
+    },
+    {
+      "key": "ai.setup_skipped",
+      "value": "true"
+    },
+    {
+      "key": "paths.publish",
+      "value": "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-17766b7-durable-draft\\sites\\default"
+    },
+    {
+      "key": "paths.backup",
+      "value": "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-17766b7-durable-draft\\backups"
+    },
+    {
+      "key": "onboarding.step",
+      "value": "5"
+    },
+    {
+      "key": "onboarding_complete",
+      "value": "1"
+    },
+    {
+      "key": "setup.first_run_intake",
+      "value": "consumed"
+    },
+    {
+      "key": "scan.latest_id",
+      "value": "1"
+    }
+  ],
+  "sources_schema": [
+    {
+      "cid": 0,
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 1
+    },
+    {
+      "cid": 1,
+      "name": "name",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 2,
+      "name": "url",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 3,
+      "name": "type",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 4,
+      "name": "status",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "'online'",
+      "pk": 0
+    },
+    {
+      "cid": 5,
+      "name": "last_success_at",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 6,
+      "name": "last_failed_at",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 7,
+      "name": "last_scraped",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 8,
+      "name": "tier",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "'community_signal'",
+      "pk": 0
+    }
+  ],
+  "sources_count": 9,
+  "sources_rows": [
+    {
+      "id": 1,
+      "name": "Longmont official city website",
+      "url": "https://www.longmontcolorado.gov/",
+      "type": "primary_record",
+      "status": "online",
+      "last_success_at": "2026-07-09T14:30:07.149155600+00:00",
+      "last_failed_at": null,
+      "last_scraped": "2026-07-09T14:30:07.149155600+00:00",
+      "tier": "official_record"
+    },
+    {
+      "id": 2,
+      "name": "Longmont agendas and minutes",
+      "url": "https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk/agendas-and-minutes",
+      "type": "primary_record",
+      "status": "offline",
+      "last_success_at": null,
+      "last_failed_at": "2026-07-09T14:30:10.702248600+00:00",
+      "last_scraped": null,
+      "tier": "official_record"
+    },
+    {
+      "id": 3,
+      "name": "Longmont public notices search",
+      "url": "https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk",
+      "type": "primary_record",
+      "status": "online",
+      "last_success_at": "2026-07-09T14:30:13.119721100+00:00",
+      "last_failed_at": null,
+      "last_scraped": "2026-07-09T14:30:13.119721100+00:00",
+      "tier": "official_record"
+    },
+    {
+      "id": 4,
+      "name": "St. Vrain Valley Schools",
+      "url": "https://www.svvsd.org/",
+      "type": "primary_record",
+      "status": "online",
+      "last_success_at": "2026-07-09T14:30:13.254194400+00:00",
+      "last_failed_at": null,
+      "last_scraped": "2026-07-09T14:30:13.254194400+00:00",
+      "tier": "official_record"
+    },
+    {
+      "id": 5,
+      "name": "Longmont Public Safety",
+      "url": "https://www.longmontcolorado.gov/departments/departments-n-z/public-safety",
+      "type": "official_comm",
+      "status": "offline",
+      "last_success_at": null,
+      "last_failed_at": "2026-07-09T14:30:16.783141600+00:00",
+      "last_scraped": null,
+      "tier": "official_record"
+    },
+    {
+      "id": 6,
+      "name": "r/Longmont",
+      "url": "https://www.reddit.com/r/Longmont/",
+      "type": "community_signal",
+      "status": "offline",
+      "last_success_at": null,
+      "last_failed_at": "2026-07-09T14:30:16.813240500+00:00",
+      "last_scraped": null,
+      "tier": "community_signal"
+    },
+    {
+      "id": 7,
+      "name": "Longmont Leader local news",
+      "url": "https://www.longmontleader.com/local-news",
+      "type": "media_lead",
+      "status": "online",
+      "last_success_at": "2026-07-09T14:30:17.126381900+00:00",
+      "last_failed_at": null,
+      "last_scraped": "2026-07-09T14:30:17.126381900+00:00",
+      "tier": "news_reporting"
+    },
+    {
+      "id": 8,
+      "name": "Longmont Area Chamber of Commerce",
+      "url": "https://longmontchamber.org/",
+      "type": "community_signal",
+      "status": "online",
+      "last_success_at": "2026-07-09T14:30:18.478257+00:00",
+      "last_failed_at": null,
+      "last_scraped": "2026-07-09T14:30:18.478257+00:00",
+      "tier": "community_signal"
+    },
+    {
+      "id": 9,
+      "name": "Longmont city events",
+      "url": "https://longmontcolorado.gov/events/",
+      "type": "official_calendar",
+      "status": "online",
+      "last_success_at": "2026-07-09T14:30:18.636339900+00:00",
+      "last_failed_at": null,
+      "last_scraped": "2026-07-09T14:30:18.636339900+00:00",
+      "tier": "community_signal"
+    }
+  ],
+  "daily_scan_runs_schema": [
+    {
+      "cid": 0,
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 1
+    },
+    {
+      "cid": 1,
+      "name": "started_at",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 2,
+      "name": "completed_at",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 3,
+      "name": "run_status",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    }
+  ],
+  "daily_scan_runs_count": 1,
+  "daily_scan_runs_rows": [
+    {
+      "id": 1,
+      "started_at": "2026-07-09T14:30:18.638207200+00:00",
+      "completed_at": "2026-07-09T14:30:32.918994300+00:00",
+      "run_status": "completed"
+    }
+  ],
+  "daily_scan_leads_schema": [
+    {
+      "cid": 0,
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 1
+    },
+    {
+      "cid": 1,
+      "name": "scan_id",
+      "type": "INTEGER",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 2,
+      "name": "title",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 3,
+      "name": "summary",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 4,
+      "name": "source_id",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 5,
+      "name": "original_url",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 6,
+      "name": "why_flagged",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 7,
+      "name": "source_name",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 8,
+      "name": "source_type",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 9,
+      "name": "priority",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 10,
+      "name": "suggested_next_step",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 11,
+      "name": "story_type",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 12,
+      "name": "what_changed",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 13,
+      "name": "immediacy",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 14,
+      "name": "impact",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 15,
+      "name": "conflict",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 16,
+      "name": "novelty",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 17,
+      "name": "publishability_note",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 18,
+      "name": "disposition",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "'review'",
+      "pk": 0
+    },
+    {
+      "cid": 19,
+      "name": "recurrence_count",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 20,
+      "name": "recurrence_note",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    }
+  ],
+  "daily_scan_leads_count": 5,
+  "daily_scan_leads_rows": [
+    {
+      "id": 1,
+      "scan_id": 1,
+      "title": "Review community signal from Longmont city events",
+      "summary": "Free Document Shredding Event Saturday, July 11 - 9 am - 1 pm Free Document Shredding Event Series Green Girl Recycling",
+      "source_id": 9,
+      "original_url": "https://longmontcolorado.gov/events/",
+      "why_flagged": "Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence.",
+      "source_name": "Longmont city events",
+      "source_type": "community_signal",
+      "priority": "high",
+      "suggested_next_step": "Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting.",
+      "story_type": "verification",
+      "what_changed": "Dark-signal pattern detected from recent evidence.",
+      "immediacy": 2,
+      "impact": 4,
+      "conflict": null,
+      "novelty": null,
+      "publishability_note": "Confirm the signal against source records or a second public source before drafting.",
+      "disposition": "needs_verification",
+      "recurrence_count": null,
+      "recurrence_note": null
+    },
+    {
+      "id": 2,
+      "scan_id": 1,
+      "title": "Review community signal from Longmont city events",
+      "summary": "Glam Group (Summer Program) Series Longmont Youth Center 1050 Lashley St., Longmont, CO, United States Thu",
+      "source_id": 9,
+      "original_url": "https://longmontcolorado.gov/events/",
+      "why_flagged": "Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence.",
+      "source_name": "Longmont city events",
+      "source_type": "community_signal",
+      "priority": "high",
+      "suggested_next_step": "Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting.",
+      "story_type": "verification",
+      "what_changed": "Dark-signal pattern detected from recent evidence.",
+      "immediacy": 2,
+      "impact": 4,
+      "conflict": null,
+      "novelty": null,
+      "publishability_note": "Confirm the signal against source records or a second public source before drafting.",
+      "disposition": "needs_verification",
+      "recurrence_count": null,
+      "recurrence_note": null
+    },
+    {
+      "id": 3,
+      "scan_id": 1,
+      "title": "Verify source-quality issue from Longmont city events",
+      "summary": "The scan found an official-source page, but the lead text looks like navigation, an index, markup, or a multi-item listing instead of one reportable civic item.",
+      "source_id": 9,
+      "original_url": "https://longmontcolorado.gov/events/",
+      "why_flagged": "Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Quality gate: The lead text still contains markup, encoded HTML, or page-navigation debris.",
+      "source_name": "Longmont city events",
+      "source_type": "community_signal",
+      "priority": "low",
+      "suggested_next_step": "Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting.",
+      "story_type": "verification",
+      "what_changed": "Dark-signal pattern detected from recent evidence.",
+      "immediacy": 2,
+      "impact": 4,
+      "conflict": null,
+      "novelty": null,
+      "publishability_note": "Confirm the signal against source records or a second public source before drafting. The lead text still contains markup, encoded HTML, or page-navigation debris.",
+      "disposition": "needs_verification",
+      "recurrence_count": null,
+      "recurrence_note": null
+    },
+    {
+      "id": 4,
+      "scan_id": 1,
+      "title": "Review community signal from Longmont city events",
+      "summary": "Public Safety Sustainability Transportation Utilities",
+      "source_id": 9,
+      "original_url": "https://longmontcolorado.gov/events/",
+      "why_flagged": "Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence.",
+      "source_name": "Longmont city events",
+      "source_type": "community_signal",
+      "priority": "medium",
+      "suggested_next_step": "Open the linked source, confirm the date, location, organizer, and public relevance, then draft a short brief from the source-backed facts.",
+      "story_type": "brief",
+      "what_changed": "Specific source-backed civic item detected from recent evidence.",
+      "immediacy": 4,
+      "impact": 4,
+      "conflict": null,
+      "novelty": 4,
+      "publishability_note": "Single-source official civic briefs are draftable only after confirming the linked source facts; seek a second public source when available.",
+      "disposition": "ready_to_draft",
+      "recurrence_count": null,
+      "recurrence_note": null
+    },
+    {
+      "id": 5,
+      "scan_id": 1,
+      "title": "Verify source-quality issue from Longmont city events",
+      "summary": "The scan found an official-source page, but the lead text looks like navigation, an index, markup, or a multi-item listing instead of one reportable civic item.",
+      "source_id": 9,
+      "original_url": "https://longmontcolorado.gov/events/",
+      "why_flagged": "Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Quality gate: The lead text still contains markup, encoded HTML, or page-navigation debris.",
+      "source_name": "Longmont city events",
+      "source_type": "community_signal",
+      "priority": "low",
+      "suggested_next_step": "Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting.",
+      "story_type": "verification",
+      "what_changed": "Dark-signal pattern detected from recent evidence.",
+      "immediacy": 2,
+      "impact": 3,
+      "conflict": null,
+      "novelty": null,
+      "publishability_note": "Confirm the signal against source records or a second public source before drafting. The lead text still contains markup, encoded HTML, or page-navigation debris.",
+      "disposition": "needs_verification",
+      "recurrence_count": null,
+      "recurrence_note": null
+    }
+  ],
+  "leads_schema": [
+    {
+      "cid": 0,
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 1
+    },
+    {
+      "cid": 1,
+      "name": "detector_name",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 2,
+      "name": "why",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 3,
+      "name": "confidence",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 4,
+      "name": "risk_level",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "'low'",
+      "pk": 0
+    },
+    {
+      "cid": 5,
+      "name": "confirmation_checklist",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "'[]'",
+      "pk": 0
+    },
+    {
+      "cid": 6,
+      "name": "created_at",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 7,
+      "name": "from_scan_lead_id",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 8,
+      "name": "story_type",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 9,
+      "name": "disposition",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "'review'",
+      "pk": 0
+    },
+    {
+      "cid": 10,
+      "name": "novelty_score",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 11,
+      "name": "novelty_reason",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 12,
+      "name": "recurrence_count",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 13,
+      "name": "recurrence_note",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    }
+  ],
+  "leads_count": 5,
+  "leads_rows": [
+    {
+      "id": 1,
+      "detector_name": "daily_scan",
+      "why": "Review community signal from Longmont city events: Free Document Shredding Event Saturday, July 11 - 9 am - 1 pm Free Document Shredding Event Series Green Girl Recycling Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting.",
+      "confidence": "high",
+      "risk_level": "high",
+      "confirmation_checklist": "[\"Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-09T14:30:18.677802900+00:00",
+      "from_scan_lead_id": 1,
+      "story_type": "verification",
+      "disposition": "needs_verification",
+      "novelty_score": null,
+      "novelty_reason": "Dark-signal pattern detected from recent evidence.",
+      "recurrence_count": null,
+      "recurrence_note": null
+    },
+    {
+      "id": 2,
+      "detector_name": "daily_scan",
+      "why": "Review community signal from Longmont city events: Glam Group (Summer Program) Series Longmont Youth Center 1050 Lashley St., Longmont, CO, United States Thu Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting.",
+      "confidence": "high",
+      "risk_level": "high",
+      "confirmation_checklist": "[\"Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-09T14:30:18.680933700+00:00",
+      "from_scan_lead_id": 2,
+      "story_type": "verification",
+      "disposition": "needs_verification",
+      "novelty_score": null,
+      "novelty_reason": "Dark-signal pattern detected from recent evidence.",
+      "recurrence_count": null,
+      "recurrence_note": null
+    },
+    {
+      "id": 3,
+      "detector_name": "daily_scan",
+      "why": "Verify source-quality issue from Longmont city events: The scan found an official-source page, but the lead text looks like navigation, an index, markup, or a multi-item listing instead of one reportable civic item. Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Quality gate: The lead text still contains markup, encoded HTML, or page-navigation debris. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting.",
+      "confidence": "low",
+      "risk_level": "low",
+      "confirmation_checklist": "[\"Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-09T14:30:18.683630700+00:00",
+      "from_scan_lead_id": 3,
+      "story_type": "verification",
+      "disposition": "needs_verification",
+      "novelty_score": null,
+      "novelty_reason": "Dark-signal pattern detected from recent evidence.",
+      "recurrence_count": null,
+      "recurrence_note": null
+    },
+    {
+      "id": 4,
+      "detector_name": "daily_scan",
+      "why": "Review community signal from Longmont city events: Public Safety Sustainability Transportation Utilities Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Open the linked source, confirm the date, location, organizer, and public relevance, then draft a short brief from the source-backed facts.",
+      "confidence": "med",
+      "risk_level": "med",
+      "confirmation_checklist": "[\"Open the linked source, confirm the date, location, organizer, and public relevance, then draft a short brief from the source-backed facts.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-09T14:30:18.686872200+00:00",
+      "from_scan_lead_id": 4,
+      "story_type": "brief",
+      "disposition": "ready_to_draft",
+      "novelty_score": 4,
+      "novelty_reason": "Specific source-backed civic item detected from recent evidence.",
+      "recurrence_count": null,
+      "recurrence_note": null
+    },
+    {
+      "id": 5,
+      "detector_name": "daily_scan",
+      "why": "Verify source-quality issue from Longmont city events: The scan found an official-source page, but the lead text looks like navigation, an index, markup, or a multi-item listing instead of one reportable civic item. Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Quality gate: The lead text still contains markup, encoded HTML, or page-navigation debris. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting.",
+      "confidence": "low",
+      "risk_level": "low",
+      "confirmation_checklist": "[\"Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-09T14:30:18.689698300+00:00",
+      "from_scan_lead_id": 5,
+      "story_type": "verification",
+      "disposition": "needs_verification",
+      "novelty_score": null,
+      "novelty_reason": "Dark-signal pattern detected from recent evidence.",
+      "recurrence_count": null,
+      "recurrence_note": null
+    }
+  ],
+  "lead_evidence_schema": [
+    {
+      "cid": 0,
+      "name": "lead_id",
+      "type": "INTEGER",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 1
+    },
+    {
+      "cid": 1,
+      "name": "evidence_id",
+      "type": "INTEGER",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 2
+    }
+  ],
+  "lead_evidence_count": 5,
+  "lead_evidence_rows": [
+    {
+      "lead_id": 1,
+      "evidence_id": 24
+    },
+    {
+      "lead_id": 2,
+      "evidence_id": 23
+    },
+    {
+      "lead_id": 3,
+      "evidence_id": 22
+    },
+    {
+      "lead_id": 4,
+      "evidence_id": 25
+    },
+    {
+      "lead_id": 5,
+      "evidence_id": 21
+    }
+  ],
+  "evidence_items_schema": [
+    {
+      "cid": 0,
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 1
+    },
+    {
+      "cid": 1,
+      "name": "source_id",
+      "type": "INTEGER",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 2,
+      "name": "url",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 3,
+      "name": "fetched_at",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 4,
+      "name": "excerpt",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 5,
+      "name": "content_hash",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 6,
+      "name": "entities",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "'[]'",
+      "pk": 0
+    }
+  ],
+  "evidence_items_count": 26,
+  "evidence_items_rows": [
+    {
+      "id": 1,
+      "source_id": 1,
+      "url": "https://www.longmontcolorado.gov/",
+      "fetched_at": "2026-07-09T14:30:07.068117600+00:00",
+      "excerpt": "City of Longmont Skip to main content News & Alerts Events Careers Contact Ensuring accessible government services. Activities Providing community activities. Building Guiding construction and development. Business Supporting local businesses. Education Offering educational resources. Government Facilitating civic engagement. Housing Providing housing services. Human Services Information Delivering essential community information. Jobs Connecting residents with jobs. Library Offering library services and resources. Licensing Issuing permits and licenses. Maintenance Maintaining public infrastructure. Museum Exhibiting arts, culture and history. NextLight Fiber Internet Public Safety Ensuring community safety. Sustainability Promoting environmental sustainability. Transportation Utilities Managing utility services. Wellness Supporting community health. Explore All Services Explore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place. All Services Departments Airport Boards, Committees and Commissions Building Services Children, Youth and Families at the Youth Center City Attorney City Clerk City Council City Manager Community and Neighborhood Resources Enterprise Technology Services Environment Finance Forestry Golf Services Housing and Community Investment Human Resources Human Services Judicial Department Library Longmont Housing Authority Longmont Museum Longmont Power & Communications Municipal Court Municipal Probation NextLight Fiber Internet Parks and Natural Resources Planning and Development Services Public Information Public Safety Purchasing and Contracts Recreation Services Risk Management Senior Services Transportation Providing transport options. Trash, Recycling, and Composting Utilities and Public Works Water Explore All Departments",
+      "content_hash": "a4618cda8b29100cc8ee8bdd241776a3e622266376725cf0ee853489fe98d22a",
+      "entities": "[\"Community Investment\\nHuman Resources\\nHuman Services\\nJudicial Department\",\"Youth Center\\nCity Attorney\\nCity Clerk\\nCity Council\"]"
+    },
+    {
+      "id": 2,
+      "source_id": 1,
+      "url": "https://www.longmontcolorado.gov/",
+      "fetched_at": "2026-07-09T14:30:07.087609200+00:00",
+      "excerpt": "Discover all the departments that make up the City of Longmont's government. Get detailed information on their roles, responsibilities, and how they serve the community. All Departments Government City of Longmont 01/04 Official City of Longmont Flag Redesign Apply by Monday, July 20 or share your ideas I want to... Select an action Apply Apply Request Learn Pay Report Select a service Building Permit Building Permit Business License City Job Special Event Permit Submit Quick Links to City Services Access the most frequently used city services: View All Services Pay Utility Bill Longmont Library Sign up for NextLight Internet Trash, Recycling, and Composting Public Safety Recreation Services Careers Longmont Museum News & Alerts Stay informed with the latest news and announcements from the City of Longmont, including updates on city projects, important community alerts, or events that you can attend. View News City of Longmont Job Alerts: 7/8/2026 July 8, 2026 Longmont's Historic Callahan House Hosts Club-A-Fair and Summer Open House July 8, 2026 Drone Flight Notification: July 13, 2026 July 7, 2026 Growing Connections (Full Speed Ahead blog) July 6, 2026 Pace Street Entrance to Centennial Park Apartments Closed July 14-21 July 6, 2026 Francis Street Chip Seal July 6-15 July 2, 2026 View News Helpful Resources & Information Helpful resources to assist you with your everyday needs. Longmont Indicators Track progress toward citywide plans Public Records Access the public records database Universal Recycling Ordinance Find information about URO and recycling City Projects Projects throughout the city A Lot to Love in Longmont Whether you're visiting for a day or a week, or you've been a proud resident for years, there's always something new to discover in Longmont. Explore the possibilities and reconnect with the vibrant life in Longmont, Colorado. Explore Longmont Upcoming Events Events and activities happening in Longmont.",
+      "content_hash": "2ea3bf0cbe2e715a710fa6e81f837c070e95e1b52367ac579bf318548b5faeb7",
+      "entities": "[]"
+    },
+    {
+      "id": 3,
+      "source_id": 1,
+      "url": "https://www.longmontcolorado.gov/",
+      "fetched_at": "2026-07-09T14:30:07.095049400+00:00",
+      "excerpt": "View Events Craft Storytime Thursday, July 9 - 10 am - 11 am 355 Emery St. Longmont, CO 80501 United States Library Spanish-English Conversation Group Thursday, July 9 - 1 pm - 2 pm 355 Emery St. Longmont, CO 80501 United States Library Navigators (Summer Program) Thursday, July 9 - 1 pm - 5:30 pm 1050 Lashley St. Longmont, CO 80504 United States Children Youth and Families Glam Group (Summer Program) Thursday, July 9 - 1 pm - 5:30 pm 1050 Lashley St. Longmont, CO 80504 United States Children Youth and Families Make it Better (Summer Program) Thursday, July 9 - 1 pm - 5:30 pm 1050 Lashley St. Longmont, CO 80504 United States Children Youth and Families Youth Original Recording Studio (Summer Program) Thursday, July 9 - 1 pm - 5:30 pm 1050 Lashley St. Longmont, CO 80504 United States Children Youth and Families AI: A Panel Discussion on Artificial Intelligence Thursday, July 9 - 5:45 pm - 7:15 pm 355 Emery St. Longmont, CO 80501 United States Library Summer Concert Series: Gora Gora Orkestar Thursday, July 9 - 7 pm - 8:30 pm 400 Quail Rd. Longmont, CO 80501 United States Museum Free Fitness in the Park Friday, July 10 - 9 am - 10 am 1757 Harvard St Longmont, Colorado 80503 Recreation Services Nature Fridays at Sandstone Ranch Friday, July 10 - 9 am - 12 pm 3001 Sandstone Dr. Longmont, CO 80504 United States Recreation Services Craft Storytime Thursday, July 9 - 10 am - 11 am 355 Emery St. Longmont, CO 80501 United States Library Spanish-English Conversation Group Thursday, July 9 - 1 pm - 2 pm 355 Emery St. Longmont, CO 80501 United States Library Navigators (Summer Program) Thursday, July 9 - 1 pm - 5:30 pm 1050 Lashley St. Longmont, CO 80504 United States Children Youth and Families Glam Group (Summer Program) Thursday, July 9 - 1 pm - 5:30 pm 1050 Lashley St. Longmont, CO 80504 United States Children Youth and Families",
+      "content_hash": "68eedae51b74dccce952a9be9b1c00810a3cf0012f5b1c328d962b0eb94b4089",
+      "entities": "[]"
+    },
+    {
+      "id": 4,
+      "source_id": 1,
+      "url": "https://www.longmontcolorado.gov/",
+      "fetched_at": "2026-07-09T14:30:07.118513500+00:00",
+      "excerpt": "Make it Better (Summer Program) Thursday, July 9 - 1 pm - 5:30 pm 1050 Lashley St. Longmont, CO 80504 United States Children Youth and Families Youth Original Recording Studio (Summer Program) Thursday, July 9 - 1 pm - 5:30 pm 1050 Lashley St. Longmont, CO 80504 United States Children Youth and Families AI: A Panel Discussion on Artificial Intelligence Thursday, July 9 - 5:45 pm - 7:15 pm 355 Emery St. Longmont, CO 80501 United States Library Summer Concert Series: Gora Gora Orkestar Thursday, July 9 - 7 pm - 8:30 pm 400 Quail Rd. Longmont, CO 80501 United States Museum Free Fitness in the Park Friday, July 10 - 9 am - 10 am 1757 Harvard St Longmont, Colorado 80503 Recreation Services Nature Fridays at Sandstone Ranch Friday, July 10 - 9 am - 12 pm 3001 Sandstone Dr. Longmont, CO 80504 United States Recreation Services View Events Need assistance? Please contact us for help. Service Request Contact Welcome Longmont is a diverse, multicultural and welcoming city. Contact View All Services Departments View All Departments Quick Links Agendas and Meetings Code Enforcement Emergency Notifications Employment Opportunities Permits and Inspections Public Records Service Requests Email Signup Stay up-to-date on news and events in Longmont. Sign Up For questions or assistance, please contact our help and information line at 303-776-6050 . Activities Building Business Education Government Housing Human Services Information Jobs Library Licensing Maintenance Museum NextLight Fiber Internet Public Safety Sustainability Transportation Utilities Wellness Explore All Services Explore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place. All Services Departments Airport Boards, Committees and Commissions Building Services Children, Youth and Families at the Youth Center City Attorney City Clerk",
+      "content_hash": "ac052457c55935dfab26dc213c0ef4aba424325a1b2cc10cf6f227cbfd889c3a",
+      "entities": "[]"
+    },
+    {
+      "id": 5,
+      "source_id": 1,
+      "url": "https://www.longmontcolorado.gov/",
+      "fetched_at": "2026-07-09T14:30:07.134782100+00:00",
+      "excerpt": "City Council City Manager Community and Neighborhood Resources Enterprise Technology Services Environment Finance Forestry Golf Services Housing and Community Investment Human Resources Human Services Judicial Department Library Longmont Housing Authority Longmont Museum Longmont Power & Communications Municipal Court Municipal Probation NextLight Fiber Internet Parks and Natural Resources Planning and Development Services Public Information Public Safety Purchasing and Contracts Recreation Services Risk Management Senior Services Transportation Trash, Recycling, and Composting Utilities and Public Works Water Explore All Departments Discover all the departments that make up the City of Longmont's government. Get detailed information on their roles, responsibilities, and how they serve the community. All Departments Government News & Alerts Events Careers Contact Subscribe to Email Updates Email Address Stay Connected Get the latest updates from the City of Longmont This is Longmont The official newsletter of the City of Longmont Weekly Topics of Interest Choose specific topics you want to hear about Select all in this category News & Alerts Latest news information, notices and alerts from the city Events & Activities Community events, programs and activities happening in Longmont Weekly City Events Downtown Events Events for Kids Job Announcements Employment opportunities delivered to your inbox Weekly Department Newsletters Subscribe to updates from specific city departments Select all in this category Longmont Library Updates and registration information about library programs and events Adult Programs Children Programs (Infant - 5th Grade) Technology + Computer Classes Teens Program Notices (6th-12th graders) This Month @ the Library Longmont Museum Events, exhibits and more from the museum Auditorium Programs Discovery Days (Early Childhood) Museum Exhibits & Events Recreation Activities, classes, sports and more Sustainability",
+      "content_hash": "092974831ad50a0d6f3e858271577863a79042a27b75f9319aeb00e2751895b9",
+      "entities": "[\"City Council\",\"Community Investment\\nHuman Resources\\nHuman Services\\nJudicial Department\",\"Weekly\\nDepartment\"]"
+    },
+    {
+      "id": 6,
+      "source_id": 1,
+      "url": "https://www.longmontcolorado.gov/",
+      "fetched_at": "2026-07-09T14:30:07.146961500+00:00",
+      "excerpt": "Project and program updates, including money-saving rebates and efficiency resources Sustainable Business Program Promotes environmental stewardship, economic vitality and social equity Senior Center Senior Center news and updates about upcoming programs and events Vision Zero Vision Zero projects, activities and how to get involved to improve transportation safety Youth Center Helping families, children and youth in Longmont grow, succeed and reach their best potential Language Preference English Spanish Most of our email newsletters are currently published in English only. We're recording preferences if we add Spanish translations in the future.",
+      "content_hash": "54953856af1881d60e6235bb93e478e0d63f0fa017a6409fad3cd96f7135c159",
+      "entities": "[]"
+    },
+    {
+      "id": 7,
+      "source_id": 3,
+      "url": "https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk",
+      "fetched_at": "2026-07-09T14:30:13.073370900+00:00",
+      "excerpt": "City Clerk - City of Longmont Skip to main content News & Alerts Events Careers Contact Ensuring accessible government services. Activities Providing community activities. Building Guiding construction and development. Business Supporting local businesses. Education Offering educational resources. Government Facilitating civic engagement. Housing Providing housing services. Human Services Information Delivering essential community information. Jobs Connecting residents with jobs. Library Offering library services and resources. Licensing Issuing permits and licenses. Maintenance Maintaining public infrastructure. Museum Exhibiting arts, culture and history. NextLight Fiber Internet Public Safety Ensuring community safety. Sustainability Promoting environmental sustainability. Transportation Utilities Managing utility services. Wellness Supporting community health. Explore All Services Explore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place. All Services Departments Airport Boards, Committees and Commissions Building Services Children, Youth and Families at the Youth Center City Attorney City Clerk City Council City Manager Community and Neighborhood Resources Enterprise Technology Services Environment Finance Forestry Golf Services Housing and Community Investment Human Resources Human Services Judicial Department Library Longmont Housing Authority Longmont Museum Longmont Power & Communications Municipal Court Municipal Probation NextLight Fiber Internet Parks and Natural Resources Planning and Development Services Public Information Public Safety Purchasing and Contracts Recreation Services Risk Management Senior Services Transportation Providing transport options. Trash, Recycling, and Composting Utilities and Public Works Water Explore All Departments",
+      "content_hash": "7b649ae2aab734412e11d409ceb5a2724eee9c7acd53eaf8b3abfe31db2f80fe",
+      "entities": "[\"Community Investment\\nHuman Resources\\nHuman Services\\nJudicial Department\",\"Youth Center\\nCity Attorney\\nCity Clerk\\nCity Council\"]"
+    },
+    {
+      "id": 8,
+      "source_id": 3,
+      "url": "https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk",
+      "fetched_at": "2026-07-09T14:30:13.091133900+00:00",
+      "excerpt": "Discover all the departments that make up the City of Longmont's government. Get detailed information on their roles, responsibilities, and how they serve the community. All Departments Government Home Departments City Clerk City Clerk Contact 303-651-8649 Email Hours of Operation Monday - Friday, 8 am to 5 pm Location Civic Center, Upper Level 350 Kimbark St. Longmont, CO 80501 The City Clerk's Office connects residents with local government, ensuring transparency and accessibility of city records and documents. The Clerk is the official record keeper for city records and keeps the City seal, supports City Council and publishes all Council agendas and packets, oversees elections, processes liquor, marijuana retail and specialty business licenses, issues special event permits, processes open records requests, maintains the municipal code, and recruits for and manages board and commission members. Explore City Clerk Services Button Agenda Management Portal Business License Colorado Revised Statutes Election Information Licenses and Permits Longmont Municipal Code Transparency, Public Records and Open Records Requests View More Access Public Records Elections & Voter Registration Longmont Municipal Code Welcome Longmont is a diverse, multicultural and welcoming city. Contact View All Services Departments View All Departments Quick Links Agendas and Meetings Code Enforcement Emergency Notifications Employment Opportunities Permits and Inspections Public Records Service Requests Email Signup Stay up-to-date on news and events in Longmont. Sign Up For questions or assistance, please contact our help and information line at 303-776-6050 . Activities Building Business Education Government Housing Human Services Information Jobs Library Licensing Maintenance Museum NextLight Fiber Internet Public Safety Sustainability Transportation Utilities Wellness Explore All Services",
+      "content_hash": "49f8a82dda95c4971ac1182b001d17ea5de57ca56471c18bf6ca40378183e9b8",
+      "entities": "[\"City Council\"]"
+    },
+    {
+      "id": 9,
+      "source_id": 3,
+      "url": "https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk",
+      "fetched_at": "2026-07-09T14:30:13.096308+00:00",
+      "excerpt": "Explore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place. All Services Departments Airport Boards, Committees and Commissions Building Services Children, Youth and Families at the Youth Center City Attorney City Clerk City Council City Manager Community and Neighborhood Resources Enterprise Technology Services Environment Finance Forestry Golf Services Housing and Community Investment Human Resources Human Services Judicial Department Library Longmont Housing Authority Longmont Museum Longmont Power & Communications Municipal Court Municipal Probation NextLight Fiber Internet Parks and Natural Resources Planning and Development Services Public Information Public Safety Purchasing and Contracts Recreation Services Risk Management Senior Services Transportation Trash, Recycling, and Composting Utilities and Public Works Water Explore All Departments Discover all the departments that make up the City of Longmont's government. Get detailed information on their roles, responsibilities, and how they serve the community. All Departments Government News & Alerts Events Careers Contact Subscribe to Email Updates Email Address Stay Connected Get the latest updates from the City of Longmont This is Longmont The official newsletter of the City of Longmont Weekly Topics of Interest Choose specific topics you want to hear about Select all in this category News & Alerts Latest news information, notices and alerts from the city Events & Activities Community events, programs and activities happening in Longmont Weekly City Events Downtown Events Events for Kids Job Announcements Employment opportunities delivered to your inbox Weekly Department Newsletters Subscribe to updates from specific city departments Select all in this category Longmont Library Updates and registration information about library programs and events",
+      "content_hash": "971686bb5b8329194538103583b697df62a567d08fb7cdbd280f4e531059342a",
+      "entities": "[\"Community Investment\\nHuman Resources\\nHuman Services\\nJudicial Department\",\"Weekly\\nDepartment\",\"Youth Center\\nCity Attorney\\nCity Clerk\\nCity Council\"]"
+    },
+    {
+      "id": 10,
+      "source_id": 3,
+      "url": "https://www.longmontcolorado.gov/departments/departments-a-d/city-clerk",
+      "fetched_at": "2026-07-09T14:30:13.117187600+00:00",
+      "excerpt": "Adult Programs Children Programs (Infant - 5th Grade) Technology + Computer Classes Teens Program Notices (6th-12th graders) This Month @ the Library Longmont Museum Events, exhibits and more from the museum Auditorium Programs Discovery Days (Early Childhood) Museum Exhibits & Events Recreation Activities, classes, sports and more Sustainability Project and program updates, including money-saving rebates and efficiency resources Sustainable Business Program Promotes environmental stewardship, economic vitality and social equity Senior Center Senior Center news and updates about upcoming programs and events Vision Zero Vision Zero projects, activities and how to get involved to improve transportation safety Youth Center Helping families, children and youth in Longmont grow, succeed and reach their best potential Language Preference English Spanish Most of our email newsletters are currently published in English only. We're recording preferences if we add Spanish translations in the future.",
+      "content_hash": "e6e09275fe42581ce7031bc181793402f1e9b06955371bbc8f00fa4da3e12e9c",
+      "entities": "[]"
+    },
+    {
+      "id": 11,
+      "source_id": 4,
+      "url": "https://www.svvsd.org/",
+      "fetched_at": "2026-07-09T14:30:13.196874500+00:00",
+      "excerpt": "St. Vrain Valley Schools - Academic Excellence By Design Skip to content Espa\u00f1ol Search for: Inclement Weather Calendar Staff Portal 2024 Bond Measure St. Vrain Valley Schools Academic Excellence By Design About District Overview Strategic Priorities Superintendent Board of Education District Committees Leadership St. Vrain Financial Transparency Bond & Mill Levy Override Partnerships Excellence in St. Vrain Valley Schools Schools School Directory Enrollment and Registration Maps & Boundaries School Feeders School Supplies Student Conduct Programs Focus Programs P-TECH P-TEACH Gifted and Talented Special Education Preschool Community Schools Career and Technical Education Alternative Options APEX Homeschool Program Summer Programs Parent University Career Elevation & Technology Center Innovation Center Mobile Lab Departments Assessment, Curriculum, & Instruction Athletics, Activities, & Fine Arts Attendance Communications Energy and Sustainability Facility Use Financial Services Health Services Human Resources District Library and Media Services Nutrition Services Operations Planning Priority Programs Procurement Professional Development Records Management Safety & Security Special Education Student Services Technology Transportation Staff Portal 2024 Bond Quick Links School Calendar Inclement Weather Contact Form Online Payments Infinite Campus Safe2Tell Nutrition & Menus Search & Apply St. Vrain Valley Schools We are the future of America. We are providing current and future generations a strong competitive advantage so that all students can achieve success in a globalized world. Learn More Join our Team Focus Programs Enroll in St. Vrain Online Payments Infinite Campus Safe2Tell Nutrition & Menus Job Openings Advancing Academic Excellence 24.5 credits required for graduation - among the most rigorous requirements in the state. 331 industry certifications earned by students in the 2021-2022 school year. $53",
+      "content_hash": "bd9ee0e60a4e4af6a906ee9461c5d8bfb1b43553106e454b03c22ed3c7baedf3",
+      "entities": "[\"$53\",\"Education\\nDistrict\",\"Sustainability\\nFacility Use\\nFinancial Services\\nHealth Services\\nHuman Resources\\nDistrict\",\"Vrain Valley Schools\\nAcademic Excellence By Design\\nAbout\\nDistrict Overview\\nStrategic Priorities\\nSuperintendent\\nBoard\"]"
+    },
+    {
+      "id": 12,
+      "source_id": 4,
+      "url": "https://www.svvsd.org/",
+      "fetched_at": "2026-07-09T14:30:13.219927600+00:00",
+      "excerpt": "million dollars received in competitive grant awards since January 2018. 120+ district-level partnerships and 435+ direct to school partnerships. More Achievements Families Students Staff Community Quick Links Enrollment Infinite Campus Payments Schoology Academics St. Vrain provides a rigorous academic foundation designed to prepare students for career and postsecondary readiness, including over 70 instructional focus programs. Find a Focus Program Safety & Well-Being Students safety and well-being is paramount, with over $45 million invested in safety upgrades over the past decade, as well as significant investments in mental health resources. Learn more Get Involved St. Vrain has many opportunities for parents and caregivers to be involved in their student's education, including our nationally recognized program, Leadership St. Vrain. Learn more Community Schools St. Vrain supports working families by providing high-quality before- and after-school childcare programming that is available in all elementary school communities. Learn more Enrollment St. Vrain Valley Schools promotes open enrollment so that families can select the school and program that best meets their students interests and needs. Learn more Follow us Quick Links Schoology Classlink Lunch Menus Concurrent Enrollment Students in St. Vrain have many opportunities to earn college credit while in high school through concurrent enrollment in courses with partner colleges and universities. Learn more Athletics & Activities St. Vrain offers a robust portfolio of athletics, arts, and other activities to engage students beyond the school day. Learn More Advanced Placement The AP\u00ae Program is continuously introducing new resources and processes designed to help students earn college credit and placement. Learn more Graduation St. Vrain has some of the most rigorous graduation requirements in Colorado, designed to best prepare students for postsecondary success.",
+      "content_hash": "26235416fe52fb4aeda2da7ba5396b63b5a2c8347bd0e19b30bbce18b9045af3",
+      "entities": "[\"$45\"]"
+    },
+    {
+      "id": 13,
+      "source_id": 4,
+      "url": "https://www.svvsd.org/",
+      "fetched_at": "2026-07-09T14:30:13.224992600+00:00",
+      "excerpt": "Learn More Innovation Center Student learning at the Innovation Center transcends the traditional classroom and provides experiential opportunities that are developing today's students into tomorrow's leaders, innovators, and changemakers. Visit the Innovation Center Career Elevation & Technology Center The CETC offers classes that provide real-world, hands-on experiences in pathways that are high-wage, high-growth, high-demand, and with a post-secondary trajectory. Visit the CETC Quick Links Staff Portal Infinite Visions Help Desk Curricular Resources Our content leadership teams designed a set of 21st century curricular resources to supply our students with a guaranteed and viable curriculum aligned with the new Colorado Academic Standards. Learn more Benefits St. Vrain values the health and well-being of its employees and seeks to establish and maintain a culture of health and wellness. Learn more Open Positions We hope you will consider a career with St. Vrain Valley Schools and join our highly effective and supportive team of professionals who are having a significant impact in the lives of many students and families. Search and Apply Professional Development There are many professional development opportunities available to build the capacity of all district employees through staff development that improves the learning of all the children we serve. Register for Courses Human Resources We select, recruit and retain exceptional employees who exemplify the vision and goals of St. Vrain Valley Schools by meeting the educational, emotional, and social needs of our students. Learn more Wellness In an effort to improve the health of all SVVSD employees and promote a healthier and happier workforce, the district has established an active Worksite Wellness Program. Learn more",
+      "content_hash": "7605aa6ead2294cc098abc8ebd01a72f80574a53bdde434fccc9f351f05cb9ac",
+      "entities": "[]"
+    },
+    {
+      "id": 14,
+      "source_id": 4,
+      "url": "https://www.svvsd.org/",
+      "fetched_at": "2026-07-09T14:30:13.232234+00:00",
+      "excerpt": "Quick Links Financial Transparency Records Request Senior Volunteers There are many ways for the community to get involved with our students and schools, including earning credit toward their property taxes by volunteering with the district. Learn more Promotional Flyers Businesses and organizations seeking to distribute an electronic flyer to benefit the students and parents of the St. Vrain Valley Schools may do so by following the guidelines below. Learn more Facility Use Most of the St. Vrain Valley School District's schools and fields are available for use by community groups. We support and encourage community use with priority given to youth activities. Learn more Educator Highlight Katie Cooper, Brian McGuirk, Marques Novak Specials Team, Burlington Elementary \"Our Specials Team brings incredible value to our school community. Their innovation, teamwork, and dedication make a lasting impact on both students and staff.\" Watch the Video Join our team today Join a team of over 5,000 employees dedicated to helping students succeed. Apply Today Featured Stories Teaching: A Career Worth Choosing Read More What Does it Mean to be Future-Ready? What is the role of public education in a time of rapid change? The World Economic Forum predicts that 65% of children entering kindergarten today will work in job categories that do not yet exist.\u00b9 How can public education prepare students so that by the time they have completed their\u2026 St. Vrain Valley Schools Read More Read More The Public School Advantage From my earliest memories, I knew I wanted to be an educator. Thirty-eight years later, that calling still guides me, and my conviction that public schools are among the most important institutions in America has only deepened. They are the heartbeat of every community they serve, and are the gathering\u2026 St. Vrain Valley Schools Read More Read More Upcoming Board Meetings Aug 1 Board of Education Member Events for August",
+      "content_hash": "7f02807656112cb7a79fceb5ffc168983c0b34211f78b35f6405daab30ad0ee4",
+      "entities": "[\"Vrain Valley School District\",\"Vrain Valley Schools  Read More\\nRead More\\nUpcoming Board\"]"
+    },
+    {
+      "id": 15,
+      "source_id": 4,
+      "url": "https://www.svvsd.org/",
+      "fetched_at": "2026-07-09T14:30:13.239666300+00:00",
+      "excerpt": "August 1, 2026 - - Aug 12 Board of Education Regular Meeting August 12, 2026 - 6:00 p.m. Aug 19 Board of Education Study Session August 19, 2026 - 6:00 p.m. Previous Board Meetings Jul 1 Board of Education Member Events for July July 1, 2026 - - Jun 24 Board of Education Study Session June 24, 2026 - 5:15 p.m. Jun 24 Board of Education Regular Meeting June 24, 2026 - 6:00 p.m. All Board Meetings District News CETC Manufacturing Students Create Awards Honoring Colorado's School Safety Leaders When school resource officers, educators, and school safety professionals from across Colorado gathered for the 2026 Colorado Association of School Resource Officers (CASRO) Regional School Safety Conference, the awards they received had a unique local connection. The custom awards presented during the conference were designed and manufactured by students in\u2026 St. Vrain Valley Schools Read More Read More Skyline High School teacher participates in 2026 Supreme Court Summer Institute Skyline High School social studies teacher Katie Strock attended the 2026 Supreme Court Summer Institute in Washington, D.C., June 22-26. Following a highly competitive application process, Strock was one of just 60 educators selected nationwide to participate in the prestigious professional learning opportunity, which is co-sponsored by Street Law, Inc.\u2026 St. Vrain Valley Schools Read More Read More St. Vrain Valley Schools Students Eligible for Direct Admission to CU Denver St. Vrain Valley Schools students who have demonstrated strong academic achievement are now eligible to receive a direct admission offer from the University of Colorado Denver (CU Denver) through a new partnership between the district and the university. Under the agreement, current St. Vrain juniors and seniors who have earned\u2026 St. Vrain Valley Schools Read More Read More All News This is the St. Vrain Advantage",
+      "content_hash": "5d1e6b513fb7b991f192fee42d22eda9485df34c57b10bd85ae1a7864680a8d0",
+      "entities": "[\"All Board Meetings\\nDistrict\",\"Colorado Association\",\"Previous Board\"]"
+    },
+    {
+      "id": 16,
+      "source_id": 4,
+      "url": "https://www.svvsd.org/",
+      "fetched_at": "2026-07-09T14:30:13.249449400+00:00",
+      "excerpt": "Discover upcoming events, celebrations, and stories from across St. Vrain. Contact Us Have a question or comment? Send us a message and we will get back to you as soon as possible. 395 S. Pratt Pkwy, Longmont, CO 80501 (303) 776-6200 St. Vrain Valley Schools Home Page Please enable JavaScript in your browser to complete this form. Name * Email * Topic * General Employment/Human Resources Infinite Campus School Calendar Substitute Teaching Transcript/Records Vendor Website Feedback Questions/Comments * Submit Digital Accessibility Statement Legal Notices Title IX Financial Transparency Promotional Flyers Staff Login Twitter LinkedIn Vimeo St. Vrain Valley Schools",
+      "content_hash": "8c8cb43cdc8a4ccfd75a6856a6b77e4a1f916572c22f1f0fc3e00f623e1fca3d",
+      "entities": "[]"
+    },
+    {
+      "id": 17,
+      "source_id": 7,
+      "url": "https://www.longmontleader.com/local-news",
+      "fetched_at": "2026-07-09T14:30:17.120959300+00:00",
+      "excerpt": "Headline: Longmont News - The Longmont Leader",
+      "content_hash": "73dad9e9ffb63f0638eaf667d0c45a70ec781e6888448486b8de94e225361e8a",
+      "entities": "[]"
+    },
+    {
+      "id": 18,
+      "source_id": 8,
+      "url": "https://longmontchamber.org/",
+      "fetched_at": "2026-07-09T14:30:18.459381200+00:00",
+      "excerpt": "Longmont Area Chamber of Commerce - Longmont Area Chamber of Commerce Membership Benefits of Membership Join the Longmont Chamber Member Login Our Members Business Directory Press Releases Job Openings Offers & Deals Volunteer Opportunities Advocacy Events Calendars Chamber Events Community Calendar Business Excellence Awards Unity in the Community Longmont Chamber Golf Tournament State of the City Networking Programs Leadership Longmont Workers' Compensation Safety Program About Team Blog Longmont Community Profile Join Now Select Page We Speak Longmont Become a Member Member Login We encourage and promote a balanced, thriving economy and preserve those unique qualities that are good for businesses and our community. Our Strategy The Longmont Area Chamber of Commerce is here to build a stronger community. We believe communities are positively influenced by strong businesses in every industry. At the Longmont Chamber, we work directly with business owners to identify their goals and provide them with the resources most relevant to them. What's most important to your business? Advocacy We speak on behalf of business and represent their interests, and ensure that our community benefits by having a healthy business climate. Learn More Advocacy Focal Points Legislative Tracker Recent Actions Northwest Chamber Alliance Connection We build meaningful relationships between Longmont businesses and our community and cultivate a business-friendly environment. Learn More Membership Unity in the Community Networking Advancement We move our community forward by providing the opportunities and resources necessary for business development and growth. Learn More Leadership Longmont Blog Upcoming Events Longmont Chamber Events Community Events Blog Updates The 2026 Legislative Session Is Behind Us: Here's What It Means for Longmont Business",
+      "content_hash": "f45799dee938eb6480b24c9fa2220e10fda5dedb38f3546571443fca6464c9bf",
+      "entities": "[]"
+    },
+    {
+      "id": 19,
+      "source_id": 8,
+      "url": "https://longmontchamber.org/",
+      "fetched_at": "2026-07-09T14:30:18.463428500+00:00",
+      "excerpt": "May 27, 2026 The Colorado General Assembly wrapped up its 2026 session, and as always, there was no shortage of action affecting our business community. From a billion-dollar state budget shortfall to new labor rules and energy policy debates, this was a session that demanded close attention and we were paying it. This Is What Your Membership Makes Possible Apr 28, 2026 From hiring a lobbyist to launching new networking groups and distributing $60,000 in nonprofit grants, this past year proved what Longmont businesses can accomplish together. CEO Scott Cook shares a look back at what your membership has made possible, and what is coming next. Quality First, Always: Meet Caribou Office Apr 15, 2026 Founded by Scott Gillies and Kyle Gustafson, Caribou Office delivers high-quality, health-focused office products at accessible prices. See why Longmont businesses are taking notice. Our Community We understand Longmont, and not just from a business perspective. The Longmont Area Chamber of Commerce is a conduit for our members to connect with the community. Every Chamber member is a partner when it comes to creating a stronger and more empathetic regional economy. Email Address * First Name * Last Name * Follow Follow Follow Follow Follow Follow Our Community We understand Longmont, and not just from a business perspective. The Longmont Area Chamber of Commerce is a conduit for our members to connect with the community. Every Chamber member is a partner when it comes to creating a stronger and more empathetic regional economy. Follow Follow Follow Are you ready to be a part of a bigger community? Become a Member - Top Supporters We encourage and promote a balanced, thriving economy and preserve those unique qualities that are good for businesses and our community. 528 Main Street Longmont, CO 80501 303-776-5295 Email Us Become a Member Member Login Quick Links:",
+      "content_hash": "a28958c945cc2d478416352482b8f5bb6000b285475c03034aed6a9377a51b4d",
+      "entities": "[\"$60,000\"]"
+    },
+    {
+      "id": 20,
+      "source_id": 8,
+      "url": "https://longmontchamber.org/",
+      "fetched_at": "2026-07-09T14:30:18.475318700+00:00",
+      "excerpt": "Advocacy Membership Programs About Us Blog eCertify",
+      "content_hash": "a845d2009f830399144b859c7119b5f3b2387dcad4776474c03cf13fb7cbe20a",
+      "entities": "[]"
+    },
+    {
+      "id": 21,
+      "source_id": 9,
+      "url": "https://longmontcolorado.gov/events/",
+      "fetched_at": "2026-07-09T14:30:18.546898500+00:00",
+      "excerpt": "Events from Wednesday, Nov. 20, 2024 - Friday, Jan. 3, 2025 - City of Longmont Skip to main content News & Alerts Events Careers Contact Ensuring accessible government services. Activities Providing community activities. Building Guiding construction and development. Business Supporting local businesses. Education Offering educational resources. Government Facilitating civic engagement. Housing Providing housing services. Human Services Information Delivering essential community information. Jobs Connecting residents with jobs. Library Offering library services and resources. Licensing Issuing permits and licenses. Maintenance Maintaining public infrastructure. Museum Exhibiting arts, culture and history. NextLight Fiber Internet Public Safety Ensuring community safety. Sustainability Promoting environmental sustainability. Transportation Utilities Managing utility services. Wellness Supporting community health. Explore All Services Explore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place. All Services Departments Airport Boards, Committees and Commissions Building Services Children, Youth and Families at the Youth Center City Attorney City Clerk City Council City Manager Community and Neighborhood Resources Enterprise Technology Services Environment Finance Forestry Golf Services Housing and Community Investment Human Resources Human Services Judicial Department Library Longmont Housing Authority Longmont Museum Longmont Power & Communications Municipal Court Municipal Probation NextLight Fiber Internet Parks and Natural Resources Planning and Development Services Public Information Public Safety Purchasing and Contracts Recreation Services Risk Management Senior Services Transportation Providing transport options. Trash, Recycling, and Composting Utilities and Public Works Water Explore All Departments",
+      "content_hash": "04675936c9a570c026574de4e030de268fbcca7e53181b1c6a9f5b4dc60195ae",
+      "entities": "[\"Community Investment\\nHuman Resources\\nHuman Services\\nJudicial Department\",\"Youth Center\\nCity Attorney\\nCity Clerk\\nCity Council\"]"
+    },
+    {
+      "id": 22,
+      "source_id": 9,
+      "url": "https://longmontcolorado.gov/events/",
+      "fetched_at": "2026-07-09T14:30:18.564945100+00:00",
+      "excerpt": "Discover all the departments that make up the City of Longmont's government. Get detailed information on their roles, responsibilities, and how they serve the community. All Departments Government Home Events Events Calendar City of Longmont events 20 events found. Events City of Longmont events Events Search and Views Navigation Enter Keyword. Search for Events by Keyword. Find Events Hide filters Event Views Navigation List List Month Summary Today Now Now - 7/12/2026 Sunday, Jul. 12 Select date. Filters Changing any of the form inputs will cause the list of events to refresh with the filtered results. Done Clear Event Category : Open filter Close filter Event Category Tags : Open filter Close filter Tags Day : Open filter Close filter Day Sunday Monday Tuesday Wednesday Thursday Friday Saturday Time : Open filter Close filter Time All Day Morning Afternoon Evening Night July 2026 Thu 9 2026 Summer Reading Challenge Thursday, May 21 - 9 am - Friday, July 31 - 5 pm Longmont Public Library 355 Emery St., Longmont, CO, United States Summer Reading runs from May 21 - through July 31. Be sure to hand in your boards and cards by July 31 for prizes (while supplies last.) Thu 9 Craft Storytime Thursday, July 9 - 10 am - 11 am Craft Storytime Series Longmont Public Library 355 Emery St., Longmont, CO, United States Enjoy stories, songs, movement, and a hands-on craft while building social-emotional, early literacy, and fine motor skills. Thu 9 Spanish-English Conversation Group Thursday, July 9 - 1 pm - 2 pm Spanish-English Conversation Group Series Longmont Public Library 355 Emery St., Longmont, CO, United States Get to know other language learners while practicing conversations in Spanish or English. Thu 9 Navigators (Summer Program) Thursday, July 9 - 1 pm - 5:30 pm Navigators (Summer Program) Series Longmont Youth Center 1050 Lashley St., Longmont, CO, United States Thu 9 Glam Group (Summer Program) Thursday, July 9 - 1 pm - 5:30 pm",
+      "content_hash": "e0e90d64627e509a62f3c5f46ff618317c8f794cc38b03a51f1b00cdd77aab14",
+      "entities": "[]"
+    },
+    {
+      "id": 23,
+      "source_id": 9,
+      "url": "https://longmontcolorado.gov/events/",
+      "fetched_at": "2026-07-09T14:30:18.581583100+00:00",
+      "excerpt": "Glam Group (Summer Program) Series Longmont Youth Center 1050 Lashley St., Longmont, CO, United States Thu 9 Make it Better (Summer Program) Thursday, July 9 - 1 pm - 5:30 pm Make it Better (Summer Program) Series Longmont Youth Center 1050 Lashley St., Longmont, CO, United States Thu 9 Youth Original Recording Studio (Summer Program) Thursday, July 9 - 1 pm - 5:30 pm Youth Original Recording Studio (Summer Program) Series Longmont Youth Center 1050 Lashley St., Longmont, CO, United States Thu 9 AI: A Panel Discussion on Artificial Intelligence Thursday, July 9 - 5:45 pm - 7:15 pm Longmont Public Library 355 Emery St., Longmont, CO, United States Thu 9 Summer Concert Series: Gora Gora Orkestar Thursday, July 9 - 7 pm - 8:30 pm Longmont Museum 400 Quail Rd., Longmont, CO, United States Known for their driving rhythms and innovative approaches to the traditional music of Eastern Europe, this 11-piece brass band brings the sounds of the Old World to the Rocky Mountains. Fri 10 Free Fitness in the Park Friday, July 10 - 9 am - 10 am Dawson Park 1757 Harvard St, Longmont, Colorado Fri 10 Nature Fridays at Sandstone Ranch Friday, July 10 - 9 am - 12 pm Nature Fridays at Sandstone Ranch Series Sandstone Ranch Visitors Center 3001 Sandstone Dr., Longmont, CO, United States Fri 10 Kids' Performance on the Patio with Spoon Circus Friday, July 10 - 10 am - 11 am Longmont Public Library 355 Emery St., Longmont, CO, United States A Spoon Circus Performance: The Lost Treasure! Join Captain Noodle Beard and his first mate as they stumble, juggle, and clown their way through circus antics and distractions galore. Fri 10 All Out League (Summer Program) Friday, July 10 - 1 pm - 5:30 pm All Out League (Summer Program) Series Longmont Youth Center 1050 Lashley St., Longmont, CO, United States Fri 10 Mindful Art Friday, July 10 - 1 pm - 5:30 pm Mindful Art Series Longmont Youth Center 1050 Lashley St., Longmont, CO, United States Sat 11",
+      "content_hash": "a7c93baccbb71fbc3e7f01ef0e7c73f8419533f07773e92406917ac55c1cae88",
+      "entities": "[]"
+    },
+    {
+      "id": 24,
+      "source_id": 9,
+      "url": "https://longmontcolorado.gov/events/",
+      "fetched_at": "2026-07-09T14:30:18.600828400+00:00",
+      "excerpt": "Free Document Shredding Event Saturday, July 11 - 9 am - 1 pm Free Document Shredding Event Series Green Girl Recycling 1801 Boston Ave., Colorado, United States Sat 11 Saturday Itty Bitty City Saturday, July 11 - 10 am - 12 pm Saturday Itty Bitty City Series Memorial Building 700 Longs Peak Ave., Longmont, CO, United States Sat 11 English Conversation Group Saturday, July 11 - 10:30 am - 11:30 am English Conversation Group Series Longmont Public Library 355 Emery St., Longmont, CO, United States Practice English conversation with others in an informal, conversational setting. Some English experience suggested, but all welcome. Sat 11 Free Environmental Education Programs Saturday, July 11 - 10:30 am - 12 pm Free Environmental Education Programs Series Sandstone Ranch Visitors Center 3001 Sandstone Dr., Longmont, CO, United States Sat 11 Kids' Concert: Indonesian Dance & Music with ARCINDA Saturday, July 11 - 11 am - 11:45 am Longmont Public Library 355 Emery St., Longmont, CO, United States Sun 12 Dogs Enjoy Afternoon Reading (D.E.A.R.) Sunday, July 12 - 2 pm - 3 pm Dogs Enjoy Afternoon Reading (D.E.A.R.) Series Longmont Public Library 355 Emery St., Longmont, CO, United States Designed for new readers and kids who want to practice their reading with a non-judgmental, furry audience a.k.a. a trained therapy dog. Previous Events Today Next Events Welcome Longmont is a diverse, multicultural and welcoming city. Contact View All Services Departments View All Departments Quick Links Agendas and Meetings Code Enforcement Emergency Notifications Employment Opportunities Permits and Inspections Public Records Service Requests Email Signup Stay up-to-date on news and events in Longmont. Sign Up For questions or assistance, please contact our help and information line at 303-776-6050 . Activities Building Business Education Government Housing Human Services Information Jobs Library Licensing Maintenance Museum NextLight Fiber Internet",
+      "content_hash": "abf53e48efbf39ddb5b4f4a0e86a9b91c40c14e18a96e5d1c817a68b40cdeaa7",
+      "entities": "[]"
+    },
+    {
+      "id": 25,
+      "source_id": 9,
+      "url": "https://longmontcolorado.gov/events/",
+      "fetched_at": "2026-07-09T14:30:18.617540100+00:00",
+      "excerpt": "Public Safety Sustainability Transportation Utilities Wellness Explore All Services Explore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place. All Services Departments Airport Boards, Committees and Commissions Building Services Children, Youth and Families at the Youth Center City Attorney City Clerk City Council City Manager Community and Neighborhood Resources Enterprise Technology Services Environment Finance Forestry Golf Services Housing and Community Investment Human Resources Human Services Judicial Department Library Longmont Housing Authority Longmont Museum Longmont Power & Communications Municipal Court Municipal Probation NextLight Fiber Internet Parks and Natural Resources Planning and Development Services Public Information Public Safety Purchasing and Contracts Recreation Services Risk Management Senior Services Transportation Trash, Recycling, and Composting Utilities and Public Works Water Explore All Departments Discover all the departments that make up the City of Longmont's government. Get detailed information on their roles, responsibilities, and how they serve the community. All Departments Government News & Alerts Events Careers Contact Subscribe to Email Updates Email Address Stay Connected Get the latest updates from the City of Longmont This is Longmont The official newsletter of the City of Longmont Weekly Topics of Interest Choose specific topics you want to hear about Select all in this category News & Alerts Latest news information, notices and alerts from the city Events & Activities Community events, programs and activities happening in Longmont Weekly City Events Downtown Events Events for Kids Job Announcements Employment opportunities delivered to your inbox Weekly Department Newsletters Subscribe to updates from specific city departments Select all in this category",
+      "content_hash": "d81aafe38b4d8ea6258001b6cb161ac1175ceb14a41fcaf828ce5861da9633df",
+      "entities": "[\"Community Investment\\nHuman Resources\\nHuman Services\\nJudicial Department\",\"Weekly\\nDepartment\",\"Youth Center\\nCity Attorney\\nCity Clerk\\nCity Council\"]"
+    },
+    {
+      "id": 26,
+      "source_id": 9,
+      "url": "https://longmontcolorado.gov/events/",
+      "fetched_at": "2026-07-09T14:30:18.633985700+00:00",
+      "excerpt": "Longmont Library Updates and registration information about library programs and events Adult Programs Children Programs (Infant - 5th Grade) Technology + Computer Classes Teens Program Notices (6th-12th graders) This Month @ the Library Longmont Museum Events, exhibits and more from the museum Auditorium Programs Discovery Days (Early Childhood) Museum Exhibits & Events Recreation Activities, classes, sports and more Sustainability Project and program updates, including money-saving rebates and efficiency resources Sustainable Business Program Promotes environmental stewardship, economic vitality and social equity Senior Center Senior Center news and updates about upcoming programs and events Vision Zero Vision Zero projects, activities and how to get involved to improve transportation safety Youth Center Helping families, children and youth in Longmont grow, succeed and reach their best potential Language Preference English Spanish Most of our email newsletters are currently published in English only. We're recording preferences if we add Spanish translations in the future.",
+      "content_hash": "5561dc7902c1586bc073094d7825839f903003ee9f9085a68687bbe29541ad86",
+      "entities": "[]"
+    }
+  ],
+  "drafts_schema": [
+    {
+      "cid": 0,
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 1
+    },
+    {
+      "cid": 1,
+      "name": "lead_id",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 2,
+      "name": "format",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 3,
+      "name": "title",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 4,
+      "name": "content",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 5,
+      "name": "status",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "'lead'",
+      "pk": 0
+    },
+    {
+      "cid": 6,
+      "name": "verification_checklist",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "'[]'",
+      "pk": 0
+    },
+    {
+      "cid": 7,
+      "name": "missing_evidence_notes",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 8,
+      "name": "correction_note",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 9,
+      "name": "created_at",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 10,
+      "name": "updated_at",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 11,
+      "name": "attested_by",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 12,
+      "name": "attested_at",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 13,
+      "name": "guardrail_override_reason",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    }
+  ],
+  "drafts_count": 0,
+  "drafts_rows": [],
+  "published_posts_schema": [
+    {
+      "cid": 0,
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 1
+    },
+    {
+      "cid": 1,
+      "name": "draft_id",
+      "type": "INTEGER",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 2,
+      "name": "file_path",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 3,
+      "name": "url",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 4,
+      "name": "published_at",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 5,
+      "name": "correction_history",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "'[]'",
+      "pk": 0
+    }
+  ],
+  "published_posts_count": 0,
+  "published_posts_rows": [],
+  "publish_runs_schema": [
+    {
+      "cid": 0,
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 1
+    },
+    {
+      "cid": 1,
+      "name": "issue_id",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 2,
+      "name": "output_path",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 3,
+      "name": "generated_files",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "'[]'",
+      "pk": 0
+    },
+    {
+      "cid": 4,
+      "name": "provider",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "'local_export'",
+      "pk": 0
+    },
+    {
+      "cid": 5,
+      "name": "published_url",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 6,
+      "name": "deployment_id",
+      "type": "TEXT",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 0
+    },
+    {
+      "cid": 7,
+      "name": "article_count",
+      "type": "INTEGER",
+      "notnull": 1,
+      "dflt_value": "0",
+      "pk": 0
+    },
+    {
+      "cid": 8,
+      "name": "skipped_count",
+      "type": "INTEGER",
+      "notnull": 1,
+      "dflt_value": "0",
+      "pk": 0
+    },
+    {
+      "cid": 9,
+      "name": "files_written",
+      "type": "INTEGER",
+      "notnull": 1,
+      "dflt_value": "0",
+      "pk": 0
+    },
+    {
+      "cid": 10,
+      "name": "generated_at",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    }
+  ],
+  "publish_runs_count": 0,
+  "publish_runs_rows": [],
+  "ready_to_draft_leads": [
+    {
+      "id": 4,
+      "detector_name": "daily_scan",
+      "why": "Review community signal from Longmont city events: Public Safety Sustainability Transportation Utilities Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Open the linked source, confirm the date, location, organizer, and public relevance, then draft a short brief from the source-backed facts.",
+      "confidence": "med",
+      "risk_level": "med",
+      "confirmation_checklist": "[\"Open the linked source, confirm the date, location, organizer, and public relevance, then draft a short brief from the source-backed facts.\",\"Confirm dates, names, dollar amounts, and decision points before publication.\",\"Keep unverified or single-source claims labeled for editor review.\"]",
+      "created_at": "2026-07-09T14:30:18.686872200+00:00",
+      "from_scan_lead_id": 4,
+      "story_type": "brief",
+      "disposition": "ready_to_draft",
+      "novelty_score": 4,
+      "novelty_reason": "Specific source-backed civic item detected from recent evidence.",
+      "recurrence_count": null,
+      "recurrence_note": null
+    }
+  ]
+}
