@@ -1,0 +1,21 @@
+﻿{
+    "timestamp":  "2026-07-09T13:54:20.1887524Z",
+    "observedAppRelaunches":  [
+                                  "PID 3932 debug session closed during Generate Draft; follow-up process PID 40400 had no debug endpoint and drafts table remained empty.",
+                                  "PID 41896 debug session closed during Auto-Find Feeds Longmont/Colorado; follow-up process PID 18288 had no debug endpoint and sources table remained at 9."
+                              ],
+    "currentProcesses":  [
+                             {
+                                 "Id":  18288,
+                                 "ProcessName":  "civicnews",
+                                 "MainWindowTitle":  "The Civic Desk",
+                                 "Path":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe"
+                             },
+                             {
+                                 "Id":  5416,
+                                 "ProcessName":  "ollama",
+                                 "MainWindowTitle":  "",
+                                 "Path":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-35e6cf0-dark-signal-evidence\\ollama-runtime\\v0.30.11\\ollama.exe"
+                             }
+                         ]
+}

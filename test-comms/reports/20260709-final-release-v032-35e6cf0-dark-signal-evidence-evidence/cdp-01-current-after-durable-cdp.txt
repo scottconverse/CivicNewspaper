@@ -1,0 +1,99 @@
+The Civic Desk
+LONGMONT / CO
+NEWSROOM
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+SET UP
+Sources
+AI Model
+Publishing
+TOOLS
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+phi4-mini:latest
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Story Queue
+
+Civic signals your sources surfaced, ready to verify and turn into plain-language stories.
+
+Refresh
+Daily Scan
+Scrape & Detect
+NEW LEADS
+5
+IN DRAFTING
+0
+HIGH PRIORITY
+2
+SOURCES
+9
+Local-first workflow
+Scan sources, draft from linked evidence, run guardrails, then publish a static paper.
+Leads
+5
+Drafts
+0
+Scan results
+latest
+Filter leads
+Sort by:
+Date Created
+Risk Level
+Confidence
+Risk: low
+Verification
+Needs verification
+daily_scan
+Verify source-quality issue from Longmont city events: The scan found an official-source page, but the lead text looks like navigation, an index, markup, or a multi-item listing instead of one reportable civic item. Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Quality gate: The lead text still contains markup, encoded HTML, or page-navigation debris. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting.
+
+Novelty /5. Dark-signal pattern detected from recent evidence.
+
+Confidence: low
+Verify first
+Risk: med
+Brief
+Ready to draft
+daily_scan
+Review community signal from Longmont city events: Public Safety Sustainability Transportation Utilities Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Open the linked source, confirm the date, location, organizer, and public relevance, then draft a short brief from the source-backed facts.
+
+Novelty 4/5. Specific source-backed civic item detected from recent evidence.
+
+Confidence: med
+Draft
+Risk: low
+Verification
+Needs verification
+daily_scan
+Verify source-quality issue from Longmont city events: The scan found an official-source page, but the lead text looks like navigation, an index, markup, or a multi-item listing instead of one reportable civic item. Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Quality gate: The lead text still contains markup, encoded HTML, or page-navigation debris. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting.
+
+Novelty /5. Dark-signal pattern detected from recent evidence.
+
+Confidence: low
+Verify first
+Risk: high
+Verification
+Needs verification
+daily_scan
+Review community signal from Longmont city events: Glam Group (Summer Program) Series Longmont Youth Center 1050 Lashley St., Longmont, CO, United States Thu Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting.
+
+Novelty /5. Dark-signal pattern detected from recent evidence.
+
+Confidence: high
+Verify first
+Risk: high
+Verification
+Needs verification
+daily_scan
+Review community signal from Longmont city events: Free Document Shredding Event Saturday, July 11 - 9 am - 1 pm Free Document Shredding Event Series Green Girl Recycling Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting.
+
+Novelty /5. Dark-signal pattern detected from recent evidence.
+
+Confidence: high
+Verify first

@@ -1,0 +1,8 @@
+﻿{
+    "timestamp":  "2026-07-09T13:50:20.4831249Z",
+    "exe":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+    "cleanProfile":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-35e6cf0-dark-signal-evidence",
+    "pid":  35332,
+    "webviewArgs":  "--remote-debugging-port=9224 --remote-allow-origins=*",
+    "cdpResult":  "[ {\r\n   \"description\": \"\",\r\n   \"devtoolsFrontendUrl\": \"https://aka.ms/docs-landing-page/serve_rev/@6362dfa84aa4f30c18c60ac12387d02753f37dc6/inspector.html?ws=127.0.0.1:9224/devtools/page/93F15DD8EF05857BBB963B8B20E74FC9\",\r\n   \"faviconUrl\": \"http://tauri.localhost/favicon.svg\",\r\n   \"id\": \"93F15DD8EF05857BBB963B8B20E74FC9\",\r\n   \"title\": \"CivicNews Dashboard\",\r\n   \"type\": \"page\",\r\n   \"url\": \"http://tauri.localhost/\",\r\n   \"webSocketDebuggerUrl\": \"ws://127.0.0.1:9224/devtools/page/93F15DD8EF05857BBB963B8B20E74FC9\"\r\n} ]\r\n"
+}

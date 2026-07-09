@@ -1,0 +1,5 @@
+﻿{
+    "timestamp":  "2026-07-09T13:53:23.2284934Z",
+    "pid":  18288,
+    "cdpResult":  "[ {\r\n   \"description\": \"\",\r\n   \"devtoolsFrontendUrl\": \"https://aka.ms/docs-landing-page/serve_rev/@6362dfa84aa4f30c18c60ac12387d02753f37dc6/inspector.html?ws=127.0.0.1:9224/devtools/page/27892B718323EE9956758D5E70AD3055\",\r\n   \"faviconUrl\": \"http://tauri.localhost/favicon.svg\",\r\n   \"id\": \"27892B718323EE9956758D5E70AD3055\",\r\n   \"title\": \"CivicNews Dashboard\",\r\n   \"type\": \"page\",\r\n   \"url\": \"http://tauri.localhost/\",\r\n   \"webSocketDebuggerUrl\": \"ws://127.0.0.1:9224/devtools/page/27892B718323EE9956758D5E70AD3055\"\r\n} ]\r\n"
+}

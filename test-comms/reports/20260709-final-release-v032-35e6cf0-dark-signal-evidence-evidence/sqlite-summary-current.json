@@ -1,0 +1,225 @@
+{
+  "db_path": "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-35e6cf0-dark-signal-evidence\\civicdesk.db",
+  "tables": [
+    "beat_memory",
+    "civic_entities",
+    "civic_observation_entities",
+    "civic_observations",
+    "daily_scan_leads",
+    "daily_scan_runs",
+    "dark_signals",
+    "drafts",
+    "evidence_items",
+    "lead_evidence",
+    "leads",
+    "paired_clients",
+    "publish_decision_audits",
+    "publish_runs",
+    "published_posts",
+    "settings",
+    "source_performance_scores",
+    "sources",
+    "sqlite_sequence",
+    "story_templates",
+    "subscribers",
+    "verification_tasks"
+  ],
+  "sources_count": 9,
+  "evidence_items_count": 26,
+  "daily_scan_runs_count": 1,
+  "daily_scan_leads_count": 5,
+  "leads_count": 5,
+  "lead_evidence_count": 5,
+  "drafts_count": 0,
+  "published_posts_count": 0,
+  "publish_runs_count": 0,
+  "verification_tasks_count": 61,
+  "leads": [
+    {
+      "id": 1,
+      "story_type": "verification",
+      "disposition": "needs_verification",
+      "risk_level": "high",
+      "confidence": "high",
+      "novelty_score": null,
+      "recurrence_count": null,
+      "created_at": "2026-07-09T13:48:44.395316400+00:00",
+      "why": "Review community signal from Longmont city events: Free Document Shredding Event Saturday, July 11 - 9 am - 1 pm Free Document Shredding Event Series Green Girl Recycling Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting."
+    },
+    {
+      "id": 2,
+      "story_type": "verification",
+      "disposition": "needs_verification",
+      "risk_level": "high",
+      "confidence": "high",
+      "novelty_score": null,
+      "recurrence_count": null,
+      "created_at": "2026-07-09T13:48:44.398411100+00:00",
+      "why": "Review community signal from Longmont city events: Glam Group (Summer Program) Series Longmont Youth Center 1050 Lashley St., Longmont, CO, United States Thu Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting."
+    },
+    {
+      "id": 3,
+      "story_type": "verification",
+      "disposition": "needs_verification",
+      "risk_level": "low",
+      "confidence": "low",
+      "novelty_score": null,
+      "recurrence_count": null,
+      "created_at": "2026-07-09T13:48:44.401191900+00:00",
+      "why": "Verify source-quality issue from Longmont city events: The scan found an official-source page, but the lead text looks like navigation, an index, markup, or a multi-item listing instead of one reportable civic item. Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Quality gate: The lead text still contains markup, encoded HTML, or page-navigation debris. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting."
+    },
+    {
+      "id": 4,
+      "story_type": "brief",
+      "disposition": "ready_to_draft",
+      "risk_level": "med",
+      "confidence": "med",
+      "novelty_score": 4,
+      "recurrence_count": null,
+      "created_at": "2026-07-09T13:48:44.404564500+00:00",
+      "why": "Review community signal from Longmont city events: Public Safety Sustainability Transportation Utilities Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Open the linked source, confirm the date, location, organizer, and public relevance, then draft a short brief from the source-backed facts."
+    },
+    {
+      "id": 5,
+      "story_type": "verification",
+      "disposition": "needs_verification",
+      "risk_level": "low",
+      "confidence": "low",
+      "novelty_score": null,
+      "recurrence_count": null,
+      "created_at": "2026-07-09T13:48:44.407349100+00:00",
+      "why": "Verify source-quality issue from Longmont city events: The scan found an official-source page, but the lead text looks like navigation, an index, markup, or a multi-item listing instead of one reportable civic item. Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Quality gate: The lead text still contains markup, encoded HTML, or page-navigation debris. Suggested next step: Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting."
+    }
+  ],
+  "daily_scan_leads": [
+    {
+      "id": 1,
+      "title": "Review community signal from Longmont city events",
+      "source_name": "Longmont city events",
+      "priority": "high",
+      "story_type": "verification",
+      "disposition": "needs_verification",
+      "publishability_note": "Confirm the signal against source records or a second public source before drafting."
+    },
+    {
+      "id": 2,
+      "title": "Review community signal from Longmont city events",
+      "source_name": "Longmont city events",
+      "priority": "high",
+      "story_type": "verification",
+      "disposition": "needs_verification",
+      "publishability_note": "Confirm the signal against source records or a second public source before drafting."
+    },
+    {
+      "id": 3,
+      "title": "Verify source-quality issue from Longmont city events",
+      "source_name": "Longmont city events",
+      "priority": "low",
+      "story_type": "verification",
+      "disposition": "needs_verification",
+      "publishability_note": "Confirm the signal against source records or a second public source before drafting. The lead text still contains markup, encoded HTML, or page-navigation debris."
+    },
+    {
+      "id": 4,
+      "title": "Review community signal from Longmont city events",
+      "source_name": "Longmont city events",
+      "priority": "medium",
+      "story_type": "brief",
+      "disposition": "ready_to_draft",
+      "publishability_note": "Single-source official civic briefs are draftable only after confirming the linked source facts; seek a second public source when available."
+    },
+    {
+      "id": 5,
+      "title": "Verify source-quality issue from Longmont city events",
+      "source_name": "Longmont city events",
+      "priority": "low",
+      "story_type": "verification",
+      "disposition": "needs_verification",
+      "publishability_note": "Confirm the signal against source records or a second public source before drafting. The lead text still contains markup, encoded HTML, or page-navigation debris."
+    }
+  ],
+  "lead_evidence": [
+    {
+      "lead_id": 1,
+      "evidence_id": 24
+    },
+    {
+      "lead_id": 2,
+      "evidence_id": 23
+    },
+    {
+      "lead_id": 3,
+      "evidence_id": 22
+    },
+    {
+      "lead_id": 4,
+      "evidence_id": 25
+    },
+    {
+      "lead_id": 5,
+      "evidence_id": 21
+    }
+  ],
+  "evidence_sample": [
+    {
+      "id": 26,
+      "source_id": 9,
+      "url": "https://longmontcolorado.gov/events/",
+      "excerpt": "Longmont Library Updates and registration information about library programs and events Adult Programs Children Programs (Infant - 5th Grade) Technology + Computer Classes Teens Program Notices (6th-12th graders) This Month @ the Library Longmont Museum Events, exhibits and more from the museum Audi"
+    },
+    {
+      "id": 25,
+      "source_id": 9,
+      "url": "https://longmontcolorado.gov/events/",
+      "excerpt": "Public Safety Sustainability Transportation Utilities Wellness Explore All Services Explore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place. All Services Departments Airp"
+    },
+    {
+      "id": 24,
+      "source_id": 9,
+      "url": "https://longmontcolorado.gov/events/",
+      "excerpt": "Free Document Shredding Event Saturday, July 11 - 9 am - 1 pm Free Document Shredding Event Series Green Girl Recycling 1801 Boston Ave., Colorado, United States Sat 11 Saturday Itty Bitty City Saturday, July 11 - 10 am - 12 pm Saturday Itty Bitty City Series Memorial Building 700 Longs Peak Ave., L"
+    },
+    {
+      "id": 23,
+      "source_id": 9,
+      "url": "https://longmontcolorado.gov/events/",
+      "excerpt": "Glam Group (Summer Program) Series Longmont Youth Center 1050 Lashley St., Longmont, CO, United States Thu 9 Make it Better (Summer Program) Thursday, July 9 - 1 pm - 5:30 pm Make it Better (Summer Program) Series Longmont Youth Center 1050 Lashley St., Longmont, CO, United States Thu 9 Youth Origin"
+    },
+    {
+      "id": 22,
+      "source_id": 9,
+      "url": "https://longmontcolorado.gov/events/",
+      "excerpt": "Discover all the departments that make up the City of Longmont's government. Get detailed information on their roles, responsibilities, and how they serve the community. All Departments Government Home Events Events Calendar City of Longmont events 20 events found. Events City of Longmont events Eve"
+    },
+    {
+      "id": 21,
+      "source_id": 9,
+      "url": "https://longmontcolorado.gov/events/",
+      "excerpt": "Events from Wednesday, Nov. 20, 2024 - Friday, Jan. 3, 2025 - City of Longmont Skip to main content News & Alerts Events Careers Contact Ensuring accessible government services. Activities Providing community activities. Building Guiding construction and development. Business Supporting local busine"
+    },
+    {
+      "id": 20,
+      "source_id": 8,
+      "url": "https://longmontchamber.org/",
+      "excerpt": "Advocacy Membership Programs About Us Blog eCertify"
+    },
+    {
+      "id": 19,
+      "source_id": 8,
+      "url": "https://longmontchamber.org/",
+      "excerpt": "May 27, 2026 The Colorado General Assembly wrapped up its 2026 session, and as always, there was no shortage of action affecting our business community. From a billion-dollar state budget shortfall to new labor rules and energy policy debates, this was a session that demanded close attention and we "
+    },
+    {
+      "id": 18,
+      "source_id": 8,
+      "url": "https://longmontchamber.org/",
+      "excerpt": "Longmont Area Chamber of Commerce - Longmont Area Chamber of Commerce Membership Benefits of Membership Join the Longmont Chamber Member Login Our Members Business Directory Press Releases Job Openings Offers & Deals Volunteer Opportunities Advocacy Events Calendars Chamber Events Community Calendar"
+    },
+    {
+      "id": 17,
+      "source_id": 7,
+      "url": "https://www.longmontleader.com/local-news",
+      "excerpt": "Headline: Longmont News - The Longmont Leader"
+    }
+  ]
+}

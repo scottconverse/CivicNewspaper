@@ -1,0 +1,8 @@
+﻿{
+    "timestamp":  "2026-07-09T13:41:11.7491067Z",
+    "cleanProfile":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-35e6cf0-dark-signal-evidence",
+    "exe":  "C:\\Users\\civic\\AppData\\Local\\The Civic Desk\\civicnews.exe",
+    "pid":  14280,
+    "processAlive":  true,
+    "profileItems":  "[{\"FullName\":\"C:\\\\Users\\\\civic\\\\AppData\\\\Local\\\\Temp\\\\civicdesk-final-v032-35e6cf0-dark-signal-evidence\\\\backups\",\"Length\":null},{\"FullName\":\"C:\\\\Users\\\\civic\\\\AppData\\\\Local\\\\Temp\\\\civicdesk-final-v032-35e6cf0-dark-signal-evidence\\\\logs\",\"Length\":null},{\"FullName\":\"C:\\\\Users\\\\civic\\\\AppData\\\\Local\\\\Temp\\\\civicdesk-final-v032-35e6cf0-dark-signal-evidence\\\\sites\",\"Length\":null},{\"FullName\":\"C:\\\\Users\\\\civic\\\\AppData\\\\Local\\\\Temp\\\\civicdesk-final-v032-35e6cf0-dark-signal-evidence\\\\civicdesk.db\",\"Length\":4096},{\"FullName\":\"C:\\\\Users\\\\civic\\\\AppData\\\\Local\\\\Temp\\\\civicdesk-final-v032-35e6cf0-dark-signal-evidence\\\\civicdesk.db-shm\",\"Length\":32768},{\"FullName\":\"C:\\\\Users\\\\civic\\\\AppData\\\\Local\\\\Temp\\\\civicdesk-final-v032-35e6cf0-dark-signal-evidence\\\\civicdesk.db-wal\",\"Length\":403792},{\"FullName\":\"C:\\\\Users\\\\civic\\\\AppData\\\\Local\\\\Temp\\\\civicdesk-final-v032-35e6cf0-dark-signal-evidence\\\\sites\\\\default\",\"Length\":null}]"
+}

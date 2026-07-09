@@ -1,0 +1,122 @@
+[
+  {
+    "i": 0,
+    "text": "Story Queue",
+    "disabled": false
+  },
+  {
+    "i": 1,
+    "text": "Daily Scan",
+    "disabled": false
+  },
+  {
+    "i": 2,
+    "text": "Dark Signals",
+    "disabled": false
+  },
+  {
+    "i": 3,
+    "text": "Verification",
+    "disabled": false
+  },
+  {
+    "i": 4,
+    "text": "Workbench",
+    "disabled": false
+  },
+  {
+    "i": 5,
+    "text": "Sources",
+    "disabled": false
+  },
+  {
+    "i": 6,
+    "text": "AI Model",
+    "disabled": false
+  },
+  {
+    "i": 7,
+    "text": "Publishing",
+    "disabled": false
+  },
+  {
+    "i": 8,
+    "text": "Browser Pairing",
+    "disabled": false
+  },
+  {
+    "i": 9,
+    "text": "Ethics & Backups",
+    "disabled": false
+  },
+  {
+    "i": 10,
+    "text": "System & Status",
+    "disabled": false
+  },
+  {
+    "i": 11,
+    "text": "",
+    "disabled": false
+  },
+  {
+    "i": 12,
+    "text": "Refresh",
+    "disabled": false
+  },
+  {
+    "i": 13,
+    "text": "Daily Scan",
+    "disabled": false
+  },
+  {
+    "i": 14,
+    "text": "Scrape & Detect",
+    "disabled": false
+  },
+  {
+    "i": 15,
+    "text": "IN DRAFTING\n0",
+    "disabled": false
+  },
+  {
+    "i": 16,
+    "text": "Leads\n5",
+    "disabled": false
+  },
+  {
+    "i": 17,
+    "text": "Drafts\n0",
+    "disabled": false
+  },
+  {
+    "i": 18,
+    "text": "Scan results\nlatest",
+    "disabled": false
+  },
+  {
+    "i": 19,
+    "text": "Verify first",
+    "disabled": false
+  },
+  {
+    "i": 20,
+    "text": "Draft",
+    "disabled": false
+  },
+  {
+    "i": 21,
+    "text": "Verify first",
+    "disabled": false
+  },
+  {
+    "i": 22,
+    "text": "Verify first",
+    "disabled": false
+  },
+  {
+    "i": 23,
+    "text": "Verify first",
+    "disabled": false
+  }
+]

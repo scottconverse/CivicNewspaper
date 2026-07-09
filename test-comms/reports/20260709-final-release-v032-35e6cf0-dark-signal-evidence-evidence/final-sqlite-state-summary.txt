@@ -1,0 +1,26 @@
+﻿{
+  "settings_count": 13,
+  "sources_count": 9,
+  "daily_scan_runs_count": 1,
+  "daily_scan_leads_count": 5,
+  "leads_count": 5,
+  "lead_evidence_count": 5,
+  "evidence_items_count": 26,
+  "drafts_count": 0,
+  "published_posts_count": 0,
+  "publish_runs_count": 0,
+  "verification_tasks_count": 61,
+  "ready_to_draft_leads": [
+    {
+      "id": 4,
+      "detector_name": "daily_scan",
+      "why": "Review community signal from Longmont city events: Public Safety Sustainability Transportation Utilities Editor context: Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Suggested next step: Open the linked source, confirm the date, location, organizer, and public relevance, then draft a short brief from the source-backed facts.",
+      "confidence": "med",
+      "risk_level": "med",
+      "story_type": "brief",
+      "disposition": "ready_to_draft",
+      "novelty_score": 4,
+      "novelty_reason": "Specific source-backed civic item detected from recent evidence."
+    }
+  ]
+}
