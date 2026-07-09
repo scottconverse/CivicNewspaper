@@ -1,99 +1,135 @@
-# Final Cleanroom Release Verification - The Civic Desk v0.3.2 ba49af4
+# Final Cleanroom Report - The Civic Desk v0.3.2 ba49af4 Publish Flow
 
-Tester branch: `test-comms/cleanroom-coder-tester`  
-Directive: `Final Cleanroom Release Verification - The Civic Desk v0.3.2 ba49af4 Publish Flow Rerun`  
-Checked at: 2026-07-09 UTC  
-Overall result: FAIL for full static publish flow. Release visibility, install, onboarding, scan, AI setup, draft generation, and approval override passed; static compile/publish remained blocked by the public identity gate and repeated WebView/CDP loss while trying to save a real publication title.
+**FAIL**
 
-## Target
+The ba49af4 build improves the publish path substantially: release visibility passes, the linked-evidence Brief draft persists, editor attestation can move the draft to `ready_to_publish`, static export writes 18 files plus `site-package.zip`, and the anonymous here.now preview publishes successfully. Final release still fails because the published reader-facing brief is not coherent civic copy: it is a navigation/service-list fragment from the Longmont events page, not a concrete source-backed civic item.
 
-- Product commit under test: `ba49af4d69d2c4d6d88bfd148490494f243cc9d7`
-- Release/docs commit: `4ba609690e0094c453b4a2852fd209cc8c8b2c83`
-- Installer: `The.Civic.Desk_0.3.2_x64-setup.exe`
-- Installer SHA256: `1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5`
+## Machine Profile
 
-Evidence folder:
-`test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/`
+- Machine/user: `MSI\civic`
+- Repo path: `C:\Users\civic\Desktop\CODE\civicnewspaper-test-comms`
+- Tester branch: `test-comms/cleanroom-coder-tester`
+- Active directive: `test-comms/ACTIVE_DIRECTIVE.md`
+- Product build commit under test: `ba49af4d69d2c4d6d88bfd148490494f243cc9d7`
+- Release/docs commit in refreshed directive: `2cb62b8262a04111d00b1b4e1d0ebd9b4a78eeb1`
+- Installed EXE: `C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe`
+- Clean app profile: `C:\Users\civic\AppData\Local\Temp\civicdesk-final-v032-ba49af4-publish-flow`
+
+## Steps Run
+
+- Pulled and fast-forwarded `origin/test-comms/cleanroom-coder-tester`, including the refreshed docs commit pointer.
+- Reread `test-comms/ACTIVE_DIRECTIVE.md`.
+- Downloaded installer and checksum from the GitHub release.
+- Verified SHA256 `1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5`.
+- Uninstalled prior The Civic Desk instance and installed the downloaded release installer.
+- Launched only the installed EXE with fresh `CIVICNEWS_APP_DATA_DIR`.
+- Completed first-run Longmont, CO onboarding.
+- Ran Daily Scan without editing Settings first.
+- Opened the linked-evidence Brief lead and generated a draft.
+- Used editor attestation/override to approve the draft for static publishing.
+- Set publication identity to `Longmont Civic Desk` to clear the starter-name compile gate.
+- Ran the compile checklist and clicked `Compile site`.
+- Inspected generated `index.html`, `briefs/1.html`, and SQLite state.
+- Published through the authorized anonymous here.now preview path.
+- Fetched the public here.now home page and brief page as a visitor.
 
 ## What Passed
 
-- Release visibility and checksum verification passed. See `20260709-final-release-v032-ba49af4-publish-flow-visibility.md`.
-- Prior app was uninstalled with `uninstall.exe /S`, exit 0.
-- Downloaded installer installed silently with `/S`, exit 0.
-- Installed executable was present at `C:\Users\civic\AppData\Local\The Civic Desk\civicnews.exe`, version `0.3.2`.
-- First-run onboarding appeared in the installed app, not a browser-only preview.
-- Longmont, CO starter setup completed and added 9 starter sources.
-- Daily Scan completed and saved 5 leads with 26 evidence items.
-- The AI setup page installed/repaired the local runtime and reached `Local AI ready` with `phi4-mini:latest`.
-- The one `ready_to_draft` lead opened in Workbench and generated a draft.
-- The editor attestation checkbox enabled the approval buttons.
-- `Approve for Static Publish` opened the warning override modal instead of staying disabled.
-- `Publish anyway (logged)` saved the draft as `ready_to_publish` with `attested_by=Local Editor` and the tester override reason.
+- Release visibility passed: release/docs were reachable, hash/size/commit matched the directive, and stale hashes were absent.
+- Installer lifecycle passed.
+- First-run onboarding passed on a fresh profile.
+- Saved profile/settings show `Longmont` / `CO`.
+- Daily Scan did not hit the prior city/state Settings blocker.
+- Starter source creation passed: `sources_count=9`.
+- Daily Scan completed: `daily_scan_runs_count=1`, `daily_scan_leads_count=5`, `leads_count=5`.
+- Linked evidence retention passed: `lead_evidence_count=5`.
+- Durable draft persistence passed: `drafts_count=1`.
+- Editor attestation/override passed: `publish_decision_audits_count=1`, draft status `ready_to_publish`.
+- Static export passed mechanically: the local export run wrote 18 files for 1 article with `skipped_count=0`.
+- ZIP package was created at `C:\Users\civic\AppData\Local\Temp\civicdesk-final-v032-ba49af4-publish-flow\sites\default\site-package.zip`.
+- here.now publication passed mechanically: `publish_runs_count=2`, provider `here_now`, public URL `https://chilly-hearth-wcnn.here.now`.
+- Public here.now visitor fetches returned HTTP 200 for the home page and `briefs/1.html`.
 
-## Blocking Failure
+## Findings
 
-Static compile/export/publish could not complete because the Publishing tab refused to compile while the public publication identity still used the starter title `My Local Publication`.
+Severity counts:
 
-Publishing showed:
+- Blocker: 1
+- Critical: 0
+- Major: 0
+- Minor: 1
+- Nit: 0
 
-- `Publication name still uses starter text. Public publishing is paused until you choose one.`
-- `Choose and save a real publication name before compiling or publishing.`
-- `1 approved story ready for the public package.`
+### Blocker 1 - Static export publishes navigation/source-chrome text as the civic brief
 
-I attempted to use the app's own `Edit identity` flow to set the publication name to `Longmont Civic Desk`. That path repeatedly closed the WebView/CDP target and left the running app without the remote debugging endpoint. The partial save changed the tagline to `Local civic notes for Longmont, Colorado.`, but `community_profile.json` still had `"site_title": "My Local Publication"`. Because the title did not save, compile/export/publish remained blocked and no publish run was recorded.
+The release cannot pass because the generated public article is not coherent reader-facing civic copy.
+
+Observed public article headline:
+
+`Review community signal from Longmont city events: Public Safety Sustainability Transportation`
+
+Observed public article body:
+
+`According to the linked source, Public Safety Sustainability Transportation Utilities Wellness Explore All Services Explore a comprehensive list of services provided by the City of Longmont. Source. Taken together, the linked records give Longmont readers a source-backed civic brief. Keep the story limited to these records until an editor confirms any public impact, cost, decision date, or agency response not shown in the linked sources.`
+
+This is a page-navigation/service-list fragment. It does not identify a concrete civic action, date, meeting, deadline, amount, decision, or public impact. It also tells the reader to keep the story limited until an editor confirms impact, which is internal/editorial process language rather than a publishable civic brief.
+
+Impact: The app can now compile, but the compiled output still fails the directive's public-copy quality gate.
 
 Evidence:
 
-- `publishing-tab-before-export.png`
-- `publishing-initial.txt`
-- `after-click-Compile.txt`
-- `after-click-Export.txt`
-- `after-click-Publish.txt`
-- `publish-identity-edit-form.png`
-- `publishing-after-second-relaunch.png`
-- `identity-edit-cdp-loss-state.json`
-- `community_profile-final.json`
-- `sqlite-final-state.json`
+- `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/exported-brief-1.html`
+- `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/exported-index.html`
+- `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/after-checklist-Compile.png`
+- `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/final-sqlite-state-summary.json`
 
-## Product Quality Findings
+### Minor 1 - Event/calendar weak leads still appear high priority
 
-1. Daily Scan mechanics worked, but output quality is still poor. Four of five leads were `needs_verification`; two were explicit source-quality/navigation-debris findings, and the one draftable lead was a vague category string: `Public Safety Sustainability Transportation Utilities`.
-2. The generated draft was reader-facing but low quality. It reused navigation/category text from the source and triggered warnings for headline quality, verbatim overlap, and citation coverage.
-3. The approval override behavior is fixed enough to proceed past the prior disabled-button blocker: attestation enabled approval and the logged override saved to the draft row.
-4. The public identity save path is unstable/blocking in this clean profile. Two attempts caused WebView/CDP loss while the `civicnews` process remained/restarted without the debug port.
+Daily Scan still included event/calendar-style weak leads as high priority verification work. They were not draftable, but the priority label may overstate weak community/event material.
 
-## Final State
+## Static Site Quality Checks
 
-SQLite final counts:
+- Duplicate topic stories: no duplicate story files observed; one brief was exported.
+- Raw Markdown in HTML pages: none observed in `index.html` or `briefs/1.html`.
+- Internal tester/developer paths in generated public HTML: none observed in `index.html` or `briefs/1.html`.
+- Unsupported Mac/Linux installer claims in generated public HTML: none observed.
+- Broken story links: local `index.html` links to existing `briefs/1.html`.
+- Public here.now URL: `https://chilly-hearth-wcnn.here.now`
+- Public here.now visitor fetches: HTTP 200 for home and brief.
+- Public copy quality: failed, as described in Blocker 1.
 
-- `sources`: 9
-- `daily_scan_runs`: 1
-- `daily_scan_leads`: 5
-- `leads`: 5
-- `evidence_items`: 26
-- `drafts`: 1
-- `published_posts`: 0
-- `publish_runs`: 0
+## SQLite Summary
 
-The draft row ended as:
+From `final-sqlite-state-summary.txt`:
 
-- `status`: `ready_to_publish`
-- `attested_by`: `Local Editor`
-- `guardrail_override_reason`: `Cleanroom tester override to verify static publish flow; warnings are recorded as product-quality issues in the tester report.`
+- `settings_count=13`
+- `sources_count=9`
+- `daily_scan_runs_count=1`
+- `daily_scan_leads_count=5`
+- `leads_count=5`
+- `lead_evidence_count=5`
+- `evidence_items_count=26`
+- `drafts_count=1`
+- `published_posts_count=1`
+- `publish_runs_count=2`
+- `publish_decision_audits_count=1`
+- `verification_tasks_count=61`
 
-## Reproduction Summary
+## Evidence Index
 
-1. Install `The.Civic.Desk_0.3.2_x64-setup.exe` from the v0.3.2 ba49af4 release.
-2. Launch the installed app with a clean `CIVICNEWS_APP_DATA_DIR`.
-3. Complete first-run onboarding for Longmont, CO.
-4. Wait for starter source setup; confirm 9 sources.
-5. Run Daily Scan; confirm 5 leads and 26 evidence items.
-6. Install/repair the local AI runtime from AI Model setup until `Local AI ready`.
-7. Draft the only `ready_to_draft` lead.
-8. Check editor attestation and approve with warning override.
-9. Open Publishing. The approved story is present, but compile is paused because the publication name is still starter text.
-10. Click `Edit identity`, change the publication name, and save. During this run, the WebView/CDP target closed repeatedly and the title remained `My Local Publication`, so compile/export/publish could not finish.
+- Visibility/download: `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/visibility-download-state.json`
+- Release API: `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/release-api.json`
+- Public docs snapshot: `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/public-docs.html`
+- Installer lifecycle: `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/install-lifecycle.json`
+- Onboarding screenshot: `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/first-run-onboarding.png`
+- Daily Scan screenshot: `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/daily-scan-after-run.png`
+- Draft/workbench screenshots: `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/workbench-ready-lead-4.png`, `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/lead-4-generate-form.png`
+- Approval/export screenshots: `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/workbench-relaunch-current.png`, `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/publishing-after-identity-save.png`, `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/after-checklist-Compile.png`
+- Static ZIP copy: `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/site-package.zip`
+- Exported HTML copies: `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/exported-index.html`, `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/exported-brief-1.html`
+- here.now public fetch evidence: `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/herenow-home-response.json`, `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/herenow-brief-response.json`
+- Final SQLite summary: `test-comms/reports/20260709-final-release-v032-ba49af4-publish-flow-evidence/final-sqlite-state-summary.json`
 
-## Verdict
+## Request For Coder
 
-FAIL for the full cleanroom publish-flow directive. The release is visible and installable, and the previous approval override gate appears fixed, but the static publish flow is still not complete because the app cannot reliably save the required publication title and therefore cannot compile/export/publish the approved package.
+Keep the release visibility, durable draft, editor override, static export, and here.now publication improvements. Next, prevent navigation/service-list source chrome from becoming a publishable Brief.

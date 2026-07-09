@@ -1,0 +1,86 @@
+The Civic Desk
+LONGMONT / CO
+NEWSROOM
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+SET UP
+Sources
+AI Model
+Publishing
+TOOLS
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+phi4-mini:latest
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Review the compile checklist, then click Compile site to write files.
+Dismiss
+Publishing
+
+Publish instantly with here.now. Use GitHub Pages if you want a public archive in your own repository.
+
+Public site identity review
+
+Review this before compile. The app publishes only the identity and policy copy you choose.
+
+Edit identity
+Publication
+Longmont Civic Desk
+Tagline
+Local civic notes for Longmont, Colorado.
+Publisher type
+Single person
+Layout
+classic / #5a1818
+Logo
+Text masthead
+Footer note
+Configured
+Advisor
+On
+Compile your gazette
+1 approved story ready for the public package.
+Output folder
+Browse
+Approve at least one story
+1
+Compile approved stories
+pending
+Preview local website
+pending
+Export hosting package
+pending
+Publish to a host
+pending
+Share with residents
+pending
+Compile site
+Ready for final compile
+
+Click Compile site to write the static website files to the output folder.
+
+Open folder
+Reset
+Subscriber list
+
+0 active subscribers stored locally.
+
+Email
+Name
+Add
+Import CSV
+Export CSV
+
+No subscribers yet.
+
+Next step: publish instantly with here.now. Use GitHub Pages for a durable public archive, and use the newsletter and share package to tell residents where to read it.
+
+Publish history
+
+No publish runs recorded yet.

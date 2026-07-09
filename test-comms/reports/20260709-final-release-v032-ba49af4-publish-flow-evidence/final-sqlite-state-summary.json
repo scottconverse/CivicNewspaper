@@ -1,0 +1,82 @@
+{
+  "settings_count": 13,
+  "sources_count": 9,
+  "daily_scan_runs_count": 1,
+  "daily_scan_leads_count": 5,
+  "leads_count": 5,
+  "lead_evidence_count": 5,
+  "evidence_items_count": 26,
+  "drafts_count": 1,
+  "published_posts_count": 1,
+  "publish_runs_count": 2,
+  "publish_decision_audits_count": 1,
+  "verification_tasks_count": 61,
+  "drafts": [
+    {
+      "id": 1,
+      "lead_id": 4,
+      "format": "brief",
+      "title": "Review community signal from Longmont city events: Public Safety Sustainability Transportation",
+      "content": "According to the linked source, Public Safety Sustainability Transportation Utilities Wellness Explore All Services Explore a comprehensive list of services provided by the City of Longmont. [Source](evidence:25).\n\nTaken together, the linked records give Longmont readers a source-backed civic brief. Keep the story limited to these records until an editor confirms any public impact, cost, decision date, or agency response not shown in the linked sources.",
+      "status": "ready_to_publish",
+      "verification_checklist": "[]",
+      "missing_evidence_notes": null,
+      "correction_note": null,
+      "created_at": "2026-07-09T15:52:38.993852100+00:00",
+      "updated_at": "2026-07-09T15:55:18.023396700+00:00",
+      "attested_by": "Local Editor",
+      "attested_at": "2026-07-09T15:55:18.020283900+00:00",
+      "guardrail_override_reason": "Cleanroom tester override to verify static publish flow; warnings are recorded as product-quality issues in the tester report."
+    }
+  ],
+  "published_posts": [
+    {
+      "id": 1,
+      "draft_id": 1,
+      "file_path": "briefs/1.html",
+      "url": "briefs/1.html",
+      "published_at": "2026-07-09T15:55:18.023396700+00:00",
+      "correction_history": "[]"
+    }
+  ],
+  "publish_runs": [
+    {
+      "id": 1,
+      "issue_id": "issue-20260709-160213-701346000",
+      "output_path": "C:/Users/civic/AppData/Local/Temp/civicdesk-final-v032-ba49af4-publish-flow/sites/default",
+      "generated_files": "[\"styles.css\",\"print.css\",\"briefs/1.html\",\"index.html\",\"about.html\",\"ethics.html\",\"how-we-report.html\",\"corrections.html\",\"feed.xml\",\"newsletter.md\",\"substack.md\",\"share-package.md\",\"facebook-post.txt\",\"subreddit-post.md\",\"nextdoor-post.txt\",\"short-link-blurb.txt\",\"publish-manifest.json\",\"site-package.zip\"]",
+      "provider": "local_export",
+      "published_url": null,
+      "deployment_id": null,
+      "article_count": 1,
+      "skipped_count": 0,
+      "files_written": 18,
+      "generated_at": "2026-07-09T16:02:13.701346+00:00"
+    },
+    {
+      "id": 2,
+      "issue_id": "issue-20260709-160548-617592700",
+      "output_path": "C:/Users/civic/AppData/Local/Temp/civicdesk-final-v032-ba49af4-publish-flow/sites/default",
+      "generated_files": "[\"styles.css\",\"print.css\",\"briefs/1.html\",\"index.html\",\"about.html\",\"ethics.html\",\"how-we-report.html\",\"corrections.html\",\"feed.xml\",\"newsletter.md\",\"substack.md\",\"share-package.md\",\"facebook-post.txt\",\"subreddit-post.md\",\"nextdoor-post.txt\",\"short-link-blurb.txt\",\"publish-manifest.json\",\"site-package.zip\"]",
+      "provider": "here_now",
+      "published_url": "https://chilly-hearth-wcnn.here.now",
+      "deployment_id": "slug=chilly-hearth-wcnn;version=01KX3T1QDET3HX52TM4233KM08;created_slug=chilly-hearth-wcnn",
+      "article_count": 1,
+      "skipped_count": 0,
+      "files_written": 18,
+      "generated_at": "2026-07-09T16:05:48.617592700+00:00"
+    }
+  ],
+  "publish_decision_audits": [
+    {
+      "id": 1,
+      "draft_id": 1,
+      "decision": "ready_to_publish",
+      "attested": 1,
+      "guardrail_override_reason": "Cleanroom tester override to verify static publish flow; warnings are recorded as product-quality issues in the tester report.",
+      "guardrail_issue_count": 3,
+      "note": "Publish decision recorded after editor attestation; guardrail warnings had an editor note.",
+      "created_at": "2026-07-09T15:55:18.022801200+00:00"
+    }
+  ]
+}

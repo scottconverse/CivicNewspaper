@@ -1,0 +1,121 @@
+[
+  {
+    "i": 0,
+    "tag": "INPUT",
+    "type": "text",
+    "value": "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-ba49af4-publish-flow\\sites\\default",
+    "checked": false,
+    "disabled": false,
+    "placeholder": "C:\\\\CivicDesk\\\\site",
+    "aria": null
+  },
+  {
+    "i": 1,
+    "tag": "INPUT",
+    "type": "email",
+    "value": "",
+    "checked": false,
+    "disabled": false,
+    "placeholder": "reader@example.com",
+    "aria": null
+  },
+  {
+    "i": 2,
+    "tag": "INPUT",
+    "type": "text",
+    "value": "",
+    "checked": false,
+    "disabled": false,
+    "placeholder": "optional",
+    "aria": null
+  },
+  {
+    "i": 3,
+    "tag": "SELECT",
+    "type": null,
+    "value": "here_now",
+    "disabled": false,
+    "placeholder": null,
+    "aria": null
+  },
+  {
+    "i": 4,
+    "tag": "INPUT",
+    "type": "url",
+    "value": "",
+    "checked": false,
+    "disabled": false,
+    "placeholder": "optional for API connectors; required for manual save",
+    "aria": null
+  },
+  {
+    "i": 5,
+    "tag": "INPUT",
+    "type": "text",
+    "value": "",
+    "checked": false,
+    "disabled": false,
+    "placeholder": "optional",
+    "aria": null
+  },
+  {
+    "i": 6,
+    "tag": "INPUT",
+    "type": "text",
+    "value": "here.now",
+    "checked": false,
+    "disabled": false,
+    "placeholder": null,
+    "aria": null
+  },
+  {
+    "i": 7,
+    "tag": "INPUT",
+    "type": "url",
+    "value": "",
+    "checked": false,
+    "disabled": false,
+    "placeholder": "https://your-town-news.example.com",
+    "aria": null
+  },
+  {
+    "i": 8,
+    "tag": "INPUT",
+    "type": "text",
+    "value": "",
+    "checked": false,
+    "disabled": false,
+    "placeholder": "blank creates a new site; enter a slug to update",
+    "aria": null
+  },
+  {
+    "i": 9,
+    "tag": "INPUT",
+    "type": "text",
+    "value": "",
+    "checked": false,
+    "disabled": false,
+    "placeholder": "optional internal note",
+    "aria": null
+  },
+  {
+    "i": 10,
+    "tag": "INPUT",
+    "type": "password",
+    "value": "",
+    "checked": false,
+    "disabled": false,
+    "placeholder": "optional; leave blank for anonymous preview",
+    "aria": null
+  },
+  {
+    "i": 11,
+    "tag": "INPUT",
+    "type": "checkbox",
+    "value": "on",
+    "checked": false,
+    "disabled": false,
+    "placeholder": null,
+    "aria": null
+  }
+]

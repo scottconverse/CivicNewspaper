@@ -1,0 +1,176 @@
+The Civic Desk
+LONGMONT / CO
+NEWSROOM
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+SET UP
+Sources
+AI Model
+Publishing
+TOOLS
+Browser Pairing
+Ethics & Backups
+System & Status
+Local AI ready
+phi4-mini:latest
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Ethics standard and community profile updated.
+Dismiss
+Ethics & Backups
+
+Your publication identity and where your records are kept safe.
+
+Publication identity
+Save now
+Publication name
+Publication tagline
+Publisher type
+Single person
+For-profit publication
+Nonprofit publication
+Private organization
+Community group
+Other
+City
+State
+Site layout
+Classic newspaper
+Compact
+Wide
+Modern
+Accent color
+High-cost contract alert threshold
+Logo image URL
+Choose image
+
+Optional. Choose a local image or paste an HTTPS logo URL. Leave blank for a text-only masthead.
+
+About this site
+Ethics statement
+How we report (published on your site)
+
+This text is published as written. Add AI, ad, ownership, corrections, or sourcing disclosures only if they match your publication.
+
+Footer / legal note
+
+The app will not invent copyright, ownership, ad-policy, or AI-disclosure language.
+
+Show the First Amendment advisor in the Workbench.
+Advisory only. It warns and asks good questions; it does not decide what can be shown to the editor or published.
+Save identity
+Use neutral starter copy
+Identity saved.
+Story guardrails
+
+Drafts are scanned for these words. By default a match only warns the editor. Tick high concern on a word to ask for an editor note before approval. The app ranks and records concerns; it does not decide what the editor may see or publish. Changes apply to stories checked from now on.
+
+Accusatory terms
+
+Flagged when used in a paragraph with no linked source.
+
+corrupt
+high concern
+x
+stole
+high concern
+x
+illegal
+high concern
+x
+fraud
+high concern
+x
+embezzle
+high concern
+x
+bribe
+high concern
+x
+scam
+high concern
+x
+theft
+high concern
+x
+criminal
+high concern
+x
+guilty
+high concern
+x
+conspiracy
+high concern
+x
+extortion
+high concern
+x
+misconduct
+high concern
+x
+kickback
+high concern
+x
+laundering
+high concern
+x
+arrested
+high concern
+x
+charged
+high concern
+x
+indicted
+high concern
+x
+convicted
+high concern
+x
+prosecuted
+high concern
+x
+Add
+Charge / legal terms
+
+Flagged when used without "alleged" / "allegedly" (presumption of innocence).
+
+arrested
+high concern
+x
+charged
+high concern
+x
+indicted
+high concern
+x
+accused
+high concern
+x
+suspect
+high concern
+x
+theft
+high concern
+x
+embezzle
+high concern
+x
+fraud
+high concern
+x
+misconduct
+high concern
+x
+Add
+Save guardrail words
+Backups
+
+All your leads, drafts, and sources live in one file on this computer. Back it up somewhere safe.
+
+Backup folder
+Back up now
+Restore from backup

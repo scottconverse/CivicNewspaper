@@ -1,0 +1,12 @@
+settings_count: 13
+sources_count: 9
+daily_scan_runs_count: 1
+daily_scan_leads_count: 5
+leads_count: 5
+lead_evidence_count: 5
+evidence_items_count: 26
+drafts_count: 1
+published_posts_count: 1
+publish_runs_count: 2
+publish_decision_audits_count: 1
+verification_tasks_count: 61

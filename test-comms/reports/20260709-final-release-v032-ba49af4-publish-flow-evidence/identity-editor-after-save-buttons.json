@@ -1,0 +1,359 @@
+[
+  {
+    "i": 0,
+    "text": "Story Queue",
+    "disabled": false,
+    "title": "Story Queue (Alt+1)",
+    "aria": null
+  },
+  {
+    "i": 1,
+    "text": "Daily Scan",
+    "disabled": false,
+    "title": "Daily Scan (Alt+2)",
+    "aria": null
+  },
+  {
+    "i": 2,
+    "text": "Dark Signals",
+    "disabled": false,
+    "title": "Dark Signals (Alt+3)",
+    "aria": null
+  },
+  {
+    "i": 3,
+    "text": "Verification",
+    "disabled": false,
+    "title": "Verification (Alt+4)",
+    "aria": null
+  },
+  {
+    "i": 4,
+    "text": "Workbench",
+    "disabled": false,
+    "title": "Workbench (Alt+5)",
+    "aria": null
+  },
+  {
+    "i": 5,
+    "text": "Sources",
+    "disabled": false,
+    "title": "Sources (Alt+6)",
+    "aria": null
+  },
+  {
+    "i": 6,
+    "text": "AI Model",
+    "disabled": false,
+    "title": "AI Model (Alt+7)",
+    "aria": null
+  },
+  {
+    "i": 7,
+    "text": "Publishing",
+    "disabled": false,
+    "title": "Publishing (Alt+8)",
+    "aria": null
+  },
+  {
+    "i": 8,
+    "text": "Browser Pairing",
+    "disabled": false,
+    "title": "Browser Pairing (Alt+9)",
+    "aria": null
+  },
+  {
+    "i": 9,
+    "text": "Ethics & Backups",
+    "disabled": false,
+    "title": "Ethics & Backups (Alt+10)",
+    "aria": null
+  },
+  {
+    "i": 10,
+    "text": "System & Status",
+    "disabled": false,
+    "title": "System & Status (Alt+11)",
+    "aria": null
+  },
+  {
+    "i": 11,
+    "text": "",
+    "disabled": false,
+    "title": null,
+    "aria": "Dismiss beta notice"
+  },
+  {
+    "i": 12,
+    "text": "Dismiss",
+    "disabled": false,
+    "title": null,
+    "aria": null
+  },
+  {
+    "i": 13,
+    "text": "Save now",
+    "disabled": false,
+    "title": null,
+    "aria": null
+  },
+  {
+    "i": 14,
+    "text": "Choose image",
+    "disabled": false,
+    "title": null,
+    "aria": null
+  },
+  {
+    "i": 15,
+    "text": "Save identity",
+    "disabled": false,
+    "title": null,
+    "aria": null
+  },
+  {
+    "i": 16,
+    "text": "Use neutral starter copy",
+    "disabled": false,
+    "title": null,
+    "aria": null
+  },
+  {
+    "i": 17,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove corrupt"
+  },
+  {
+    "i": 18,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove stole"
+  },
+  {
+    "i": 19,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove illegal"
+  },
+  {
+    "i": 20,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove fraud"
+  },
+  {
+    "i": 21,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove embezzle"
+  },
+  {
+    "i": 22,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove bribe"
+  },
+  {
+    "i": 23,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove scam"
+  },
+  {
+    "i": 24,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove theft"
+  },
+  {
+    "i": 25,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove criminal"
+  },
+  {
+    "i": 26,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove guilty"
+  },
+  {
+    "i": 27,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove conspiracy"
+  },
+  {
+    "i": 28,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove extortion"
+  },
+  {
+    "i": 29,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove misconduct"
+  },
+  {
+    "i": 30,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove kickback"
+  },
+  {
+    "i": 31,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove laundering"
+  },
+  {
+    "i": 32,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove arrested"
+  },
+  {
+    "i": 33,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove charged"
+  },
+  {
+    "i": 34,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove indicted"
+  },
+  {
+    "i": 35,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove convicted"
+  },
+  {
+    "i": 36,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove prosecuted"
+  },
+  {
+    "i": 37,
+    "text": "Add",
+    "disabled": false,
+    "title": null,
+    "aria": null
+  },
+  {
+    "i": 38,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove arrested"
+  },
+  {
+    "i": 39,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove charged"
+  },
+  {
+    "i": 40,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove indicted"
+  },
+  {
+    "i": 41,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove accused"
+  },
+  {
+    "i": 42,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove suspect"
+  },
+  {
+    "i": 43,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove theft"
+  },
+  {
+    "i": 44,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove embezzle"
+  },
+  {
+    "i": 45,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove fraud"
+  },
+  {
+    "i": 46,
+    "text": "x",
+    "disabled": false,
+    "title": null,
+    "aria": "Remove misconduct"
+  },
+  {
+    "i": 47,
+    "text": "Add",
+    "disabled": false,
+    "title": null,
+    "aria": null
+  },
+  {
+    "i": 48,
+    "text": "Save guardrail words",
+    "disabled": false,
+    "title": null,
+    "aria": null
+  },
+  {
+    "i": 49,
+    "text": "Back up now",
+    "disabled": false,
+    "title": "Create a backup at the path above",
+    "aria": null
+  },
+  {
+    "i": 50,
+    "text": "Restore from backup",
+    "disabled": false,
+    "title": "Restore from the backup file at the path above",
+    "aria": null
+  }
+]

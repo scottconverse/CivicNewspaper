@@ -1,0 +1,9 @@
+﻿{
+    "hereNowAttempt":  "Not completed: after compile, app stayed responsive but WebView remote debug endpoint repeatedly dropped before the Publish to here.now action could be attached/clicked by automation.",
+    "sitePath":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-ba49af4-publish-flow\\sites\\default",
+    "timestamp":  "2026-07-09T16:05:57.5922534Z",
+    "copiedZip":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260709-final-release-v032-ba49af4-publish-flow-evidence\\site-package.zip",
+    "copiedIndex":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260709-final-release-v032-ba49af4-publish-flow-evidence\\exported-index.html",
+    "zipPath":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-ba49af4-publish-flow\\sites\\default\\site-package.zip",
+    "copiedBrief":  "C:\\Users\\civic\\Desktop\\CODE\\civicnewspaper-test-comms\\test-comms\\reports\\20260709-final-release-v032-ba49af4-publish-flow-evidence\\exported-brief-1.html"
+}

@@ -1,0 +1,17 @@
+{
+  "site_title": "Longmont Civic Desk",
+  "site_subtitle": "Local civic notes for Longmont, Colorado.",
+  "about_text": "A locally edited publication for this community.",
+  "ethics_text": "Editorial standards are set by the publisher. Corrections are published when needed.",
+  "how_we_report_text": "Stories, sources, and publication decisions are reviewed by the editor before publication.",
+  "organization_type": "single_person",
+  "footer_text": "Cleanroom test preview.",
+  "logo_url": "",
+  "accent_color": "#5a1818",
+  "layout_style": "classic",
+  "first_amendment_advisor_enabled": true,
+  "money_threshold": 250000.0,
+  "watchlist": [],
+  "city": "Longmont",
+  "state": "CO"
+}
