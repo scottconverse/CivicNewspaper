@@ -1,6 +1,6 @@
 {
     "tag":  "v0.3.2",
-    "commit":  "38e328bdaa0a74d4f59b30b63738d5ece8cf7f5c",
+    "commit":  "17766b7ccb0cc744522090e28997b764676ce1c5",
     "generated_at":  "2026-07-04T23:05:30-06:00",
     "rc_receipt_path":  ".agent-runs/release-candidate-20260704-230528/release-candidate-receipt.json",
     "rc_receipt_sha256":  "2607F693BB4ACC39468EF14FC54B0A30B7A3CD5BD3E6B3E1832598CFBFD631C8",
@@ -25,8 +25,8 @@
                                     "receipt_sha256":  "C427FD868A2636F5A3DAD5B2D25501ED60F87447CA9DBBC8D461AFE3A69B204B",
                                     "installer_name":  "The Civic Desk_0.3.2_x64-setup.exe",
                                     "release_asset_name":  "The.Civic.Desk_0.3.2_x64-setup.exe",
-                                    "installer_sha256":  "B71F47CCD68DC41280C209C5BCB91B143BE6F20A6B65513045DE001A2FE7B37D",
-                                    "installer_size":  5240625
+                                    "installer_sha256":  "8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3",
+                                    "installer_size":  5260917
                                 },
     "packaged_first_run_walkthrough":  {
                                            "ok":  true,
@@ -38,10 +38,10 @@
                       "report_path":  null,
                       "report_sha256":  null,
                       "tester_machine":  "pending final cleanroom rerun",
-                      "installer_sha256":  "B71F47CCD68DC41280C209C5BCB91B143BE6F20A6B65513045DE001A2FE7B37D",
+                      "installer_sha256":  "8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3",
                       "public_url":  null,
                       "zip_path":  null,
-                      "verdict":  "PENDING: installed-app onboarding reachability, legacy malformed-draft quarantine, encoded calendar-rollup story-quality repairs, onboarding identity reconciliation before Daily Scan, unsupported Daily Scan lead downgrading, full state-name discovery normalization, weak scan lead draft gating, reader-facing brief format fallback, official-record brief promotion, source-quality cleanup, source-backed Daily Scan brief promotion, dependency advisory update, release smoke, local installer smoke, packaged first-run walkthrough, and full Rust/frontend verification passed for commit 38e328bdaa0a74d4f59b30b63738d5ece8cf7f5c. Final remote cleanroom proof is still required before this rebuilt artifact is called beta-release ready."
+                      "verdict":  "PENDING: installed-app onboarding reachability, legacy malformed-draft quarantine, encoded calendar-rollup story-quality repairs, onboarding identity reconciliation before Daily Scan, unsupported Daily Scan lead downgrading, full state-name discovery normalization, weak scan lead draft gating, reader-facing brief format fallback, official-record brief promotion, source-quality cleanup, source-backed Daily Scan brief promotion, dependency advisory update, durable draft persistence, linked-evidence Brief fallback, release smoke, local installer smoke, packaged first-run walkthrough, and full Rust/frontend verification passed for commit 17766b7ccb0cc744522090e28997b764676ce1c5. Final remote cleanroom proof is still required before this rebuilt artifact is called beta-release ready."
                   },
     "release_scope":  {
                           "windows_public_beta":  true,

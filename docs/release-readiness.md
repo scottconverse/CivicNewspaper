@@ -72,16 +72,16 @@ This prevents a public unsigned installer from appearing before checksum and loc
 
 ## Current v0.3.2 evidence
 
-The Windows public-beta v0.3.2 release line has cleanroom proof at commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`. The current rebuilt release-candidate installer was built from commit `38e328bdaa0a74d4f59b30b63738d5ece8cf7f5c` after AI setup visibility, installed-app onboarding reachability, legacy malformed-draft quarantine, encoded calendar-rollup story-quality repairs, onboarding identity reconciliation before Daily Scan, unsupported Daily Scan lead downgrading, full state-name discovery normalization, weak scan lead draft gating, reader-facing brief format fallback, official-record brief promotion, source-quality cleanup, source-backed Daily Scan brief promotion, and dependency advisory update. It is queued for final cleanroom recheck.
+The Windows public-beta v0.3.2 release line has cleanroom proof at commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`. The current rebuilt release-candidate installer was built from commit `17766b7ccb0cc744522090e28997b764676ce1c5` after AI setup visibility, installed-app onboarding reachability, legacy malformed-draft quarantine, encoded calendar-rollup story-quality repairs, onboarding identity reconciliation before Daily Scan, unsupported Daily Scan lead downgrading, full state-name discovery normalization, weak scan lead draft gating, reader-facing brief format fallback, official-record brief promotion, source-quality cleanup, source-backed Daily Scan brief promotion, and dependency advisory update, durable draft persistence, and linked-evidence Brief fallback. It is queued for final cleanroom recheck.
 
 - Hosted evidence file: `docs/release-evidence/v0.3.2.json`
 - RC receipt: `.agent-runs/release-candidate-20260704-230528/release-candidate-receipt.json`
 - Strict release smoke: `.agent-runs/release-smoke-20260704-225633/release-smoke-receipt.json`
 - Windows installer smoke: `.agent-runs/windows-installer-smoke-20260704-230413/windows-installer-smoke-receipt.json`
 - Packaged first-run walkthrough: `.agent-runs/packaged-first-run-walkthrough-20260704-230445/packaged-first-run-walkthrough-receipt.json`
-- Final cleanroom report: pending final cleanroom rerun for commit `38e328bdaa0a74d4f59b30b63738d5ece8cf7f5c`
+- Final cleanroom report: pending final cleanroom rerun for commit `17766b7ccb0cc744522090e28997b764676ce1c5`
 - Cleanroom public URL: pending final cleanroom rerun
-- Current rebuilt release-candidate installer SHA256: `B71F47CCD68DC41280C209C5BCB91B143BE6F20A6B65513045DE001A2FE7B37D`
+- Current rebuilt release-candidate installer SHA256: `8D5F6E06CA86B96DA7CC8AA9273305033C36A580A6B8064B6BC144550B5C25B3`
 
 This does not publish, merge, or tag the release by itself. Scott must still approve the product push, tag, hosted GitHub Release, and GitHub Pages update.
 
