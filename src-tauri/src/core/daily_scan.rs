@@ -1087,8 +1087,8 @@ fn save_dark_signal_leads(
     for signal in signals
         .into_iter()
         .filter(|signal| signal.publication_status != "dismissed")
-        .filter(|signal| {
-            signal
+        .filter_map(|signal| {
+            let evidence_id = signal
                 .observation_id
                 .and_then(|observation_id| {
                     conn.query_row(
@@ -1098,12 +1098,14 @@ fn save_dark_signal_leads(
                     )
                     .ok()
                     .flatten()
-                })
-                .map(|evidence_id| evidence_ids.contains(&evidence_id))
-                .unwrap_or(false)
+                })?;
+            evidence_ids
+                .contains(&evidence_id)
+                .then_some((signal, evidence_id))
         })
         .take(5)
     {
+        let (signal, evidence_id) = signal;
         let original_url: String = conn
             .query_row(
                 "SELECT COALESCE(co.url, s.url, '')
@@ -1186,7 +1188,9 @@ fn save_dark_signal_leads(
             recurrence_count: None,
             recurrence_note: None,
         };
-        if save_daily_scan_lead_for_queue(conn, &lead).unwrap_or(0) > 0 {
+        if save_daily_scan_lead_for_queue_with_evidence(conn, &lead, &[evidence_id]).unwrap_or(0)
+            > 0
+        {
             saved += 1;
         }
     }
@@ -1249,6 +1253,14 @@ fn save_daily_scan_lead_for_queue(
     conn: &rusqlite::Connection,
     lead: &DailyScanLead,
 ) -> rusqlite::Result<i32> {
+    save_daily_scan_lead_for_queue_with_evidence(conn, lead, &[])
+}
+
+fn save_daily_scan_lead_for_queue_with_evidence(
+    conn: &rusqlite::Connection,
+    lead: &DailyScanLead,
+    trusted_evidence_ids: &[i32],
+) -> rusqlite::Result<i32> {
     if similar_scan_lead_exists(conn, lead)? {
         return Ok(0);
     }
@@ -1257,7 +1269,10 @@ fn save_daily_scan_lead_for_queue(
     if let Some(reason) = scan_lead_public_quality_issue(&lead) {
         lead = downgrade_scan_lead_for_public_quality(lead, reason);
     }
-    let evidence_ids = evidence_ids_for_scan_lead(conn, &lead)?;
+    let mut evidence_ids = evidence_ids_for_scan_lead(conn, &lead)?;
+    evidence_ids.extend_from_slice(trusted_evidence_ids);
+    evidence_ids.sort_unstable();
+    evidence_ids.dedup();
     if evidence_ids.is_empty() {
         lead = downgrade_scan_lead_without_evidence(lead);
     }

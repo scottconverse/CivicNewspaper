@@ -3040,7 +3040,7 @@ I should produce JSON only.
                 source_id,
                 url: Some("https://longmontcolorado.gov/events/senior-center-workshop".to_string()),
                 fetched_at: Utc::now().to_rfc3339(),
-                excerpt: "Longmont Senior Center\nThe City of Longmont will host a public workshop on July 12 at the Longmont Senior Center about waste reduction resources for residents.".to_string(),
+                excerpt: "Longmont Senior Center\nThe City of Longmont will host a public workshop on July 12 at the Longmont Senior Center about waste reduction resources for residents.\n910 Longs Peak Ave., Longmont, CO, United States\nThu 9\nEvents\nNature Fridays at Sandstone Ranch Friday, July 10 - 9 am - 12 pm\nExplore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place.".to_string(),
                 content_hash: "longmont_senior_center_program_hash".to_string(),
                 entities: "[]".to_string(),
             },
