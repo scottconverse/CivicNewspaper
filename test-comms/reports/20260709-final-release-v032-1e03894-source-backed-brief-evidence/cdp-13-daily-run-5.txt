@@ -1,0 +1,182 @@
+The Civic Desk
+LONGMONT / CO
+NEWSROOM
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+SET UP
+Sources
+AI Model
+Publishing
+TOOLS
+Browser Pairing
+Ethics & Backups
+System & Status
+AI limited mode
+Source checks still work
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Daily Scan complete (Scan ID: 1).
+Dismiss
+
+MORNING EDITOR PACKET
+
+Daily Scan
+
+Run deterministic record checks first, then use local AI only to summarize and rank what needs an editor's look.
+
+Refresh
+Run Daily Scan
+SOURCES WATCHED
+9
+OPEN LEADS
+5
+DRAFTS IN DESK
+0
+AI STATUS
+Limited
+
+AI BRIEF
+
+Latest scan #1
+
+Civic Desk keeps this pass local, private, and evidence-first. Use it to find the handful of records worth turning into leads. If local AI is unavailable, deterministic checks still build a review packet.
+
+SCAN PROGRESS
+
+Daily Scan saved 5 lead(s).
+
+Model: phi4-mini:latest. Evidence: 26. Saved leads: 5.
+
+Complete
+Scan Results for Scan #1
+
+LONGMONT CITY EVENTS / COMMUNITY SIGNAL
+
+Review community signal from Longmont city events
+Verification
+Needs verification
+Low priority
+
+Longmont Senior Center 910 Longs Peak Ave., Longmont, CO, United States Thu 9
+
+Why now: Specific source-backed civic item detected from recent evidence.
+
+Novelty: 4/5
+
+Before publishing: Single-source official civic briefs are draftable only after confirming the linked source facts; seek a second public source when available. No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy.
+
+Why this was flagged
+
+Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence.
+
+Suggested next step
+
+Open the linked source, confirm the date, location, organizer, and public relevance, then draft a short brief from the source-backed facts. Then attach or cite the source document before drafting.
+
+Open source and review
+Open in Workbench
+Source #9
+
+LONGMONT CITY EVENTS / COMMUNITY SIGNAL
+
+Review community signal from Longmont city events
+Verification
+Needs verification
+Low priority
+
+Explore a comprehensive list of services provided by the City of Longmont. From public safety and utilities to parks and community programs, find all the resources you need in one place. All Services Departments Airport
+
+Why now: Dark-signal pattern detected from recent evidence.
+
+Before publishing: Confirm the signal against source records or a second public source before drafting. No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy.
+
+Why this was flagged
+
+Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence.
+
+Suggested next step
+
+Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then attach or cite the source document before drafting.
+
+Open source and review
+Open in Workbench
+Source #9
+
+LONGMONT CITY EVENTS / COMMUNITY SIGNAL
+
+Review community signal from Longmont city events
+Verification
+Needs verification
+Low priority
+
+Nature Fridays at Sandstone Ranch Friday, July 10 · 9 am - 12 pm Nature Fridays at Sandstone Ranch Series Sandstone Ranch Visitors Center
+
+Why now: Dark-signal pattern detected from recent evidence.
+
+Before publishing: Confirm the signal against source records or a second public source before drafting. No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy.
+
+Why this was flagged
+
+Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence.
+
+Suggested next step
+
+Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then attach or cite the source document before drafting.
+
+Open source and review
+Open in Workbench
+Source #9
+
+LONGMONT CITY EVENTS / COMMUNITY SIGNAL
+
+Verify source-quality issue from Longmont city events
+Verification
+Needs verification
+Low priority
+
+The scan found an official-source page, but the lead text looks like navigation, an index, markup, or a multi-item listing instead of one reportable civic item.
+
+Why now: Dark-signal pattern detected from recent evidence.
+
+Before publishing: Confirm the signal against source records or a second public source before drafting. The lead text still contains markup, encoded HTML, or page-navigation debris. No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy.
+
+Why this was flagged
+
+Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Quality gate: The lead text still contains markup, encoded HTML, or page-navigation debris.
+
+Suggested next step
+
+Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting. Then attach or cite the source document before drafting.
+
+Open source and review
+Open in Workbench
+Source #9
+
+LONGMONT AREA CHAMBER OF COMMERCE / COMMUNITY SIGNAL
+
+Verify source-quality issue from Longmont Area Chamber of Commerce
+Verification
+Needs verification
+Low priority
+
+The scan found an official-source page, but the lead text looks like navigation, an index, markup, or a multi-item listing instead of one reportable civic item.
+
+Why now: Dark-signal pattern detected from recent evidence.
+
+Before publishing: Confirm the signal against source records or a second public source before drafting. The lead appears to be a broad organization or legislative-session rollup, not a specific local civic development. No source documents could be linked to this model-suggested lead. Attach or verify public source material before drafting reader-facing copy.
+
+Why this was flagged
+
+Community or weakly verified signals can reveal early civic risk, but they must be verified before they become publishable evidence. Quality gate: The lead appears to be a broad organization or legislative-session rollup, not a specific local civic development.
+
+Suggested next step
+
+Check for matching official records, agenda packets, land records, business registrations, meeting video, and at least one independent local source before drafting. Then confirm this is one current, local, source-backed item before drafting. Then attach or cite the source document before drafting.
+
+Open source and review
+Open in Workbench
+Source #8

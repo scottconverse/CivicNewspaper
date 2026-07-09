@@ -1,0 +1,27 @@
+Workspace Setup
+Step 2 of 5
+AI Service Setup
+
+Check the connection to the local AI service that runs on your computer.
+
+To continue, install the local AI runtime or choose Skip for now. Skipping is supported: source checks still work, and you can finish AI setup later from AI Model.
+Choose how to continue
+
+You can install local AI now, or skip it and finish setup. Source checks still work without AI.
+
+Install local AI runtime
+Retry
+Skip for now
+Local AI Service Connection
+
+Local RAM: 15 GB
+
+Couldn't reach the AI service
+
+The private AI service did not start. First try restarting Civic Desk. If Windows or antivirus asked about this app, allow it, then retry. If it still fails, save a diagnostics file for support.
+
+If this is a clean machine, Civic Desk can download and install its local AI runtime for you. This is a large one-time download and may take a while.
+
+Need help from support?
+Back
+Next

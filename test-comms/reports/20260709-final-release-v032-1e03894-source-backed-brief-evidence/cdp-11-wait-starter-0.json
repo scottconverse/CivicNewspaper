@@ -1,0 +1,107 @@
+{
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 11,
+      "text": "",
+      "aria": "Dismiss beta notice",
+      "disabled": false
+    },
+    {
+      "i": 12,
+      "text": "Run Daily Scan",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 13,
+      "text": "Dismiss",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 14,
+      "text": "Refresh",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 15,
+      "text": "Run Daily Scan",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 16,
+      "text": "Run Daily Scan",
+      "aria": null,
+      "disabled": false
+    }
+  ],
+  "inputs": []
+}

@@ -1,0 +1,15 @@
+﻿import fs from 'node:fs/promises';
+import { chromium } from 'playwright';
+const out = process.argv[2];
+const name = process.argv[3] || 'capture';
+const browser = await chromium.connectOverCDP('http://127.0.0.1:9224');
+const context = browser.contexts()[0];
+const page = context.pages()[0];
+await page.waitForLoadState('domcontentloaded').catch(()=>{});
+await page.waitForTimeout(1200);
+await page.screenshot({ path: `${out}/${name}.png`, fullPage: true });
+const text = await page.locator('body').innerText().catch(async()=>await page.textContent('body'));
+await fs.writeFile(`${out}/${name}.txt`, text || '', 'utf8');
+const info = await page.evaluate(() => ({ title: document.title, url: location.href, bodyLength: document.body?.innerText?.length || 0, buttons: [...document.querySelectorAll('button')].map((b,i)=>({i,text:b.innerText, aria:b.getAttribute('aria-label'), disabled:b.disabled})), inputs: [...document.querySelectorAll('input,textarea,select')].map((el,i)=>({i, tag: el.tagName, type: el.getAttribute('type'), value: el.value, placeholder: el.getAttribute('placeholder'), label: el.getAttribute('aria-label'), name: el.getAttribute('name')})) }));
+await fs.writeFile(`${out}/${name}.json`, JSON.stringify(info, null, 2), 'utf8');
+await browser.close();

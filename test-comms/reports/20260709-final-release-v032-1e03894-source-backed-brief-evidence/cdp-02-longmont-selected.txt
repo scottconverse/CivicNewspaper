@@ -1,0 +1,19 @@
+Workspace Setup
+Step 2 of 5
+AI Service Setup
+
+Check the connection to the local AI service that runs on your computer.
+
+To continue, install the local AI runtime or choose Skip for now. Skipping is supported: source checks still work, and you can finish AI setup later from AI Model.
+Choose how to continue
+
+You can install local AI now, or skip it and finish setup. Source checks still work without AI.
+
+Install local AI runtime
+Checking...
+Skip for now
+
+Starting the local AI service...
+
+Back
+Next

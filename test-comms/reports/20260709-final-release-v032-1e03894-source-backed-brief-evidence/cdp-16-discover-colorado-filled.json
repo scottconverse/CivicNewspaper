@@ -1,0 +1,417 @@
+{
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Story Queue",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 1,
+      "text": "Daily Scan",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 2,
+      "text": "Dark Signals",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 3,
+      "text": "Verification",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 4,
+      "text": "Workbench",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 5,
+      "text": "Sources",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 6,
+      "text": "AI Model",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 7,
+      "text": "Publishing",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 8,
+      "text": "Browser Pairing",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 9,
+      "text": "Ethics & Backups",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 10,
+      "text": "System & Status",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 11,
+      "text": "",
+      "aria": "Dismiss beta notice",
+      "disabled": false
+    },
+    {
+      "i": 12,
+      "text": "Discover for my city",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 13,
+      "text": "Bulk import",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 14,
+      "text": "",
+      "aria": "Delete source Longmont official city website",
+      "disabled": false
+    },
+    {
+      "i": 15,
+      "text": "",
+      "aria": "Delete source Longmont agendas and minutes",
+      "disabled": false
+    },
+    {
+      "i": 16,
+      "text": "",
+      "aria": "Delete source Longmont public notices search",
+      "disabled": false
+    },
+    {
+      "i": 17,
+      "text": "",
+      "aria": "Delete source St. Vrain Valley Schools",
+      "disabled": false
+    },
+    {
+      "i": 18,
+      "text": "",
+      "aria": "Delete source Longmont Public Safety",
+      "disabled": false
+    },
+    {
+      "i": 19,
+      "text": "",
+      "aria": "Delete source r/Longmont",
+      "disabled": false
+    },
+    {
+      "i": 20,
+      "text": "",
+      "aria": "Delete source Longmont Leader local news",
+      "disabled": false
+    },
+    {
+      "i": 21,
+      "text": "",
+      "aria": "Delete source Longmont Area Chamber of Commerce",
+      "disabled": false
+    },
+    {
+      "i": 22,
+      "text": "",
+      "aria": "Delete source Longmont city events",
+      "disabled": false
+    },
+    {
+      "i": 23,
+      "text": "Add Source",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 24,
+      "text": "Close",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 25,
+      "text": "Auto-Find Feeds",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 26,
+      "text": "Clear",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 27,
+      "text": "Import Checked Sources",
+      "aria": null,
+      "disabled": false
+    }
+  ],
+  "inputs": [
+    {
+      "i": 0,
+      "tag": "INPUT",
+      "type": "text",
+      "value": "Colorado",
+      "placeholder": "e.g. City Council Agendas",
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 1,
+      "tag": "INPUT",
+      "type": "url",
+      "value": "Longmont",
+      "placeholder": "e.g. https://city.gov/agendas/rss",
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 2,
+      "tag": "SELECT",
+      "type": null,
+      "value": "primary_record",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 3,
+      "tag": "SELECT",
+      "type": null,
+      "value": "community_signal",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 4,
+      "tag": "INPUT",
+      "type": "text",
+      "value": "Longmont",
+      "placeholder": "City Name (e.g. Brighton)",
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 5,
+      "tag": "INPUT",
+      "type": "text",
+      "value": "Colorado",
+      "placeholder": "State (e.g. CO)",
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 6,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 7,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 8,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 9,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 10,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 11,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 12,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 13,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 14,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 15,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 16,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 17,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 18,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 19,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 20,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 21,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 22,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 23,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 24,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 25,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 26,
+      "tag": "INPUT",
+      "type": "checkbox",
+      "value": "on",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    }
+  ]
+}

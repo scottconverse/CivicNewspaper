@@ -1,0 +1,17 @@
+Workspace Setup
+Step 5 of 5
+Done
+
+Onboarding completed. Ready to inspect local stories.
+
+Workspace ready.
+
+You can enter the workspace now. If you skipped local AI setup, drafting and AI-assisted review stay limited until you finish AI Model setup.
+
+What's next?
+Starter sources may be added automatically when you enter the workspace.
+Daily Scan is next once the starter-source step finishes, or you can add sources manually.
+Review leads in Story Queue, then draft and edit in Workbench.
+Finish AI Model setup later if you skipped it here.
+Back
+Finish Onboarding

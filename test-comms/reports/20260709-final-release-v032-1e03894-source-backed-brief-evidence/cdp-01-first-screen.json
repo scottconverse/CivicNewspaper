@@ -1,0 +1,78 @@
+{
+  "title": "CivicNews Dashboard",
+  "url": "http://tauri.localhost/",
+  "bodyLength": 641,
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Longmont",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 1,
+      "text": "Brighton",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 2,
+      "text": "Denver",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 3,
+      "text": "Continue setup",
+      "aria": "Continue setup Next",
+      "disabled": false
+    }
+  ],
+  "inputs": [
+    {
+      "i": 0,
+      "tag": "INPUT",
+      "type": "text",
+      "value": "",
+      "placeholder": "e.g. The Brighton Gazette",
+      "label": "Publication Name",
+      "name": null
+    },
+    {
+      "i": 1,
+      "tag": "INPUT",
+      "type": "text",
+      "value": "",
+      "placeholder": "e.g. Jane Doe",
+      "label": "Editor Name",
+      "name": null
+    },
+    {
+      "i": 2,
+      "tag": "SELECT",
+      "type": null,
+      "value": "single_person",
+      "placeholder": null,
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 3,
+      "tag": "INPUT",
+      "type": "text",
+      "value": "",
+      "placeholder": "Brighton",
+      "label": null,
+      "name": null
+    },
+    {
+      "i": 4,
+      "tag": "INPUT",
+      "type": "text",
+      "value": "",
+      "placeholder": "CO",
+      "label": null,
+      "name": null
+    }
+  ]
+}

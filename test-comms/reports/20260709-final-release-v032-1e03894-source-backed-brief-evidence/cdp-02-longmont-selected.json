@@ -1,0 +1,35 @@
+{
+  "buttons": [
+    {
+      "i": 0,
+      "text": "Install local AI runtime",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 1,
+      "text": "Checking...",
+      "aria": null,
+      "disabled": true
+    },
+    {
+      "i": 2,
+      "text": "Skip for now",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 3,
+      "text": "Back",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "i": 4,
+      "text": "Next",
+      "aria": null,
+      "disabled": true
+    }
+  ],
+  "inputs": []
+}

@@ -1,0 +1,60 @@
+The Civic Desk
+LONGMONT / CO
+NEWSROOM
+Story Queue
+Daily Scan
+Dark Signals
+Verification
+Workbench
+SET UP
+Sources
+AI Model
+Publishing
+TOOLS
+Browser Pairing
+Ethics & Backups
+System & Status
+AI limited mode
+Source checks still work
+
+You're running an unsigned public beta of The Civic Desk. Windows SmartScreen may warn on install; that's expected. Report issues on GitHub.
+
+Running the daily scan across your collected evidence...
+
+MORNING EDITOR PACKET
+
+Daily Scan
+
+Run deterministic record checks first, then use local AI only to summarize and rank what needs an editor's look.
+
+Refresh
+Run Daily Scan
+SOURCES WATCHED
+9
+OPEN LEADS
+0
+DRAFTS IN DESK
+0
+AI STATUS
+Limited
+
+AI BRIEF
+
+No scan has been run yet
+
+Civic Desk keeps this pass local, private, and evidence-first. Use it to find the handful of records worth turning into leads. If local AI is unavailable, deterministic checks still build a review packet.
+
+SCAN PROGRESS
+
+Scanning batch 1 of 7.
+
+Model: phi4-mini:latest. Evidence: 26. Saved leads: 5. Batch 1 of 7.
+
+Local scans move in stages rather than a fake percent. Deterministic checks run first; AI review can be skipped or slow on CPU-only machines.
+
+Targeted AI review
+Start today's scan
+
+The results panel will fill with surfaced civic leads after the first run. Daily Scan will check watched sources before analyzing records.
+
+Run Daily Scan

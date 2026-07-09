@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>document.documentElement.classList.add('js');</script>
+    <title>The Civic Desk | Local newsroom software for small-town reporting</title>
+    <meta name="description" content="The Civic Desk is local-first desktop newsroom software for finding civic leads, drafting and editing stories, and publishing a local paper with here.now anonymous preview or static export.">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@0.456.0"></script>
+</head>
+<body>
+    <nav aria-label="Site navigation">
+        <div class="nav-container">
+            <a class="logo" href="#top" aria-label="The Civic Desk home">
+                <i data-lucide="newspaper"></i>
+                <span>The Civic Desk</span>
+            </a>
+            <input type="checkbox" id="nav-toggle" class="nav-toggle">
+            <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation menu">
+                <span></span>
+            </label>
+            <div class="nav-links">
+                <a href="#why">Why</a>
+                <a href="#workflow">Workflow</a>
+                <a href="#publishing">Publishing</a>
+                <a href="#downloads">Downloads</a>
+                <a href="user_manual.html">Manual</a>
+                <a class="nav-btn-primary" href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <header id="top" class="hero">
+        <div class="hero-inner">
+            <div class="hero-copy fade-up">
+                <p class="eyebrow">Public beta for local civic publishers</p>
+                <h1>Build a real local paper from sources, leads, drafts, and editor judgment.</h1>
+                <p class="hero-lead">The Civic Desk helps one person or a small newsroom monitor public sources, surface civic leads, draft from evidence, review risks, and publish a static issue. The app assists. The editor decides.</p>
+                <div class="hero-actions">
+                    <a class="button primary" href="https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2" target="_blank" rel="noopener noreferrer">
+                        <i data-lucide="download"></i>
+                        Download v0.3.2
+                    </a>
+                    <a class="button secondary" href="user_manual.html">
+                        <i data-lucide="book-open"></i>
+                        Read the manual
+                    </a>
+                </div>
+                <div class="hero-proof">
+                    <span><strong>Default preview:</strong> here.now</span>
+                    <span><strong>Archive:</strong> static export or credentialed connector</span>
+                    <span><strong>AI:</strong> local-first with Ollama</span>
+                </div>
+            </div>
+            <div class="hero-panel fade-up">
+                <img src="assets/civic-desk-daily-scan.png" alt="The Civic Desk Daily Scan screen showing watched sources, open leads, AI status, and scan results.">
+                <div class="panel-caption">
+                    <strong>Start with a morning editor packet.</strong>
+                    <span>Watch sources, find leads, review evidence, and decide what deserves reporting.</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="why" class="section intro-section">
+            <div class="section-container split">
+                <div class="section-kicker">What it is for</div>
+                <div>
+                    <h2>Local news lost the labor. The work still has to happen.</h2>
+                    <p class="section-lead">Small towns still have council packets, zoning changes, police controversies, land deals, public notices, school-board decisions, and community rumors that deserve attention. The Civic Desk is built to reduce the routine digging so a human editor can spend time on judgment, verification, interviews, and publication.</p>
+                </div>
+            </div>
+            <div class="evidence-grid section-container">
+                <article>
+                    <i data-lucide="search-check"></i>
+                    <h3>Find signals</h3>
+                    <p>Scan official sources, public local media, documents, feeds, and public community spaces. Search is a fallback, not the only discovery strategy.</p>
+                </article>
+                <article>
+                    <i data-lucide="notebook-tabs"></i>
+                    <h3>Keep the trail</h3>
+                    <p>Leads stay tied to source records, evidence, entities, verification tasks, and editorial status. The system should explain why something matters.</p>
+                </article>
+                <article>
+                    <i data-lucide="scale"></i>
+                    <h3>Warn without vetoing</h3>
+                    <p>Guardrails and press-freedom review can flag sourcing, defamation, privacy, and quality risks. They do not replace the editor.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="workflow" class="section band">
+            <div class="section-container">
+                <div class="section-header left">
+                    <p class="eyebrow">The newsroom loop</p>
+                    <h2>From source intake to a published issue.</h2>
+                    <p>The app is not a magic article machine. It is a local newsroom desk that helps a person move through the whole cycle.</p>
+                </div>
+                <div class="workflow-grid">
+                    <article class="workflow-card">
+                        <span>01</span>
+                        <h3>Collect sources</h3>
+                        <p>Add official city pages, public notices, local media, public social/community sources, spreadsheets, documents, and source lists. PDF import is disabled in the public beta until hardened parsing is available.</p>
+                    </article>
+                    <article class="workflow-card">
+                        <span>02</span>
+                        <h3>Scan and triage</h3>
+                        <p>Fetch sources, detect changes and civic observations, extract entities, dedupe overlapping leads, and rank items for human review.</p>
+                    </article>
+                    <article class="workflow-card">
+                        <span>03</span>
+                        <h3>Draft and edit</h3>
+                        <p>Use local AI when available, then rewrite. Workbench supports review, approval, hold, send-back, advisory guardrails, and source checks.</p>
+                    </article>
+                    <article class="workflow-card">
+                        <span>04</span>
+                        <h3>Publish and share</h3>
+                        <p>Compile a static issue, export a ZIP, publish with here.now anonymous preview by default, and generate share copy. Durable archives use your own credentialed connector and should be verified for the release.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="publishing" class="section publishing-section">
+            <div class="section-container split reversed">
+                <div class="publish-stack">
+                    <article class="stack-card featured">
+                        <div>
+                            <p class="stack-label">Recommended default</p>
+                            <h3>here.now</h3>
+                        </div>
+                        <p>Publish instantly from the app. Anonymous previews are useful for testing; account/API-key publishing is the path for permanent here.now sites.</p>
+                    </article>
+                    <article class="stack-card">
+                        <div>
+                            <p class="stack-label">Durable archive</p>
+                            <h3>GitHub Pages</h3>
+                        </div>
+                        <p>Use a public repository-backed archive when a publisher wants long-term public history and versioned static files.</p>
+                    </article>
+                    <article class="stack-card">
+                        <div>
+                            <p class="stack-label">Technical hosting</p>
+                            <h3>Netlify / manual Cloudflare</h3>
+                        </div>
+                        <p>Use Netlify through its token connector, or export the folder/ZIP and deploy manually to Cloudflare Pages.</p>
+                    </article>
+                    <article class="stack-card">
+                        <div>
+                            <p class="stack-label">Distribution</p>
+                            <h3>Substack and social copy</h3>
+                        </div>
+                        <p>The paper should have a canonical website first. Newsletter, Substack, Facebook, Reddit, Nextdoor, and short blurbs help residents find it.</p>
+                    </article>
+                </div>
+                <div>
+                    <p class="eyebrow">Publishing model</p>
+                    <h2>Publish instantly with here.now. Keep an archive when you need one.</h2>
+                    <p class="section-lead">The Civic Desk compiles a flat HTML paper and a ZIP package. That means the output can be reviewed, archived, moved, hosted, or republished without locking the publisher into one platform.</p>
+                    <div class="honesty-box">
+                        <strong>Beta honesty:</strong>
+                        <span>The Windows installer is unsigned, so SmartScreen may warn. macOS and Linux installers are not supported in this release line yet. Output quality still depends on editor review, source quality, and local AI behavior.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="quality" class="section band">
+            <div class="section-container split">
+                <div>
+                    <p class="eyebrow">Human judgment stays central</p>
+                    <h2>The system should never quietly decide what the public is allowed to see.</h2>
+                    <p class="section-lead">The Civic Desk can warn about weak sourcing, evergreen filler, reporter-note scaffolding, legal risk, and missing verification. It can rank and explain. It should not hide a lead from the editor or silently make the news judgment, but visible static-package integrity blockers stop approval/export until broken public output is repaired.</p>
+                    <ul class="check-list">
+                        <li><i data-lucide="check"></i> Advisory guardrails, not machine censorship.</li>
+                        <li><i data-lucide="check"></i> Evidence and source links remain visible to the editor.</li>
+                        <li><i data-lucide="check"></i> Drafts are starting points, not finished journalism.</li>
+                    </ul>
+                </div>
+                <figure class="screenshot-card">
+                    <img src="assets/onboarding-empty-state.png" alt="The Civic Desk first-run workspace prompting the publisher to configure a publication identity.">
+                    <figcaption>First-run setup asks what kind of publication the user runs before publishing.</figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <section id="downloads" class="section">
+            <div class="section-container">
+                <div class="section-header">
+                    <p class="eyebrow">Get the public beta</p>
+                    <h2>Download the v0.3.2 Windows-only public beta.</h2>
+                    <p>Use the Windows `.exe` installer from the v0.3.2 release and verify it against `SHA256SUMS` before opening it. The beta is unsigned, so Windows SmartScreen may show an unknown-publisher warning. If the hash matches, click <strong>More info</strong>, then <strong>Run anyway</strong>.</p>
+                </div>
+                <div class="download-container">
+                    <div class="download-card" id="download-win">
+                        <i data-lucide="monitor-down"></i>
+                        <h3>Windows</h3>
+                        <p>Use the `.exe` installer. This is the only supported public-beta installer path for v0.3.2. SHA256: <code>E7B620C4D51837DDD43028B511E396643EE9A67D1CD23DC0B59BC5442277DCD7</code>. SmartScreen warnings are expected for this unsigned beta; click <strong>More info</strong>, then <strong>Run anyway</strong> after verifying the file came from this release.</p>
+                        <a href="https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2" class="download-btn">
+                            <i data-lucide="download"></i>
+                            Download v0.3.2
+                        </a>
+                    </div>
+                    <div class="download-card" id="download-mac">
+                        <i data-lucide="laptop"></i>
+                        <h3>macOS backlog</h3>
+                        <p>Planned, but not a supported public-beta installer path until clean-machine proof and platform notes are recorded.</p>
+                        <a href="install.html#macos-and-linux" class="download-btn">
+                            <i data-lucide="list-checks"></i>
+                            View backlog
+                        </a>
+                    </div>
+                    <div class="download-card" id="download-linux">
+                        <i data-lucide="terminal"></i>
+                        <h3>Linux backlog</h3>
+                        <p>Planned, but not a supported public-beta installer path until a VM or clean-machine proof is recorded.</p>
+                        <a href="install.html#macos-and-linux" class="download-btn">
+                            <i data-lucide="list-checks"></i>
+                            View backlog
+                        </a>
+                    </div>
+                </div>
+                <div class="download-links">
+                    <a href="install.html">Install guide and checksums</a>
+                    <a href="troubleshooting.html">Troubleshooting</a>
+                    <a href="release-readiness.html">Release readiness</a>
+                    <a href="https://github.com/scottconverse/CivicNewspaper/issues" target="_blank" rel="noopener noreferrer">Report a bug</a>
+                    <a href="https://github.com/scottconverse/CivicNewspaper/discussions" target="_blank" rel="noopener noreferrer">Discussions</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div>
+                <a class="logo" href="#top">
+                    <i data-lucide="newspaper"></i>
+                    <span>The Civic Desk</span>
+                </a>
+                <p>Open-source local newsroom software. Repository name: CivicNewspaper. Installed app name: The Civic Desk.</p>
+            </div>
+            <div class="footer-links">
+                <a href="user_manual.html">Manual</a>
+                <a href="troubleshooting.html">Troubleshooting</a>
+                <a href="architecture.html">Architecture</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

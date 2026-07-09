@@ -1,0 +1,22 @@
+﻿[
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1e03894-source-backed-brief\\civicdesk.db",
+        "Length":  425984,
+        "LastWriteTimeUtc":  "\/Date(1783559306240)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1e03894-source-backed-brief\\civicdesk.db-shm",
+        "Length":  32768,
+        "LastWriteTimeUtc":  "\/Date(1783559007623)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1e03894-source-backed-brief\\civicdesk.db-wal",
+        "Length":  4120032,
+        "LastWriteTimeUtc":  "\/Date(1783559306261)\/"
+    },
+    {
+        "FullName":  "C:\\Users\\civic\\AppData\\Local\\Temp\\civicdesk-final-v032-1e03894-source-backed-brief\\community_profile.json",
+        "Length":  662,
+        "LastWriteTimeUtc":  "\/Date(1783559228052)\/"
+    }
+]
