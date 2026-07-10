@@ -72,8 +72,8 @@
 <li>City.</li>
 <li>State.</li>
 <li>Local AI setup.</li>
-<li>Publication folder, where finished HTML sites and ZIP review packages are saved.</li>
-<li>Backup folder, where database backup copies are saved.</li>
+<li>Publication folder under The Civic Desk app-data folder or your Downloads folder, where finished HTML sites and ZIP review packages are saved.</li>
+<li>Backup file path under The Civic Desk app-data folder or your Downloads folder.</li>
 </ul>
 <p>Use real names if you intend to publish publicly. The app should not invent your copyright line, business model, ad policy, AI disclosure, or editorial policy. Those are your decisions.</p>
 <h3 id="local-ai-setup">Local AI Setup</h3>
@@ -356,7 +356,7 @@
 <p>The app should not invent these for you. If the output says &quot;we run no ads&quot; or &quot;all stories are public-record backed,&quot; that should be because you wrote it, not because the software assumed it.</p>
 <h2 id="9-backups-and-restore">9. Backups And Restore</h2>
 <p>Use backups before major imports, big scans, or release work.</p>
-<p>Create a backup from the app&#x27;s backup/system area. Store it somewhere you control, such as an external drive or private cloud folder.</p>
+<p>Create a backup from the app&#x27;s backup/system area. For write safety, the app creates backups only under its app-data folder or your Downloads folder. After creation, you can use File Explorer to copy the backup to an external drive or private cloud folder you control.</p>
 <p>Restore replaces the current local database with the backup. Treat restore as a serious action. If you are unsure, make a fresh backup first.</p>
 <p>The current app is single-machine software. Do not open the same live SQLite database from two computers at once.</p>
 <h2 id="10-troubleshooting">10. Troubleshooting</h2>
