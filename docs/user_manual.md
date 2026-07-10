@@ -67,7 +67,7 @@ You will choose or enter:
 - State.
 - Local AI setup.
 - Publication folder under The Civic Desk app-data folder or your Downloads folder, where finished HTML sites and ZIP review packages are saved.
-- Backup file path under The Civic Desk app-data folder or your Downloads folder.
+- Backup folder and file path under The Civic Desk app-data folder or your Downloads folder.
 
 Use real names if you intend to publish publicly. The app should not invent your copyright line, business model, ad policy, AI disclosure, or editorial policy. Those are your decisions.
 
