@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicNewspaper v0.3.2 Local Isolated Package Report | The Civic Desk</title>
+    <meta name="description" content="CivicNewspaper v0.3.2 Local Isolated Package Report for The Civic Desk public beta.">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../doc-page.css">
+</head>
+<body class="doc-page">
+    <nav aria-label="Site navigation">
+        <div class="nav-container">
+            <a class="logo" href="../index.html#top" aria-label="The Civic Desk home">
+                <span>The Civic Desk</span>
+            </a>
+            <div class="nav-links">
+                <a href="../index.html#downloads">Downloads</a>
+                <a href="../user_manual.html">Manual</a>
+                <a href="../install.html">Install</a>
+                <a href="../troubleshooting.html">Troubleshooting</a>
+                <a class="nav-btn-primary" href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </nav>
+    <main class="doc-shell">
+        <article class="doc-content">
+<h1 id="civicnewspaper-v0-3-2-local-isolated-package-report">CivicNewspaper v0.3.2 Local Isolated Package Report</h1>
+<h2 id="evidence-header">Evidence header</h2>
+<ul>
+<li><strong>Release:</strong> <code>v0.3.2</code> Windows public-beta candidate</li>
+<li><strong>Product commit:</strong> <code>bfa37f87dda8aa61c98da4bd7bc2be907581a416</code></li>
+<li><strong>Installer:</strong> <code>The Civic Desk_0.3.2_x64-setup.exe</code></li>
+<li><strong>Installer SHA256:</strong> <code>636D87041396603456634E6B47AE1071E8726D8D05C0FC08768D5B9E92A71C83</code></li>
+<li><strong>Installer size:</strong> <code>5274104</code> bytes</li>
+<li><strong>App version:</strong> <code>0.3.2</code></li>
+<li><strong>Embedded build ID:</strong> <code>bfa37f87dda8aa61c98da4bd7bc2be907581a416</code></li>
+<li><strong>Gate machine:</strong> <code>DESKTOP-S9MHP33</code></li>
+<li><strong>Windows:</strong> <code>Microsoft Windows NT 10.0.26200.0</code></li>
+<li><strong>First-run profile:</strong> <code>.agent-runs/release-smoke-20260709-181659/packaged-walkthrough/app-data</code></li>
+<li><strong>Live-model profile:</strong> <code>.agent-runs/release-smoke-20260709-181659/packaged-walkthrough/core-flow/app-data</code></li>
+<li><strong>Local model:</strong> <code>phi4-mini:latest</code>, Ollama <code>0.31.2</code></li>
+<li><strong>RC receipt:</strong> <code>.agent-runs/release-candidate-20260709-182734/release-candidate-receipt.json</code></li>
+<li><strong>RC receipt SHA256:</strong> <code>12C80AB694F484BB1176CF1F37590E3BEDD853985D020997BF47BCAEDBBCBE75</code></li>
+<li><strong>Evidence ZIP:</strong> <code>.agent-runs/release-candidate-20260709-182734.zip</code></li>
+<li><strong>Evidence ZIP SHA256:</strong> <code>0405CA6CFA7843C6E6B643AB53973F7BE846EE13D488F393AF506F6DE16540CD</code></li>
+<li><strong>Temporary publish URL:</strong> <code>https://present-tablet-sx2h.here.now</code></li>
+</ul>
+<p>This report covers a fresh silent install and two isolated app-data profiles on the gate machine. It is local installed-package proof for the Windows beta candidate, not a claim of VM proof, code signing, cross-platform support, or credentialed external-provider coverage.</p>
+<p>The candidate hash above does not match the older installer currently published on GitHub. The new candidate has not been uploaded in this work unit, so the published asset must not be described as this tested build until replacement and hosted-hash verification occur.</p>
+<h2 id="results">Results</h2>
+<ul>
+<li><strong>PASS - NSIS lifecycle:</strong> silent install, installed launch, uninstaller presence, and silent uninstall; 11 checks, 0 failed.</li>
+<li><strong>PASS - Dependency-absent first run:</strong> the forced unused Ollama endpoint was unreachable before launch.</li>
+<li><strong>PASS - Accessible local-AI choice:</strong> <code>Install local AI runtime</code>, <code>Skip for now</code>, and <code>Continue without AI</code> were located by accessible name.</li>
+<li><strong>PASS - Persisted skip state:</strong> <code>ai.setup_skipped=true</code> and <code>onboarding_complete=true</code>.</li>
+<li><strong>PASS - Zero-source usability:</strong> source count <code>0</code>; Daily Scan exposed <code>Add Sources First</code> and <code>Go to Sources</code>.</li>
+<li><strong>PASS - Embedded artifact identity:</strong> the installed WebView build ID matched the product commit in first-run and core-flow sessions.</li>
+<li><strong>PASS - Live installed-app Daily Scan:</strong> two controlled official sources produced 5 scan leads and 5 queue leads.</li>
+<li><strong>PASS - Linked evidence:</strong> the selected lead had linked evidence through actual Tauri IPC commands.</li>
+<li><strong>PASS - Live-model draft generation:</strong> <code>phi4-mini:latest</code> was reachable; draft ID <code>1</code> persisted with 469 characters.</li>
+<li><strong>PASS - Workbench persistence:</strong> the app reloaded, opened Drafts, and loaded the same draft title in Workbench.</li>
+<li><strong>PASS - Independent database chain:</strong> 2 sources, 7 evidence rows, 5 scan leads, 5 queue leads, 1 draft, and 1 linked draft.</li>
+<li><strong>PASS - Stable release smoke:</strong> 14 checks, 0 failed, 0 skipped.</li>
+<li><strong>PASS - Frontend tests and coverage:</strong> 27 files, 238 tests; 63.45% line coverage against the 60% floor.</li>
+<li><strong>PASS - Rust tests and coverage:</strong> 250 tests; 70.13% regions, 61.91% functions, 73.47% lines.</li>
+<li><strong>PASS - Default-model bakeoff:</strong> civic signals produced 3 leads; routine/noise produced 0 leads; no JSON repair.</li>
+<li><strong>PASS - Dependency audit:</strong> npm moderate threshold and Cargo audit with current machine-readable waivers.</li>
+<li><strong>PASS - Anonymous here.now publish:</strong> the temporary preview URL is recorded above.</li>
+</ul>
+<h2 id="severity-rollup">Severity rollup</h2>
+<p>Blocker: <strong>0</strong>. Critical: <strong>0</strong>. Major: <strong>0</strong>. Minor: <strong>0</strong>. Nit: <strong>0</strong>.</p>
+<h2 id="verdict">Verdict</h2>
+<p><strong>PASS for local Windows public-beta release-candidate status.</strong> The exact installed artifact completed the dependency-absent first-run path and the live-model source-to-Workbench path with no failed or skipped release-smoke checks. Stable-release requirements remain out of scope: signed installers, cross-platform package proof, and credentialed external publishing providers.</p>
+        </article>
+    </main>
+    <footer>
+        <div class="footer-container">
+            <div>
+                <a class="logo" href="../index.html#top"><span>The Civic Desk</span></a>
+                <p>Open-source local newsroom software. Repository name: CivicNewspaper. Installed app name: The Civic Desk.</p>
+            </div>
+            <div class="footer-links">
+                <a href="../user_manual.html">Manual</a>
+                <a href="../troubleshooting.html">Troubleshooting</a>
+                <a href="../architecture.html">Architecture</a>
+                <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

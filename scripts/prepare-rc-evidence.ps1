@@ -237,17 +237,17 @@ try {
       "nsis-silent-install",
       "installed-exe-present",
       "window-handle-present",
-      "before-screenshot",
-      "after-typing-screenshot",
-      "after-next-screenshot",
-      "skip-confirmation-screenshot",
-      "after-skip-setup-screenshot",
-      "done-step-screenshot",
-      "workspace-reached-screenshot",
+      "webview-cdp-ready",
+      "first-run-webview-driver",
+      "webview-build-id-matches-commit",
+      "webview-dependency-absent-choice-visible",
+      "webview-workspace-reached",
+      "webview-zero-source-guidance-usable",
+      "webview-07-first-run-workspace",
       "sqlite-db-present",
-      "starter-source-intake-terminal",
-      "starter-source-count-positive",
-      "starter-source-resolution-screenshot",
+      "finish-onboarding-complete",
+      "ai-setup-skipped",
+      "zero-source-first-run",
       "setting-paths.publish-isolated",
       "setting-paths.backup-isolated",
       "setting-onboarding_complete",
@@ -255,6 +255,15 @@ try {
       "packaged-live-pairing-positive",
       "packaged-live-protected-queue",
       "downloaded-runtime-absent",
+      "core-flow-webview-cdp-ready",
+      "core-flow-webview-driver",
+      "core-live-model-ready",
+      "core-controlled-sources-added",
+      "core-daily-scan-created-linked-lead",
+      "core-draft-persisted-through-command",
+      "core-draft-reloaded-in-workbench",
+      "core-03-core-flow-reloaded-workbench",
+      "core-flow-database-persistence",
       "nsis-silent-uninstall"
     )
     $presentWalkthroughChecks = @($packagedWalkthrough.checks | ForEach-Object { $_.name })
@@ -262,12 +271,21 @@ try {
     if ($missingWalkthroughChecks.Count -gt 0) {
       throw "Packaged first-run walkthrough receipt is missing required completion checks: $($missingWalkthroughChecks -join ', ')"
     }
-    $workspaceCheck = @($packagedWalkthrough.checks | Where-Object { $_.name -eq "workspace-reached-screenshot" } | Select-Object -First 1)
+    $workspaceCheck = @($packagedWalkthrough.checks | Where-Object { $_.name -eq "webview-07-first-run-workspace" } | Select-Object -First 1)
     if ($workspaceCheck.Count -eq 0 -or -not (Test-Path -LiteralPath ([string]$workspaceCheck[0].details.path))) {
       throw "Packaged first-run walkthrough workspace screenshot is missing on disk."
     }
     if ([string]::IsNullOrWhiteSpace([string]$packagedWalkthrough.forced_ollama_base_url)) {
       throw "Packaged first-run walkthrough receipt is missing forced_ollama_base_url."
+    }
+    if (-not $packagedWalkthrough.core_flow) {
+      throw "Packaged walkthrough receipt does not include the required live-model core flow."
+    }
+    if ([string]::IsNullOrWhiteSpace([string]$packagedWalkthrough.installer_sha256) -or -not $packagedWalkthrough.installer_size) {
+      throw "Packaged walkthrough receipt is missing installer SHA256 or size."
+    }
+    if (-not (Test-Path -LiteralPath "$($resolvedPackagedWalkthroughReceipt.Path).sha256")) {
+      throw "Packaged walkthrough receipt is missing its SHA256 sidecar."
     }
     $packagedWalkthroughOk = $true
   }
@@ -337,13 +355,20 @@ try {
   if ($staleArtifacts.Count -gt 0 -and -not $AllowStaleArtifacts) {
     throw "Stale installer artifact(s) found under ${ArtifactsDir}: $($staleArtifacts.name -join ', '). Remove old bundle artifacts before creating release evidence, or use -AllowStaleArtifacts for a diagnostic receipt."
   }
-  $preBuildIdArtifacts = @($artifacts | Where-Object { [DateTime]::Parse([string]$_.last_write_time_utc).ToUniversalTime() -lt $frontendBuildIdTimeUtc })
-  if ($preBuildIdArtifacts.Count -gt 0 -and -not $AllowStaleArtifacts) {
-    throw "Installer artifact(s) are older than dist\build-id.txt for current HEAD: $($preBuildIdArtifacts.name -join ', '). Rebuild the installer after npm run build."
-  }
   $preCommitArtifacts = @($artifacts | Where-Object { [DateTime]::Parse([string]$_.last_write_time_utc).ToUniversalTime() -lt $headCommitTimeUtc })
   if ($preCommitArtifacts.Count -gt 0 -and -not $AllowStaleArtifacts) {
     throw "Installer artifact(s) predate current HEAD commit time: $($preCommitArtifacts.name -join ', '). Rebuild the installer from the audited commit."
+  }
+
+  if ($packagedWalkthroughOk -and $artifacts.Count -gt 0) {
+    $walkthroughHash = ([string]$packagedWalkthrough.installer_sha256).Trim().ToUpperInvariant()
+    $walkthroughSize = [int64]$packagedWalkthrough.installer_size
+    $walkthroughArtifacts = @($artifacts | Where-Object {
+      ([string]$_.sha256).ToUpperInvariant() -eq $walkthroughHash -and [int64]$_.bytes -eq $walkthroughSize
+    })
+    if ($walkthroughArtifacts.Count -eq 0) {
+      throw "Current release artifact does not match the packaged walkthrough receipt SHA256 and size."
+    }
   }
 
   if ($installerSmokeOk -and $artifacts.Count -gt 0) {

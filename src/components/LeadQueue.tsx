@@ -211,6 +211,8 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
           className={`queue-tab ${queueSubTab === "leads" ? "active" : ""}`}
           onClick={() => setQueueSubTab("leads")}
           id="queue-tab-leads"
+          aria-pressed={queueSubTab === "leads"}
+          aria-controls="queue-view-panel"
         >
           Leads <span className="badge badge-neutral">{leads.length}</span>
         </button>
@@ -218,6 +220,8 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
           className={`queue-tab ${queueSubTab === "drafts" ? "active" : ""}`}
           onClick={() => setQueueSubTab("drafts")}
           id="queue-tab-drafts"
+          aria-pressed={queueSubTab === "drafts"}
+          aria-controls="queue-view-panel"
         >
           Drafts <span className="badge badge-neutral">{drafts.length}</span>
         </button>
@@ -226,12 +230,19 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
             className={`queue-tab ${queueSubTab === "scan" ? "active" : ""}`}
             onClick={() => setQueueSubTab("scan")}
             id="queue-tab-scan-results"
+            aria-pressed={queueSubTab === "scan"}
+            aria-controls="queue-view-panel"
           >
             Scan results <span className="badge badge-neutral">latest</span>
           </button>
         )}
       </div>
 
+      <div
+        id="queue-view-panel"
+        role="region"
+        aria-labelledby={`queue-tab-${queueSubTab === "scan" ? "scan-results" : queueSubTab}`}
+      >
       {queueSubTab === "scan" && latestScanId ? (
         <DailyScanResults scanId={latestScanId} onRunScan={onDailyScan} />
       ) : queueSubTab === "leads" ? (
@@ -469,6 +480,7 @@ export const LeadQueue: React.FC<LeadQueueProps> = ({
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

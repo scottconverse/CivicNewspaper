@@ -4,6 +4,14 @@ fn main() {
         // Windows release exe can overflow the default stack during startup.
         // Give the desktop binary a normal larger GUI-app stack reserve.
         println!("cargo:rustc-link-arg-bin=civicnews=/STACK:16777216");
+
+        // tauri-plugin-dialog links TaskDialogIndirect. Cargo's Windows test
+        // harness does not inherit the Tauri application manifest, so without
+        // this dependency Windows activates Common Controls v5.82 and the test
+        // executable exits before discovery with STATUS_ENTRYPOINT_NOT_FOUND.
+        println!(
+            "cargo:rustc-link-arg=/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'"
+        );
     }
 
     // The app installs/starts Ollama from first-run setup when a clean machine

@@ -385,6 +385,8 @@ fn build_batch_prompt(
          Evidence Context:\n{context}\n\
          Return ONLY valid JSON. No markdown. No prose. No code fence.\n\
          Schema: {{\"leads\":[{{\"title\":\"short civic lead title\",\"summary\":\"1-2 evidence-grounded sentences\",\"original_url\":\"source URL from evidence or empty string\",\"why_flagged\":\"plain-language reason this deserves review\",\"source_name\":\"name or short description of source\",\"source_type\":\"agenda, public notice, budget, official update, community signal, or unknown\",\"priority\":\"high, medium, or low\",\"suggested_next_step\":\"specific editor action before drafting\",\"story_type\":\"story, brief, watch, background, or verification\",\"what_changed\":\"specific current fact that makes this timely, or 'no current change found'\",\"immediacy\":1,\"impact\":1,\"conflict\":1,\"novelty\":1,\"what_would_make_it_publishable\":\"specific missing fact, document, interview, vote, deadline, public effect, or cross-check\"}}]}}\n\
+         System-prompt examples and schema text are formatting instructions, not evidence. Never copy facts, entities, actions, dates, amounts, or URLs from them. Use only facts present in Evidence Context.\n\
+         Treat routine amenity reminders, reservation availability, seasonal hours, and unchanged service pages as no lead unless Evidence Context shows a current change, deadline, disruption, vote, cost, conflict, closure, shortage, or unusually broad public impact.\n\
          Score immediacy, impact, conflict, and novelty from 1 to 5. A recurring meeting page, archive page, general service page, or newly fetched but unchanged source should score low on immediacy and novelty and should usually be story_type background or watch, not story.\n\
          Event calendar sources can be useful tips, but they are not publishable stories by themselves. Only create story/brief leads from calendars when the excerpt has a concrete dated item with a civic action, deadline, public impact, closure, vote, permit, notice, or official decision; otherwise use watch/background/verification.\n\
          If an excerpt contains a dated Latest News, alert, notice, or events list, split it into separate leads for the specific dated items. Do not summarize the parent page as one generic lead unless the parent page itself changed in a newsworthy way.\n\
@@ -1088,17 +1090,15 @@ fn save_dark_signal_leads(
         .into_iter()
         .filter(|signal| signal.publication_status != "dismissed")
         .filter_map(|signal| {
-            let evidence_id = signal
-                .observation_id
-                .and_then(|observation_id| {
-                    conn.query_row(
-                        "SELECT evidence_id FROM civic_observations WHERE id = ?1",
-                        [observation_id],
-                        |row| row.get::<_, Option<i32>>(0),
-                    )
-                    .ok()
-                    .flatten()
-                })?;
+            let evidence_id = signal.observation_id.and_then(|observation_id| {
+                conn.query_row(
+                    "SELECT evidence_id FROM civic_observations WHERE id = ?1",
+                    [observation_id],
+                    |row| row.get::<_, Option<i32>>(0),
+                )
+                .ok()
+                .flatten()
+            })?;
             evidence_ids
                 .contains(&evidence_id)
                 .then_some((signal, evidence_id))
@@ -1231,23 +1231,22 @@ fn dark_signal_is_source_backed_brief_candidate(signal: &intelligence::DarkSigna
         return false;
     }
     let has_civic_service_signal = [
-            "senior center",
-            "waste reduction",
-            "reuse experts",
-            "public workshop",
-            "community resources",
-            "road closure",
-            "utility",
-            "utilities",
-            "public safety",
-            "library",
-            "recreation services",
-        ]
-        .iter()
-        .any(|needle| text.contains(needle));
+        "senior center",
+        "waste reduction",
+        "reuse experts",
+        "public workshop",
+        "community resources",
+        "road closure",
+        "utility",
+        "utilities",
+        "public safety",
+        "library",
+        "recreation services",
+    ]
+    .iter()
+    .any(|needle| text.contains(needle));
     has_civic_service_signal
-        && (evidence_has_strong_current_action(&text)
-            || evidence_has_public_impact_signal(&text))
+        && (evidence_has_strong_current_action(&text) || evidence_has_public_impact_signal(&text))
 }
 
 fn save_daily_scan_lead_for_queue(
@@ -2817,5 +2816,31 @@ mod prompt_tests {
         assert!(prompt.contains("split it into separate leads"));
         assert!(prompt.contains("Do not summarize the parent page as one generic lead"));
         assert!(prompt.contains("Do not create several separate leads"));
+    }
+
+    #[test]
+    fn batch_and_system_prompts_forbid_example_fact_reuse() {
+        let evidence = vec![EvidenceItem {
+            id: Some(1),
+            source_id: 44,
+            url: Some("https://example.gov/parks/news".to_string()),
+            excerpt: "Picnic shelters are available by reservation during regular summer hours."
+                .to_string(),
+            content_hash: "routine-amenity".to_string(),
+            entities: "[]".to_string(),
+            fetched_at: "2026-06-30T00:00:00Z".to_string(),
+        }];
+
+        let prompt = build_batch_prompt("Brighton", "CO", 0, &evidence);
+        let system = std::fs::read_to_string(
+            std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("prompts/aggregator.md"),
+        )
+        .unwrap();
+
+        for content in [&prompt, &system] {
+            assert!(content.contains("formatting instructions, not evidence"));
+            assert!(content.contains("Never copy facts"));
+            assert!(content.contains("routine amenity reminders"));
+        }
     }
 }

@@ -2,7 +2,9 @@ param(
   [string]$NsisInstaller = "",
   [string]$OutputDir = "",
   [string]$Python = "",
-  [switch]$CompleteOnboarding
+  [string]$Model = "phi4-mini:latest",
+  [switch]$CompleteOnboarding,
+  [switch]$CoreFlow
 )
 
 $ErrorActionPreference = "Stop"
@@ -79,13 +81,18 @@ function Test-PortFree {
   }
 }
 
-function Resolve-UnusedLoopbackUrl {
-  for ($port = 65200; $port -le 65300; $port++) {
+function Resolve-UnusedLoopbackPort {
+  param([int]$Start = 65200, [int]$End = 65300)
+  for ($port = $Start; $port -le $End; $port++) {
     if (Test-PortFree -Port $port) {
-      return "http://127.0.0.1:$port"
+      return $port
     }
   }
   throw "Could not find an unused loopback port."
+}
+
+function Resolve-UnusedLoopbackUrl {
+  return "http://127.0.0.1:$(Resolve-UnusedLoopbackPort)"
 }
 
 function Test-LoopbackAbsent {
@@ -122,93 +129,6 @@ function Test-PathUnderRoot {
     $fullRoot += [System.IO.Path]::DirectorySeparatorChar
   }
   return $fullPath.StartsWith($fullRoot, [System.StringComparison]::OrdinalIgnoreCase)
-}
-
-Add-Type @"
-using System;
-using System.Runtime.InteropServices;
-public class CivicDeskWalkthroughWin32 {
-  [StructLayout(LayoutKind.Sequential)]
-  public struct RECT {
-    public int Left;
-    public int Top;
-    public int Right;
-    public int Bottom;
-  }
-  [DllImport("user32.dll")]
-  public static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
-  [DllImport("user32.dll")]
-  public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
-  [DllImport("user32.dll")]
-  public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-  [DllImport("user32.dll")]
-  public static extern bool SetForegroundWindow(IntPtr hWnd);
-  [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-  public static extern int GetWindowText(IntPtr hWnd, System.Text.StringBuilder text, int count);
-  [DllImport("user32.dll")]
-  public static extern bool PrintWindow(IntPtr hWnd, IntPtr hdcBlt, int nFlags);
-  [DllImport("user32.dll")]
-  public static extern bool SetProcessDPIAware();
-  [DllImport("user32.dll")]
-  public static extern bool SetCursorPos(int X, int Y);
-  [DllImport("user32.dll")]
-  public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, UIntPtr dwExtraInfo);
-}
-"@
-
-Add-Type -AssemblyName System.Drawing
-Add-Type -AssemblyName System.Windows.Forms
-[void][CivicDeskWalkthroughWin32]::SetProcessDPIAware()
-
-function Capture-WindowScreenshot {
-  param(
-    [System.Diagnostics.Process]$Process,
-    [string]$Path
-  )
-
-  $rect = New-Object CivicDeskWalkthroughWin32+RECT
-  if (-not [CivicDeskWalkthroughWin32]::GetWindowRect($Process.MainWindowHandle, [ref]$rect)) {
-    throw "Could not read app window bounds."
-  }
-  $width = [Math]::Max(1, $rect.Right - $rect.Left)
-  $height = [Math]::Max(1, $rect.Bottom - $rect.Top)
-  $bitmap = New-Object System.Drawing.Bitmap($width, $height)
-  $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
-  try {
-    $hdc = $graphics.GetHdc()
-    try {
-      $rendered = [CivicDeskWalkthroughWin32]::PrintWindow($Process.MainWindowHandle, $hdc, 2)
-    } finally {
-      $graphics.ReleaseHdc($hdc)
-    }
-    if (-not $rendered) {
-      $graphics.CopyFromScreen($rect.Left, $rect.Top, 0, 0, $bitmap.Size)
-    }
-    $bitmap.Save($Path, [System.Drawing.Imaging.ImageFormat]::Png)
-  } finally {
-    $graphics.Dispose()
-    $bitmap.Dispose()
-  }
-}
-
-function Click-WindowPoint {
-  param(
-    [System.Diagnostics.Process]$Process,
-    [int]$X,
-    [int]$Y
-  )
-
-  $rect = New-Object CivicDeskWalkthroughWin32+RECT
-  if (-not [CivicDeskWalkthroughWin32]::GetWindowRect($Process.MainWindowHandle, [ref]$rect)) {
-    throw "Could not read app window bounds for click."
-  }
-  [void][CivicDeskWalkthroughWin32]::SetForegroundWindow($Process.MainWindowHandle)
-  Start-Sleep -Milliseconds 150
-  [void][CivicDeskWalkthroughWin32]::SetCursorPos($rect.Left + $X, $rect.Top + $Y)
-  Start-Sleep -Milliseconds 100
-  [CivicDeskWalkthroughWin32]::mouse_event(0x0002, 0, 0, 0, [UIntPtr]::Zero)
-  Start-Sleep -Milliseconds 75
-  [CivicDeskWalkthroughWin32]::mouse_event(0x0004, 0, 0, 0, [UIntPtr]::Zero)
 }
 
 function Stop-WalkthroughProcess {
@@ -256,11 +176,18 @@ $receipt = [ordered]@{
   dirty = [bool](git -C $repo status --porcelain)
   app_version = $version
   installer = $installer
+  installer_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $installer).Hash
+  installer_size = (Get-Item -LiteralPath $installer).Length
+  machine = $env:COMPUTERNAME
+  windows_version = [System.Environment]::OSVersion.VersionString
   output_dir = $OutputDir
   install_root = $installRoot
   app_data_dir = $appDataRoot
   python = $pythonExe
   forced_ollama_base_url = $null
+  webview_driver = (Join-Path $repo "scripts\packaged-webview-driver.mjs")
+  cdp_url = $null
+  core_flow = [bool]$CoreFlow
   checks = @()
 }
 
@@ -310,6 +237,8 @@ try {
   if (-not $installedExe) {
     throw "No installed application executable found."
   }
+  $receipt.installed_exe = $installedExe.FullName
+  $receipt.installed_exe_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $installedExe.FullName).Hash
 
   $absentOllamaBaseUrl = Resolve-UnusedLoopbackUrl
   $receipt.forced_ollama_base_url = $absentOllamaBaseUrl
@@ -324,6 +253,10 @@ try {
   $psi.UseShellExecute = $false
   $psi.Environment["CIVICNEWS_APP_DATA_DIR"] = $appDataRoot
   $psi.Environment["CIVICNEWS_OLLAMA_BASE_URL"] = $absentOllamaBaseUrl
+  $cdpPort = Resolve-UnusedLoopbackPort -Start 65301 -End 65400
+  $cdpUrl = "http://127.0.0.1:$cdpPort"
+  $receipt.cdp_url = $cdpUrl
+  $psi.Environment["WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS"] = "--remote-debugging-port=$cdpPort"
   $appProcess = [System.Diagnostics.Process]::Start($psi)
 
   $deadline = (Get-Date).AddSeconds(30)
@@ -342,82 +275,42 @@ try {
     throw "Installed app did not expose a main window."
   }
 
-  [void][CivicDeskWalkthroughWin32]::ShowWindow($appProcess.MainWindowHandle, 9)
-  [void][CivicDeskWalkthroughWin32]::MoveWindow($appProcess.MainWindowHandle, 40, 40, 1250, 900, $true)
-  [void][CivicDeskWalkthroughWin32]::SetForegroundWindow($appProcess.MainWindowHandle)
-  Start-Sleep -Seconds 3
-
-  $titleBuilder = New-Object System.Text.StringBuilder 512
-  [void][CivicDeskWalkthroughWin32]::GetWindowText($appProcess.MainWindowHandle, $titleBuilder, $titleBuilder.Capacity)
-  $windowTitle = $titleBuilder.ToString()
-  Add-Check "window-title" ($windowTitle -match "Civic Desk") @{ title = $windowTitle }
-
-  $beforeScreenshot = Join-Path $OutputDir "01-before-identity-entry.png"
-  Capture-WindowScreenshot -Process $appProcess -Path $beforeScreenshot
-  Add-ScreenshotCheck "before-screenshot" $beforeScreenshot
-
-  $publication = "Longmont Local Beta Desk"
-  $editor = "Local Packaged Walkthrough"
-  $city = "Longmont"
-  $state = "CO"
-  [System.Windows.Forms.SendKeys]::SendWait($publication)
-  Start-Sleep -Milliseconds 250
-  [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
-  Start-Sleep -Milliseconds 150
-  [System.Windows.Forms.SendKeys]::SendWait($editor)
-  Start-Sleep -Milliseconds 250
-  [System.Windows.Forms.SendKeys]::SendWait("{TAB}{TAB}")
-  Start-Sleep -Milliseconds 150
-  [System.Windows.Forms.SendKeys]::SendWait($city)
-  Start-Sleep -Milliseconds 250
-  [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
-  Start-Sleep -Milliseconds 150
-  [System.Windows.Forms.SendKeys]::SendWait($state)
-  Start-Sleep -Milliseconds 250
-
-  $afterTypingScreenshot = Join-Path $OutputDir "02-after-identity-entry.png"
-  Capture-WindowScreenshot -Process $appProcess -Path $afterTypingScreenshot
-  Add-ScreenshotCheck "after-typing-screenshot" $afterTypingScreenshot
-
-  [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
-  Start-Sleep -Seconds 5
-
-  $afterNextScreenshot = Join-Path $OutputDir "03-after-identity-next.png"
-  Capture-WindowScreenshot -Process $appProcess -Path $afterNextScreenshot
-  Add-ScreenshotCheck "after-next-screenshot" $afterNextScreenshot
-
-  if ($CompleteOnboarding) {
-    [void][CivicDeskWalkthroughWin32]::SetForegroundWindow($appProcess.MainWindowHandle)
-    Start-Sleep -Milliseconds 150
-    # Step 2 focuses the visible "Skip for now" action when the local AI
-    # runtime is unavailable. Use the focus path instead of stale coordinates
-    # so this smoke keeps proving the actual keyboard-accessible route.
-    [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
-    Start-Sleep -Seconds 1
-    $skipConfirmScreenshot = Join-Path $OutputDir "04-skip-confirmation.png"
-    Capture-WindowScreenshot -Process $appProcess -Path $skipConfirmScreenshot
-    Add-ScreenshotCheck "skip-confirmation-screenshot" $skipConfirmScreenshot
-
-    [System.Windows.Forms.SendKeys]::SendWait("{TAB}{ENTER}")
-    Start-Sleep -Seconds 2
-    $afterSkipScreenshot = Join-Path $OutputDir "05-after-skip-setup.png"
-    Capture-WindowScreenshot -Process $appProcess -Path $afterSkipScreenshot
-    Add-ScreenshotCheck "after-skip-setup-screenshot" $afterSkipScreenshot
-
-    Click-WindowPoint -Process $appProcess -X 820 -Y 817
-    Start-Sleep -Seconds 1
-    $doneStepScreenshot = Join-Path $OutputDir "06-done-step.png"
-    Capture-WindowScreenshot -Process $appProcess -Path $doneStepScreenshot
-    Add-ScreenshotCheck "done-step-screenshot" $doneStepScreenshot
-
-    [void][CivicDeskWalkthroughWin32]::SetForegroundWindow($appProcess.MainWindowHandle)
-    Start-Sleep -Milliseconds 150
-    [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
-    Start-Sleep -Seconds 3
-    $workspaceScreenshot = Join-Path $OutputDir "07-workspace-reached.png"
-    Capture-WindowScreenshot -Process $appProcess -Path $workspaceScreenshot
-    Add-ScreenshotCheck "workspace-reached-screenshot" $workspaceScreenshot
+  if (-not $CompleteOnboarding) {
+    throw "Packaged first-run proof requires -CompleteOnboarding."
   }
+  $cdpDeadline = (Get-Date).AddSeconds(30)
+  $cdpReady = $false
+  while ((Get-Date) -lt $cdpDeadline) {
+    try {
+      $targets = Invoke-RestMethod -Uri "$cdpUrl/json" -TimeoutSec 2
+      if ($targets) { $cdpReady = $true; break }
+    } catch {}
+    Start-Sleep -Milliseconds 500
+  }
+  Add-Check "webview-cdp-ready" $cdpReady @{ cdp_url = $cdpUrl }
+  if (-not $cdpReady) {
+    throw "Installed app did not expose WebView2 CDP at $cdpUrl"
+  }
+
+  $driverScript = Join-Path $repo "scripts\packaged-webview-driver.mjs"
+  & node $driverScript --cdp-url $cdpUrl --mode first-run --output-dir $OutputDir --expected-build-id $($receipt.commit)
+  if ($LASTEXITCODE -ne 0) {
+    throw "Packaged first-run webview driver failed with exit code $LASTEXITCODE"
+  }
+  $driverResultPath = Join-Path $OutputDir "first-run-webview-result.json"
+  $driverResult = Get-Content -Raw -LiteralPath $driverResultPath | ConvertFrom-Json
+  Add-Check "first-run-webview-driver" ([bool]$driverResult.ok) @{ result_path = $driverResultPath }
+  foreach ($driverCheck in $driverResult.checks) {
+    Add-Check "webview-$($driverCheck.name)" ([bool]$driverCheck.ok) @{ details = $driverCheck.details }
+  }
+  foreach ($screenshot in $driverResult.screenshots) {
+    Add-ScreenshotCheck "webview-$([System.IO.Path]::GetFileNameWithoutExtension($screenshot))" $screenshot
+  }
+
+  $publication = "Local Beta Desk"
+  $editor = "Packaged Walkthrough"
+  $city = ""
+  $state = ""
 
   $dbPath = Join-Path $appDataRoot "civicdesk.db"
   Add-Check "sqlite-db-present" (Test-Path $dbPath) @{ db_path = $dbPath }
@@ -443,63 +336,14 @@ with open(out_path, "w", encoding="utf-8") as f:
   }
   $settings = Get-Content -Raw -LiteralPath $settingsJsonPath | ConvertFrom-Json
 
-  if ($CompleteOnboarding) {
-    $finishRecoveryNeeded = $false
-    $onboardingComplete = [string]$settings.PSObject.Properties["onboarding_complete"].Value
-    if ($onboardingComplete -ne "1") {
-      $finishRecoveryNeeded = $true
-      [void][CivicDeskWalkthroughWin32]::SetForegroundWindow($appProcess.MainWindowHandle)
-      Start-Sleep -Milliseconds 150
-      Click-WindowPoint -Process $appProcess -X 750 -Y 823
-      Start-Sleep -Milliseconds 350
-      [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
-      Start-Sleep -Seconds 3
-      $finishRecoveryScreenshot = Join-Path $OutputDir "07b-finish-onboarding-recovery.png"
-      Capture-WindowScreenshot -Process $appProcess -Path $finishRecoveryScreenshot
-      Add-ScreenshotCheck "finish-onboarding-recovery-screenshot" $finishRecoveryScreenshot
-      & $pythonExe $queryScriptPath $dbPath $settingsJsonPath
-      if ($LASTEXITCODE -ne 0) {
-        throw "SQLite settings read failed with exit code $LASTEXITCODE after finish-onboarding recovery"
-      }
-      $settings = Get-Content -Raw -LiteralPath $settingsJsonPath | ConvertFrom-Json
-      $onboardingComplete = [string]$settings.PSObject.Properties["onboarding_complete"].Value
-    }
-    Add-Check "finish-onboarding-recovery-needed" $true @{ needed = $finishRecoveryNeeded }
-    Add-Check "finish-onboarding-complete" ($onboardingComplete -eq "1") @{ onboarding_complete = $onboardingComplete }
-    if ($onboardingComplete -ne "1") {
-      throw "Finish Onboarding did not persist onboarding_complete=1 after keyboard and click recovery."
-    }
-
-    $intakeDeadline = (Get-Date).AddSeconds(180)
-    $intakeStatus = ""
-    $sourceCount = 0
-    while ((Get-Date) -lt $intakeDeadline) {
-      & $pythonExe $queryScriptPath $dbPath $settingsJsonPath
-      if ($LASTEXITCODE -ne 0) {
-        throw "SQLite settings read failed with exit code $LASTEXITCODE while waiting for starter-source completion"
-      }
-      $settings = Get-Content -Raw -LiteralPath $settingsJsonPath | ConvertFrom-Json
-      $firstRunStatus = [string]$settings.PSObject.Properties["setup.first_run_intake"].Value
-      $recoveredStatus = [string]$settings.PSObject.Properties["setup.recovered_input"].Value
-      $intakeStatus = if ($firstRunStatus) { $firstRunStatus } else { $recoveredStatus }
-      $sourceCount = [int]([string]$settings.PSObject.Properties["__source_count"].Value)
-      if ($intakeStatus -eq "consumed" -and $sourceCount -gt 0) {
-        break
-      }
-      Start-Sleep -Seconds 2
-    }
-    $starterSourceTerminal = $intakeStatus -eq "consumed"
-    Add-Check "starter-source-intake-terminal" $starterSourceTerminal @{ status = $intakeStatus; source_count = $sourceCount }
-    if (-not $starterSourceTerminal) {
-      throw "Starter-source intake did not reach consumed state. status='$intakeStatus' source_count=$sourceCount"
-    }
-    Add-Check "starter-source-count-positive" ($sourceCount -gt 0) @{ source_count = $sourceCount }
-    if ($sourceCount -le 0) {
-      throw "Starter-source intake completed without importing any source."
-    }
-    $starterSourceScreenshot = Join-Path $OutputDir "08-after-starter-source-resolution.png"
-    Capture-WindowScreenshot -Process $appProcess -Path $starterSourceScreenshot
-    Add-ScreenshotCheck "starter-source-resolution-screenshot" $starterSourceScreenshot
+  $onboardingComplete = [string]$settings.PSObject.Properties["onboarding_complete"].Value
+  $aiSetupSkipped = [string]$settings.PSObject.Properties["ai.setup_skipped"].Value
+  $sourceCount = [int]([string]$settings.PSObject.Properties["__source_count"].Value)
+  Add-Check "finish-onboarding-complete" ($onboardingComplete -eq "1" -or $onboardingComplete -eq "true") @{ onboarding_complete = $onboardingComplete }
+  Add-Check "ai-setup-skipped" ($aiSetupSkipped -eq "true") @{ ai_setup_skipped = $aiSetupSkipped }
+  Add-Check "zero-source-first-run" ($sourceCount -eq 0) @{ source_count = $sourceCount }
+  if (($onboardingComplete -ne "1" -and $onboardingComplete -ne "true") -or $aiSetupSkipped -ne "true" -or $sourceCount -ne 0) {
+    throw "First-run database state does not match the dependency-absent walkthrough."
   }
 
   $identityChecks = @{
@@ -597,6 +441,92 @@ print(token)
   if (-not $queueOk) {
     throw "Packaged live protected queue request did not return a response."
   }
+
+  if ($CoreFlow) {
+    Stop-WalkthroughProcess -Process $appProcess
+    $appProcess = $null
+    $portDeadline = (Get-Date).AddSeconds(15)
+    while ((Get-Date) -lt $portDeadline -and -not (Test-PortFree -Port 12053)) {
+      Start-Sleep -Milliseconds 500
+    }
+    if (-not (Test-PortFree -Port 12053)) {
+      throw "Packaged first-run process did not release port 12053."
+    }
+
+    $coreFlowDir = Join-Path $OutputDir "core-flow"
+    $coreAppData = Join-Path $coreFlowDir "app-data"
+    New-Item -ItemType Directory -Force -Path $coreFlowDir, $coreAppData | Out-Null
+    $coreCdpPort = Resolve-UnusedLoopbackPort -Start 65401 -End 65500
+    $coreCdpUrl = "http://127.0.0.1:$coreCdpPort"
+    $corePsi = New-Object System.Diagnostics.ProcessStartInfo
+    $corePsi.FileName = $installedExe.FullName
+    $corePsi.WorkingDirectory = Split-Path $installedExe.FullName
+    $corePsi.UseShellExecute = $false
+    $corePsi.Environment["CIVICNEWS_APP_DATA_DIR"] = $coreAppData
+    $corePsi.Environment["WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS"] = "--remote-debugging-port=$coreCdpPort"
+    $appProcess = [System.Diagnostics.Process]::Start($corePsi)
+
+    $coreCdpDeadline = (Get-Date).AddSeconds(30)
+    $coreCdpReady = $false
+    while ((Get-Date) -lt $coreCdpDeadline) {
+      if ($appProcess.HasExited) {
+        throw "Packaged core-flow app exited early with code $($appProcess.ExitCode)."
+      }
+      try {
+        $targets = Invoke-RestMethod -Uri "$coreCdpUrl/json" -TimeoutSec 2
+        if ($targets) { $coreCdpReady = $true; break }
+      } catch {}
+      Start-Sleep -Milliseconds 500
+    }
+    Add-Check "core-flow-webview-cdp-ready" $coreCdpReady @{ cdp_url = $coreCdpUrl; app_data_dir = $coreAppData }
+    if (-not $coreCdpReady) {
+      throw "Packaged core-flow app did not expose WebView2 CDP at $coreCdpUrl"
+    }
+
+    & node $driverScript --cdp-url $coreCdpUrl --mode core-flow --output-dir $coreFlowDir --model $Model --expected-build-id $($receipt.commit)
+    if ($LASTEXITCODE -ne 0) {
+      throw "Packaged core-flow webview driver failed with exit code $LASTEXITCODE"
+    }
+    $coreResultPath = Join-Path $coreFlowDir "core-flow-webview-result.json"
+    $coreResult = Get-Content -Raw -LiteralPath $coreResultPath | ConvertFrom-Json
+    Add-Check "core-flow-webview-driver" ([bool]$coreResult.ok) @{ result_path = $coreResultPath; details = $coreResult.details }
+    foreach ($driverCheck in $coreResult.checks) {
+      Add-Check "core-$($driverCheck.name)" ([bool]$driverCheck.ok) @{ details = $driverCheck.details }
+    }
+    foreach ($screenshot in $coreResult.screenshots) {
+      Add-ScreenshotCheck "core-$([System.IO.Path]::GetFileNameWithoutExtension($screenshot))" $screenshot
+    }
+
+    $coreDbPath = Join-Path $coreAppData "civicdesk.db"
+    $coreDbSummaryPath = Join-Path $coreFlowDir "database-summary.json"
+    $coreQuery = @"
+import json, sqlite3, sys
+db_path, out_path = sys.argv[1], sys.argv[2]
+conn = sqlite3.connect(db_path)
+summary = {
+    "sources": conn.execute("select count(*) from sources").fetchone()[0],
+    "evidence": conn.execute("select count(*) from evidence_items").fetchone()[0],
+    "scan_leads": conn.execute("select count(*) from daily_scan_leads").fetchone()[0],
+    "queue_leads": conn.execute("select count(*) from leads").fetchone()[0],
+    "drafts": conn.execute("select count(*) from drafts").fetchone()[0],
+    "linked_drafts": conn.execute("select count(distinct d.id) from drafts d join lead_evidence le on le.lead_id = d.lead_id").fetchone()[0],
+}
+with open(out_path, "w", encoding="utf-8") as f:
+    json.dump(summary, f, indent=2, sort_keys=True)
+"@
+    $coreQueryPath = Join-Path $coreFlowDir "read-core-flow.py"
+    Set-Content -LiteralPath $coreQueryPath -Value $coreQuery -Encoding UTF8
+    & $pythonExe $coreQueryPath $coreDbPath $coreDbSummaryPath
+    if ($LASTEXITCODE -ne 0) {
+      throw "Packaged core-flow SQLite verification failed with exit code $LASTEXITCODE"
+    }
+    $coreSummary = Get-Content -Raw -LiteralPath $coreDbSummaryPath | ConvertFrom-Json
+    $coreDatabaseOk = $coreSummary.sources -ge 2 -and $coreSummary.evidence -gt 0 -and $coreSummary.scan_leads -gt 0 -and $coreSummary.queue_leads -gt 0 -and $coreSummary.drafts -gt 0 -and $coreSummary.linked_drafts -gt 0
+    Add-Check "core-flow-database-persistence" $coreDatabaseOk @{ summary = $coreSummary; path = $coreDbSummaryPath }
+    if (-not $coreDatabaseOk) {
+      throw "Packaged core-flow database does not contain the required source-to-draft chain."
+    }
+  }
 } finally {
   Stop-WalkthroughProcess -Process $appProcess
   if (Test-Path $installRoot) {
@@ -613,6 +543,8 @@ print(token)
 
 $receipt.ok = -not ($receipt.checks | Where-Object { -not $_.ok })
 $receipt | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $receiptPath -Encoding UTF8
+$receiptHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $receiptPath).Hash
+"$receiptHash  $([System.IO.Path]::GetFileName($receiptPath))" | Set-Content -LiteralPath "$receiptPath.sha256" -Encoding ascii
 
 if (-not $receipt.ok) {
   throw "Packaged first-run walkthrough failed. Receipt: $receiptPath"

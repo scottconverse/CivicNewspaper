@@ -1391,8 +1391,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                     <p style={{ fontSize: "0.9rem", marginBottom: "0.5rem" }}>
                       We detected the following models already installed on your computer. Select one to use it and skip downloading:
                     </p>
+                    <label htmlFor="onboarding-installed-model" className="sr-only">Installed model</label>
                     {/* installedModels from api/tags are selectable: Use existing model if you already have it. */}
-                    <select 
+                    <select
+                      id="onboarding-installed-model"
                       value={model} 
                       onChange={e => setModel(e.target.value)}
                       style={{ width: "100%", padding: "0.5rem", borderRadius: "4px", border: "1px solid var(--border-color)", background: "var(--bg-card)", color: "var(--text-primary)" }}

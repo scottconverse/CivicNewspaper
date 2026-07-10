@@ -7,13 +7,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [0.3.2] - 2026-07-02
 
 ### Changed
-- Rebuilt the current v0.3.2 Windows candidate from commit `ba49af4d69d2c4d6d88bfd148490494f243cc9d7`, installer SHA256 `1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5`, size `5250809` bytes; final cleanroom recheck is still required before calling this rebuilt artifact cleanroom-proven.
+- Built and locally proved the v0.3.2 Windows beta candidate from commit `bfa37f87dda8aa61c98da4bd7bc2be907581a416`, installer SHA256 `636D87041396603456634E6B47AE1071E8726D8D05C0FC08768D5B9E92A71C83`, size `5274104` bytes; GitHub asset replacement remains a separate publication step.
 - Recorded final Windows public-beta cleanroom pass for commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`, installer SHA256 `AB598EC26F658BB2B0735827F15DC787162D372A0C3FF0A3A18B6ADE48ABE241`, and here.now verification URL `https://olive-gorge-cgsr.here.now`.
 - Hardened the Windows public-beta first-run setup path so identity entry, local-AI skip, defaults, and workspace entry can be proven from the packaged installer.
 - Made release smoke reject stable runs that also allow a dirty working tree.
 - Updated release-facing docs to match the v0.3.2 Windows-only public-beta installer scope.
 
 ### Fixed
+- Restored Windows Rust test execution by activating Common Controls v6 for test harnesses, used the platform-correct bundled IPC origin, and retired historical v0.2 phase scope locks from evergreen CI in favor of current executable tests and coverage gates.
+- Prevented local models from copying facts out of the aggregator prompt's JSON example into unrelated evidence batches, and made any failed model-bakeoff case fail the command.
+- Replaced coordinate/keystroke packaged walkthrough automation with accessible-name WebView2 automation that proves dependency-absent onboarding, zero-source guidance, live-model Daily Scan, durable draft generation, and Workbench reload against the installed app.
+- Replaced textual site-root prefix checks with component-aware canonical containment and traversal/sibling regression coverage.
+- Added screen-reader announcements for Daily Scan progress and failures, a programmatic name for the installed-model selector, and selected-state semantics for Story Queue views.
+- Made frontend and Rust coverage floors release-gating, preserved machine-readable coverage artifacts, and added focused thresholds for first-run, IPC, Workbench, and publishing surfaces.
+- Bound manual smoke reports to exact tag, commit, installer filename/hash/size, machine/profile, app version, report/output hashes, result table, and hosted release evidence.
+- Linked the authenticated localhost API and Browser Bridge setup from the main README and landing-page documentation index.
 - Fixed the publish-preflight dead end by keeping package-integrity problems as blockers while routing topic/quality heuristics through a logged editor confirmation.
 - Removed the unreachable Manual Mode promise from offline AI drafting copy; draft generation, improvement, and social copy now plainly require a reachable local model.
 - Renamed cautious lead queue actions from "Verify first" to "Review" so the button matches the action it performs.

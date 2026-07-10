@@ -131,6 +131,37 @@ describe("LeadQueue Component Tests", () => {
     expect(handleOpenDraft).toHaveBeenCalledWith(fixtureDrafts[0]);
   });
 
+  test("announces the selected queue view and controlled panel", () => {
+    render(
+      <LeadQueue
+        leads={fixtureLeads}
+        drafts={fixtureDrafts}
+        loading={false}
+        latestScanId={9}
+        onSelect={vi.fn()}
+        onSyncList={vi.fn()}
+        onIngest={vi.fn()}
+        onDailyScan={vi.fn()}
+        onOpenDraftEditor={vi.fn()}
+        onOpenCorrectionModal={vi.fn()}
+        onDeleteDraft={vi.fn()}
+      />
+    );
+
+    const leadsButton = document.getElementById("queue-tab-leads")!;
+    const draftsButton = document.getElementById("queue-tab-drafts")!;
+    expect(leadsButton).toHaveAttribute("aria-pressed", "true");
+    expect(leadsButton).toHaveAttribute("aria-controls", "queue-view-panel");
+    expect(draftsButton).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByRole("region", { name: /Leads/i })).toHaveAttribute("id", "queue-view-panel");
+
+    fireEvent.click(draftsButton);
+
+    expect(leadsButton).toHaveAttribute("aria-pressed", "false");
+    expect(draftsButton).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("region", { name: /Drafts/i })).toHaveAttribute("id", "queue-view-panel");
+  });
+
   test("opens an existing draft from a drafted lead instead of starting a duplicate", () => {
     const handleSelect = vi.fn();
     const handleOpenDraft = vi.fn();

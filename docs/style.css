@@ -338,6 +338,11 @@ nav {
     color: var(--muted);
 }
 
+.download-card code {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
 .workflow-grid {
     grid-template-columns: repeat(4, 1fr);
 }

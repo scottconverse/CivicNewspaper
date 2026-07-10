@@ -211,32 +211,18 @@ jobs:
       - name: Vitest
         run: npm test
       - run: npm run build
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: 1.94.0
-          components: rustfmt, clippy
-      - name: Fetch Ollama binaries
-        run: bash scripts/fetch-ollama-binaries.sh
-      - name: Run Phase 1 DoD verification
-        if: hashFiles('scripts/verify-v0.2-phase-1-dod.sh') != ''
-        run: bash scripts/verify-v0.2-phase-1-dod.sh
-      - name: Run Phase 2 DoD verification
-        if: hashFiles('scripts/verify-v0.2-phase-2-dod.sh') != ''
-        run: bash scripts/verify-v0.2-phase-2-dod.sh
-      - name: Run Phase 3 DoD verification
-        if: hashFiles('scripts/verify-v0.2-phase-3-dod.sh') != ''
-        run: bash scripts/verify-v0.2-phase-3-dod.sh
+      # The v0.2 phase scripts are retained as historical artifacts, not as
+      # evergreen CI policy. Current behavior is protected above by Vitest and
+      # the production build, and in the Rust, clippy, hosted-test, and coverage
+      # jobs by executable tests and measured coverage floors.
+      - name: Repository hygiene
+        run: git diff --check
 
-  # TEST-005: report-only coverage. This job NEVER gates a merge
-  # (continue-on-error at both job and step level) — it exists to surface
-  # Rust + frontend coverage numbers in the logs so coverage drift is visible
-  # without making a flaky coverage tool able to block the branch. Runs after
-  # `rust` so the heavier cargo builds serialize.
+  # Required coverage gate with measured v0.3.2 floors and machine-readable
+  # reports. Runs after `rust` so the heavier cargo builds serialize.
   coverage:
     needs: rust
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 
@@ -262,10 +248,11 @@ jobs:
         with:
           tool: cargo-llvm-cov
 
-      - name: Rust coverage (report-only)
-        continue-on-error: true
+      - name: Rust coverage gate
         working-directory: ./src-tauri
-        run: cargo llvm-cov --lib --summary-only
+        run: |
+          mkdir -p ../coverage
+          cargo llvm-cov --lib --lcov --output-path ../coverage/rust.lcov --fail-under-regions 68 --fail-under-functions 60 --fail-under-lines 72
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -275,8 +262,11 @@ jobs:
 
       - run: npm ci
 
-      - name: Frontend coverage (report-only)
-        continue-on-error: true
-        run: |
-          npm install --no-save @vitest/coverage-v8@2
-          npx vitest run --coverage
+      - name: Frontend coverage gate
+        run: npm run test:coverage
+
+      - name: Preserve coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: coverage/

@@ -1,53 +1,55 @@
 {
-    "tag":  "v0.3.2",
-    "commit":  "ba49af4d69d2c4d6d88bfd148490494f243cc9d7",
-    "generated_at":  "2026-07-09T09:28:00-06:00",
-    "rc_receipt_path":  "pending current ba49af4 release-candidate receipt",
-    "rc_receipt_sha256":  "PENDING_CURRENT_RECEIPT",
-    "release_smoke":  {
-                          "ok":  false,
-                          "receipt_path":  "pending current ba49af4 release smoke receipt",
-                          "receipt_sha256":  "PENDING_CURRENT_RECEIPT"
-                      },
-    "model_bakeoff":  {
-                          "ok":  false,
-                          "receipt_path":  "pending current ba49af4 model bakeoff receipt",
-                          "receipt_sha256":  "PENDING_CURRENT_RECEIPT"
-                      },
-    "dependency_audit":  {
-                             "ok":  true,
-                             "receipt_path":  ".agent-runs/dependency-audit-20260709-093244.json",
-                             "receipt_sha256":  "1F7CC8E1AF18BFCE2B60328AAC0EB9503FBD8BFD6E3006A76AD48C2AE31E82F6"
-                         },
-    "windows_installer_smoke":  {
-                                    "ok":  false,
-                                    "receipt_path":  "pending current ba49af4 installer smoke receipt",
-                                    "receipt_sha256":  "PENDING_CURRENT_RECEIPT",
-                                    "installer_name":  "The Civic Desk_0.3.2_x64-setup.exe",
-                                    "release_asset_name":  "The.Civic.Desk_0.3.2_x64-setup.exe",
-                                    "installer_sha256":  "1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5",
-                                    "installer_size":  5250809
-                                },
-    "packaged_first_run_walkthrough":  {
-                                           "ok":  false,
-                                           "receipt_path":  "pending current ba49af4 packaged first-run walkthrough receipt",
-                                           "receipt_sha256":  "PENDING_CURRENT_RECEIPT"
-                                       },
-    "cleanroom":  {
-                      "ok":  false,
-                      "report_path":  null,
-                      "report_sha256":  null,
-                      "tester_machine":  "pending final cleanroom rerun",
-                      "installer_sha256":  "1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5",
-                      "public_url":  null,
-                      "zip_path":  null,
-                      "verdict":  "PENDING: publish-preflight editor override, honest offline-AI drafting copy, release-body provenance checking, durable draft persistence, linked-evidence Brief fallback, and full Rust/frontend verification passed for commit ba49af4d69d2c4d6d88bfd148490494f243cc9d7. Final remote cleanroom proof is still required before this rebuilt artifact is called beta-release ready."
-                  },
-    "release_scope":  {
-                          "windows_public_beta":  true,
-                          "macos_installer":  "backlog/proof-needed",
-                          "linux_installer":  "backlog/proof-needed",
-                          "unsigned_installer":  true,
-                          "scott_approved_public_release":  false
-                      }
+  "tag": "v0.3.2",
+  "commit": "bfa37f87dda8aa61c98da4bd7bc2be907581a416",
+  "generated_at": "2026-07-09T18:27:35-06:00",
+  "rc_receipt_path": ".agent-runs/release-candidate-20260709-182734/release-candidate-receipt.json",
+  "rc_receipt_sha256": "12C80AB694F484BB1176CF1F37590E3BEDD853985D020997BF47BCAEDBBCBE75",
+  "release_smoke": {
+    "ok": true,
+    "receipt_path": ".agent-runs/release-smoke-20260709-181659/release-smoke-receipt.json",
+    "receipt_sha256": "213887F59B4907A46B770987C5468A75318F1286A67B0FA60FE8BF238AAF1F8B"
+  },
+  "model_bakeoff": {
+    "ok": true,
+    "receipt_path": ".agent-runs/model-bakeoff-2026-07-10T00-24-21-827Z.json",
+    "receipt_sha256": "D4DEFA41E3128603097259F6433B91B19DAEABC92160F636305A69581B3A1895"
+  },
+  "dependency_audit": {
+    "ok": true,
+    "receipt_path": ".agent-runs/beta-rc-bfa37f8-dependency-audit/dependency-audit-20260709-182436.json",
+    "receipt_sha256": "F2DC84A23551F1638285758E20EBC5927CE4EC2BFEBE21721997657C7A18D30C"
+  },
+  "windows_installer_smoke": {
+    "ok": true,
+    "receipt_path": ".agent-runs/beta-rc-bfa37f8-windows-installer-smoke/windows-installer-smoke-receipt.json",
+    "receipt_sha256": "B765AC71F86B8A3128B1F083CAE01762CECAB07C7EF0BF2BD99D31EBD59C7DFA",
+    "installer_name": "The Civic Desk_0.3.2_x64-setup.exe",
+    "release_asset_name": "The.Civic.Desk_0.3.2_x64-setup.exe",
+    "installer_sha256": "636D87041396603456634E6B47AE1071E8726D8D05C0FC08768D5B9E92A71C83",
+    "installer_size": 5274104
+  },
+  "packaged_first_run_walkthrough": {
+    "ok": true,
+    "receipt_path": ".agent-runs/release-smoke-20260709-181659/packaged-walkthrough/packaged-first-run-walkthrough-receipt.json",
+    "receipt_sha256": "EE82560ED42AD4530C23A7A1D57E55397D345F95060D4819BF77B35B8F271C99"
+  },
+  "cleanroom": {
+    "ok": true,
+    "report_path": "docs/release-evidence/v0.3.2-local-isolated-package-report.md",
+    "report_sha256": "DAAAB19F700E5C8D4BB7F68AFF2E79D3B2EEA4A0000B94A51497E7F526B4B9F4",
+    "tester_machine": "DESKTOP-S9MHP33 local isolated profiles",
+    "installer_sha256": "636D87041396603456634E6B47AE1071E8726D8D05C0FC08768D5B9E92A71C83",
+    "public_url": "https://present-tablet-sx2h.here.now",
+    "zip_path": ".agent-runs/release-candidate-20260709-182734.zip",
+    "zip_sha256": "0405CA6CFA7843C6E6B643AB53973F7BE846EE13D488F393AF506F6DE16540CD",
+    "zip_size": 3669125,
+    "verdict": "PASS: exact installed artifact completed dependency-absent onboarding and the live-model source-to-Workbench path with 0 failed and 0 skipped release-smoke checks. This is local isolated Windows beta-candidate proof, not signed, cross-platform, or credentialed-provider stable-release proof."
+  },
+  "release_scope": {
+    "windows_public_beta": true,
+    "macos_installer": "backlog/proof-needed",
+    "linux_installer": "backlog/proof-needed",
+    "unsigned_installer": true,
+    "scott_approved_public_release": false
+  }
 }

@@ -466,6 +466,26 @@ fn official_record_is_brief_candidate(excerpt: &str, evidence_url: &Option<Strin
     has_action && (has_date_or_amount || url_looks_specific)
 }
 
+fn format_money(val: f64) -> String {
+    let s = format!("{:.2}", val);
+    let parts: Vec<&str> = s.split('.').collect();
+    let integer_part = parts.first().copied().unwrap_or("0");
+    let decimal_part = parts.get(1).copied().unwrap_or("00");
+
+    let mut result = String::new();
+    let num_bytes = integer_part.len();
+    for (i, c) in integer_part.chars().enumerate() {
+        let rem = num_bytes - i;
+        if i > 0 && rem / 3 * 3 == rem {
+            result.push(',');
+        }
+        result.push(c);
+    }
+    result.push('.');
+    result.push_str(decimal_part);
+    result
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -487,24 +507,4 @@ mod tests {
             &Some("https://example.gov/notice/road-closure".to_string())
         ));
     }
-}
-
-fn format_money(val: f64) -> String {
-    let s = format!("{:.2}", val);
-    let parts: Vec<&str> = s.split('.').collect();
-    let integer_part = parts.first().copied().unwrap_or("0");
-    let decimal_part = parts.get(1).copied().unwrap_or("00");
-
-    let mut result = String::new();
-    let num_bytes = integer_part.len();
-    for (i, c) in integer_part.chars().enumerate() {
-        let rem = num_bytes - i;
-        if i > 0 && rem / 3 * 3 == rem {
-            result.push(',');
-        }
-        result.push(c);
-    }
-    result.push('.');
-    result.push_str(decimal_part);
-    result
 }

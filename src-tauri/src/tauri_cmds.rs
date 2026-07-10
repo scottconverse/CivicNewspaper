@@ -1416,6 +1416,10 @@ fn normalize_generated_draft_parts(raw: &str, fallback_title: &str) -> (String, 
         r"(?i)\[(?:insert [^\]]+|[^\]]+ if available|source needed|verification needed)\]",
     )
     .expect("valid placeholder regex");
+    let draft_marker_re = regex::Regex::new(
+        r"(?i)^\s*\[?\s*(source needed|verification needed|end of report)\s*\]?\s*$",
+    )
+    .expect("valid draft marker regex");
 
     for (idx, line) in lines.iter().enumerate() {
         if title_line_index == Some(idx) {
@@ -1425,11 +1429,7 @@ fn normalize_generated_draft_parts(raw: &str, fallback_title: &str) -> (String, 
         let lower = plain.to_lowercase();
         if line_has_forbidden_draft_marker(plain)
             || lower.starts_with("tester edit:")
-            || regex::Regex::new(
-                r"(?i)^\s*\[?\s*(source needed|verification needed|end of report)\s*\]?\s*$",
-            )
-            .expect("valid draft marker regex")
-            .is_match(plain)
+            || draft_marker_re.is_match(plain)
         {
             skipping_reporting_steps = false;
             continue;
@@ -1528,6 +1528,7 @@ fn draft_has_publishable_linked_source_shape(content: &str, linked_evidence_coun
         && content.to_lowercase().contains("according to")
 }
 
+#[allow(clippy::too_many_arguments)]
 fn build_persistable_draft(
     lead_id: i32,
     lead_why: &str,
@@ -2445,6 +2446,185 @@ pub async fn generate_and_save_draft<R: tauri::Runtime>(
     db::get_draft(&conn, draft_id)
         .map_err(|e| e.to_string())?
         .ok_or_else(|| "Draft was saved but could not be reloaded.".to_string())
+}
+
+#[cfg(test)]
+mod generate_and_save_draft_ipc_tests {
+    use super::*;
+    use crate::core::llm::LlmClient;
+    use rusqlite::Connection;
+    use std::io::{Read, Write};
+    use std::net::TcpListener;
+    use std::sync::{Arc, LazyLock, Mutex};
+    use std::thread;
+    use tempfile::tempdir;
+
+    static ENV_LOCK: LazyLock<Mutex<()>> = LazyLock::new(|| Mutex::new(()));
+
+    struct FakeDraftLlm {
+        evidence_id: i32,
+        calls: Mutex<Vec<(String, String)>>,
+    }
+
+    #[async_trait::async_trait]
+    impl LlmClient for FakeDraftLlm {
+        async fn call(&self, model: &str, prompt: &str, _system: &str) -> Result<String, String> {
+            self.calls
+                .lock()
+                .unwrap()
+                .push((model.to_string(), prompt.to_string()));
+            Ok(format!(
+                "Headline: Council approves a street-safety grant\n\nAccording to the linked source, the city council approved a street-safety grant for the coming fiscal year [Source](evidence:{}).",
+                self.evidence_id
+            ))
+        }
+    }
+
+    fn start_model_tags_stub() -> (String, thread::JoinHandle<()>) {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = listener.local_addr().unwrap();
+        let handle = thread::spawn(move || {
+            if let Ok((mut stream, _)) = listener.accept() {
+                let mut request = [0_u8; 1024];
+                let _ = stream.read(&mut request);
+                let body = r#"{"models":[{"name":"test-model:latest"}]}"#;
+                let response = format!(
+                    "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
+                    body.len(), body
+                );
+                let _ = stream.write_all(response.as_bytes());
+            }
+        });
+        (format!("http://{}", address), handle)
+    }
+
+    #[tokio::test]
+    async fn registered_ipc_command_generates_and_reloads_linked_draft() {
+        let _env_guard = ENV_LOCK.lock().unwrap();
+        let app_data = tempdir().unwrap();
+        let (ollama_url, tags_server) = start_model_tags_stub();
+        std::env::set_var(
+            crate::core::app_paths::APP_DATA_OVERRIDE_ENV,
+            app_data.path(),
+        );
+        std::env::set_var("CIVICNEWS_OLLAMA_BASE_URL", &ollama_url);
+
+        let mut connection = Connection::open_in_memory().unwrap();
+        crate::core::migrations::run_migrations(&mut connection).unwrap();
+        let source_id = crate::core::db::insert_source(
+            &connection,
+            &Source {
+                id: None,
+                name: "City council agenda".to_string(),
+                url: "https://city.example/agenda".to_string(),
+                r#type: "primary_record".to_string(),
+                status: "online".to_string(),
+                tier: "official_record".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        let evidence_id = crate::core::db::insert_evidence_item(
+            &connection,
+            &EvidenceItem {
+                id: None,
+                source_id,
+                url: Some("https://city.example/agenda#grant".to_string()),
+                fetched_at: "2026-07-09T12:00:00Z".to_string(),
+                excerpt:
+                    "The city council approved a street-safety grant for the coming fiscal year."
+                        .to_string(),
+                content_hash: "test-hash".to_string(),
+                entities: "[]".to_string(),
+            },
+        )
+        .unwrap();
+        let lead_id = crate::core::db::insert_lead(
+            &connection,
+            &Lead {
+                id: None,
+                detector_name: "Test detector".to_string(),
+                why: "Council approves a street-safety grant".to_string(),
+                confidence: "high".to_string(),
+                risk_level: "low".to_string(),
+                confirmation_checklist: "[]".to_string(),
+                from_scan_lead_id: None,
+                story_type: Some("story".to_string()),
+                disposition: Some("ready_to_draft".to_string()),
+                novelty_score: Some(5),
+                novelty_reason: Some("Current approval".to_string()),
+                recurrence_count: Some(0),
+                recurrence_note: None,
+                created_at: "2026-07-09T12:00:00Z".to_string(),
+            },
+            &[evidence_id],
+        )
+        .unwrap();
+        connection
+            .execute(
+                "INSERT INTO settings (key, value) VALUES ('model.selected', 'test-model:latest')",
+                [],
+            )
+            .unwrap();
+
+        let db = Arc::new(Mutex::new(connection));
+        let fake_llm = Arc::new(FakeDraftLlm {
+            evidence_id,
+            calls: Mutex::new(Vec::new()),
+        });
+        let app = tauri::test::mock_builder()
+            .manage(db.clone())
+            .manage(fake_llm.clone() as Arc<dyn LlmClient>)
+            .invoke_handler(tauri::generate_handler![generate_and_save_draft])
+            .build(tauri::test::mock_context(tauri::test::noop_assets()))
+            .unwrap();
+        let webview = tauri::WebviewWindowBuilder::new(&app, "main", Default::default())
+            .build()
+            .unwrap();
+        let bundled_origin = if cfg!(windows) {
+            "http://tauri.localhost"
+        } else {
+            "tauri://localhost"
+        };
+        let request = tauri::webview::InvokeRequest {
+            cmd: "generate_and_save_draft".into(),
+            callback: tauri::ipc::CallbackFn(0),
+            error: tauri::ipc::CallbackFn(1),
+            url: bundled_origin.parse().unwrap(),
+            body: tauri::ipc::InvokeBody::Json(serde_json::json!({
+                "leadId": lead_id,
+                "format": "brief",
+            })),
+            headers: Default::default(),
+            invoke_key: tauri::test::INVOKE_KEY.to_string(),
+        };
+
+        let response = tauri::test::get_ipc_response(&webview, request).unwrap();
+        let draft: Draft = response.deserialize().unwrap();
+        assert_eq!(draft.lead_id, Some(lead_id));
+        assert_eq!(draft.status, "draft_generated");
+        assert!(draft.content.contains(&format!("evidence:{evidence_id}")));
+
+        let persisted = crate::core::db::get_draft(&db.lock().unwrap(), draft.id.unwrap())
+            .unwrap()
+            .unwrap();
+        assert_eq!(persisted.content, draft.content);
+        assert_eq!(persisted.title, "Council approves a street-safety grant");
+        let calls = fake_llm.calls.lock().unwrap();
+        assert_eq!(calls.len(), 1);
+        assert_eq!(calls[0].0, "test-model:latest");
+        assert!(calls[0]
+            .1
+            .contains(&format!("Evidence Citation ID: {evidence_id}")));
+
+        drop(webview);
+        drop(app);
+        std::env::remove_var(crate::core::app_paths::APP_DATA_OVERRIDE_ENV);
+        std::env::remove_var("CIVICNEWS_OLLAMA_BASE_URL");
+        tags_server.join().unwrap();
+    }
 }
 
 #[tauri::command]

@@ -33,7 +33,7 @@ jobs:
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: 1.94.0
-          components: rustfmt, clippy
+          components: rustfmt, clippy, llvm-tools-preview
 
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
@@ -55,6 +55,17 @@ jobs:
         working-directory: ./src-tauri
         run: cargo test --all --locked
 
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-llvm-cov
+
+      - name: Rust coverage gate
+        working-directory: ./src-tauri
+        run: |
+          mkdir -p ../coverage
+          cargo llvm-cov --lib --lcov --output-path ../coverage/rust.lcov --fail-under-regions 68 --fail-under-functions 60 --fail-under-lines 72
+
       - name: Setup Node.js for tests
         uses: actions/setup-node@v4
         with:
@@ -63,8 +74,14 @@ jobs:
 
       - run: npm ci
 
-      - name: Vitest
-        run: npm test
+      - name: Vitest coverage gate
+        run: npm run test:coverage
+
+      - name: Preserve coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-coverage-reports
+          path: coverage/
 
   hosted-release-evidence:
     needs: test
