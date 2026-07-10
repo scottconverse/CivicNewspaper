@@ -19,10 +19,13 @@ import sys
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RELEASE_TAG = "v0.3.2"
-PRODUCT_COMMIT = "ba49af4d69d2c4d6d88bfd148490494f243cc9d7"
-INSTALLER_SHA256 = "1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5"
-INSTALLER_SIZE = "5250809"
-STALE_RELEASE_VALUES = (
+LOCAL_CANDIDATE_COMMIT = "bfa37f87dda8aa61c98da4bd7bc2be907581a416"
+LOCAL_CANDIDATE_SHA256 = "636D87041396603456634E6B47AE1071E8726D8D05C0FC08768D5B9E92A71C83"
+LOCAL_CANDIDATE_SIZE = "5274104"
+PUBLISHED_COMMIT = "ba49af4d69d2c4d6d88bfd148490494f243cc9d7"
+PUBLISHED_SHA256 = "1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5"
+PUBLISHED_SIZE = "5250809"
+STALE_PUBLISHED_VALUES = (
     "35e6cf0f4a8f01d74ef79247feaaadbd34dbb3da",
     "8204BB4210DD284518D114C57A3089BAC11D7B0EC8E0F83D8D61928D44FEB6E0",
     "5240548",
@@ -60,10 +63,10 @@ def check_release_body(failures: list[str]) -> None:
         failures.append(f"GitHub release body check failed: {result.stderr.strip() or result.stdout.strip()}")
         return
     body = result.stdout
-    for expected in (PRODUCT_COMMIT, INSTALLER_SHA256, INSTALLER_SIZE):
+    for expected in (PUBLISHED_COMMIT, PUBLISHED_SHA256, PUBLISHED_SIZE):
         if expected.lower() not in body.lower():
             failures.append(f"GitHub release body missing `{expected}`")
-    for stale in STALE_RELEASE_VALUES:
+    for stale in STALE_PUBLISHED_VALUES:
         if stale.lower() in body.lower():
             failures.append(f"GitHub release body contains stale `{stale}`")
 
@@ -72,9 +75,10 @@ def main() -> int:
     failures: list[str] = []
 
     require("README.md", "Local isolated-profile smoke", failures)
-    require("README.md", "queued for final cleanroom recheck", failures)
+    require("README.md", "The GitHub release asset has not yet been replaced", failures)
     require("README.md", "docs/release-evidence/v0.3.2.json", failures)
     require("README.md", "v0.3.2 is a Windows public beta", failures)
+    forbid("README.md", "queued for final cleanroom recheck", failures)
     forbid("README.md", "true clean-machine or remote tester run is still required", failures)
 
     require("CONTRIBUTING.md", "app-managed local AI setup", failures)
@@ -86,12 +90,19 @@ def main() -> int:
         require(path, "backlog/proof-needed", failures)
         require(path, "macOS and Linux", failures)
 
-    require("docs/install.md", "passed final remote cleanroom testing", failures)
+    require("docs/install.md", "passed dependency-absent onboarding", failures)
+    require("docs/install.md", "GitHub release asset has not yet been replaced", failures)
     require("docs/install.md", "https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2", failures)
     require("docs/release-readiness.md", "Current v0.3.2 evidence", failures)
     require("docs/release-readiness.md", "docs/release-evidence/v0.3.2.json", failures)
-    require("docs/release-evidence/v0.3.2.json", PRODUCT_COMMIT, failures)
-    require("docs/release-evidence/v0.3.2.json", INSTALLER_SHA256, failures)
+    require("docs/release-evidence/v0.3.2.json", LOCAL_CANDIDATE_COMMIT, failures)
+    require("docs/release-evidence/v0.3.2.json", LOCAL_CANDIDATE_SHA256, failures)
+    require("docs/release-evidence/v0.3.2.json", LOCAL_CANDIDATE_SIZE, failures)
+    require("docs/release-evidence/v0.3.2-local-isolated-package-report.md", LOCAL_CANDIDATE_COMMIT, failures)
+    require("docs/index.html", PUBLISHED_COMMIT, failures)
+    require("docs/index.html", PUBLISHED_SHA256, failures)
+    require("docs/index.html", PUBLISHED_SIZE, failures)
+    require("docs/index.html", "has not been uploaded", failures)
     check_release_body(failures)
 
     require("docs/publishing-connectors.md", "anonymous here.now preview publishing is the tested default fast path", failures)

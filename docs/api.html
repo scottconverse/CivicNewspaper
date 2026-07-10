@@ -29,7 +29,7 @@
 <p>CivicNewspaper&#x27;s Rust backend runs an Axum HTTP server bound strictly to <code>127.0.0.1:12053</code>. It exists so local clients, including the Chromium browser extension and local assistant tools, can pair with the desktop app and exchange data over a controlled local channel.</p>
 <p>This file is the route contract. If <code>src-tauri/src/core/server.rs</code> or <code>src-tauri/src/core/auth.rs</code> changes, update this document.</p>
 <h2 id="trust-boundary">Trust Boundary</h2>
-<p>The trust boundary is the local user account, not the process. Any process running as the same OS user can reach <code>127.0.0.1:12053</code>. After pairing, the bearer token is the authorization gate. See <a href="../SECURITY.html">SECURITY.md</a> for the full threat model.</p>
+<p>The trust boundary is the local user account, not the process. Any process running as the same OS user can reach <code>127.0.0.1:12053</code>. After pairing, the bearer token is the authorization gate. See <a href="https://github.com/scottconverse/CivicNewspaper/blob/main/SECURITY.md">SECURITY.md</a> for the full threat model.</p>
 <h2 id="base-url">Base URL</h2>
 <pre><code>http://127.0.0.1:12053</code></pre>
 <p>The server binds <code>127.0.0.1</code> only. It is not intended to be reachable from another machine.</p>

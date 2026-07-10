@@ -6,7 +6,7 @@ This file is the route contract. If `src-tauri/src/core/server.rs` or `src-tauri
 
 ## Trust Boundary
 
-The trust boundary is the local user account, not the process. Any process running as the same OS user can reach `127.0.0.1:12053`. After pairing, the bearer token is the authorization gate. See [SECURITY.md](../SECURITY.md) for the full threat model.
+The trust boundary is the local user account, not the process. Any process running as the same OS user can reach `127.0.0.1:12053`. After pairing, the bearer token is the authorization gate. See [SECURITY.md](https://github.com/scottconverse/CivicNewspaper/blob/main/SECURITY.md) for the full threat model.
 
 ## Base URL
 

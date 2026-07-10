@@ -19,6 +19,7 @@ DOCS = ROOT / "docs"
 
 PUBLIC_DOCS = [
     "api.md",
+    "release-evidence/v0.3.2-local-isolated-package-report.md",
     "user_manual.md",
     "install.md",
     "release-readiness.md",
@@ -168,6 +169,8 @@ def render_page(source: Path) -> str:
     markdown = source.read_text(encoding="utf-8")
     title = title_from_markdown(markdown, source.stem.replace("-", " ").title())
     body = render_markdown(markdown)
+    page_depth = len(source.relative_to(DOCS).parent.parts)
+    page_prefix = "../" * page_depth
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -175,20 +178,20 @@ def render_page(source: Path) -> str:
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{html.escape(title)} | The Civic Desk</title>
     <meta name="description" content="{html.escape(title)} for The Civic Desk public beta.">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="doc-page.css">
+    <link rel="stylesheet" href="{page_prefix}style.css">
+    <link rel="stylesheet" href="{page_prefix}doc-page.css">
 </head>
 <body class="doc-page">
     <nav aria-label="Site navigation">
         <div class="nav-container">
-            <a class="logo" href="index.html#top" aria-label="The Civic Desk home">
+            <a class="logo" href="{page_prefix}index.html#top" aria-label="The Civic Desk home">
                 <span>The Civic Desk</span>
             </a>
             <div class="nav-links">
-                <a href="index.html#downloads">Downloads</a>
-                <a href="user_manual.html">Manual</a>
-                <a href="install.html">Install</a>
-                <a href="troubleshooting.html">Troubleshooting</a>
+                <a href="{page_prefix}index.html#downloads">Downloads</a>
+                <a href="{page_prefix}user_manual.html">Manual</a>
+                <a href="{page_prefix}install.html">Install</a>
+                <a href="{page_prefix}troubleshooting.html">Troubleshooting</a>
                 <a class="nav-btn-primary" href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
             </div>
         </div>
@@ -201,13 +204,13 @@ def render_page(source: Path) -> str:
     <footer>
         <div class="footer-container">
             <div>
-                <a class="logo" href="index.html#top"><span>The Civic Desk</span></a>
+                <a class="logo" href="{page_prefix}index.html#top"><span>The Civic Desk</span></a>
                 <p>Open-source local newsroom software. Repository name: CivicNewspaper. Installed app name: The Civic Desk.</p>
             </div>
             <div class="footer-links">
-                <a href="user_manual.html">Manual</a>
-                <a href="troubleshooting.html">Troubleshooting</a>
-                <a href="architecture.html">Architecture</a>
+                <a href="{page_prefix}user_manual.html">Manual</a>
+                <a href="{page_prefix}troubleshooting.html">Troubleshooting</a>
+                <a href="{page_prefix}architecture.html">Architecture</a>
                 <a href="https://github.com/scottconverse/CivicNewspaper" target="_blank" rel="noopener noreferrer">GitHub</a>
             </div>
         </div>

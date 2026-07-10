@@ -53,7 +53,9 @@
     background: #efe7d8;
     border-radius: 4px;
     color: #203935;
+    overflow-wrap: anywhere;
     padding: 0.08rem 0.28rem;
+    word-break: break-word;
 }
 
 .doc-content pre {
@@ -67,7 +69,10 @@
 .doc-content pre code {
     background: transparent;
     color: inherit;
+    overflow-wrap: normal;
     padding: 0;
+    white-space: pre;
+    word-break: normal;
 }
 
 .doc-content blockquote {

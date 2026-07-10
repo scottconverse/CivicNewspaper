@@ -76,18 +76,18 @@ This prevents a public unsigned installer from appearing before checksum and loc
 
 ## Current v0.3.2 evidence
 
-The Windows public-beta v0.3.2 release line has cleanroom proof at commit `af4a12b0689dd8de64ce6af707b0c305a9cdaba0`. The current rebuilt release-candidate installer was built from commit `ba49af4d69d2c4d6d88bfd148490494f243cc9d7` after AI setup visibility, installed-app onboarding reachability, legacy malformed-draft quarantine, encoded calendar-rollup story-quality repairs, onboarding identity reconciliation before Daily Scan, unsupported Daily Scan lead downgrading, full state-name discovery normalization, weak scan lead draft gating, reader-facing brief format fallback, official-record brief promotion, source-quality cleanup, source-backed Daily Scan brief promotion, dependency advisory update, durable draft persistence, linked-evidence Brief fallback, publish-preflight editor override, honest offline-AI drafting copy, and release-body provenance checking. It is queued for final cleanroom recheck.
+The local Windows public-beta candidate was built from commit `bfa37f87dda8aa61c98da4bd7bc2be907581a416` and passed the artifact-bound isolated installed-package gate. The exact package completed dependency-absent onboarding, zero-source guidance, a live `phi4-mini:latest` Daily Scan, linked-evidence draft generation, persistence, and Workbench reload. This is beta-candidate proof on the recorded local gate machine; it is not signed, cross-platform, or credentialed-provider stable-release proof. The GitHub release asset is still the older `ba49af4d69d2c4d6d88bfd148490494f243cc9d7` build and has not been replaced in this work unit.
 
 - Hosted evidence file: `docs/release-evidence/v0.3.2.json`
-- RC receipt: pending current `ba49af4d69d2c4d6d88bfd148490494f243cc9d7` receipt
-- Strict release smoke: pending current `ba49af4d69d2c4d6d88bfd148490494f243cc9d7` receipt
-- Dependency audit: `.agent-runs/dependency-audit-20260709-093244.json`
-- Windows installer smoke: pending current `ba49af4d69d2c4d6d88bfd148490494f243cc9d7` receipt
-- Packaged first-run walkthrough: pending current `ba49af4d69d2c4d6d88bfd148490494f243cc9d7` receipt
-- Final cleanroom report: pending final cleanroom rerun for commit `ba49af4d69d2c4d6d88bfd148490494f243cc9d7`
-- Cleanroom public URL: pending final cleanroom rerun
-- Current rebuilt release-candidate installer SHA256: `1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5`
-- Current rebuilt release-candidate installer size: `5250809` bytes
+- RC receipt: `.agent-runs/release-candidate-20260709-182734/release-candidate-receipt.json`, SHA256 `12C80AB694F484BB1176CF1F37590E3BEDD853985D020997BF47BCAEDBBCBE75`
+- Strict release smoke: `.agent-runs/release-smoke-20260709-181659/release-smoke-receipt.json`, SHA256 `213887F59B4907A46B770987C5468A75318F1286A67B0FA60FE8BF238AAF1F8B`
+- Dependency audit: `.agent-runs/beta-rc-bfa37f8-dependency-audit/dependency-audit-20260709-182436.json`, SHA256 `F2DC84A23551F1638285758E20EBC5927CE4EC2BFEBE21721997657C7A18D30C`
+- Windows installer smoke: `.agent-runs/beta-rc-bfa37f8-windows-installer-smoke/windows-installer-smoke-receipt.json`, SHA256 `B765AC71F86B8A3128B1F083CAE01762CECAB07C7EF0BF2BD99D31EBD59C7DFA`
+- Packaged first-run/core-flow walkthrough: `.agent-runs/release-smoke-20260709-181659/packaged-walkthrough/packaged-first-run-walkthrough-receipt.json`, SHA256 `EE82560ED42AD4530C23A7A1D57E55397D345F95060D4819BF77B35B8F271C99`
+- Local isolated-package report: `docs/release-evidence/v0.3.2-local-isolated-package-report.md`, SHA256 `DAAAB19F700E5C8D4BB7F68AFF2E79D3B2EEA4A0000B94A51497E7F526B4B9F4`
+- Evidence ZIP: `.agent-runs/release-candidate-20260709-182734.zip`, SHA256 `0405CA6CFA7843C6E6B643AB53973F7BE846EE13D488F393AF506F6DE16540CD`
+- Tested release-candidate installer SHA256: `636D87041396603456634E6B47AE1071E8726D8D05C0FC08768D5B9E92A71C83`
+- Tested release-candidate installer size: `5274104` bytes
 
 This does not publish, merge, or tag the release by itself. Scott must still approve the product push, tag, hosted GitHub Release, and GitHub Pages update.
 

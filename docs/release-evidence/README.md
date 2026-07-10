@@ -9,7 +9,7 @@ Before pushing a `vX.Y.Z` tag, add or update `docs/release-evidence/vX.Y.Z.json`
 - dependency audit passed;
 - Windows installer smoke passed against the packaged installer;
 - packaged first-run walkthrough passed;
-- final cleanroom tester report passed;
+- an artifact-bound local isolated-package or external cleanroom report passed;
 - the installer SHA256 used in cleanroom matches the installer SHA256 from local installer smoke.
 - the hosted release asset hash in `SHA256SUMS.txt` matches that same cleanroom-tested installer SHA256.
 

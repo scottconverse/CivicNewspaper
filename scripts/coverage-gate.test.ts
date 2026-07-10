@@ -60,4 +60,38 @@ describe("release coverage gate", () => {
     expect(bakeoff).toContain("results.some((result) => !result.ok)");
     expect(bakeoff).toContain("process.exitCode = 1");
   });
+
+  test("keeps the proved local candidate distinct from the published asset", () => {
+    const policy = read("scripts/policy/check_release_docs_consistency.py");
+    const landing = read("docs/index.html");
+
+    expect(policy).toContain("LOCAL_CANDIDATE_COMMIT");
+    expect(policy).toContain("PUBLISHED_COMMIT");
+    expect(landing).toContain("has not been uploaded");
+    expect(landing).toContain("do not use its hash for the current download");
+  });
+
+  test("renders the nested evidence report with publish-root navigation", () => {
+    const renderer = read("scripts/render_public_docs.py");
+    const reportPage = read("docs/release-evidence/v0.3.2-local-isolated-package-report.html");
+    const docCss = read("docs/doc-page.css");
+    const siteCss = read("docs/style.css");
+
+    expect(renderer).toContain('"release-evidence/v0.3.2-local-isolated-package-report.md"');
+    expect(renderer).toContain('page_prefix = "../" *');
+    expect(reportPage).toContain('href="../style.css"');
+    expect(reportPage).toContain('href="../index.html#top"');
+    expect(docCss).toContain("overflow-wrap: anywhere");
+    expect(siteCss).toContain(".download-card code");
+  });
+
+  test("keeps the direct desktop IPC draft regression in the Rust suite", () => {
+    const commands = read("src-tauri/src/tauri_cmds.rs");
+
+    expect(commands).toContain("registered_ipc_command_generates_and_reloads_linked_draft");
+    expect(commands).toContain("tauri::generate_handler![generate_and_save_draft]");
+    expect(commands).toContain("tauri::test::get_ipc_response");
+    expect(commands).toContain("Arc<dyn LlmClient>");
+    expect(commands).toContain("get_draft(&db.lock().unwrap(), draft.id.unwrap())");
+  });
 });
