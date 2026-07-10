@@ -66,8 +66,8 @@ You will choose or enter:
 - City.
 - State.
 - Local AI setup.
-- Publication folder, where finished HTML sites and ZIP review packages are saved.
-- Backup folder, where database backup copies are saved.
+- Publication folder under The Civic Desk app-data folder or your Downloads folder, where finished HTML sites and ZIP review packages are saved.
+- Backup folder and file path under The Civic Desk app-data folder or your Downloads folder.
 
 Use real names if you intend to publish publicly. The app should not invent your copyright line, business model, ad policy, AI disclosure, or editorial policy. Those are your decisions.
 
@@ -418,7 +418,7 @@ The app should not invent these for you. If the output says "we run no ads" or "
 
 Use backups before major imports, big scans, or release work.
 
-Create a backup from the app's backup/system area. Store it somewhere you control, such as an external drive or private cloud folder.
+Create a backup from the app's backup/system area. For write safety, the app creates backups only under its app-data folder or your Downloads folder. After creation, you can use File Explorer to copy the backup to an external drive or private cloud folder you control.
 
 Restore replaces the current local database with the backup. Treat restore as a serious action. If you are unsure, make a fresh backup first.
 

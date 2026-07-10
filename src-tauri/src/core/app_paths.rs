@@ -66,11 +66,69 @@ pub fn is_standard_site_path(app_data: &std::path::Path, path: &std::path::Path)
         .is_ok_and(|ancestor| ancestor.starts_with(canonical_root))
 }
 
+pub fn validate_write_destination(
+    allowed_roots: &[PathBuf],
+    requested: &Path,
+) -> Result<PathBuf, String> {
+    if !requested.is_absolute()
+        || requested
+            .components()
+            .any(|component| matches!(component, std::path::Component::ParentDir))
+    {
+        return Err(
+            "Write destination must be an absolute path inside an allowed directory.".to_string(),
+        );
+    }
+
+    let canonical_roots = allowed_roots
+        .iter()
+        .map(|root| {
+            root.canonicalize()
+                .map_err(|e| format!("Invalid allowed directory `{}`: {e}", root.display()))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let existing_ancestor = requested
+        .ancestors()
+        .find(|ancestor| ancestor.exists())
+        .ok_or_else(|| "Write destination has no existing parent directory.".to_string())?;
+    let canonical_ancestor = existing_ancestor
+        .canonicalize()
+        .map_err(|e| format!("Invalid write destination: {e}"))?;
+
+    if !canonical_roots
+        .iter()
+        .any(|root| canonical_ancestor.starts_with(root))
+    {
+        return Err("Write destination is outside allowed directories.".to_string());
+    }
+
+    let suffix = requested
+        .strip_prefix(existing_ancestor)
+        .map_err(|_| "Invalid write destination.".to_string())?;
+    Ok(canonical_ancestor.join(suffix))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::sync::{LazyLock, Mutex};
     use tempfile::tempdir;
+
+    #[cfg(unix)]
+    fn symlink_dir(target: &Path, link: &Path) {
+        std::os::unix::fs::symlink(target, link).unwrap();
+    }
+
+    #[cfg(windows)]
+    fn symlink_dir(target: &Path, link: &Path) {
+        let status = std::process::Command::new("cmd")
+            .args(["/d", "/c", "mklink", "/J"])
+            .arg(link)
+            .arg(target)
+            .status()
+            .unwrap();
+        assert!(status.success(), "failed to create test junction");
+    }
 
     static ENV_LOCK: LazyLock<Mutex<()>> = LazyLock::new(|| Mutex::new(()));
 
@@ -135,5 +193,71 @@ mod tests {
             &app_data,
             &app_data.join("sites").join("..").join("backups")
         ));
+    }
+
+    #[test]
+    fn write_destination_accepts_allowed_roots_and_nonexistent_children() {
+        let root = tempdir().unwrap();
+        let app_data = root.path().join("app-data");
+        let downloads = root.path().join("downloads");
+        std::fs::create_dir_all(&app_data).unwrap();
+        std::fs::create_dir_all(&downloads).unwrap();
+
+        let file = downloads.join("exports").join("subscribers.csv");
+        let directory = app_data.join("sites").join("next-issue");
+
+        assert_eq!(
+            validate_write_destination(&[app_data.clone(), downloads.clone()], &file).unwrap(),
+            downloads
+                .canonicalize()
+                .unwrap()
+                .join("exports")
+                .join("subscribers.csv")
+        );
+        assert_eq!(
+            validate_write_destination(&[app_data, downloads], &directory).unwrap(),
+            directory
+                .ancestors()
+                .find(|ancestor| ancestor.exists())
+                .unwrap()
+                .canonicalize()
+                .unwrap()
+                .join("sites")
+                .join("next-issue")
+        );
+    }
+
+    #[test]
+    fn write_destination_rejects_sibling_and_traversal_escapes() {
+        let root = tempdir().unwrap();
+        let allowed = root.path().join("downloads");
+        let sibling = root.path().join("downloads-archive");
+        std::fs::create_dir_all(&allowed).unwrap();
+        std::fs::create_dir_all(&sibling).unwrap();
+
+        assert!(validate_write_destination(
+            std::slice::from_ref(&allowed),
+            &sibling.join("export.csv")
+        )
+        .is_err());
+        assert!(validate_write_destination(
+            std::slice::from_ref(&allowed),
+            &allowed.join("..").join("outside").join("export.csv")
+        )
+        .is_err());
+        assert!(validate_write_destination(&[allowed], Path::new("relative.csv")).is_err());
+    }
+
+    #[test]
+    fn write_destination_rejects_symlink_escape() {
+        let root = tempdir().unwrap();
+        let allowed = root.path().join("downloads");
+        let outside = root.path().join("outside");
+        std::fs::create_dir_all(&allowed).unwrap();
+        std::fs::create_dir_all(&outside).unwrap();
+        let escape = allowed.join("escape");
+        symlink_dir(&outside, &escape);
+
+        assert!(validate_write_destination(&[allowed], &escape.join("export.csv")).is_err());
     }
 }

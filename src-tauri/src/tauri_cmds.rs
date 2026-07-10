@@ -2683,6 +2683,7 @@ pub fn publish(
     app: tauri::AppHandle,
     output_dir: String,
 ) -> Result<compiler::CompileStaticSiteResult, String> {
+    let output_dir = validate_app_write_destination(&app, &output_dir)?;
     let profile_json = {
         let path = get_config_path(&app)?;
         if path.exists() {
@@ -2694,7 +2695,8 @@ pub fn publish(
 
     let conn = db.lock().map_err(|_| "Failed to lock database")?;
     ensure_publishable_story_exists(&conn)?;
-    compiler::compile_static_site(&conn, &output_dir, &profile_json).map_err(|e| e.to_string())
+    compiler::compile_static_site(&conn, &output_dir.to_string_lossy(), &profile_json)
+        .map_err(|e| e.to_string())
 }
 
 fn ensure_publishable_story_exists(conn: &rusqlite::Connection) -> Result<(), String> {
@@ -2719,15 +2721,17 @@ fn ensure_publishable_story_exists(conn: &rusqlite::Connection) -> Result<(), St
 #[tauri::command]
 pub fn record_publish_destination(
     db: tauri::State<'_, DbConn>,
+    app: tauri::AppHandle,
     output_dir: String,
     provider: String,
     published_url: String,
     deployment_id: Option<String>,
 ) -> Result<compiler::CompileStaticSiteResult, String> {
+    let output_dir = validate_app_write_destination(&app, &output_dir)?;
     let provider = provider.trim();
     let _connector = publisher::publisher_for(provider)?;
     let normalized_url = publisher::validate_public_url(&published_url)?;
-    let output_path = publisher::validate_publish_artifacts(&output_dir)?;
+    let output_path = publisher::validate_publish_artifacts(&output_dir.to_string_lossy())?;
 
     let result = compiler::record_publish_destination_files(
         &output_path,
@@ -2853,6 +2857,7 @@ pub async fn test_publisher_connection(
 #[tauri::command]
 pub async fn publish_with_connector(
     db: tauri::State<'_, DbConn>,
+    app: tauri::AppHandle,
     output_dir: String,
     provider: String,
     published_url: Option<String>,
@@ -2881,6 +2886,7 @@ pub async fn publish_with_connector(
     let published = connector.publish_folder(&config, &request).await?;
     record_publish_destination(
         db,
+        app,
         output_dir,
         published.provider,
         published.published_url,
@@ -3043,7 +3049,12 @@ pub fn import_subscribers_csv(db: tauri::State<'_, DbConn>, path: String) -> Res
 }
 
 #[tauri::command]
-pub fn export_subscribers_csv(db: tauri::State<'_, DbConn>, path: String) -> Result<(), String> {
+pub fn export_subscribers_csv(
+    db: tauri::State<'_, DbConn>,
+    app: tauri::AppHandle,
+    path: String,
+) -> Result<(), String> {
+    let path = validate_app_write_destination(&app, &path)?;
     let conn = db.lock().map_err(|_| "Failed to lock database")?;
     let subscribers = db::list_subscribers(&conn).map_err(|e| e.to_string())?;
     let mut out = String::from("email,name,status\n");
@@ -3055,7 +3066,7 @@ pub fn export_subscribers_csv(db: tauri::State<'_, DbConn>, path: String) -> Res
             csv_escape(&subscriber.status)
         ));
     }
-    std::fs::write(path.trim(), out).map_err(|e| e.to_string())
+    std::fs::write(path, out).map_err(|e| e.to_string())
 }
 
 fn publish_artifact_path(
@@ -3087,9 +3098,11 @@ pub fn read_publish_artifact(output_dir: String, relative_path: String) -> Resul
 #[tauri::command]
 pub fn export_issue_email(
     db: tauri::State<'_, DbConn>,
+    app: tauri::AppHandle,
     output_dir: String,
     path: String,
 ) -> Result<(), String> {
+    let path = validate_app_write_destination(&app, &path)?;
     let newsletter_path = publish_artifact_path(&output_dir, "newsletter.md")?;
     let body = std::fs::read_to_string(newsletter_path).map_err(|e| e.to_string())?;
     let conn = db.lock().map_err(|_| "Failed to lock database")?;
@@ -3102,7 +3115,7 @@ pub fn export_issue_email(
         "Subject: Your Civic Desk issue is ready\nPreheader: {} subscriber(s) on the local list\n\n{}",
         active_count, body
     );
-    std::fs::write(path.trim(), subject).map_err(|e| e.to_string())
+    std::fs::write(path, subject).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -3123,9 +3136,14 @@ pub fn register_correction(
 }
 
 #[tauri::command]
-pub fn backup_save(db: tauri::State<'_, DbConn>, dest_path: String) -> Result<(), String> {
+pub fn backup_save(
+    db: tauri::State<'_, DbConn>,
+    app: tauri::AppHandle,
+    dest_path: String,
+) -> Result<(), String> {
+    let dest_path = validate_app_write_destination(&app, &dest_path)?;
     let conn = db.lock().map_err(|_| "Failed to lock database")?;
-    backups::save_backup(&conn, &dest_path).map_err(|e| e.to_string())
+    backups::save_backup(&conn, &dest_path.to_string_lossy()).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -3380,28 +3398,24 @@ pub fn validate_export_path(
     download_dir: std::path::PathBuf,
     path: &str,
 ) -> Result<std::path::PathBuf, String> {
-    let requested = std::path::Path::new(path);
-    let parent = requested
-        .parent()
-        .ok_or_else(|| "Invalid path".to_string())?;
+    crate::core::app_paths::validate_write_destination(
+        &[app_data_dir, download_dir],
+        std::path::Path::new(path),
+    )
+    .map_err(|_| "Path is outside allowed directories".to_string())
+}
 
-    let canonical_parent =
-        std::fs::canonicalize(parent).map_err(|e| format!("Invalid path: {}", e))?;
-
-    let canonical_app_data = std::fs::canonicalize(&app_data_dir).unwrap_or(app_data_dir);
-    let canonical_download = std::fs::canonicalize(&download_dir).unwrap_or(download_dir);
-
-    if canonical_parent.starts_with(&canonical_app_data)
-        || canonical_parent.starts_with(&canonical_download)
-    {
-        Ok(canonical_parent.join(
-            requested
-                .file_name()
-                .ok_or_else(|| "No file name".to_string())?,
-        ))
-    } else {
-        Err("Path is outside allowed directories".to_string())
-    }
+fn validate_app_write_destination(
+    app: &tauri::AppHandle,
+    requested: &str,
+) -> Result<std::path::PathBuf, String> {
+    let app_data = crate::core::app_paths::app_data_dir(app)?;
+    let downloads = app.path().download_dir().map_err(|e| e.to_string())?;
+    std::fs::create_dir_all(&downloads).map_err(|e| e.to_string())?;
+    crate::core::app_paths::validate_write_destination(
+        &[app_data, downloads],
+        std::path::Path::new(requested.trim()),
+    )
 }
 
 pub async fn export_diagnostics_inner(
