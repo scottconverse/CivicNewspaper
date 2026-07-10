@@ -1,12 +1,13 @@
 # Next-Codex implementation handoff — v0.3.2 candidate
 
-Copy the prompt below into a new Codex instance after it has cloned this repository and checked out the current `main` branch. The prompt deliberately separates what is proven locally from what is still required before a tag or hosted release.
+Copy the prompt below into a new Codex instance after it has cloned this repository and checked out the current handoff PR branch; use `main` only after this PR has merged. The prompt deliberately separates what is proven locally from what is still required before a tag or hosted release.
 
 ```text
 You are taking over CivicNewspaper, a Windows-focused Tauri 2 + React/TypeScript local-newsroom application.
 
 Repository: https://github.com/scottconverse/CivicNewspaper
 Working directory after clone: <your-clone>/civicnewspaper
+Until PR #32 is merged, check out `agent/v032-candidate-handoff` after fetching it. If the PR has merged, use current `origin/main` instead.
 Current product line: v0.3.2 Windows public beta. Do NOT create or move a Git tag, publish or replace a GitHub Release asset, trigger a GitHub Pages deployment, or treat the current local candidate as the hosted download unless the owner explicitly asks.
 
 First, orient to the actual checkout rather than this note:
