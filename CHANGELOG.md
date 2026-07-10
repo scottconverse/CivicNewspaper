@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Updated release-facing docs to match the v0.3.2 Windows-only public-beta installer scope.
 
 ### Fixed
+- Restored Windows Rust test execution by activating Common Controls v6 for test harnesses, used the platform-correct bundled IPC origin, and retired historical v0.2 phase scope locks from evergreen CI in favor of current executable tests and coverage gates.
 - Prevented local models from copying facts out of the aggregator prompt's JSON example into unrelated evidence batches, and made any failed model-bakeoff case fail the command.
 - Replaced coordinate/keystroke packaged walkthrough automation with accessible-name WebView2 automation that proves dependency-absent onboarding, zero-source guidance, live-model Daily Scan, durable draft generation, and Workbench reload against the installed app.
 - Replaced textual site-root prefix checks with component-aware canonical containment and traversal/sibling regression coverage.

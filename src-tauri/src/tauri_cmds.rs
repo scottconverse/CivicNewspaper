@@ -2583,11 +2583,16 @@ mod generate_and_save_draft_ipc_tests {
         let webview = tauri::WebviewWindowBuilder::new(&app, "main", Default::default())
             .build()
             .unwrap();
+        let bundled_origin = if cfg!(windows) {
+            "http://tauri.localhost"
+        } else {
+            "tauri://localhost"
+        };
         let request = tauri::webview::InvokeRequest {
             cmd: "generate_and_save_draft".into(),
             callback: tauri::ipc::CallbackFn(0),
             error: tauri::ipc::CallbackFn(1),
-            url: "tauri://localhost".parse().unwrap(),
+            url: bundled_origin.parse().unwrap(),
             body: tauri::ipc::InvokeBody::Json(serde_json::json!({
                 "leadId": lead_id,
                 "format": "brief",

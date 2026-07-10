@@ -211,22 +211,12 @@ jobs:
       - name: Vitest
         run: npm test
       - run: npm run build
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: 1.94.0
-          components: rustfmt, clippy
-      - name: Fetch Ollama binaries
-        run: bash scripts/fetch-ollama-binaries.sh
-      - name: Run Phase 1 DoD verification
-        if: hashFiles('scripts/verify-v0.2-phase-1-dod.sh') != ''
-        run: bash scripts/verify-v0.2-phase-1-dod.sh
-      - name: Run Phase 2 DoD verification
-        if: hashFiles('scripts/verify-v0.2-phase-2-dod.sh') != ''
-        run: bash scripts/verify-v0.2-phase-2-dod.sh
-      - name: Run Phase 3 DoD verification
-        if: hashFiles('scripts/verify-v0.2-phase-3-dod.sh') != ''
-        run: bash scripts/verify-v0.2-phase-3-dod.sh
+      # The v0.2 phase scripts are retained as historical artifacts, not as
+      # evergreen CI policy. Current behavior is protected above by Vitest and
+      # the production build, and in the Rust, clippy, hosted-test, and coverage
+      # jobs by executable tests and measured coverage floors.
+      - name: Repository hygiene
+        run: git diff --check
 
   # Required coverage gate with measured v0.3.2 floors and machine-readable
   # reports. Runs after `rust` so the heavier cargo builds serialize.
