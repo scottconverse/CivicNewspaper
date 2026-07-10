@@ -2587,7 +2587,7 @@ mod generate_and_save_draft_ipc_tests {
             cmd: "generate_and_save_draft".into(),
             callback: tauri::ipc::CallbackFn(0),
             error: tauri::ipc::CallbackFn(1),
-            url: "http://tauri.localhost".parse().unwrap(),
+            url: "tauri://localhost".parse().unwrap(),
             body: tauri::ipc::InvokeBody::Json(serde_json::json!({
                 "leadId": lead_id,
                 "format": "brief",
