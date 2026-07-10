@@ -44,4 +44,6 @@ jobs:
           echo "OK: Onboarding Wizard code and docs are fully synchronized!"
 
       - name: Verify release documentation consistency
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: python scripts/policy/check_release_docs_consistency.py
