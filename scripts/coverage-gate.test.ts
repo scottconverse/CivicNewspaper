@@ -53,4 +53,11 @@ describe("release coverage gate", () => {
     expect(rcEvidence).toContain("does not match the packaged walkthrough receipt");
     expect(rcEvidence).toContain("core-draft-reloaded-in-workbench");
   });
+
+  test("makes any model bakeoff case failure fail the command", () => {
+    const bakeoff = read("scripts/model-bakeoff.mjs");
+
+    expect(bakeoff).toContain("results.some((result) => !result.ok)");
+    expect(bakeoff).toContain("process.exitCode = 1");
+  });
 });

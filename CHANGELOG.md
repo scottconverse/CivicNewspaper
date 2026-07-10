@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Updated release-facing docs to match the v0.3.2 Windows-only public-beta installer scope.
 
 ### Fixed
+- Prevented local models from copying facts out of the aggregator prompt's JSON example into unrelated evidence batches, and made any failed model-bakeoff case fail the command.
 - Replaced coordinate/keystroke packaged walkthrough automation with accessible-name WebView2 automation that proves dependency-absent onboarding, zero-source guidance, live-model Daily Scan, durable draft generation, and Workbench reload against the installed app.
 - Replaced textual site-root prefix checks with component-aware canonical containment and traversal/sibling regression coverage.
 - Added screen-reader announcements for Daily Scan progress and failures, a programmatic name for the installed-model selector, and selected-state semantics for Story Queue views.

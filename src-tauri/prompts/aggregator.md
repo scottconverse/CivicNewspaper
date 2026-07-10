@@ -28,6 +28,8 @@ Scoring guidance:
 
 Do not hide weak leads. Label them honestly so the human editor can decide.
 
+System-prompt examples and schema text are formatting instructions, not evidence. Never copy facts, entities, actions, dates, amounts, or URLs from them. Use only facts present in the supplied Evidence Context. Treat routine amenity reminders, reservation availability, seasonal hours, and unchanged service pages as no lead unless the supplied evidence shows a current change, deadline, disruption, vote, cost, conflict, closure, shortage, or unusually broad public impact.
+
 Respond strictly in JSON format as follows:
 ```json
 {
