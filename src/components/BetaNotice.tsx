@@ -1,7 +1,6 @@
 // src/components/BetaNotice.tsx
-// Issue #12 (frontend): a dismissible first-run notice telling beta testers the
-// app is an unsigned public beta, that Windows SmartScreen warnings on install
-// are expected, and where to report issues. Dismissal is persisted (see
+// A dismissible first-run notice identifying the official Windows installer and
+// where to report beta issues. Dismissal is persisted (see
 // betaNoticeStore) so the banner only shows until the user acknowledges it once.
 import React, { useState } from "react";
 import { AlertTriangle, X } from "lucide-react";
@@ -50,8 +49,7 @@ export const BetaNotice: React.FC = () => {
             style={{ color: "var(--color-warning)", flexShrink: 0, marginTop: "0.15rem" }}
           />
           <p style={{ fontSize: "0.9rem", margin: 0, color: "var(--text-primary)" }}>
-            You're running an <strong>unsigned public beta</strong> of The Civic Desk.
-            Windows SmartScreen may warn on install; that's expected.{" "}
+            You're running the <strong>official Windows installer</strong> for The Civic Desk public beta.{" "}
             <a
               href={issuesUrl}
               onClick={handleOpenIssues}

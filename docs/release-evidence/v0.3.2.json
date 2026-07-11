@@ -43,13 +43,13 @@
     "zip_path": ".agent-runs/release-candidate-20260709-182734.zip",
     "zip_sha256": "0405CA6CFA7843C6E6B643AB53973F7BE846EE13D488F393AF506F6DE16540CD",
     "zip_size": 3669125,
-    "verdict": "PASS: exact installed artifact completed dependency-absent onboarding and the live-model source-to-Workbench path with 0 failed and 0 skipped release-smoke checks. This is local isolated Windows beta-candidate proof, not signed, cross-platform, or credentialed-provider stable-release proof."
+    "verdict": "PASS: exact installed artifact completed dependency-absent onboarding and the live-model source-to-Workbench path with 0 failed and 0 skipped release-smoke checks. This is local isolated Windows beta-candidate proof that predates the current signing rollout; it is not cross-platform or credentialed-provider stable-release proof."
   },
   "release_scope": {
     "windows_public_beta": true,
     "macos_installer": "backlog/proof-needed",
     "linux_installer": "backlog/proof-needed",
-    "unsigned_installer": true,
+    "authenticode_signature_verified": false,
     "scott_approved_public_release": false
   }
 }

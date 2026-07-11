@@ -517,7 +517,7 @@ try {
     notes = @(
       "Windows public beta evidence only.",
       "Mac and Linux installer proof is backlog/proof-needed.",
-      "Unsigned installer status must remain visible in release notes and setup docs."
+      "Authenticode signature verification must be recorded for the release installer."
     )
   }
 

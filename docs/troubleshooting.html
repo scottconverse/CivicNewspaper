@@ -29,13 +29,13 @@
 <p>This page is for public-beta users who are trying to install, set up, scan, draft, or publish and something feels stuck or confusing.</p>
 <p>The Civic Desk is local-first desktop software. That means several things happen on your machine: a local database is created, a local AI runtime may be installed, a model may be downloaded, and the app may compile files into a static website before publishing. Some steps are slow the first time.</p>
 <h2 id="windows-says-the-app-is-unknown">Windows Says The App Is Unknown</h2>
-<p>The public-beta Windows installer is unsigned. Windows SmartScreen may show &quot;Windows protected your PC&quot; or &quot;Unknown publisher.&quot;</p>
+<p>Install only the official Windows release artifact and verify its published checksum before opening it.</p>
 <p>What to do:</p>
 <ol>
 <li>Confirm you downloaded the installer from the official GitHub Releases page.</li>
 <li>Confirm the filename matches the release asset.</li>
 <li>Compare the SHA256 checksum using the install guide.</li>
-<li>If the checksum matches and you are comfortable continuing, click <strong>More info</strong> and then <strong>Run anyway</strong>.</li>
+<li>If the checksum does not match, delete the file and download it again from the official release page.</li>
 </ol>
 <p>What not to assume:</p>
 <ul>
