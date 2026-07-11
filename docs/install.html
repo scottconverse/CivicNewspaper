@@ -27,7 +27,7 @@
         <article class="doc-content">
 <h1 id="installation-guide-and-checksum-verification">Installation Guide And Checksum Verification</h1>
 <p>This guide explains how to install The Civic Desk from the CivicNewspaper releases page and how to verify a downloaded installer.</p>
-<p>The public beta Windows installer is unsigned. Windows SmartScreen may warn you before the app opens. That warning is expected for an unsigned beta and does not by itself mean the file is malicious. It also does not prove the file is safe. Use the checksum steps below to confirm the download matches the release artifact.</p>
+<p>Use the official Windows installer from the release page. Verify the checksum below to confirm the download matches the published release artifact.</p>
 <h2 id="download">Download</h2>
 <p>Open the releases page:</p>
 <p><a href="https://github.com/scottconverse/CivicNewspaper/releases">https://github.com/scottconverse/CivicNewspaper/releases</a></p>
@@ -38,9 +38,8 @@
 <li>Download <code>The.Civic.Desk_0.3.2_x64-setup.exe</code> from the release assets.</li>
 <li>Optional but recommended: verify the SHA256 checksum before opening the installer.</li>
 <li>Double-click the installer.</li>
-<li>If Windows SmartScreen says &quot;Windows protected your PC,&quot; click <strong>More info</strong>.</li>
-<li>Confirm the filename matches the release asset you downloaded. Because the beta is unsigned, Windows may show an unknown publisher; use the checksum below to verify the artifact.</li>
-<li>Click <strong>Run anyway</strong>.</li>
+<li>Confirm the filename and publisher match the official release asset you downloaded.</li>
+<li>Verify the checksum below before installing.</li>
 <li>Follow the installer prompts.</li>
 <li>Launch <strong>The Civic Desk</strong> from the Start menu.</li>
 </ol>
@@ -80,10 +79,10 @@
 <li>Backup and publishing folders.</li>
 </ul>
 <p>On the Windows public-beta path, the app may recommend and download a local model through its product-owned Ollama runtime. Model downloads can be large and slow. The app should show progress and allow an explicit AI-skipped source-review path. macOS and Linux runtime/installer automation remains backlog until platform clean-machine proof is recorded.</p>
-<p>If setup or publishing gets stuck, see <a href="troubleshooting.html">troubleshooting.md</a> for SmartScreen, model download, local AI runtime, here.now preview, ZIP/static output, weak-story, and source-import guidance.</p>
+<p>If setup or publishing gets stuck, see <a href="troubleshooting.html">troubleshooting.md</a> for installer provenance, model download, local AI runtime, here.now preview, ZIP/static output, weak-story, and source-import guidance.</p>
 <h2 id="current-public-beta-limits">Current Public-Beta Limits</h2>
 <ul>
-<li>Installers are unsigned.</li>
+<li>Authenticode signature verification is required before a release installer is published.</li>
 <li>Windows only is the tested public-beta installer path for this release line.</li>
 <li>macOS and Linux installer proof is backlog/proof-needed.</li>
 <li>Some external publishing providers require user-owned credentials.</li>

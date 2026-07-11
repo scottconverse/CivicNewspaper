@@ -125,7 +125,7 @@ The following are not required for v1.0.0 unless explicitly added later:
 - Cloud-hosted SaaS dashboard.
 - Fully autonomous publication without editor review.
 - Legal advice.
-- Code-signed installers, if certificates are not available.
+- Code-signed installers, using the available Windows signing certificate.
 - Advanced speaker recognition.
 - Full DocumentCloud hosting/self-hosting.
 - Full courts beat.
@@ -835,11 +835,11 @@ Use deterministic preprocessing, structured prompts, story templates, verificati
 
 Installer risk:
 
-Unsigned installers will scare some users.
+Unverified installer provenance will scare some users.
 
 Mitigation:
 
-Explain beta unsigned status clearly. Do not claim signing until available.
+Explain the public-beta status clearly and verify installer signing before release.
 
 Source reliability risk:
 

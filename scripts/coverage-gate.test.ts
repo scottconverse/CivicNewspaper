@@ -33,6 +33,28 @@ describe("release coverage gate", () => {
     expect(release).toContain("npm run test:coverage");
   });
 
+  test("signs the actual NSIS installer with direct Azure service-principal credentials", () => {
+    const release = read(".github/workflows/release.yml");
+
+    expect(release).toContain("azure/artifact-signing-action@v2");
+    expect(release).toContain("AZURE_CLIENT_SECRET");
+    expect(release).toContain("oauth2/v2.0/token");
+    expect(release).toContain("src-tauri\\target\\${{ matrix.target }}\\release\\bundle\\nsis");
+    expect(release).toContain("Get-AuthenticodeSignature");
+    expect(release).not.toContain("azure/login@");
+  });
+
+  test("provides a non-publishing manual signing smoke workflow", () => {
+    const smoke = read(".github/workflows/signing-smoke.yml");
+
+    expect(smoke).toContain("workflow_dispatch:");
+    expect(smoke).toContain("azure/artifact-signing-action@v2");
+    expect(smoke).toContain("Get-AuthenticodeSignature");
+    expect(smoke).toContain("actions/upload-artifact@v4");
+    expect(smoke).not.toContain("gh release");
+    expect(smoke).not.toContain("azure/login@");
+  });
+
   test("requires accessible packaged first-run and live core-flow proof", () => {
     const walkthrough = read("scripts/packaged-first-run-walkthrough.ps1");
     const webviewDriver = read("scripts/packaged-webview-driver.mjs");

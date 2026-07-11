@@ -12,7 +12,7 @@ The Civic Desk is public-beta software. It is useful, but it is not a signed sta
 
 What that means in practice:
 
-- Windows may warn you because the public-beta installer is unsigned.
+- The public-beta installer is distributed through the official release page; verify its checksum before installing.
 - The public release page should match the version you intend to install.
 - Windows is the tested public-beta installer path for this release line.
 - macOS and Linux installers are backlog/proof-needed until clean-machine proof is recorded.
@@ -46,13 +46,13 @@ Choose the v0.3.2 Windows public beta release:
 
 <https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2>
 
-On Windows, use the `.exe` installer. Because the app is unsigned, SmartScreen may show a warning. Click **More info**, confirm the filename came from the project release page, and choose **Run anyway** if you are comfortable continuing.
+On Windows, use the `.exe` installer from the official release page. Confirm the filename, publisher, and published checksum before installing.
 
 macOS and Linux are planned, but they are not supported public-beta installer paths in this release line yet. The project needs a real artifact, clean-machine install proof, first-run local AI proof, and honest platform-specific warning text before the manual should tell normal users to install those builds.
 
 Before running an installer, you can compare its SHA256 hash with the release checksum. Checksums confirm that your download matches the release artifact. They are not a replacement for code signing. See [install.md](install.md) for exact commands.
 
-If installation, local AI setup, publishing, source import, or output quality goes wrong, use [troubleshooting.md](troubleshooting.md). It has plain-English fixes for SmartScreen warnings, model downloads, local AI runtime states, weak story output, here.now previews, ZIP/static output, and source import problems.
+If installation, local AI setup, publishing, source import, or output quality goes wrong, use [troubleshooting.md](troubleshooting.md). It has plain-English help for installer provenance, model downloads, local AI runtime states, weak story output, here.now previews, ZIP/static output, and source import problems.
 
 ## 2. First Launch And Setup
 
@@ -488,7 +488,7 @@ If XLSX or DOCX imports flatten many URLs into one candidate, report it as a bug
 
 ### Current Public-Beta Limits
 
-- Installers are unsigned.
+- Authenticode signature verification is required before a release installer is published.
 - Latest source/tag and latest published installer release may not always be the same.
 - Windows is the tested public-beta installer path.
 - macOS and Linux installer proof is backlog/proof-needed.

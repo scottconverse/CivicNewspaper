@@ -85,7 +85,7 @@ The diagnostic report may include:
 
 - **Other local processes can reach `127.0.0.1:12053`.** The bearer token is the main gate after pairing. A malicious process running as the same user could try to read local app data or intercept local traffic.
 - **Any local process running as the user can use a paired token.** This is by design for local IDE/coding-agent workflows. Revoke leaked tokens from Browser Pairing.
-- **No code signing yet.** Public beta installers may trigger Windows SmartScreen. Users should download only from the official release page, compare checksums when provided, and avoid third-party mirrors.
+- **Installer provenance.** Users should download only from the official release page, verify the published checksum, and avoid third-party mirrors. Release evidence must include Authenticode signature verification for Windows installers.
 
 ## Disclosure Timing
 

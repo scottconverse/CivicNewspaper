@@ -2,7 +2,7 @@
 
 > **Project name:** CivicNewspaper. **Installed app name:** The Civic Desk.
 >
-> **Current release line:** v0.3.2 Windows-only public beta. The local release candidate built from commit `bfa37f87dda8aa61c98da4bd7bc2be907581a416` passed the artifact-bound isolated installed-package gate with SHA256 `636D87041396603456634E6B47AE1071E8726D8D05C0FC08768D5B9E92A71C83` and size `5274104` bytes. The GitHub release asset has not yet been replaced with this candidate. Installers are unsigned. This is not a stable production release.
+> **Current release line:** v0.3.2 Windows-only public beta. The local release candidate built from commit `bfa37f87dda8aa61c98da4bd7bc2be907581a416` passed the artifact-bound isolated installed-package gate with SHA256 `636D87041396603456634E6B47AE1071E8726D8D05C0FC08768D5B9E92A71C83` and size `5274104` bytes. The GitHub release asset has not yet been replaced with this candidate. It predates the current signing rollout. This is not a stable production release.
 
 The Civic Desk is a local-first desktop newsroom tool for small local publishers, civic reporters, and community editors. It helps one person or a small team monitor public local sources, discover story leads, draft articles with a local AI model, review risks and evidence, and publish a static local-news issue.
 
@@ -25,7 +25,7 @@ The app is built for the reality that many towns no longer have enough reporters
 
 ## What It Is Not Yet
 
-- Not a signed stable release. Windows SmartScreen warnings are expected for the unsigned beta.
+- Public-beta release; installer signing is verified as part of the release artifact gate.
 - Not a multi-user newsroom server.
 - Not legal advice. The press-freedom/legal-risk advisor is a risk-spotting tool, not a lawyer.
 - Not a replacement for reporting. Dark signals and community/social leads need verification before publication.
@@ -35,7 +35,7 @@ The app is built for the reality that many towns no longer have enough reporters
 
 Download the v0.3.2 Windows-only public beta from the [v0.3.2 release page](https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2). Use `The.Civic.Desk_0.3.2_x64-setup.exe` and verify it against `SHA256SUMS.txt` before opening it.
 
-- **Windows:** use `The.Civic.Desk_0.3.2_x64-setup.exe`. Because the installer is unsigned, choose **More info** then **Run anyway** when SmartScreen appears.
+- **Windows:** use `The.Civic.Desk_0.3.2_x64-setup.exe` from the official release and verify its published checksum.
 - **macOS and Linux:** backlog/proof-needed for this release line. Do not treat macOS or Linux download cards, package configs, or historical artifacts as supported public-beta installers until a clean-machine proof is recorded.
 
 See [docs/install.md](docs/install.md) for checksum verification and OS-specific details.
@@ -116,8 +116,8 @@ The Ollama runtime binary is not committed to the repo. The app-managed first-ru
 - [Implementation plan: v0.3.0 to v1.0.0](docs/implementation-plan-v0.3.0-to-v1.0.0.md) - phased roadmap with technology integrations and release gates.
 - [User manual](docs/user_manual.md) - plain-English operator guide plus technical appendix.
 - [Architecture](docs/architecture.md) - system design, schema, security, publishing, and AI boundaries.
-- [Install guide](docs/install.md) - unsigned installer and checksum instructions.
-- [Troubleshooting](docs/troubleshooting.md) - SmartScreen, model download, local AI, weak output, here.now preview, ZIP, and import help.
+- [Install guide](docs/install.md) - official installer and checksum instructions.
+- [Troubleshooting](docs/troubleshooting.md) - installer provenance, model download, local AI, weak output, here.now preview, ZIP, and import help.
 - [Publishing connectors](docs/publishing-connectors.md) - supported publishing paths.
 - [Browser Bridge extension](browser-extension/chromium/README.md) - install and pair the Chromium extension.
 - [Authenticated localhost API](docs/api.md) - loopback-only routes, headers, authentication, and response contract for the Browser Bridge and local tools.
@@ -130,7 +130,7 @@ v0.3.2 is a Windows public beta. Local isolated-profile smoke, strict source-imp
 
 ## Backlog: Mac And Linux Installer Proof
 
-Mac and Linux installer work is intentionally out of the v0.3.2 Windows public-beta release candidate. Before the public docs can advertise those platforms, the project needs real build artifacts, first-run local-AI setup proof, clean-machine install notes, and signing/notarization or explicit unsigned-platform guidance for each OS.
+Mac and Linux installer work is intentionally out of the v0.3.2 Windows public-beta release candidate. Before the public docs can advertise those platforms, the project needs real build artifacts, first-run local-AI setup proof, clean-machine install notes, and platform-specific signing/notarization guidance for each OS.
 
 ## License
 

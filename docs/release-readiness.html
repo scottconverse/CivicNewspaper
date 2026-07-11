@@ -75,9 +75,9 @@
 <li>the workflow does not publish a non-draft public release by itself;</li>
 <li>Scott must review the local RC receipt, cleanroom report, and release notes before undrafting a release.</li>
 </ul>
-<p>This prevents a public unsigned installer from appearing before checksum and local release-gate evidence have been reviewed.</p>
+<p>This prevents an unverified installer from appearing before Authenticode, checksum, and local release-gate evidence have been reviewed.</p>
 <h2 id="current-v0-3-2-evidence">Current v0.3.2 evidence</h2>
-<p>The local Windows public-beta candidate was built from commit <code>bfa37f87dda8aa61c98da4bd7bc2be907581a416</code> and passed the artifact-bound isolated installed-package gate. The exact package completed dependency-absent onboarding, zero-source guidance, a live <code>phi4-mini:latest</code> Daily Scan, linked-evidence draft generation, persistence, and Workbench reload. This is beta-candidate proof on the recorded local gate machine; it is not signed, cross-platform, or credentialed-provider stable-release proof. The GitHub release asset is still the older <code>ba49af4d69d2c4d6d88bfd148490494f243cc9d7</code> build and has not been replaced in this work unit.</p>
+<p>The local Windows public-beta candidate was built from commit <code>bfa37f87dda8aa61c98da4bd7bc2be907581a416</code> and passed the artifact-bound isolated installed-package gate. The exact package completed dependency-absent onboarding, zero-source guidance, a live <code>phi4-mini:latest</code> Daily Scan, linked-evidence draft generation, persistence, and Workbench reload. This is beta-candidate proof on the recorded local gate machine; it predates the current Windows signing rollout and is not cross-platform or credentialed-provider stable-release proof. The GitHub release asset is still the older <code>ba49af4d69d2c4d6d88bfd148490494f243cc9d7</code> build and has not been replaced in this work unit.</p>
 <ul>
 <li>Hosted evidence file: <code>docs/release-evidence/v0.3.2.json</code></li>
 <li>RC receipt: <code>.agent-runs/release-candidate-20260709-182734/release-candidate-receipt.json</code>, SHA256 <code>12C80AB694F484BB1176CF1F37590E3BEDD853985D020997BF47BCAEDBBCBE75</code></li>
@@ -92,7 +92,7 @@
 </ul>
 <p>This does not publish, merge, or tag the release by itself. Scott must still approve the product push, tag, hosted GitHub Release, and GitHub Pages update.</p>
 <h2 id="evidence-levels">Evidence levels</h2>
-<p>| Level | Required evidence | Allowed skips | |---|---|---| | Public beta | Frontend tests, Rust tests, static-site output gate, release notes, known limitations, install guide, user manual, and troubleshooting guide. | Live provider credentials, signing, true clean-machine proof. Skips must be explicit in the receipt. | | Release candidate | Beta evidence plus enforced coverage floors, desktop smoke, current-version Windows installer artifacts, isolated packaged first-run/core-flow proof, source-import fixtures, live Colorado scan, model bakeoff, dependency audit, anonymous here.now publish. | External providers without credentials; external tester optional when local packaged proof is complete. | | Stable | RC evidence plus no skipped release-smoke gates, clean first-run artifact, signed Windows installer, cross-platform installer proof for every advertised OS, and credentialed live connector verification for supported providers. | None for the release-critical gates. |</p>
+<p>| Level | Required evidence | Allowed skips | |---|---|---| | Public beta | Frontend tests, Rust tests, static-site output gate, Authenticode verification, release notes, known limitations, install guide, user manual, and troubleshooting guide. | Live provider credentials and true clean-machine proof. Skips must be explicit in the receipt. | | Release candidate | Beta evidence plus enforced coverage floors, desktop smoke, current-version Windows installer artifacts, isolated packaged first-run/core-flow proof, source-import fixtures, live Colorado scan, model bakeoff, dependency audit, anonymous here.now publish. | External providers without credentials; external tester optional when local packaged proof is complete. | | Stable | RC evidence plus no skipped release-smoke gates, clean first-run artifact, signed Windows installer, cross-platform installer proof for every advertised OS, and credentialed live connector verification for supported providers. | None for the release-critical gates. |</p>
 <h2 id="source-import-fixtures">Source import fixtures</h2>
 <p>The full local fixture suite expects realistic files in a machine-available fixture folder. For repo-local release evidence, restore or copy the fixture artifact to:</p>
 <pre><code>tests\fixtures\source-import</code></pre>
@@ -120,9 +120,8 @@ cargo audit</code></pre>
 <p>Warnings from transitive desktop framework dependencies should be recorded in the release notes if they cannot be upgraded safely before release.</p>
 <p>Current Rust advisory exceptions live in <code>src-tauri\.cargo\audit.toml</code>; the matching rationale, owner, release-note text, and review date live in <code>docs\security-advisory-waivers.json</code>. The release gate should not accept a dependency audit receipt that suppresses advisories without matching current waiver metadata.</p>
 <h2 id="stable-release-blockers">Stable-release blockers</h2>
-<p>These cannot be fully completed from one unsigned Windows development machine:</p>
+<p>These cannot be fully completed from one Windows development machine:</p>
 <ul>
-<li>Windows code-signing certificate and signed installer verification</li>
 <li>Mac installer build, signing/notarization decision, and clean-machine proof</li>
 <li>Linux installer/package build and clean-machine or VM proof</li>
 <li>clean-machine installer proof on every OS advertised in public docs</li>

@@ -91,7 +91,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
 
   return (
     <>
-      {/* First-run beta notice (#12): unsigned-beta / SmartScreen disclosure */}
+      {/* First-run public-beta installer notice */}
       <BetaNotice />
 
       {/* Global confirmation dialog (destructive actions) */}

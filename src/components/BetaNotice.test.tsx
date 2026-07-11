@@ -10,11 +10,10 @@ describe("BetaNotice (first-run beta notice)", () => {
     window.localStorage.clear();
   });
 
-  test("renders the unsigned-beta / SmartScreen disclosure on first run", () => {
+  test("renders the official Windows installer notice on first run", () => {
     render(<BetaNotice />);
     expect(screen.getByTestId("beta-notice")).toBeInTheDocument();
-    expect(screen.getByText(/unsigned public beta/i)).toBeInTheDocument();
-    expect(screen.getByText(/SmartScreen may warn/i)).toBeInTheDocument();
+    expect(screen.getByText(/official Windows installer/i)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Report issues on GitHub/i })).toBeInTheDocument();
   });
 

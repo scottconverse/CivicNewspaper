@@ -2,7 +2,7 @@
 """Check release-scope documentation claims against the current beta contract.
 
 This is intentionally narrow. It protects the claims that have repeatedly drifted:
-Windows-only public-beta installer proof, unsigned installer honesty, here.now as
+Windows-only public-beta installer proof, Authenticode verification, here.now as
 the live-tested default, credentialed providers as proof-needed, Cloudflare as
 assisted/manual, app-managed local AI setup, hosted release evidence, and
 portable fixture paths.

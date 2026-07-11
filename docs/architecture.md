@@ -262,7 +262,7 @@ Security boundaries are local-first, not offline-only.
 
 The release build creates desktop installers from the Tauri app.
 
-Current public beta installers are unsigned. A stable release needs signed Windows installers, macOS signing/notarization, cross-platform clean-machine installer proof, and repeatable release smoke artifacts.
+Windows installer signing is part of the current release artifact gate. A stable release still needs macOS signing/notarization, cross-platform clean-machine installer proof, and repeatable release smoke artifacts.
 
 ## Current Stable-Release Gaps
 

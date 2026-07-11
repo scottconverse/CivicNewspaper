@@ -6,14 +6,14 @@ The Civic Desk is local-first desktop software. That means several things happen
 
 ## Windows Says The App Is Unknown
 
-The public-beta Windows installer is unsigned. Windows SmartScreen may show "Windows protected your PC" or "Unknown publisher."
+Install only the official Windows release artifact and verify its published checksum before opening it.
 
 What to do:
 
 1. Confirm you downloaded the installer from the official GitHub Releases page.
 2. Confirm the filename matches the release asset.
 3. Compare the SHA256 checksum using the install guide.
-4. If the checksum matches and you are comfortable continuing, click **More info** and then **Run anyway**.
+4. If the checksum does not match, delete the file and download it again from the official release page.
 
 What not to assume:
 

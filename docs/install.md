@@ -2,7 +2,7 @@
 
 This guide explains how to install The Civic Desk from the CivicNewspaper releases page and how to verify a downloaded installer.
 
-The public beta Windows installer is unsigned. Windows SmartScreen may warn you before the app opens. That warning is expected for an unsigned beta and does not by itself mean the file is malicious. It also does not prove the file is safe. Use the checksum steps below to confirm the download matches the release artifact.
+Use the official Windows installer from the release page. Verify the checksum below to confirm the download matches the published release artifact.
 
 ## Download
 
@@ -19,9 +19,8 @@ Use the v0.3.2 Windows-only public-beta release when installing this version:
 1. Download `The.Civic.Desk_0.3.2_x64-setup.exe` from the release assets.
 2. Optional but recommended: verify the SHA256 checksum before opening the installer.
 3. Double-click the installer.
-4. If Windows SmartScreen says "Windows protected your PC," click **More info**.
-5. Confirm the filename matches the release asset you downloaded. Because the beta is unsigned, Windows may show an unknown publisher; use the checksum below to verify the artifact.
-6. Click **Run anyway**.
+4. Confirm the filename and publisher match the official release asset you downloaded.
+5. Verify the checksum below before installing.
 7. Follow the installer prompts.
 8. Launch **The Civic Desk** from the Start menu.
 
@@ -75,11 +74,11 @@ On first launch, the setup flow asks for:
 
 On the Windows public-beta path, the app may recommend and download a local model through its product-owned Ollama runtime. Model downloads can be large and slow. The app should show progress and allow an explicit AI-skipped source-review path. macOS and Linux runtime/installer automation remains backlog until platform clean-machine proof is recorded.
 
-If setup or publishing gets stuck, see [troubleshooting.md](troubleshooting.md) for SmartScreen, model download, local AI runtime, here.now preview, ZIP/static output, weak-story, and source-import guidance.
+If setup or publishing gets stuck, see [troubleshooting.md](troubleshooting.md) for installer provenance, model download, local AI runtime, here.now preview, ZIP/static output, weak-story, and source-import guidance.
 
 ## Current Public-Beta Limits
 
-- Installers are unsigned.
+- Authenticode signature verification is required before a release installer is published.
 - Windows only is the tested public-beta installer path for this release line.
 - macOS and Linux installer proof is backlog/proof-needed.
 - Some external publishing providers require user-owned credentials.

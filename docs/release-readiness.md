@@ -72,11 +72,11 @@ The GitHub release workflow is intentionally conservative during public beta:
 - the workflow does not publish a non-draft public release by itself;
 - Scott must review the local RC receipt, cleanroom report, and release notes before undrafting a release.
 
-This prevents a public unsigned installer from appearing before checksum and local release-gate evidence have been reviewed.
+This prevents an unverified installer from appearing before Authenticode, checksum, and local release-gate evidence have been reviewed.
 
 ## Current v0.3.2 evidence
 
-The local Windows public-beta candidate was built from commit `bfa37f87dda8aa61c98da4bd7bc2be907581a416` and passed the artifact-bound isolated installed-package gate. The exact package completed dependency-absent onboarding, zero-source guidance, a live `phi4-mini:latest` Daily Scan, linked-evidence draft generation, persistence, and Workbench reload. This is beta-candidate proof on the recorded local gate machine; it is not signed, cross-platform, or credentialed-provider stable-release proof. The GitHub release asset is still the older `ba49af4d69d2c4d6d88bfd148490494f243cc9d7` build and has not been replaced in this work unit.
+The local Windows public-beta candidate was built from commit `bfa37f87dda8aa61c98da4bd7bc2be907581a416` and passed the artifact-bound isolated installed-package gate. The exact package completed dependency-absent onboarding, zero-source guidance, a live `phi4-mini:latest` Daily Scan, linked-evidence draft generation, persistence, and Workbench reload. This is beta-candidate proof on the recorded local gate machine; it predates the current Windows signing rollout and is not cross-platform or credentialed-provider stable-release proof. The GitHub release asset is still the older `ba49af4d69d2c4d6d88bfd148490494f243cc9d7` build and has not been replaced in this work unit.
 
 - Hosted evidence file: `docs/release-evidence/v0.3.2.json`
 - RC receipt: `.agent-runs/release-candidate-20260709-182734/release-candidate-receipt.json`, SHA256 `12C80AB694F484BB1176CF1F37590E3BEDD853985D020997BF47BCAEDBBCBE75`
@@ -95,7 +95,7 @@ This does not publish, merge, or tag the release by itself. Scott must still app
 
 | Level | Required evidence | Allowed skips |
 |---|---|---|
-| Public beta | Frontend tests, Rust tests, static-site output gate, release notes, known limitations, install guide, user manual, and troubleshooting guide. | Live provider credentials, signing, true clean-machine proof. Skips must be explicit in the receipt. |
+| Public beta | Frontend tests, Rust tests, static-site output gate, Authenticode verification, release notes, known limitations, install guide, user manual, and troubleshooting guide. | Live provider credentials and true clean-machine proof. Skips must be explicit in the receipt. |
 | Release candidate | Beta evidence plus enforced coverage floors, desktop smoke, current-version Windows installer artifacts, isolated packaged first-run/core-flow proof, source-import fixtures, live Colorado scan, model bakeoff, dependency audit, anonymous here.now publish. | External providers without credentials; external tester optional when local packaged proof is complete. |
 | Stable | RC evidence plus no skipped release-smoke gates, clean first-run artifact, signed Windows installer, cross-platform installer proof for every advertised OS, and credentialed live connector verification for supported providers. | None for the release-critical gates. |
 
@@ -155,9 +155,8 @@ Current Rust advisory exceptions live in `src-tauri\.cargo\audit.toml`; the matc
 
 ## Stable-release blockers
 
-These cannot be fully completed from one unsigned Windows development machine:
+These cannot be fully completed from one Windows development machine:
 
-- Windows code-signing certificate and signed installer verification
 - Mac installer build, signing/notarization decision, and clean-machine proof
 - Linux installer/package build and clean-machine or VM proof
 - clean-machine installer proof on every OS advertised in public docs
