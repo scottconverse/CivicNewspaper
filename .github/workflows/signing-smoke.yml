@@ -34,10 +34,41 @@ jobs:
       - name: Fetch Ollama binaries
         run: bash scripts/fetch-ollama-binaries.sh
 
-      - name: Build Windows NSIS installer
+      - name: Azure token preflight (fail-fast)
+        shell: pwsh
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        run: |
+          $body = @{
+            client_id = $env:AZURE_CLIENT_ID
+            client_secret = $env:AZURE_CLIENT_SECRET
+            grant_type = "client_credentials"
+            scope = "https://management.azure.com/.default"
+          }
+          $uri = "https://login.microsoftonline.com/$env:AZURE_TENANT_ID/oauth2/v2.0/token"
+          try {
+            Invoke-RestMethod -Method Post -Uri $uri -Body $body -ErrorAction Stop | Out-Null
+            Write-Host "Azure token preflight succeeded."
+          } catch {
+            throw "Azure token preflight failed: $($_.Exception.Message)"
+          }
+
+      - name: Install pinned Artifact Signing module
+        shell: pwsh
+        run: |
+          Install-Module -Name ArtifactSigning -RequiredVersion 0.1.8 -Scope CurrentUser -Force -Repository PSGallery
+          "$env:GITHUB_WORKSPACE\scripts" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Build and sign Windows NSIS installer
         uses: tauri-apps/tauri-action@v0
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         with:
-          args: --target x86_64-pc-windows-msvc --bundles nsis -- --locked
+          args: --config src-tauri/tauri.windows-signing.conf.json --target x86_64-pc-windows-msvc --bundles nsis -- --locked
 
       - name: Locate NSIS installer
         shell: pwsh
@@ -49,63 +80,13 @@ jobs:
           }
           "INSTALLER_PATH=$($installers[0].FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      - name: Azure token preflight (fail-fast)
+      - name: Verify installer, application, and uninstaller signatures (fail-closed)
         shell: pwsh
         run: |
-          $body = @{
-            client_id = "${{ secrets.AZURE_CLIENT_ID }}"
-            client_secret = "${{ secrets.AZURE_CLIENT_SECRET }}"
-            grant_type = "client_credentials"
-            scope = "https://management.azure.com/.default"
-          }
-          $uri = "https://login.microsoftonline.com/${{ secrets.AZURE_TENANT_ID }}/oauth2/v2.0/token"
-          try {
-            Invoke-RestMethod -Method Post -Uri $uri -Body $body -ErrorAction Stop | Out-Null
-            Write-Host "Azure token preflight succeeded."
-          } catch {
-            throw "Azure token preflight failed: $($_.Exception.Message)"
-          }
-
-      - name: Sign installer with Azure Artifact Signing
-        uses: azure/artifact-signing-action@v2
-        with:
-          endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
-          signing-account-name: scottconverse-signing
-          certificate-profile-name: ScottConversePublic
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          files: ${{ env.INSTALLER_PATH }}
-          timestamp-rfc3161: http://timestamp.acs.microsoft.com
-
-      - name: Verify signature and write receipt (fail-closed)
-        shell: pwsh
-        run: |
-          $sig = Get-AuthenticodeSignature $env:INSTALLER_PATH
-          if ($sig.Status -ne "Valid") {
-            throw "Installer signature is not valid: $($sig.Status) $($sig.StatusMessage)"
-          }
-          if (-not $sig.SignerCertificate) {
-            throw "Installer has no signer certificate."
-          }
-          if (-not $sig.TimeStamperCertificate) {
-            throw "Installer signature has no RFC3161 timestamp certificate."
-          }
-          $receipt = [ordered]@{
-            commit = "${{ github.sha }}"
-            installer_name = Split-Path -Leaf $env:INSTALLER_PATH
-            installer_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $env:INSTALLER_PATH).Hash
-            installer_size = (Get-Item -LiteralPath $env:INSTALLER_PATH).Length
-            signature_status = [string]$sig.Status
-            signer_subject = $sig.SignerCertificate.Subject
-            signer_thumbprint = $sig.SignerCertificate.Thumbprint
-            signer_not_after = $sig.SignerCertificate.NotAfter.ToUniversalTime().ToString("o")
-            timestamp_subject = $sig.TimeStamperCertificate.Subject
-            timestamp_thumbprint = $sig.TimeStamperCertificate.Thumbprint
-            timestamp_not_after = $sig.TimeStamperCertificate.NotAfter.ToUniversalTime().ToString("o")
-          }
-          $receipt | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath signing-smoke-receipt.json -Encoding utf8
-          $receipt | ConvertTo-Json -Depth 5
+          ./scripts/verify-windows-signatures.ps1 -Installer $env:INSTALLER_PATH -ReceiptPath signing-smoke-receipt.json
+          $receipt = Get-Content -Raw signing-smoke-receipt.json | ConvertFrom-Json
+          $receipt | Add-Member -NotePropertyName commit -NotePropertyValue "${{ github.sha }}"
+          $receipt | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath signing-smoke-receipt.json -Encoding utf8
 
       - name: Upload signed installer and receipt
         uses: actions/upload-artifact@v4
