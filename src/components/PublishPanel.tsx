@@ -581,7 +581,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({
                 </button>
                 <button className="btn btn-secondary" type="button" onClick={onExportIssueEmail}>
                   <Mail size={16} />
-                  Export issue email
+                  Export issue email template
                 </button>
               </div>
             </div>

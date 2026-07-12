@@ -8,4 +8,4 @@ Current v0.3.2 focus areas:
 - Keep local LLM assistance optional and editor-controlled; software warnings never make the editor's news judgment, while deterministic static-package integrity checks can block export until broken public output is repaired.
 - Harden source intake, source compliance, and browser-bridge consent.
 - Prove release candidates through repeatable smoke tests, clean-machine installs, live local AI, source import fixtures, ZIP export, and here.now publishing.
-- Move toward v1.0 only after signed installers, cross-platform proof, upgrade/recovery evidence, and stable external-provider verification are complete.
+- Move toward v1.0 only after published signature/checksum binding, cross-platform proof, upgrade/recovery evidence, and stable external-provider verification are complete.

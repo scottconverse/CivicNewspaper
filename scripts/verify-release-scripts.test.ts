@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { afterEach, describe, expect, test } from "vitest";
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 
 const root = process.cwd();
 const head = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
@@ -72,7 +72,7 @@ describe("release verifier scripts", () => {
   });
 
   test("hosted release evidence accepts a complete exact-tag fixture", () => {
-    const tag = "v0.0.999-test";
+    const tag = `v0.0.999-test-${process.pid}-${randomUUID()}`;
     writeHostedEvidenceFixture(tag);
 
     const result = runNode("scripts/verify-hosted-release-evidence.mjs", [tag]);
@@ -82,7 +82,7 @@ describe("release verifier scripts", () => {
   });
 
   test("hosted release evidence rejects missing cleanroom fields and hash mismatches", () => {
-    const tag = "v0.0.998-test";
+    const tag = `v0.0.998-test-${process.pid}-${randomUUID()}`;
     writeHostedEvidenceFixture(tag, {
       cleanroom: {
         ok: true,

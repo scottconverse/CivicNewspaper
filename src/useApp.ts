@@ -79,6 +79,13 @@ import {
 import modelsConfig from "./models.json";
 import { buildBulkImportReview, BulkImportReview, normalizeImportUrl, tierForSourceType } from "./bulkImportParser";
 
+const exportDestinationMessage = (error: unknown) => {
+  const message = toUserMessage(error);
+  return /outside allowed|outside allowed directories|write destination/i.test(message)
+    ? "Choose a file in Downloads. For safety, The Civic Desk does not write exports to other folders."
+    : message;
+};
+
 function repairCommonMojibake(text: string): string {
   return text
     .replace(/\u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a2/g, "-")
@@ -1748,7 +1755,7 @@ export function useApp() {
       await exportSubscribersCsv(selected);
       setStatusMessage("Subscriber CSV exported.");
     } catch (e: any) {
-      setErrorMessage(toUserMessage(e));
+      setErrorMessage(exportDestinationMessage(e));
     } finally {
       setLoading(false);
     }
@@ -1774,9 +1781,9 @@ export function useApp() {
       });
       if (!selected) return;
       await exportIssueEmail(outputDir, selected);
-      setStatusMessage("Issue email markdown exported.");
+      setStatusMessage("Issue email template exported. If the site is not published yet, replace the example URL before sending.");
     } catch (e: any) {
-      setErrorMessage(toUserMessage(e));
+      setErrorMessage(exportDestinationMessage(e));
     } finally {
       setLoading(false);
     }

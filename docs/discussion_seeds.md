@@ -23,7 +23,7 @@ Welcome to the CivicNewspaper community.
 
 The Civic Desk is a local-first desktop newsroom for people trying to cover local government with limited time and limited staff. It helps a small publisher add sources, scan for leads, review evidence, draft stories, verify claims, and publish a static local paper.
 
-This is a public beta, not a signed stable release. We want bug reports, usability reports, clean-machine install results, real source intake examples, and honest feedback from people who might actually use this to cover a town, city, county, school board, water district, or local agency.
+This is a signed Windows public beta, not a stable release. We want bug reports, usability reports, clean-machine install results, real source intake examples, and honest feedback from people who might actually use this to cover a town, city, county, school board, water district, or local agency.
 
 Helpful reports include:
 

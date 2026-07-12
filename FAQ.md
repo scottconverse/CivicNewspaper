@@ -8,7 +8,7 @@ This FAQ is intentionally plain about what works, what is still beta, and what t
 
 ### Is this production software?
 
-Not yet. The Civic Desk is a public beta. Its Windows installer is Authenticode-signed and the signing gate verifies the installer, installed application, and uninstaller. Stable-grade cross-platform clean-machine proof is still in progress.
+Not yet. The Civic Desk is a public beta. New Windows candidates are Authenticode-signed, and the signing gate verifies the installer, installed application, and uninstaller. The current GitHub download remains pending replacement with the final cleanroom-tested candidate; do not treat it as the final beta candidate until the release page publishes the matching checksum and evidence. Stable-grade cross-platform clean-machine proof is still in progress.
 
 Use it with informed caution. A human editor remains responsible for every published word.
 
@@ -153,7 +153,7 @@ Your local database and drafts are not uploaded unless you choose an export, sha
 
 ### How do I back up?
 
-Use the Ethics & Backups/System areas in the app to create local backups. Store backups somewhere you control, such as an external drive or private cloud folder.
+Use the Ethics & Backups area to create a local backup in Downloads or the Civic Desk data folder. Then copy the completed `.db` file somewhere you control, such as an external drive or private cloud folder.
 
 ### Can I sync two editors at the same time?
 

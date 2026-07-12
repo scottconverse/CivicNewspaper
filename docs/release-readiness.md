@@ -74,11 +74,11 @@ The GitHub release workflow is intentionally conservative during public beta:
 
 This prevents an unverified installer from appearing before Authenticode, checksum, and local release-gate evidence have been reviewed.
 
-## Current v0.3.2 evidence
+## Historical v0.3.2 evidence and the final-candidate rule
 
-Windows release candidates now pass an Authenticode signing gate that validates the installer, installed application, and uninstaller, including timestamps. Candidate-specific cleanroom evidence is recorded separately and must match the exact commit and installer hash being evaluated. This is Windows beta-candidate proof, not cross-platform or credentialed-provider stable-release proof. The GitHub release asset has not been replaced in this work unit.
+Windows release candidates now pass an Authenticode signing gate that validates the installer, installed application, and uninstaller, including timestamps. The evidence listed below belongs to an earlier candidate and is retained for audit history; it is not current-candidate or current-download proof. Final beta evidence must be regenerated after the candidate commit is merged and signed, and it must match the exact installer hash that completes the cleanroom gate and is later uploaded under owner authorization.
 
-- Hosted evidence file: `docs/release-evidence/v0.3.2.json`
+- Historical hosted evidence file: `docs/release-evidence/v0.3.2.json`
 - RC receipt: `.agent-runs/release-candidate-20260709-182734/release-candidate-receipt.json`, SHA256 `12C80AB694F484BB1176CF1F37590E3BEDD853985D020997BF47BCAEDBBCBE75`
 - Strict release smoke: `.agent-runs/release-smoke-20260709-181659/release-smoke-receipt.json`, SHA256 `213887F59B4907A46B770987C5468A75318F1286A67B0FA60FE8BF238AAF1F8B`
 - Dependency audit: `.agent-runs/beta-rc-bfa37f8-dependency-audit/dependency-audit-20260709-182436.json`, SHA256 `F2DC84A23551F1638285758E20EBC5927CE4EC2BFEBE21721997657C7A18D30C`
@@ -97,7 +97,7 @@ This does not publish, merge, or tag the release by itself. Scott must still app
 |---|---|---|
 | Public beta | Frontend tests, Rust tests, static-site output gate, Authenticode verification, release notes, known limitations, install guide, user manual, and troubleshooting guide. | Live provider credentials and true clean-machine proof. Skips must be explicit in the receipt. |
 | Release candidate | Beta evidence plus enforced coverage floors, desktop smoke, current-version Windows installer artifacts, isolated packaged first-run/core-flow proof, source-import fixtures, live Colorado scan, model bakeoff, dependency audit, anonymous here.now publish. | External providers without credentials; external tester optional when local packaged proof is complete. |
-| Stable | RC evidence plus no skipped release-smoke gates, clean first-run artifact, signed Windows installer, cross-platform installer proof for every advertised OS, and credentialed live connector verification for supported providers. | None for the release-critical gates. |
+| Stable | RC evidence plus no skipped release-smoke gates, clean first-run artifact, published Windows signature/checksum bound to the tested bytes, cross-platform installer proof for every advertised OS, and credentialed live connector verification for supported providers. | None for the release-critical gates. |
 
 ## Source import fixtures
 

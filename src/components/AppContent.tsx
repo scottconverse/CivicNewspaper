@@ -130,7 +130,7 @@ export const AppContent: React.FC<AppContentProps> = ({ app }) => {
       )}
 
       {app.errorMessage && (
-        <div className="card" role="alert" aria-live="assertive" style={{ borderLeft: "4px solid var(--color-error)", background: "rgba(239, 68, 68, 0.05)" }}>
+        <div className="card" role="alert" aria-live="assertive" style={{ borderLeft: "4px solid var(--color-error)", background: "rgba(239, 68, 68, 0.05)", position: "sticky", top: "1rem", zIndex: 100 }}>
           <div className="flex-between">
             <span style={{ fontSize: "0.9rem", color: "var(--color-error)" }}>{app.errorMessage}</span>
             <button className="btn btn-secondary btn-sm" onClick={() => app.setErrorMessage("")}>Dismiss</button>
