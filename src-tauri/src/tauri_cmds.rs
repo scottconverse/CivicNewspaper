@@ -3150,6 +3150,12 @@ pub fn export_issue_email(
     let newsletter_path = publish_artifact_path(&output_dir, "newsletter.md")?;
     let body = std::fs::read_to_string(newsletter_path).map_err(|e| e.to_string())?;
     let conn = db.lock().map_err(|_| "Failed to lock database")?;
+    let public_url = db::list_publish_runs(&conn)
+        .map_err(|e| e.to_string())?
+        .into_iter()
+        .find(|run| run.output_path == output_dir && run.published_url.is_some())
+        .and_then(|run| run.published_url);
+    let body = prepare_issue_email_body(&body, public_url.as_deref());
     let active_count = db::list_subscribers(&conn)
         .map_err(|e| e.to_string())?
         .into_iter()
@@ -3160,6 +3166,18 @@ pub fn export_issue_email(
         active_count, body
     );
     std::fs::write(path, subject).map_err(|e| e.to_string())
+}
+
+pub(crate) fn prepare_issue_email_body(body: &str, public_url: Option<&str>) -> String {
+    match public_url.map(str::trim).filter(|url| !url.is_empty()) {
+        Some(url) => body.replace(
+            "https://YOUR-PUBLIC-SITE.example",
+            url.trim_end_matches('/'),
+        ),
+        None => format!(
+            "> Before sending: replace `https://YOUR-PUBLIC-SITE.example` with your published site URL.\n\n{body}"
+        ),
+    }
 }
 
 #[tauri::command]
@@ -3180,14 +3198,16 @@ pub fn register_correction(
 }
 
 #[tauri::command]
-pub fn backup_save(
-    db: tauri::State<'_, DbConn>,
-    app: tauri::AppHandle,
-    dest_path: String,
-) -> Result<(), String> {
+pub async fn backup_save(app: tauri::AppHandle, dest_path: String) -> Result<(), String> {
     let dest_path = validate_app_write_destination(&app, &dest_path)?;
-    let conn = db.lock().map_err(|_| "Failed to lock database")?;
-    backups::save_backup(&conn, &dest_path.to_string_lossy()).map_err(|e| e.to_string())
+    let live_db_path = db::get_app_db_path(&app).map_err(|e| e.to_string())?;
+    let live_db_path = live_db_path.to_string_lossy().into_owned();
+    tauri::async_runtime::spawn_blocking(move || {
+        let conn = db::open_conn(&live_db_path).map_err(|e| e.to_string())?;
+        backups::save_backup(&conn, &dest_path.to_string_lossy()).map_err(|e| e.to_string())
+    })
+    .await
+    .map_err(|e| format!("Backup worker failed: {e}"))?
 }
 
 #[tauri::command]

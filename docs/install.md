@@ -20,9 +20,9 @@ Use the v0.3.2 Windows-only public-beta release when installing this version:
 2. Optional but recommended: verify the SHA256 checksum before opening the installer.
 3. Double-click the installer.
 4. Confirm the filename and publisher match the official release asset you downloaded.
-5. Verify the checksum below before installing.
-7. Follow the installer prompts.
-8. Launch **The Civic Desk** from the Start menu.
+5. Verify the checksum published for that exact release asset before installing.
+6. Follow the installer prompts.
+7. Launch **The Civic Desk** from the Start menu.
 
 ## macOS And Linux
 
@@ -30,7 +30,7 @@ macOS and Linux installers are backlog/proof-needed for this release line. Do no
 
 ## Clean-Machine Proof
 
-Every release candidate needs an artifact-bound installed-package report from a clean machine, VM, Windows Sandbox, external tester, or isolated app-data profile before it can be called proved at that evidence level. The v0.3.2 local Windows beta candidate was built from commit `bfa37f87dda8aa61c98da4bd7bc2be907581a416`; its SHA256 is `636D87041396603456634E6B47AE1071E8726D8D05C0FC08768D5B9E92A71C83` and its size is `5274104` bytes. It passed dependency-absent onboarding and the live-model source-to-Workbench path in fresh isolated profiles with zero failed or skipped release-smoke checks. See the [local isolated-package report](release-evidence/v0.3.2-local-isolated-package-report.md). The GitHub release asset has not yet been replaced with this tested candidate, so do not use this candidate hash to verify the older published download.
+Every release candidate needs an artifact-bound installed-package report from a clean machine, VM, Windows Sandbox, external tester, or isolated app-data profile before it can be called proved at that evidence level. The repository's [local isolated-package report](release-evidence/v0.3.2-local-isolated-package-report.md) records an earlier candidate and is retained as historical evidence. It is not the checksum for the candidate currently under evaluation or for the existing GitHub download. The final beta candidate must publish a new exact-candidate report and checksum only after the merged commit is signed and the same installer bytes complete the cleanroom gate.
 
 Required proof for a cleanroom-proven release:
 

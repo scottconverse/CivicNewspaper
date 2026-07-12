@@ -516,7 +516,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "1rem" }}>
             <div>
-              <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }} htmlFor="input-backup-path">Backup folder</label>
+              <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }} htmlFor="input-backup-path">Backup file</label>
+              <p className="help-text" style={{ margin: "0 0 0.5rem" }}>
+                Enter a complete <code>.db</code> filename in Downloads or the Civic Desk data folder.
+              </p>
               <input
                 type="text"
                 value={backupPathInput}

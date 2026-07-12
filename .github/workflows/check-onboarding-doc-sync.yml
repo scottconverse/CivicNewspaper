@@ -30,7 +30,7 @@ jobs:
             exit 1
           fi
 
-          for field in "Publication Name" "Editor Name" "City" "State" "Publication folder" "Backup folder"; do
+          for field in "Publication Name" "Editor Name" "City" "State" "Publication folder" "Backup file"; do
             if ! grep -qi "$field" src/components/OnboardingWizard.tsx; then
               echo "FAIL: OnboardingWizard.tsx is missing field: $field"
               exit 1

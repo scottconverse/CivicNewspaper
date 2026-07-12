@@ -771,6 +771,71 @@ mod tests {
         }
     }
 
+    #[test]
+    fn test_restore_rejects_integrity_valid_non_civic_database() {
+        let temp_dir = tempdir().unwrap();
+        let live_db_path = temp_dir.path().join("live.db");
+        let foreign_db_path = temp_dir.path().join("foreign.db");
+
+        let conn = init_db(live_db_path.to_str().unwrap()).unwrap();
+        insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Keep Me".to_string(),
+                url: "https://keep.example.gov".to_string(),
+                r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+
+        let foreign = Connection::open(&foreign_db_path).unwrap();
+        foreign
+            .execute_batch(&format!(
+                "PRAGMA user_version = {}; CREATE TABLE unrelated (id INTEGER PRIMARY KEY);",
+                crate::core::migrations::get_expected_version()
+            ))
+            .unwrap();
+        drop(foreign);
+
+        let db_conn_arc = Arc::new(Mutex::new(conn));
+        let result = restore_backup(
+            &db_conn_arc,
+            foreign_db_path.to_str().unwrap(),
+            live_db_path.to_str().unwrap(),
+        );
+
+        assert!(
+            result.is_err(),
+            "an unrelated SQLite database must be rejected"
+        );
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("Civic Desk database"));
+        let live = db_conn_arc.lock().unwrap();
+        let sources = list_sources(&live).unwrap();
+        assert_eq!(sources.len(), 1);
+        assert_eq!(sources[0].name, "Keep Me");
+    }
+
+    #[test]
+    fn test_issue_email_template_uses_published_url_or_actionable_placeholder() {
+        let body = "[Story](https://YOUR-PUBLIC-SITE.example/briefs/1.html)";
+        let published =
+            crate::tauri_cmds::prepare_issue_email_body(body, Some("https://news.example.org/"));
+        assert_eq!(published, "[Story](https://news.example.org/briefs/1.html)");
+
+        let unpublished = crate::tauri_cmds::prepare_issue_email_body(body, None);
+        assert!(unpublished.contains("Before sending"));
+        assert!(unpublished.contains("https://YOUR-PUBLIC-SITE.example"));
+    }
+
     // 6. Compiler and Site Gen Tests (Milestone integration test)
     #[test]
     fn test_compiler_static_site() {
@@ -4292,6 +4357,10 @@ I should produce JSON only.
             temp_dir.path().join("newsletter.md").exists(),
             "newsletter export missing"
         );
+        let newsletter = fs::read_to_string(temp_dir.path().join("newsletter.md")).unwrap();
+        assert!(newsletter.contains("https://YOUR-PUBLIC-SITE.example/"));
+        assert!(!newsletter.contains("Generated: 20"));
+        assert!(!newsletter.contains("+00:00"));
         assert!(
             temp_dir.path().join("substack.md").exists(),
             "Substack export missing"
@@ -5158,6 +5227,52 @@ I should produce JSON only.
         assert!(
             !temp_dir.path().join("site-package.zip").exists(),
             "failed public output must not leave a missing or stale ZIP state"
+        );
+    }
+
+    #[test]
+    fn test_failed_recompile_preserves_last_known_good_publication() {
+        let conn =
+            init_db("file:test_compile_preserves_last_good?mode=memory&cache=shared").unwrap();
+        let temp_dir = tempdir().unwrap();
+
+        compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}").unwrap();
+        let original_index = fs::read(temp_dir.path().join("index.html")).unwrap();
+        let original_manifest = fs::read(temp_dir.path().join("publish-manifest.json")).unwrap();
+        let original_zip = fs::read(temp_dir.path().join("site-package.zip")).unwrap();
+
+        insert_draft(
+            &conn,
+            &Draft {
+                id: None,
+                lead_id: None,
+                format: "watch".to_string(),
+                title: "Unpublishable replacement".to_string(),
+                content: "EDITOR_NOTE: This is not public story copy.".to_string(),
+                status: "ready_to_publish".to_string(),
+                verification_checklist: "[]".to_string(),
+                missing_evidence_notes: None,
+                correction_note: None,
+                created_at: Utc::now().to_rfc3339(),
+                updated_at: Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+
+        compile_static_site(&conn, temp_dir.path().to_str().unwrap(), "{}")
+            .expect_err("invalid replacement must fail");
+
+        assert_eq!(
+            fs::read(temp_dir.path().join("index.html")).unwrap(),
+            original_index
+        );
+        assert_eq!(
+            fs::read(temp_dir.path().join("publish-manifest.json")).unwrap(),
+            original_manifest
+        );
+        assert_eq!(
+            fs::read(temp_dir.path().join("site-package.zip")).unwrap(),
+            original_zip
         );
     }
 

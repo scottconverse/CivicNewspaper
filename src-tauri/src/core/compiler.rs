@@ -1175,9 +1175,10 @@ pub fn render_markdown(markdown: &str) -> String {
     html_output
 }
 
-pub fn compile_static_site(
+fn compile_static_site_into(
     conn: &Connection,
     output_dir_str: &str,
+    manifest_output_dir_str: &str,
     profile_json: &str,
 ) -> Result<CompileStaticSiteResult, Box<dyn Error>> {
     let output_dir = Path::new(output_dir_str);
@@ -1572,20 +1573,25 @@ pub fn compile_static_site(
 
     let mut newsletter = format!(
         "# {}\n\n{}\n\nGenerated: {}\n\n",
-        site_title, site_subtitle, generated_at
+        site_title,
+        site_subtitle,
+        generated_at_time.format("%B %d, %Y at %H:%M UTC")
     );
     if compiled_articles.is_empty() {
         newsletter.push_str("No approved stories were included in this package.\n");
     } else {
         newsletter.push_str("## This Issue\n\n");
         for article in &compiled_articles {
+            let article_date = chrono::DateTime::parse_from_rfc3339(&article.updated_at)
+                .map(|date| date.format("%B %d, %Y").to_string())
+                .unwrap_or_else(|_| article.updated_at.clone());
             newsletter.push_str(&format!(
-                "- [{}]({}) - {} - {}\n",
-                article.title, article.relative_path, article.format, article.updated_at
+                "- [{}](https://YOUR-PUBLIC-SITE.example/{}) - {} - {}\n",
+                article.title, article.relative_path, article.format, article_date
             ));
         }
     }
-    newsletter.push_str("\n## Links\n\n- Website home: index.html\n- RSS feed: feed.xml\n");
+    newsletter.push_str("\n## Links\n\n- Website home: https://YOUR-PUBLIC-SITE.example/index.html\n- RSS feed: https://YOUR-PUBLIC-SITE.example/feed.xml\n");
     let newsletter_path = output_dir.join("newsletter.md");
     write_site_file(&newsletter_path, newsletter, &mut files_written)?;
     generated_files.push("newsletter.md".to_string());
@@ -1683,7 +1689,7 @@ pub fn compile_static_site(
     generated_files.push("site-package.zip".to_string());
     let mut result = CompileStaticSiteResult {
         issue_id,
-        output_dir: path_for_manifest(output_dir),
+        output_dir: path_for_manifest(Path::new(manifest_output_dir_str)),
         generated_at,
         provider: "local_export".to_string(),
         published_url: None,
@@ -1719,6 +1725,65 @@ pub fn compile_static_site(
     write_zip_package(output_dir, &zip_path, &result.generated_files)?;
     files_written += 1;
     result.files_written = files_written;
+
+    Ok(result)
+}
+
+fn copy_output_tree(source: &Path, destination: &Path) -> Result<(), Box<dyn Error>> {
+    fs::create_dir_all(destination)?;
+    for entry in fs::read_dir(source)? {
+        let entry = entry?;
+        let target = destination.join(entry.file_name());
+        if entry.file_type()?.is_dir() {
+            copy_output_tree(&entry.path(), &target)?;
+        } else {
+            fs::copy(entry.path(), target)?;
+        }
+    }
+    Ok(())
+}
+
+pub fn compile_static_site(
+    conn: &Connection,
+    output_dir_str: &str,
+    profile_json: &str,
+) -> Result<CompileStaticSiteResult, Box<dyn Error>> {
+    let output_dir = Path::new(output_dir_str);
+    ensure_owned_output_directory(output_dir)?;
+    let parent = output_dir
+        .parent()
+        .ok_or("Publishing output must have a parent directory")?;
+    let unique = format!(
+        "{}-{}",
+        std::process::id(),
+        Utc::now().timestamp_nanos_opt().unwrap_or_default()
+    );
+    let staging_dir = parent.join(format!(".civicdesk-staging-{unique}"));
+    let rollback_dir = parent.join(format!(".civicdesk-rollback-{unique}"));
+    let _ = fs::remove_dir_all(&staging_dir);
+    let _ = fs::remove_dir_all(&rollback_dir);
+    copy_output_tree(output_dir, &staging_dir)?;
+
+    let result = match compile_static_site_into(
+        conn,
+        staging_dir.to_string_lossy().as_ref(),
+        output_dir_str,
+        profile_json,
+    ) {
+        Ok(result) => result,
+        Err(error) => {
+            let _ = fs::remove_dir_all(&staging_dir);
+            return Err(error);
+        }
+    };
+
+    fs::rename(output_dir, &rollback_dir)?;
+    if let Err(error) = fs::rename(&staging_dir, output_dir) {
+        let _ = fs::rename(&rollback_dir, output_dir);
+        let _ = fs::remove_dir_all(&staging_dir);
+        return Err(format!("Failed to replace the publication safely: {error}").into());
+    }
+    let _ = fs::remove_dir_all(&rollback_dir);
 
     insert_publish_run(
         conn,

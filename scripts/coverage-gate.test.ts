@@ -125,8 +125,8 @@ describe("release coverage gate", () => {
 
     expect(policy).toContain("LOCAL_CANDIDATE_COMMIT");
     expect(policy).toContain("PUBLISHED_COMMIT");
-    expect(landing).toContain("has not been uploaded");
-    expect(landing).toContain("do not use its hash for the current download");
+    expect(landing).toContain("pending replacement with the final signed, cleanroom-tested candidate");
+    expect(landing).toContain("older repository evidence is retained as history and is not current-download proof");
   });
 
   test("renders the nested evidence report with publish-root navigation", () => {

@@ -51,7 +51,7 @@ describe("SettingsPanel Component Tests", () => {
     });
 
     // 1. Verify backup path input is editable
-    const backupInput = screen.getByLabelText(/Backup folder/i) as HTMLInputElement;
+    const backupInput = screen.getByLabelText(/Backup file/i) as HTMLInputElement;
     expect(backupInput.value).toBe(backupPath);
     
     fireEvent.change(backupInput, { target: { value: newBackupPath } });

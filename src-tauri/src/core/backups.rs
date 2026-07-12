@@ -4,6 +4,49 @@ use rusqlite::Connection;
 use std::error::Error;
 use std::time::Duration;
 
+fn validate_civic_schema(conn: &Connection) -> Result<(), Box<dyn Error + Send + Sync>> {
+    const REQUIRED_TABLES: &[&str] = &[
+        "sources",
+        "evidence_items",
+        "leads",
+        "lead_evidence",
+        "drafts",
+        "published_posts",
+        "paired_clients",
+    ];
+    for table in REQUIRED_TABLES {
+        let count: i64 = conn.query_row(
+            "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = ?1",
+            [table],
+            |row| row.get(0),
+        )?;
+        if count != 1 {
+            return Err(format!(
+                "Selected file is not a Civic Desk database: required table `{table}` is missing."
+            )
+            .into());
+        }
+    }
+
+    for (table, column) in [
+        ("sources", "url"),
+        ("evidence_items", "source_id"),
+        ("drafts", "content"),
+        ("drafts", "status"),
+        ("published_posts", "draft_id"),
+    ] {
+        let sql = format!("SELECT COUNT(*) FROM pragma_table_info('{table}') WHERE name = ?1");
+        let count: i64 = conn.query_row(&sql, [column], |row| row.get(0))?;
+        if count != 1 {
+            return Err(format!(
+                "Selected file is not a compatible Civic Desk database: `{table}.{column}` is missing."
+            )
+            .into());
+        }
+    }
+    Ok(())
+}
+
 pub fn save_backup(conn: &Connection, dest_path: &str) -> Result<(), Box<dyn Error + Send + Sync>> {
     let mut dest_conn = Connection::open(dest_path)?;
     let backup = rusqlite::backup::Backup::new(conn, &mut dest_conn)?;
@@ -53,6 +96,11 @@ pub fn restore_backup(
                 "Backup database version (v{}) is newer than the app version (v{}). Please update the app.", 
                 version, expected
             ).into());
+        }
+        if let Err(schema_err) = validate_civic_schema(&temp_conn) {
+            drop(temp_conn);
+            let _ = std::fs::remove_file(&temp_db_path);
+            return Err(schema_err);
         }
     }
 
@@ -130,6 +178,18 @@ pub fn restore_backup(
         *conn = original_conn;
         let _ = std::fs::remove_file(&rollback_backup_path);
         return Err(format!("Migrations failed on restored database: {}", migration_err).into());
+    }
+
+    if let Err(schema_err) = validate_civic_schema(&new_conn) {
+        eprintln!("Restored database failed the post-migration schema check: {schema_err}");
+        let mut original_conn = super::db::open_conn(live_db_path)?;
+        let rollback_conn = Connection::open(&rollback_backup_path)?;
+        let backup = rusqlite::backup::Backup::new(&rollback_conn, &mut original_conn)?;
+        let _ = backup.run_to_completion(5, Duration::from_millis(10), None);
+        drop(backup);
+        *conn = original_conn;
+        let _ = std::fs::remove_file(&rollback_backup_path);
+        return Err(format!("Restored database is incompatible: {schema_err}").into());
     }
 
     // Successfully restored! Replace the connection handle

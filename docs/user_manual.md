@@ -8,7 +8,7 @@ The most important rule is simple: The Civic Desk assists you. It does not decid
 
 ## Before You Start
 
-The Civic Desk is public-beta software. It is useful, but it is not a signed stable release yet.
+The Civic Desk is a signed Windows public beta. It is useful, but it is not a stable release yet.
 
 What that means in practice:
 
@@ -67,7 +67,7 @@ You will choose or enter:
 - State.
 - Local AI setup.
 - Publication folder under The Civic Desk app-data folder or your Downloads folder, where finished HTML sites and ZIP review packages are saved.
-- Backup folder and file path under The Civic Desk app-data folder or your Downloads folder.
+- Backup file: a complete `.db` path under The Civic Desk app-data folder or your Downloads folder.
 
 Use real names if you intend to publish publicly. The app should not invent your copyright line, business model, ad policy, AI disclosure, or editorial policy. Those are your decisions.
 

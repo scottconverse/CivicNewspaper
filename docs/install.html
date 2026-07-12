@@ -39,14 +39,14 @@
 <li>Optional but recommended: verify the SHA256 checksum before opening the installer.</li>
 <li>Double-click the installer.</li>
 <li>Confirm the filename and publisher match the official release asset you downloaded.</li>
-<li>Verify the checksum below before installing.</li>
+<li>Verify the checksum published for that exact release asset before installing.</li>
 <li>Follow the installer prompts.</li>
 <li>Launch <strong>The Civic Desk</strong> from the Start menu.</li>
 </ol>
 <h2 id="macos-and-linux">macOS And Linux</h2>
 <p>macOS and Linux installers are backlog/proof-needed for this release line. Do not assume a historical <code>.dmg</code>, <code>.deb</code>, package config, or build target is supported until the release notes include a clean-machine proof for that platform.</p>
 <h2 id="clean-machine-proof">Clean-Machine Proof</h2>
-<p>Every release candidate needs an artifact-bound installed-package report from a clean machine, VM, Windows Sandbox, external tester, or isolated app-data profile before it can be called proved at that evidence level. The v0.3.2 local Windows beta candidate was built from commit <code>bfa37f87dda8aa61c98da4bd7bc2be907581a416</code>; its SHA256 is <code>636D87041396603456634E6B47AE1071E8726D8D05C0FC08768D5B9E92A71C83</code> and its size is <code>5274104</code> bytes. It passed dependency-absent onboarding and the live-model source-to-Workbench path in fresh isolated profiles with zero failed or skipped release-smoke checks. See the <a href="release-evidence/v0.3.2-local-isolated-package-report.html">local isolated-package report</a>. The GitHub release asset has not yet been replaced with this tested candidate, so do not use this candidate hash to verify the older published download.</p>
+<p>Every release candidate needs an artifact-bound installed-package report from a clean machine, VM, Windows Sandbox, external tester, or isolated app-data profile before it can be called proved at that evidence level. The repository&#x27;s <a href="release-evidence/v0.3.2-local-isolated-package-report.html">local isolated-package report</a> records an earlier candidate and is retained as historical evidence. It is not the checksum for the candidate currently under evaluation or for the existing GitHub download. The final beta candidate must publish a new exact-candidate report and checksum only after the merged commit is signed and the same installer bytes complete the cleanroom gate.</p>
 <p>Required proof for a cleanroom-proven release:</p>
 <ol>
 <li>Build the artifact from a named commit.</li>

@@ -18,9 +18,6 @@ vi.mock("@tauri-apps/api/event", () => ({
   listen: vi.fn(() => Promise.resolve(() => {})),
 }));
 
-vi.mock("@tauri-apps/plugin-opener", () => ({
-  openUrl: vi.fn(),
-}));
 
 describe("OnboardingWizard Component Tests", () => {
   beforeEach(() => {
@@ -829,7 +826,7 @@ describe("OnboardingWizard Component Tests", () => {
     });
   });
 
-  test("model setup auto-starts pull and completes onboarding when no input events arrive", async () => {
+  test("model setup recovery stays neutral and completes onboarding", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
     const eventApi = await import("@tauri-apps/api/event");
@@ -863,6 +860,7 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(screen.getByText(/Download a recommended model/i)).toBeInTheDocument());
 
     await waitFor(() => expect(screen.getByText("Step 3 of 5")).toBeInTheDocument());
+    expect(screen.queryByText(/not receiving input events/i)).not.toBeInTheDocument();
     await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("pull_ollama_model", { modelId: "phi4-mini:latest" }));
     await waitFor(() => expect(handleComplete).toHaveBeenCalled());
   });

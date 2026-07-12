@@ -528,10 +528,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       }
 
       runtimeInstallRescueAttemptedRef.current = true;
-      setSetupNotice("The setup screen is not receiving input events, so The Civic Desk is installing the local AI runtime automatically.");
+      setSetupNotice("Local AI setup is taking a little while. The Civic Desk is continuing the runtime installation automatically.");
       void installRuntime().then((ready) => {
         if (ready) {
-          setSetupNotice("The local AI runtime is ready. Because setup is not receiving input events, The Civic Desk is starting the recommended model download automatically.");
+          setSetupNotice("The local AI runtime is ready. The Civic Desk is starting the recommended model download automatically.");
           setAutoStartPull(true);
           void goToStep(3);
         }
@@ -565,7 +565,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
       modelDownloadRescueAttemptedRef.current = true;
       setSetupRecoveryActive(true);
-      setSetupNotice("The setup screen still is not receiving input events, so The Civic Desk started the recommended model download automatically.");
+      setSetupNotice("The model download is taking a little while, so The Civic Desk is continuing it automatically.");
       setAutoStartPull(true);
       void goToStep(3);
     }, MODEL_DOWNLOAD_RESCUE_MS);
@@ -682,7 +682,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       if (latestHealth) {
         setHealth(latestHealth);
       }
-      setSetupNotice("The recommended model is installed. Setup is continuing automatically because the setup screen is not receiving input events.");
+      setSetupNotice("The recommended model is installed. Setup is continuing automatically.");
       await goToStep(4);
     };
 
@@ -722,7 +722,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         try {
           await saveSetting("paths.publish", publishPath);
           await saveSetting("paths.backup", backupPath);
-          setSetupNotice("Default folders were saved automatically because the setup screen is not receiving input events.");
+          setSetupNotice("Default folders were saved. Setup is continuing automatically.");
           await goToStep(5);
         } catch (e) {
           console.error(e);
@@ -1514,7 +1514,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>Finished HTML sites and ZIP review packages are saved here.</p>
                 </div>
                 <div>
-                  <label htmlFor="onboarding-backup-path" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Backup folder</label>
+                  <label htmlFor="onboarding-backup-path" style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>Backup file</label>
                   <input id="onboarding-backup-path" type="text" value={backupPath} onChange={e => setBackupPath(e.target.value)} style={{ width: "100%", padding: "0.5rem" }} />
                   <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>Database backup copies are saved here.</p>
                 </div>

@@ -97,6 +97,20 @@ describe("AppContent Component Tests", () => {
     }
   });
 
+  test("keeps command errors visible while the current panel is scrolled", () => {
+    const mockApp = {
+      ...makeMockApp("publish"),
+      errorMessage: "Choose Downloads for this export.",
+    };
+
+    render(<AppContent app={mockApp} />);
+
+    expect(screen.getByText("Choose Downloads for this export.").closest('[role="alert"]')).toHaveStyle({
+      position: "sticky",
+      top: "1rem",
+    });
+  });
+
   test("setup handoff exposes a visible Run Daily Scan action", async () => {
     const mockApp = {
       ...makeMockApp("dailyScan"),
