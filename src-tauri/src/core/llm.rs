@@ -1291,67 +1291,56 @@ mod stream_parser_tests {
 
     #[test]
     fn generation_timeout_resolves_env_values() {
-        // Serialized within one test to avoid cross-test env-var races.
+        let mut env = crate::test_support::TestEnv::new();
         let key = "CIVICNEWS_LLM_TIMEOUT_SECS";
-        let prev = std::env::var(key).ok();
 
-        std::env::remove_var(key);
+        env.remove(key);
         assert_eq!(
             generation_timeout(),
             Some(Duration::from_secs(DEFAULT_LLM_TIMEOUT_SECS)),
             "unset → default"
         );
 
-        std::env::set_var(key, "120");
+        env.set(key, "120");
         assert_eq!(
             generation_timeout(),
             Some(Duration::from_secs(120)),
             "valid integer → that many seconds"
         );
 
-        std::env::set_var(key, "0");
+        env.set(key, "0");
         assert_eq!(generation_timeout(), None, "0 → no timeout");
 
-        std::env::set_var(key, "  90 ");
+        env.set(key, "  90 ");
         assert_eq!(
             generation_timeout(),
             Some(Duration::from_secs(90)),
             "whitespace is trimmed"
         );
 
-        std::env::set_var(key, "garbage");
+        env.set(key, "garbage");
         assert_eq!(
             generation_timeout(),
             Some(Duration::from_secs(DEFAULT_LLM_TIMEOUT_SECS)),
             "unparseable → default"
         );
-
-        match prev {
-            Some(v) => std::env::set_var(key, v),
-            None => std::env::remove_var(key),
-        }
     }
 
     #[test]
     fn ollama_base_url_accepts_only_loopback_overrides() {
+        let mut env = crate::test_support::TestEnv::new();
         let key = "CIVICNEWS_OLLAMA_BASE_URL";
-        let prev = std::env::var(key).ok();
 
-        std::env::remove_var(key);
+        env.remove(key);
         assert_eq!(ollama_base_url(), DEFAULT_OLLAMA_BASE_URL);
 
-        std::env::set_var(key, "http://127.0.0.1:65534/");
+        env.set(key, "http://127.0.0.1:65534/");
         assert_eq!(ollama_base_url(), "http://127.0.0.1:65534");
 
-        std::env::set_var(key, "http://localhost:11435");
+        env.set(key, "http://localhost:11435");
         assert_eq!(ollama_base_url(), "http://localhost:11435");
 
-        std::env::set_var(key, "https://example.com");
+        env.set(key, "https://example.com");
         assert_eq!(ollama_base_url(), DEFAULT_OLLAMA_BASE_URL);
-
-        match prev {
-            Some(v) => std::env::set_var(key, v),
-            None => std::env::remove_var(key),
-        }
     }
 }

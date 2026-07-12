@@ -1,6 +1,8 @@
 // src/lib.rs
 mod core;
 mod tauri_cmds;
+#[cfg(test)]
+mod test_support;
 
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
