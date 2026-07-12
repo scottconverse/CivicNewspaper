@@ -38,24 +38,18 @@ describe("release coverage gate", () => {
     const smoke = read(".github/workflows/signing-smoke.yml");
     const tauriConfig = JSON.parse(read("src-tauri/tauri.windows-signing.conf.json"));
     const signer = read("scripts/sign-windows-artifact.ps1");
+    const shim = read("scripts/sign-windows-shim.cs");
 
-    expect(tauriConfig.bundle.windows.signCommand).toEqual({
-      cmd: "powershell.exe",
-      args: [
-        "-NoLogo",
-        "-NoProfile",
-        "-NonInteractive",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-Command",
-        "$root = if ($env:GITHUB_WORKSPACE) { $env:GITHUB_WORKSPACE } else { $PWD }; & (Join-Path $root 'scripts\\sign-windows-artifact.ps1') -File",
-        "%1",
-      ],
-    });
+    expect(tauriConfig.bundle.windows.signCommand).toBe("civic-sign-shim.exe %1");
     expect(release).toContain("Install-Module -Name ArtifactSigning -RequiredVersion 0.1.8");
     expect(smoke).toContain("Install-Module -Name ArtifactSigning -RequiredVersion 0.1.8");
     expect(release).toMatch(/Install pinned Artifact Signing module[\s\S]*?shell: powershell/);
     expect(smoke).toMatch(/Install pinned Artifact Signing module[\s\S]*?shell: powershell/);
+    expect(release).toContain("sign-windows-shim.cs");
+    expect(smoke).toContain("sign-windows-shim.cs");
+    expect(shim).toContain("ProcessStartInfo");
+    expect(shim).toContain("sign-windows-artifact.ps1");
+    expect(shim).not.toContain("AZURE_CLIENT_SECRET");
     expect(release).toContain("tauri.windows-signing.conf.json");
     expect(smoke).toContain("tauri.windows-signing.conf.json");
     expect(release).toContain("Dump signing diagnostics");

@@ -61,6 +61,14 @@ jobs:
           Install-Module -Name ArtifactSigning -RequiredVersion 0.1.8 -Scope CurrentUser -Force -Repository PSGallery
           "$env:GITHUB_WORKSPACE\scripts" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
+      - name: Build native signing shim
+        shell: powershell
+        run: |
+          $source = Get-Content -Raw "$env:GITHUB_WORKSPACE\scripts\sign-windows-shim.cs"
+          $output = Join-Path $env:RUNNER_TEMP "civic-sign-shim.exe"
+          Add-Type -TypeDefinition $source -OutputAssembly $output -OutputType ConsoleApplication
+          $env:RUNNER_TEMP | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
       - name: Build and sign Windows NSIS installer
         uses: tauri-apps/tauri-action@v0
         env:
