@@ -7034,6 +7034,7 @@ I should produce JSON only.
     }
 
     #[tokio::test]
+    #[ignore = "release gate: requires a running Ollama service with the selected real model installed"]
     async fn stage10_live_ollama_daily_scan_completes_with_real_local_model() {
         let model = std::env::var("CIVICNEWS_STAGE10_REAL_MODEL")
             .unwrap_or_else(|_| "phi4-mini:latest".to_string());
