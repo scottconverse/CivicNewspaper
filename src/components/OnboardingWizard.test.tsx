@@ -71,6 +71,47 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(handleComplete).toHaveBeenCalled());
   });
 
+  test("Finish re-persists the selected starter identity before completing onboarding", async () => {
+    const handleComplete = vi.fn();
+    const invokeMock = tauriCore.invoke as any;
+    const savedIdentity: Record<string, string> = {
+      "identity.newsroom_name": "Longmont Civic Desk",
+      "identity.editor_name": "Local Editor",
+      "identity.organization_type": "single_person",
+      "identity.city": "Longmont",
+      "identity.state": "CO",
+    };
+
+    invokeMock.mockImplementation((cmd: string, args?: { key?: string }) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(args?.key ? savedIdentity[args.key] ?? null : null);
+      if (cmd === "get_community_profile") return Promise.resolve({
+        site_title: "My Local Publication",
+        organization_type: "single_person",
+        city: "",
+        state: "",
+      });
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={true} systemRam={16} onComplete={handleComplete} initialStep={5} />);
+    await waitFor(() => expect(screen.getByText("Step 5 of 5")).toBeInTheDocument());
+    await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("get_setting", { key: "identity.city" }));
+
+    invokeMock.mockClear();
+    fireEvent.click(screen.getByRole("button", { name: /Finish Onboarding/i }));
+
+    await waitFor(() => expect(handleComplete).toHaveBeenCalled());
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "identity.city",
+      value: "Longmont",
+    });
+    expect(invokeMock).toHaveBeenCalledWith("set_setting", {
+      key: "identity.state",
+      value: "CO",
+    });
+  });
+
   test("fresh setup persists default publish and backup paths immediately", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;

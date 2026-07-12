@@ -8,7 +8,7 @@ This FAQ is intentionally plain about what works, what is still beta, and what t
 
 ### Is this production software?
 
-Not yet. The Civic Desk is a public beta. It has working source intake, local AI paths, editorial workflow, static-site generation, share-package export, and publishing connectors, but the installers are unsigned and stable-grade cross-platform clean-machine proof is still in progress.
+Not yet. The Civic Desk is a public beta. Its Windows installer is Authenticode-signed and the signing gate verifies the installer, installed application, and uninstaller. Stable-grade cross-platform clean-machine proof is still in progress.
 
 Use it with informed caution. A human editor remains responsible for every published word.
 

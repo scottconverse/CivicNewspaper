@@ -2,7 +2,7 @@
 
 > **Project name:** CivicNewspaper. **Installed app name:** The Civic Desk.
 >
-> **Current release line:** v0.3.2 Windows-only public beta. The local release candidate built from commit `bfa37f87dda8aa61c98da4bd7bc2be907581a416` passed the artifact-bound isolated installed-package gate with SHA256 `636D87041396603456634E6B47AE1071E8726D8D05C0FC08768D5B9E92A71C83` and size `5274104` bytes. The GitHub release asset has not yet been replaced with this candidate. It predates the current signing rollout. This is not a stable production release.
+> **Current release line:** v0.3.2 Windows-only public beta. Windows release candidates are Authenticode-signed, timestamped, and fail the release workflow unless the installer, installed application, and uninstaller all validate. The GitHub release asset has not yet been replaced with the current candidate. This is not a stable production release.
 
 The Civic Desk is a local-first desktop newsroom tool for small local publishers, civic reporters, and community editors. It helps one person or a small team monitor public local sources, discover story leads, draft articles with a local AI model, review risks and evidence, and publish a static local-news issue.
 
