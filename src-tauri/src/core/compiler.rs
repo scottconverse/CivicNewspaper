@@ -7,7 +7,7 @@ use super::scraper::strip_public_boilerplate;
 use super::source_grounding;
 use chrono::{Datelike, Utc};
 use pulldown_cmark::{html, CowStr, Event, Options, Parser, Tag};
-use rusqlite::{params, Connection};
+use rusqlite::{params, Connection, OptionalExtension};
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::error::Error;
@@ -75,6 +75,42 @@ pub struct CompiledArticle {
     pub relative_path: String,
     #[serde(alias = "updated_at")]
     pub published_date: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct CorrectionRecord {
+    note: String,
+    corrected_at: String,
+}
+
+fn durable_correction_history(
+    existing: &str,
+    current_note: Option<&str>,
+    draft_updated_at: &str,
+) -> Result<(String, Option<String>), serde_json::Error> {
+    let mut records: Vec<CorrectionRecord> = serde_json::from_str(existing).unwrap_or_else(|_| {
+        let legacy = existing.trim();
+        if legacy.is_empty() {
+            Vec::new()
+        } else {
+            vec![CorrectionRecord {
+                note: legacy.to_string(),
+                corrected_at: draft_updated_at.to_string(),
+            }]
+        }
+    });
+
+    if let Some(note) = current_note.map(str::trim).filter(|note| !note.is_empty()) {
+        if records.last().map(|record| record.note.as_str()) != Some(note) {
+            records.push(CorrectionRecord {
+                note: note.to_string(),
+                corrected_at: draft_updated_at.to_string(),
+            });
+        }
+    }
+
+    let corrected_at = records.last().map(|record| record.corrected_at.clone());
+    Ok((serde_json::to_string(&records)?, corrected_at))
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -979,6 +1015,122 @@ mod tests {
     }
 
     #[test]
+    fn publication_recovery_restores_last_good_output_after_old_move() {
+        let root = tempfile::tempdir().unwrap();
+        let output = root.path().join("site");
+        let staging = root.path().join(".civicdesk-staging-test");
+        let rollback = root.path().join(".civicdesk-rollback-test");
+        fs::create_dir_all(&staging).unwrap();
+        fs::create_dir_all(&rollback).unwrap();
+        fs::write(rollback.join("index.html"), "last good").unwrap();
+        fs::write(staging.join("index.html"), "candidate").unwrap();
+        let journal_path = publication_swap_journal(&output).unwrap();
+        write_swap_journal(
+            &journal_path,
+            &PublicationSwapJournal {
+                staging: staging.clone(),
+                rollback: rollback.clone(),
+                phase: "old_moved".to_string(),
+            },
+        )
+        .unwrap();
+
+        recover_interrupted_publication(&output).unwrap();
+
+        assert_eq!(
+            fs::read_to_string(output.join("index.html")).unwrap(),
+            "last good"
+        );
+        assert!(!staging.exists());
+        assert!(!rollback.exists());
+        assert!(!journal_path.exists());
+    }
+
+    #[test]
+    fn startup_recovery_uses_pending_output_without_another_publish() {
+        let root = tempfile::tempdir().unwrap();
+        let output = root.path().join("site");
+        let staging = root.path().join(".civicdesk-staging-startup");
+        let rollback = root.path().join(".civicdesk-rollback-startup");
+        fs::create_dir_all(&staging).unwrap();
+        fs::create_dir_all(&rollback).unwrap();
+        fs::write(rollback.join("index.html"), "last good").unwrap();
+        write_swap_journal(
+            &publication_swap_journal(&output).unwrap(),
+            &PublicationSwapJournal {
+                staging,
+                rollback,
+                phase: "old_moved".to_string(),
+            },
+        )
+        .unwrap();
+        let mut conn = rusqlite::Connection::open_in_memory().unwrap();
+        crate::core::migrations::run_migrations(&mut conn).unwrap();
+        conn.execute(
+            "INSERT INTO settings (key, value) VALUES ('pending_publication_output', ?1)",
+            [output.to_string_lossy().as_ref()],
+        )
+        .unwrap();
+
+        crate::recover_pending_publication(&conn);
+
+        assert_eq!(
+            fs::read_to_string(output.join("index.html")).unwrap(),
+            "last good"
+        );
+        let pending: i64 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM settings WHERE key = 'pending_publication_output'",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(pending, 0);
+    }
+
+    #[test]
+    fn publication_recovery_keeps_installed_candidate_and_rejects_forged_paths() {
+        let root = tempfile::tempdir().unwrap();
+        let output = root.path().join("site");
+        let staging = root.path().join(".civicdesk-staging-test");
+        let rollback = root.path().join(".civicdesk-rollback-test");
+        fs::create_dir_all(&output).unwrap();
+        fs::create_dir_all(&rollback).unwrap();
+        fs::write(output.join("index.html"), "candidate").unwrap();
+        fs::write(rollback.join("index.html"), "last good").unwrap();
+        let journal_path = publication_swap_journal(&output).unwrap();
+        write_swap_journal(
+            &journal_path,
+            &PublicationSwapJournal {
+                staging,
+                rollback: rollback.clone(),
+                phase: "new_installed".to_string(),
+            },
+        )
+        .unwrap();
+        recover_interrupted_publication(&output).unwrap();
+        assert_eq!(
+            fs::read_to_string(output.join("index.html")).unwrap(),
+            "candidate"
+        );
+        assert!(!rollback.exists());
+
+        let outside = root.path().parent().unwrap().join("outside-forged");
+        fs::create_dir_all(&outside).unwrap();
+        write_swap_journal(
+            &journal_path,
+            &PublicationSwapJournal {
+                staging: outside.clone(),
+                rollback: outside.clone(),
+                phase: "old_moved".to_string(),
+            },
+        )
+        .unwrap();
+        assert!(recover_interrupted_publication(&output).is_err());
+        assert!(outside.exists());
+    }
+
+    #[test]
     fn compile_preflight_rejects_cited_paragraph_with_unrelated_evidence() {
         let content = "Council members are expected to vote on a library roof repair contract this week, increase capacity by 40 percent, and spend ten million dollars over ten years [Source](evidence:57).";
         let draft = draft_with_lead(content);
@@ -1407,7 +1559,28 @@ fn compile_static_site_into(
         post_html = post_html.replace("{{LAYOUT_CLASS}}", layout_class);
         post_html = post_html.replace("{{POST_TITLE}}", &safe_title);
         post_html = post_html.replace("{{POST_DESCRIPTION}}", &safe_title);
-        let public_date = format_public_date(&draft.updated_at);
+        let existing_publication: Option<(String, String)> = conn
+            .query_row(
+                "SELECT published_at, correction_history FROM published_posts WHERE draft_id = ?1",
+                [draft_id],
+                |row| Ok((row.get(0)?, row.get(1)?)),
+            )
+            .optional()?;
+        let publication_time = existing_publication
+            .as_ref()
+            .map(|(published_at, _)| published_at.clone())
+            .unwrap_or_else(|| generated_at.clone());
+        let existing_correction_history = existing_publication
+            .as_ref()
+            .map(|(_, history)| history.as_str())
+            .unwrap_or("[]");
+        let (correction_history, correction_time) = durable_correction_history(
+            existing_correction_history,
+            draft.correction_note.as_deref(),
+            &draft.updated_at,
+        )?;
+        let public_date = format_public_date(&publication_time);
+        post_html = post_html.replace("{{DATE_LABEL}}", "Published");
         post_html = post_html.replace("{{POST_DATE}}", &public_date);
         post_html = post_html.replace("{{POST_FORMAT}}", public_format);
         post_html = post_html.replace("{{POST_CONTENT}}", &html_content);
@@ -1452,11 +1625,8 @@ fn compile_static_site_into(
             draft_id,
             file_path: relative_path.clone(),
             url: relative_path.clone(),
-            published_at: draft.updated_at.clone(),
-            correction_history: draft
-                .correction_note
-                .clone()
-                .unwrap_or_else(|| "[]".to_string()),
+            published_at: publication_time.clone(),
+            correction_history,
         };
         // Let's insert published post into DB (ignoring if it exists or doing it silently)
         let mut stmt = conn.prepare("SELECT count(*) FROM published_posts WHERE draft_id = ?1")?;
@@ -1465,8 +1635,8 @@ fn compile_static_site_into(
             insert_published_post(conn, &published_post)?;
         } else {
             conn.execute(
-                "UPDATE published_posts SET published_at = ?1, correction_history = ?2 WHERE draft_id = ?3",
-                params![draft.updated_at, published_post.correction_history, draft_id],
+                "UPDATE published_posts SET correction_history = ?1 WHERE draft_id = ?2",
+                params![published_post.correction_history, draft_id],
             )?;
         }
 
@@ -1477,7 +1647,7 @@ fn compile_static_site_into(
         ));
 
         // Add to RSS feed items
-        let rss_date = format_rss_date(&draft.updated_at);
+        let rss_date = format_rss_date(&publication_time);
         let rss_date_element = if rss_date.is_empty() {
             String::new()
         } else {
@@ -1500,7 +1670,10 @@ fn compile_static_site_into(
             let safe_corr_note = html_escape::encode_safe(&note_str);
             corrections_list_html.push_str(&format!(
                 "<div style=\"border-bottom: 1px dashed #cccccc; padding: 1.5rem 0;\">\n  <h3 style=\"margin-top: 0;\"><a href=\"{}\">{}</a></h3>\n  <p style=\"font-size: 0.9rem; color: #856404; background-color: #fff3cd; padding: 0.75rem; border-radius: 4px;\"><strong>Correction Notice ({}):</strong> {}</p>\n</div>\n\n",
-                relative_path, safe_title, public_date, safe_corr_note
+                relative_path,
+                safe_title,
+                format_public_date(correction_time.as_deref().unwrap_or(&draft.updated_at)),
+                safe_corr_note
             ));
         }
     }
@@ -1554,7 +1727,8 @@ fn compile_static_site_into(
             page_html = page_html.replace("{{LAYOUT_CLASS}}", layout_class);
             page_html = page_html.replace("{{POST_TITLE}}", title);
             page_html = page_html.replace("{{POST_DESCRIPTION}}", title);
-            page_html = page_html.replace("{{POST_DATE}}", &Utc::now().to_rfc3339());
+            page_html = page_html.replace("{{DATE_LABEL}}", "Generated");
+            page_html = page_html.replace("{{POST_DATE}}", &format_public_date(&generated_at));
             page_html = page_html.replace("{{POST_FORMAT}}", "meta");
             page_html = page_html.replace("{{POST_CONTENT}}", &body_html);
             page_html = page_html.replace("{{EVIDENCE_SECTION}}", "");
@@ -1580,7 +1754,9 @@ fn compile_static_site_into(
     corrections_html = corrections_html.replace("{{POST_TITLE}}", "Public Corrections Ledger");
     corrections_html =
         corrections_html.replace("{{POST_DESCRIPTION}}", "Public Corrections Ledger");
-    corrections_html = corrections_html.replace("{{POST_DATE}}", &Utc::now().to_rfc3339());
+    corrections_html = corrections_html.replace("{{DATE_LABEL}}", "Generated");
+    corrections_html =
+        corrections_html.replace("{{POST_DATE}}", &format_public_date(&generated_at));
     corrections_html = corrections_html.replace("{{POST_FORMAT}}", "ledger");
     corrections_html = corrections_html.replace("{{POST_CONTENT}}", &corrections_list_html);
     corrections_html = corrections_html.replace("{{EVIDENCE_SECTION}}", "");
@@ -1757,6 +1933,7 @@ fn compile_static_site_into(
     Ok(result)
 }
 
+#[allow(dead_code)]
 fn copy_output_tree(source: &Path, destination: &Path) -> Result<(), Box<dyn Error>> {
     fs::create_dir_all(destination)?;
     for entry in fs::read_dir(source)? {
@@ -1771,12 +1948,116 @@ fn copy_output_tree(source: &Path, destination: &Path) -> Result<(), Box<dyn Err
     Ok(())
 }
 
+#[derive(Serialize, Deserialize)]
+struct PublicationSwapJournal {
+    staging: PathBuf,
+    rollback: PathBuf,
+    phase: String,
+}
+
+fn publication_swap_journal(output_dir: &Path) -> Result<PathBuf, Box<dyn Error>> {
+    let parent = output_dir
+        .parent()
+        .ok_or("Publishing output must have a parent directory")?;
+    let name = output_dir
+        .file_name()
+        .and_then(|value| value.to_str())
+        .ok_or("Publishing output must have a valid folder name")?;
+    Ok(parent.join(format!(".civicdesk-swap-{name}.json")))
+}
+
+#[allow(dead_code)]
+fn write_swap_journal(path: &Path, journal: &PublicationSwapJournal) -> Result<(), Box<dyn Error>> {
+    let temp = path.with_extension("json.tmp");
+    let mut file = fs::File::create(&temp)?;
+    file.write_all(serde_json::to_string(journal)?.as_bytes())?;
+    file.sync_all()?;
+    drop(file);
+    fs::rename(temp, path)?;
+    Ok(())
+}
+
+pub(crate) fn recover_interrupted_publication(output_dir: &Path) -> Result<(), Box<dyn Error>> {
+    let journal_path = publication_swap_journal(output_dir)?;
+    if !journal_path.exists() {
+        return Ok(());
+    }
+    let journal: PublicationSwapJournal =
+        serde_json::from_str(&fs::read_to_string(&journal_path)?)?;
+    let parent = output_dir
+        .parent()
+        .ok_or("Publishing output must have a parent directory")?;
+    if journal.staging.parent() != Some(parent)
+        || journal.rollback.parent() != Some(parent)
+        || !journal
+            .staging
+            .file_name()
+            .is_some_and(|name| name.to_string_lossy().starts_with(".civicdesk-staging-"))
+        || !journal
+            .rollback
+            .file_name()
+            .is_some_and(|name| name.to_string_lossy().starts_with(".civicdesk-rollback-"))
+    {
+        return Err("Invalid publication recovery journal paths".into());
+    }
+
+    if !output_dir.exists() && journal.rollback.exists() {
+        fs::rename(&journal.rollback, output_dir)?;
+    }
+    if output_dir.exists() {
+        let _ = fs::remove_dir_all(&journal.rollback);
+        let _ = fs::remove_dir_all(&journal.staging);
+        fs::remove_file(journal_path)?;
+    }
+    Ok(())
+}
+
+pub fn compile_static_site_candidate(
+    conn: &Connection,
+    build_dir: &Path,
+    manifest_output_dir: &Path,
+    profile_json: &str,
+) -> Result<CompileStaticSiteResult, Box<dyn Error>> {
+    ensure_owned_output_directory(build_dir)?;
+    compile_static_site_into(
+        conn,
+        build_dir.to_string_lossy().as_ref(),
+        manifest_output_dir.to_string_lossy().as_ref(),
+        profile_json,
+    )
+}
+
+pub fn record_publish_run(
+    conn: &Connection,
+    result: &CompileStaticSiteResult,
+) -> Result<(), Box<dyn Error>> {
+    insert_publish_run(
+        conn,
+        &PublishRun {
+            id: None,
+            issue_id: result.issue_id.clone(),
+            output_path: result.output_dir.clone(),
+            generated_files: serde_json::to_string(&result.generated_files)?,
+            provider: result.provider.clone(),
+            published_url: result.published_url.clone(),
+            deployment_id: result.deployment_id.clone(),
+            article_count: result.article_count as i32,
+            skipped_count: result.skipped_count as i32,
+            files_written: result.files_written as i32,
+            generated_at: result.generated_at.clone(),
+        },
+    )?;
+    Ok(())
+}
+
+#[allow(dead_code)]
 pub fn compile_static_site(
     conn: &Connection,
     output_dir_str: &str,
     profile_json: &str,
 ) -> Result<CompileStaticSiteResult, Box<dyn Error>> {
     let output_dir = Path::new(output_dir_str);
+    recover_interrupted_publication(output_dir)?;
     ensure_owned_output_directory(output_dir)?;
     let parent = output_dir
         .parent()
@@ -1805,30 +2086,28 @@ pub fn compile_static_site(
         }
     };
 
+    let journal_path = publication_swap_journal(output_dir)?;
+    let mut journal = PublicationSwapJournal {
+        staging: staging_dir.clone(),
+        rollback: rollback_dir.clone(),
+        phase: "prepared".to_string(),
+    };
+    write_swap_journal(&journal_path, &journal)?;
     fs::rename(output_dir, &rollback_dir)?;
+    journal.phase = "old_moved".to_string();
+    write_swap_journal(&journal_path, &journal)?;
     if let Err(error) = fs::rename(&staging_dir, output_dir) {
         let _ = fs::rename(&rollback_dir, output_dir);
         let _ = fs::remove_dir_all(&staging_dir);
+        let _ = fs::remove_file(&journal_path);
         return Err(format!("Failed to replace the publication safely: {error}").into());
     }
+    journal.phase = "new_installed".to_string();
+    write_swap_journal(&journal_path, &journal)?;
     let _ = fs::remove_dir_all(&rollback_dir);
+    fs::remove_file(journal_path)?;
 
-    insert_publish_run(
-        conn,
-        &PublishRun {
-            id: None,
-            issue_id: result.issue_id.clone(),
-            output_path: result.output_dir.clone(),
-            generated_files: serde_json::to_string(&result.generated_files)?,
-            provider: result.provider.clone(),
-            published_url: result.published_url.clone(),
-            deployment_id: result.deployment_id.clone(),
-            article_count: result.article_count as i32,
-            skipped_count: result.skipped_count as i32,
-            files_written: result.files_written as i32,
-            generated_at: result.generated_at.clone(),
-        },
-    )?;
+    record_publish_run(conn, &result)?;
 
     Ok(result)
 }

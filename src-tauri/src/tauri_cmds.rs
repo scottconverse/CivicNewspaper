@@ -2728,6 +2728,7 @@ pub fn publish(
     output_dir: String,
 ) -> Result<compiler::CompileStaticSiteResult, String> {
     let output_dir = validate_app_write_destination(&app, &output_dir)?;
+    output_dir.prepare_directory()?;
     let profile_json = {
         let path = get_config_path(&app)?;
         if path.exists() {
@@ -2739,8 +2740,61 @@ pub fn publish(
 
     let conn = db.lock().map_err(|_| "Failed to lock database")?;
     ensure_publishable_story_exists(&conn)?;
-    compiler::compile_static_site(&conn, &output_dir.to_string_lossy(), &profile_json)
-        .map_err(|e| e.to_string())
+    conn.execute(
+        "INSERT OR REPLACE INTO settings (key, value) VALUES ('pending_publication_output', ?1)",
+        [output_dir.path().to_string_lossy().as_ref()],
+    )
+    .map_err(|e| e.to_string())?;
+    let candidate = crate::core::app_paths::app_data_dir(&app)?
+        .join("sites")
+        .join(format!(".publish-candidate-{}", uuid::Uuid::new_v4()));
+    conn.execute_batch("SAVEPOINT publication_candidate")
+        .map_err(|e| e.to_string())?;
+    let result = (|| {
+        let result = compiler::compile_static_site_candidate(
+            &conn,
+            &candidate,
+            output_dir.path(),
+            &profile_json,
+        )
+        .map_err(|e| e.to_string())?;
+        let app_data = crate::core::app_paths::app_data_dir(&app)?;
+        output_dir.install_tree_from_with_commit(&candidate, &app_data, |install_id| {
+            compiler::record_publish_run(&conn, &result).map_err(|e| e.to_string())?;
+            conn.execute(
+                "INSERT INTO settings (key, value) VALUES (?1, '1')",
+                [format!("publication_commit_{install_id}")],
+            )
+            .map_err(|e| e.to_string())?;
+            conn.execute_batch("RELEASE publication_candidate")
+                .map_err(|e| e.to_string())
+        })?;
+        Ok(result)
+    })();
+    match result {
+        Ok(result) => {
+            if let Err(warning) = cleanup_trusted_candidate(&candidate) {
+                eprintln!(
+                    "Publication committed, but candidate housekeeping needs attention: {warning}"
+                );
+            }
+            if let Err(warning) = conn.execute(
+                "DELETE FROM settings WHERE key = 'pending_publication_output'",
+                [],
+            ) {
+                eprintln!("Publication committed, but its pending marker could not be cleared: {warning}. Startup recovery will reconcile it.");
+            }
+            Ok(result)
+        }
+        Err(error) => {
+            let _ = conn
+                .execute_batch("ROLLBACK TO publication_candidate; RELEASE publication_candidate");
+            if let Err(cleanup_error) = cleanup_trusted_candidate(&candidate) {
+                return Err(format!("{error} Cleanup also failed: {cleanup_error}"));
+            }
+            Err(error)
+        }
+    }
 }
 
 fn ensure_publishable_story_exists(conn: &rusqlite::Connection) -> Result<(), String> {
@@ -2772,29 +2826,88 @@ pub fn record_publish_destination(
     deployment_id: Option<String>,
 ) -> Result<compiler::CompileStaticSiteResult, String> {
     let output_dir = validate_app_write_destination(&app, &output_dir)?;
+    output_dir.prepare_directory()?;
     let provider = provider.trim();
     let _connector = publisher::publisher_for(provider)?;
     let normalized_url = publisher::validate_public_url(&published_url)?;
-    let output_path = publisher::validate_publish_artifacts(&output_dir.to_string_lossy())?;
-
-    let result = compiler::record_publish_destination_files(
-        &output_path,
-        provider,
-        &normalized_url,
-        deployment_id.as_deref(),
-    )
-    .map_err(|e| e.to_string())?;
+    let app_data = crate::core::app_paths::app_data_dir(&app)?;
+    let candidate = app_data
+        .join("sites")
+        .join(format!(".record-candidate-{}", uuid::Uuid::new_v4()));
+    let staged = (|| {
+        output_dir.snapshot_tree_to(&candidate)?;
+        let output_path = publisher::validate_publish_artifacts(&candidate.to_string_lossy())?;
+        compiler::record_publish_destination_files(
+            &output_path,
+            provider,
+            &normalized_url,
+            deployment_id.as_deref(),
+        )
+        .map_err(|e| e.to_string())
+    })();
+    let result = match staged {
+        Ok(result) => result,
+        Err(error) => {
+            if let Err(cleanup_error) = cleanup_trusted_candidate(&candidate) {
+                return Err(format!("{error} Cleanup also failed: {cleanup_error}"));
+            }
+            return Err(error);
+        }
+    };
 
     let conn = db.lock().map_err(|_| "Failed to lock database")?;
-    db::update_latest_publish_run_destination(
-        &conn,
-        &result.output_dir,
-        provider,
-        &normalized_url,
-        deployment_id.as_deref(),
-    )
-    .map_err(|e| e.to_string())?;
+    conn.execute_batch("SAVEPOINT record_publish_destination")
+        .map_err(|e| e.to_string())?;
+    let install = output_dir.install_tree_from_with_commit(&candidate, &app_data, |install_id| {
+        db::update_latest_publish_run_destination(
+            &conn,
+            &result.output_dir,
+            provider,
+            &normalized_url,
+            deployment_id.as_deref(),
+        )
+        .map_err(|e| e.to_string())?;
+        conn.execute(
+            "INSERT INTO settings (key, value) VALUES (?1, '1')",
+            [format!("publication_commit_{install_id}")],
+        )
+        .map_err(|e| e.to_string())?;
+        conn.execute_batch("RELEASE record_publish_destination")
+            .map_err(|e| e.to_string())
+    });
+    if let Err(error) = install {
+        let _ = conn.execute_batch(
+            "ROLLBACK TO record_publish_destination; RELEASE record_publish_destination",
+        );
+        if let Err(cleanup_error) = cleanup_trusted_candidate(&candidate) {
+            return Err(format!("{error} Cleanup also failed: {cleanup_error}"));
+        }
+        return Err(error);
+    }
+    if let Err(warning) = cleanup_trusted_candidate(&candidate) {
+        eprintln!("Publish destination was committed, but candidate housekeeping needs attention: {warning}");
+    }
     Ok(result)
+}
+
+fn cleanup_trusted_candidate(candidate: &std::path::Path) -> Result<(), String> {
+    if !candidate.exists() {
+        return Ok(());
+    }
+    match std::fs::remove_dir_all(candidate) {
+        Ok(()) => Ok(()),
+        Err(remove_error) => {
+            let quarantine =
+                candidate.with_file_name(format!(".cleanup-pending-{}", uuid::Uuid::new_v4()));
+            std::fs::rename(candidate, &quarantine).map_err(|rename_error| {
+                format!("Could not remove trusted publication candidate: {remove_error}. It also could not be quarantined: {rename_error}")
+            })?;
+            Err(format!(
+                "Could not remove trusted publication candidate: {remove_error}. It was quarantined at `{}`",
+                quarantine.display()
+            ))
+        }
+    }
 }
 
 #[tauri::command]
@@ -2907,6 +3020,13 @@ pub async fn publish_with_connector(
     published_url: Option<String>,
     deployment_id: Option<String>,
 ) -> Result<compiler::CompileStaticSiteResult, String> {
+    let safe_output = validate_app_write_destination(&app, &output_dir)?;
+    publisher::validate_publish_artifacts(&safe_output.path().to_string_lossy())?;
+    let canonical_output = safe_output.path().to_string_lossy().into_owned();
+    let connector_candidate = crate::core::app_paths::app_data_dir(&app)?
+        .join("sites")
+        .join(format!(".connector-candidate-{}", uuid::Uuid::new_v4()));
+    safe_output.snapshot_tree_to(&connector_candidate)?;
     let provider = provider.trim().to_string();
     let mut config = get_publisher_config(db.clone(), provider.clone())?
         .or_else(|| default_publish_config_for_unsaved_connector(&provider, &output_dir))
@@ -2922,16 +3042,18 @@ pub async fn publish_with_connector(
     }
     let connector = publisher::publisher_for(&provider)?;
     let request = publisher::PublisherPublishRequest {
-        output_dir: output_dir.clone(),
+        output_dir: connector_candidate.to_string_lossy().into_owned(),
         provider,
         published_url,
         deployment_id,
     };
-    let published = connector.publish_folder(&config, &request).await?;
+    let published_result = connector.publish_folder(&config, &request).await;
+    let _ = std::fs::remove_dir_all(&connector_candidate);
+    let published = published_result?;
     record_publish_destination(
         db,
         app,
-        output_dir,
+        canonical_output,
         published.provider,
         published.published_url,
         published.deployment_id,
@@ -3110,7 +3232,7 @@ pub fn export_subscribers_csv(
             csv_escape(&subscriber.status)
         ));
     }
-    std::fs::write(path, out).map_err(|e| e.to_string())
+    path.write(out)
 }
 
 fn publish_artifact_path(
@@ -3165,7 +3287,7 @@ pub fn export_issue_email(
         "Subject: Your Civic Desk issue is ready\nPreheader: {} subscriber(s) on the local list\n\n{}",
         active_count, body
     );
-    std::fs::write(path, subject).map_err(|e| e.to_string())
+    path.write(subject)
 }
 
 pub(crate) fn prepare_issue_email_body(body: &str, public_url: Option<&str>) -> String {
@@ -3202,9 +3324,17 @@ pub async fn backup_save(app: tauri::AppHandle, dest_path: String) -> Result<(),
     let dest_path = validate_app_write_destination(&app, &dest_path)?;
     let live_db_path = db::get_app_db_path(&app).map_err(|e| e.to_string())?;
     let live_db_path = live_db_path.to_string_lossy().into_owned();
+    let temp_path = crate::core::app_paths::app_data_dir(&app)?
+        .join("backups")
+        .join(format!(".backup-{}.sqlite", uuid::Uuid::new_v4()));
     tauri::async_runtime::spawn_blocking(move || {
         let conn = db::open_conn(&live_db_path).map_err(|e| e.to_string())?;
-        backups::save_backup(&conn, &dest_path.to_string_lossy()).map_err(|e| e.to_string())
+        let result = (|| {
+            backups::save_backup(&conn, &temp_path.to_string_lossy()).map_err(|e| e.to_string())?;
+            dest_path.copy_from(&temp_path)
+        })();
+        let _ = std::fs::remove_file(temp_path);
+        result
     })
     .await
     .map_err(|e| format!("Backup worker failed: {e}"))?
@@ -3472,11 +3602,11 @@ pub fn validate_export_path(
 fn validate_app_write_destination(
     app: &tauri::AppHandle,
     requested: &str,
-) -> Result<std::path::PathBuf, String> {
+) -> Result<crate::core::app_paths::SafeWriteDestination, String> {
     let app_data = crate::core::app_paths::app_data_dir(app)?;
     let downloads = app.path().download_dir().map_err(|e| e.to_string())?;
     std::fs::create_dir_all(&downloads).map_err(|e| e.to_string())?;
-    crate::core::app_paths::validate_write_destination(
+    crate::core::app_paths::open_safe_write_destination(
         &[app_data, downloads],
         std::path::Path::new(requested.trim()),
     )

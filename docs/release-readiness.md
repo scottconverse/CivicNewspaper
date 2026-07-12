@@ -93,11 +93,20 @@ This does not publish, merge, or tag the release by itself. Scott must still app
 
 ## Evidence levels
 
-| Level | Required evidence | Allowed skips |
-|---|---|---|
-| Public beta | Frontend tests, Rust tests, static-site output gate, Authenticode verification, release notes, known limitations, install guide, user manual, and troubleshooting guide. | Live provider credentials and true clean-machine proof. Skips must be explicit in the receipt. |
-| Release candidate | Beta evidence plus enforced coverage floors, desktop smoke, current-version Windows installer artifacts, isolated packaged first-run/core-flow proof, source-import fixtures, live Colorado scan, model bakeoff, dependency audit, anonymous here.now publish. | External providers without credentials; external tester optional when local packaged proof is complete. |
-| Stable | RC evidence plus no skipped release-smoke gates, clean first-run artifact, published Windows signature/checksum bound to the tested bytes, cross-platform installer proof for every advertised OS, and credentialed live connector verification for supported providers. | None for the release-critical gates. |
+### Public beta
+
+- **Required:** Frontend tests, Rust tests, static-site output gate, Authenticode verification, release notes, known limitations, install guide, user manual, and troubleshooting guide.
+- **Allowed skips:** Live provider credentials and true clean-machine proof. Every skip must be explicit in the receipt.
+
+### Release candidate
+
+- **Required:** Public-beta evidence plus enforced coverage floors, desktop smoke, current-version Windows installer artifacts, isolated packaged first-run/core-flow proof, source-import fixtures, live Colorado scan, model bakeoff, dependency audit, and anonymous here.now publishing.
+- **Allowed skips:** External providers without credentials; an external tester is optional when local packaged proof is complete.
+
+### Stable
+
+- **Required:** Release-candidate evidence plus no skipped release-smoke gates, a clean first-run artifact, published Windows signature/checksum bound to the tested bytes, cross-platform installer proof for every advertised OS, and credentialed live connector verification for supported providers.
+- **Allowed skips:** None for release-critical gates.
 
 ## Source import fixtures
 

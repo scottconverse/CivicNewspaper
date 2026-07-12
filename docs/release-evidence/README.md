@@ -11,6 +11,6 @@ Before pushing a `vX.Y.Z` tag, add or update `docs/release-evidence/vX.Y.Z.json`
 - packaged first-run walkthrough passed;
 - an artifact-bound local isolated-package or external cleanroom report passed;
 - the installer SHA256 used in cleanroom matches the installer SHA256 from local installer smoke.
-- the hosted release asset hash in `SHA256SUMS.txt` matches that same cleanroom-tested installer SHA256.
+- the hosted release asset hash in `SHA256SUMS` matches that same cleanroom-tested installer SHA256.
 
 This keeps GitHub Releases from going green on tag-only automation when the real local RC and cleanroom evidence has not been reviewed.

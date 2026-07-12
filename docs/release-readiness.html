@@ -92,7 +92,21 @@
 </ul>
 <p>This does not publish, merge, or tag the release by itself. Scott must still approve the product push, tag, hosted GitHub Release, and GitHub Pages update.</p>
 <h2 id="evidence-levels">Evidence levels</h2>
-<table><thead><tr><th>Level</th><th>Required evidence</th><th>Allowed skips</th></tr></thead><tbody><tr><td>Public beta</td><td>Frontend tests, Rust tests, static-site output gate, Authenticode verification, release notes, known limitations, install guide, user manual, and troubleshooting guide.</td><td>Live provider credentials and true clean-machine proof. Skips must be explicit in the receipt.</td></tr><tr><td>Release candidate</td><td>Beta evidence plus enforced coverage floors, desktop smoke, current-version Windows installer artifacts, isolated packaged first-run/core-flow proof, source-import fixtures, live Colorado scan, model bakeoff, dependency audit, anonymous here.now publish.</td><td>External providers without credentials; external tester optional when local packaged proof is complete.</td></tr><tr><td>Stable</td><td>RC evidence plus no skipped release-smoke gates, clean first-run artifact, published Windows signature/checksum bound to the tested bytes, cross-platform installer proof for every advertised OS, and credentialed live connector verification for supported providers.</td><td>None for the release-critical gates.</td></tr></tbody></table>
+<h3 id="public-beta">Public beta</h3>
+<ul>
+<li><strong>Required:</strong> Frontend tests, Rust tests, static-site output gate, Authenticode verification, release notes, known limitations, install guide, user manual, and troubleshooting guide.</li>
+<li><strong>Allowed skips:</strong> Live provider credentials and true clean-machine proof. Every skip must be explicit in the receipt.</li>
+</ul>
+<h3 id="release-candidate">Release candidate</h3>
+<ul>
+<li><strong>Required:</strong> Public-beta evidence plus enforced coverage floors, desktop smoke, current-version Windows installer artifacts, isolated packaged first-run/core-flow proof, source-import fixtures, live Colorado scan, model bakeoff, dependency audit, and anonymous here.now publishing.</li>
+<li><strong>Allowed skips:</strong> External providers without credentials; an external tester is optional when local packaged proof is complete.</li>
+</ul>
+<h3 id="stable">Stable</h3>
+<ul>
+<li><strong>Required:</strong> Release-candidate evidence plus no skipped release-smoke gates, a clean first-run artifact, published Windows signature/checksum bound to the tested bytes, cross-platform installer proof for every advertised OS, and credentialed live connector verification for supported providers.</li>
+<li><strong>Allowed skips:</strong> None for release-critical gates.</li>
+</ul>
 <h2 id="source-import-fixtures">Source import fixtures</h2>
 <p>The full local fixture suite expects realistic files in a machine-available fixture folder. For repo-local release evidence, restore or copy the fixture artifact to:</p>
 <pre><code>tests\fixtures\source-import</code></pre>

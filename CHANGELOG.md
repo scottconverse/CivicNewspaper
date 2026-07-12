@@ -9,6 +9,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 - Added Azure Artifact Signing to the Windows package build using the repository's service-principal secrets, a fail-fast token preflight, and fail-closed Authenticode verification of the installer, installed application, and uninstaller before draft-release upload.
 - Replaced unsigned-installer and SmartScreen-bypass copy with official-installer provenance and checksum guidance across the app, installer dialog, release workflow, and current documentation.
+- Made installer trust guidance name the actual `SHA256SUMS` asset and expected `Scott Converse` Authenticode signer, while keeping signed-candidate wording conditional until the GitHub asset is replaced and verified.
+- Made local Ollama generation deterministic for structured newsroom tasks and made the stable live-model gate reject deterministic fallback as AI proof.
+
+### Fixed
+- Replaced raw draft-edit timestamps in published pages with the first actual publication time, preserved that time across recompiles, separated generated/correction dates, and emitted reader-friendly HTML dates plus RFC 2822 RSS dates.
+- Bound publication, subscriber, issue-email, and backup writes to opened allowed-root capabilities so junction swaps after validation fail closed, and added centrally journaled startup recovery for interrupted publication replacement.
+- Hardened database restore rollback with injected failures across preservation, open, migration, schema validation, rollback rename, and rollback reopen while preserving the original database bytes and a writable recovered connection.
 
 ## [0.3.2] - 2026-07-02
 

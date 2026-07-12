@@ -2,7 +2,7 @@
 
 This guide explains how to install The Civic Desk from the CivicNewspaper releases page and how to verify a downloaded installer.
 
-Use the official Windows installer from the release page. Verify the checksum published beside that exact release asset to confirm the download matches it.
+**Candidate pending:** the v0.3.2 release page still serves an earlier asset. Do not install it as the signed candidate. Wait until the release page identifies the replacement, then verify both its checksum and Authenticode signer before opening it.
 
 ## Download
 
@@ -10,17 +10,17 @@ Open the releases page:
 
 <https://github.com/scottconverse/CivicNewspaper/releases>
 
-Use the v0.3.2 Windows-only public-beta release when installing this version:
+After the signed replacement is published, use the v0.3.2 Windows-only public-beta release:
 
 <https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2>
 
 ## Windows
 
-1. Download `The.Civic.Desk_0.3.2_x64-setup.exe` from the release assets.
-2. Optional but recommended: verify the SHA256 checksum before opening the installer.
-3. Double-click the installer.
-4. Confirm the filename and publisher match the official release asset you downloaded.
-5. Verify the checksum published for that exact release asset before installing.
+1. Confirm the release page says the signed replacement candidate has been published.
+2. Download `The.Civic.Desk_0.3.2_x64-setup.exe` and `SHA256SUMS` from that release.
+3. Verify the SHA256 checksum.
+4. Verify Authenticode reports `Status` as `Valid` and the signer contains **Scott Converse**.
+5. Only after both checks pass, double-click the installer.
 6. Follow the installer prompts.
 7. Launch **The Civic Desk** from the Start menu.
 
@@ -49,7 +49,7 @@ macOS and Linux additionally require real platform artifacts and platform-specif
 A SHA256 checksum proves that the file you downloaded matches the file listed in the release manifest. It is not the same as code signing and does not prove who built the file.
 
 1. Open the release page for the installer you downloaded.
-2. Find the `SHA256SUMS.txt` file or the checksum listed for your installer.
+2. Find the `SHA256SUMS` file or the checksum listed for your installer.
 3. Compute the local hash.
 4. Compare the two strings exactly.
 
@@ -58,6 +58,15 @@ A SHA256 checksum proves that the file you downloaded matches the file listed in
 ```powershell
 Get-FileHash -Algorithm SHA256 "C:\Users\YourName\Downloads\The.Civic.Desk_0.3.2_x64-setup.exe"
 ```
+
+Verify the Authenticode signature separately:
+
+```powershell
+Get-AuthenticodeSignature "C:\Users\YourName\Downloads\The.Civic.Desk_0.3.2_x64-setup.exe" |
+  Select-Object Status, @{Name='Signer'; Expression={$_.SignerCertificate.Subject}}
+```
+
+Do not install unless `Status` is `Valid` and `Signer` contains `Scott Converse`.
 
 If the hash does not match, delete the installer and report it on the project issue tracker: <https://github.com/scottconverse/CivicNewspaper/issues>. Do not run a mismatched installer.
 

@@ -8,11 +8,11 @@ The most important rule is simple: The Civic Desk assists you. It does not decid
 
 ## Before You Start
 
-The Civic Desk is a signed Windows public beta. It is useful, but it is not a stable release yet.
+The signed Windows candidate is still under evaluation. The currently downloadable v0.3.2 asset is not the candidate until the release page is replaced and independently verified. This is a public beta, not a stable release.
 
 What that means in practice:
 
-- The public-beta installer is distributed through the official release page; verify its checksum before installing.
+- Install only from the official release page after it identifies the signed candidate; verify its checksum and signer before installing.
 - The public release page should match the version you intend to install.
 - Windows is the tested public-beta installer path for this release line.
 - macOS and Linux installers are backlog/proof-needed until clean-machine proof is recorded.
@@ -46,7 +46,7 @@ Choose the v0.3.2 Windows public beta release:
 
 <https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2>
 
-On Windows, use the `.exe` installer from the official release page. Confirm the filename, publisher, and published checksum before installing.
+On Windows, use the `.exe` installer from the official release page. Confirm the filename, published checksum, and a valid Authenticode signer containing **Scott Converse** before installing.
 
 macOS and Linux are planned, but they are not supported public-beta installer paths in this release line yet. The project needs a real artifact, clean-machine install proof, first-run local AI proof, and honest platform-specific warning text before the manual should tell normal users to install those builds.
 
