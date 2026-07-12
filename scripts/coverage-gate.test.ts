@@ -48,7 +48,7 @@ describe("release coverage gate", () => {
         "-ExecutionPolicy",
         "Bypass",
         "-File",
-        "..\\scripts\\sign-windows-artifact.ps1",
+        "scripts\\sign-windows-artifact.ps1",
         "-File",
         "%1",
       ],
@@ -57,6 +57,8 @@ describe("release coverage gate", () => {
     expect(smoke).toContain("Install-Module -Name ArtifactSigning -RequiredVersion 0.1.8");
     expect(release).toContain("tauri.windows-signing.conf.json");
     expect(smoke).toContain("tauri.windows-signing.conf.json");
+    expect(release).toContain("Dump signing diagnostics");
+    expect(smoke).toContain("Dump signing diagnostics");
     expect(release).toContain("release-signature-proof-${{ github.sha }}");
     expect(signer).toContain("Invoke-ArtifactSigning @params");
     expect(signer).toContain("ExcludeAzureCliCredential = $true");
