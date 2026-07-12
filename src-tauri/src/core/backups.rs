@@ -1,10 +1,36 @@
 // core/backups.rs
 use super::db::DbConn;
-use rusqlite::Connection;
+use rusqlite::{Connection, OptionalExtension};
 use std::error::Error;
 use std::time::Duration;
 
-fn validate_civic_schema(conn: &Connection) -> Result<(), Box<dyn Error + Send + Sync>> {
+const CIVIC_DESK_APPLICATION_ID: i64 = 1_128_879_683;
+
+fn application_id(conn: &Connection) -> Result<i64, rusqlite::Error> {
+    conn.query_row("PRAGMA application_id;", [], |row| row.get(0))
+}
+
+fn schema_definitions(
+    conn: &Connection,
+) -> Result<Vec<(String, String, String, String)>, rusqlite::Error> {
+    let mut statement = conn.prepare(
+        "SELECT type, name, tbl_name, sql
+         FROM sqlite_master
+         WHERE name NOT LIKE 'sqlite_%' AND sql IS NOT NULL
+         ORDER BY type, name",
+    )?;
+    let definitions = statement
+        .query_map([], |row| {
+            Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?))
+        })?
+        .collect();
+    definitions
+}
+
+fn validate_civic_schema(
+    conn: &Connection,
+    require_current_schema: bool,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
     const REQUIRED_TABLES: &[&str] = &[
         "sources",
         "evidence_items",
@@ -14,7 +40,28 @@ fn validate_civic_schema(conn: &Connection) -> Result<(), Box<dyn Error + Send +
         "published_posts",
         "paired_clients",
     ];
-    for table in REQUIRED_TABLES {
+    const CURRENT_TABLES: &[&str] = &[
+        "settings",
+        "daily_scan_runs",
+        "daily_scan_leads",
+        "publish_runs",
+        "subscribers",
+        "civic_observations",
+        "civic_entities",
+        "civic_observation_entities",
+        "source_performance_scores",
+        "dark_signals",
+        "verification_tasks",
+        "beat_memory",
+        "story_templates",
+        "publish_decision_audits",
+    ];
+    for table in REQUIRED_TABLES.iter().chain(
+        require_current_schema
+            .then_some(CURRENT_TABLES)
+            .into_iter()
+            .flatten(),
+    ) {
         let count: i64 = conn.query_row(
             "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = ?1",
             [table],
@@ -25,6 +72,17 @@ fn validate_civic_schema(conn: &Connection) -> Result<(), Box<dyn Error + Send +
                 "Selected file is not a Civic Desk database: required table `{table}` is missing."
             )
             .into());
+        }
+    }
+
+    if require_current_schema {
+        let mut canonical = Connection::open_in_memory()?;
+        super::migrations::run_migrations(&mut canonical)?;
+        if schema_definitions(conn)? != schema_definitions(&canonical)? {
+            return Err(
+                "Selected file is not a compatible Civic Desk database: its tables, indexes, views, or triggers do not match the current schema."
+                    .into(),
+            );
         }
     }
 
@@ -43,6 +101,19 @@ fn validate_civic_schema(conn: &Connection) -> Result<(), Box<dyn Error + Send +
             )
             .into());
         }
+    }
+    let foreign_key_violation: Option<String> = conn
+        .query_row(
+            "SELECT CAST(\"table\" AS TEXT) FROM pragma_foreign_key_check LIMIT 1",
+            [],
+            |row| row.get(0),
+        )
+        .optional()?;
+    if let Some(table) = foreign_key_violation {
+        return Err(format!(
+            "Selected Civic Desk database has a broken foreign-key reference in `{table}`."
+        )
+        .into());
     }
     Ok(())
 }
@@ -80,7 +151,7 @@ pub fn restore_backup(
             return Err("Database file is not a valid SQLite database.".into());
         }
 
-        let temp_conn = Connection::open(&temp_db_path)?;
+        let mut temp_conn = Connection::open(&temp_db_path)?;
         let integrity: String =
             temp_conn.query_row("PRAGMA integrity_check;", [], |row| row.get(0))?;
         if integrity != "ok" {
@@ -97,7 +168,36 @@ pub fn restore_backup(
                 version, expected
             ).into());
         }
-        if let Err(schema_err) = validate_civic_schema(&temp_conn) {
+        let database_application_id = application_id(&temp_conn)?;
+        if database_application_id != 0 && database_application_id != CIVIC_DESK_APPLICATION_ID {
+            let _ = std::fs::remove_file(&temp_db_path);
+            return Err("Selected file is not a Civic Desk database: its application identity belongs to another application.".into());
+        }
+        if version == expected && database_application_id != CIVIC_DESK_APPLICATION_ID {
+            let _ = std::fs::remove_file(&temp_db_path);
+            return Err("Selected file is not a Civic Desk database: the current database identity marker is missing.".into());
+        }
+        if let Err(schema_err) = validate_civic_schema(&temp_conn, version == expected) {
+            drop(temp_conn);
+            let _ = std::fs::remove_file(&temp_db_path);
+            return Err(schema_err);
+        }
+        if version < expected {
+            if let Err(migration_err) = super::migrations::run_migrations(&mut temp_conn) {
+                drop(temp_conn);
+                let _ = std::fs::remove_file(&temp_db_path);
+                return Err(format!(
+                    "Selected Civic Desk backup could not be upgraded safely: {migration_err}"
+                )
+                .into());
+            }
+        }
+        if application_id(&temp_conn)? != CIVIC_DESK_APPLICATION_ID {
+            drop(temp_conn);
+            let _ = std::fs::remove_file(&temp_db_path);
+            return Err("Selected file is not a Civic Desk database: the application identity marker is missing after migration.".into());
+        }
+        if let Err(schema_err) = validate_civic_schema(&temp_conn, true) {
             drop(temp_conn);
             let _ = std::fs::remove_file(&temp_db_path);
             return Err(schema_err);
@@ -180,7 +280,7 @@ pub fn restore_backup(
         return Err(format!("Migrations failed on restored database: {}", migration_err).into());
     }
 
-    if let Err(schema_err) = validate_civic_schema(&new_conn) {
+    if let Err(schema_err) = validate_civic_schema(&new_conn, true) {
         eprintln!("Restored database failed the post-migration schema check: {schema_err}");
         let mut original_conn = super::db::open_conn(live_db_path)?;
         let rollback_conn = Connection::open(&rollback_backup_path)?;
@@ -190,6 +290,17 @@ pub fn restore_backup(
         *conn = original_conn;
         let _ = std::fs::remove_file(&rollback_backup_path);
         return Err(format!("Restored database is incompatible: {schema_err}").into());
+    }
+
+    if application_id(&new_conn)? != CIVIC_DESK_APPLICATION_ID {
+        let mut original_conn = super::db::open_conn(live_db_path)?;
+        let rollback_conn = Connection::open(&rollback_backup_path)?;
+        let backup = rusqlite::backup::Backup::new(&rollback_conn, &mut original_conn)?;
+        let _ = backup.run_to_completion(5, Duration::from_millis(10), None);
+        drop(backup);
+        *conn = original_conn;
+        let _ = std::fs::remove_file(&rollback_backup_path);
+        return Err("Restored database is incompatible: the Civic Desk application identity marker is missing after migration.".into());
     }
 
     // Successfully restored! Replace the connection handle

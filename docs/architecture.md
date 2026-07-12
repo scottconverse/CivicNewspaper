@@ -268,7 +268,7 @@ Windows package signing is part of the current release artifact gate. Tauri sign
 
 The app has public-beta functionality, but stable release still needs:
 
-- Signed installers.
+- Published release assets whose signatures, checksums, and clean-machine evidence are bound to the exact released commit.
 - More clean-machine coverage across platforms.
 - More live provider verification with real user-owned credentials.
 - OCR path for scanned PDFs.

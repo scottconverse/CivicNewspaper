@@ -2,7 +2,7 @@
 
 This guide explains how to install The Civic Desk from the CivicNewspaper releases page and how to verify a downloaded installer.
 
-Use the official Windows installer from the release page. Verify the checksum below to confirm the download matches the published release artifact.
+Use the official Windows installer from the release page. Verify the checksum published beside that exact release asset to confirm the download matches it.
 
 ## Download
 
