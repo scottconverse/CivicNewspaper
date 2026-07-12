@@ -392,6 +392,60 @@ describe("useApp Hook Tests", () => {
     expect(hookResult.communityProfile.state).toBe("CO");
   });
 
+  test("settings save rejects when the backend cannot persist the profile", async () => {
+    let rejectSaves = false;
+    vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {
+      if (cmd === "get_queue") return { leads: [], drafts: [] };
+      if (cmd === "get_sources") return [];
+      if (cmd === "get_community_profile") return { city: "Longmont", state: "CO" };
+      if (cmd === "list_paired_clients") return [];
+      if (cmd === "get_system_ram") return 16;
+      if (cmd === "get_setting") {
+        if (args?.key === "identity.city") return "Longmont";
+        if (args?.key === "identity.state") return "CO";
+        return "";
+      }
+      if (cmd === "save_community_profile") {
+        if (rejectSaves) throw new Error("disk write failed");
+        return null;
+      }
+      return null;
+    });
+
+    let hookResult: any;
+    const TestComp = () => {
+      hookResult = useApp();
+      return null;
+    };
+
+    await act(async () => {
+      render(<TestComp />);
+    });
+    rejectSaves = true;
+
+    await expect(
+      act(async () => {
+        await hookResult.handleSaveProfile({
+          site_title: "Longmont Civic Desk",
+          site_subtitle: "Local news and community information.",
+          about_text: "A locally edited publication for this community.",
+          ethics_text: "Editorial standards are set by the publisher.",
+          how_we_report_text: "Stories and sources are reviewed by the editor.",
+          organization_type: "single_person",
+          footer_text: "",
+          logo_url: "",
+          accent_color: "#5a1818",
+          layout_style: "classic",
+          first_amendment_advisor_enabled: true,
+          money_threshold: 250000,
+          watchlist: [],
+          city: "Longmont",
+          state: "CO",
+        });
+      }),
+    ).rejects.toThrow("disk write failed");
+  });
+
   test("imports discovered official sources with official tier", async () => {
     const calls: Array<{ cmd: string; args: any }> = [];
     vi.mocked(invoke).mockImplementation(async (cmd: string, args: any) => {

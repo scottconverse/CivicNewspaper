@@ -99,4 +99,66 @@ describe("SettingsPanel Component Tests", () => {
     expect(screen.getByAltText(/Logo preview/i)).toBeInTheDocument();
     expect(await screen.findByRole("status")).toHaveTextContent("Logo loaded. Save identity to publish it.");
   });
+
+  test("reports a failed identity save instead of claiming success", async () => {
+    vi.mocked(invoke).mockResolvedValue({
+      accusatory: [],
+      legal: [],
+      blocking: [],
+    });
+    const handleSaveProfile = vi.fn().mockRejectedValue(new Error("disk write failed"));
+
+    render(
+      <SettingsPanel
+        communityProfile={mockProfile}
+        onSaveProfile={handleSaveProfile}
+        backupPathInput=""
+        onBackupPathInputChange={vi.fn()}
+        onBackupSave={vi.fn()}
+        onBackupRestore={vi.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Save identity/i }));
+
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "Save failed: Something went wrong: disk write failed",
+    );
+    expect(screen.queryByText("Identity saved.")).not.toBeInTheDocument();
+  });
+
+  test("allows only one identity save while a save is pending", async () => {
+    vi.mocked(invoke).mockResolvedValue({
+      accusatory: [],
+      legal: [],
+      blocking: [],
+    });
+    let finishSave: (() => void) | undefined;
+    const pendingSave = new Promise<void>((resolve) => {
+      finishSave = resolve;
+    });
+    const handleSaveProfile = vi.fn().mockReturnValue(pendingSave);
+
+    render(
+      <SettingsPanel
+        communityProfile={mockProfile}
+        onSaveProfile={handleSaveProfile}
+        backupPathInput=""
+        onBackupPathInputChange={vi.fn()}
+        onBackupSave={vi.fn()}
+        onBackupRestore={vi.fn()}
+      />
+    );
+
+    const saveButton = screen.getByRole("button", { name: /Save identity/i });
+    fireEvent.click(saveButton);
+    fireEvent.click(saveButton);
+
+    expect(handleSaveProfile).toHaveBeenCalledTimes(1);
+    expect(saveButton).toBeDisabled();
+    expect(screen.getByLabelText(/City/i)).toBeDisabled();
+    finishSave?.();
+    expect(await screen.findByText("Identity saved.")).toBeInTheDocument();
+    await waitFor(() => expect(saveButton).not.toBeDisabled());
+  });
 });
