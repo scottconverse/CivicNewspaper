@@ -13,15 +13,18 @@ function Write-SigningDiagnostic([string]$Message) {
   Add-Content -LiteralPath $logPath -Encoding UTF8 -Value "$(Get-Date -Format o) $Message"
 }
 Set-Content -LiteralPath $logPath -Encoding UTF8 -Value "$(Get-Date -Format o) signer-start"
+try {
 foreach ($name in @("AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET", "AZURE_TENANT_ID")) {
   if ([string]::IsNullOrWhiteSpace([System.Environment]::GetEnvironmentVariable($name))) {
+    Write-SigningDiagnostic "missing-required-environment name=$name"
     throw "$name is required for Windows package signing."
   }
 }
+Write-SigningDiagnostic "environment-validated"
 
+Write-SigningDiagnostic "artifact-input name=$(Split-Path -Leaf $File) exists=$(Test-Path -LiteralPath $File)"
 $File = (Resolve-Path -LiteralPath $File).Path
 Write-SigningDiagnostic "artifact-resolved name=$(Split-Path -Leaf $File)"
-try {
 Import-Module ArtifactSigning -RequiredVersion 0.1.8 -Force
 Write-SigningDiagnostic "module-imported"
 $params = @{
