@@ -32,6 +32,26 @@ fn schedule_main_window_reveal<R: tauri::Runtime>(app_handle: tauri::AppHandle<R
         .ok();
 }
 
+fn recover_pending_publication(conn: &rusqlite::Connection) {
+    let pending_output: Option<String> = conn
+        .query_row(
+            "SELECT value FROM settings WHERE key = 'pending_publication_output'",
+            [],
+            |row| row.get(0),
+        )
+        .ok();
+    if let Some(output) = pending_output {
+        if crate::core::compiler::recover_interrupted_publication(std::path::Path::new(&output))
+            .is_ok()
+        {
+            let _ = conn.execute(
+                "DELETE FROM settings WHERE key = 'pending_publication_output'",
+                [],
+            );
+        }
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -90,6 +110,30 @@ pub fn run() {
 
             // 2. Initialize database and run migrations
             let conn = crate::core::db::init_db(db_path_str).map_err(|e| e.to_string())?;
+            if let (Ok(app_data), Ok(downloads)) = (
+                crate::core::app_paths::app_data_dir(app.handle()),
+                app.path().download_dir(),
+            ) {
+                let _ = std::fs::create_dir_all(&downloads);
+                crate::core::app_paths::recover_capability_publications(
+                    &[app_data.clone(), downloads],
+                    &app_data,
+                    |id| {
+                        conn.query_row(
+                            "SELECT COUNT(*) FROM settings WHERE key = ?1",
+                            [format!("publication_commit_{id}")],
+                            |row| row.get::<_, i64>(0),
+                        )
+                        .is_ok_and(|count| count > 0)
+                    },
+                )
+                .map_err(|e| format!("Could not recover an interrupted publication: {e}"))?;
+                let _ = conn.execute(
+                    "DELETE FROM settings WHERE key LIKE 'publication_commit_%'",
+                    [],
+                );
+            }
+            recover_pending_publication(&conn);
             let db_conn = Arc::new(Mutex::new(conn));
 
             // 3. Manage database connection state in Tauri

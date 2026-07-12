@@ -785,6 +785,381 @@ mod tests {
         }
     }
 
+    fn assert_restore_fault_rolls_back(fault: crate::core::backups::RestoreFault) {
+        let temp_dir = tempdir().unwrap();
+        let live_db_path = temp_dir.path().join("fault-live.db");
+        let backup_db_path = temp_dir.path().join("fault-backup.db");
+
+        let live = init_db(live_db_path.to_str().unwrap()).unwrap();
+        insert_source(
+            &live,
+            &Source {
+                id: None,
+                name: "Original Source".to_string(),
+                url: "https://original.example.gov".to_string(),
+                r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        live.execute_batch("PRAGMA wal_checkpoint(TRUNCATE);")
+            .unwrap();
+        let original_bytes = fs::read(&live_db_path).unwrap();
+
+        let backup = init_db(backup_db_path.to_str().unwrap()).unwrap();
+        insert_source(
+            &backup,
+            &Source {
+                id: None,
+                name: "Replacement Source".to_string(),
+                url: "https://replacement.example.gov".to_string(),
+                r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        backup
+            .execute_batch("PRAGMA wal_checkpoint(TRUNCATE);")
+            .unwrap();
+        drop(backup);
+
+        let db = Arc::new(Mutex::new(live));
+        let result = crate::core::backups::restore_backup_with_fault(
+            &db,
+            backup_db_path.to_str().unwrap(),
+            live_db_path.to_str().unwrap(),
+            fault,
+        );
+        let error = result.expect_err("fault injection must abort restore");
+        if fault == crate::core::backups::RestoreFault::Preserve {
+            assert!(
+                error
+                    .to_string()
+                    .contains("injected live database preservation failure"),
+                "restore must preserve the original preservation error: {error}"
+            );
+        }
+        if fault == crate::core::backups::RestoreFault::RollbackRename {
+            let message = error.to_string();
+            assert!(message.contains("injected post-swap schema failure"));
+            assert!(message.contains("injected rollback rename failure"));
+        }
+        if fault == crate::core::backups::RestoreFault::RollbackReopen {
+            let message = error.to_string();
+            assert!(message.contains("injected post-swap schema failure"));
+            assert!(message.contains("injected rollback reopen failure"));
+        }
+
+        let conn = db.lock().unwrap();
+        let sources = list_sources(&conn).unwrap();
+        assert_eq!(sources.len(), 1);
+        assert_eq!(sources[0].name, "Original Source");
+        let foreign_keys: i64 = conn
+            .query_row("PRAGMA foreign_keys;", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(
+            foreign_keys, 1,
+            "recovered handle must enforce foreign keys"
+        );
+        conn.execute_batch("PRAGMA wal_checkpoint(TRUNCATE);")
+            .unwrap();
+        assert_eq!(
+            fs::read(&live_db_path).unwrap(),
+            original_bytes,
+            "rollback must restore the exact original live database bytes"
+        );
+        insert_source(
+            &conn,
+            &Source {
+                id: None,
+                name: "Handle Still Active".to_string(),
+                url: "https://active.example.gov".to_string(),
+                r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        conn.execute_batch("PRAGMA wal_checkpoint(TRUNCATE);")
+            .unwrap();
+        drop(conn);
+
+        assert!(live_db_path.is_file(), "recovered live path must exist");
+        assert_ne!(
+            fs::read(&live_db_path).unwrap(),
+            original_bytes,
+            "active-handle write must reach the recovered live database"
+        );
+        assert!(
+            !std::path::Path::new(&format!("{}.restore_temp", live_db_path.display())).exists()
+        );
+        assert!(
+            !std::path::Path::new(&format!("{}.rollback_temp", live_db_path.display())).exists()
+        );
+        assert!(
+            !std::path::Path::new(&format!("{}.rollback_temp-wal", live_db_path.display()))
+                .exists()
+        );
+        assert!(
+            !std::path::Path::new(&format!("{}.rollback_temp-shm", live_db_path.display()))
+                .exists()
+        );
+        assert!(!std::path::Path::new(&format!(
+            "{}.rollback_temp.recovery",
+            live_db_path.display()
+        ))
+        .exists());
+    }
+
+    #[test]
+    fn test_restore_rolls_back_after_post_swap_open_failure() {
+        assert_restore_fault_rolls_back(crate::core::backups::RestoreFault::Open);
+    }
+
+    #[test]
+    fn test_restore_rolls_back_after_post_swap_migration_failure() {
+        assert_restore_fault_rolls_back(crate::core::backups::RestoreFault::Migration);
+    }
+
+    #[test]
+    fn test_restore_rolls_back_after_post_swap_schema_failure() {
+        assert_restore_fault_rolls_back(crate::core::backups::RestoreFault::Schema);
+    }
+
+    #[test]
+    fn test_restore_recovers_after_live_file_preservation_failure() {
+        assert_restore_fault_rolls_back(crate::core::backups::RestoreFault::Preserve);
+    }
+
+    #[test]
+    fn test_restore_recovers_after_rollback_rename_failure() {
+        assert_restore_fault_rolls_back(crate::core::backups::RestoreFault::RollbackRename);
+    }
+
+    #[test]
+    fn test_restore_recovers_after_rollback_reopen_failure() {
+        assert_restore_fault_rolls_back(crate::core::backups::RestoreFault::RollbackReopen);
+    }
+
+    #[test]
+    fn test_restore_rolls_back_after_post_swap_identity_query_failure() {
+        assert_restore_fault_rolls_back(crate::core::backups::RestoreFault::IdentityQuery);
+    }
+
+    #[test]
+    fn test_restore_checkpoint_failure_cleans_temp_and_preserves_live_handle() {
+        assert_restore_fault_rolls_back(crate::core::backups::RestoreFault::Checkpoint);
+    }
+
+    #[test]
+    fn test_restore_cleanup_failure_quarantines_temp_without_harming_live_handle() {
+        let temp_dir = tempdir().unwrap();
+        let live_db_path = temp_dir.path().join("cleanup-live.db");
+        let backup_db_path = temp_dir.path().join("cleanup-backup.db");
+        let live = init_db(live_db_path.to_str().unwrap()).unwrap();
+        let backup = init_db(backup_db_path.to_str().unwrap()).unwrap();
+        drop(backup);
+        let db = Arc::new(Mutex::new(live));
+
+        let error = crate::core::backups::restore_backup_with_fault(
+            &db,
+            backup_db_path.to_str().unwrap(),
+            live_db_path.to_str().unwrap(),
+            crate::core::backups::RestoreFault::Cleanup,
+        )
+        .expect_err("cleanup fault must be reported");
+
+        assert!(error
+            .to_string()
+            .contains("injected restore temp cleanup failure"));
+        assert!(
+            !std::path::Path::new(&format!("{}.restore_temp", live_db_path.display())).exists()
+        );
+        let quarantined: Vec<_> = std::fs::read_dir(temp_dir.path())
+            .unwrap()
+            .filter_map(Result::ok)
+            .map(|entry| entry.path())
+            .filter(|path| {
+                path.file_name()
+                    .unwrap()
+                    .to_string_lossy()
+                    .contains("cleanup-pending")
+            })
+            .collect();
+        assert_eq!(
+            quarantined.len(),
+            1,
+            "failed cleanup must leave one named quarantine artifact"
+        );
+        let conn = db.lock().unwrap();
+        assert_eq!(
+            conn.query_row("PRAGMA foreign_keys", [], |row| row.get::<_, i64>(0))
+                .unwrap(),
+            1
+        );
+        conn.execute(
+            "INSERT INTO settings (key, value) VALUES ('cleanup-proof', 'ok')",
+            [],
+        )
+        .unwrap();
+        assert!(live_db_path.is_file());
+    }
+
+    #[test]
+    fn test_restore_rollback_internal_failures_never_leave_empty_handle() {
+        for fault in [
+            crate::core::backups::RestoreFault::StaleRecoveryCleanup,
+            crate::core::backups::RestoreFault::RollbackCopy,
+            crate::core::backups::RestoreFault::LiveRemove,
+            crate::core::backups::RestoreFault::SidecarCleanup,
+            crate::core::backups::RestoreFault::FallbackCopy,
+            crate::core::backups::RestoreFault::BothRollbackReopens,
+        ] {
+            let temp_dir = tempdir().unwrap();
+            let live_path = temp_dir.path().join("internal-live.db");
+            let backup_path = temp_dir.path().join("internal-backup.db");
+            let live = init_db(live_path.to_str().unwrap()).unwrap();
+            insert_source(
+                &live,
+                &Source {
+                    id: None,
+                    name: "Original Source".into(),
+                    url: "https://original.example.gov".into(),
+                    r#type: "primary_record".into(),
+                    tier: "official_record".into(),
+                    status: "online".into(),
+                    last_success_at: None,
+                    last_failed_at: None,
+                    last_scraped: None,
+                },
+            )
+            .unwrap();
+            let backup = init_db(backup_path.to_str().unwrap()).unwrap();
+            drop(backup);
+            let db = Arc::new(Mutex::new(live));
+
+            crate::core::backups::restore_backup_with_fault(
+                &db,
+                backup_path.to_str().unwrap(),
+                live_path.to_str().unwrap(),
+                fault,
+            )
+            .expect_err("rollback internal fault must abort restore");
+
+            let conn = db.lock().unwrap();
+            assert_eq!(list_sources(&conn).unwrap()[0].name, "Original Source");
+            assert_eq!(
+                conn.query_row("PRAGMA foreign_keys", [], |row| row.get::<_, i64>(0))
+                    .unwrap(),
+                1
+            );
+            conn.execute(
+                "INSERT INTO settings (key, value) VALUES ('emergency-handle-proof', 'ok')",
+                [],
+            )
+            .unwrap();
+        }
+    }
+
+    #[test]
+    fn test_restore_success_cleanup_failure_reports_unique_quarantine_and_keeps_live_handle() {
+        let temp_dir = tempdir().unwrap();
+        let live_path = temp_dir.path().join("success-cleanup-live.db");
+        let backup_path = temp_dir.path().join("success-cleanup-backup.db");
+        let live = init_db(live_path.to_str().unwrap()).unwrap();
+        let backup = init_db(backup_path.to_str().unwrap()).unwrap();
+        drop(backup);
+        let db = Arc::new(Mutex::new(live));
+        crate::core::backups::restore_backup_with_fault(
+            &db,
+            backup_path.to_str().unwrap(),
+            live_path.to_str().unwrap(),
+            crate::core::backups::RestoreFault::SuccessRollbackCleanup,
+        )
+        .expect("post-commit cleanup failure must remain a successful restore");
+        let conn = db.lock().unwrap();
+        assert_eq!(
+            conn.query_row("PRAGMA foreign_keys", [], |row| row.get::<_, i64>(0))
+                .unwrap(),
+            1
+        );
+        conn.execute(
+            "INSERT INTO settings (key, value) VALUES ('restored-handle-proof', 'ok')",
+            [],
+        )
+        .unwrap();
+        assert!(live_path.is_file());
+        assert!(std::fs::read_dir(temp_dir.path())
+            .unwrap()
+            .filter_map(Result::ok)
+            .any(|entry| entry
+                .file_name()
+                .to_string_lossy()
+                .contains("cleanup-pending")));
+    }
+
+    #[test]
+    fn test_restore_stale_rollback_cleanup_failure_keeps_original_live_handle() {
+        let temp_dir = tempdir().unwrap();
+        let live_path = temp_dir.path().join("stale-live.db");
+        let backup_path = temp_dir.path().join("stale-backup.db");
+        let stale_path = format!("{}.rollback_temp", live_path.display());
+        let live = init_db(live_path.to_str().unwrap()).unwrap();
+        insert_source(
+            &live,
+            &Source {
+                id: None,
+                name: "Original Source".into(),
+                url: "https://original.example.gov".into(),
+                r#type: "primary_record".into(),
+                tier: "official_record".into(),
+                status: "online".into(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+        let backup = init_db(backup_path.to_str().unwrap()).unwrap();
+        drop(backup);
+        std::fs::write(&stale_path, b"stale").unwrap();
+        let db = Arc::new(Mutex::new(live));
+        crate::core::backups::restore_backup_with_fault(
+            &db,
+            backup_path.to_str().unwrap(),
+            live_path.to_str().unwrap(),
+            crate::core::backups::RestoreFault::StaleRollbackCleanupBeforePreserve,
+        )
+        .expect_err("stale cleanup fault must abort before detaching live handle");
+        let conn = db.lock().unwrap();
+        assert_eq!(list_sources(&conn).unwrap()[0].name, "Original Source");
+        assert_eq!(
+            conn.query_row("PRAGMA foreign_keys", [], |row| row.get::<_, i64>(0))
+                .unwrap(),
+            1
+        );
+        conn.execute(
+            "INSERT INTO settings (key, value) VALUES ('stale-proof', 'ok')",
+            [],
+        )
+        .unwrap();
+        conn.execute_batch("PRAGMA wal_checkpoint(TRUNCATE)")
+            .unwrap();
+        assert!(live_path.is_file());
+        assert!(std::fs::metadata(&live_path).unwrap().len() > 16);
+    }
+
     #[test]
     fn test_restore_rejects_integrity_valid_non_civic_database() {
         let temp_dir = tempdir().unwrap();
@@ -1018,22 +1393,27 @@ mod tests {
             verification_checklist: "[]".to_string(),
             missing_evidence_notes: None,
             correction_note: Some("The date was corrected after publication.".to_string()),
-            created_at: "2026-07-12T15:46:57.921916900+00:00".to_string(),
-            updated_at: "2026-07-12T15:46:57.921916900+00:00".to_string(),
+            created_at: "2020-01-02T03:04:05.000000000+00:00".to_string(),
+            updated_at: "2020-01-02T03:04:05.000000000+00:00".to_string(),
         }).unwrap();
 
         // RE-AUDIT M1: the publish sink now requires a recorded human attestation.
         crate::core::db::attest_draft(&conn, draft_id, "Test Editor").unwrap();
         conn.execute(
             "UPDATE drafts SET updated_at = ?1 WHERE id = ?2",
-            rusqlite::params!["2026-07-12T15:46:57.921916900+00:00", draft_id],
+            rusqlite::params!["2020-01-02T03:04:05.000000000+00:00", draft_id],
         )
         .unwrap();
 
         let profile_json = r#"{"site_title": "Local Observer", "site_subtitle": "Evidence first", "about_text": "About Observer", "ethics_text": "Ethics", "how_we_report_text": "How We Report"}"#;
 
         // Compile
-        compile_static_site(&conn, site_output_path.to_str().unwrap(), profile_json).unwrap();
+        let first_result =
+            compile_static_site(&conn, site_output_path.to_str().unwrap(), profile_json).unwrap();
+        let expected_public_date = chrono::DateTime::parse_from_rfc3339(&first_result.generated_at)
+            .unwrap()
+            .format("%B %d, %Y")
+            .to_string();
 
         // Assert files are written correctly
         assert!(site_output_path.join("styles.css").exists());
@@ -1070,46 +1450,89 @@ mod tests {
             "Citations section missing evidence ID anchor tag."
         );
         assert!(
-            content.contains("July 12, 2026"),
+            content.contains(&expected_public_date),
             "Compiled article should show a reader-friendly publication date"
         );
         assert!(
-            !content.contains("2026-07-12T15:46:57.921916900+00:00"),
+            !content.contains("2020-01-02T03:04:05.000000000+00:00"),
             "Compiled article must not expose the raw RFC 3339 timestamp"
         );
 
         let index_html = fs::read_to_string(site_output_path.join("index.html")).unwrap();
         assert!(
-            index_html.contains("July 12, 2026"),
+            index_html.contains(&expected_public_date),
             "Homepage should show a reader-friendly publication date"
         );
         assert!(
-            !index_html.contains("2026-07-12T15:46:57.921916900+00:00"),
+            !index_html.contains("2020-01-02T03:04:05.000000000+00:00"),
             "Homepage must not expose the raw RFC 3339 timestamp"
         );
 
         let feed_xml = fs::read_to_string(site_output_path.join("feed.xml")).unwrap();
         assert!(
-            feed_xml.contains("<pubDate>Sun, 12 Jul 2026 15:46:57 +0000</pubDate>"),
+            feed_xml.contains(&format!(
+                "<pubDate>{}</pubDate>",
+                chrono::DateTime::parse_from_rfc3339(&first_result.generated_at)
+                    .unwrap()
+                    .to_rfc2822()
+            )),
             "RSS item should use the RFC 2822 date format required by RSS readers: {feed_xml}"
         );
         assert!(
-            !feed_xml.contains("2026-07-12T15:46:57.921916900+00:00"),
+            !feed_xml.contains("2020-01-02T03:04:05.000000000+00:00"),
             "RSS feed must not expose the raw RFC 3339 timestamp"
         );
 
         let corrections_html =
             fs::read_to_string(site_output_path.join("corrections.html")).unwrap();
-        assert!(corrections_html.contains("July 12, 2026"));
-        assert!(!corrections_html.contains("2026-07-12T15:46:57.921916900+00:00"));
+        assert!(corrections_html.contains(&expected_public_date));
+        assert!(!corrections_html.contains("2020-01-02T03:04:05.000000000+00:00"));
 
         let newsletter = fs::read_to_string(site_output_path.join("newsletter.md")).unwrap();
-        assert!(newsletter.contains("July 12, 2026"));
-        assert!(!newsletter.contains("2026-07-12T15:46:57.921916900+00:00"));
+        assert!(newsletter.contains(&expected_public_date));
+        assert!(!newsletter.contains("2020-01-02T03:04:05.000000000+00:00"));
 
         let manifest = fs::read_to_string(site_output_path.join("publish-manifest.json")).unwrap();
-        assert!(manifest.contains("July 12, 2026"));
-        assert!(!manifest.contains("2026-07-12T15:46:57.921916900+00:00"));
+        assert!(manifest.contains(&expected_public_date));
+        assert!(!manifest.contains("2020-01-02T03:04:05.000000000+00:00"));
+
+        for page in [
+            "about.html",
+            "ethics.html",
+            "how-we-report.html",
+            "corrections.html",
+        ] {
+            let html = fs::read_to_string(site_output_path.join(page)).unwrap();
+            assert!(
+                html.contains(&expected_public_date),
+                "{page} should format its generated date"
+            );
+            assert!(
+                !html.contains(&first_result.generated_at),
+                "{page} must not expose RFC 3339"
+            );
+        }
+
+        conn.execute(
+            "UPDATE drafts SET updated_at = ?1 WHERE id = ?2",
+            rusqlite::params!["2025-06-07T08:09:10Z", draft_id],
+        )
+        .unwrap();
+        let second_result =
+            compile_static_site(&conn, site_output_path.to_str().unwrap(), profile_json).unwrap();
+        assert_eq!(
+            second_result.articles[0].published_date, first_result.articles[0].published_date,
+            "recompiling an edited story must preserve its original publication date"
+        );
+        let second_post =
+            fs::read_to_string(site_output_path.join(&second_result.articles[0].relative_path))
+                .unwrap();
+        assert!(second_post.contains(&format!("Published: {expected_public_date}")));
+        let second_corrections =
+            fs::read_to_string(site_output_path.join("corrections.html")).unwrap();
+        assert!(second_corrections.contains("Generated:"));
+        assert!(second_corrections.contains("Correction Notice (January 02, 2020)"));
+        assert!(!second_corrections.contains("Correction Notice (June 07, 2025)"));
     }
 
     // 7. DuckDuckGo Auto-Discovery HTML Parser Test
@@ -6611,6 +7034,7 @@ I should produce JSON only.
     }
 
     #[tokio::test]
+    #[ignore = "release gate: requires a running Ollama service with the selected real model installed"]
     async fn stage10_live_ollama_daily_scan_completes_with_real_local_model() {
         let model = std::env::var("CIVICNEWS_STAGE10_REAL_MODEL")
             .unwrap_or_else(|_| "phi4-mini:latest".to_string());
@@ -6672,9 +7096,20 @@ I should produce JSON only.
 
         assert_eq!(run_status, "completed");
         assert!(evidence_count > 0);
+        assert!(lead_count > 0, "real local model path should produce leads");
         assert!(
-            lead_count > 0,
-            "real local model path should produce leads or fallback evidence packets"
+            progress_messages
+                .iter()
+                .any(|p| p["stage"].as_str() == Some("saving")),
+            "live-model gate requires at least one usable JSON response from Ollama; progress: {}",
+            serde_json::to_string_pretty(&progress_messages).unwrap()
+        );
+        assert!(
+            !progress_messages
+                .iter()
+                .any(|p| p["stage"].as_str() == Some("fallback")),
+            "live-model gate must not pass through deterministic fallback; progress: {}",
+            serde_json::to_string_pretty(&progress_messages).unwrap()
         );
         assert!(
             progress_messages

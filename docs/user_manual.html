@@ -30,10 +30,10 @@
 <p>This manual is written for a new user, not a programmer. If you are a reporter, editor, town resident, nonprofit worker, blogger, or one-person local publisher, start at the beginning and follow the first-issue walkthrough. If you already know the app, use the later chapters as a reference.</p>
 <p>The most important rule is simple: The Civic Desk assists you. It does not decide for you. It can warn, rank, summarize, suggest, and organize. You decide what is newsworthy, fair, legal, verified, and ready to publish.</p>
 <h2 id="before-you-start">Before You Start</h2>
-<p>The Civic Desk is a signed Windows public beta. It is useful, but it is not a stable release yet.</p>
+<p>The signed Windows candidate is still under evaluation. The currently downloadable v0.3.2 asset is not the candidate until the release page is replaced and independently verified. This is a public beta, not a stable release.</p>
 <p>What that means in practice:</p>
 <ul>
-<li>The public-beta installer is distributed through the official release page; verify its checksum before installing.</li>
+<li>Install only from the official release page after it identifies the signed candidate; verify its checksum and signer before installing.</li>
 <li>The public release page should match the version you intend to install.</li>
 <li>Windows is the tested public-beta installer path for this release line.</li>
 <li>macOS and Linux installers are backlog/proof-needed until clean-machine proof is recorded.</li>
@@ -58,7 +58,7 @@
 <p><a href="https://github.com/scottconverse/CivicNewspaper/releases">https://github.com/scottconverse/CivicNewspaper/releases</a></p>
 <p>Choose the v0.3.2 Windows public beta release:</p>
 <p><a href="https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2">https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2</a></p>
-<p>On Windows, use the <code>.exe</code> installer from the official release page. Confirm the filename, publisher, and published checksum before installing.</p>
+<p>On Windows, use the <code>.exe</code> installer from the official release page. Confirm the filename, published checksum, and a valid Authenticode signer containing <strong>Scott Converse</strong> before installing.</p>
 <p>macOS and Linux are planned, but they are not supported public-beta installer paths in this release line yet. The project needs a real artifact, clean-machine install proof, first-run local AI proof, and honest platform-specific warning text before the manual should tell normal users to install those builds.</p>
 <p>Before running an installer, you can compare its SHA256 hash with the release checksum. Checksums confirm that your download matches the release artifact. They are not a replacement for code signing. See <a href="install.html">install.md</a> for exact commands.</p>
 <p>If installation, local AI setup, publishing, source import, or output quality goes wrong, use <a href="troubleshooting.html">troubleshooting.md</a>. It has plain-English help for installer provenance, model downloads, local AI runtime states, weak story output, here.now previews, ZIP/static output, and source import problems.</p>

@@ -28,6 +28,22 @@ struct OllamaGenerateRequest<'a> {
     stream: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     format: Option<serde_json::Value>,
+    options: OllamaGenerateOptions,
+}
+
+#[derive(Debug, Serialize)]
+struct OllamaGenerateOptions {
+    temperature: f32,
+    seed: u64,
+}
+
+impl Default for OllamaGenerateOptions {
+    fn default() -> Self {
+        Self {
+            temperature: 0.0,
+            seed: 42,
+        }
+    }
 }
 
 /// One line of a streaming `/api/generate` response. Ollama emits newline-
@@ -230,6 +246,7 @@ async fn call_local_ollama_streaming_with_format(
         system,
         stream: true,
         format,
+        options: OllamaGenerateOptions::default(),
     };
 
     let timeout = generation_timeout();
@@ -1176,6 +1193,21 @@ impl Drop for OllamaSidecar {
 #[cfg(test)]
 mod stream_parser_tests {
     use super::*;
+
+    #[test]
+    fn generation_request_is_deterministic_for_release_quality() {
+        let request = OllamaGenerateRequest {
+            model: "phi4-mini:latest",
+            prompt: "prompt",
+            system: "system",
+            stream: true,
+            format: Some(serde_json::json!("json")),
+            options: OllamaGenerateOptions::default(),
+        };
+        let value = serde_json::to_value(request).unwrap();
+        assert_eq!(value["options"]["temperature"], 0.0);
+        assert_eq!(value["options"]["seed"], 42);
+    }
 
     // --- parse_stream_line: the pure NDJSON-per-line parser (NEW-Nit1) ---
 
