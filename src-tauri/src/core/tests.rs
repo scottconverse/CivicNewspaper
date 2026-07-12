@@ -1014,16 +1014,21 @@ mod tests {
             format: "investigation".to_string(), // maps to 'stories' subfolder
             title: "Zoning Board Approves New Building C Expansion".to_string(),
             content: "In yesterday's meeting, the commission formally approved zoning request for [Building C](evidence:1).\n\nThis marks a significant expansion plan.".to_string(),
-            status: "published".to_string(), // MUST be published to compile
+            status: "corrected".to_string(),
             verification_checklist: "[]".to_string(),
             missing_evidence_notes: None,
-            correction_note: None,
-            created_at: Utc::now().to_rfc3339(),
-            updated_at: Utc::now().to_rfc3339(),
+            correction_note: Some("The date was corrected after publication.".to_string()),
+            created_at: "2026-07-12T15:46:57.921916900+00:00".to_string(),
+            updated_at: "2026-07-12T15:46:57.921916900+00:00".to_string(),
         }).unwrap();
 
         // RE-AUDIT M1: the publish sink now requires a recorded human attestation.
         crate::core::db::attest_draft(&conn, draft_id, "Test Editor").unwrap();
+        conn.execute(
+            "UPDATE drafts SET updated_at = ?1 WHERE id = ?2",
+            rusqlite::params!["2026-07-12T15:46:57.921916900+00:00", draft_id],
+        )
+        .unwrap();
 
         let profile_json = r#"{"site_title": "Local Observer", "site_subtitle": "Evidence first", "about_text": "About Observer", "ethics_text": "Ethics", "how_we_report_text": "How We Report"}"#;
 
@@ -1064,6 +1069,47 @@ mod tests {
             content.contains("id=\"evidence-1\""),
             "Citations section missing evidence ID anchor tag."
         );
+        assert!(
+            content.contains("July 12, 2026"),
+            "Compiled article should show a reader-friendly publication date"
+        );
+        assert!(
+            !content.contains("2026-07-12T15:46:57.921916900+00:00"),
+            "Compiled article must not expose the raw RFC 3339 timestamp"
+        );
+
+        let index_html = fs::read_to_string(site_output_path.join("index.html")).unwrap();
+        assert!(
+            index_html.contains("July 12, 2026"),
+            "Homepage should show a reader-friendly publication date"
+        );
+        assert!(
+            !index_html.contains("2026-07-12T15:46:57.921916900+00:00"),
+            "Homepage must not expose the raw RFC 3339 timestamp"
+        );
+
+        let feed_xml = fs::read_to_string(site_output_path.join("feed.xml")).unwrap();
+        assert!(
+            feed_xml.contains("<pubDate>Sun, 12 Jul 2026 15:46:57 +0000</pubDate>"),
+            "RSS item should use the RFC 2822 date format required by RSS readers: {feed_xml}"
+        );
+        assert!(
+            !feed_xml.contains("2026-07-12T15:46:57.921916900+00:00"),
+            "RSS feed must not expose the raw RFC 3339 timestamp"
+        );
+
+        let corrections_html =
+            fs::read_to_string(site_output_path.join("corrections.html")).unwrap();
+        assert!(corrections_html.contains("July 12, 2026"));
+        assert!(!corrections_html.contains("2026-07-12T15:46:57.921916900+00:00"));
+
+        let newsletter = fs::read_to_string(site_output_path.join("newsletter.md")).unwrap();
+        assert!(newsletter.contains("July 12, 2026"));
+        assert!(!newsletter.contains("2026-07-12T15:46:57.921916900+00:00"));
+
+        let manifest = fs::read_to_string(site_output_path.join("publish-manifest.json")).unwrap();
+        assert!(manifest.contains("July 12, 2026"));
+        assert!(!manifest.contains("2026-07-12T15:46:57.921916900+00:00"));
     }
 
     // 7. DuckDuckGo Auto-Discovery HTML Parser Test

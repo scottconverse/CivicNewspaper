@@ -241,7 +241,7 @@ export interface CompiledArticle {
   title: string;
   format: string;
   relative_path: string;
-  updated_at: string;
+  published_date: string;
 }
 
 export interface PublishResult {
