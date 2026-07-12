@@ -617,7 +617,7 @@ describe("OnboardingWizard Component Tests", () => {
     });
   });
 
-  test("identity setup warns after no input without choosing a city for the user", async () => {
+  test("identity setup waits neutrally after no input without choosing a city for the user", async () => {
     vi.useFakeTimers();
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
@@ -640,13 +640,13 @@ describe("OnboardingWizard Component Tests", () => {
     expect(screen.getByLabelText("City")).toHaveValue("");
     expect(screen.getByLabelText("State")).toHaveValue("");
     expect(screen.getByText("Step 1 of 5")).toBeInTheDocument();
-    expect(screen.getByText(/choose a starter profile, type your city and state/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Setup is not receiving identity input yet/i)).not.toBeInTheDocument();
     expect(invokeMock).not.toHaveBeenCalledWith("set_setting", expect.objectContaining({
       key: "identity.city",
     }));
   });
 
-  test("identity setup does not continue after no-input warning without an explicit identity", async () => {
+  test("identity setup does not continue while neutrally awaiting an explicit identity", async () => {
     vi.useFakeTimers();
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
@@ -683,7 +683,7 @@ describe("OnboardingWizard Component Tests", () => {
     expect(handleComplete).not.toHaveBeenCalled();
   });
 
-  test("no-input warning does not start product-owned runtime install before identity is explicit", async () => {
+  test("neutral identity wait does not start product-owned runtime install before identity is explicit", async () => {
     vi.useFakeTimers();
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
@@ -715,7 +715,7 @@ describe("OnboardingWizard Component Tests", () => {
     });
     expect(screen.getByText("Step 1 of 5")).toBeInTheDocument();
     expect(invokeMock).not.toHaveBeenCalledWith("install_ollama_runtime");
-    expect(screen.getByText(/choose a starter profile, type your city and state/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Setup is not receiving identity input yet/i)).not.toBeInTheDocument();
     vi.useRealTimers();
   });
 
@@ -744,6 +744,50 @@ describe("OnboardingWizard Component Tests", () => {
     expect(screen.getByLabelText("Publication Name")).toHaveValue("Boulder Beat");
     expect(screen.getByLabelText("City")).toHaveValue("");
     expect(screen.queryByText(/choose a starter profile, type your city and state/i)).not.toBeInTheDocument();
+  });
+
+  test("fresh identity setup stays neutral while waiting for the user", async () => {
+    vi.useFakeTimers();
+    const invokeMock = tauriCore.invoke as any;
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={vi.fn()} />);
+
+    const { act } = await import("@testing-library/react");
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(15000);
+    });
+
+    expect(screen.getByText("Step 1 of 5")).toBeInTheDocument();
+    expect(screen.queryByText(/Setup is not receiving identity input yet/i)).not.toBeInTheDocument();
+  });
+
+  test("invalid local AI health responses do not escape as uncaught type errors", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    const invokeMock = tauriCore.invoke as any;
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      if (cmd === "ollama_health") return Promise.resolve(undefined);
+      return Promise.resolve();
+    });
+
+    render(
+      <OnboardingWizard
+        ollamaOnline={false}
+        systemRam={16}
+        onComplete={vi.fn()}
+        initialStep={2}
+      />,
+    );
+
+    await waitFor(() => expect(screen.getByText("Starting the local AI service")).toBeInTheDocument());
+    expect(consoleError).not.toHaveBeenCalled();
+    consoleError.mockRestore();
   });
 
   test("identity setup waits for explicit user input instead of auto-continuing", async () => {
