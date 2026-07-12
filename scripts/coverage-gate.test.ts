@@ -48,7 +48,8 @@ describe("release coverage gate", () => {
         "-ExecutionPolicy",
         "Bypass",
         "-Command",
-        "$root = if ($env:GITHUB_WORKSPACE) { $env:GITHUB_WORKSPACE } else { $PWD }; & (Join-Path $root 'scripts\\sign-windows-artifact.ps1') -File '%1'",
+        "$root = if ($env:GITHUB_WORKSPACE) { $env:GITHUB_WORKSPACE } else { $PWD }; & (Join-Path $root 'scripts\\sign-windows-artifact.ps1') -File",
+        "%1",
       ],
     });
     expect(release).toContain("Install-Module -Name ArtifactSigning -RequiredVersion 0.1.8");
