@@ -262,6 +262,16 @@ pub(crate) async fn get_selected_model_or_fallback(db: &DbConn) -> String {
 /// Fetch the list of installed model tags from the local Ollama. Returns an
 /// empty vec if Ollama is unreachable or returns no models.
 pub(crate) async fn list_installed_models() -> Vec<String> {
+    #[cfg(test)]
+    if let Ok(models) = std::env::var("CIVICNEWS_TEST_INSTALLED_MODELS") {
+        return models
+            .split(',')
+            .map(str::trim)
+            .filter(|model| !model.is_empty())
+            .map(str::to_string)
+            .collect();
+    }
+
     let client = match reqwest::Client::builder()
         .timeout(std::time::Duration::from_secs(2))
         .build()
@@ -289,6 +299,59 @@ pub(crate) async fn list_installed_models() -> Vec<String> {
         }
     }
     Vec::new()
+}
+
+#[cfg(test)]
+mod installed_model_transport_tests {
+    use super::list_installed_models;
+    use crate::test_support::TestEnv;
+    use std::io::{Read, Write};
+    use std::net::TcpListener;
+    use std::thread;
+    use std::time::{Duration, Instant};
+
+    #[tokio::test]
+    async fn list_installed_models_reads_ollama_tags_response() {
+        let mut env = TestEnv::new();
+        env.remove("CIVICNEWS_TEST_INSTALLED_MODELS");
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = listener.local_addr().unwrap();
+        listener.set_nonblocking(true).unwrap();
+        env.set("CIVICNEWS_OLLAMA_BASE_URL", format!("http://{address}"));
+        let server = thread::spawn(move || {
+            let deadline = Instant::now() + Duration::from_secs(3);
+            let (mut stream, _) = loop {
+                match listener.accept() {
+                    Ok(connection) => break connection,
+                    Err(error)
+                        if error.kind() == std::io::ErrorKind::WouldBlock
+                            && Instant::now() < deadline =>
+                    {
+                        thread::sleep(Duration::from_millis(5));
+                    }
+                    Err(error) => {
+                        panic!("model tags test server did not accept a request: {error}")
+                    }
+                }
+            };
+            stream
+                .set_read_timeout(Some(Duration::from_secs(2)))
+                .unwrap();
+            let mut request = [0_u8; 1024];
+            let bytes_read = stream.read(&mut request).unwrap();
+            assert!(String::from_utf8_lossy(&request[..bytes_read]).starts_with("GET /api/tags "));
+            let body = r#"{"models":[{"name":"phi4-mini:latest"},{"name":"test-model:latest"}]}"#;
+            let response = format!(
+                "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
+                body.len(), body
+            );
+            stream.write_all(response.as_bytes()).unwrap();
+        });
+
+        let models = list_installed_models().await;
+        server.join().unwrap();
+        assert_eq!(models, ["phi4-mini:latest", "test-model:latest"]);
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -2452,14 +2515,10 @@ pub async fn generate_and_save_draft<R: tauri::Runtime>(
 mod generate_and_save_draft_ipc_tests {
     use super::*;
     use crate::core::llm::LlmClient;
+    use crate::test_support::TestEnv;
     use rusqlite::Connection;
-    use std::io::{Read, Write};
-    use std::net::TcpListener;
-    use std::sync::{Arc, LazyLock, Mutex};
-    use std::thread;
+    use std::sync::{Arc, Mutex};
     use tempfile::tempdir;
-
-    static ENV_LOCK: LazyLock<Mutex<()>> = LazyLock::new(|| Mutex::new(()));
 
     struct FakeDraftLlm {
         evidence_id: i32,
@@ -2480,34 +2539,15 @@ mod generate_and_save_draft_ipc_tests {
         }
     }
 
-    fn start_model_tags_stub() -> (String, thread::JoinHandle<()>) {
-        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
-        let address = listener.local_addr().unwrap();
-        let handle = thread::spawn(move || {
-            if let Ok((mut stream, _)) = listener.accept() {
-                let mut request = [0_u8; 1024];
-                let _ = stream.read(&mut request);
-                let body = r#"{"models":[{"name":"test-model:latest"}]}"#;
-                let response = format!(
-                    "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
-                    body.len(), body
-                );
-                let _ = stream.write_all(response.as_bytes());
-            }
-        });
-        (format!("http://{}", address), handle)
-    }
-
     #[tokio::test]
     async fn registered_ipc_command_generates_and_reloads_linked_draft() {
-        let _env_guard = ENV_LOCK.lock().unwrap();
+        let mut env = TestEnv::new();
         let app_data = tempdir().unwrap();
-        let (ollama_url, tags_server) = start_model_tags_stub();
-        std::env::set_var(
+        env.set(
             crate::core::app_paths::APP_DATA_OVERRIDE_ENV,
             app_data.path(),
         );
-        std::env::set_var("CIVICNEWS_OLLAMA_BASE_URL", &ollama_url);
+        env.set("CIVICNEWS_TEST_INSTALLED_MODELS", "test-model:latest");
 
         let mut connection = Connection::open_in_memory().unwrap();
         crate::core::migrations::run_migrations(&mut connection).unwrap();
@@ -2621,9 +2661,6 @@ mod generate_and_save_draft_ipc_tests {
 
         drop(webview);
         drop(app);
-        std::env::remove_var(crate::core::app_paths::APP_DATA_OVERRIDE_ENV);
-        std::env::remove_var("CIVICNEWS_OLLAMA_BASE_URL");
-        tags_server.join().unwrap();
     }
 }
 

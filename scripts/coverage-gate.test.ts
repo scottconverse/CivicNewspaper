@@ -33,26 +33,51 @@ describe("release coverage gate", () => {
     expect(release).toContain("npm run test:coverage");
   });
 
-  test("signs the actual NSIS installer with direct Azure service-principal credentials", () => {
+  test("signs every shipped Windows executable during Tauri bundling", () => {
     const release = read(".github/workflows/release.yml");
+    const smoke = read(".github/workflows/signing-smoke.yml");
+    const tauriConfig = JSON.parse(read("src-tauri/tauri.windows-signing.conf.json"));
+    const signer = read("scripts/sign-windows-artifact.ps1");
 
-    expect(release).toContain("azure/artifact-signing-action@v2");
+    expect(tauriConfig.bundle.windows.signCommand).toContain("sign-windows-artifact.cmd");
+    expect(tauriConfig.bundle.windows.signCommand).toContain("%1");
+    expect(release).toContain("Install-Module -Name ArtifactSigning -RequiredVersion 0.1.8");
+    expect(smoke).toContain("Install-Module -Name ArtifactSigning -RequiredVersion 0.1.8");
+    expect(release).toContain("tauri.windows-signing.conf.json");
+    expect(smoke).toContain("tauri.windows-signing.conf.json");
+    expect(release).toContain("release-signature-proof-${{ github.sha }}");
+    expect(signer).toContain("Invoke-ArtifactSigning @params");
+    expect(signer).toContain("ExcludeAzureCliCredential = $true");
+    expect(signer).not.toContain("az login");
+    expect(release).not.toContain("artifact-signing-cli");
+    expect(smoke).not.toContain("artifact-signing-cli");
     expect(release).toContain("AZURE_CLIENT_SECRET");
+    expect(smoke).toContain("AZURE_CLIENT_SECRET");
+    expect(release).not.toContain('client_secret = "${{ secrets.AZURE_CLIENT_SECRET }}"');
+    expect(smoke).not.toContain('client_secret = "${{ secrets.AZURE_CLIENT_SECRET }}"');
+    expect(release).toContain("client_secret = $env:AZURE_CLIENT_SECRET");
+    expect(smoke).toContain("client_secret = $env:AZURE_CLIENT_SECRET");
     expect(release).toContain("oauth2/v2.0/token");
     expect(release).toContain("src-tauri\\target\\${{ matrix.target }}\\release\\bundle\\nsis");
-    expect(release).toContain("Get-AuthenticodeSignature");
     expect(release).not.toContain("azure/login@");
+    expect(smoke).not.toContain("azure/login@");
   });
 
   test("provides a non-publishing manual signing smoke workflow", () => {
     const smoke = read(".github/workflows/signing-smoke.yml");
+    const verifier = read("scripts/verify-windows-signatures.ps1");
 
     expect(smoke).toContain("workflow_dispatch:");
-    expect(smoke).toContain("azure/artifact-signing-action@v2");
-    expect(smoke).toContain("Get-AuthenticodeSignature");
+    expect(smoke).toContain("scripts/verify-windows-signatures.ps1");
     expect(smoke).toContain("actions/upload-artifact@v4");
     expect(smoke).not.toContain("gh release");
     expect(smoke).not.toContain("azure/login@");
+    expect(verifier).toContain("Get-AuthenticodeSignature -LiteralPath $Path");
+    expect(verifier).toContain('Get-SignatureRecord -Name "installer"');
+    expect(verifier).toContain('Get-SignatureRecord -Name "application"');
+    expect(verifier).toContain('Get-SignatureRecord -Name "uninstaller"');
+    expect(verifier).toContain("TimeStamperCertificate");
+    expect(verifier).toContain('Status -eq "Valid"');
   });
 
   test("requires accessible packaged first-run and live core-flow proof", () => {
