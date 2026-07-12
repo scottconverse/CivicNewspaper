@@ -76,7 +76,7 @@ This prevents an unverified installer from appearing before Authenticode, checks
 
 ## Current v0.3.2 evidence
 
-The local Windows public-beta candidate was built from commit `bfa37f87dda8aa61c98da4bd7bc2be907581a416` and passed the artifact-bound isolated installed-package gate. The exact package completed dependency-absent onboarding, zero-source guidance, a live `phi4-mini:latest` Daily Scan, linked-evidence draft generation, persistence, and Workbench reload. This is beta-candidate proof on the recorded local gate machine; it predates the current Windows signing rollout and is not cross-platform or credentialed-provider stable-release proof. The GitHub release asset is still the older `ba49af4d69d2c4d6d88bfd148490494f243cc9d7` build and has not been replaced in this work unit.
+Windows release candidates now pass an Authenticode signing gate that validates the installer, installed application, and uninstaller, including timestamps. Candidate-specific cleanroom evidence is recorded separately and must match the exact commit and installer hash being evaluated. This is Windows beta-candidate proof, not cross-platform or credentialed-provider stable-release proof. The GitHub release asset has not been replaced in this work unit.
 
 - Hosted evidence file: `docs/release-evidence/v0.3.2.json`
 - RC receipt: `.agent-runs/release-candidate-20260709-182734/release-candidate-receipt.json`, SHA256 `12C80AB694F484BB1176CF1F37590E3BEDD853985D020997BF47BCAEDBBCBE75`

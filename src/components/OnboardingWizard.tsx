@@ -742,6 +742,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     const timer = window.setTimeout(() => {
       void (async () => {
         try {
+          await persistIdentity();
           await saveOnboardingDone();
           await saveSetting("setup.recovered_input", "true");
           onComplete();
@@ -804,6 +805,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
         await goToStep(5);
       } else if (step === 5) {
+        // Re-commit identity at the final boundary. Installed WebView recovery
+        // can advance later setup steps without React input events, so the
+        // values selected on step 1 must still be durable when setup finishes.
+        await persistIdentity();
         await saveOnboardingDone();
         if (setupRecoveryActive) {
           await saveSetting("setup.recovered_input", "true");
