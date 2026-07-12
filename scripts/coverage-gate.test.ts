@@ -39,7 +39,9 @@ describe("release coverage gate", () => {
     const tauriConfig = JSON.parse(read("src-tauri/tauri.windows-signing.conf.json"));
     const signer = read("scripts/sign-windows-artifact.ps1");
 
-    expect(tauriConfig.bundle.windows.signCommand).toContain("sign-windows-artifact.cmd");
+    expect(tauriConfig.bundle.windows.signCommand).toBe(
+      "scripts\\sign-windows-artifact.cmd %1",
+    );
     expect(tauriConfig.bundle.windows.signCommand).toContain("%1");
     expect(release).toContain("Install-Module -Name ArtifactSigning -RequiredVersion 0.1.8");
     expect(smoke).toContain("Install-Module -Name ArtifactSigning -RequiredVersion 0.1.8");
