@@ -70,6 +70,13 @@ jobs:
         with:
           args: --config src-tauri/tauri.windows-signing.conf.json --target x86_64-pc-windows-msvc --bundles nsis -- --locked
 
+      - name: Dump signing diagnostics
+        if: failure()
+        shell: pwsh
+        run: |
+          $log = Join-Path $env:RUNNER_TEMP "civicnewspaper-signing.log"
+          if (Test-Path -LiteralPath $log) { Get-Content -LiteralPath $log } else { Write-Host "Signer did not create a diagnostic log." }
+
       - name: Locate NSIS installer
         shell: pwsh
         run: |
