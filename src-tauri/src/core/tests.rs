@@ -265,6 +265,20 @@ mod tests {
     }
 
     #[test]
+    fn test_current_database_has_civic_application_id() {
+        const CIVIC_DESK_APPLICATION_ID: i64 = 1_128_879_683;
+        let temp_dir = tempdir().unwrap();
+        let db_path = temp_dir.path().join("current.db");
+        let conn = init_db(db_path.to_str().unwrap()).unwrap();
+
+        let application_id: i64 = conn
+            .query_row("PRAGMA application_id;", [], |row| row.get(0))
+            .unwrap();
+
+        assert_eq!(application_id, CIVIC_DESK_APPLICATION_ID);
+    }
+
+    #[test]
     fn test_restore_migrates_pre_0017_backup() {
         let temp_dir = tempdir().unwrap();
         let live_path = temp_dir.path().join("live.db");
@@ -820,6 +834,99 @@ mod tests {
             .contains("Civic Desk database"));
         let live = db_conn_arc.lock().unwrap();
         let sources = list_sources(&live).unwrap();
+        assert_eq!(sources.len(), 1);
+        assert_eq!(sources[0].name, "Keep Me");
+    }
+
+    #[test]
+    fn test_restore_rejects_branded_but_incomplete_current_database() {
+        let temp_dir = tempdir().unwrap();
+        let live_db_path = temp_dir.path().join("live.db");
+        let damaged_db_path = temp_dir.path().join("damaged.db");
+
+        let live = init_db(live_db_path.to_str().unwrap()).unwrap();
+        insert_source(
+            &live,
+            &Source {
+                id: None,
+                name: "Keep Me".to_string(),
+                url: "https://keep.example.gov".to_string(),
+                r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+
+        let damaged = init_db(damaged_db_path.to_str().unwrap()).unwrap();
+        damaged
+            .execute_batch(
+                "DROP TABLE settings; CREATE TABLE settings (key TEXT PRIMARY KEY NOT NULL);",
+            )
+            .unwrap();
+        drop(damaged);
+
+        let db_conn = Arc::new(Mutex::new(live));
+        let result = restore_backup(
+            &db_conn,
+            damaged_db_path.to_str().unwrap(),
+            live_db_path.to_str().unwrap(),
+        );
+
+        assert!(
+            result.is_err(),
+            "a damaged current Civic Desk database must be rejected"
+        );
+        let _ = result.unwrap_err();
+        let sources = list_sources(&db_conn.lock().unwrap()).unwrap();
+        assert_eq!(sources.len(), 1);
+        assert_eq!(sources[0].name, "Keep Me");
+    }
+
+    #[test]
+    fn test_restore_rejects_current_database_missing_unique_index() {
+        let temp_dir = tempdir().unwrap();
+        let live_db_path = temp_dir.path().join("live.db");
+        let damaged_db_path = temp_dir.path().join("damaged-index.db");
+
+        let live = init_db(live_db_path.to_str().unwrap()).unwrap();
+        insert_source(
+            &live,
+            &Source {
+                id: None,
+                name: "Keep Me".to_string(),
+                url: "https://keep.example.gov".to_string(),
+                r#type: "primary_record".to_string(),
+                tier: "official_record".to_string(),
+                status: "online".to_string(),
+                last_success_at: None,
+                last_failed_at: None,
+                last_scraped: None,
+            },
+        )
+        .unwrap();
+
+        let damaged = init_db(damaged_db_path.to_str().unwrap()).unwrap();
+        damaged
+            .execute_batch("DROP INDEX idx_evidence_source_url_content_hash;")
+            .unwrap();
+        drop(damaged);
+
+        let db_conn = Arc::new(Mutex::new(live));
+        let result = restore_backup(
+            &db_conn,
+            damaged_db_path.to_str().unwrap(),
+            live_db_path.to_str().unwrap(),
+        );
+
+        assert!(
+            result.is_err(),
+            "a current database missing a required unique index must be rejected"
+        );
+        let sources = list_sources(&db_conn.lock().unwrap()).unwrap();
         assert_eq!(sources.len(), 1);
         assert_eq!(sources[0].name, "Keep Me");
     }
