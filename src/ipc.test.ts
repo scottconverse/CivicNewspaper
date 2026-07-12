@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { toUserMessage } from "./ipc";
+import { normalizeOllamaHealth, toUserMessage } from "./ipc";
 
 // QA-R2-mn1 / QA-R2-mn2: typed `UPPER_SNAKE:` prefixes the backend emits must be
 // translated into plain-language guidance with the machine token stripped, not
@@ -40,5 +40,32 @@ describe("toUserMessage typed-prefix translation", () => {
     // A normal sentence shouldn't be mistaken for a typed prefix.
     const msg = toUserMessage("could not reach ollama: connection refused");
     expect(msg.toLowerCase()).toContain("ollama");
+  });
+});
+
+describe("normalizeOllamaHealth", () => {
+  it.each([undefined, null, {}, { reachable: true, models: null }])(
+    "normalizes malformed health payload %j to unavailable",
+    (payload) => {
+      expect(normalizeOllamaHealth(payload)).toEqual({
+        reachable: false,
+        models: [],
+        version: null,
+      });
+    },
+  );
+
+  it("preserves a valid health payload", () => {
+    expect(
+      normalizeOllamaHealth({
+        reachable: true,
+        models: ["phi4-mini:latest"],
+        version: "0.30.11",
+      }),
+    ).toEqual({
+      reachable: true,
+      models: ["phi4-mini:latest"],
+      version: "0.30.11",
+    });
   });
 });

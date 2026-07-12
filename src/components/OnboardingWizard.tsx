@@ -36,7 +36,6 @@ const SLOW_CPU_CAUTION =
 const MODEL_DOWNLOAD_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 6000;
 const MODEL_READY_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 5000;
 const FINAL_SETUP_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 3000;
-const IDENTITY_PREFILL_RESCUE_MS = import.meta.env.MODE === "test" ? 5000 : 10000;
 const RUNTIME_INSTALL_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 4000;
 
 // Approximate one-time download sizes, sourced from models.json so the wizard
@@ -142,8 +141,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const [runtimeError, setRuntimeError] = useState("");
   const modelDownloadRescueAttemptedRef = useRef(false);
   const runtimeInstallRescueAttemptedRef = useRef(false);
-  const identityPrefillRescueAttemptedRef = useRef(false);
-  const identityUserInteractedRef = useRef(false);
   const identityAdvanceInFlightRef = useRef(false);
   const pubNameInputRef = useRef<HTMLInputElement | null>(null);
   const editorNameInputRef = useRef<HTMLInputElement | null>(null);
@@ -236,7 +233,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   };
 
   const markIdentityInteraction = () => {
-    identityUserInteractedRef.current = true;
+    setSetupNotice(null);
   };
 
   const currentIdentityValues = () => ({
@@ -412,8 +409,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               setModel(result.models[0]);
             }
           }
-        } catch (e) {
-          console.error(e);
+        } catch {
+          setHealth({ reachable: false, models: [], version: null });
         } finally {
           if (isFirst) {
             setCheckingHealth(false);
@@ -860,39 +857,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       }
     }, 0);
   }, [step, stepTwoNeedsRuntimeInstall]);
-
-  useEffect(() => {
-    if (
-      step !== 1 ||
-      identityPrefillRescueAttemptedRef.current ||
-      identityUserInteractedRef.current ||
-      pubName.trim() ||
-      editorName.trim() ||
-      city.trim() ||
-      state.trim()
-    ) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      if (
-        step !== 1 ||
-        identityPrefillRescueAttemptedRef.current ||
-        identityUserInteractedRef.current ||
-        pubName.trim() ||
-        editorName.trim() ||
-        city.trim() ||
-        state.trim()
-      ) {
-        return;
-      }
-
-      identityPrefillRescueAttemptedRef.current = true;
-      setSetupNotice("Setup is not receiving identity input yet. Choose a starter profile, type your city and state, or use Tab and Enter to continue with fields you control.");
-    }, IDENTITY_PREFILL_RESCUE_MS);
-
-    return () => window.clearTimeout(timer);
-  }, [step, pubName, editorName, city, state]);
 
   useEffect(() => {
     if (step === 1) {

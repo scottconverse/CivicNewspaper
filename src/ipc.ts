@@ -653,8 +653,31 @@ export interface OllamaState {
   version: string | null;
 }
 
+export function normalizeOllamaHealth(value: unknown): OllamaState {
+  if (
+    !value ||
+    typeof value !== "object" ||
+    typeof (value as { reachable?: unknown }).reachable !== "boolean" ||
+    !Array.isArray((value as { models?: unknown }).models) ||
+    !(value as { models: unknown[] }).models.every((model) => typeof model === "string") ||
+    !(
+      (value as { version?: unknown }).version === null ||
+      typeof (value as { version?: unknown }).version === "string"
+    )
+  ) {
+    return { reachable: false, models: [], version: null };
+  }
+
+  const state = value as OllamaState;
+  return {
+    reachable: state.reachable,
+    models: [...state.models],
+    version: state.version,
+  };
+}
+
 export async function ollamaHealth(): Promise<OllamaState> {
-  return invokeGuarded<OllamaState>("ollama_health");
+  return normalizeOllamaHealth(await invokeGuarded<unknown>("ollama_health"));
 }
 
 export async function pullOllamaModel(modelId: string): Promise<void> {
