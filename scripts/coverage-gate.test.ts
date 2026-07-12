@@ -54,6 +54,8 @@ describe("release coverage gate", () => {
     });
     expect(release).toContain("Install-Module -Name ArtifactSigning -RequiredVersion 0.1.8");
     expect(smoke).toContain("Install-Module -Name ArtifactSigning -RequiredVersion 0.1.8");
+    expect(release).toMatch(/Install pinned Artifact Signing module[\s\S]*?shell: powershell/);
+    expect(smoke).toMatch(/Install pinned Artifact Signing module[\s\S]*?shell: powershell/);
     expect(release).toContain("tauri.windows-signing.conf.json");
     expect(smoke).toContain("tauri.windows-signing.conf.json");
     expect(release).toContain("Dump signing diagnostics");
