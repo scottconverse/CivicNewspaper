@@ -56,12 +56,25 @@ fn default_first_amendment_advisor_enabled() -> bool {
     true
 }
 
+fn format_public_date(timestamp: &str) -> String {
+    chrono::DateTime::parse_from_rfc3339(timestamp)
+        .map(|date| date.format("%B %d, %Y").to_string())
+        .unwrap_or_else(|_| "Date unavailable".to_string())
+}
+
+fn format_rss_date(timestamp: &str) -> String {
+    chrono::DateTime::parse_from_rfc3339(timestamp)
+        .map(|date| date.to_rfc2822())
+        .unwrap_or_default()
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CompiledArticle {
     pub title: String,
     pub format: String,
     pub relative_path: String,
-    pub updated_at: String,
+    #[serde(alias = "updated_at")]
+    pub published_date: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -960,6 +973,12 @@ mod tests {
     }
 
     #[test]
+    fn malformed_publication_dates_are_explicit_and_never_fabricated() {
+        assert_eq!(format_public_date("not-a-date"), "Date unavailable");
+        assert_eq!(format_rss_date("not-a-date"), "");
+    }
+
+    #[test]
     fn compile_preflight_rejects_cited_paragraph_with_unrelated_evidence() {
         let content = "Council members are expected to vote on a library roof repair contract this week, increase capacity by 40 percent, and spend ten million dollars over ten years [Source](evidence:57).";
         let draft = draft_with_lead(content);
@@ -1388,7 +1407,8 @@ fn compile_static_site_into(
         post_html = post_html.replace("{{LAYOUT_CLASS}}", layout_class);
         post_html = post_html.replace("{{POST_TITLE}}", &safe_title);
         post_html = post_html.replace("{{POST_DESCRIPTION}}", &safe_title);
-        post_html = post_html.replace("{{POST_DATE}}", &draft.updated_at);
+        let public_date = format_public_date(&draft.updated_at);
+        post_html = post_html.replace("{{POST_DATE}}", &public_date);
         post_html = post_html.replace("{{POST_FORMAT}}", public_format);
         post_html = post_html.replace("{{POST_CONTENT}}", &html_content);
         post_html = post_html.replace(
@@ -1423,7 +1443,7 @@ fn compile_static_site_into(
             title: title.clone(),
             format: public_format.to_string(),
             relative_path: relative_path.clone(),
-            updated_at: draft.updated_at.clone(),
+            published_date: public_date.clone(),
         });
 
         // Update database linking
@@ -1453,13 +1473,24 @@ fn compile_static_site_into(
         // Add to Homepage listing HTML
         article_list_html.push_str(&format!(
             "<article>\n  <h2 class=\"article-title\"><a href=\"{}\">{}</a></h2>\n  <div class=\"article-meta\">\n    <span>{}</span>\n    <span>Format: <span class=\"tag\">{}</span></span>\n  </div>\n</article>\n\n",
-            relative_path, safe_title, draft.updated_at, public_format
+            relative_path, safe_title, public_date, public_format
         ));
 
         // Add to RSS feed items
+        let rss_date = format_rss_date(&draft.updated_at);
+        let rss_date_element = if rss_date.is_empty() {
+            String::new()
+        } else {
+            format!("      <pubDate>{rss_date}</pubDate>\n")
+        };
         rss_items.push_str(&format!(
-            "    <item>\n      <title>{}</title>\n      <link>{}</link>\n      <guid>{}/{}</guid>\n      <pubDate>{}</pubDate>\n      <description>{}</description>\n    </item>\n",
-            safe_title, relative_path, subfolder, draft_id, draft.updated_at, safe_title
+            "    <item>\n      <title>{}</title>\n      <link>{}</link>\n      <guid>{}/{}</guid>\n{}      <description>{}</description>\n    </item>\n",
+            safe_title,
+            relative_path,
+            subfolder,
+            draft_id,
+            rss_date_element,
+            safe_title
         ));
 
         // Add to Corrections Ledger listing if corrected
@@ -1469,7 +1500,7 @@ fn compile_static_site_into(
             let safe_corr_note = html_escape::encode_safe(&note_str);
             corrections_list_html.push_str(&format!(
                 "<div style=\"border-bottom: 1px dashed #cccccc; padding: 1.5rem 0;\">\n  <h3 style=\"margin-top: 0;\"><a href=\"{}\">{}</a></h3>\n  <p style=\"font-size: 0.9rem; color: #856404; background-color: #fff3cd; padding: 0.75rem; border-radius: 4px;\"><strong>Correction Notice ({}):</strong> {}</p>\n</div>\n\n",
-                relative_path, safe_title, draft.updated_at, safe_corr_note
+                relative_path, safe_title, public_date, safe_corr_note
             ));
         }
     }
@@ -1582,12 +1613,9 @@ fn compile_static_site_into(
     } else {
         newsletter.push_str("## This Issue\n\n");
         for article in &compiled_articles {
-            let article_date = chrono::DateTime::parse_from_rfc3339(&article.updated_at)
-                .map(|date| date.format("%B %d, %Y").to_string())
-                .unwrap_or_else(|_| article.updated_at.clone());
             newsletter.push_str(&format!(
                 "- [{}](https://YOUR-PUBLIC-SITE.example/{}) - {} - {}\n",
-                article.title, article.relative_path, article.format, article_date
+                article.title, article.relative_path, article.format, article.published_date
             ));
         }
     }

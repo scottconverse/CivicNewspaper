@@ -826,7 +826,7 @@ describe("PublishPanel Component Tests", () => {
             title: "Council weighs budget change",
             format: "watch",
             relative_path: "articles/council.html",
-            updated_at: "2026-06-27T00:00:00Z",
+            published_date: "June 27, 2026",
           }],
         }}
         {...defaultPublisherProps}
