@@ -48,7 +48,7 @@ describe("release coverage gate", () => {
         "-ExecutionPolicy",
         "Bypass",
         "-File",
-        "scripts\\sign-windows-artifact.ps1",
+        "..\\scripts\\sign-windows-artifact.ps1",
         "-File",
         "%1",
       ],
