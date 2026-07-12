@@ -59,6 +59,8 @@ describe("release coverage gate", () => {
     expect(smoke).toContain("Dump signing diagnostics");
     expect(release).toContain("release-signature-proof-${{ github.sha }}");
     expect(signer).toContain("Invoke-ArtifactSigning @params");
+    expect(signer).toContain('Write-SigningDiagnostic "environment-validated"');
+    expect(signer).toContain('Write-SigningDiagnostic "artifact-input');
     expect(signer).toContain("ExcludeAzureCliCredential = $true");
     expect(signer).not.toContain("az login");
     expect(release).not.toContain("artifact-signing-cli");
