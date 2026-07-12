@@ -1254,6 +1254,7 @@ export function useApp() {
       setStatusMessage("Ethics standard and community profile updated.");
     } catch (e: any) {
       setErrorMessage(toUserMessage(e));
+      throw e;
     } finally {
       setLoading(false);
     }

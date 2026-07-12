@@ -210,7 +210,7 @@ const GuardrailEditor: React.FC = () => {
 
 interface SettingsPanelProps {
   communityProfile: CommunityProfile | null;
-  onSaveProfile: (profile: CommunityProfile) => void;
+  onSaveProfile: (profile: CommunityProfile) => Promise<void>;
   onChooseLogo?: () => Promise<string | null>;
   backupPathInput: string;
   onBackupPathInputChange: (val: string) => void;
@@ -229,6 +229,13 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 }) => {
   const [profileForm, setProfileForm] = useState<CommunityProfile | null>(communityProfile);
   const [profileSaveStatus, setProfileSaveStatus] = useState<string>("");
+  const [isProfileSaving, setIsProfileSaving] = useState(false);
+  const profileSaveInFlight = React.useRef(false);
+  const profileStatusTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  React.useEffect(() => () => {
+    if (profileStatusTimer.current) clearTimeout(profileStatusTimer.current);
+  }, []);
 
   const applyNeutralStarterCopy = () => {
     if (!profileForm) return;
@@ -250,14 +257,26 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (profileForm) {
+    if (profileForm && !profileSaveInFlight.current) {
+      profileSaveInFlight.current = true;
+      setIsProfileSaving(true);
+      if (profileStatusTimer.current) {
+        clearTimeout(profileStatusTimer.current);
+        profileStatusTimer.current = null;
+      }
       try {
         setProfileSaveStatus("Saving...");
         await Promise.resolve(onSaveProfile(profileForm));
         setProfileSaveStatus("Identity saved.");
-        setTimeout(() => setProfileSaveStatus(""), 4000);
+        profileStatusTimer.current = setTimeout(() => {
+          setProfileSaveStatus("");
+          profileStatusTimer.current = null;
+        }, 4000);
       } catch (error) {
         setProfileSaveStatus(`Save failed: ${toUserMessage(error)}`);
+      } finally {
+        profileSaveInFlight.current = false;
+        setIsProfileSaving(false);
       }
     }
   };
@@ -279,13 +298,17 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               className="btn btn-primary btn-sm"
               type="submit"
               form="form-save-profile"
-              disabled={!profileForm}
+              disabled={!profileForm || isProfileSaving}
             >
               Save now
             </button>
           </div>
           {profileForm ? (
             <form onSubmit={handleProfileSubmit} id="form-save-profile">
+              <fieldset
+                disabled={isProfileSaving}
+                style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}
+              >
               <div className="settings-form-grid">
                 <div>
                   <label style={{ fontWeight: 600, display: "block", marginBottom: "0.25rem" }} htmlFor="input-profile-title">Publication name</label>
@@ -493,7 +516,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               </label>
 
               <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
-                <button className="btn btn-primary" type="submit" id="btn-save-profile">
+                <button className="btn btn-primary" type="submit" id="btn-save-profile" disabled={isProfileSaving}>
                   Save identity
                 </button>
                 <button className="btn btn-secondary" type="button" onClick={applyNeutralStarterCopy} id="btn-neutral-starter-copy">
@@ -501,6 +524,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 </button>
                 {profileSaveStatus && <span className="help-text" role="status">{profileSaveStatus}</span>}
               </div>
+              </fieldset>
             </form>
           ) : (
             <p id="profile-loading-text">Loading profile configurations...</p>
