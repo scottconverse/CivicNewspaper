@@ -74,8 +74,9 @@ def check_release_body(failures: list[str]) -> None:
 def main() -> int:
     failures: list[str] = []
 
-    require("README.md", "Local isolated-profile smoke", failures)
-    require("README.md", "The GitHub release asset has not yet been replaced", failures)
+    require("README.md", "AuthentiCode-signs and timestamps", failures)
+    require("README.md", "downloadable GitHub asset has not yet been replaced", failures)
+    require("README.md", "preserved as historical evidence", failures)
     require("README.md", "docs/release-evidence/v0.3.2.json", failures)
     require("README.md", "v0.3.2 is a Windows public beta", failures)
     forbid("README.md", "queued for final cleanroom recheck", failures)
@@ -90,19 +91,17 @@ def main() -> int:
         require(path, "backlog/proof-needed", failures)
         require(path, "macOS and Linux", failures)
 
-    require("docs/install.md", "passed dependency-absent onboarding", failures)
-    require("docs/install.md", "GitHub release asset has not yet been replaced", failures)
+    require("docs/install.md", "records an earlier candidate", failures)
+    require("docs/install.md", "final beta candidate must publish a new exact-candidate report", failures)
     require("docs/install.md", "https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2", failures)
-    require("docs/release-readiness.md", "Current v0.3.2 evidence", failures)
+    require("docs/release-readiness.md", "Historical v0.3.2 evidence and the final-candidate rule", failures)
     require("docs/release-readiness.md", "docs/release-evidence/v0.3.2.json", failures)
     require("docs/release-evidence/v0.3.2.json", LOCAL_CANDIDATE_COMMIT, failures)
     require("docs/release-evidence/v0.3.2.json", LOCAL_CANDIDATE_SHA256, failures)
     require("docs/release-evidence/v0.3.2.json", LOCAL_CANDIDATE_SIZE, failures)
     require("docs/release-evidence/v0.3.2-local-isolated-package-report.md", LOCAL_CANDIDATE_COMMIT, failures)
-    require("docs/index.html", PUBLISHED_COMMIT, failures)
-    require("docs/index.html", PUBLISHED_SHA256, failures)
-    require("docs/index.html", PUBLISHED_SIZE, failures)
-    require("docs/index.html", "has not been uploaded", failures)
+    require("docs/index.html", "pending replacement with the final signed, cleanroom-tested candidate", failures)
+    require("docs/index.html", "older repository evidence is retained as history and is not current-download proof", failures)
     check_release_body(failures)
 
     require("docs/publishing-connectors.md", "anonymous here.now preview publishing is the tested default fast path", failures)
