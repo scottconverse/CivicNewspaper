@@ -662,9 +662,12 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   }, [step, autoStartPull, pulling, pullComplete, model]);
 
   const stepTwoNeedsRuntimeInstall = step === 2 && Boolean(health && !health.reachable);
+  const selectedModelReady = Boolean(
+    health?.reachable && modelInstalled(model, health.models),
+  );
 
   useEffect(() => {
-    if (step !== 3 || !setupRecoveryActive || pullError) {
+    if (step !== 3 || !pullComplete || pullError) {
       return;
     }
 
@@ -685,16 +688,15 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
     const checkModelReady = async () => {
       try {
-        if (pullComplete) {
-          await finishRecoveredSetup(null);
-          return;
-        }
-
         const latestHealth = await ollamaHealth();
         if (cancelled) return;
         setHealth(latestHealth);
         if (latestHealth.reachable && modelInstalled(model, latestHealth.models)) {
-          await finishRecoveredSetup(latestHealth);
+          if (setupRecoveryActive) {
+            await finishRecoveredSetup(latestHealth);
+          } else {
+            setSetupNotice("The recommended model is installed and ready.");
+          }
         }
       } catch (e) {
         console.error(e);
@@ -787,8 +789,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           await goToStep(3);
         }
       } else if (step === 3) {
-        const modelReady = pullComplete || Boolean(health && modelInstalled(model, health.models));
-        if (!modelReady) {
+        if (!selectedModelReady) {
+          if (pullComplete) {
+            setSetupNotice("The download finished. Waiting for the local AI service to confirm the model is ready.");
+            return;
+          }
           setAutoStartPull(true);
           return;
         }
@@ -1449,7 +1454,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                     Cancel Download
                   </button>
                 )}
-                {pullComplete && (
+                {selectedModelReady && (
                   <div style={{ marginTop: "1rem", color: "var(--color-success)", display: "flex", alignItems: "center" }}>
                     <CheckCircle size={16} style={{ marginRight: "0.5rem" }} /> Model pulled successfully.
                   </div>
@@ -1535,13 +1540,15 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             onClick={handleNext}
             id="btn-wizard-next"
             aria-label={step === 1 ? "Continue setup Next" : undefined}
-            disabled={runtimeInstalling || pulling || stepTwoNeedsRuntimeInstall}
+            disabled={runtimeInstalling || pulling || stepTwoNeedsRuntimeInstall || (step === 3 && pullComplete && !selectedModelReady)}
             aria-describedby={stepTwoNeedsRuntimeInstall ? "onboarding-runtime-required-note" : undefined}
             title={stepTwoNeedsRuntimeInstall ? "Install the local AI runtime or choose Skip for now before continuing." : undefined}
           >
             {step === 1
               ? "Continue setup"
-              : step === 3 && !pulling && !pullComplete && !(health && modelInstalled(model, health.models))
+              : step === 3 && pullComplete && !selectedModelReady
+                ? "Verifying model"
+                : step === 3 && !pulling && !pullComplete && !selectedModelReady
                 ? "Start download"
                 : step === steps.length
                   ? "Finish Onboarding"

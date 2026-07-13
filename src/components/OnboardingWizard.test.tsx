@@ -870,11 +870,12 @@ describe("OnboardingWizard Component Tests", () => {
     });
   });
 
-  test("model setup recovery stays neutral and completes onboarding", async () => {
+  test("model setup recovery waits for Ollama to confirm the model before completing", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;
     const eventApi = await import("@tauri-apps/api/event");
     let completeCallback: any = null;
+    let modelVisible = false;
 
     vi.mocked(eventApi.listen).mockImplementation(((eventName: string, callback: any) => {
       if (eventName === "ollama-pull-complete") {
@@ -889,7 +890,7 @@ describe("OnboardingWizard Component Tests", () => {
       if (cmd === "set_setting") return Promise.resolve();
       if (cmd === "ollama_health") return Promise.resolve({
         reachable: true,
-        models: [],
+        models: modelVisible ? ["phi4-mini:latest"] : [],
         version: "0.1.0",
       });
       if (cmd === "pull_ollama_model") {
@@ -906,6 +907,23 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(screen.getByText("Step 3 of 5")).toBeInTheDocument());
     expect(screen.queryByText(/not receiving input events/i)).not.toBeInTheDocument();
     await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("pull_ollama_model", { modelId: "phi4-mini:latest" }));
+    await waitFor(() => expect(completeCallback).toBeTypeOf("function"));
+    const { act } = await import("@testing-library/react");
+    await act(async () => {
+      completeCallback({ payload: undefined });
+      await new Promise(resolve => window.setTimeout(resolve, 200));
+    });
+    expect(handleComplete).not.toHaveBeenCalled();
+    const verifyingButton = screen.getByRole("button", { name: /Verifying model/i });
+    expect(verifyingButton).toBeDisabled();
+    fireEvent.click(verifyingButton);
+    await act(async () => {
+      await new Promise(resolve => window.setTimeout(resolve, 150));
+    });
+    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
+    expect(handleComplete).not.toHaveBeenCalled();
+
+    modelVisible = true;
     await waitFor(() => expect(handleComplete).toHaveBeenCalled());
   });
 
@@ -1045,10 +1063,11 @@ describe("OnboardingWizard Component Tests", () => {
       return Promise.resolve(() => {});
     }) as any);
 
+    let modelVisible = false;
     invokeMock.mockImplementation((cmd: string) => {
       if (cmd === "get_system_ram") return Promise.resolve(16);
       if (cmd === "get_setting") return Promise.resolve(null);
-      if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: [], version: "0.1.0" });
+      if (cmd === "ollama_health") return Promise.resolve({ reachable: true, models: modelVisible ? ["phi4-mini:latest"] : [], version: "0.1.0" });
       if (cmd === "pull_ollama_model") return Promise.resolve();
       return Promise.resolve();
     });
@@ -1088,6 +1107,7 @@ describe("OnboardingWizard Component Tests", () => {
     expect(screen.getByRole("status")).toHaveTextContent("50.0%");
 
     // Now simulate success
+    modelVisible = true;
     act(() => {
       progressCallback({
         payload: {
