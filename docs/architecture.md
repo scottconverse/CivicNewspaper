@@ -262,6 +262,8 @@ Security boundaries are local-first, not offline-only.
 
 The release build creates desktop installers from the Tauri app.
 
+The Windows NSIS package uses Tauri's WebView2 download bootstrapper. On a machine without Microsoft Edge WebView2 Runtime, initial installation therefore requires network access to obtain that prerequisite; the current public-beta package is not an offline installer. This is separate from first-run local AI setup, which downloads the app-managed Ollama runtime and selected model.
+
 Windows package signing is part of the current release artifact gate. Tauri signs the application executable, generated NSIS uninstaller, and outer installer during bundling; CI then installs the candidate and fails closed unless all three Authenticode signatures and timestamps are valid. A stable release still needs macOS signing/notarization, cross-platform clean-machine installer proof, and repeatable release smoke artifacts.
 
 ## Current Stable-Release Gaps

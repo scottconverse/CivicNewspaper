@@ -18,7 +18,7 @@ What that means in practice:
 - macOS and Linux installers are backlog/proof-needed until clean-machine proof is recorded.
 - You should verify important output before publishing.
 
-The app is local-first, not internet-free. Your database, drafts, settings, and output files are local by default. The app uses the internet when you fetch sources, run discovery/search, download a local AI model, or publish to an external provider.
+The app is local-first, not internet-free. Your database, drafts, settings, and output files are local by default. Initial installation requires an internet connection when Microsoft Edge WebView2 Runtime is not already installed. The app also uses the internet when you fetch sources, run discovery/search, download the app-managed Ollama runtime or a local AI model, or publish to an external provider.
 
 ## What The App Does Not Do
 
@@ -47,6 +47,8 @@ Choose the v0.3.2 Windows public beta release:
 <https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2>
 
 On Windows, use the `.exe` installer from the official release page. Confirm the filename, published checksum, and a valid Authenticode signer containing **Scott Converse** before installing.
+
+Keep the computer online during initial installation and first-run local AI setup. If Microsoft Edge WebView2 Runtime is missing, the installer downloads that prerequisite; first-run AI setup downloads the app-managed Ollama runtime and selected model. This public-beta installer is not an offline installer.
 
 macOS and Linux are planned, but they are not supported public-beta installer paths in this release line yet. The project needs a real artifact, clean-machine install proof, first-run local AI proof, and honest platform-specific warning text before the manual should tell normal users to install those builds.
 
