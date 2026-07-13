@@ -27,17 +27,17 @@
         <article class="doc-content">
 <h1 id="installation-guide-and-checksum-verification">Installation Guide And Checksum Verification</h1>
 <p>This guide explains how to install The Civic Desk from the CivicNewspaper releases page and how to verify a downloaded installer.</p>
-<p><strong>Candidate pending:</strong> the v0.3.2 release page still serves an earlier asset. Do not install it as the signed candidate. Wait until the release page identifies the replacement, then verify both its checksum and Authenticode signer before opening it.</p>
+<p>The v0.3.2 release page now serves the signed, cleanroom-tested Windows public-beta installer. Verify both its checksum and Authenticode signer before opening it.</p>
 <h2 id="download">Download</h2>
 <p>Open the releases page:</p>
 <p><a href="https://github.com/scottconverse/CivicNewspaper/releases">https://github.com/scottconverse/CivicNewspaper/releases</a></p>
-<p>After the signed replacement is published, use the v0.3.2 Windows-only public-beta release:</p>
+<p>Use the v0.3.2 Windows-only public-beta release:</p>
 <p><a href="https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2">https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2</a></p>
 <h2 id="windows">Windows</h2>
 <p>Initial installation requires an internet connection when Microsoft Edge WebView2 Runtime is not already installed. Keep the computer online for the installer and for first-run local AI setup, which downloads the app-managed Ollama runtime and selected model. This public-beta installer is not an offline installer.</p>
 <ol>
-<li>Confirm the release page says the signed replacement candidate has been published.</li>
-<li>Download <code>The.Civic.Desk_0.3.2_x64-setup.exe</code> and <code>SHA256SUMS</code> from that release.</li>
+<li>Confirm the release page identifies product build commit <code>796b8700831f964beea97630c51d71a40a9b724f</code>.</li>
+<li>Download <code>The.Civic.Desk_0.3.2_x64-setup.exe</code> and <code>SHA256SUMS.txt</code> from that release.</li>
 <li>Verify the SHA256 checksum.</li>
 <li>Verify Authenticode reports <code>Status</code> as <code>Valid</code> and the signer contains <strong>Scott Converse</strong>.</li>
 <li>Only after both checks pass, double-click the installer.</li>
@@ -47,7 +47,7 @@
 <h2 id="macos-and-linux">macOS And Linux</h2>
 <p>macOS and Linux installers are backlog/proof-needed for this release line. Do not assume a historical <code>.dmg</code>, <code>.deb</code>, package config, or build target is supported until the release notes include a clean-machine proof for that platform.</p>
 <h2 id="clean-machine-proof">Clean-Machine Proof</h2>
-<p>Every release candidate needs an artifact-bound installed-package report from a clean machine, VM, Windows Sandbox, external tester, or isolated app-data profile before it can be called proved at that evidence level. The repository&#x27;s <a href="release-evidence/v0.3.2-local-isolated-package-report.html">local isolated-package report</a> records an earlier candidate and is retained as historical evidence. It is not the checksum for the candidate currently under evaluation or for the existing GitHub download. The final beta candidate must publish a new exact-candidate report and checksum only after the merged commit is signed and the same installer bytes complete the cleanroom gate.</p>
+<p>Every release candidate needs an artifact-bound installed-package report from a clean machine, VM, Windows Sandbox, external tester, or isolated app-data profile before it can be called proved at that evidence level. The repository&#x27;s <a href="release-evidence/v0.3.2-local-isolated-package-report.html">local isolated-package report</a> records an earlier candidate and is retained as historical evidence. The published signed candidate is bound to commit <code>796b8700831f964beea97630c51d71a40a9b724f</code>, SHA256 <code>BDA7CE85759AD1C475D100D0F04FBC7F3CAF7DFF07DDB74F60B24F1CAAF526DD</code>, and size <code>5342976</code> bytes; its exact-candidate cleanroom evidence is identified in the release notes.</p>
 <p>Required proof for a cleanroom-proven release:</p>
 <ol>
 <li>Build the artifact from a named commit.</li>

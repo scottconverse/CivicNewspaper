@@ -2,7 +2,7 @@
 
 This guide explains how to install The Civic Desk from the CivicNewspaper releases page and how to verify a downloaded installer.
 
-**Candidate pending:** the v0.3.2 release page still serves an earlier asset. Do not install it as the signed candidate. Wait until the release page identifies the replacement, then verify both its checksum and Authenticode signer before opening it.
+The v0.3.2 release page now serves the signed, cleanroom-tested Windows public-beta installer. Verify both its checksum and Authenticode signer before opening it.
 
 ## Download
 
@@ -10,7 +10,7 @@ Open the releases page:
 
 <https://github.com/scottconverse/CivicNewspaper/releases>
 
-After the signed replacement is published, use the v0.3.2 Windows-only public-beta release:
+Use the v0.3.2 Windows-only public-beta release:
 
 <https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2>
 
@@ -18,8 +18,8 @@ After the signed replacement is published, use the v0.3.2 Windows-only public-be
 
 Initial installation requires an internet connection when Microsoft Edge WebView2 Runtime is not already installed. Keep the computer online for the installer and for first-run local AI setup, which downloads the app-managed Ollama runtime and selected model. This public-beta installer is not an offline installer.
 
-1. Confirm the release page says the signed replacement candidate has been published.
-2. Download `The.Civic.Desk_0.3.2_x64-setup.exe` and `SHA256SUMS` from that release.
+1. Confirm the release page identifies product build commit `796b8700831f964beea97630c51d71a40a9b724f`.
+2. Download `The.Civic.Desk_0.3.2_x64-setup.exe` and `SHA256SUMS.txt` from that release.
 3. Verify the SHA256 checksum.
 4. Verify Authenticode reports `Status` as `Valid` and the signer contains **Scott Converse**.
 5. Only after both checks pass, double-click the installer.
@@ -32,7 +32,7 @@ macOS and Linux installers are backlog/proof-needed for this release line. Do no
 
 ## Clean-Machine Proof
 
-Every release candidate needs an artifact-bound installed-package report from a clean machine, VM, Windows Sandbox, external tester, or isolated app-data profile before it can be called proved at that evidence level. The repository's [local isolated-package report](release-evidence/v0.3.2-local-isolated-package-report.md) records an earlier candidate and is retained as historical evidence. It is not the checksum for the candidate currently under evaluation or for the existing GitHub download. The final beta candidate must publish a new exact-candidate report and checksum only after the merged commit is signed and the same installer bytes complete the cleanroom gate.
+Every release candidate needs an artifact-bound installed-package report from a clean machine, VM, Windows Sandbox, external tester, or isolated app-data profile before it can be called proved at that evidence level. The repository's [local isolated-package report](release-evidence/v0.3.2-local-isolated-package-report.md) records an earlier candidate and is retained as historical evidence. The published signed candidate is bound to commit `796b8700831f964beea97630c51d71a40a9b724f`, SHA256 `BDA7CE85759AD1C475D100D0F04FBC7F3CAF7DFF07DDB74F60B24F1CAAF526DD`, and size `5342976` bytes; its exact-candidate cleanroom evidence is identified in the release notes.
 
 Required proof for a cleanroom-proven release:
 

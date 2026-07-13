@@ -2,7 +2,7 @@
 
 > **Project name:** CivicNewspaper. **Installed app name:** The Civic Desk.
 >
-> **Current release line:** v0.3.2 Windows-only public beta. Windows release candidates are Authenticode-signed, timestamped, and fail the release workflow unless the installer, installed application, and uninstaller all validate. The GitHub release asset has not yet been replaced with the current candidate. This is not a stable production release.
+> **Current release line:** v0.3.2 Windows-only public beta. The published Windows installer is Authenticode-signed, timestamped, and passed the release workflow checks for the installer, installed application, and uninstaller. This is not a stable production release.
 
 The Civic Desk is a local-first desktop newsroom tool for small local publishers, civic reporters, and community editors. It helps one person or a small team monitor public local sources, discover story leads, draft articles with a local AI model, review risks and evidence, and publish a static local-news issue.
 
@@ -33,9 +33,9 @@ The app is built for the reality that many towns no longer have enough reporters
 
 ## Download
 
-The [v0.3.2 release page](https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2) still serves the earlier asset. **Do not install it as the signed candidate.** Wait until the release page identifies the replacement candidate, then verify `The.Civic.Desk_0.3.2_x64-setup.exe` against `SHA256SUMS` and confirm Authenticode reports `Status: Valid` with a signer containing `Scott Converse` before opening it.
+The [v0.3.2 release page](https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2) serves the signed, cleanroom-tested Windows public-beta installer built from commit `796b8700831f964beea97630c51d71a40a9b724f`. Verify `The.Civic.Desk_0.3.2_x64-setup.exe` against `SHA256SUMS.txt` and confirm Authenticode reports `Status: Valid` with a signer containing `Scott Converse` before opening it.
 
-- **Windows:** after the signed replacement is published, use `The.Civic.Desk_0.3.2_x64-setup.exe` only when both its published checksum and signer identity pass the checks above.
+- **Windows:** download `The.Civic.Desk_0.3.2_x64-setup.exe`. Its current SHA256 is `BDA7CE85759AD1C475D100D0F04FBC7F3CAF7DFF07DDB74F60B24F1CAAF526DD`; size: `5342976` bytes. Install only when both its published checksum and signer identity pass the checks above.
 - **macOS and Linux:** backlog/proof-needed for this release line. Do not treat macOS or Linux download cards, package configs, or historical artifacts as supported public-beta installers until a clean-machine proof is recorded.
 
 Initial installation requires an internet connection on Windows systems where Microsoft Edge WebView2 Runtime is not already installed. First-run local AI setup also needs internet access to download the app-managed Ollama runtime and selected model. After those components and source material are available, drafting and review run locally.
@@ -128,7 +128,7 @@ The Ollama runtime binary is not committed to the repo. The app-managed first-ru
 
 ## Release Status
 
-v0.3.2 is a Windows public beta. The Windows release workflow Authenticode-signs and timestamps the installer, installed application, and uninstaller, then fails closed if any signature check fails. The downloadable GitHub asset has not yet been replaced with the candidate currently under evaluation, so the repository does not present an older installer hash as current proof. The [local isolated-package report](docs/release-evidence/v0.3.2-local-isolated-package-report.md) and [hosted evidence JSON](docs/release-evidence/v0.3.2.json) are preserved as historical evidence for an earlier candidate. Final beta publication requires one exact identity chain across the merged commit, signed installer, cleanroom report, checksum manifest, and hosted release asset. Stable release additionally requires cross-platform clean-machine proof for every advertised platform and credentialed live verification for external publishing providers.
+v0.3.2 is a Windows public beta. The Windows release workflow Authenticode-signs and timestamps the installer, installed application, and uninstaller, then fails closed if any signature check fails. The downloadable GitHub asset is the signed, cleanroom-tested candidate built from commit `796b8700831f964beea97630c51d71a40a9b724f`, with SHA256 `BDA7CE85759AD1C475D100D0F04FBC7F3CAF7DFF07DDB74F60B24F1CAAF526DD` and size `5342976` bytes. The [local isolated-package report](docs/release-evidence/v0.3.2-local-isolated-package-report.md) and [hosted evidence JSON](docs/release-evidence/v0.3.2.json) are preserved as historical evidence for an earlier candidate; the current release page, checksum manifest, and exact-candidate cleanroom report are the proof for the published download. Stable release additionally requires cross-platform clean-machine proof for every advertised platform and credentialed live verification for external publishing providers.
 
 ## Backlog: Mac And Linux Installer Proof
 
