@@ -38,6 +38,8 @@ The [v0.3.2 release page](https://github.com/scottconverse/CivicNewspaper/releas
 - **Windows:** after the signed replacement is published, use `The.Civic.Desk_0.3.2_x64-setup.exe` only when both its published checksum and signer identity pass the checks above.
 - **macOS and Linux:** backlog/proof-needed for this release line. Do not treat macOS or Linux download cards, package configs, or historical artifacts as supported public-beta installers until a clean-machine proof is recorded.
 
+Initial installation requires an internet connection on Windows systems where Microsoft Edge WebView2 Runtime is not already installed. First-run local AI setup also needs internet access to download the app-managed Ollama runtime and selected model. After those components and source material are available, drafting and review run locally.
+
 See [docs/install.md](docs/install.md) for checksum verification and OS-specific details.
 
 ## First Run
@@ -48,7 +50,7 @@ See [docs/install.md](docs/install.md) for checksum verification and OS-specific
 4. Add or discover sources for your city.
 5. Run Daily Scan, review leads, generate drafts, approve stories, compile the issue, and publish.
 
-The app can use the internet for source fetching, model download, and publishing. Drafting and review happen locally once the model and source material are available.
+The app can use the internet for installer prerequisites, source fetching, model download, and publishing. Drafting and review happen locally once the model and source material are available.
 For the editor desk workflow, see the manual's Workbench section: improve weak drafts, send stories back with assignment notes, hold stories with reasons, cut stories from an issue, then approve only the exact saved draft you reviewed.
 
 ## Core Workflow

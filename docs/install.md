@@ -16,6 +16,8 @@ After the signed replacement is published, use the v0.3.2 Windows-only public-be
 
 ## Windows
 
+Initial installation requires an internet connection when Microsoft Edge WebView2 Runtime is not already installed. Keep the computer online for the installer and for first-run local AI setup, which downloads the app-managed Ollama runtime and selected model. This public-beta installer is not an offline installer.
+
 1. Confirm the release page says the signed replacement candidate has been published.
 2. Download `The.Civic.Desk_0.3.2_x64-setup.exe` and `SHA256SUMS` from that release.
 3. Verify the SHA256 checksum.
