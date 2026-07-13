@@ -18,7 +18,7 @@ What that means in practice:
 - macOS and Linux installers are backlog/proof-needed until clean-machine proof is recorded.
 - You should verify important output before publishing.
 
-The app is local-first, not internet-free. Your database, drafts, settings, and output files are local by default. Initial installation requires an internet connection when Microsoft Edge WebView2 Runtime is not already installed. The app also uses the internet when you fetch sources, run discovery/search, download the app-managed Ollama runtime or a local AI model, or publish to an external provider.
+The app is local-first, not internet-free. Your database, drafts, settings, and output files are local by default. Initial installation requires an internet connection when Microsoft Edge WebView2 Runtime is not already installed. Internet access is also used for source fetching, discovery/search, automatic app-managed Ollama runtime and local AI model downloads, and external publishing.
 
 ## What The App Does Not Do
 
