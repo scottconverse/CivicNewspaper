@@ -79,6 +79,7 @@ def main() -> int:
     require("README.md", "preserved as historical evidence", failures)
     require("README.md", "docs/release-evidence/v0.3.2.json", failures)
     require("README.md", "v0.3.2 is a Windows public beta", failures)
+    require("README.md", "initial installation requires an internet connection", failures)
     forbid("README.md", "queued for final cleanroom recheck", failures)
     forbid("README.md", "true clean-machine or remote tester run is still required", failures)
 
@@ -94,6 +95,7 @@ def main() -> int:
     require("docs/install.md", "records an earlier candidate", failures)
     require("docs/install.md", "final beta candidate must publish a new exact-candidate report", failures)
     require("docs/install.md", "https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2", failures)
+    require("docs/install.md", "initial installation requires an internet connection", failures)
     require("docs/release-readiness.md", "Historical v0.3.2 evidence and the final-candidate rule", failures)
     require("docs/release-readiness.md", "docs/release-evidence/v0.3.2.json", failures)
     require("docs/release-evidence/v0.3.2.json", LOCAL_CANDIDATE_COMMIT, failures)
