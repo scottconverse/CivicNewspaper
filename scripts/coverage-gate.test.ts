@@ -119,14 +119,15 @@ describe("release coverage gate", () => {
     expect(bakeoff).toContain("process.exitCode = 1");
   });
 
-  test("keeps the proved local candidate distinct from the published asset", () => {
+  test("binds the public landing page to the published signed candidate", () => {
     const policy = read("scripts/policy/check_release_docs_consistency.py");
     const landing = read("docs/index.html");
 
     expect(policy).toContain("LOCAL_CANDIDATE_COMMIT");
     expect(policy).toContain("PUBLISHED_COMMIT");
-    expect(landing).toContain("pending replacement with the final signed, cleanroom-tested candidate");
-    expect(landing).toContain("older repository evidence is retained as history and is not current-download proof");
+    expect(landing).toContain("Download signed Windows beta");
+    expect(landing).toContain("BDA7CE85759AD1C475D100D0F04FBC7F3CAF7DFF07DDB74F60B24F1CAAF526DD");
+    expect(landing).not.toContain("Candidate pending");
   });
 
   test("renders the nested evidence report with publish-root navigation", () => {

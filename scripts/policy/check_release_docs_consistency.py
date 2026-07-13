@@ -22,9 +22,9 @@ RELEASE_TAG = "v0.3.2"
 LOCAL_CANDIDATE_COMMIT = "bfa37f87dda8aa61c98da4bd7bc2be907581a416"
 LOCAL_CANDIDATE_SHA256 = "636D87041396603456634E6B47AE1071E8726D8D05C0FC08768D5B9E92A71C83"
 LOCAL_CANDIDATE_SIZE = "5274104"
-PUBLISHED_COMMIT = "ba49af4d69d2c4d6d88bfd148490494f243cc9d7"
-PUBLISHED_SHA256 = "1D6E650C44B44A74C5E7640097D2F8FF0618631D4C7311738229F424441F8BD5"
-PUBLISHED_SIZE = "5250809"
+PUBLISHED_COMMIT = "796b8700831f964beea97630c51d71a40a9b724f"
+PUBLISHED_SHA256 = "BDA7CE85759AD1C475D100D0F04FBC7F3CAF7DFF07DDB74F60B24F1CAAF526DD"
+PUBLISHED_SIZE = "5342976"
 STALE_PUBLISHED_VALUES = (
     "35e6cf0f4a8f01d74ef79247feaaadbd34dbb3da",
     "8204BB4210DD284518D114C57A3089BAC11D7B0EC8E0F83D8D61928D44FEB6E0",
@@ -75,7 +75,10 @@ def main() -> int:
     failures: list[str] = []
 
     require("README.md", "AuthentiCode-signs and timestamps", failures)
-    require("README.md", "downloadable GitHub asset has not yet been replaced", failures)
+    require("README.md", PUBLISHED_COMMIT, failures)
+    require("README.md", PUBLISHED_SHA256, failures)
+    require("README.md", PUBLISHED_SIZE, failures)
+    require("README.md", "downloadable GitHub asset is the signed, cleanroom-tested candidate", failures)
     require("README.md", "preserved as historical evidence", failures)
     require("README.md", "docs/release-evidence/v0.3.2.json", failures)
     require("README.md", "v0.3.2 is a Windows public beta", failures)
@@ -93,7 +96,9 @@ def main() -> int:
         require(path, "macOS and Linux", failures)
 
     require("docs/install.md", "records an earlier candidate", failures)
-    require("docs/install.md", "final beta candidate must publish a new exact-candidate report", failures)
+    require("docs/install.md", PUBLISHED_COMMIT, failures)
+    require("docs/install.md", PUBLISHED_SHA256, failures)
+    require("docs/install.md", PUBLISHED_SIZE, failures)
     require("docs/install.md", "https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2", failures)
     require("docs/install.md", "initial installation requires an internet connection", failures)
     require("docs/user_manual.md", "initial installation requires an internet connection", failures)
@@ -105,8 +110,9 @@ def main() -> int:
     require("docs/release-evidence/v0.3.2.json", LOCAL_CANDIDATE_SHA256, failures)
     require("docs/release-evidence/v0.3.2.json", LOCAL_CANDIDATE_SIZE, failures)
     require("docs/release-evidence/v0.3.2-local-isolated-package-report.md", LOCAL_CANDIDATE_COMMIT, failures)
-    require("docs/index.html", "pending replacement with the final signed, cleanroom-tested candidate", failures)
-    require("docs/index.html", "older repository evidence is retained as history and is not current-download proof", failures)
+    require("docs/index.html", PUBLISHED_SHA256, failures)
+    require("docs/index.html", "Download signed Windows beta", failures)
+    forbid("docs/index.html", "Candidate pending", failures)
     check_release_body(failures)
 
     require("docs/publishing-connectors.md", "anonymous here.now preview publishing is the tested default fast path", failures)
