@@ -1,0 +1,42 @@
+{
+  "evidence_schema": "hosted-exact-artifacts-v2",
+  "tag": "v0.3.3",
+  "commit": "eeafcec22f8cc265f2b9daf7ebd94826b55bf8ef",
+  "generated_at": "2026-07-24T15:36:09Z",
+  "release_scope": {
+    "windows_public_beta": true,
+    "macos_apple_silicon_beta": true,
+    "linux_release": "deferred-v0.3.4",
+    "scott_approved_public_release": true
+  },
+  "windows_hosted_proof": {
+    "ok": true,
+    "receipt_asset": "windows-signature-smoke-receipt.json",
+    "required_executables": [
+      "installer",
+      "application",
+      "uninstaller"
+    ],
+    "policy": "The exact hosted Windows installer must install silently on a fresh runner, and the installer, installed application, and uninstaller must each have a valid Scott Converse Authenticode signature and timestamp. The receipt installer hash must match SHA256SUMS."
+  },
+  "macos_preflight": {
+    "ok": true,
+    "receipt_path": ".agent-runs/v0.3.3-macos-preflight/macos-packaged-smoke-receipt.json",
+    "receipt_sha256": "DE997A4CA14A348E6EBF971AC9A2F4EA738976A01F93B6AF274F930666EFA329",
+    "artifact_sha256": "146431E84B2FFD887A2EC6D6B7AC9762711C3BDE901D463E33D1E4BDCEDE7BE8",
+    "artifact_size": 7896135,
+    "architecture": "aarch64",
+    "minimum_macos": "11.0",
+    "developer_id_signed": false,
+    "notarized": false,
+    "ollama_setup": "manual",
+    "browser_extension_manifest": true,
+    "prompt_file_count": 2,
+    "isolated_launch": {
+      "ok": true,
+      "ollama_forced_absent": true,
+      "database_initialized": true
+    },
+    "note": "This local preflight proves the merged v0.3.3 code and unsigned Gatekeeper path. DMG container bytes are not reproducible, so the release workflow separately smoke-tests the exact hosted DMG and binds that hosted receipt hash to SHA256SUMS."
+  }
+}

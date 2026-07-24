@@ -69,6 +69,56 @@ try {
 }
 
 requireCleanString(evidence.generated_at, "generated_at");
+
+if (evidence.evidence_schema === "hosted-exact-artifacts-v2") {
+  const scope = evidence.release_scope;
+  if (scope?.windows_public_beta !== true) {
+    fail("release_scope.windows_public_beta must be true.");
+  }
+  if (scope?.macos_apple_silicon_beta !== true) {
+    fail("release_scope.macos_apple_silicon_beta must be true.");
+  }
+  if (scope?.linux_release !== "deferred-v0.3.4") {
+    fail("release_scope.linux_release must be deferred-v0.3.4.");
+  }
+  if (scope?.scott_approved_public_release !== true) {
+    fail("release_scope.scott_approved_public_release must be true.");
+  }
+
+  const windowsHostedProof = requireOkSection(evidence, "windows_hosted_proof");
+  if (
+    requireCleanString(windowsHostedProof.receipt_asset, "windows_hosted_proof.receipt_asset")
+    !== "windows-signature-smoke-receipt.json"
+  ) {
+    fail("windows_hosted_proof.receipt_asset must be windows-signature-smoke-receipt.json.");
+  }
+  for (const executable of ["installer", "application", "uninstaller"]) {
+    if (!windowsHostedProof.required_executables?.includes(executable)) {
+      fail(`windows_hosted_proof.required_executables must include ${executable}.`);
+    }
+  }
+
+  const macPreflight = requireOkSection(evidence, "macos_preflight");
+  requireCleanString(macPreflight.receipt_path, "macos_preflight.receipt_path");
+  requireSha256(macPreflight.receipt_sha256, "macos_preflight.receipt_sha256");
+  requireSha256(macPreflight.artifact_sha256, "macos_preflight.artifact_sha256");
+  if (requireCleanString(macPreflight.architecture, "macos_preflight.architecture") !== "aarch64") {
+    fail("macos_preflight.architecture must be aarch64.");
+  }
+  if (requireCleanString(macPreflight.minimum_macos, "macos_preflight.minimum_macos") !== "11.0") {
+    fail("macos_preflight.minimum_macos must be 11.0.");
+  }
+  if (macPreflight.developer_id_signed !== false || macPreflight.notarized !== false) {
+    fail("the v0.3.3 macOS beta must explicitly record Developer ID signing and notarization as false.");
+  }
+  if (requireCleanString(macPreflight.ollama_setup, "macos_preflight.ollama_setup") !== "manual") {
+    fail("macos_preflight.ollama_setup must be manual.");
+  }
+
+  console.log(`OK: hosted release evidence for ${tag} matches commit ${head}.`);
+  process.exit(0);
+}
+
 requireCleanString(evidence.rc_receipt_path, "rc_receipt_path");
 requireSha256(evidence.rc_receipt_sha256, "rc_receipt_sha256");
 

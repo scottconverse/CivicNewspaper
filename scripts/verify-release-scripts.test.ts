@@ -99,13 +99,26 @@ describe("release verifier scripts", () => {
     expect(result.output).toContain("cleanroom.installer_sha256 must match");
   });
 
-  test("hosted release evidence accepts matching unsigned Apple Silicon proof", () => {
+  test("hosted release evidence accepts v2 exact-hosted-artifact policy and Apple Silicon preflight", () => {
     const tag = `v0.0.997-test-${process.pid}-${randomUUID()}`;
     writeHostedEvidenceFixture(tag, {
-      release_scope: { macos_apple_silicon_beta: true },
+      evidence_schema: "hosted-exact-artifacts-v2",
+      release_scope: {
+        windows_public_beta: true,
+        macos_apple_silicon_beta: true,
+        linux_release: "deferred-v0.3.4",
+        scott_approved_public_release: true,
+      },
+      windows_hosted_proof: {
+        ok: true,
+        receipt_asset: "windows-signature-smoke-receipt.json",
+        required_executables: ["installer", "application", "uninstaller"],
+      },
       macos_preflight: {
         ok: true,
+        receipt_path: ".agent-runs/macos-preflight/receipt.json",
         receipt_sha256: "4".repeat(64),
+        artifact_sha256: "5".repeat(64),
         architecture: "aarch64",
         minimum_macos: "11.0",
         developer_id_signed: false,
@@ -218,7 +231,7 @@ describe("release verifier scripts", () => {
     expect(result.output).toContain("published installer hash does not match");
   });
 
-  test("asset hash verifier binds the Apple Silicon DMG to macOS cleanroom evidence", () => {
+  test("asset hash verifier binds exact hosted Windows and Apple Silicon receipts", () => {
     const dir = mkdtempSync(join(tmpdir(), "civic-assets-"));
     tempDirs.push(dir);
     const windowsName = "The.Civic.Desk_0.3.3_x64-setup.exe";
@@ -233,16 +246,29 @@ describe("release verifier scripts", () => {
       `${windowsHash}  ${windowsName}\n${macHash}  ${macName}\n`,
     );
     const evidence = join(dir, "evidence.json");
+    const windowsReceipt = join(dir, "windows-signature-smoke-receipt.json");
     const macReceipt = join(dir, "macos-packaged-smoke-receipt.json");
     writeFileSync(
       evidence,
       JSON.stringify({
-        release_scope: { macos_apple_silicon_beta: true },
-        windows_installer_smoke: {
-          installer_name: windowsName,
-          installer_sha256: windowsHash,
+        evidence_schema: "hosted-exact-artifacts-v2",
+        release_scope: {
+          windows_public_beta: true,
+          macos_apple_silicon_beta: true,
         },
-        cleanroom: { installer_sha256: windowsHash },
+      }),
+    );
+    writeFileSync(
+      windowsReceipt,
+      JSON.stringify({
+        ok: true,
+        release_asset_name: windowsName,
+        installer_sha256: windowsHash,
+        executables: ["installer", "application", "uninstaller"].map((name) => ({
+          name,
+          status: "Valid",
+          timestamp_subject: "CN=Test Timestamp",
+        })),
       }),
     );
     writeFileSync(
@@ -264,6 +290,8 @@ describe("release verifier scripts", () => {
       manifest,
       "--evidence",
       evidence,
+      "--windows-receipt",
+      windowsReceipt,
       "--macos-receipt",
       macReceipt,
     ]);
