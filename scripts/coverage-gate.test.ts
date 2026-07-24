@@ -78,6 +78,10 @@ describe("release coverage gate", () => {
     expect(release).toContain("scripts/macos-packaged-smoke.mjs");
     expect(release).toContain("windows-signature-smoke-receipt.json");
     expect(release).toContain("macos-packaged-smoke-receipt.json");
+    expect(release).toContain("path: release-staging/windows");
+    expect(release).toContain("path: release-staging/macos");
+    expect(release).toContain("find release-staging/windows -type f");
+    expect(release).toContain("find release-staging/macos -type f");
     expect(release).not.toContain("x86_64-apple-darwin");
     expect(release).not.toContain("azure/login@");
     expect(smoke).not.toContain("azure/login@");

@@ -356,17 +356,22 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: release-windows-${{ github.sha }}
-          path: release-assets
+          path: release-staging/windows
 
       - name: Download verified macOS artifact
         uses: actions/download-artifact@v4
         with:
           name: release-macos-${{ github.sha }}
-          path: release-assets
+          path: release-staging/macos
 
       - name: Require one Windows installer and one Apple Silicon DMG
         run: |
           set -euo pipefail
+          mkdir -p release-assets
+          find release-staging/windows -type f \( -name '*.exe' -o -name 'windows-signature-smoke-receipt.json' \) \
+            -exec cp '{}' release-assets/ \;
+          find release-staging/macos -type f \( -name '*.dmg' -o -name 'macos-packaged-smoke-receipt.json' \) \
+            -exec cp '{}' release-assets/ \;
           test "$(find release-assets -maxdepth 1 -type f -name '*.exe' | wc -l)" -eq 1
           test "$(find release-assets -maxdepth 1 -type f -name '*.dmg' | wc -l)" -eq 1
           test -f release-assets/windows-signature-smoke-receipt.json
