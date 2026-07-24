@@ -695,6 +695,14 @@ export async function installOllamaRuntime(): Promise<void> {
   return invokeGuarded<void>("install_ollama_runtime");
 }
 
+export async function managedOllamaInstallSupported(): Promise<boolean> {
+  const value = await invokeGuarded<unknown>("managed_ollama_install_supported");
+  // Older test harnesses and development bridges may not yet return the new
+  // capability. Preserve the existing managed-install path unless the backend
+  // explicitly reports false; shipping macOS builds always return false.
+  return value !== false;
+}
+
 export async function getSystemRam(): Promise<number> {
   return invokeGuarded<number>("get_system_ram");
 }

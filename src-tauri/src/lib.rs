@@ -232,6 +232,7 @@ pub fn run() {
             backup_save,
             backup_restore,
             check_ollama,
+            managed_ollama_install_supported,
             install_ollama_runtime,
             pull_ollama_model,
             cancel_ollama_pull,

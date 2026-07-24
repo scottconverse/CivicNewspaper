@@ -50,7 +50,7 @@ CivicNewspaper is designed with a local-LLM architecture. Draft generation, soci
 
 ## Local AI Runtime Attack Surface
 
-CivicNewspaper does not commit an Ollama executable into this repository, and the v0.3.x release path does not depend on the legacy bundled sidecar-fetch script. On Windows, first-run setup can download the pinned Ollama runtime, verify its SHA256, extract it under the user's CivicNewspaper app-data directory, and start it locally.
+CivicNewspaper does not commit an Ollama executable into this repository, and the v0.3.x release path does not depend on the legacy bundled sidecar-fetch script. On Windows, first-run setup can download the pinned Ollama runtime, verify its SHA256, extract it under the user's CivicNewspaper app-data directory, and start it locally. On macOS, the app reports that managed installation is unavailable and connects to a separately installed official Ollama app over loopback.
 
 - **Downloaded runtime:** `install_ollama_runtime` downloads the pinned Windows runtime from Ollama and compares it to the SHA256 in `src-tauri/src/core/llm.rs` before extraction.
 - **Process lifecycle:** When a verified downloaded runtime exists, the Rust backend starts `ollama.exe serve` from the app-data runtime folder and keeps the child process handle so it can stop it on app exit or panic. If something is already listening on `127.0.0.1:11434`, the app attaches to that local service instead of starting another process.
@@ -85,7 +85,7 @@ The diagnostic report may include:
 
 - **Other local processes can reach `127.0.0.1:12053`.** The bearer token is the main gate after pairing. A malicious process running as the same user could try to read local app data or intercept local traffic.
 - **Any local process running as the user can use a paired token.** This is by design for local IDE/coding-agent workflows. Revoke leaked tokens from Browser Pairing.
-- **Installer provenance.** Users should download only from the official release page, verify the published checksum, and avoid third-party mirrors. Release evidence must include Authenticode signature verification for Windows installers.
+- **Installer provenance.** Users should download only from the official release page, verify the published checksum, and avoid third-party mirrors. Release evidence must include Authenticode verification for Windows and exact-DMG hash plus unsigned/unnotarized clean-machine evidence for Apple Silicon macOS.
 
 ## Disclosure Timing
 

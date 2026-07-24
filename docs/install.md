@@ -2,7 +2,7 @@
 
 This guide explains how to install The Civic Desk from the CivicNewspaper releases page and how to verify a downloaded installer.
 
-The v0.3.2 release page now serves the signed, cleanroom-tested Windows public-beta installer. Verify both its checksum and Authenticode signer before opening it.
+The v0.3.2 release page serves the signed, cleanroom-tested Windows public-beta installer. The planned v0.3.3 release adds an unsigned Apple Silicon macOS DMG after its exact artifact passes Mac clean-machine verification.
 
 ## Download
 
@@ -26,9 +26,35 @@ Initial installation requires an internet connection when Microsoft Edge WebView
 6. Follow the installer prompts.
 7. Launch **The Civic Desk** from the Start menu.
 
-## macOS And Linux
+## Apple Silicon macOS — v0.3.3 Candidate
 
-macOS and Linux installers are backlog/proof-needed for this release line. Do not assume a historical `.dmg`, `.deb`, package config, or build target is supported until the release notes include a clean-machine proof for that platform.
+The v0.3.3 macOS build supports Apple Silicon only. Intel Macs and Rosetta are not supported. The DMG is intentionally not Developer ID signed and not notarized.
+
+When v0.3.3 is published:
+
+1. Download `The.Civic.Desk_0.3.3_aarch64.dmg` and `SHA256SUMS` from the official v0.3.3 release page.
+2. In Terminal, run:
+
+   ```bash
+   shasum -a 256 ~/Downloads/The.Civic.Desk_0.3.3_aarch64.dmg
+   ```
+
+3. Compare the result exactly with the DMG line in `SHA256SUMS`. Delete the DMG if it does not match.
+4. Open the DMG and drag **The Civic Desk** to Applications.
+5. In Applications, Control-click or right-click **The Civic Desk**, choose **Open**, and confirm **Open**. This is the normal first-launch path for an unsigned beta.
+6. Install the official Ollama app from <https://ollama.com/download/mac>, open it, and then choose **Check again** in The Civic Desk.
+
+If macOS still reports that the verified app is quarantined, the narrow fallback is:
+
+```bash
+xattr -d com.apple.quarantine "/Applications/The Civic Desk.app"
+```
+
+Run that command only after the DMG checksum matches the official release manifest. Do not disable Gatekeeper globally.
+
+## Linux
+
+Linux is deferred to v0.3.4. No `.deb`, AppImage, or other Linux package is supported or published as part of v0.3.3.
 
 ## Clean-Machine Proof
 
@@ -44,7 +70,7 @@ Required proof for a cleanroom-proven release:
 
 The v0.3.2 hosted-release evidence file is [release-evidence/v0.3.2.json](release-evidence/v0.3.2.json).
 
-macOS and Linux additionally require real platform artifacts and platform-specific clean-machine proof before public docs advertise them as supported installer paths.
+Every advertised platform requires a real artifact and platform-specific clean-machine proof. For v0.3.3, the fresh hosted Mac runner smoke-tests the exact DMG and publishes a receipt binding its hash, ARM64 architecture, resources, and isolated launch. Local preflight separately records the unsigned, unnotarized Gatekeeper and manual-Ollama experience.
 
 ## Verify The SHA256 Checksum
 
@@ -83,15 +109,17 @@ On first launch, the setup flow asks for:
 - Local AI/model setup.
 - Backup and publishing folders.
 
-On the Windows public-beta path, the app may recommend and download a local model through its product-owned Ollama runtime. Model downloads can be large and slow. The app should show progress and allow an explicit AI-skipped source-review path. macOS and Linux runtime/installer automation remains backlog until platform clean-machine proof is recorded.
+On Windows, the app may recommend and download a local model through its product-owned Ollama runtime. On macOS, install and start the official Ollama app separately; The Civic Desk detects that loopback service and downloads the selected model through it. Model downloads can be large and slow. Both platforms allow an explicit AI-skipped source-review path.
 
 If setup or publishing gets stuck, see [troubleshooting.md](troubleshooting.md) for installer provenance, model download, local AI runtime, here.now preview, ZIP/static output, weak-story, and source-import guidance.
 
 ## Current Public-Beta Limits
 
 - Authenticode signature verification is required before a release installer is published.
-- Windows only is the tested public-beta installer path for this release line.
-- macOS and Linux installer proof is backlog/proof-needed.
+- Windows v0.3.2 is the currently published public-beta installer path.
+- Apple Silicon macOS is the v0.3.3 candidate; it is unsigned and unnotarized.
+- Intel macOS is unsupported.
+- Linux is deferred to v0.3.4.
 - Some external publishing providers require user-owned credentials.
 - PDF source-list import is disabled in the public beta until hardened parsing is available; convert PDFs to TXT/CSV/DOCX/XLSX or paste URLs directly.
 - Clean-machine installer coverage is improving but not yet stable-release grade.

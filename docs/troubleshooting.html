@@ -43,6 +43,18 @@
 <li>A matching checksum does not replace code signing.</li>
 <li>If the checksum does not match, do not run the installer.</li>
 </ul>
+<h2 id="macos-says-the-app-cannot-be-verified">macOS Says The App Cannot Be Verified</h2>
+<p>The v0.3.3 Apple Silicon beta is not Developer ID signed and is not notarized.</p>
+<ol>
+<li>Confirm the Mac has Apple Silicon. Intel Macs are unsupported.</li>
+<li>Confirm the DMG came from the official GitHub release.</li>
+<li>Verify the DMG with <code>shasum -a 256</code> and compare it with <code>SHA256SUMS</code>.</li>
+<li>Copy the app to Applications.</li>
+<li>Control-click or right-click the app, choose <strong>Open</strong>, and confirm <strong>Open</strong>.</li>
+</ol>
+<p>If the checksum matches but quarantine still blocks the app, use only the narrow app-specific fallback:</p>
+<pre><code>xattr -d com.apple.quarantine &quot;/Applications/The Civic Desk.app&quot;</code></pre>
+<p>Do not disable Gatekeeper globally.</p>
 <h2 id="model-download-looks-stuck">Model Download Looks Stuck</h2>
 <p>Local AI models are large. The first download can take a long time, especially on slower connections.</p>
 <p>What to check:</p>
@@ -65,7 +77,8 @@
 <p>What to do:</p>
 <ol>
 <li>Open <strong>AI Model</strong>.</li>
-<li>Let the app check the machine.</li>
+<li>On macOS, install and open the official Ollama app first. Windows can use the in-app managed installer.</li>
+<li>Let The Civic Desk check the machine again.</li>
 <li>Select or download the recommended model.</li>
 <li>Return to <strong>System &amp; Status</strong> and confirm the state changes to ready.</li>
 </ol>

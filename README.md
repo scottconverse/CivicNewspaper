@@ -2,7 +2,7 @@
 
 > **Project name:** CivicNewspaper. **Installed app name:** The Civic Desk.
 >
-> **Current release line:** v0.3.2 Windows-only public beta. The published Windows installer is Authenticode-signed, timestamped, and passed the release workflow checks for the installer, installed application, and uninstaller. This is not a stable production release.
+> **Current published release:** v0.3.2 Windows public beta. **Next candidate:** v0.3.3 adds an unsigned, unnotarized Apple Silicon macOS build. Intel Macs are not supported. Linux is deferred to v0.3.4. This is not a stable production release.
 
 The Civic Desk is a local-first desktop newsroom tool for small local publishers, civic reporters, and community editors. It helps one person or a small team monitor public local sources, discover story leads, draft articles with a local AI model, review risks and evidence, and publish a static local-news issue.
 
@@ -12,7 +12,7 @@ The app is built for the reality that many towns no longer have enough reporters
 
 - Runs as a Tauri desktop app with a React frontend and Rust backend.
 - Stores sources, evidence, leads, drafts, settings, subscribers, publish history, civic entities, dark signals, and verification tasks in a local SQLite database.
-- On the Windows public-beta path, manages a local Ollama runtime for local AI. First-run setup checks the machine, can install the pinned Windows runtime when needed, and currently guides the user toward the public-beta default `phi4-mini:latest` model.
+- On Windows, manages a local Ollama runtime for local AI. On macOS, detects the separately installed official Ollama app and never invokes the Windows runtime installer. Both paths guide the user toward the public-beta default `phi4-mini:latest` model.
 - Watches official records, agenda pages, public notices, local media, and public community/social sources.
 - Imports source lists from CSV, TXT, XLSX, and DOCX files. PDF source-list import is disabled in this public beta until hardened PDF parsing is available; convert PDFs to TXT/CSV/DOCX/XLSX or paste the URLs directly.
 - Runs Daily Scan from watched sources, deterministic detectors, source diffs, civic entities, dark signals, verification tasks, and optional local-model summarization/ranking.
@@ -36,9 +36,10 @@ The app is built for the reality that many towns no longer have enough reporters
 The [v0.3.2 release page](https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2) serves the signed, cleanroom-tested Windows public-beta installer built from commit `796b8700831f964beea97630c51d71a40a9b724f`. Verify `The.Civic.Desk_0.3.2_x64-setup.exe` against `SHA256SUMS.txt` and confirm Authenticode reports `Status: Valid` with a signer containing `Scott Converse` before opening it.
 
 - **Windows:** download `The.Civic.Desk_0.3.2_x64-setup.exe`. Its current SHA256 is `BDA7CE85759AD1C475D100D0F04FBC7F3CAF7DFF07DDB74F60B24F1CAAF526DD`; size: `5342976` bytes. Install only when both its published checksum and signer identity pass the checks above.
-- **macOS and Linux:** backlog/proof-needed for this release line. Do not treat macOS or Linux download cards, package configs, or historical artifacts as supported public-beta installers until a clean-machine proof is recorded.
+- **macOS:** v0.3.3 is planned to add `The.Civic.Desk_0.3.3_aarch64.dmg` for Apple Silicon only. It is intentionally not Developer ID signed or notarized. Do not treat the candidate as released until the v0.3.3 release page publishes its exact checksum and clean-machine evidence.
+- **Linux:** deferred to v0.3.4. No Linux artifact is part of v0.3.3.
 
-Initial installation requires an internet connection on Windows systems where Microsoft Edge WebView2 Runtime is not already installed. First-run local AI setup also needs internet access to download the app-managed Ollama runtime and selected model. After those components and source material are available, drafting and review run locally.
+Initial installation requires an internet connection on Windows systems where Microsoft Edge WebView2 Runtime is not already installed. First-run local AI setup also needs internet access to download the runtime and selected model. macOS users install and start Ollama separately before the app downloads a model. After those components and source material are available, drafting and review run locally.
 
 See [docs/install.md](docs/install.md) for checksum verification and OS-specific details.
 
@@ -95,7 +96,7 @@ Prerequisites:
 - Node.js 18+
 - Rust stable toolchain
 - Platform prerequisites for Tauri v2
-- An internet connection for model download. The app-managed runtime download is Windows-only in this public-beta line; other platforms need an existing/manual Ollama install until platform proof exists.
+- An internet connection for model download. The app-managed runtime download is Windows-only; Apple Silicon macOS uses a separately installed Ollama app.
 
 ```bash
 git clone https://github.com/scottconverse/CivicNewspaper.git
@@ -131,9 +132,9 @@ The Ollama runtime binary is not committed to the repo. The app-managed first-ru
 
 v0.3.2 is a Windows public beta. The Windows release workflow Authenticode-signs and timestamps the installer, installed application, and uninstaller, then fails closed if any signature check fails. The downloadable GitHub asset is the signed, cleanroom-tested candidate built from commit `796b8700831f964beea97630c51d71a40a9b724f`, with SHA256 `BDA7CE85759AD1C475D100D0F04FBC7F3CAF7DFF07DDB74F60B24F1CAAF526DD` and size `5342976` bytes. The original v0.3.2 tag predates that rebuilt installer, so its automatic GitHub source archives are a documented historical exception rather than matching installer provenance; the next release must use a fresh tag bound to its exact product commit. The [local isolated-package report](docs/release-evidence/v0.3.2-local-isolated-package-report.md) and [hosted evidence JSON](docs/release-evidence/v0.3.2.json) are preserved as historical evidence for an earlier candidate; the current release page, checksum manifest, and exact-candidate cleanroom report are the proof for the published download. Stable release additionally requires cross-platform clean-machine proof for every advertised platform and credentialed live verification for external publishing providers.
 
-## Backlog: Mac And Linux Installer Proof
+## Platform Release Roadmap
 
-Mac and Linux installer work is intentionally out of the v0.3.2 Windows public-beta release candidate. Before the public docs can advertise those platforms, the project needs real build artifacts, first-run local-AI setup proof, clean-machine install notes, and platform-specific signing/notarization guidance for each OS.
+v0.3.3 is the Apple Silicon macOS public-beta candidate. Its DMG is intentionally unsigned and unnotarized, requires a manual Ollama install, and cannot be published until ARM64 bundle inspection, exact-artifact checksums, and Apple Silicon clean-machine proof pass. Intel Macs are not supported. Linux packaging and proof are deliberately deferred to v0.3.4.
 
 ## License
 

@@ -6,7 +6,7 @@ Thanks for considering a contribution. CivicNewspaper is in public beta; the mos
 
 - The project is single-editor, local-first, no-cloud. Contributions that add cloud dependencies, telemetry, or analytics will be rejected.
 - Source links and presumption-of-innocence guardrails should help editors make better decisions, but the software must not replace editor judgment or veto publication.
-- CivicNewspaper uses app-managed local AI setup. The public-beta build does not require a committed Ollama sidecar binary or bundled model weights. Contributors should not introduce vendored binaries, model weights, telemetry, or cloud dependencies without prior maintainer approval.
+- CivicNewspaper uses app-managed local AI setup on Windows and a separately installed official Ollama app on macOS. The public-beta build does not require a committed Ollama sidecar binary or bundled model weights. Contributors should not introduce vendored binaries, model weights, telemetry, or cloud dependencies without prior maintainer approval.
 
 ## Development setup
 

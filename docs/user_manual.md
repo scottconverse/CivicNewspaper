@@ -14,8 +14,9 @@ What that means in practice:
 
 - Install only from the official release page after it identifies the signed candidate; verify its checksum and signer before installing.
 - The public release page should match the version you intend to install.
-- Windows is the tested public-beta installer path for this release line.
-- macOS and Linux installers are backlog/proof-needed until clean-machine proof is recorded.
+- Windows v0.3.2 is the currently published public-beta installer path.
+- Apple Silicon macOS is planned for v0.3.3 as an unsigned, unnotarized beta.
+- Intel Macs are unsupported, and Linux is deferred to v0.3.4.
 - You should verify important output before publishing.
 
 The app is local-first, not internet-free. Your database, drafts, settings, and output files are local by default. Initial installation requires an internet connection when Microsoft Edge WebView2 Runtime is not already installed. Internet access is also used for source fetching, discovery/search, automatic app-managed Ollama runtime and local AI model downloads, and external publishing.
@@ -50,7 +51,7 @@ On Windows, use the `.exe` installer from the official release page. Confirm the
 
 Keep the computer online during initial installation and first-run local AI setup. If Microsoft Edge WebView2 Runtime is missing, the installer downloads that prerequisite; first-run AI setup downloads the app-managed Ollama runtime and selected model. This public-beta installer is not an offline installer.
 
-macOS and Linux are planned, but they are not supported public-beta installer paths in this release line yet. The project needs a real artifact, clean-machine install proof, first-run local AI proof, and honest platform-specific warning text before the manual should tell normal users to install those builds.
+The v0.3.3 candidate adds Apple Silicon macOS only. Its DMG is not Developer ID signed or notarized, so verify its SHA256 and use the documented Control-click **Open** flow. Intel Macs are unsupported. Linux packaging is deferred to v0.3.4.
 
 Before running an installer, you can compare its SHA256 hash with the release checksum. Checksums confirm that your download matches the release artifact. They are not a replacement for code signing. See [install.md](install.md) for exact commands.
 
@@ -80,6 +81,11 @@ The app checks your machine and recommends a local model. For this public-beta l
 Model downloads can be large and slow. This is normal. The setup screen should tell you what is being downloaded and show progress. If you skip local AI setup, you can still use many parts of the app: source review, manual writing in the editor, editing, backup, export, and publishing. AI-assisted summarization, drafting, ranking, improvement, social copy, and advisor features require a reachable local model.
 
 If the app says local AI is unavailable, do not assume your work is lost. It usually means the Ollama runtime or selected model is not running or not installed. Use the AI Model screen to retry, download, or change the model.
+
+On macOS, The Civic Desk does not install or manage Ollama. Install the official
+Ollama app, open it, and choose **Check again** in setup. The Civic Desk then
+connects to Ollama only through the local loopback service at
+`127.0.0.1:11434`.
 
 ## 3. Your First Issue: A Practical Walkthrough
 

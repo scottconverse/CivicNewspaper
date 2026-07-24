@@ -90,4 +90,21 @@ if (cleanroom.installer_sha256.toLowerCase() !== installerSmoke.installer_sha256
   fail("cleanroom.installer_sha256 must match windows_installer_smoke.installer_sha256.");
 }
 
+if (evidence.release_scope?.macos_apple_silicon_beta === true) {
+  const macPreflight = requireOkSection(evidence, "macos_preflight");
+  requireSha256(macPreflight.receipt_sha256, "macos_preflight.receipt_sha256");
+  if (requireCleanString(macPreflight.architecture, "macos_preflight.architecture") !== "aarch64") {
+    fail("macos_preflight.architecture must be aarch64.");
+  }
+  if (requireCleanString(macPreflight.minimum_macos, "macos_preflight.minimum_macos") !== "11.0") {
+    fail("macos_preflight.minimum_macos must be 11.0.");
+  }
+  if (macPreflight.developer_id_signed !== false || macPreflight.notarized !== false) {
+    fail("the v0.3.3 macOS beta must explicitly record Developer ID signing and notarization as false.");
+  }
+  if (requireCleanString(macPreflight.ollama_setup, "macos_preflight.ollama_setup") !== "manual") {
+    fail("macos_preflight.ollama_setup must be manual.");
+  }
+}
+
 console.log(`OK: hosted release evidence for ${tag} matches commit ${head}.`);
