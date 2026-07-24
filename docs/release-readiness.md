@@ -74,6 +74,23 @@ The GitHub release workflow is intentionally conservative during public beta:
 
 This prevents an unverified installer from appearing before Authenticode, checksum, and local release-gate evidence have been reviewed.
 
+## Successor release provenance
+
+The published v0.3.2 installer was rebuilt from commit
+`796b8700831f964beea97630c51d71a40a9b724f`, while the original `v0.3.2` tag
+still identifies commit `4e2fa0a9706e10a53fab3a904afb30d7fec43f56`.
+Consequently, GitHub's automatic v0.3.2 source archives do not identify the
+source used for the current downloadable installer. The release page records
+the product build commit and is the authoritative provenance note for that
+historical exception.
+
+Do not move, replace, or silently delete the published v0.3.2 tag. The next
+release must use a new version and tag created from the exact product commit.
+Its evidence file, signatures, checksums, cleanroom report, release body, and
+uploaded artifacts must all identify that same commit and artifact bytes before
+publication. A planned v0.3.3 version is not released merely because this rule
+is documented.
+
 ## Historical v0.3.2 evidence and the final-candidate rule
 
 Windows release candidates now pass an Authenticode signing gate that validates the installer, installed application, and uninstaller, including timestamps. The evidence listed below belongs to an earlier candidate and is retained for audit history; it is not current-candidate or current-download proof. Final beta evidence must be regenerated after the candidate commit is merged and signed, and it must match the exact installer hash that completes the cleanroom gate and is later uploaded under owner authorization.

@@ -18,7 +18,14 @@ otherwise it stays here with a RESOLVED or WITHDRAWN tag so cross-references in
 
 ## Items
 
-- **P5-000 — DEFERRED (→ future)** (P0, Sealed Policy Callables for Pipeline Integrity): Security bypass loophole. Custom callables declared under `acceptance.manager` in the directive must be loaded from a sealed/immutable location that the executor cannot access or edit, rather than a directory editable by the executor. Executor access to these scripts allows arbitrary validation overrides.
+- **P5-000 — WITHDRAWN (repo-local agent pipeline retired; see
+  `docs/agent-pipeline-retirement.md`)** (P0, Sealed Policy Callables for
+  Pipeline Integrity): The vulnerable v0.2 self-grading pipeline and its
+  executable promotion entry points were removed instead of building a sealed
+  callable store for an obsolete system. Historical run and forensic records
+  remain non-authoritative. Any future replacement requires a new design,
+  issue, and security review with validation authority outside
+  executor-writable worktrees.
 - **P5-001 — RESOLVED (v0.2.6, `Workbench.tsx` rewrite diff modal)** (Diff Modal for Rewrites): The plain-language rewrite
   no longer overwrites the draft in place. `Workbench.tsx` now holds the LLM
   result in `rewritePreview` state and opens a side-by-side diff modal
