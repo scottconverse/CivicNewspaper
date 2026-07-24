@@ -31,6 +31,7 @@ describe("release coverage gate", () => {
     expect(coverageJob).toContain("actions/upload-artifact@v4");
     expect(release).toContain("--fail-under-lines 72");
     expect(release).toContain("npm run test:coverage");
+    expect(release).toMatch(/hosted-release-evidence:[\s\S]*?fetch-depth: 0/);
   });
 
   test("signs every shipped Windows executable during Tauri bundling", () => {
