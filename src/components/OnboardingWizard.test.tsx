@@ -962,6 +962,34 @@ describe("OnboardingWizard Component Tests", () => {
     await waitFor(() => expect(invokeMock).toHaveBeenCalledWith("pull_ollama_model", { modelId: "phi4-mini:latest" }), { timeout: 7000 });
   }, 10000);
 
+  test("macOS setup directs users to Ollama without invoking the Windows installer", async () => {
+    const invokeMock = tauriCore.invoke as any;
+    const user = userEvent.setup();
+
+    invokeMock.mockImplementation((cmd: string) => {
+      if (cmd === "managed_ollama_install_supported") return Promise.resolve(false);
+      if (cmd === "get_system_ram") return Promise.resolve(16);
+      if (cmd === "get_setting") return Promise.resolve(null);
+      if (cmd === "ollama_health") {
+        return Promise.resolve({ reachable: false, models: [], version: null });
+      }
+      return Promise.resolve();
+    });
+
+    render(<OnboardingWizard ollamaOnline={false} systemRam={16} onComplete={vi.fn()} initialStep={2} />);
+
+    const downloadButton = await screen.findByRole("button", { name: /Open Ollama download page/i });
+    expect(screen.queryByRole("button", { name: /Install local AI runtime/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Check again/i })).toBeInTheDocument();
+    expect(screen.getByText(/does not install or manage Ollama automatically/i)).toBeInTheDocument();
+
+    await user.click(downloadButton);
+    expect(invokeMock).toHaveBeenCalledWith("open_external_url", {
+      url: "https://ollama.com/download/mac",
+    });
+    expect(invokeMock).not.toHaveBeenCalledWith("install_ollama_runtime");
+  });
+
   test("offline AI setup keeps Next disabled while runtime install is running", async () => {
     const handleComplete = vi.fn();
     const invokeMock = tauriCore.invoke as any;

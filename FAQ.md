@@ -8,7 +8,7 @@ This FAQ is intentionally plain about what works, what is still beta, and what t
 
 ### Is this production software?
 
-Not yet. The Civic Desk is a public beta. New Windows candidates are Authenticode-signed, and the signing gate verifies the installer, installed application, and uninstaller. The current GitHub download remains pending replacement with the final cleanroom-tested candidate; do not treat it as the final beta candidate until the release page publishes the matching checksum and evidence. Stable-grade cross-platform clean-machine proof is still in progress.
+Not yet. The Civic Desk is a public beta. Windows candidates are Authenticode-signed. The v0.3.3 candidate adds an unsigned, unnotarized Apple Silicon macOS DMG after exact-artifact clean-machine verification. Intel Macs are unsupported, and Linux is deferred to v0.3.4.
 
 Use it with informed caution. A human editor remains responsible for every published word.
 
@@ -43,7 +43,7 @@ Model downloads are large. The app should explain size, expected time, and degra
 
 ### What happens if Ollama or the model is missing?
 
-The app should degrade gracefully. Source fetching, imports, editing, backup, export, and publishing should remain usable. AI-assisted summarization, drafting, and advisor features may be unavailable until the runtime/model is installed.
+The app should degrade gracefully. On Windows, setup can install the managed runtime. On macOS, install and open the official Ollama app separately, then choose **Check again**. Source fetching, imports, editing, backup, export, and publishing should remain usable. AI-assisted summarization, drafting, and advisor features may be unavailable until the runtime/model is installed.
 
 ### Can the AI provide legal review?
 

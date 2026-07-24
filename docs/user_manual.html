@@ -35,8 +35,9 @@
 <ul>
 <li>Install only from the official release page after it identifies the signed candidate; verify its checksum and signer before installing.</li>
 <li>The public release page should match the version you intend to install.</li>
-<li>Windows is the tested public-beta installer path for this release line.</li>
-<li>macOS and Linux installers are backlog/proof-needed until clean-machine proof is recorded.</li>
+<li>Windows v0.3.2 is the currently published public-beta installer path.</li>
+<li>Apple Silicon macOS is planned for v0.3.3 as an unsigned, unnotarized beta.</li>
+<li>Intel Macs are unsupported, and Linux is deferred to v0.3.4.</li>
 <li>You should verify important output before publishing.</li>
 </ul>
 <p>The app is local-first, not internet-free. Your database, drafts, settings, and output files are local by default. Initial installation requires an internet connection when Microsoft Edge WebView2 Runtime is not already installed. Internet access is also used for source fetching, discovery/search, automatic app-managed Ollama runtime and local AI model downloads, and external publishing.</p>
@@ -60,7 +61,7 @@
 <p><a href="https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2">https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2</a></p>
 <p>On Windows, use the <code>.exe</code> installer from the official release page. Confirm the filename, published checksum, and a valid Authenticode signer containing <strong>Scott Converse</strong> before installing.</p>
 <p>Keep the computer online during initial installation and first-run local AI setup. If Microsoft Edge WebView2 Runtime is missing, the installer downloads that prerequisite; first-run AI setup downloads the app-managed Ollama runtime and selected model. This public-beta installer is not an offline installer.</p>
-<p>macOS and Linux are planned, but they are not supported public-beta installer paths in this release line yet. The project needs a real artifact, clean-machine install proof, first-run local AI proof, and honest platform-specific warning text before the manual should tell normal users to install those builds.</p>
+<p>The v0.3.3 candidate adds Apple Silicon macOS only. Its DMG is not Developer ID signed or notarized, so verify its SHA256 and use the documented Control-click <strong>Open</strong> flow. Intel Macs are unsupported. Linux packaging is deferred to v0.3.4.</p>
 <p>Before running an installer, you can compare its SHA256 hash with the release checksum. Checksums confirm that your download matches the release artifact. They are not a replacement for code signing. See <a href="install.html">install.md</a> for exact commands.</p>
 <p>If installation, local AI setup, publishing, source import, or output quality goes wrong, use <a href="troubleshooting.html">troubleshooting.md</a>. It has plain-English help for installer provenance, model downloads, local AI runtime states, weak story output, here.now previews, ZIP/static output, and source import problems.</p>
 <h2 id="2-first-launch-and-setup">2. First Launch And Setup</h2>
@@ -81,6 +82,7 @@
 <p>The app checks your machine and recommends a local model. For this public-beta line, <code>phi4-mini:latest</code> is the conservative default because the latest local bakeoff showed it returned valid structured results for both real civic signals and empty/noise input. You can still choose another installed model from the AI Model screen, but the app should not silently switch models without telling you.</p>
 <p>Model downloads can be large and slow. This is normal. The setup screen should tell you what is being downloaded and show progress. If you skip local AI setup, you can still use many parts of the app: source review, manual writing in the editor, editing, backup, export, and publishing. AI-assisted summarization, drafting, ranking, improvement, social copy, and advisor features require a reachable local model.</p>
 <p>If the app says local AI is unavailable, do not assume your work is lost. It usually means the Ollama runtime or selected model is not running or not installed. Use the AI Model screen to retry, download, or change the model.</p>
+<p>On macOS, The Civic Desk does not install or manage Ollama. Install the official Ollama app, open it, and choose <strong>Check again</strong> in setup. The Civic Desk then connects to Ollama only through the local loopback service at <code>127.0.0.1:11434</code>.</p>
 <h2 id="3-your-first-issue-a-practical-walkthrough">3. Your First Issue: A Practical Walkthrough</h2>
 <p>This chapter walks through a small-town first issue. Do this before trying advanced workflows.</p>
 <h3 id="step-1-add-a-few-reliable-sources">Step 1: Add A Few Reliable Sources</h3>

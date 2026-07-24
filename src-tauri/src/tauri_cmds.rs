@@ -116,6 +116,29 @@ pub fn get_resolved_app_data_dir<R: tauri::Runtime>(
     crate::core::app_paths::app_data_dir(&app).map(|path| path.to_string_lossy().to_string())
 }
 
+/// Reports whether this build can install and manage its own Ollama runtime.
+///
+/// Windows keeps the verified in-app installer. Apple Silicon macOS releases
+/// intentionally use the official user-installed Ollama app, so onboarding
+/// must offer manual setup instead of invoking the Windows-only installer.
+#[tauri::command]
+pub fn managed_ollama_install_supported() -> bool {
+    cfg!(target_os = "windows")
+}
+
+#[cfg(test)]
+mod runtime_install_capability_tests {
+    use super::managed_ollama_install_supported;
+
+    #[test]
+    fn managed_runtime_install_is_windows_only() {
+        assert_eq!(
+            managed_ollama_install_supported(),
+            cfg!(target_os = "windows")
+        );
+    }
+}
+
 fn default_community_profile() -> CommunityProfile {
     CommunityProfile {
         site_title: "My Local Publication".to_string(),

@@ -40,7 +40,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\release-smoke.ps1 `
 
 The stable run fails if the working tree is dirty or if desktop smoke, live model, here.now, or import fixture gates are skipped. Use `-AllowDirty` only for a non-release diagnostic run. The `-FixtureDir` value must point to a folder available on the machine running the gate. Use the committed `tests\fixtures\source-import` fixture folder for normal release checks, or pass any equivalent full source-file fixture folder that contains the expected CSV, TXT, XLSX, DOCX files and PDF-disabled guidance fixtures.
 
-For this Windows beta release-candidate line, cleanroom evidence may be produced locally in an isolated app-data profile, Windows Sandbox, or VM. An external tester is optional, not mandatory, when the local report binds the exact installer SHA256/size and commit, proves the dependency-absent first run, and proves the live-model source-to-Workbench path against the installed package.
+For Windows, cleanroom evidence may be produced locally in an isolated app-data profile, Windows Sandbox, or VM. For the v0.3.3 Apple Silicon beta, local preflight must verify the unsigned Gatekeeper path, manual Ollama detection, and packaged source-to-Workbench behavior. Because DMG output is not byte-reproducible, the tag workflow additionally smoke-tests the exact hosted DMG on a fresh Mac runner and publishes a receipt binding that DMG's SHA256, size, ARM64 architecture, resources, and isolated first launch. Intel Mac proof is neither required nor accepted because Intel Macs are unsupported.
 
 ## Release-candidate packaging receipt
 
@@ -59,20 +59,44 @@ The receipt records the exact branch, commit, app versions, Tauri bundle targets
 
 The model bakeoff receipt must show that the configured default model in `src\models.json` passed every bakeoff case. The dependency audit receipt must be clean, run npm audit at the documented `moderate` threshold or stricter, and include Rust advisory checking through `cargo-audit`; a receipt that only exists but contains failures is not release evidence. If `cargo-audit` uses ignored RustSec advisories, every ignored ID must have a current machine-readable waiver in `docs/security-advisory-waivers.json`, and the dependency and RC receipts must copy exactly matching waiver entries into release evidence. Missing, extra, duplicated, expired, or incomplete waivers fail RC evidence. The Windows installer smoke receipt must prove NSIS silent install, installed app start from the packaged installer, first-run screenshot capture, uninstaller presence, and silent uninstall, and its recorded installer SHA256 must match the current RC artifact SHA256. MSI lifecycle proof is backlog/proof-needed until MSI is reintroduced as a public beta artifact.
 
-For this release line, RC packaging evidence is Windows public beta only. macOS and Linux installer proof is backlog/proof-needed until a real platform artifact and clean-machine first-run proof exist.
+For v0.3.3, RC packaging evidence covers the signed Windows installer and the unsigned, unnotarized Apple Silicon DMG. Linux installer proof remains backlog/proof-needed and is deferred to v0.3.4.
+
+### Apple Silicon packaged preflight
+
+Build and exercise the local candidate on an Apple Silicon Mac:
+
+```bash
+npm run tauri build -- \
+  --config src-tauri/tauri.macos.conf.json \
+  --target aarch64-apple-darwin \
+  --bundles dmg \
+  -- --locked
+
+node scripts/macos-packaged-smoke.mjs \
+  "src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/The Civic Desk_0.3.3_aarch64.dmg"
+```
+
+The smoke script mounts the DMG read-only, requires a thin ARM64 executable,
+checks prompt and browser-extension resources, records the absence of a
+Developer ID identity and notarization, launches the packaged app with isolated
+app data and Ollama forced absent, and requires database initialization. Its
+receipt is local preflight evidence. Because rebuilding a DMG changes its bytes,
+the tag workflow repeats the smoke against the exact hosted artifact and
+publishes that separate receipt.
 
 ## Hosted release workflow
 
 The GitHub release workflow is intentionally conservative during public beta:
 
-- tag pushes build Windows artifacts into a **draft** prerelease;
-- the hosted workflow fails unless `docs/release-evidence/<tag>.json` exists at the tagged commit and verifies local RC evidence, Windows installer smoke, isolated packaged first-run/core-flow cleanroom proof, and the matching installer SHA256 for that exact tag;
+- tag pushes build signed Windows x64 and unsigned Apple Silicon macOS artifacts into a **draft** prerelease;
+- the hosted workflow fails unless `docs/release-evidence/<tag>.json` exists at the tagged commit and verifies local RC evidence, Windows installer smoke, Windows cleanroom proof, and Apple Silicon preflight policy;
+- the fresh hosted Mac runner smoke-tests the exact generated DMG and publishes `macos-packaged-smoke-receipt.json`;
 - the workflow attaches a checksum manifest and runs release-asset integrity checks;
-- release-asset integrity recomputes every downloaded asset hash and requires the published Windows installer hash in the checksum manifest to match the cleanroom-tested installer hash from `docs/release-evidence/<tag>.json`;
+- release-asset integrity recomputes every downloaded asset hash, requires the Windows installer hash to match checked-in cleanroom evidence, and requires the Apple Silicon DMG hash to match the exact hosted packaged-smoke receipt;
 - the workflow does not publish a non-draft public release by itself;
 - Scott must review the local RC receipt, cleanroom report, and release notes before undrafting a release.
 
-This prevents an unverified installer from appearing before Authenticode, checksum, and local release-gate evidence have been reviewed.
+This prevents an unverified installer from appearing before Windows Authenticode proof, platform checksums, explicit Mac unsigned-release disclosure, and local release-gate evidence have been reviewed.
 
 ## Successor release provenance
 
@@ -117,7 +141,7 @@ This does not publish, merge, or tag the release by itself. Scott must still app
 
 ### Release candidate
 
-- **Required:** Public-beta evidence plus enforced coverage floors, desktop smoke, current-version Windows installer artifacts, isolated packaged first-run/core-flow proof, source-import fixtures, live Colorado scan, model bakeoff, dependency audit, and anonymous here.now publishing.
+- **Required:** Public-beta evidence plus enforced coverage floors, desktop smoke, current-version Windows and advertised Apple Silicon artifacts, platform-specific packaged first-run/core-flow proof, source-import fixtures, live Colorado scan, model bakeoff, dependency audit, and anonymous here.now publishing.
 - **Allowed skips:** External providers without credentials; an external tester is optional when local packaged proof is complete.
 
 ### Stable
@@ -183,7 +207,6 @@ Current Rust advisory exceptions live in `src-tauri\.cargo\audit.toml`; the matc
 
 These cannot be fully completed from one Windows development machine:
 
-- Mac installer build, signing/notarization decision, and clean-machine proof
 - Linux installer/package build and clean-machine or VM proof
 - clean-machine installer proof on every OS advertised in public docs
 - permanent here.now API-key publish verification

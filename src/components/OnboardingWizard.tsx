@@ -12,12 +12,14 @@ import {
   saveCommunityProfile,
   ollamaHealth,
   installOllamaRuntime,
+  managedOllamaInstallSupported,
   pullOllamaModel,
   cancelOllamaPull,
   exportDiagnostics,
   setOnboardingComplete,
   revealMainWindowForSetup,
   getResolvedAppDataDir,
+  openExternalUrl,
   isTauri,
   toUserMessage,
 } from "../ipc";
@@ -37,6 +39,7 @@ const MODEL_DOWNLOAD_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 6000;
 const MODEL_READY_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 5000;
 const FINAL_SETUP_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 3000;
 const RUNTIME_INSTALL_RESCUE_MS = import.meta.env.MODE === "test" ? 50 : 4000;
+const OLLAMA_MAC_DOWNLOAD_URL = "https://ollama.com/download/mac";
 
 // Approximate one-time download sizes, sourced from models.json so the wizard
 // can disclose the size up front (UX-C1) instead of springing a multi-GB
@@ -136,6 +139,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const [retryCount, setRetryCount] = useState(0);
   const [exportStatus, setExportStatus] = useState("");
   const [runtimeInstalling, setRuntimeInstalling] = useState(false);
+  const [managedRuntimeInstall, setManagedRuntimeInstall] = useState(true);
   const [runtimeProgress, setRuntimeProgress] = useState("");
   const [runtimePercent, setRuntimePercent] = useState<number | null>(null);
   const [runtimeError, setRuntimeError] = useState("");
@@ -313,6 +317,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     async function init() {
       try {
         if (isTauri()) {
+          setManagedRuntimeInstall(await managedOllamaInstallSupported());
           const appData = await getResolvedAppDataDir();
           const pPath = await join(appData, "sites", "default");
           setPublishPath(pPath);
@@ -502,6 +507,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   useEffect(() => {
     if (
       !setupRecoveryActive ||
+      !managedRuntimeInstall ||
       runtimeInstallRescueAttemptedRef.current ||
       step !== 2 ||
       checkingHealth ||
@@ -536,7 +542,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     }, RUNTIME_INSTALL_RESCUE_MS);
 
     return () => window.clearTimeout(timer);
-  }, [setupRecoveryActive, step, checkingHealth, runtimeInstalling, health?.reachable]);
+  }, [setupRecoveryActive, managedRuntimeInstall, step, checkingHealth, runtimeInstalling, health?.reachable]);
 
   useEffect(() => {
     if (
@@ -781,7 +787,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           await clearAiSetupSkipped();
           await goToStep(4);
         } else if (!health?.reachable) {
-          setSetupNotice("Install the local AI runtime or choose Skip for now before continuing.");
+          setSetupNotice(
+            managedRuntimeInstall
+              ? "Install the local AI runtime or choose Skip for now before continuing."
+              : "Install and start Ollama, then check again—or choose Skip for now."
+          );
           setHealthTimeout(true);
           return;
         } else {
@@ -1039,7 +1049,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         </p>
         {stepTwoNeedsRuntimeInstall && (
           <div className="onboarding-notice onboarding-decision-note" id="onboarding-runtime-required-note" role="status">
-            To continue, install the local AI runtime or choose <strong>Skip for now</strong>. Skipping is supported: source checks still work, and you can finish AI setup later from AI Model.
+            {managedRuntimeInstall
+              ? <>To continue, install the local AI runtime or choose <strong>Skip for now</strong>. Skipping is supported: source checks still work, and you can finish AI setup later from AI Model.</>
+              : <>To continue on macOS, install and start Ollama, then check again—or choose <strong>Skip for now</strong>. Skipping is supported: source checks still work, and you can finish AI setup later from AI Model.</>}
           </div>
         )}
 
@@ -1185,11 +1197,13 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               <div>
                 <strong>Choose how to continue</strong>
                 <p className="help-text">
-                  You can install local AI now, or skip it and finish setup. Source checks still work without AI.
+                  {managedRuntimeInstall
+                    ? "You can install local AI now, or skip it and finish setup. Source checks still work without AI."
+                    : "On macOS, install Ollama separately and start it before continuing. You can also skip AI and finish setup."}
                 </p>
               </div>
               <div className="onboarding-step-two-buttons">
-                {health && !health.reachable && (
+                {health && !health.reachable && managedRuntimeInstall && (
                   <button
                     type="button"
                     className="btn btn-primary"
@@ -1198,6 +1212,16 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   >
                     <Download size={14} style={{ marginRight: "0.5rem" }} />
                     {runtimeInstalling ? "Installing..." : "Install local AI runtime"}
+                  </button>
+                )}
+                {health && !health.reachable && !managedRuntimeInstall && (
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => void openExternalUrl(OLLAMA_MAC_DOWNLOAD_URL)}
+                  >
+                    <Download size={14} style={{ marginRight: "0.5rem" }} />
+                    Open Ollama download page
                   </button>
                 )}
                 {health && health.reachable && health.models.length === 0 && (
@@ -1233,7 +1257,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                     disabled={checkingHealth || runtimeInstalling}
                   >
                     <RefreshCcw size={14} style={{ marginRight: "0.5rem" }} />
-                    {checkingHealth ? "Checking..." : "Retry"}
+                    {checkingHealth ? "Checking..." : managedRuntimeInstall ? "Retry" : "Check again"}
                   </button>
                 )}
                 <button
@@ -1270,10 +1294,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   <div style={{ background: "rgba(239, 68, 68, 0.05)", padding: "1rem", borderRadius: "8px" }}>
                     <h4 style={{ color: "var(--color-error)" }}>Couldn't reach the AI service</h4>
                     <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>
-                      The private AI service did not start. First try restarting Civic Desk. If Windows or antivirus asked about this app, allow it, then retry. If it still fails, save a diagnostics file for support.
+                      {managedRuntimeInstall
+                        ? "The private AI service did not start. First try restarting Civic Desk. If Windows or antivirus asked about this app, allow it, then retry. If it still fails, save a diagnostics file for support."
+                        : "The Civic Desk could not reach Ollama. Install the official Ollama app, open it so the local service starts, then choose Check again."}
                     </p>
                     <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>
-                      If this is a clean machine, Civic Desk can download and install its local AI runtime for you. This is a large one-time download and may take a while.
+                      {managedRuntimeInstall
+                        ? "If this is a clean machine, Civic Desk can download and install its local AI runtime for you. This is a large one-time download and may take a while."
+                        : "Ollama and downloaded models remain local to this Mac. The Civic Desk connects only to the loopback service at 127.0.0.1:11434."}
                     </p>
                     {runtimeError && (
                       <p style={{ fontSize: "0.85rem", color: "var(--color-error)", marginBottom: "0.5rem" }}>{runtimeError}</p>
@@ -1317,10 +1345,16 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
 
                 {!healthTimeout && health && !health.reachable && (
                   <div style={{ background: "rgba(239, 68, 68, 0.05)", padding: "1rem", borderRadius: "8px" }}>
-                    <h4 style={{ color: "var(--color-error)" }}>Starting the local AI service</h4>
-                    <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>The Civic Desk includes a local AI service that runs on your computer. It may take a moment to start up. Once it's running, you'll download a model in the next step.</p>
+                    <h4 style={{ color: "var(--color-error)" }}>{managedRuntimeInstall ? "Starting the local AI service" : "Ollama is not running yet"}</h4>
+                    <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>
+                      {managedRuntimeInstall
+                        ? "The Civic Desk includes a local AI service that runs on your computer. It may take a moment to start up. Once it's running, you'll download a model in the next step."
+                        : "Install the official Ollama app and open it. When its local service is running, choose Check again; the next step will download the recommended model."}
+                    </p>
                     <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
-                      On a clean machine, use the install button if the service does not become ready.
+                      {managedRuntimeInstall
+                        ? "On a clean machine, use the install button if the service does not become ready."
+                        : "The macOS beta does not install or manage Ollama automatically."}
                     </p>
                     {runtimeError && (
                       <p style={{ fontSize: "0.85rem", color: "var(--color-error)", marginBottom: "0.5rem" }}>{runtimeError}</p>
@@ -1542,7 +1576,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             aria-label={step === 1 ? "Continue setup Next" : undefined}
             disabled={runtimeInstalling || pulling || stepTwoNeedsRuntimeInstall || (step === 3 && pullComplete && !selectedModelReady)}
             aria-describedby={stepTwoNeedsRuntimeInstall ? "onboarding-runtime-required-note" : undefined}
-            title={stepTwoNeedsRuntimeInstall ? "Install the local AI runtime or choose Skip for now before continuing." : undefined}
+            title={stepTwoNeedsRuntimeInstall
+              ? managedRuntimeInstall
+                ? "Install the local AI runtime or choose Skip for now before continuing."
+                : "Install and start Ollama, then check again—or choose Skip for now."
+              : undefined}
           >
             {step === 1
               ? "Continue setup"

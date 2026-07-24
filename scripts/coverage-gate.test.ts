@@ -69,7 +69,13 @@ describe("release coverage gate", () => {
     expect(release).toContain("client_secret = $env:AZURE_CLIENT_SECRET");
     expect(smoke).toContain("client_secret = $env:AZURE_CLIENT_SECRET");
     expect(release).toContain("oauth2/v2.0/token");
-    expect(release).toContain("src-tauri\\target\\${{ matrix.target }}\\release\\bundle\\nsis");
+    expect(release).toContain(
+      "src-tauri\\target\\x86_64-pc-windows-msvc\\release\\bundle\\nsis",
+    );
+    expect(release).toContain("runs-on: macos-15");
+    expect(release).toContain("--target aarch64-apple-darwin");
+    expect(release).toContain("scripts/macos-packaged-smoke.mjs");
+    expect(release).not.toContain("x86_64-apple-darwin");
     expect(release).not.toContain("azure/login@");
     expect(smoke).not.toContain("azure/login@");
   });

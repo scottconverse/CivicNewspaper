@@ -99,6 +99,27 @@ describe("release verifier scripts", () => {
     expect(result.output).toContain("cleanroom.installer_sha256 must match");
   });
 
+  test("hosted release evidence accepts matching unsigned Apple Silicon proof", () => {
+    const tag = `v0.0.997-test-${process.pid}-${randomUUID()}`;
+    writeHostedEvidenceFixture(tag, {
+      release_scope: { macos_apple_silicon_beta: true },
+      macos_preflight: {
+        ok: true,
+        receipt_sha256: "4".repeat(64),
+        architecture: "aarch64",
+        minimum_macos: "11.0",
+        developer_id_signed: false,
+        notarized: false,
+        ollama_setup: "manual",
+      },
+    });
+
+    const result = runNode("scripts/verify-hosted-release-evidence.mjs", [tag]);
+
+    expect(result.ok).toBe(true);
+    expect(result.output).toContain(`OK: hosted release evidence for ${tag}`);
+  });
+
   test("asset hash verifier binds SHA256SUMS to cleanroom-tested installer", () => {
     const dir = mkdtempSync(join(tmpdir(), "civic-assets-"));
     tempDirs.push(dir);
@@ -195,5 +216,59 @@ describe("release verifier scripts", () => {
 
     expect(result.ok).toBe(false);
     expect(result.output).toContain("published installer hash does not match");
+  });
+
+  test("asset hash verifier binds the Apple Silicon DMG to macOS cleanroom evidence", () => {
+    const dir = mkdtempSync(join(tmpdir(), "civic-assets-"));
+    tempDirs.push(dir);
+    const windowsName = "The.Civic.Desk_0.3.3_x64-setup.exe";
+    const macName = "The.Civic.Desk_0.3.3_aarch64.dmg";
+    const windowsHash = sha256Text("windows installer");
+    const macHash = sha256Text("apple silicon dmg");
+    writeFileSync(join(dir, windowsName), "windows installer");
+    writeFileSync(join(dir, macName), "apple silicon dmg");
+    const manifest = join(dir, "SHA256SUMS");
+    writeFileSync(
+      manifest,
+      `${windowsHash}  ${windowsName}\n${macHash}  ${macName}\n`,
+    );
+    const evidence = join(dir, "evidence.json");
+    const macReceipt = join(dir, "macos-packaged-smoke-receipt.json");
+    writeFileSync(
+      evidence,
+      JSON.stringify({
+        release_scope: { macos_apple_silicon_beta: true },
+        windows_installer_smoke: {
+          installer_name: windowsName,
+          installer_sha256: windowsHash,
+        },
+        cleanroom: { installer_sha256: windowsHash },
+      }),
+    );
+    writeFileSync(
+      macReceipt,
+      JSON.stringify({
+        ok: true,
+        architecture: "aarch64",
+        developer_id_signed: false,
+        notarized: false,
+          artifact_name: macName,
+          artifact_sha256: macHash,
+      }),
+    );
+
+    const result = runNode("scripts/verify-release-asset-hashes.mjs", [
+      "--assets-dir",
+      dir,
+      "--manifest",
+      manifest,
+      "--evidence",
+      evidence,
+      "--macos-receipt",
+      macReceipt,
+    ]);
+
+    expect(result.ok).toBe(true);
+    expect(result.output).toContain("OK: verified 2 published asset hashes");
   });
 });

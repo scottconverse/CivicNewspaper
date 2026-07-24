@@ -11,6 +11,7 @@ for (let i = 2; i < process.argv.length; i += 2) {
 const assetsDir = args.get("--assets-dir");
 const manifestPath = args.get("--manifest");
 const evidencePath = args.get("--evidence");
+const macosReceiptPath = args.get("--macos-receipt");
 
 function fail(message) {
   console.error(`FAIL: ${message}`);
@@ -33,7 +34,7 @@ function cleanHash(value, field) {
 }
 
 if (!assetsDir || !manifestPath) {
-  fail("usage: verify-release-asset-hashes.mjs --assets-dir <dir> --manifest <SHA256SUMS> [--evidence <json>]");
+  fail("usage: verify-release-asset-hashes.mjs --assets-dir <dir> --manifest <SHA256SUMS> [--evidence <json>] [--macos-receipt <json>]");
 }
 if (!existsSync(assetsDir)) {
   fail(`assets directory does not exist: ${assetsDir}`);
@@ -107,6 +108,45 @@ if (evidencePath && existsSync(evidencePath)) {
       `published installer hash does not match cleanroom-tested hash for '${releaseAssetName}': ` +
         `manifest=${manifestHash} evidence=${expectedInstallerHash}`
     );
+  }
+
+  if (evidence?.release_scope?.macos_apple_silicon_beta === true) {
+    if (!macosReceiptPath || !existsSync(macosReceiptPath)) {
+      fail("Apple Silicon release scope requires the exact hosted macOS packaged-smoke receipt.");
+    }
+    let macReceipt;
+    try {
+      macReceipt = readJson(macosReceiptPath);
+    } catch (error) {
+      fail(`could not parse macOS packaged-smoke receipt ${macosReceiptPath}: ${error.message}`);
+    }
+    if (macReceipt.ok !== true) {
+      fail("macOS packaged-smoke receipt must report ok=true.");
+    }
+    if (macReceipt.architecture !== "aarch64") {
+      fail("macOS packaged-smoke receipt must report architecture=aarch64.");
+    }
+    if (macReceipt.developer_id_signed !== false || macReceipt.notarized !== false) {
+      fail("macOS packaged-smoke receipt must record Developer ID signing and notarization as false.");
+    }
+    const macAssetName = macReceipt.artifact_name;
+    if (typeof macAssetName !== "string" || !macAssetName.trim()) {
+      fail("macOS packaged-smoke receipt is missing artifact_name.");
+    }
+    const expectedMacHash = cleanHash(
+      macReceipt.artifact_sha256,
+      "macOS packaged-smoke artifact_sha256",
+    );
+    const publishedMacHash = manifest.get(macAssetName);
+    if (!publishedMacHash) {
+      fail(`SHA256SUMS does not list the macOS release asset '${macAssetName}'.`);
+    }
+    if (publishedMacHash !== expectedMacHash) {
+      fail(
+        `published macOS hash does not match cleanroom-tested hash for '${macAssetName}': ` +
+          `manifest=${publishedMacHash} evidence=${expectedMacHash}`,
+      );
+    }
   }
 }
 

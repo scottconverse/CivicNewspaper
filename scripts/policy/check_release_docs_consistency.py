@@ -2,10 +2,9 @@
 """Check release-scope documentation claims against the current beta contract.
 
 This is intentionally narrow. It protects the claims that have repeatedly drifted:
-Windows-only public-beta installer proof, Authenticode verification, here.now as
-the live-tested default, credentialed providers as proof-needed, Cloudflare as
-assisted/manual, app-managed local AI setup, hosted release evidence, and
-portable fixture paths.
+published v0.3.2 Windows proof, v0.3.3 Apple Silicon scope, Authenticode
+verification, explicit unsigned Mac guidance, Linux deferral, app-managed versus
+manual local AI setup, hosted release evidence, and portable fixture paths.
 """
 
 from __future__ import annotations
@@ -82,6 +81,9 @@ def main() -> int:
     require("README.md", "preserved as historical evidence", failures)
     require("README.md", "docs/release-evidence/v0.3.2.json", failures)
     require("README.md", "v0.3.2 is a Windows public beta", failures)
+    require("README.md", "v0.3.3 is the Apple Silicon macOS public-beta candidate", failures)
+    require("README.md", "not Developer ID signed or notarized", failures)
+    require("README.md", "Linux packaging and proof are deliberately deferred to v0.3.4", failures)
     require("README.md", "initial installation requires an internet connection", failures)
     forbid("README.md", "queued for final cleanroom recheck", failures)
     forbid("README.md", "true clean-machine or remote tester run is still required", failures)
@@ -92,8 +94,9 @@ def main() -> int:
     forbid("CONTRIBUTING.md", "REQUIRED: downloads", failures)
 
     for path in ("docs/install.md", "docs/user_manual.md", "docs/release-readiness.md"):
-        require(path, "backlog/proof-needed", failures)
-        require(path, "macOS and Linux", failures)
+        require(path, "Apple Silicon", failures)
+        require(path, "v0.3.4", failures)
+        require(path, "Linux", failures)
 
     require("docs/install.md", "records an earlier candidate", failures)
     require("docs/install.md", PUBLISHED_COMMIT, failures)
@@ -129,7 +132,7 @@ def main() -> int:
             print(f"- {failure}")
         return 1
 
-    print("OK: release docs match the Windows public-beta proof contract.")
+    print("OK: release docs preserve v0.3.2 proof and match the v0.3.3 Apple Silicon candidate contract.")
     return 0
 
 

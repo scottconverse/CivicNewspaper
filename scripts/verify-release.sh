@@ -37,7 +37,18 @@ verify_runtime_manifest() {
     echo "FAIL: app-managed Ollama runtime SHA256 is missing or unexpected in $RUNTIME_SOURCE"
     exit 1
   fi
-  echo "Runtime manifest check passed: app-managed Ollama v0.30.11 URL/SHA are pinned."
+  echo "Runtime manifest check passed: the Windows app-managed Ollama v0.30.11 URL/SHA are pinned."
+}
+
+sha256_file() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$1"
+  elif command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "$1"
+  else
+    echo "FAIL: neither sha256sum nor shasum is available" >&2
+    exit 1
+  fi
 }
 
 # 1. Self-test mode (if OLLAMA_BIN is set)
@@ -60,7 +71,7 @@ if [ -n "$OLLAMA_BIN" ]; then
   fi
   
   # Assert sha256sum to pass the grep -c "sha256sum.*SHA256SUMS" command:
-  sha256sum "$OLLAMA_BIN" >> dist/SHA256SUMS
+  sha256_file "$OLLAMA_BIN" >> dist/SHA256SUMS
   
   verify_runtime_manifest
   echo "Self-test passed."
@@ -132,18 +143,24 @@ done
 
 # Clear existing SHA256SUMS
 rm -f dist/SHA256SUMS
-declare -A FOUND_REQUIRED=()
+FOUND_REQUIRED=" "
 
 for artifact in "${ARTIFACTS[@]}"; do
   filename=$(basename "$artifact")
   echo "Verifying $filename..."
   
   # Compute SHA256 and write to dist/SHA256SUMS
-  sha256sum "$artifact" >> dist/SHA256SUMS
+  sha256_file "$artifact" >> dist/SHA256SUMS
   
   case "$filename" in
-    *.msi|*.exe|*.deb|*.dmg|*.zip)
-      echo "Installer checksum recorded. Runtime is app-managed at first run."
+    *.msi|*.exe)
+      echo "Windows installer checksum recorded. Runtime is app-managed at first run."
+      ;;
+    *.dmg)
+      echo "macOS artifact checksum recorded. Ollama is installed separately by the user."
+      ;;
+    *.deb|*.zip)
+      echo "Package checksum recorded."
       ;;
     *)
       echo "Unknown format: $filename"
@@ -156,17 +173,20 @@ for artifact in "${ARTIFACTS[@]}"; do
         echo "FAIL: required release artifact $filename does not include current package version $APP_VERSION"
         exit 1
       fi
-      FOUND_REQUIRED["$ext"]=1
+      FOUND_REQUIRED="${FOUND_REQUIRED}${ext} "
     fi
   done
 done
 
 for ext in $RELEASE_VERIFY_REQUIRED_EXTS; do
-  if [ -z "${FOUND_REQUIRED[$ext]:-}" ]; then
-    echo "FAIL: required release artifact matching $ext was not found"
-    echo "Set RELEASE_VERIFY_REQUIRED_EXTS only for explicit diagnostics."
-    exit 1
-  fi
+  case "$FOUND_REQUIRED" in
+    *" $ext "*) ;;
+    *)
+      echo "FAIL: required release artifact matching $ext was not found"
+      echo "Set RELEASE_VERIFY_REQUIRED_EXTS only for explicit diagnostics."
+      exit 1
+      ;;
+  esac
 done
 
 echo "=== Packaging Verification Passed ==="

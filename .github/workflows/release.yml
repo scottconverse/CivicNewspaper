@@ -97,16 +97,9 @@ jobs:
       - name: Require exact-tag local RC and cleanroom evidence
         run: node scripts/verify-hosted-release-evidence.mjs "${{ github.ref_name }}"
 
-  release:
+  windows-build:
     needs: hosted-release-evidence
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: windows-latest
-            os: windows-latest
-            target: x86_64-pc-windows-msvc
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
     
     steps:
       - uses: actions/checkout@v4
@@ -177,7 +170,7 @@ jobs:
           # GG-C2: --locked is passed through Tauri to Cargo after `--`, forcing
           # the build to use the committed Cargo.lock so a drifting transitive
           # dependency can't enter a release that CI never saw.
-          args: --config src-tauri/tauri.windows-signing.conf.json --target ${{ matrix.target }} --bundles nsis -- --locked
+          args: --config src-tauri/tauri.windows-signing.conf.json --target x86_64-pc-windows-msvc --bundles nsis -- --locked
 
       - name: Dump signing diagnostics
         if: failure()
@@ -189,7 +182,7 @@ jobs:
       - name: Locate the NSIS installer
         shell: pwsh
         run: |
-          $installers = @(Get-ChildItem -LiteralPath "src-tauri\target\${{ matrix.target }}\release\bundle\nsis" -Filter "*.exe" -File)
+          $installers = @(Get-ChildItem -LiteralPath "src-tauri\target\x86_64-pc-windows-msvc\release\bundle\nsis" -Filter "*.exe" -File)
           if ($installers.Count -ne 1) {
             throw "Expected exactly one NSIS installer; found $($installers.Count)."
           }
@@ -207,27 +200,191 @@ jobs:
           path: release-signature-receipt.json
           if-no-files-found: error
 
-      - name: Create draft release and upload signed installer
+      - name: Stage signed Windows installer
         shell: pwsh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release view "${{ github.ref_name }}" --repo "${{ github.repository }}" 2>$null
-          if ($LASTEXITCODE -ne 0) {
-            gh release create "${{ github.ref_name }}" --repo "${{ github.repository }}" --draft --prerelease --title "The Civic Desk ${{ github.ref_name }}" --notes "DRAFT Windows public beta. Do not publish until SHA256SUMS, Authenticode signature verification, release-integrity verification, and local RC/cleanroom evidence for this exact tag have been reviewed. Verify SHA256SUMS before running."
-          }
-          gh release upload "${{ github.ref_name }}" $env:INSTALLER_PATH --repo "${{ github.repository }}" --clobber
-          
+          New-Item -ItemType Directory -Force -Path release-assets | Out-Null
+          $version = "${{ github.ref_name }}".TrimStart("v")
+          $destination = Join-Path (Resolve-Path release-assets) "The.Civic.Desk_${version}_x64-setup.exe"
+          Copy-Item -LiteralPath $env:INSTALLER_PATH -Destination $destination
+          "STAGED_INSTALLER=$destination" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
       - name: Verify release artifacts
+        env:
+          ARTIFACT_DIR: release-assets
+          RELEASE_VERIFY_REQUIRED_EXTS: .exe
         run: |
           bash scripts/verify-release.sh
 
-  # After the Windows public-beta build has uploaded its installers, aggregate a single
+      - name: Upload signed Windows release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-windows-${{ github.sha }}
+          path: ${{ env.STAGED_INSTALLER }}
+          if-no-files-found: error
+
+  macos-build:
+    needs: hosted-release-evidence
+    # GitHub's macos-15 standard runner is arm64. Pin the image so the release
+    # smoke actually launches the ARM64 app instead of merely cross-compiling it.
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Apple Silicon Rust target
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.94.0
+          targets: aarch64-apple-darwin
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build unsigned Apple Silicon DMG
+        run: npm run tauri build -- --config src-tauri/tauri.macos.conf.json --target aarch64-apple-darwin --bundles dmg -- --locked
+
+      - name: Verify Apple Silicon bundle and stage DMG
+        shell: bash
+        run: |
+          set -euo pipefail
+          bundle_root="src-tauri/target/aarch64-apple-darwin/release/bundle"
+          shopt -s nullglob
+          dmgs=( "$bundle_root"/dmg/*.dmg )
+          if [ "${#dmgs[@]}" -ne 1 ]; then
+            echo "FAIL: expected exactly one Apple Silicon DMG; found ${#dmgs[@]}"
+            exit 1
+          fi
+          mount_dir="$(mktemp -d "${RUNNER_TEMP}/civicdesk-dmg.XXXXXX")"
+          cleanup() {
+            hdiutil detach "$mount_dir" >/dev/null 2>&1 || true
+            rmdir "$mount_dir" >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+          hdiutil attach "${dmgs[0]}" -readonly -nobrowse -mountpoint "$mount_dir" >/dev/null
+          app="$mount_dir/The Civic Desk.app"
+          binary="$app/Contents/MacOS/civicnews"
+          if [ ! -x "$binary" ]; then
+            echo "FAIL: packaged macOS executable is missing: $binary"
+            exit 1
+          fi
+          arches="$(lipo -archs "$binary")"
+          if [ "$arches" != "arm64" ]; then
+            echo "FAIL: expected arm64-only executable; found: $arches"
+            exit 1
+          fi
+          if find "$app/Contents/Resources" -type f -name manifest.json | grep -q .; then
+            echo "Browser extension manifest is bundled."
+          else
+            echo "FAIL: browser extension manifest is missing from the app bundle."
+            exit 1
+          fi
+          if find "$app/Contents/Resources" -type f -path '*/prompts/*' | grep -q .; then
+            echo "Prompt resources are bundled."
+          else
+            echo "FAIL: prompt resources are missing from the app bundle."
+            exit 1
+          fi
+          codesign -dvv "$app" 2>&1 | tee macos-codesign-inspection.txt || true
+          if grep -q 'Authority=Developer ID Application' macos-codesign-inspection.txt; then
+            echo "FAIL: the unsigned beta unexpectedly carries a Developer ID identity."
+            exit 1
+          fi
+          mkdir -p release-assets
+          version="${GITHUB_REF_NAME#v}"
+          staged="$PWD/release-assets/The.Civic.Desk_${version}_aarch64.dmg"
+          cp "${dmgs[0]}" "$staged"
+          echo "STAGED_DMG=$staged" >> "$GITHUB_ENV"
+
+      - name: Verify macOS release artifact
+        env:
+          ARTIFACT_DIR: release-assets
+          RELEASE_VERIFY_REQUIRED_EXTS: .dmg
+        run: bash scripts/verify-release.sh
+
+      - name: Smoke-test the exact hosted DMG on a fresh Mac runner
+        run: |
+          node scripts/macos-packaged-smoke.mjs "$STAGED_DMG" \
+            --receipt "$PWD/macos-packaged-smoke-receipt.json"
+
+      - name: Upload Apple Silicon release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-macos-${{ github.sha }}
+          path: |
+            ${{ env.STAGED_DMG }}
+            macos-packaged-smoke-receipt.json
+          if-no-files-found: error
+
+      - name: Preserve macOS architecture and signing inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-macos-inspection-${{ github.sha }}
+          path: macos-codesign-inspection.txt
+          if-no-files-found: error
+
+  publish-release:
+    needs:
+      - windows-build
+      - macos-build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download verified release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-windows-${{ github.sha }}
+          path: release-assets
+
+      - name: Download verified macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-macos-${{ github.sha }}
+          path: release-assets
+
+      - name: Require one Windows installer and one Apple Silicon DMG
+        run: |
+          set -euo pipefail
+          test "$(find release-assets -maxdepth 1 -type f -name '*.exe' | wc -l)" -eq 1
+          test "$(find release-assets -maxdepth 1 -type f -name '*.dmg' | wc -l)" -eq 1
+          test -f release-assets/macos-packaged-smoke-receipt.json
+          ARTIFACT_DIR=release-assets RELEASE_VERIFY_REQUIRED_EXTS=".exe .dmg" bash scripts/verify-release.sh
+
+      - name: Create draft prerelease and upload verified artifacts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if ! gh release view "${{ github.ref_name }}" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            gh release create "${{ github.ref_name }}" \
+              --repo "${{ github.repository }}" \
+              --draft \
+              --prerelease \
+              --title "The Civic Desk ${{ github.ref_name }}" \
+              --notes "DRAFT public beta for signed Windows x64 and unsigned Apple Silicon macOS. The macOS build is not Developer ID signed or notarized and requires a separately installed Ollama app. Do not publish until SHA256SUMS, platform-specific cleanroom evidence, Windows signature proof, and exact-tag release evidence have been reviewed."
+          fi
+          gh release upload "${{ github.ref_name }}" release-assets/* \
+            --repo "${{ github.repository }}" \
+            --clobber
+
+  # After both platform builds are uploaded, aggregate a single
   # SHA256SUMS manifest covering all published assets and attach it to the release.
   # This is the manifest docs/install.md, README.md, and FAQ.md tell users to verify
   # against; without this job it 404s and installer provenance checks are incomplete.
   checksums:
-    needs: release
+    needs: publish-release
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     permissions:

@@ -53,7 +53,7 @@
   -Model &quot;phi4-mini:latest&quot; `
   -Stable</code></pre>
 <p>The stable run fails if the working tree is dirty or if desktop smoke, live model, here.now, or import fixture gates are skipped. Use <code>-AllowDirty</code> only for a non-release diagnostic run. The <code>-FixtureDir</code> value must point to a folder available on the machine running the gate. Use the committed <code>tests\fixtures\source-import</code> fixture folder for normal release checks, or pass any equivalent full source-file fixture folder that contains the expected CSV, TXT, XLSX, DOCX files and PDF-disabled guidance fixtures.</p>
-<p>For this Windows beta release-candidate line, cleanroom evidence may be produced locally in an isolated app-data profile, Windows Sandbox, or VM. An external tester is optional, not mandatory, when the local report binds the exact installer SHA256/size and commit, proves the dependency-absent first run, and proves the live-model source-to-Workbench path against the installed package.</p>
+<p>For Windows, cleanroom evidence may be produced locally in an isolated app-data profile, Windows Sandbox, or VM. For the v0.3.3 Apple Silicon beta, local preflight must verify the unsigned Gatekeeper path, manual Ollama detection, and packaged source-to-Workbench behavior. Because DMG output is not byte-reproducible, the tag workflow additionally smoke-tests the exact hosted DMG on a fresh Mac runner and publishes a receipt binding that DMG&#x27;s SHA256, size, ARM64 architecture, resources, and isolated first launch. Intel Mac proof is neither required nor accepted because Intel Macs are unsupported.</p>
 <h2 id="release-candidate-packaging-receipt">Release-candidate packaging receipt</h2>
 <p>After tests and smoke checks pass, generate a local RC evidence receipt before publishing any release asset:</p>
 <pre><code>powershell -NoProfile -ExecutionPolicy Bypass -File scripts\prepare-rc-evidence.ps1 `
@@ -64,18 +64,30 @@
   -PackagedWalkthroughReceipt &quot;.agent-runs\packaged-first-run-walkthrough-YYYYMMDD-HHMMSS\packaged-first-run-walkthrough-receipt.json&quot;</code></pre>
 <p>The receipt records the exact branch, commit, app versions, Tauri bundle targets, artifact paths, SHA256 hashes, smoke-check results, model-bakeoff receipt, dependency-audit receipt, Windows installer-smoke receipt, packaged first-run/core-flow receipt, and checksum-manifest output. It is a local evidence artifact; it does not push, merge, tag, or publish. By default it fails if the smoke receipt is missing, from a different repo or commit, dirty/diagnostic, contains failed/skipped checks, no current-version installer artifacts are present, stale historical installer artifacts are present in the bundle folder, the installer-smoke SHA256 does not match the current release artifact SHA256, or the required model-bakeoff/dependency-audit/installer/package artifacts are missing. Use the diagnostic flags only for local investigation, not release evidence.</p>
 <p>The model bakeoff receipt must show that the configured default model in <code>src\models.json</code> passed every bakeoff case. The dependency audit receipt must be clean, run npm audit at the documented <code>moderate</code> threshold or stricter, and include Rust advisory checking through <code>cargo-audit</code>; a receipt that only exists but contains failures is not release evidence. If <code>cargo-audit</code> uses ignored RustSec advisories, every ignored ID must have a current machine-readable waiver in <code>docs/security-advisory-waivers.json</code>, and the dependency and RC receipts must copy exactly matching waiver entries into release evidence. Missing, extra, duplicated, expired, or incomplete waivers fail RC evidence. The Windows installer smoke receipt must prove NSIS silent install, installed app start from the packaged installer, first-run screenshot capture, uninstaller presence, and silent uninstall, and its recorded installer SHA256 must match the current RC artifact SHA256. MSI lifecycle proof is backlog/proof-needed until MSI is reintroduced as a public beta artifact.</p>
-<p>For this release line, RC packaging evidence is Windows public beta only. macOS and Linux installer proof is backlog/proof-needed until a real platform artifact and clean-machine first-run proof exist.</p>
+<p>For v0.3.3, RC packaging evidence covers the signed Windows installer and the unsigned, unnotarized Apple Silicon DMG. Linux installer proof remains backlog/proof-needed and is deferred to v0.3.4.</p>
+<h3 id="apple-silicon-packaged-preflight">Apple Silicon packaged preflight</h3>
+<p>Build and exercise the local candidate on an Apple Silicon Mac:</p>
+<pre><code>npm run tauri build -- \
+  --config src-tauri/tauri.macos.conf.json \
+  --target aarch64-apple-darwin \
+  --bundles dmg \
+  -- --locked
+
+node scripts/macos-packaged-smoke.mjs \
+  &quot;src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/The Civic Desk_0.3.3_aarch64.dmg&quot;</code></pre>
+<p>The smoke script mounts the DMG read-only, requires a thin ARM64 executable, checks prompt and browser-extension resources, records the absence of a Developer ID identity and notarization, launches the packaged app with isolated app data and Ollama forced absent, and requires database initialization. Its receipt is local preflight evidence. Because rebuilding a DMG changes its bytes, the tag workflow repeats the smoke against the exact hosted artifact and publishes that separate receipt.</p>
 <h2 id="hosted-release-workflow">Hosted release workflow</h2>
 <p>The GitHub release workflow is intentionally conservative during public beta:</p>
 <ul>
-<li>tag pushes build Windows artifacts into a <strong>draft</strong> prerelease;</li>
-<li>the hosted workflow fails unless <code>docs/release-evidence/&amp;lt;tag&amp;gt;.json</code> exists at the tagged commit and verifies local RC evidence, Windows installer smoke, isolated packaged first-run/core-flow cleanroom proof, and the matching installer SHA256 for that exact tag;</li>
+<li>tag pushes build signed Windows x64 and unsigned Apple Silicon macOS artifacts into a <strong>draft</strong> prerelease;</li>
+<li>the hosted workflow fails unless <code>docs/release-evidence/&amp;lt;tag&amp;gt;.json</code> exists at the tagged commit and verifies local RC evidence, Windows installer smoke, Windows cleanroom proof, and Apple Silicon preflight policy;</li>
+<li>the fresh hosted Mac runner smoke-tests the exact generated DMG and publishes <code>macos-packaged-smoke-receipt.json</code>;</li>
 <li>the workflow attaches a checksum manifest and runs release-asset integrity checks;</li>
-<li>release-asset integrity recomputes every downloaded asset hash and requires the published Windows installer hash in the checksum manifest to match the cleanroom-tested installer hash from <code>docs/release-evidence/&amp;lt;tag&amp;gt;.json</code>;</li>
+<li>release-asset integrity recomputes every downloaded asset hash, requires the Windows installer hash to match checked-in cleanroom evidence, and requires the Apple Silicon DMG hash to match the exact hosted packaged-smoke receipt;</li>
 <li>the workflow does not publish a non-draft public release by itself;</li>
 <li>Scott must review the local RC receipt, cleanroom report, and release notes before undrafting a release.</li>
 </ul>
-<p>This prevents an unverified installer from appearing before Authenticode, checksum, and local release-gate evidence have been reviewed.</p>
+<p>This prevents an unverified installer from appearing before Windows Authenticode proof, platform checksums, explicit Mac unsigned-release disclosure, and local release-gate evidence have been reviewed.</p>
 <h2 id="successor-release-provenance">Successor release provenance</h2>
 <p>The published v0.3.2 installer was rebuilt from commit <code>796b8700831f964beea97630c51d71a40a9b724f</code>, while the original <code>v0.3.2</code> tag still identifies commit <code>4e2fa0a9706e10a53fab3a904afb30d7fec43f56</code>. Consequently, GitHub&#x27;s automatic v0.3.2 source archives do not identify the source used for the current downloadable installer. The release page records the product build commit and is the authoritative provenance note for that historical exception.</p>
 <p>Do not move, replace, or silently delete the published v0.3.2 tag. The next release must use a new version and tag created from the exact product commit. Its evidence file, signatures, checksums, cleanroom report, release body, and uploaded artifacts must all identify that same commit and artifact bytes before publication. A planned v0.3.3 version is not released merely because this rule is documented.</p>
@@ -102,7 +114,7 @@
 </ul>
 <h3 id="release-candidate">Release candidate</h3>
 <ul>
-<li><strong>Required:</strong> Public-beta evidence plus enforced coverage floors, desktop smoke, current-version Windows installer artifacts, isolated packaged first-run/core-flow proof, source-import fixtures, live Colorado scan, model bakeoff, dependency audit, and anonymous here.now publishing.</li>
+<li><strong>Required:</strong> Public-beta evidence plus enforced coverage floors, desktop smoke, current-version Windows and advertised Apple Silicon artifacts, platform-specific packaged first-run/core-flow proof, source-import fixtures, live Colorado scan, model bakeoff, dependency audit, and anonymous here.now publishing.</li>
 <li><strong>Allowed skips:</strong> External providers without credentials; an external tester is optional when local packaged proof is complete.</li>
 </ul>
 <h3 id="stable">Stable</h3>
@@ -139,7 +151,6 @@ cargo audit</code></pre>
 <h2 id="stable-release-blockers">Stable-release blockers</h2>
 <p>These cannot be fully completed from one Windows development machine:</p>
 <ul>
-<li>Mac installer build, signing/notarization decision, and clean-machine proof</li>
 <li>Linux installer/package build and clean-machine or VM proof</li>
 <li>clean-machine installer proof on every OS advertised in public docs</li>
 <li>permanent here.now API-key publish verification</li>
