@@ -67,6 +67,17 @@ The current detector layer is regex. There is a credible case for layering a sma
 - Run `cargo fmt` for Rust and `npm run lint` (if/once configured) for TS before pushing.
 - PR description: what changed, why, and how you verified it.
 
+## Active automation and historical records
+
+GitHub Actions under `.github/workflows/` and maintainer review are the active
+acceptance gates. The old repo-local self-grading agent pipeline is retired.
+Files under `.agent-runs/`, `.agent-workflows/`, `audit-*`, and `forensic/` are
+historical records and must not be used to approve or promote current work.
+
+See [Repo-Local Agent Pipeline Retirement](docs/agent-pipeline-retirement.md)
+for the trust boundary and the requirements that apply before any replacement
+could be proposed.
+
 ## Commit messages
 
 Plain, imperative-mood, descriptive. No conventional-commits prefix is required; do not gate PRs on commit-message style.

@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [Unreleased]
 
 ### Changed
+- Retired the obsolete repo-local self-grading agent pipeline, removed its
+  automatic promotion entry points and v0.2 phase gates, and made GitHub
+  Actions plus maintainer review the only current acceptance authorities.
 - Added Azure Artifact Signing to the Windows package build using the repository's service-principal secrets, a fail-fast token preflight, and fail-closed Authenticode verification of the installer, installed application, and uninstaller before draft-release upload.
 - Replaced unsigned-installer and SmartScreen-bypass copy with official-installer provenance and checksum guidance across the app, installer dialog, release workflow, and current documentation.
 - Made installer trust guidance name the actual `SHA256SUMS` asset and expected `Scott Converse` Authenticode signer, while keeping signed-candidate wording conditional until the GitHub asset is replaced and verified.

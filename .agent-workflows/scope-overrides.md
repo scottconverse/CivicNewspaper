@@ -1,5 +1,10 @@
 # Scope override ledger
 
+> **Historical record only.** The repo-local agent pipeline was permanently
+> retired on 2026-07-24. These overrides cannot authorize current work or
+> releases. See
+> [`docs/agent-pipeline-retirement.md`](../docs/agent-pipeline-retirement.md).
+
 Every manifest that bypassed `check_active_target.py` via `override_active_target` is logged here.
 
 ## 2026-05-26T06:54:20Z — run 2026-05-26-civicnewspaper-v020-ship
