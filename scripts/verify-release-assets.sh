@@ -58,6 +58,10 @@ EVIDENCE_ARGS=()
 if [ -f "$EVIDENCE_FILE" ]; then
   EVIDENCE_ARGS=(--evidence "$EVIDENCE_FILE")
 fi
+WINDOWS_RECEIPT_ARGS=()
+if [ -f "$tmp/assets/windows-signature-smoke-receipt.json" ]; then
+  WINDOWS_RECEIPT_ARGS=(--windows-receipt "$tmp/assets/windows-signature-smoke-receipt.json")
+fi
 MACOS_RECEIPT_ARGS=()
 if [ -f "$tmp/assets/macos-packaged-smoke-receipt.json" ]; then
   MACOS_RECEIPT_ARGS=(--macos-receipt "$tmp/assets/macos-packaged-smoke-receipt.json")
@@ -67,6 +71,7 @@ node scripts/verify-release-asset-hashes.mjs \
   --assets-dir "$tmp/assets" \
   --manifest "$tmp/assets/SHA256SUMS" \
   "${EVIDENCE_ARGS[@]}" \
+  "${WINDOWS_RECEIPT_ARGS[@]}" \
   "${MACOS_RECEIPT_ARGS[@]}"
 
 echo "=== Release-integrity gate PASSED: SHA256SUMS present, assets published, and hashes verified ==="

@@ -11,6 +11,7 @@ for (let i = 2; i < process.argv.length; i += 2) {
 const assetsDir = args.get("--assets-dir");
 const manifestPath = args.get("--manifest");
 const evidencePath = args.get("--evidence");
+const windowsReceiptPath = args.get("--windows-receipt");
 const macosReceiptPath = args.get("--macos-receipt");
 
 function fail(message) {
@@ -34,7 +35,7 @@ function cleanHash(value, field) {
 }
 
 if (!assetsDir || !manifestPath) {
-  fail("usage: verify-release-asset-hashes.mjs --assets-dir <dir> --manifest <SHA256SUMS> [--evidence <json>] [--macos-receipt <json>]");
+  fail("usage: verify-release-asset-hashes.mjs --assets-dir <dir> --manifest <SHA256SUMS> [--evidence <json>] [--windows-receipt <json>] [--macos-receipt <json>]");
 }
 if (!existsSync(assetsDir)) {
   fail(`assets directory does not exist: ${assetsDir}`);
@@ -83,31 +84,75 @@ if (evidencePath && existsSync(evidencePath)) {
   } catch (error) {
     fail(`could not parse release evidence ${evidencePath}: ${error.message}`);
   }
-  const installerName = evidence?.windows_installer_smoke?.installer_name;
-  const releaseAssetName = evidence?.windows_installer_smoke?.release_asset_name || installerName;
-  if (typeof installerName !== "string" || !installerName.trim()) {
-    fail("release evidence is missing windows_installer_smoke.installer_name.");
-  }
-  if (typeof releaseAssetName !== "string" || !releaseAssetName.trim()) {
-    fail("release evidence is missing windows_installer_smoke.release_asset_name.");
-  }
-  const expectedInstallerHash = cleanHash(
-    evidence?.windows_installer_smoke?.installer_sha256,
-    "windows_installer_smoke.installer_sha256"
-  );
-  const cleanroomHash = cleanHash(evidence?.cleanroom?.installer_sha256, "cleanroom.installer_sha256");
-  if (cleanroomHash !== expectedInstallerHash) {
-    fail("cleanroom installer SHA256 does not match Windows installer-smoke SHA256.");
-  }
-  const manifestHash = manifest.get(releaseAssetName);
-  if (!manifestHash) {
-    fail(`SHA256SUMS does not list the release installer asset '${releaseAssetName}'.`);
-  }
-  if (manifestHash !== expectedInstallerHash) {
-    fail(
-      `published installer hash does not match cleanroom-tested hash for '${releaseAssetName}': ` +
-        `manifest=${manifestHash} evidence=${expectedInstallerHash}`
+  if (evidence.evidence_schema === "hosted-exact-artifacts-v2") {
+    if (evidence?.release_scope?.windows_public_beta === true) {
+      if (!windowsReceiptPath || !existsSync(windowsReceiptPath)) {
+        fail("Windows public-beta scope requires the exact hosted Windows signature-smoke receipt.");
+      }
+      let windowsReceipt;
+      try {
+        windowsReceipt = readJson(windowsReceiptPath);
+      } catch (error) {
+        fail(`could not parse Windows signature-smoke receipt ${windowsReceiptPath}: ${error.message}`);
+      }
+      if (windowsReceipt.ok !== true) {
+        fail("Windows signature-smoke receipt must report ok=true.");
+      }
+      const requiredExecutables = new Set(["installer", "application", "uninstaller"]);
+      for (const executable of windowsReceipt.executables || []) {
+        if (executable?.status === "Valid" && executable?.timestamp_subject) {
+          requiredExecutables.delete(executable.name);
+        }
+      }
+      if (requiredExecutables.size !== 0) {
+        fail(`Windows signature-smoke receipt is missing valid timestamped proof for: ${[...requiredExecutables].join(", ")}.`);
+      }
+      const releaseAssetName = windowsReceipt.release_asset_name;
+      if (typeof releaseAssetName !== "string" || !releaseAssetName.trim()) {
+        fail("Windows signature-smoke receipt is missing release_asset_name.");
+      }
+      const expectedInstallerHash = cleanHash(
+        windowsReceipt.installer_sha256,
+        "Windows signature-smoke installer_sha256",
+      );
+      const manifestHash = manifest.get(releaseAssetName);
+      if (!manifestHash) {
+        fail(`SHA256SUMS does not list the Windows release asset '${releaseAssetName}'.`);
+      }
+      if (manifestHash !== expectedInstallerHash) {
+        fail(
+          `published Windows hash does not match hosted signature-smoke hash for '${releaseAssetName}': ` +
+            `manifest=${manifestHash} receipt=${expectedInstallerHash}`,
+        );
+      }
+    }
+  } else {
+    const installerName = evidence?.windows_installer_smoke?.installer_name;
+    const releaseAssetName = evidence?.windows_installer_smoke?.release_asset_name || installerName;
+    if (typeof installerName !== "string" || !installerName.trim()) {
+      fail("release evidence is missing windows_installer_smoke.installer_name.");
+    }
+    if (typeof releaseAssetName !== "string" || !releaseAssetName.trim()) {
+      fail("release evidence is missing windows_installer_smoke.release_asset_name.");
+    }
+    const expectedInstallerHash = cleanHash(
+      evidence?.windows_installer_smoke?.installer_sha256,
+      "windows_installer_smoke.installer_sha256"
     );
+    const cleanroomHash = cleanHash(evidence?.cleanroom?.installer_sha256, "cleanroom.installer_sha256");
+    if (cleanroomHash !== expectedInstallerHash) {
+      fail("cleanroom installer SHA256 does not match Windows installer-smoke SHA256.");
+    }
+    const manifestHash = manifest.get(releaseAssetName);
+    if (!manifestHash) {
+      fail(`SHA256SUMS does not list the release installer asset '${releaseAssetName}'.`);
+    }
+    if (manifestHash !== expectedInstallerHash) {
+      fail(
+        `published installer hash does not match cleanroom-tested hash for '${releaseAssetName}': ` +
+          `manifest=${manifestHash} evidence=${expectedInstallerHash}`
+      );
+    }
   }
 
   if (evidence?.release_scope?.macos_apple_silicon_beta === true) {

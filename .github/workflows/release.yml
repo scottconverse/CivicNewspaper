@@ -193,13 +193,6 @@ jobs:
         run: |
           ./scripts/verify-windows-signatures.ps1 -Installer $env:INSTALLER_PATH -ReceiptPath release-signature-receipt.json
 
-      - name: Preserve release signature proof
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-signature-proof-${{ github.sha }}
-          path: release-signature-receipt.json
-          if-no-files-found: error
-
       - name: Stage signed Windows installer
         shell: pwsh
         run: |
@@ -207,7 +200,17 @@ jobs:
           $version = "${{ github.ref_name }}".TrimStart("v")
           $destination = Join-Path (Resolve-Path release-assets) "The.Civic.Desk_${version}_x64-setup.exe"
           Copy-Item -LiteralPath $env:INSTALLER_PATH -Destination $destination
+          $receipt = Get-Content -Raw -LiteralPath release-signature-receipt.json | ConvertFrom-Json
+          $receipt | Add-Member -NotePropertyName release_asset_name -NotePropertyValue (Split-Path -Leaf $destination) -Force
+          $receipt | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath windows-signature-smoke-receipt.json -Encoding utf8
           "STAGED_INSTALLER=$destination" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Preserve release signature proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-signature-proof-${{ github.sha }}
+          path: windows-signature-smoke-receipt.json
+          if-no-files-found: error
 
       - name: Verify release artifacts
         env:
@@ -220,7 +223,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: release-windows-${{ github.sha }}
-          path: ${{ env.STAGED_INSTALLER }}
+          path: |
+            ${{ env.STAGED_INSTALLER }}
+            windows-signature-smoke-receipt.json
           if-no-files-found: error
 
   macos-build:
@@ -359,6 +364,7 @@ jobs:
           set -euo pipefail
           test "$(find release-assets -maxdepth 1 -type f -name '*.exe' | wc -l)" -eq 1
           test "$(find release-assets -maxdepth 1 -type f -name '*.dmg' | wc -l)" -eq 1
+          test -f release-assets/windows-signature-smoke-receipt.json
           test -f release-assets/macos-packaged-smoke-receipt.json
           ARTIFACT_DIR=release-assets RELEASE_VERIFY_REQUIRED_EXTS=".exe .dmg" bash scripts/verify-release.sh
 
