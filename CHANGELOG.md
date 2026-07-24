@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-07-24
+
 ### Changed
 - Prepared v0.3.3 as an Apple Silicon-only macOS beta: added ARM64 DMG packaging, manual official-Ollama onboarding, unsigned/unnotarized Gatekeeper guidance, exact-hosted-DMG smoke receipts, and a single multi-platform draft-release publisher. Intel macOS is unsupported and Linux is deferred to v0.3.4.
 - Retired the obsolete repo-local self-grading agent pipeline, removed its
