@@ -88,6 +88,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The evidence intentionally points at the merged-code preflight
+          # commit, which is an ancestor of the final evidence/tag commit.
+          # A depth-1 tag checkout cannot prove that ancestry.
+          fetch-depth: 0
 
       - name: Setup Node.js for evidence gate
         uses: actions/setup-node@v4
