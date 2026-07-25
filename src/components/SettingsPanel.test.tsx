@@ -68,7 +68,7 @@ describe("SettingsPanel Component Tests", () => {
       ...mockProfile,
       site_title: "Updated Observer"
     });
-    expect(await screen.findByRole("status")).toHaveTextContent("Identity saved.");
+    expect(await screen.findByText("Identity saved.")).toHaveAttribute("role", "status");
   });
 
   test("choose logo fills the profile logo field and shows a preview", async () => {
