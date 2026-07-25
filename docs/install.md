@@ -66,7 +66,7 @@ Required proof for a cleanroom-proven release:
 4. Record the report path, report hash, installer hash, tester machine, and any signing, notarization, permission, or package-manager warnings honestly in the release notes.
 5. Verify that hosted release evidence and published asset hashes match the cleanroom-tested installer.
 
-The current hosted-release evidence file is [release-evidence/v0.3.3.json](release-evidence/v0.3.3.json). The [v0.3.2 evidence](release-evidence/v0.3.2.json) is historical.
+The [v0.3.3 release-policy evidence file](release-evidence/v0.3.3.json) records prepublication policy and local Mac preflight. It does not contain the final hosted DMG hash because DMG container bytes are not reproducible. `SHA256SUMS` plus the hosted Windows and macOS receipt assets bind the final downloads to their exact bytes. The [v0.3.2 evidence](release-evidence/v0.3.2.json) is historical.
 
 Every advertised platform requires a real artifact and platform-specific clean-machine proof. For v0.3.3, the fresh hosted Mac runner smoke-tests the exact DMG and publishes a receipt binding its hash, ARM64 architecture, resources, and isolated launch. Local preflight separately records the unsigned, unnotarized Gatekeeper and manual-Ollama experience.
 
