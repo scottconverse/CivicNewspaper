@@ -13,6 +13,7 @@ const manifestPath = args.get("--manifest");
 const evidencePath = args.get("--evidence");
 const windowsReceiptPath = args.get("--windows-receipt");
 const macosReceiptPath = args.get("--macos-receipt");
+const linuxReceiptPath = args.get("--linux-receipt");
 
 function fail(message) {
   console.error(`FAIL: ${message}`);
@@ -35,7 +36,7 @@ function cleanHash(value, field) {
 }
 
 if (!assetsDir || !manifestPath) {
-  fail("usage: verify-release-asset-hashes.mjs --assets-dir <dir> --manifest <SHA256SUMS> [--evidence <json>] [--windows-receipt <json>] [--macos-receipt <json>]");
+  fail("usage: verify-release-asset-hashes.mjs --assets-dir <dir> --manifest <SHA256SUMS> [--evidence <json>] [--windows-receipt <json>] [--macos-receipt <json>] [--linux-receipt <json>]");
 }
 if (!existsSync(assetsDir)) {
   fail(`assets directory does not exist: ${assetsDir}`);
@@ -191,6 +192,48 @@ if (evidencePath && existsSync(evidencePath)) {
         `published macOS hash does not match cleanroom-tested hash for '${macAssetName}': ` +
           `manifest=${publishedMacHash} evidence=${expectedMacHash}`,
       );
+    }
+  }
+
+  if (evidence?.release_scope?.linux_debian_x64_beta === true) {
+    if (!linuxReceiptPath || !existsSync(linuxReceiptPath)) {
+      fail("Linux public-beta scope requires the exact hosted Linux packaged-smoke receipt.");
+    }
+    let linuxReceipt;
+    try {
+      linuxReceipt = readJson(linuxReceiptPath);
+    } catch (error) {
+      fail(`could not parse Linux packaged-smoke receipt ${linuxReceiptPath}: ${error.message}`);
+    }
+    if (linuxReceipt.ok !== true) {
+      fail("Linux packaged-smoke receipt must report ok=true.");
+    }
+    if (linuxReceipt.package_format !== "deb") {
+      fail("Linux packaged-smoke receipt must report package_format=deb.");
+    }
+    if (linuxReceipt.architecture !== "x86_64") {
+      fail("Linux packaged-smoke receipt must report architecture=x86_64.");
+    }
+    if (linuxReceipt.minimum_ubuntu !== "22.04") {
+      fail("Linux packaged-smoke receipt must report minimum_ubuntu=22.04.");
+    }
+    if (linuxReceipt.browser_extension_manifest !== true || !Number.isInteger(linuxReceipt.prompt_file_count) || linuxReceipt.prompt_file_count < 1) {
+      fail("Linux packaged-smoke receipt must prove bundled browser-extension and prompt resources.");
+    }
+    if (linuxReceipt?.isolated_launch?.ok !== true || linuxReceipt.isolated_launch.ollama_forced_absent !== true || linuxReceipt.isolated_launch.database_initialized !== true) {
+      fail("Linux packaged-smoke receipt must prove isolated launch with Ollama absent and database initialization.");
+    }
+    const linuxAssetName = linuxReceipt.artifact_name;
+    if (typeof linuxAssetName !== "string" || !linuxAssetName.trim()) {
+      fail("Linux packaged-smoke receipt is missing artifact_name.");
+    }
+    const expectedLinuxHash = cleanHash(linuxReceipt.artifact_sha256, "Linux packaged-smoke artifact_sha256");
+    const publishedLinuxHash = manifest.get(linuxAssetName);
+    if (!publishedLinuxHash) {
+      fail(`SHA256SUMS does not list the Linux release asset '${linuxAssetName}'.`);
+    }
+    if (publishedLinuxHash !== expectedLinuxHash) {
+      fail(`published Linux hash does not match packaged-smoke hash for '${linuxAssetName}': manifest=${publishedLinuxHash} evidence=${expectedLinuxHash}`);
     }
   }
 }

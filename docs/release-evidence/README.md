@@ -18,8 +18,8 @@ cleanroom proof:
 - the installer SHA256 used in cleanroom matches the installer SHA256 from local installer smoke;
 - the hosted release asset hash in `SHA256SUMS` matches that same cleanroom-tested installer SHA256.
 
-The `hosted-exact-artifacts-v2` schema used by v0.3.3 avoids claiming that a
-pre-tag hash identifies a newly rebuilt signed installer or DMG. It requires:
+The `hosted-exact-artifacts-v2` schema avoids claiming that a pre-tag hash
+identifies a newly rebuilt installer, DMG, or Debian package. It requires:
 
 - explicit maintainer publication approval and the Windows, Apple Silicon, and
   Linux release scope;
@@ -28,7 +28,10 @@ pre-tag hash identifies a newly rebuilt signed installer or DMG. It requires:
   installer, installed application, and uninstaller;
 - an exact hosted macOS receipt proving ARM64 architecture, packaged resources,
   unsigned/unnotarized state, and isolated first launch;
-- receipt hashes for both exact hosted installers that match their entries in
+- when Linux is advertised, an exact hosted Debian receipt proving the x86_64
+  package, bundled resources, installed-package isolated launch, and database
+  initialization with Ollama absent;
+- receipt hashes for every exact hosted installer that match their entries in
   the published `SHA256SUMS`.
 
 When `release_scope.macos_apple_silicon_beta` is true, the checked-in evidence
@@ -45,3 +48,8 @@ therefore smoke-tests the exact DMG on a fresh hosted Mac runner, publishes
 the DMG entry in the published `SHA256SUMS`.
 
 This keeps GitHub Releases from going green on tag-only automation when the real local RC and cleanroom evidence has not been reviewed.
+
+Linux public beta is deliberately narrow: a `.deb` for x86_64 Debian/Ubuntu
+systems built on Ubuntu 22.04. It is not an AppImage, RPM, Flatpak, ARM Linux,
+or a claim of support for every Linux distribution. Ollama is installed
+separately by the user.

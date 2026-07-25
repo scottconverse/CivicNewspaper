@@ -133,6 +133,41 @@ describe("release verifier scripts", () => {
     expect(result.output).toContain(`OK: hosted release evidence for ${tag}`);
   });
 
+  test("hosted release evidence requires explicit Linux package policy when Linux is advertised", () => {
+    const tag = `v0.0.996-test-${process.pid}-${randomUUID()}`;
+    writeHostedEvidenceFixture(tag, {
+      evidence_schema: "hosted-exact-artifacts-v2",
+      release_scope: {
+        windows_public_beta: true,
+        macos_apple_silicon_beta: true,
+        linux_release: "debian-x64-ubuntu-22.04+",
+        linux_debian_x64_beta: true,
+        scott_approved_public_release: true,
+      },
+      windows_hosted_proof: {
+        ok: true,
+        receipt_asset: "windows-signature-smoke-receipt.json",
+        required_executables: ["installer", "application", "uninstaller"],
+      },
+      macos_preflight: {
+        ok: true,
+        receipt_path: ".agent-runs/macos-preflight/receipt.json",
+        receipt_sha256: "4".repeat(64),
+        artifact_sha256: "5".repeat(64),
+        architecture: "aarch64",
+        minimum_macos: "11.0",
+        developer_id_signed: false,
+        notarized: false,
+        ollama_setup: "manual",
+      },
+    });
+
+    const result = runNode("scripts/verify-hosted-release-evidence.mjs", [tag]);
+
+    expect(result.ok).toBe(false);
+    expect(result.output).toContain("linux_hosted_proof.ok must be true");
+  });
+
   test("asset hash verifier binds SHA256SUMS to cleanroom-tested installer", () => {
     const dir = mkdtempSync(join(tmpdir(), "civic-assets-"));
     tempDirs.push(dir);
@@ -298,5 +333,52 @@ describe("release verifier scripts", () => {
 
     expect(result.ok).toBe(true);
     expect(result.output).toContain("OK: verified 2 published asset hashes");
+  });
+
+  test("asset hash verifier binds an exact hosted Linux DEB receipt", () => {
+    const dir = mkdtempSync(join(tmpdir(), "civic-assets-"));
+    tempDirs.push(dir);
+    const linuxName = "The.Civic.Desk_0.3.4_amd64.deb";
+    const linuxHash = sha256Text("linux deb");
+    writeFileSync(join(dir, linuxName), "linux deb");
+    const manifest = join(dir, "SHA256SUMS");
+    writeFileSync(manifest, `${linuxHash}  ${linuxName}\n`);
+    const evidence = join(dir, "evidence.json");
+    const linuxReceipt = join(dir, "linux-packaged-smoke-receipt.json");
+    writeFileSync(
+      evidence,
+      JSON.stringify({
+        evidence_schema: "hosted-exact-artifacts-v2",
+        release_scope: { linux_debian_x64_beta: true },
+      }),
+    );
+    writeFileSync(
+      linuxReceipt,
+      JSON.stringify({
+        ok: true,
+        artifact_name: linuxName,
+        artifact_sha256: linuxHash,
+        package_format: "deb",
+        architecture: "x86_64",
+        minimum_ubuntu: "22.04",
+        browser_extension_manifest: true,
+        prompt_file_count: 2,
+        isolated_launch: { ok: true, ollama_forced_absent: true, database_initialized: true },
+      }),
+    );
+
+    const result = runNode("scripts/verify-release-asset-hashes.mjs", [
+      "--assets-dir",
+      dir,
+      "--manifest",
+      manifest,
+      "--evidence",
+      evidence,
+      "--linux-receipt",
+      linuxReceipt,
+    ]);
+
+    expect(result.ok).toBe(true);
+    expect(result.output).toContain("OK: verified 1 published asset hash");
   });
 });
