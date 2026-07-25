@@ -72,7 +72,7 @@
 <li>Record the report path, report hash, installer hash, tester machine, and any signing, notarization, permission, or package-manager warnings honestly in the release notes.</li>
 <li>Verify that hosted release evidence and published asset hashes match the cleanroom-tested installer.</li>
 </ol>
-<p>The current hosted-release evidence file is <a href="release-evidence/v0.3.3.json">release-evidence/v0.3.3.json</a>. The <a href="release-evidence/v0.3.2.json">v0.3.2 evidence</a> is historical.</p>
+<p>The <a href="release-evidence/v0.3.3.json">v0.3.3 release-policy evidence file</a> records prepublication policy and local Mac preflight. It does not contain the final hosted DMG hash because DMG container bytes are not reproducible. <code>SHA256SUMS</code> plus the hosted Windows and macOS receipt assets bind the final downloads to their exact bytes. The <a href="release-evidence/v0.3.2.json">v0.3.2 evidence</a> is historical.</p>
 <p>Every advertised platform requires a real artifact and platform-specific clean-machine proof. For v0.3.3, the fresh hosted Mac runner smoke-tests the exact DMG and publishes a receipt binding its hash, ARM64 architecture, resources, and isolated launch. Local preflight separately records the unsigned, unnotarized Gatekeeper and manual-Ollama experience.</p>
 <h2 id="verify-the-sha256-checksum">Verify The SHA256 Checksum</h2>
 <p>A SHA256 checksum proves that the file you downloaded matches the file listed in the release manifest. It is not the same as code signing and does not prove who built the file.</p>
