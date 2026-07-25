@@ -18,6 +18,31 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Lucide icons failed to initialize:', err);
     }
 
+    const navToggle = document.getElementById('nav-toggle');
+    const navLinks = document.getElementById('site-nav-links');
+    const closeNavigation = () => {
+        if (!navToggle || !navLinks) return;
+        navLinks.classList.remove('is-open');
+        navToggle.setAttribute("aria-expanded", "false");
+    };
+
+    if (navToggle && navLinks) {
+        navToggle.addEventListener('click', () => {
+            const willOpen = navToggle.getAttribute('aria-expanded') !== 'true';
+            navLinks.classList.toggle('is-open', willOpen);
+            navToggle.setAttribute("aria-expanded", String(willOpen));
+        });
+        navLinks.querySelectorAll('a').forEach((link) => {
+            link.addEventListener('click', closeNavigation);
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === "Escape" && navToggle.getAttribute('aria-expanded') === 'true') {
+                closeNavigation();
+                navToggle.focus();
+            }
+        });
+    }
+
     // Platform detection for download highlights
     const userAgent = navigator.userAgent.toLowerCase();
     const platform = navigator.platform ? navigator.platform.toLowerCase() : '';

@@ -8,14 +8,14 @@ The most important rule is simple: The Civic Desk assists you. It does not decid
 
 ## Before You Start
 
-The signed Windows candidate is still under evaluation. The currently downloadable v0.3.2 asset is not the candidate until the release page is replaced and independently verified. This is a public beta, not a stable release.
+v0.3.3 is the current public beta for signed Windows x64 and unsigned, unnotarized Apple Silicon macOS 11+. It is not a stable release.
 
 What that means in practice:
 
-- Install only from the official release page after it identifies the signed candidate; verify its checksum and signer before installing.
+- Install only from the official v0.3.3 release page; verify the exact artifact checksum before installing. On Windows, verify the signer too.
 - The public release page should match the version you intend to install.
-- Windows v0.3.2 is the currently published public-beta installer path.
-- Apple Silicon macOS is planned for v0.3.3 as an unsigned, unnotarized beta.
+- Windows x64 v0.3.3 is signed and published.
+- Apple Silicon macOS 11+ v0.3.3 is published as an unsigned, unnotarized beta.
 - Intel Macs are unsupported, and Linux is deferred to v0.3.4.
 - You should verify important output before publishing.
 
@@ -43,15 +43,15 @@ Open the GitHub Releases page:
 
 <https://github.com/scottconverse/CivicNewspaper/releases>
 
-Choose the v0.3.2 Windows public beta release:
+Choose the v0.3.3 public beta release:
 
-<https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2>
+<https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.3>
 
 On Windows, use the `.exe` installer from the official release page. Confirm the filename, published checksum, and a valid Authenticode signer containing **Scott Converse** before installing.
 
 Keep the computer online during initial installation and first-run local AI setup. If Microsoft Edge WebView2 Runtime is missing, the installer downloads that prerequisite; first-run AI setup downloads the app-managed Ollama runtime and selected model. This public-beta installer is not an offline installer.
 
-The v0.3.3 candidate adds Apple Silicon macOS only. Its DMG is not Developer ID signed or notarized, so verify its SHA256 and use the documented Control-click **Open** flow. Intel Macs are unsupported. Linux packaging is deferred to v0.3.4.
+The v0.3.3 DMG supports Apple Silicon macOS 11+ only. It is not Developer ID signed or notarized, so verify its SHA256 and follow the documented unsigned-app first-launch guidance. Intel Macs are unsupported. Linux packaging is deferred to v0.3.4.
 
 Before running an installer, you can compare its SHA256 hash with the release checksum. Checksums confirm that your download matches the release artifact. They are not a replacement for code signing. See [install.md](install.md) for exact commands.
 
@@ -497,9 +497,9 @@ If XLSX or DOCX imports flatten many URLs into one candidate, report it as a bug
 ### Current Public-Beta Limits
 
 - Authenticode signature verification is required before a release installer is published.
-- Latest source/tag and latest published installer release may not always be the same.
-- Windows is the tested public-beta installer path.
-- macOS and Linux installer proof is backlog/proof-needed.
+- v0.3.3 is published for signed Windows x64 and unsigned Apple Silicon macOS 11+.
+- Intel macOS is unsupported.
+- Linux installer proof is deferred to v0.3.4.
 - OCR for scanned PDFs and hardened/sandboxed PDF parsing are not complete.
 - Fully polished newsroom-quality story selection still needs improvement.
 - External provider verification depends on user-owned credentials.

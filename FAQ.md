@@ -8,7 +8,7 @@ This FAQ is intentionally plain about what works, what is still beta, and what t
 
 ### Is this production software?
 
-Not yet. The Civic Desk is a public beta. Windows candidates are Authenticode-signed. The v0.3.3 candidate adds an unsigned, unnotarized Apple Silicon macOS DMG after exact-artifact clean-machine verification. Intel Macs are unsupported, and Linux is deferred to v0.3.4.
+Not yet. The Civic Desk v0.3.3 is a public beta for signed Windows x64 and unsigned, unnotarized Apple Silicon macOS 11+. Intel Macs are unsupported, and Linux is deferred to v0.3.4.
 
 Use it with informed caution. A human editor remains responsible for every published word.
 

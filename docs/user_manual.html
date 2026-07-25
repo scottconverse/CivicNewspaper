@@ -30,13 +30,13 @@
 <p>This manual is written for a new user, not a programmer. If you are a reporter, editor, town resident, nonprofit worker, blogger, or one-person local publisher, start at the beginning and follow the first-issue walkthrough. If you already know the app, use the later chapters as a reference.</p>
 <p>The most important rule is simple: The Civic Desk assists you. It does not decide for you. It can warn, rank, summarize, suggest, and organize. You decide what is newsworthy, fair, legal, verified, and ready to publish.</p>
 <h2 id="before-you-start">Before You Start</h2>
-<p>The signed Windows candidate is still under evaluation. The currently downloadable v0.3.2 asset is not the candidate until the release page is replaced and independently verified. This is a public beta, not a stable release.</p>
+<p>v0.3.3 is the current public beta for signed Windows x64 and unsigned, unnotarized Apple Silicon macOS 11+. It is not a stable release.</p>
 <p>What that means in practice:</p>
 <ul>
-<li>Install only from the official release page after it identifies the signed candidate; verify its checksum and signer before installing.</li>
+<li>Install only from the official v0.3.3 release page; verify the exact artifact checksum before installing. On Windows, verify the signer too.</li>
 <li>The public release page should match the version you intend to install.</li>
-<li>Windows v0.3.2 is the currently published public-beta installer path.</li>
-<li>Apple Silicon macOS is planned for v0.3.3 as an unsigned, unnotarized beta.</li>
+<li>Windows x64 v0.3.3 is signed and published.</li>
+<li>Apple Silicon macOS 11+ v0.3.3 is published as an unsigned, unnotarized beta.</li>
 <li>Intel Macs are unsupported, and Linux is deferred to v0.3.4.</li>
 <li>You should verify important output before publishing.</li>
 </ul>
@@ -57,11 +57,11 @@
 <h2 id="1-installing-the-app">1. Installing The App</h2>
 <p>Open the GitHub Releases page:</p>
 <p><a href="https://github.com/scottconverse/CivicNewspaper/releases">https://github.com/scottconverse/CivicNewspaper/releases</a></p>
-<p>Choose the v0.3.2 Windows public beta release:</p>
-<p><a href="https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2">https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2</a></p>
+<p>Choose the v0.3.3 public beta release:</p>
+<p><a href="https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.3">https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.3</a></p>
 <p>On Windows, use the <code>.exe</code> installer from the official release page. Confirm the filename, published checksum, and a valid Authenticode signer containing <strong>Scott Converse</strong> before installing.</p>
 <p>Keep the computer online during initial installation and first-run local AI setup. If Microsoft Edge WebView2 Runtime is missing, the installer downloads that prerequisite; first-run AI setup downloads the app-managed Ollama runtime and selected model. This public-beta installer is not an offline installer.</p>
-<p>The v0.3.3 candidate adds Apple Silicon macOS only. Its DMG is not Developer ID signed or notarized, so verify its SHA256 and use the documented Control-click <strong>Open</strong> flow. Intel Macs are unsupported. Linux packaging is deferred to v0.3.4.</p>
+<p>The v0.3.3 DMG supports Apple Silicon macOS 11+ only. It is not Developer ID signed or notarized, so verify its SHA256 and follow the documented unsigned-app first-launch guidance. Intel Macs are unsupported. Linux packaging is deferred to v0.3.4.</p>
 <p>Before running an installer, you can compare its SHA256 hash with the release checksum. Checksums confirm that your download matches the release artifact. They are not a replacement for code signing. See <a href="install.html">install.md</a> for exact commands.</p>
 <p>If installation, local AI setup, publishing, source import, or output quality goes wrong, use <a href="troubleshooting.html">troubleshooting.md</a>. It has plain-English help for installer provenance, model downloads, local AI runtime states, weak story output, here.now previews, ZIP/static output, and source import problems.</p>
 <h2 id="2-first-launch-and-setup">2. First Launch And Setup</h2>
@@ -412,9 +412,9 @@
 <h3 id="current-public-beta-limits">Current Public-Beta Limits</h3>
 <ul>
 <li>Authenticode signature verification is required before a release installer is published.</li>
-<li>Latest source/tag and latest published installer release may not always be the same.</li>
-<li>Windows is the tested public-beta installer path.</li>
-<li>macOS and Linux installer proof is backlog/proof-needed.</li>
+<li>v0.3.3 is published for signed Windows x64 and unsigned Apple Silicon macOS 11+.</li>
+<li>Intel macOS is unsupported.</li>
+<li>Linux installer proof is deferred to v0.3.4.</li>
 <li>OCR for scanned PDFs and hardened/sandboxed PDF parsing are not complete.</li>
 <li>Fully polished newsroom-quality story selection still needs improvement.</li>
 <li>External provider verification depends on user-owned credentials.</li>

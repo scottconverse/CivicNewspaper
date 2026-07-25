@@ -27,26 +27,25 @@
         <article class="doc-content">
 <h1 id="installation-guide-and-checksum-verification">Installation Guide And Checksum Verification</h1>
 <p>This guide explains how to install The Civic Desk from the CivicNewspaper releases page and how to verify a downloaded installer.</p>
-<p>The v0.3.2 release page serves the signed, cleanroom-tested Windows public-beta installer. The planned v0.3.3 release adds an unsigned Apple Silicon macOS DMG after its exact artifact passes Mac clean-machine verification.</p>
+<p>The v0.3.3 release page serves the signed Windows x64 installer and the unsigned, unnotarized Apple Silicon macOS DMG. Both are public-beta artifacts built from commit <code>e94a2f94885c1e6013129c3d854662cc3c8e5b27</code>.</p>
 <h2 id="download">Download</h2>
 <p>Open the releases page:</p>
 <p><a href="https://github.com/scottconverse/CivicNewspaper/releases">https://github.com/scottconverse/CivicNewspaper/releases</a></p>
-<p>Use the v0.3.2 Windows-only public-beta release:</p>
-<p><a href="https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2">https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2</a></p>
+<p>Use the v0.3.3 public-beta release:</p>
+<p><a href="https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.3">https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.3</a></p>
 <h2 id="windows">Windows</h2>
 <p>Initial installation requires an internet connection when Microsoft Edge WebView2 Runtime is not already installed. Keep the computer online for the installer and for first-run local AI setup, which downloads the app-managed Ollama runtime and selected model. This public-beta installer is not an offline installer.</p>
 <ol>
-<li>Confirm the release page identifies product build commit <code>796b8700831f964beea97630c51d71a40a9b724f</code>.</li>
-<li>Download <code>The.Civic.Desk_0.3.2_x64-setup.exe</code> and <code>SHA256SUMS.txt</code> from that release.</li>
+<li>Confirm the release page identifies product build commit <code>e94a2f94885c1e6013129c3d854662cc3c8e5b27</code>.</li>
+<li>Download <code>The.Civic.Desk_0.3.3_x64-setup.exe</code> and <code>SHA256SUMS</code> from that release.</li>
 <li>Verify the SHA256 checksum.</li>
 <li>Verify Authenticode reports <code>Status</code> as <code>Valid</code> and the signer contains <strong>Scott Converse</strong>.</li>
 <li>Only after both checks pass, double-click the installer.</li>
 <li>Follow the installer prompts.</li>
 <li>Launch <strong>The Civic Desk</strong> from the Start menu.</li>
 </ol>
-<h2 id="apple-silicon-macos-v0-3-3-candidate">Apple Silicon macOS — v0.3.3 Candidate</h2>
+<h2 id="apple-silicon-macos-v0-3-3">Apple Silicon macOS — v0.3.3</h2>
 <p>The v0.3.3 macOS build supports Apple Silicon only. Intel Macs and Rosetta are not supported. The DMG is intentionally not Developer ID signed and not notarized.</p>
-<p>When v0.3.3 is published:</p>
 <ol>
 <li>Download <code>The.Civic.Desk_0.3.3_aarch64.dmg</code> and <code>SHA256SUMS</code> from the official v0.3.3 release page.</li>
 <li>In Terminal, run:</li>
@@ -55,16 +54,16 @@
 <ol>
 <li>Compare the result exactly with the DMG line in <code>SHA256SUMS</code>. Delete the DMG if it does not match.</li>
 <li>Open the DMG and drag <strong>The Civic Desk</strong> to Applications.</li>
-<li>In Applications, Control-click or right-click <strong>The Civic Desk</strong>, choose <strong>Open</strong>, and confirm <strong>Open</strong>. This is the normal first-launch path for an unsigned beta.</li>
+<li>In Applications, Control-click or right-click <strong>The Civic Desk</strong>, choose <strong>Open</strong>, and confirm <strong>Open</strong>. macOS may still block or warn about this unsigned build.</li>
 <li>Install the official Ollama app from <a href="https://ollama.com/download/mac">https://ollama.com/download/mac</a>, open it, and then choose <strong>Check again</strong> in The Civic Desk.</li>
 </ol>
-<p>If macOS still reports that the verified app is quarantined, the narrow fallback is:</p>
+<p>The published receipt proves direct isolated launch of the exact hosted DMG; it does not prove the quarantined Finder or Control-click prompt. If macOS still reports that the checksum-verified app is quarantined, the narrow fallback is:</p>
 <pre><code>xattr -d com.apple.quarantine &quot;/Applications/The Civic Desk.app&quot;</code></pre>
 <p>Run that command only after the DMG checksum matches the official release manifest. Do not disable Gatekeeper globally.</p>
 <h2 id="linux">Linux</h2>
 <p>Linux is deferred to v0.3.4. No <code>.deb</code>, AppImage, or other Linux package is supported or published as part of v0.3.3.</p>
 <h2 id="clean-machine-proof">Clean-Machine Proof</h2>
-<p>Every release candidate needs an artifact-bound installed-package report from a clean machine, VM, Windows Sandbox, external tester, or isolated app-data profile before it can be called proved at that evidence level. The repository&#x27;s <a href="release-evidence/v0.3.2-local-isolated-package-report.html">local isolated-package report</a> records an earlier candidate and is retained as historical evidence. The published signed candidate is bound to commit <code>796b8700831f964beea97630c51d71a40a9b724f</code>, SHA256 <code>BDA7CE85759AD1C475D100D0F04FBC7F3CAF7DFF07DDB74F60B24F1CAAF526DD</code>, and size <code>5342976</code> bytes; its exact-candidate cleanroom evidence is identified in the release notes.</p>
+<p>Every release needs artifact-bound installed-package evidence. v0.3.3 is bound to commit <code>e94a2f94885c1e6013129c3d854662cc3c8e5b27</code>. Its Windows installer SHA256 is <code>3d08ec394d87329043acd57f8f714cdcfdf10b3670631861ba16bc397c6befd2</code> (size <code>5343200</code> bytes), and its Apple Silicon DMG SHA256 is <code>95c82afa6549a5648e919306b3fbc6b7f7336ee331ca7f3c7091d87d3d11f01b</code> (size <code>7891351</code> bytes). The repository&#x27;s <a href="release-evidence/v0.3.2-local-isolated-package-report.html">v0.3.2 local isolated-package report</a> remains historical evidence only.</p>
 <p>Required proof for a cleanroom-proven release:</p>
 <ol>
 <li>Build the artifact from a named commit.</li>
@@ -73,7 +72,7 @@
 <li>Record the report path, report hash, installer hash, tester machine, and any signing, notarization, permission, or package-manager warnings honestly in the release notes.</li>
 <li>Verify that hosted release evidence and published asset hashes match the cleanroom-tested installer.</li>
 </ol>
-<p>The v0.3.2 hosted-release evidence file is <a href="release-evidence/v0.3.2.json">release-evidence/v0.3.2.json</a>.</p>
+<p>The current hosted-release evidence file is <a href="release-evidence/v0.3.3.json">release-evidence/v0.3.3.json</a>. The <a href="release-evidence/v0.3.2.json">v0.3.2 evidence</a> is historical.</p>
 <p>Every advertised platform requires a real artifact and platform-specific clean-machine proof. For v0.3.3, the fresh hosted Mac runner smoke-tests the exact DMG and publishes a receipt binding its hash, ARM64 architecture, resources, and isolated launch. Local preflight separately records the unsigned, unnotarized Gatekeeper and manual-Ollama experience.</p>
 <h2 id="verify-the-sha256-checksum">Verify The SHA256 Checksum</h2>
 <p>A SHA256 checksum proves that the file you downloaded matches the file listed in the release manifest. It is not the same as code signing and does not prove who built the file.</p>
@@ -84,9 +83,9 @@
 <li>Compare the two strings exactly.</li>
 </ol>
 <h3 id="windows-powershell">Windows PowerShell</h3>
-<pre><code>Get-FileHash -Algorithm SHA256 &quot;C:\Users\YourName\Downloads\The.Civic.Desk_0.3.2_x64-setup.exe&quot;</code></pre>
+<pre><code>Get-FileHash -Algorithm SHA256 &quot;C:\Users\YourName\Downloads\The.Civic.Desk_0.3.3_x64-setup.exe&quot;</code></pre>
 <p>Verify the Authenticode signature separately:</p>
-<pre><code>Get-AuthenticodeSignature &quot;C:\Users\YourName\Downloads\The.Civic.Desk_0.3.2_x64-setup.exe&quot; |
+<pre><code>Get-AuthenticodeSignature &quot;C:\Users\YourName\Downloads\The.Civic.Desk_0.3.3_x64-setup.exe&quot; |
   Select-Object Status, @{Name=&#x27;Signer&#x27;; Expression={$_.SignerCertificate.Subject}}</code></pre>
 <p>Do not install unless <code>Status</code> is <code>Valid</code> and <code>Signer</code> contains <code>Scott Converse</code>.</p>
 <p>If the hash does not match, delete the installer and report it on the project issue tracker: <a href="https://github.com/scottconverse/CivicNewspaper/issues">https://github.com/scottconverse/CivicNewspaper/issues</a>. Do not run a mismatched installer.</p>
@@ -105,8 +104,8 @@
 <h2 id="current-public-beta-limits">Current Public-Beta Limits</h2>
 <ul>
 <li>Authenticode signature verification is required before a release installer is published.</li>
-<li>Windows v0.3.2 is the currently published public-beta installer path.</li>
-<li>Apple Silicon macOS is the v0.3.3 candidate; it is unsigned and unnotarized.</li>
+<li>Windows x64 v0.3.3 is signed and published.</li>
+<li>Apple Silicon macOS 11+ v0.3.3 is published; it is unsigned and unnotarized.</li>
 <li>Intel macOS is unsupported.</li>
 <li>Linux is deferred to v0.3.4.</li>
 <li>Some external publishing providers require user-owned credentials.</li>

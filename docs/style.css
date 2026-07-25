@@ -98,8 +98,7 @@ nav {
     color: var(--brick);
 }
 
-.nav-toggle,
-.nav-toggle-label {
+.nav-toggle {
     display: none;
 }
 
@@ -117,6 +116,21 @@ nav {
 
 .nav-links a:hover {
     color: var(--ink);
+}
+
+.nav-toggle:focus-visible,
+.nav-links a:focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: 3px;
+}
+
+.download-card,
+.download-card code,
+.section-header,
+.section-header code {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .nav-btn-primary,
@@ -580,17 +594,22 @@ footer {
         min-height: 64px;
     }
 
-    .nav-toggle-label {
+    .nav-toggle {
         display: flex;
         align-items: center;
         justify-content: center;
         width: 42px;
         height: 42px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--ink);
+        cursor: pointer;
     }
 
-    .nav-toggle-label span,
-    .nav-toggle-label span::before,
-    .nav-toggle-label span::after {
+    .nav-toggle span,
+    .nav-toggle span::before,
+    .nav-toggle span::after {
         display: block;
         width: 24px;
         height: 2px;
@@ -600,18 +619,18 @@ footer {
         transition: transform 0.2s ease, opacity 0.2s ease;
     }
 
-    .nav-toggle-label span::before,
-    .nav-toggle-label span::after {
+    .nav-toggle span::before,
+    .nav-toggle span::after {
         content: "";
         position: absolute;
         left: 0;
     }
 
-    .nav-toggle-label span::before {
+    .nav-toggle span::before {
         top: -8px;
     }
 
-    .nav-toggle-label span::after {
+    .nav-toggle span::after {
         top: 8px;
     }
 
@@ -629,19 +648,19 @@ footer {
         text-align: center;
     }
 
-    .nav-toggle:checked ~ .nav-links {
+    .nav-links.is-open {
         display: flex;
     }
 
-    .nav-toggle:checked ~ .nav-toggle-label span {
+    .nav-toggle[aria-expanded="true"] span {
         background: transparent;
     }
 
-    .nav-toggle:checked ~ .nav-toggle-label span::before {
+    .nav-toggle[aria-expanded="true"] span::before {
         transform: translateY(8px) rotate(45deg);
     }
 
-    .nav-toggle:checked ~ .nav-toggle-label span::after {
+    .nav-toggle[aria-expanded="true"] span::after {
         transform: translateY(-8px) rotate(-45deg);
     }
 
