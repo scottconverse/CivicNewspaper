@@ -16,11 +16,10 @@
                 <i data-lucide="newspaper"></i>
                 <span>The Civic Desk</span>
             </a>
-            <input type="checkbox" id="nav-toggle" class="nav-toggle">
-            <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation menu">
+            <button type="button" id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-controls="site-nav-links" aria-label="Toggle navigation menu">
                 <span></span>
-            </label>
-            <div class="nav-links">
+            </button>
+            <div class="nav-links" id="site-nav-links">
                 <a href="#why">Why</a>
                 <a href="#workflow">Workflow</a>
                 <a href="#publishing">Publishing</a>
@@ -39,16 +38,16 @@
                 <h1>Build a real local paper from sources, leads, drafts, and editor judgment.</h1>
                 <p class="hero-lead">The Civic Desk helps one person or a small newsroom monitor public sources, surface civic leads, draft from evidence, review risks, and publish a static issue. The app assists. The editor decides.</p>
                 <div class="hero-actions">
-                    <a class="button primary" href="https://github.com/scottconverse/CivicNewspaper/releases/download/v0.3.2/The.Civic.Desk_0.3.2_x64-setup.exe">
+                    <a class="button primary" href="https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.3">
                         <i data-lucide="download"></i>
-                        Download signed Windows beta
+                        Get v0.3.3 for Mac or Windows
                     </a>
                     <a class="button secondary" href="user_manual.html">
                         <i data-lucide="book-open"></i>
                         Read the manual
                     </a>
                 </div>
-                <p class="release-status">The signed Windows v0.3.2 public beta is available now.</p>
+                <p class="release-status">v0.3.3 is available for signed Windows x64 and unsigned Apple Silicon macOS 11+.</p>
                 <div class="hero-proof">
                     <span><strong>Default preview:</strong> here.now</span>
                     <span><strong>Archive:</strong> static export or credentialed connector</span>
@@ -163,7 +162,7 @@
                     <p class="section-lead">The Civic Desk compiles a flat HTML paper and a ZIP package. That means the output can be reviewed, archived, moved, hosted, or republished without locking the publisher into one platform.</p>
                     <div class="honesty-box">
                         <strong>Beta honesty:</strong>
-                        <span>Use the official Windows installer and verify its published checksum. macOS and Linux installers are not supported in this release line yet. Output quality still depends on editor review, source quality, and local AI behavior.</span>
+                        <span>Use an official v0.3.3 installer and verify its published checksum. The macOS build is Apple Silicon only, unsigned, and unnotarized; Linux is deferred to v0.3.4. Output quality still depends on editor review, source quality, and local AI behavior.</span>
                     </div>
                 </div>
             </div>
@@ -192,37 +191,37 @@
             <div class="section-container">
                 <div class="section-header">
                     <p class="eyebrow">Get the public beta</p>
-                    <h2>Signed v0.3.2 Windows public beta.</h2>
-                    <p><strong>Status:</strong> the published Windows installer passed signing, cleanroom, product, documentation, audit, and proof gates.</p>
-                    <p>Use the official Windows <code>.exe</code> installer from the v0.3.2 release and verify it against <code>SHA256SUMS.txt</code> before opening it. The current SHA256 is <code>BDA7CE85759AD1C475D100D0F04FBC7F3CAF7DFF07DDB74F60B24F1CAAF526DD</code>. Install only when the signature status is <code>Valid</code> and the signer contains <strong>Scott Converse</strong>.</p>
+                    <h2>v0.3.3 for Windows and Apple Silicon Mac.</h2>
+                    <p><strong>Status:</strong> both v0.3.3 public-beta artifacts are published from commit <code>e94a2f94885c1e6013129c3d854662cc3c8e5b27</code>. Windows is signed and timestamped. macOS is intentionally unsigned and unnotarized.</p>
+                    <p>Download only from the <a href="https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.3">official v0.3.3 release</a> and verify the exact file against <code>SHA256SUMS</code> before opening it.</p>
                     <p>Initial installation requires an internet connection when Microsoft Edge WebView2 Runtime is not already installed. Keep the computer online for first-run local AI setup as well; it downloads the app-managed Ollama runtime and selected model. This public-beta installer is not an offline installer.</p>
                 </div>
                 <div class="download-container">
                     <div class="download-card" id="download-win">
                         <i data-lucide="monitor-down"></i>
                         <h3>Windows</h3>
-                        <p>Use the signed <code>.exe</code> installer with an internet connection. This is the only supported public-beta installer path for v0.3.2. Use only the checksum published beside the exact release asset.</p>
-                        <a href="https://github.com/scottconverse/CivicNewspaper/releases/download/v0.3.2/The.Civic.Desk_0.3.2_x64-setup.exe" class="download-btn">
+                        <p>Windows x64. Use the signed <code>The.Civic.Desk_0.3.3_x64-setup.exe</code> installer with an internet connection. SHA256: <code>3d08ec394d87329043acd57f8f714cdcfdf10b3670631861ba16bc397c6befd2</code>.</p>
+                        <a href="https://github.com/scottconverse/CivicNewspaper/releases/download/v0.3.3/The.Civic.Desk_0.3.3_x64-setup.exe" class="download-btn">
                             <i data-lucide="download"></i>
-                            Download signed Windows beta
+                            Download Windows x64
                         </a>
                     </div>
                     <div class="download-card" id="download-mac">
                         <i data-lucide="laptop"></i>
-                        <h3>macOS backlog</h3>
-                        <p>Planned, but not a supported public-beta installer path until clean-machine proof and platform notes are recorded.</p>
-                        <a href="install.html#macos-and-linux" class="download-btn">
-                            <i data-lucide="list-checks"></i>
-                            View backlog
+                        <h3>Apple Silicon macOS</h3>
+                        <p>macOS 11+, Apple Silicon only. <code>The.Civic.Desk_0.3.3_aarch64.dmg</code> is unsigned and unnotarized. SHA256: <code>95c82afa6549a5648e919306b3fbc6b7f7336ee331ca7f3c7091d87d3d11f01b</code>.</p>
+                        <a href="https://github.com/scottconverse/CivicNewspaper/releases/download/v0.3.3/The.Civic.Desk_0.3.3_aarch64.dmg" class="download-btn">
+                            <i data-lucide="download"></i>
+                            Download Apple Silicon DMG
                         </a>
                     </div>
                     <div class="download-card" id="download-linux">
                         <i data-lucide="terminal"></i>
                         <h3>Linux backlog</h3>
-                        <p>Planned, but not a supported public-beta installer path until a VM or clean-machine proof is recorded.</p>
-                        <a href="install.html#macos-and-linux" class="download-btn">
+                        <p>Deferred to v0.3.4. No Linux package is published in v0.3.3.</p>
+                        <a href="install.html#linux" class="download-btn">
                             <i data-lucide="list-checks"></i>
-                            View backlog
+                            View Linux status
                         </a>
                     </div>
                 </div>

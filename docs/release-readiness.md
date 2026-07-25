@@ -108,12 +108,11 @@ source used for the current downloadable installer. The release page records
 the product build commit and is the authoritative provenance note for that
 historical exception.
 
-Do not move, replace, or silently delete the published v0.3.2 tag. The next
-release must use a new version and tag created from the exact product commit.
-Its evidence file, signatures, checksums, cleanroom report, release body, and
-uploaded artifacts must all identify that same commit and artifact bytes before
-publication. A planned v0.3.3 version is not released merely because this rule
-is documented.
+Do not move, replace, or silently delete the published v0.3.2 tag. v0.3.3
+resolved the successor-provenance problem with a fresh tag at exact product
+commit `e94a2f94885c1e6013129c3d854662cc3c8e5b27`; its evidence, checksums,
+release body, and uploaded artifacts identify that commit and the published
+bytes.
 
 ## Historical v0.3.2 evidence and the final-candidate rule
 

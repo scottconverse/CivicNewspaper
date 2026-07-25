@@ -132,15 +132,60 @@ describe("release coverage gate", () => {
     expect(bakeoff).toContain("process.exitCode = 1");
   });
 
-  test("binds the public landing page to the published signed candidate", () => {
+  test("binds the public landing page to the published v0.3.3 release", () => {
     const policy = read("scripts/policy/check_release_docs_consistency.py");
     const landing = read("docs/index.html");
 
-    expect(policy).toContain("LOCAL_CANDIDATE_COMMIT");
-    expect(policy).toContain("PUBLISHED_COMMIT");
-    expect(landing).toContain("Download signed Windows beta");
-    expect(landing).toContain("BDA7CE85759AD1C475D100D0F04FBC7F3CAF7DFF07DDB74F60B24F1CAAF526DD");
-    expect(landing).not.toContain("Candidate pending");
+    expect(policy).toContain('RELEASE_TAG = "v0.3.3"');
+    expect(policy).toContain(
+      'RELEASE_COMMIT = "e94a2f94885c1e6013129c3d854662cc3c8e5b27"',
+    );
+    expect(landing).toContain(
+      "https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.3",
+    );
+    expect(landing).toContain("The.Civic.Desk_0.3.3_aarch64.dmg");
+    expect(landing).toContain("The.Civic.Desk_0.3.3_x64-setup.exe");
+    expect(landing).toContain(
+      "95c82afa6549a5648e919306b3fbc6b7f7336ee331ca7f3c7091d87d3d11f01b",
+    );
+    expect(landing).toContain(
+      "3d08ec394d87329043acd57f8f714cdcfdf10b3670631861ba16bc397c6befd2",
+    );
+    expect(landing).toContain("macOS 11");
+    expect(landing).not.toContain("Download signed Windows beta");
+    expect(landing).not.toContain("v0.3.2 release candidate");
+  });
+
+  test("publishes accessible responsive release documentation", () => {
+    const landing = read("docs/index.html");
+    const script = read("docs/script.js");
+    const siteCss = read("docs/style.css");
+    const docCss = read("docs/doc-page.css");
+    const readme = read("README.md");
+    const faq = read("FAQ.md");
+    const changelog = read("CHANGELOG.md");
+
+    expect(landing).toMatch(
+      /<button[^>]+id="nav-toggle"[^>]+aria-expanded="false"[^>]+aria-controls="site-nav-links"/,
+    );
+    expect(landing).not.toContain('type="checkbox" id="nav-toggle"');
+    expect(script).toContain('setAttribute("aria-expanded"');
+    expect(script).toContain('event.key === "Escape"');
+    expect(siteCss).toContain(".nav-toggle:focus-visible");
+    expect(siteCss).toContain("overflow-wrap: anywhere");
+    expect(docCss).toContain("overflow-wrap: anywhere");
+    expect(docCss).toContain("max-width: 100%");
+    expect(readme).toContain("v0.3.3");
+    expect(readme).not.toContain("v0.3.3 candidate");
+    expect(faq).toContain("v0.3.3");
+    expect(faq).not.toContain("v0.3.3 candidate");
+    expect(changelog).toContain(
+      "[Unreleased]: https://github.com/scottconverse/CivicNewspaper/compare/v0.3.3...HEAD",
+    );
+    expect(changelog).toContain(
+      "[0.3.3]: https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.3",
+    );
+    expect(changelog).not.toContain("/compare/v0.2.0...v0.2.1");
   });
 
   test("renders the nested evidence report with publish-root navigation", () => {

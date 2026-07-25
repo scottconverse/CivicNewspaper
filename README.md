@@ -2,7 +2,7 @@
 
 > **Project name:** CivicNewspaper. **Installed app name:** The Civic Desk.
 >
-> **Current published release:** v0.3.2 Windows public beta. **Next candidate:** v0.3.3 adds an unsigned, unnotarized Apple Silicon macOS build. Intel Macs are not supported. Linux is deferred to v0.3.4. This is not a stable production release.
+> **Current published release:** v0.3.3 public beta for signed Windows x64 and unsigned, unnotarized Apple Silicon macOS. Intel Macs are not supported. Linux is deferred to v0.3.4. This is not a stable production release.
 
 The Civic Desk is a local-first desktop newsroom tool for small local publishers, civic reporters, and community editors. It helps one person or a small team monitor public local sources, discover story leads, draft articles with a local AI model, review risks and evidence, and publish a static local-news issue.
 
@@ -33,10 +33,10 @@ The app is built for the reality that many towns no longer have enough reporters
 
 ## Download
 
-The [v0.3.2 release page](https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2) serves the signed, cleanroom-tested Windows public-beta installer built from commit `796b8700831f964beea97630c51d71a40a9b724f`. Verify `The.Civic.Desk_0.3.2_x64-setup.exe` against `SHA256SUMS.txt` and confirm Authenticode reports `Status: Valid` with a signer containing `Scott Converse` before opening it.
+The [v0.3.3 release page](https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.3) serves both supported public-beta installers from commit `e94a2f94885c1e6013129c3d854662cc3c8e5b27`. Verify each download against `SHA256SUMS` before opening it.
 
-- **Windows:** download `The.Civic.Desk_0.3.2_x64-setup.exe`. Its current SHA256 is `BDA7CE85759AD1C475D100D0F04FBC7F3CAF7DFF07DDB74F60B24F1CAAF526DD`; size: `5342976` bytes. Install only when both its published checksum and signer identity pass the checks above.
-- **macOS:** v0.3.3 is planned to add `The.Civic.Desk_0.3.3_aarch64.dmg` for Apple Silicon only. It is intentionally not Developer ID signed or notarized. Do not treat the candidate as released until the v0.3.3 release page publishes its exact checksum and clean-machine evidence.
+- **Windows x64:** download `The.Civic.Desk_0.3.3_x64-setup.exe`. SHA256: `3d08ec394d87329043acd57f8f714cdcfdf10b3670631861ba16bc397c6befd2`; size: `5343200` bytes. Also confirm Authenticode reports `Status: Valid` with a signer containing `Scott Converse`.
+- **Apple Silicon macOS 11+:** download `The.Civic.Desk_0.3.3_aarch64.dmg`. SHA256: `95c82afa6549a5648e919306b3fbc6b7f7336ee331ca7f3c7091d87d3d11f01b`; size: `7891351` bytes. It is intentionally not Developer ID signed or notarized. Intel Macs and Rosetta are not supported.
 - **Linux:** deferred to v0.3.4. No Linux artifact is part of v0.3.3.
 
 Initial installation requires an internet connection on Windows systems where Microsoft Edge WebView2 Runtime is not already installed. First-run local AI setup also needs internet access to download the runtime and selected model. macOS users install and start Ollama separately before the app downloads a model. After those components and source material are available, drafting and review run locally.
@@ -130,11 +130,11 @@ The Ollama runtime binary is not committed to the repo. The app-managed first-ru
 
 ## Release Status
 
-v0.3.2 is a Windows public beta. The Windows release workflow Authenticode-signs and timestamps the installer, installed application, and uninstaller, then fails closed if any signature check fails. The downloadable GitHub asset is the signed, cleanroom-tested candidate built from commit `796b8700831f964beea97630c51d71a40a9b724f`, with SHA256 `BDA7CE85759AD1C475D100D0F04FBC7F3CAF7DFF07DDB74F60B24F1CAAF526DD` and size `5342976` bytes. The original v0.3.2 tag predates that rebuilt installer, so its automatic GitHub source archives are a documented historical exception rather than matching installer provenance; the next release must use a fresh tag bound to its exact product commit. The [local isolated-package report](docs/release-evidence/v0.3.2-local-isolated-package-report.md) and [hosted evidence JSON](docs/release-evidence/v0.3.2.json) are preserved as historical evidence for an earlier candidate; the current release page, checksum manifest, and exact-candidate cleanroom report are the proof for the published download. Stable release additionally requires cross-platform clean-machine proof for every advertised platform and credentialed live verification for external publishing providers.
+v0.3.3 is the current public beta. Its fresh tag is bound to exact product commit `e94a2f94885c1e6013129c3d854662cc3c8e5b27`. The Windows release workflow Authenticode-signs and timestamps the installer, installed application, and uninstaller, then fails closed if any signature check fails. The Apple Silicon DMG is intentionally unsigned and unnotarized. The release page, `SHA256SUMS`, hosted Windows and macOS receipts, and [hosted evidence JSON](docs/release-evidence/v0.3.3.json) bind the published downloads to their exact bytes. The older [v0.3.2 local isolated-package report](docs/release-evidence/v0.3.2-local-isolated-package-report.md) and [v0.3.2 evidence JSON](docs/release-evidence/v0.3.2.json) remain historical evidence only.
 
 ## Platform Release Roadmap
 
-v0.3.3 is the Apple Silicon macOS public-beta candidate. Its DMG is intentionally unsigned and unnotarized, requires a manual Ollama install, and cannot be published until ARM64 bundle inspection, exact-artifact checksums, and Apple Silicon clean-machine proof pass. Intel Macs are not supported. Linux packaging and proof are deliberately deferred to v0.3.4.
+v0.3.3 supports Windows x64 and Apple Silicon macOS 11+. The macOS DMG requires a separate official Ollama install and is intentionally unsigned and unnotarized. Intel Macs are not supported. Linux packaging and proof are deliberately deferred to v0.3.4.
 
 ## License
 
