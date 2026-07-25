@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.3.5] - 2026-07-25
+
+### Fixed
+- Corrected the Linux packaged-smoke harness so it verifies the installed `/usr/bin/civicnews` executable after package installation instead of rejecting a harmless `dpkg-deb` listing representation before installation.
+
 ## [0.3.4] - 2026-07-25
 
 ### Added

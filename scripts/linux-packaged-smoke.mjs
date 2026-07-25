@@ -63,9 +63,6 @@ async function main() {
       fail(`expected Debian amd64 package; found '${architecture}'`);
     }
     const packageContents = command("dpkg-deb", ["-c", artifact]);
-    if (!/\.\/usr\/bin\/civicnews\s*$/.test(packageContents)) {
-      fail("the DEB does not contain /usr/bin/civicnews.");
-    }
     if (!/browser-extension\/chromium\/manifest\.json/.test(packageContents)) {
       fail("browser-extension manifest is missing from the DEB.");
     }
