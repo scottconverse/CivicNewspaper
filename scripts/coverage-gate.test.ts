@@ -177,6 +177,12 @@ describe("release coverage gate", () => {
     expect(docCss).toContain("max-width: 100%");
     expect(readme).toContain("v0.3.3");
     expect(readme).not.toContain("v0.3.3 candidate");
+    expect(readme).toContain(
+      "its local preflight hash is not the final hosted DMG hash",
+    );
+    expect(read("docs/install.md")).toContain(
+      "It does not contain the final hosted DMG hash",
+    );
     expect(faq).toContain("v0.3.3");
     expect(faq).not.toContain("v0.3.3 candidate");
     expect(changelog).toContain(
