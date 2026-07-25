@@ -78,8 +78,29 @@ if (evidence.evidence_schema === "hosted-exact-artifacts-v2") {
   if (scope?.macos_apple_silicon_beta !== true) {
     fail("release_scope.macos_apple_silicon_beta must be true.");
   }
-  if (scope?.linux_release !== "deferred-v0.3.4") {
-    fail("release_scope.linux_release must be deferred-v0.3.4.");
+  const linuxPublished = scope?.linux_debian_x64_beta === true;
+  if (linuxPublished) {
+    if (scope?.linux_release !== "debian-x64-ubuntu-22.04+") {
+      fail("published Linux scope must be debian-x64-ubuntu-22.04+.");
+    }
+    const linuxHostedProof = requireOkSection(evidence, "linux_hosted_proof");
+    if (requireCleanString(linuxHostedProof.receipt_asset, "linux_hosted_proof.receipt_asset") !== "linux-packaged-smoke-receipt.json") {
+      fail("linux_hosted_proof.receipt_asset must be linux-packaged-smoke-receipt.json.");
+    }
+    if (requireCleanString(linuxHostedProof.package_format, "linux_hosted_proof.package_format") !== "deb") {
+      fail("linux_hosted_proof.package_format must be deb.");
+    }
+    if (requireCleanString(linuxHostedProof.architecture, "linux_hosted_proof.architecture") !== "x86_64") {
+      fail("linux_hosted_proof.architecture must be x86_64.");
+    }
+    if (requireCleanString(linuxHostedProof.minimum_ubuntu, "linux_hosted_proof.minimum_ubuntu") !== "22.04") {
+      fail("linux_hosted_proof.minimum_ubuntu must be 22.04.");
+    }
+    if (requireCleanString(linuxHostedProof.ollama_setup, "linux_hosted_proof.ollama_setup") !== "manual") {
+      fail("linux_hosted_proof.ollama_setup must be manual.");
+    }
+  } else if (scope?.linux_release !== "deferred-v0.3.4") {
+    fail("release_scope.linux_release must be deferred-v0.3.4 until Linux is published.");
   }
   if (scope?.scott_approved_public_release !== true) {
     fail("release_scope.scott_approved_public_release must be true.");

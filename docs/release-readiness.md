@@ -59,7 +59,7 @@ The receipt records the exact branch, commit, app versions, Tauri bundle targets
 
 The model bakeoff receipt must show that the configured default model in `src\models.json` passed every bakeoff case. The dependency audit receipt must be clean, run npm audit at the documented `moderate` threshold or stricter, and include Rust advisory checking through `cargo-audit`; a receipt that only exists but contains failures is not release evidence. If `cargo-audit` uses ignored RustSec advisories, every ignored ID must have a current machine-readable waiver in `docs/security-advisory-waivers.json`, and the dependency and RC receipts must copy exactly matching waiver entries into release evidence. Missing, extra, duplicated, expired, or incomplete waivers fail RC evidence. The Windows installer smoke receipt must prove NSIS silent install, installed app start from the packaged installer, first-run screenshot capture, uninstaller presence, and silent uninstall, and its recorded installer SHA256 must match the current RC artifact SHA256. MSI lifecycle proof is backlog/proof-needed until MSI is reintroduced as a public beta artifact.
 
-For v0.3.3, RC packaging evidence covers the signed Windows installer and the unsigned, unnotarized Apple Silicon DMG. Linux installer proof remains backlog/proof-needed and is deferred to v0.3.4.
+For v0.3.4, RC packaging evidence covers the signed Windows installer, the unsigned, unnotarized Apple Silicon DMG, and the Linux x86_64 Debian package. Linux support is limited to a `.deb` built on Ubuntu 22.04; AppImage, RPM, Flatpak, ARM Linux, and a claim of universal Linux support are out of scope. The Linux hosted smoke installs the exact staged package on a fresh Ubuntu runner, launches it under Xvfb with an isolated app-data profile and Ollama forced absent, and requires database initialization plus bundled prompt and browser-extension resources.
 
 ### Apple Silicon packaged preflight
 
@@ -88,11 +88,12 @@ publishes that separate receipt.
 
 The GitHub release workflow is intentionally conservative during public beta:
 
-- tag pushes build signed Windows x64 and unsigned Apple Silicon macOS artifacts into a **draft** prerelease;
-- the hosted workflow fails unless `docs/release-evidence/<tag>.json` exists at the tagged commit and verifies local RC evidence, Windows installer smoke, Windows cleanroom proof, and Apple Silicon preflight policy;
+- tag pushes build signed Windows x64, unsigned Apple Silicon macOS, and x86_64 Debian/Ubuntu Linux artifacts into a **draft** prerelease;
+- the hosted workflow fails unless `docs/release-evidence/<tag>.json` exists at the tagged commit and verifies the selected platform policies and preflight evidence;
 - the fresh hosted Mac runner smoke-tests the exact generated DMG and publishes `macos-packaged-smoke-receipt.json`;
+- the fresh Ubuntu 22.04 runner installs and smoke-tests the exact generated `.deb` and publishes `linux-packaged-smoke-receipt.json`;
 - the workflow attaches a checksum manifest and runs release-asset integrity checks;
-- release-asset integrity recomputes every downloaded asset hash, requires the Windows installer hash to match checked-in cleanroom evidence, and requires the Apple Silicon DMG hash to match the exact hosted packaged-smoke receipt;
+- release-asset integrity recomputes every downloaded asset hash and requires every advertised platform's hosted receipt hash to match its exact published artifact;
 - the workflow does not publish a non-draft public release by itself;
 - Scott must review the local RC receipt, cleanroom report, and release notes before undrafting a release.
 

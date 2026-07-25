@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-07-25
+
+### Added
+- Added a Debian/Ubuntu x86_64 Linux public-beta package. The release workflow builds on Ubuntu 22.04, installs the exact staged `.deb` on a fresh runner, launches it with an isolated profile and Ollama deliberately unavailable, and publishes an artifact-bound packaged-smoke receipt alongside `SHA256SUMS`.
+
+### Changed
+- Release integrity now requires the Linux package, its packaged-smoke receipt, and a matching `SHA256SUMS` entry before publishing the combined Windows, Apple Silicon macOS, and Linux public beta.
+
 ## [0.3.3] - 2026-07-24
 
 ### Changed

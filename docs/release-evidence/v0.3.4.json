@@ -1,0 +1,52 @@
+{
+  "evidence_schema": "hosted-exact-artifacts-v2",
+  "tag": "v0.3.4",
+  "commit": "5194028cee5f803aa63a3331348d64b496555b60",
+  "generated_at": "2026-07-25T14:31:00Z",
+  "release_scope": {
+    "windows_public_beta": true,
+    "macos_apple_silicon_beta": true,
+    "linux_release": "debian-x64-ubuntu-22.04+",
+    "linux_debian_x64_beta": true,
+    "scott_approved_public_release": true
+  },
+  "windows_hosted_proof": {
+    "ok": true,
+    "receipt_asset": "windows-signature-smoke-receipt.json",
+    "required_executables": [
+      "installer",
+      "application",
+      "uninstaller"
+    ],
+    "policy": "The exact hosted Windows installer must install silently on a fresh runner, and the installer, installed application, and uninstaller must each have a valid Scott Converse Authenticode signature and timestamp. The receipt installer hash must match SHA256SUMS."
+  },
+  "macos_preflight": {
+    "ok": true,
+    "receipt_path": ".agent-runs/v0.3.4-macos-preflight/macos-packaged-smoke-receipt.json",
+    "receipt_sha256": "d2669da2c3a2eb4248999e7839aaa258535d415f7e5b1469cea387130e0a3507",
+    "artifact_sha256": "4e3405fbc8c9c484e5a50c1d8fe20d8d94d1375e1a124c3ff659d8a029891028",
+    "artifact_size": 7897788,
+    "architecture": "aarch64",
+    "minimum_macos": "11.0",
+    "developer_id_signed": false,
+    "notarized": false,
+    "ollama_setup": "manual",
+    "browser_extension_manifest": true,
+    "prompt_file_count": 2,
+    "isolated_launch": {
+      "ok": true,
+      "ollama_forced_absent": true,
+      "database_initialized": true
+    },
+    "note": "This local preflight proves the merged v0.3.4 code and unsigned Gatekeeper path. DMG container bytes are not reproducible, so the release workflow separately smoke-tests the exact hosted DMG and binds that hosted receipt hash to SHA256SUMS."
+  },
+  "linux_hosted_proof": {
+    "ok": true,
+    "receipt_asset": "linux-packaged-smoke-receipt.json",
+    "package_format": "deb",
+    "architecture": "x86_64",
+    "minimum_ubuntu": "22.04",
+    "ollama_setup": "manual",
+    "policy": "The exact hosted Debian package must be built on Ubuntu 22.04, installed on a fresh runner, launched under Xvfb with an isolated app-data directory and Ollama forced absent, and prove database initialization plus bundled browser-extension and prompt resources. The receipt package hash must match SHA256SUMS."
+  }
+}

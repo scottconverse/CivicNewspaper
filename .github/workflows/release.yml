@@ -342,10 +342,87 @@ jobs:
           path: macos-codesign-inspection.txt
           if-no-files-found: error
 
+  linux-build:
+    needs: hosted-release-evidence
+    # Build against Ubuntu 22.04, the declared baseline for the x86_64 DEB.
+    # The smoke installs this exact package on the fresh runner and launches it
+    # with an isolated profile and Ollama deliberately unreachable.
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux packaging and smoke dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev xvfb
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.94.0
+          targets: x86_64-unknown-linux-gnu
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Fetch Ollama binaries
+        run: bash scripts/fetch-ollama-binaries.sh
+
+      - name: Build x86_64 Debian package
+        run: npm run tauri build -- --config src-tauri/tauri.linux.conf.json --target x86_64-unknown-linux-gnu --bundles deb -- --locked
+
+      - name: Stage Debian package
+        shell: bash
+        run: |
+          set -euo pipefail
+          bundle_root="src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb"
+          shopt -s nullglob
+          debs=( "$bundle_root"/*.deb )
+          if [ "${#debs[@]}" -ne 1 ]; then
+            echo "FAIL: expected exactly one Debian package; found ${#debs[@]}"
+            exit 1
+          fi
+          mkdir -p release-assets
+          version="${GITHUB_REF_NAME#v}"
+          staged="$PWD/release-assets/The.Civic.Desk_${version}_amd64.deb"
+          cp "${debs[0]}" "$staged"
+          echo "STAGED_DEB=$staged" >> "$GITHUB_ENV"
+
+      - name: Verify Linux release artifact
+        env:
+          ARTIFACT_DIR: release-assets
+          RELEASE_VERIFY_REQUIRED_EXTS: .deb
+        run: bash scripts/verify-release.sh
+
+      - name: Smoke-test the exact staged DEB on a fresh Ubuntu runner
+        run: |
+          node scripts/linux-packaged-smoke.mjs "$STAGED_DEB" \
+            --receipt "$PWD/linux-packaged-smoke-receipt.json"
+
+      - name: Upload Linux release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-linux-${{ github.sha }}
+          path: |
+            ${{ env.STAGED_DEB }}
+            linux-packaged-smoke-receipt.json
+          if-no-files-found: error
+
   publish-release:
     needs:
       - windows-build
       - macos-build
+      - linux-build
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -364,7 +441,13 @@ jobs:
           name: release-macos-${{ github.sha }}
           path: release-staging/macos
 
-      - name: Require one Windows installer and one Apple Silicon DMG
+      - name: Download verified Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-linux-${{ github.sha }}
+          path: release-staging/linux
+
+      - name: Require one Windows installer, Apple Silicon DMG, and x86_64 DEB
         run: |
           set -euo pipefail
           mkdir -p release-assets
@@ -372,11 +455,15 @@ jobs:
             -exec cp '{}' release-assets/ \;
           find release-staging/macos -type f \( -name '*.dmg' -o -name 'macos-packaged-smoke-receipt.json' \) \
             -exec cp '{}' release-assets/ \;
+          find release-staging/linux -type f \( -name '*.deb' -o -name 'linux-packaged-smoke-receipt.json' \) \
+            -exec cp '{}' release-assets/ \;
           test "$(find release-assets -maxdepth 1 -type f -name '*.exe' | wc -l)" -eq 1
           test "$(find release-assets -maxdepth 1 -type f -name '*.dmg' | wc -l)" -eq 1
+          test "$(find release-assets -maxdepth 1 -type f -name '*.deb' | wc -l)" -eq 1
           test -f release-assets/windows-signature-smoke-receipt.json
           test -f release-assets/macos-packaged-smoke-receipt.json
-          ARTIFACT_DIR=release-assets RELEASE_VERIFY_REQUIRED_EXTS=".exe .dmg" bash scripts/verify-release.sh
+          test -f release-assets/linux-packaged-smoke-receipt.json
+          ARTIFACT_DIR=release-assets RELEASE_VERIFY_REQUIRED_EXTS=".exe .dmg .deb" bash scripts/verify-release.sh
 
       - name: Create draft prerelease and upload verified artifacts
         env:
@@ -389,7 +476,7 @@ jobs:
               --draft \
               --prerelease \
               --title "The Civic Desk ${{ github.ref_name }}" \
-              --notes "DRAFT public beta for signed Windows x64 and unsigned Apple Silicon macOS. The macOS build is not Developer ID signed or notarized and requires a separately installed Ollama app. Do not publish until SHA256SUMS, platform-specific cleanroom evidence, Windows signature proof, and exact-tag release evidence have been reviewed."
+              --notes "DRAFT public beta for signed Windows x64, unsigned Apple Silicon macOS, and Debian/Ubuntu x86_64 Linux. macOS is not Developer ID signed or notarized; macOS and Linux require a separately installed Ollama app. Do not publish until SHA256SUMS, platform-specific packaged-smoke receipts, Windows signature proof, and exact-tag release evidence have been reviewed."
           fi
           gh release upload "${{ github.ref_name }}" release-assets/* \
             --repo "${{ github.repository }}" \
