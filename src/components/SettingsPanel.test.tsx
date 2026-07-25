@@ -121,9 +121,9 @@ describe("SettingsPanel Component Tests", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /Save identity/i }));
 
-    expect(await screen.findByRole("status")).toHaveTextContent(
-      "Save failed: Something went wrong: disk write failed",
-    );
+    expect(
+      await screen.findByText("Save failed: Something went wrong: disk write failed"),
+    ).toHaveAttribute("role", "status");
     expect(screen.queryByText("Identity saved.")).not.toBeInTheDocument();
   });
 
