@@ -11,12 +11,12 @@ This file is the active directive. Ignore older directive filenames and old repo
 - Repository: `scottconverse/CivicNewspaper`
 - Release URL: https://github.com/scottconverse/CivicNewspaper/releases/tag/v0.3.2
 - Public docs URL: https://scottconverse.github.io/CivicNewspaper/
-- Product build commit embedded in the locally verified Windows app: `e18bba5ffa890779954507b4d61d0965c3388552`
-- Documentation/policy commit: `f65847a`
+- Product build commit embedded in the locally verified Windows app: `5b454e308b48663252ef47745d4304a4eca28b54`
+- Documentation/policy commit: `f7194e4`
 - Local installer filename: `The Civic Desk_0.3.2_x64-setup.exe`
 - Hosted installer filename: `The.Civic.Desk_0.3.2_x64-setup.exe`
-- Required installer SHA256: `33C3AB662D59169E188FAE38B8F659364EAC3C6D0C5A82FC16D16D7C5073E9E0`
-- Required installer size: `5281261` bytes
+- Required installer SHA256: `0AC1A7C7A5D431C4E99CB03ADE08A58A6ED495E4A8CCEEBD17F86D5EDC8619A5`
+- Required installer size: `5279313` bytes
 - Checksum asset: `SHA256SUMS.txt`
 - App version: `0.3.2`
 - Local model used for the passing artifact-bound proof: `phi4-mini:latest`
@@ -25,23 +25,27 @@ The current GitHub release serves a different signed asset from commit `796b8700
 
 ## Local Proof Already Recorded
 
-The local Windows installed-package proof passed with zero findings in the recorded run:
+The local Windows installed-package proof passed with zero findings in the recorded runs:
 
-- Walkthrough receipt: `civicnewspaper/.agent-runs/packaged-e18bba5-phi4-retry/packaged-first-run-walkthrough-receipt.json`
-- Walkthrough receipt SHA256: `6176004CE0B01B828BFE9E0FEA7125105587B2345D14DF62F8B0967E85AB732E`
-- Core-flow receipt: `civicnewspaper/.agent-runs/packaged-e18bba5-phi4-retry/core-flow/core-flow-webview-result.json`
-- Core-flow receipt SHA256: `6604FBB1730911D556827651FCD10CF1ED4EB8CD928F5DB6848D59F0FE34B243`
+- Broad release-smoke receipt: `civicnewspaper/.agent-runs/release-smoke-20261117-084251/release-smoke-receipt.json`
+- Broad release-smoke receipt SHA256: `342AB2DFAAA0F88DAE8C35D892D4AA5F382216EBEFC46A201F570F1786D80BB8`
+- Packaged walkthrough receipt: `civicnewspaper/.agent-runs/release-smoke-20261117-084251/packaged-walkthrough/packaged-first-run-walkthrough-receipt.json`
+- Packaged walkthrough receipt SHA256: `AF417E8700A0EE691AF38AB6BBB22BA24EEBA44BC2EA13850DD83C387112E17D`
+- Core-flow receipt: `civicnewspaper/.agent-runs/release-smoke-20261117-084251/packaged-walkthrough/core-flow/core-flow-webview-result.json`
+- Core-flow receipt SHA256: `0B66B08942230C8CE4143E73D543BF4439B994D48E39FB0F1CAFCD31FCCC8D34`
+- Installer lifecycle receipt: `civicnewspaper/.agent-runs/windows-installer-smoke-5b454e3/windows-installer-smoke-receipt.json`
+- Installer lifecycle receipt SHA256: `50638A43BE22A671C0629C3316F0CED75307656BC34F1B1C9AD9B05356213578`
 - Severity rollup for that installed-package run: blocker `0`, critical `0`, major `0`, minor `0`, nit `0`
 
-The local proof covers silent install/uninstall, dependency-absent first run, accessible onboarding, persisted skip state, zero-source guidance, live-model Daily Scan, linked evidence, durable draft generation, Workbench reload, and database persistence. The broader local verification also passed 241 frontend tests across 27 files and 251 Rust tests.
+The local proof covers silent install/uninstall, dependency-absent first run, accessible onboarding, persisted skip state, zero-source guidance, live-model Daily Scan, linked evidence, durable draft generation, Workbench reload, and database persistence. The packaged proof uses a controlled source-backed fixture for deterministic evidence linkage; separate live municipal-source and live local-model checks also passed. The broader local verification passed 241 frontend tests across 27 files and 251 Rust tests.
 
 ## Required Hosted-State Gate Before Any Tester Run
 
 Do not run the cleanroom procedure until all of these are true:
 
-1. The release page asset `The.Civic.Desk_0.3.2_x64-setup.exe` hashes to `33C3AB662D59169E188FAE38B8F659364EAC3C6D0C5A82FC16D16D7C5073E9E0` and is `5281261` bytes.
+1. The release page asset `The.Civic.Desk_0.3.2_x64-setup.exe` hashes to `0AC1A7C7A5D431C4E99CB03ADE08A58A6ED495E4A8CCEEBD17F86D5EDC8619A5` and is `5279313` bytes.
 2. `SHA256SUMS.txt` names that asset and contains the same SHA256.
-3. The release body and public docs identify product commit `e18bba5ffa890779954507b4d61d0965c3388552`, the exact installer hash, and size.
+3. The release body and public docs identify product commit `5b454e308b48663252ef47745d4304a4eca28b54`, the exact installer hash, and size.
 4. The downloaded installer is from the GitHub release, never from `C:\Users\instynct`.
 
 If any hosted-state gate fails, write a visibility report identifying the mismatch and stop. Do not substitute a local copy, an older release asset, or a different hash.
