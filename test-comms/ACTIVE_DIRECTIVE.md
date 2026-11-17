@@ -1,6 +1,6 @@
 # CivicNewspaper v0.3.2 Release Candidate - Exact Provenance Handoff
 
-Tester: do not start a cleanroom run against the currently hosted older asset. This directive is the source of truth for the next release verification only after the hosted asset and checksum are replaced with the exact artifact below.
+Tester: do not start a cleanroom run against the currently hosted different asset. This directive is the source of truth for the next release verification only after the hosted asset and checksum are replaced with the exact artifact below.
 
 ## Source Of Truth
 
